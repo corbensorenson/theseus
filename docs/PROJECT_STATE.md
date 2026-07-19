@@ -104,21 +104,35 @@ share toward zero. Public benchmarks are calibration only.
   deterministic lookup and ambiguity preservation, not assertion truth, graph
   completeness, ontological identity, open-world definition quality, capsule migration,
   natural-context learned linking, complete semantics, truth, utility, or learned
-  competence. Full
-  cold producer/verifier replay took `3,917.120s`/`6,341.007s`; warm replay took
-  `3.470s`/`12.350s` through exact top-level run-cache hits with zero misses or
-  per-object work, zero failures, zero producer-authority reuse, and an unchanged
-  candidate digest. The two object stores cost `11,365,433,344` bytes (`10.585 GiB`).
+  competence. K1k now adds an explicit scoped-semantic ABI with exact proposition/scope
+  ownership across 14 operators. A separately implemented verifier replays every
+  operator, five scope/role/quantifier interventions remain identity-distinct, and four
+  topology/authority mutations reject. `KE-SERIALIZATION-2.0` exactly encodes and decodes
+  roots, typed arguments, confidence, derivation, and source alignments; packet validation
+  compares the decoded canonical program with the authoritative program. The canonical
+  K1k gate is GREEN, the focused shared suite passes 50/50, and PMB remains calibration-
+  only with zero training rows. This is authored-fixture ABI and replay evidence only,
+  not semantic parsing, complete semantics, learned competence, utility, SOTA, AGI, or
+  ASI evidence. All 27,941 corpus records are now migrated under the exact serialization
+  and independently admitted with zero failures. Cold producer/verifier runtime was
+  `3,642.746s`/`4,982.793s`; exact warm replay takes `3.200s`/`9.430s` through top-level
+  run-cache hits with zero misses or per-object work, zero producer-authority reuse, and
+  an unchanged candidate digest. The two object stores cost `14,234,451,968` bytes
+  (`13.257 GiB`). Semantic admission remains a serial performance owner; the next speed
+  change must preserve candidate, canonical-row, receipt-ledger, aggregate, and gate
+  identities under bounded parallelism and measured memory ceilings.
   Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Ten mechanisms are
   approximate or fixture-only; three are inactive or absent; H1-H8 remain inactive.
-  Broader K1 remains open: the corpus has zero correction alternatives, learned macros,
+  Broader K1 remains open: licensed non-benchmark proposition-level supervision is
+  absent, and the corpus has zero correction alternatives, learned macros,
   nonempty interaction-global dictionaries, PARTIAL decisions, or
   per-unit allocation receipts, and still contains 18,759 opaque byte-literal values.
   Observed decision and discourse labels supply bounded condition, causal, contrast,
-  attribution, and sequence topology, but not compositional proposition scope,
-  quantification, compositional negation, temporal truth, general coreference,
+  attribution, and sequence topology. The ABI can now represent compositional scope,
+  quantification, and negation, but the corpus does not yet provide decision-grade
+  source supervision for those constructs; temporal truth, general coreference,
   unresolved ambiguity, or derivation edges. The four-channel neural result remains
   channel-presence learnability, not learned residual allocation. Direct probes show
   the interaction label activates from segment state without a global dictionary and

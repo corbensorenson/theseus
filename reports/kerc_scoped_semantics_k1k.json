@@ -1,0 +1,167 @@
+{
+  "candidate_generation_credit": 0,
+  "claim_ceiling": "Fixture-backed scoped-semantic ABI, exact serialization, causal intervention, and independent structural replay mechanics only. No semantic parsing, truth, completeness, learned competence, public benchmark, utility, efficiency, SOTA, AGI, or ASI claim.",
+  "deterministic_compiler_credit": 0,
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "intervention_controls": [
+    {
+      "both_independently_verified": true,
+      "causal_identity_distinguished": true,
+      "pair": [
+        "POSSIBILITY",
+        "NEGATION"
+      ]
+    },
+    {
+      "both_independently_verified": true,
+      "causal_identity_distinguished": true,
+      "pair": [
+        "NECESSITY",
+        "NEGATION"
+      ]
+    },
+    {
+      "both_independently_verified": true,
+      "causal_identity_distinguished": true,
+      "pair": [
+        "QUESTION",
+        "NEGATION"
+      ]
+    },
+    {
+      "both_independently_verified": true,
+      "causal_identity_distinguished": true,
+      "pair": [
+        "CONDITION_ANTECEDENT",
+        "CONDITION_CONSEQUENT"
+      ]
+    },
+    {
+      "both_independently_verified": true,
+      "causal_identity_distinguished": true,
+      "pair": [
+        "QUANTIFIER_FORALL",
+        "QUANTIFIER_EXISTS"
+      ]
+    }
+  ],
+  "metrics": {
+    "distinguished_intervention_count": 5,
+    "intervention_count": 5,
+    "negative_mutation_count": 4,
+    "negative_mutation_rejection_count": 4,
+    "operator_count": 14,
+    "operator_pass_count": 14
+  },
+  "negative_mutations": [
+    {
+      "mutation": "operator",
+      "rejected": true
+    },
+    {
+      "mutation": "target_role",
+      "rejected": true
+    },
+    {
+      "mutation": "root",
+      "rejected": true
+    },
+    {
+      "mutation": "identity_map",
+      "rejected": true
+    }
+  ],
+  "operator_coverage": [
+    {
+      "independent_verification_passes": true,
+      "operator": "ALTERNATION",
+      "program_sha256": "sha256:84d558a151775cc3050f3be7ef5e65e29027cd4b423646b728ce19dcde7957a0",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "ASSERTION",
+      "program_sha256": "sha256:d7d6ffc427b91a90bd709ac157ddda8b2e31276f9bc3902bfa95f38da9d43af2",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "ATTRIBUTION",
+      "program_sha256": "sha256:fce55c6cbc9e97f3de1979bd1c0221f5a8eb8f18dc7c14f15f702fcc1827766d",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "CONDITION",
+      "program_sha256": "sha256:3be774c35cabd43b933f5c6667121d8fd4fd3d1c44ddf4529ac1f224bde4314b",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "CONJUNCTION",
+      "program_sha256": "sha256:07b692b9e42d511bb387ab10bde150c25bbcfa1ebe34863621be971a4fa81b4c",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "CONSEQUENCE",
+      "program_sha256": "sha256:88f31264e03bb4304a5cb1be78e8564258d83ea0b3f58bde77097d5363bea190",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "CONTINUATION",
+      "program_sha256": "sha256:0375c0dba2e356a7ea5d3bcb4a6f82b84cb98778b11314b5c5af0a9aac432b67",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "CONTRAST",
+      "program_sha256": "sha256:9d9f6a32e5ad14cbb83750f9ce7b35c1422e4ca20e4ff95abc0ec2751289c5d5",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "EXPLANATION",
+      "program_sha256": "sha256:ebf1ca3d339bdec809ff86fb63489d45be7e7dbf25b569b336689514284a281a",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "NECESSITY",
+      "program_sha256": "sha256:35a202aa3c7485bd983f8ad4d6fed7fa3b2ec3e7b12865fe37c0a79a50a15774",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "NEGATION",
+      "program_sha256": "sha256:5c597a2b187a715a5841a31d07845e482c526c45e12797941906c417d0771a67",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "POSSIBILITY",
+      "program_sha256": "sha256:684eb67252f64ba099128a95755acd03e39dee43a1c20455499d8284c3b3843d",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "QUESTION",
+      "program_sha256": "sha256:e568118de4cabbfc0328f936a6312aba08aa121690d7a0632cae0b00b617ee72",
+      "serialization_exact": true
+    },
+    {
+      "independent_verification_passes": true,
+      "operator": "QUOTATION",
+      "program_sha256": "sha256:c0865bbf878e7bc19bf43aba0ae056995b4a28e76233f00e993bd996a46e73e1",
+      "serialization_exact": true
+    }
+  ],
+  "policy": "project_theseus_kerc_scoped_semantic_adequacy_gate_v1",
+  "public_training_rows_written": 0,
+  "remaining_wall": "Licensed non-benchmark proposition-level supervision and a learned source-to-Kernel compiler remain absent. PMB remains calibration-only and writes zero training rows.",
+  "renderer_credit": 0,
+  "report_sha256": "sha256:9a7d1a20616225501fa1bd7877bbd046df9207e8eb9a34c4bedc11a6ffc82411",
+  "status": "GREEN"
+}

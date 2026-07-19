@@ -36,7 +36,27 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "fb237dfb373ce5a6bcecedbee354ffd58cb7f5c68f13d2ed18c0eac9e33b5e93"
+      "sha256": "e2559653a2f6aa1d8b716511e7c8c449625712a4c3dfa53355fb5ffd5eec36d4"
+    },
+    {
+      "path": "scripts/kerc_scoped_semantics.py",
+      "sha256": "07974b5e71db030ba9da3eb66b9b13cd1817c33b57ee3945b5cfeb0bee3bf4d2"
+    },
+    {
+      "path": "scripts/kerc_scoped_semantics_verify.py",
+      "sha256": "56b39d2ce43da51b8e05d04ec43bb49e064f0b10179718f13a3cebc6a9fae051"
+    },
+    {
+      "path": "scripts/kerc_scoped_semantics_gate.py",
+      "sha256": "210f7b01937aa1c18b702d45343f149100179d2d0e82d9c6af5eede18081c7a5"
+    },
+    {
+      "path": "tests/test_kerc_scoped_semantics.py",
+      "sha256": "b0bb6404355636246cd6753cb255e3694e2c9750b7c1d685c6a796d3edd04321"
+    },
+    {
+      "path": "reports/kerc_scoped_semantics_k1k.json",
+      "sha256": "b76fd1922ca5599c207126ea09fe4495f893c4894edc120f620f25ff9959a143"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
@@ -72,7 +92,7 @@
     },
     {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "2f4da9be8dab1f74f5af82ead4256610519911c1bf09ba65a50acf851e9b981b"
+      "sha256": "a361003c03ecdf553049d36b941bc85718fc7937b698be1a825d58ddb9046069"
     },
     {
       "path": "configs/kerc_concept_registry.json",
@@ -124,15 +144,15 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "7df740f80dc66f3335f0b11aff9a95726bd847bd5c4d4a68e5de32b99791a2f6"
+      "sha256": "b71f898b126d6b57253abeb42e1fb19d8fb879cc3d71012abc9c91ab71ea279c"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "5213e35a2e4697e7b2296c40534a776671e03ec13f129c860d7198a7cdf13bd8"
+      "sha256": "aee506374a6ba544c27b7628358b565c64e02b680bd9b7aa0f93f82ea47fe134"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "f300c7306ae8147aabaadd0dfaca81454408285f6712f8b01694b47498483388"
+      "sha256": "3438c7c2c3a28c0fd17b2f56ac1449c1769d83fccab28dbf29b3b6f8c7ec5618"
     },
     {
       "path": "reports/kerc_selective_replay_k1g.json",
@@ -140,7 +160,11 @@
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "35063cd69aee44a1b2cc8005f17dfb776c351f1dc09b2cfb9735658b8588689a"
+      "sha256": "97c6ef7223fe08289b70e518946a53437278063f17e21cda371ba0d99d01eb98"
+    },
+    {
+      "path": "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl",
+      "sha256": "d5c5fbae36901a0f0df46943df9991ddb25ab3ea55b546f21185cda2d4023d20"
     }
   ],
   "observed_corpus_contract": {
@@ -159,7 +183,7 @@
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
-    "status": "partial_green_k1j_current_corpus_full_independent_and_top_level_warm_replay_evidence",
+    "status": "partial_green_k1k_serialization_migrated_full_independent_and_top_level_warm_replay_evidence",
     "evidence": "reports/runtime/kerc_semantic_corpus_verification.json",
     "source_family_count": 11,
     "candidate_record_count": 27941,
@@ -172,12 +196,12 @@
     "warm_per_object_work_bypassed_by_top_level_hit": true,
     "warm_miss_count": 0,
     "producer_authority_reused_for_admission": false,
-    "producer_current_cold_runtime_ms": 3917120,
-    "verifier_current_cold_runtime_ms": 6341007,
-    "cold_rebuild_scope": "all candidate/finalization/economics and semantic-admission objects invalidated by current producer/verifier source closures",
-    "producer_warm_wall_runtime_ms": 3470,
-    "verifier_warm_wall_runtime_ms": 12350,
-    "combined_cache_bytes": 11365433344,
+    "producer_current_cold_runtime_ms": 3642746,
+    "verifier_current_cold_runtime_ms": 4982793,
+    "cold_rebuild_scope": "KE-SERIALIZATION-2.0 invalidated every Kernel-protocol-bound candidate/finalization and semantic-admission object; all 27,941 records were rebuilt and independently admitted",
+    "producer_warm_wall_runtime_ms": 3200,
+    "verifier_warm_wall_runtime_ms": 9430,
+    "combined_cache_bytes": 14234451968,
     "warm_measurement_record_count": 27941,
     "current_warm_measurement_pending": false,
     "remaining_incremental_owners": [
@@ -231,9 +255,9 @@
       "id": "kerc.surface_to_kernel_compiler",
       "paper_sections": ["5.5", "10.4"],
       "status": "approximate",
-      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/kerc_gum_discourse_relations.py", "scripts/kerc_gum_discourse_relations_verify.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py", "scripts/standard_causal_transformer_model.py"],
-      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_gum_discourse_relations.py", "tests/test_kerc_gum_entity_coreference.py", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents with independently replayed primary/secondary topology. K1i adds 5,361 source-declared GUM entity/coreference records: 3,542 complete non-singleton coreference components and 1,819 bridging links with complete endpoint components. Native CoNLL independently confirms exact component membership, CoNLL-U confirms 24,162 mentions and 13,436 components, official GUM heldouts are excluded, and partial admission, inferred links, public score claims, fallback/template credit, and extra source credit are zero. Source-derived concept capsules are compiler targets rather than source-visible inputs. Proposition scope, truth, quantification, compositional negation, cross-document/open-world identity, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
+      "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/kerc_gum_discourse_relations.py", "scripts/kerc_gum_discourse_relations_verify.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py", "scripts/kerc_scoped_semantics.py", "scripts/kerc_scoped_semantics_verify.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_gum_discourse_relations.py", "tests/test_kerc_gum_entity_coreference.py", "tests/test_kerc_scoped_semantics.py", "reports/kerc_scoped_semantics_k1k.json", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
+      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents with independently replayed primary/secondary topology. K1i adds 5,361 source-declared GUM entity/coreference records: 3,542 complete non-singleton coreference components and 1,819 bridging links with complete endpoint components. Native CoNLL independently confirms exact component membership, CoNLL-U confirms 24,162 mentions and 13,436 components, official GUM heldouts are excluded, and partial admission, inferred links, public score claims, fallback/template credit, and extra source credit are zero. K1k adds a source-independent scoped-semantic graph ABI with exact single ownership and explicit assertion, negation, possibility, necessity, question, conjunction, alternation, condition, consequence, contrast, continuation, explanation, attribution, and quotation operators. An implementation-independent reconstructor verifies all 14 operator routes, five causal scope/role/quantifier interventions remain identity-distinct, and four topology/authority mutations reject. This is fixture-backed ABI evidence only and writes zero training rows. Source-derived concept capsules are compiler targets rather than source-visible inputs. Licensed non-benchmark proposition-level supervision, truth, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
@@ -291,9 +315,9 @@
       "id": "kerc.independent_roundtrip_verifier",
       "paper_sections": ["5.12", "10.13"],
       "status": "approximate",
-      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/standard_causal_transformer_model.py"],
-      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_standard_causal_transformer_survival.py"],
-      "current_finding": "Hard structured checks and a separately parameterized classifier exist, but the hard projection ignores opaque byte-literal content and the learned verifier has not been independently calibrated on broad semantic corruptions.",
+      "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_scoped_semantics_verify.py", "scripts/standard_causal_transformer_model.py"],
+      "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_kerc_scoped_semantics.py", "reports/kerc_scoped_semantics_k1k.json", "tests/test_standard_causal_transformer_survival.py"],
+      "current_finding": "KE-SERIALIZATION-2.0 now encodes and exactly decodes roots, every typed argument, confidence, derivation, and source alignment; packet validation compares the decoded canonical program with the authoritative program rather than checking only macro expansion. The scoped-semantic verifier is a separately implemented structural reconstructor and rejects operator, role, root, and identity-map mutations. The answer hard projection still ignores opaque byte-literal content and the learned verifier has not been independently calibrated on broad semantic corruptions.",
       "claim_ceiling": "Listed structured-dimension mutation detection and verifier-head mechanics only; no semantic equivalence, truth, or verification-value claim.",
       "next_evidence": "Reject byte-literal substitution plus independently produced hard negatives for scope, time, causality, attribution, quantity, caveat, ambiguity, and correlated compiler/recompiler error."
     },

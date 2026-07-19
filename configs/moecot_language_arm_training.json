@@ -519,10 +519,11 @@
         {
           "source_id": "parallel_meaning_bank",
           "intended_tier": "licensed_human_task_gold",
-          "disposition": "quarantined_license_and_shared_task_review_incomplete",
+          "disposition": "calibration_only_public_semantic_benchmark; PMB 5.1 annotation license and per-document raw-text licensing reviewed; every PMB split remains forbidden for model training",
           "public_benchmark_surface": true,
-          "license_spdx": "UNKNOWN",
-          "source_url": "https://pmb.let.rug.nl/"
+          "license_spdx": "ODC-By-1.0",
+          "raw_text_license_policy": "per_document_license_must_be_preserved; no PMB row is admitted to training regardless of raw-text license",
+          "source_url": "https://pmb.let.rug.nl/releases/pmb-5.1.0.zip"
         },
         {
           "source_id": "ldc_amr",

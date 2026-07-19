@@ -17,7 +17,8 @@ improves without cheating.
 ## How To Read This Roadmap
 
 Precedence when sections disagree: the **Capability Plan v2** decides sequencing;
-the **Phases** decide mechanism; the **Book-Parity Backlog** decides book coverage.
+the **Phases** decide mechanism; the **ASI Stack-to-Theseus Completion Program**
+decides book-derived coverage.
 When this file and `configs/roadmap_implementation_matrix.json` disagree, reconcile
 the matrix first (Phase 19), do not paper over drift in prose.
 
@@ -145,7 +146,7 @@ retirement/falsification receipt.
 
 | Order | Contract | Current disposition | Required before long training |
 |---:|---|---|---|
-| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN; K1a multi-frame, K1b decision-semantic, K1c exact-run cache, K1d selective replay-cache, K1e manual event-coreference, K1f manual MPQA attribution, K1g source-family replay, K1h licensed human eRST discourse, K1i licensed human entity/coreference, and K1j deterministic cross-document concept-registry evidence GREEN; broader construct validity RED; utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. Two separately accounted 256-row MASC strata carry either 2-8 manual frames or aligned committed-belief, MPQA subjectivity, and event annotations. K1e adds 13 complete manual event-coreference groups with 215 aligned mentions. K1f adds 846 complete manual expression-to-attitude, attitude-to-target, and ordered nested-source graphs from 1,459 linked MPQA expressions. K1h adds 9,785 eRST relation neighborhoods from 89 permissively licensed official-train GUM documents. K1i adds 5,361 complete source-declared document-local identity-component and bridging records; independent TSV reconstruction agrees, native CoNLL confirms exact component membership, CoNLL-U confirms aggregate topology, and gold identity/provenance is excluded from the learned channel. K1j adds exact cross-document lookup over 218,061 WordNet-derived relations and preserves ambiguous/unknown resolution without allowing learned authority. The corpus now has 27,941 records, 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, 7,180 document-local concept capsules, and 18,759 opaque byte literals. This does not resolve proposition scope, truth, quantification, compositional negation, natural-context learned cross-document linking, temporal truth, or complete sentence semantics. Full cold producer/verifier replay takes 3,917.120s/6,341.007s; warm replay takes 3.470s/12.350s through exact top-level run-cache hits with zero misses or per-object work, zero failures, zero producer-authority reuse, an unchanged candidate digest, and 10.585 GiB combined cache cost. Raw parse, split reconstruction, aggregate calibration, and serialization remain open. The neural head still predicts structural channel-presence labels rather than independently measured per-unit `q_i` targets; record-wide allocation uses omitted residual mass and one protected object can force the whole record to exact fidelity. Complete K1-K8 in the KERC section: remaining decision-grade semantics; per-unit packet/economics; real interaction amortization; coordinated compiler/core/renderer objectives; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
+| 1 | Kernel English + hierarchical residual compiler | `partial` / K0 GREEN; K1a-K1j source/replay/concept-registry evidence GREEN; K1k scoped-semantic ABI, exact serialization, and full corpus migration GREEN; broader construct validity RED; utility unclaimed | preserve the exact packet/codec/lifecycle work, but do not call the current four-channel head a learned KERC allocator. K1e preserves 13 complete manual event-coreference groups with 215 aligned mentions; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 licensed eRST neighborhoods; K1i preserves 5,361 source-declared entity/coreference records and 7,180 concept capsules; K1j adds exact ambiguity-preserving lookup over 218,061 WordNet-derived relations. K1k adds exact proposition/scope ownership for 14 operators, independent structural reconstruction, five causal scope/role/quantifier interventions, four rejected topology/authority mutations, strict typed values, and `KE-SERIALIZATION-2.0` decode-and-compare replay over roots, arguments, confidence, derivation, and alignments. All 27,941 corpus records are now migrated and independently admitted with zero failures; cold producer/verifier runtime is 3,642.746s/4,982.793s, warm top-level replay is 3.200s/9.430s, and the two stores cost 13.257 GiB. K1k scope fixtures write zero training rows, and PMB remains calibration-only. The corpus still does not supply licensed non-benchmark proposition-level scope supervision, learned scope compilation, truth, temporal truth, complete semantics, natural-context learned cross-document linking, or utility. Complete K1-K8 in order: decision-grade source supervision; per-unit economics; real interaction amortization; coordinated learned compiler/core/renderer; construct-valid verifier; false-negative controls; then one prospectively frozen matched campaign. No mechanics canary, schema replay, or proxy score may support a KERC utility or failure claim |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
@@ -177,7 +178,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: `KPP-1.1`, exact object handling, VCM state replay, separate code spaces, shared-trunk stage adapters, arithmetic-code receipts, development-only lambda selection, and checkpoint/migration mechanics are real. The current 27,941-record corpus includes 16,517 multi-node programs, 6,202 multi-root programs, and 7,061 multi-claim packets. K1e preserves 215 mentions across 13 complete event-coreference groups; K1f preserves 846 complete manual MPQA attribution/attitude/target/source-chain graphs; K1h preserves 9,785 licensed human eRST discourse neighborhoods; K1i preserves 5,361 complete document-local source-declared identity-component/bridging records and 7,180 concept capsules behind a leak-free learned-output ABI. K1j adds a separately indexed and independently replayed cross-document registry with 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases; learned output can request but cannot mint or select registry authority. Independent TSV and native-CoNLL membership reconstruction agree across all 89 selected documents, CoNLL-U confirms 24,162 mentions and 13,436 components, official heldouts are quarantined, and no partial/inferred link receives credit. Full cold producer/verifier replay takes 3,917.120s/6,341.007s; warm replay takes 3.470s/12.350s through exact top-level run-cache hits with zero misses or per-object work, zero failures, zero producer-authority reuse, and 10.585 GiB combined cache cost. This is a construct-validity improvement, not complete semantics: 18,759 answer arguments remain opaque byte literals; correction lattices, learned macros, and interaction-global dictionaries are empty; proposition scope, quantification, compositional negation, natural-context learned cross-document linking and open-world definitions, temporal truth, and truth remain unresolved; and the hard round-trip projection does not compare opaque literal content. The residual head still learns channel-presence labels (`interaction` is keyed from segment state even though the coded global dictionary is empty), not per-unit rate-distortion decisions. The corpus remains economically negative and no learned utility, amortization, or efficiency claim is authorized | execute K0-K8 in order. Finish K1 construct validity and the remaining raw-parse/split/calibration/serialization incremental owners; then implement per-unit constrained economics and genuine multi-turn state; complete coordinated objectives and independent verification; only then freeze and train the matched KERC/control campaign. Preserve current reports as mechanics evidence and proxy negatives, not as a verdict |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: `KPP-1.1`, exact object handling, VCM state replay, separate code spaces, shared-trunk stage adapters, arithmetic-code receipts, development-only lambda selection, and checkpoint/migration mechanics are real. K1a-K1j preserve bounded independently replayed frame, decision, event-coreference, attribution, discourse, entity/coreference, and concept-registry structure. K1k now gives nested propositions exact scope ownership across 14 explicit operators, upgrades the token ABI to an exact full-program round trip, and migrates all 27,941 corpus rows through independent replay with zero failures; an independently implemented verifier covers every operator, five causal interventions, and four mutation classes. This does not close construct validity: K1k scope evidence uses authored fixtures and writes no scope-training rows; PMB remains calibration-only; licensed non-benchmark proposition-level scope supervision, learned scope compilation, complete semantics, truth, natural-context cross-document linking, correction lattices, learned macros, interaction-global dictionaries, and per-unit allocation remain open. The residual head still learns channel presence, the corpus remains economically negative, and no learned utility, amortization, efficiency, SOTA, AGI, or ASI claim is authorized | execute K0-K8 in order. Close source-grounded K1 cells without benchmark training and replace the serial semantic-admission bottleneck only with byte-equivalent bounded parallel replay; implement per-unit constrained economics and genuine multi-turn state; complete coordinated objectives and independent verification; only then freeze and train the matched KERC/control campaign. Preserve current reports as mechanics evidence and proxy negatives, not as a verdict |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -1211,6 +1212,11 @@ them as functionally verified examples.
 - Account for AR/MTP/speculative/self-draft/diffusion modes by accepted verified
   output and verification tax, not raw tokens/sec. Route scarce verification
   bandwidth by risk.
+- Replace assigned capacity units and hardcoded gate-latency constants with observed
+  wall/CPU/GPU/memory/storage, queue delay, human-review minutes, false accepts/
+  rejects, failures caught, repair/rework, migration/recovery, and residual cost on
+  the daily-use and architecture campaigns. Reconcile route-level ledgers to system
+  totals and estimate the marginal value of another check before allocating it.
 - Acceptance: Mac routes fail closed on unavailable backends; one hot-loop ablation
   improves accepted output per second without quality loss; report/checkpoint
   retention stays under policy.
@@ -1701,7 +1707,8 @@ subject to record-share and optimizer-probability caps. Every record must bind a
 content-addressed dataset revision/license/source catalog; public semantic benchmark
 surfaces are rejected even when permissively licensed. The MLX stage consumes these
 weights for positive and verifier-only pairs. The source qualification ledger keeps
-UCCA/TUPA and SNLI calibration-only, PMB quarantined, and LDC AMR excluded. A separate
+UCCA/TUPA, SNLI, and PMB calibration-only, with PMB 5.1 annotation and raw-text
+license policy reviewed but every PMB split forbidden for model training; LDC AMR remains excluded. A separate
 producer and independently implemented raw-source replayer now admit 6,144 Dolly
 instruction/response records for the direct-surface objective only and 4,096 manual
 MASC FrameNet records for compiler/reasoner/renderer objectives only. Another 1,064
@@ -2151,13 +2158,13 @@ paper mechanism.
    This closes one bounded document-local source-declared reference family only. It does
    not establish ontological identity, cross-document registry resolution, aliases,
    open-world definition quality, capsule migration/promotion, complete semantics,
-   truth, or learned linking competence. Full cold producer and independent-verifier
-   replay takes 3,917.120s/6,341.007s, admits all 27,941 rows with zero verification
+   truth, or learned linking competence. The pre-K1k cold producer and independent-verifier
+   replay took 3,917.120s/6,341.007s, admitted all 27,941 rows with zero verification
    failures and zero producer-authority reuse, and reproduces candidate digest
    `sha256:5213e35a2e4697e7b2296c40534a776671e03ec13f129c860d7198a7cdf13bd8`.
    Warm producer/verifier replay takes 3.470s/12.350s with exact top-level run-cache
    hits and zero misses; per-object work is bypassed rather than counted as 27,941 hits.
-   The two SQLite stores cost 11,365,433,344 bytes (10.585 GiB). Raw parsing, split reconstruction,
+   The two pre-K1k SQLite stores cost 11,365,433,344 bytes (10.585 GiB). Raw parsing, split reconstruction,
    aggregate calibration, and serialization remain uncached owners; the replay is GREEN
    for integrity and reuse, not for semantic utility, compression, or runtime efficiency.
    **K1j deterministic cross-document concept registry (`GREEN`, 2026-07-18):**
@@ -2185,6 +2192,36 @@ paper mechanism.
    establishes exact registered lookup and ambiguity preservation only. ConceptNet is not
    a truth oracle: graph completeness, assertion truth, natural-context learned linking,
    definition quality, migration, causal utility, and KERC promotion remain unclaimed.
+   **K1k scoped-semantic ABI and exact program serialization (`GREEN`, 2026-07-18):**
+   a source-independent graph contract now gives every proposition and nested scope
+   exactly one owner. It supports assertion, negation, possibility, necessity, question,
+   conjunction, alternation, condition, consequence, contrast, continuation,
+   explanation, attribution, and quotation without flattening operator order. A
+   separately implemented verifier reconstructs expected Kernel topology without
+   importing the producer. All `14/14` operator routes replay; `5/5` modality/negation,
+   condition-direction, and quantifier interventions produce distinct canonical program
+   identities; `4/4` operator, target-role, root, and identity-map mutations reject.
+   Strict quantity, temporal, text, symbol, and evidence-bearing ambiguity values fail
+   closed. `KE-SERIALIZATION-2.0` repairs a prior construct-validity gap by encoding and
+   decoding roots, every typed argument, confidence, derivation, and source alignment;
+   packet validation now compares the decoded canonical program with its authoritative
+   program instead of checking only macro expansion. The focused shared-contract suite
+   passes `50/50`; the canonical gate is `GREEN` in
+   `reports/kerc_scoped_semantics_k1k.json`. This is authored-fixture ABI, causal-
+   intervention, and exact-replay mechanics evidence only. It writes zero training rows
+   and establishes no semantic parsing, truth, completeness, learned competence, public
+   benchmark, utility, efficiency, SOTA, AGI, or ASI claim. PMB remains calibration-only.
+   The complete `27,941`-record corpus is now migrated under this serialization revision.
+   Cold production took `3,642.746s`; independent admission took `4,982.793s`, wrote
+   `27,941` canonical rows and receipts with zero failures, and reproduced the aggregate
+   accounting. Exact top-level warm replay takes `3.200s`/`9.430s` with zero per-object
+   work and an unchanged candidate digest. The producer/verifier stores now cost
+   `14,234,451,968` bytes (`13.257 GiB`); semantic admission remains a serial performance
+   owner and must gain bounded deterministic parallelism under byte-identical replay and
+   measured memory limits. K1 still needs licensed non-
+   benchmark proposition-level supervision and source-disjoint weak-tail evidence before
+   any learned scope/compiler result can be interpreted; an absent source is an open
+   evidence cell, not permission to substitute a toy proxy or issue a negative verdict.
    **K1 closure gate:** maintain a construct-by-domain-by-composition-depth coverage
    matrix, not one aggregate record count. Every claimed construct needs source-group-
    disjoint train/development/evaluation examples, adversarial minimal pairs, multiple
@@ -2539,14 +2576,16 @@ learned reasoning, broad transfer, runtime authority, AGI, or ASI evidence.
   tool and survives postcondition drift; stale procedures retire automatically.
 - Do not: toolify one-off traces, let procedure reuse widen authority, or call a
   stored trajectory parametric learning.
-- Implemented evidence: three diverse schema-bound real workflows (planning,
+- Implemented evidence: three diverse schema-bound metadata workflows (planning,
   chat, and deterministic-tool assistance) pass replay and canary execution;
   each compiles to a digest-bound, noncredit lookahead asset. Exact lookup
   selects `3/3`, unknown/ambiguous routes abstain, and append-only lifecycle
   receipts automatically retire stale or postcondition-drifted procedures.
   Three SCF replacement transactions arm rollback guards, the plan compiler
   consumes exact asset/receipt IDs, and assistant runtime selects all three
-  bindings without widening authority.
+  bindings without widening authority. These are authored/synthetic workflow
+  compression mechanics, not evidence that repeated natural work was discovered,
+  made useful, or adopted by Corben in daily operation.
 
 ### Phase 16: MoECOT and Octopus Router Integration
 - Make the first live specialist registry concrete: English, Python, JS/TS,
@@ -2760,13 +2799,16 @@ public-transfer, or capability-gain claim is made from the mechanics profile.
   the model while privileged adapters substitute secrets outside model-visible text.
 - Model distributed revocation, stale grants, partitions, confused-deputy attacks,
   amendment legitimacy, and human oversight degradation/rubber-stamping.
-- Add a scalable-oversight protocol that separates proposer, trusted monitor,
-  untrusted monitor, effect observer, evaluator, and promotion authority; measures
-  correlation/collusion, weak-supervisor limits, random audit coverage, oversight
-  latency, operator load, dissent, escalation, and abstention; and prevents review
-  output from silently becoming training or execution authority.
-- Add versioned capability-threshold commitments and safety-case consumption:
-  comparable assessment identity, context, threshold, safeguard bundle, exception
+- Promote the existing synthetic scalable-oversight scaffold into a measured protocol:
+  retain proposer/trusted-monitor/untrusted-monitor/observer/evaluator/promotion-
+  authority separation, but replace `*_measured: true` declarations with referenced
+  direct-review baseline, weak-supervisor outcomes, reviewer correlation/collusion,
+  persuasion, randomized-audit coverage, latency, operator load/fatigue, dissent,
+  escalation, abstention, and recursion-bottom evidence.
+- Correct the existing synthetic capability commitment before it gains route authority:
+  its current observed metric is declared local effect count, not capability. Rename it
+  as an effect-exposure safeguard commitment or consume a real domain-scoped comparable
+  assessment with uncertainty, prospective threshold, safeguard bundle, exception
   expiry, compensating controls, residual owner, and fail-closed route effect.
 - Before cross-stack federation, require protocol/identity/exchange records for
   principal, credential, delegation chain, expiry/revocation, task/artifact schema,
@@ -2787,23 +2829,513 @@ public-transfer, or capability-gain claim is made from the mechanics profile.
   crosswalk to an immutable committed AI_book revision. Report later live-worktree
   edits as intake drift, but do not let an external dirty checkout invalidate model
   training readiness. Advance the pin only through a reviewed reconciliation and
-  route new concepts to existing phases (see Book-Parity Backlog).
+  route new concepts to existing phases (see ASI Stack-to-Theseus Completion Program).
 - Check exact chapter identity/order and every book-owned title, part, file, claim
   label, evidence level, minimal implementation, mature endpoint, interface,
   invariant, failure mode, and Codex-test inventory. Count equality alone is not
   synchronization. Preserve the book commit and manifest digest used for review.
 - Acceptance: `roadmap_implementation_gate.py --gate` reports full pinned chapter
   coverage and separately identifies live drift; every represented book mechanism meets the
-  Book-Parity Invariants below; public-safe Theseus evidence can flow back into the
+  ASI Stack Completion Invariants below; public-safe Theseus evidence can flow back into the
   book without importing private payloads or inflating support state.
 - Do not: hide matrix drift in narrative; create a capability claim from a backlog
   row.
 
-## Book-Parity Backlog (remaining coverage)
+## ASI Stack-to-Theseus Completion Program
+
+This is the exhaustive implementation intake for the current ASI Stack architecture.
+It replaces "book parity" as a count-matching exercise with a finite, dependency-
+ordered completion program. The pinned machine crosswalk remains authoritative for
+the exact book revision it names; the live book currently has 55 chapters, including
+`replaceable-cognitive-substrates-beyond-transformer-monoculture`, while the pinned
+Theseus crosswalk remains on the reviewed 54-chapter snapshot until a new explicit
+reconciliation transaction advances it.
+
+The book is a design source, not an automatic implementation mandate. Every live
+chapter core is still `Design rationale` at `argument` support. A concept enters the
+Theseus execution path only when it serves the neural seed, governed teacher/data
+loop, daily-use dogfood lane, or repository/evidence health. Everything else remains
+visible as a deferred obligation rather than becoming a new lane, dashboard, product
+surface, benchmark family, or perpetual pre-training blocker.
+
+### Completion-state vocabulary
+
+Every work package below must use one of these states. A prose claim such as
+"implemented" cannot substitute for the corresponding evidence state.
+
+| State | Exact meaning |
+|---|---|
+| `required_now` | Repository truth, safety, or contract coherence is currently broken; repair may run beside the active flagship because it protects that lane. |
+| `pretraining_contract` | Adopting the mechanism later would invalidate topology, representation, objective, checkpoint, state, or matched-comparison identity; implement or explicitly exclude it before the next long run. |
+| `real_use_qualification` | Mechanics may exist, but natural multi-day use and outcome evidence are required before the mechanism can claim usefulness or become a default. |
+| `post_behavior_qualification` | The experiment requires a behavior-positive student; schema or zero-numerator canaries cannot satisfy it and do not block the first valid run. |
+| `external_dependency` | Valid work requires another trusted node, hardware, organization, network, or real operating environment not currently available. |
+| `deferred_by_breadth_freeze` | The concept is retained with an entry condition but cannot create a current lane or surface. |
+| `decision_grade_retired` | A faithful, adequately powered, matched experiment earned a scoped retirement. Proxy or construct-invalid failures never use this state. |
+
+### Dependency waves
+
+| Wave | When | Required outcome | Work packages |
+|---:|---|---|---|
+| 0 | now, beside faithful KERC repair | the roadmap, matrix, registered verifiers, retained reports, and their projections agree with live reality | `ASI-00` through `ASI-04`, `ASI-29`, `ASI-30` |
+| 1 | before the next architecture freeze | every checkpoint-shaping interface is executable or explicitly excluded, with exact state and matched-comparison identity frozen | `ASI-05`, `ASI-06`, `ASI-13`, `ASI-16`, `ASI-17`, `ASI-19` |
+| 2 | now through the first useful local lane | one natural assistant task traverses the existing stack and produces empirical dogfood/procedural evidence without learned-credit laundering | `ASI-07` through `ASI-12` |
+| 3 | after one complete natural vertical exists | governance, assurance, failure detection, verification, and resource decisions consume observed evidence rather than declared booleans or fixture-only units | `ASI-14`, `ASI-15`, `ASI-18`, `ASI-20` through `ASI-23` |
+| 4 | only after nonzero clean student behavior | measure routing, search, deliberation, memory, feedback learning, fast generation, compression, unlearning, and open-ended improvement causally | `ASI-24` through `ASI-27` |
+| 5 | only when entry conditions become true | multi-node, network, embodied, world-model, public-operation, and hardware-root work may start without changing the current flagship | `ASI-28` |
+
+### Governed completion work packages
+
+#### `ASI-00` - Reconcile the live 55-chapter book without moving evidence by fiat
+
+- **State:** `required_now`; owner Phases 0 and 19.
+- Review the live 55-chapter manifest against the pinned 54-chapter snapshot, including
+  changed core claims, interfaces, invariants, failure modes, minimal implementations,
+  mature endpoints, tests, and proof targets. Add the replaceable-substrates chapter to
+  the next pinned crosswalk only in the same transaction that records its disposition.
+- Classify every delta as already satisfied, stronger existing obligation, new
+  pre-training contract, real-use/post-behavior qualification, external dependency,
+  deferred by the breadth freeze, or rejected as duplicate/out of scope.
+- **Done:** immutable book commit and manifest digest, exact 55-row order, independently
+  recomputed source-field parity, reviewed disposition for every changed chapter, and
+  zero automatic support-state movement.
+
+#### `ASI-01` - Canonical/projection integrity and stale-derived-state invalidation
+
+- **State:** `required_now`; owner Phases 0, 14, and 19.
+- Add one shared projection receipt used by roadmap summaries, project-state summaries,
+  evidence-store views, module status, book crosswalk counts, and readiness reports.
+  Bind canonical input identities/digests, compiler version, derived counts, freshness,
+  and reverse-dependency closure. Derived counts must be recomputed, never maintained by
+  hand beside their canonical rows.
+- A changed source, schema, registered verifier, API, config, checkpoint, or canonical
+  record invalidates every dependent projection and green report until regenerated.
+- Repair the current chapter-state histogram: canonical rows contain 36 partial, 11
+  wired, two pretraining-pending, two frozen-dependency, and three mapped-missing states,
+  while the retained summary currently folds the two pretraining-pending rows into the
+  partial count.
+- **Done:** mutation tests catch changed rows, stale API/verifier identity, omitted state,
+  wrong counts, and a projection that claims fresher authority than its canonical input.
+
+#### `ASI-02` - Registered verifier migration and report lineage
+
+- **State:** `required_now`; owner Phases 0, 1, 2, and 14.
+- Bind every verification command to an API/schema version and successor/retirement
+  record. When an interface changes, migrate or explicitly retire the old tests and
+  invalidate their descendant reports; compatibility shims carry an owner and expiry.
+- First repair: reconcile the legacy procedural-route effect transaction suite with the
+  current dispatch-digest-bound reflexive effect contract. The successor tests pass;
+  the six old callers still target a removed keyword and cannot remain an active
+  verification surface.
+- **Done:** no registered canonical verifier fails because it targets a superseded API,
+  and no report remains current solely because an older verifier once passed.
+
+#### `ASI-03` - Cross-layer trace join and terminal reconciliation
+
+- **State:** `required_now` for the contract and `real_use_qualification` for natural
+  evidence; owner Phases 1, 2, 3, 5, 14, 15, 16, and 18.
+- Extend the existing VIEA/assistant path with one Reference Trace Join Contract that
+  binds root request, interpretation version, authority, VCM snapshot and cells read,
+  plan nodes, kernel/tool proposals, verifier decisions, route, costs, effects,
+  observations, rollback/commit, claims, residuals, feedback, and terminal child
+  acknowledgements under one lineage.
+- Require one natural happy trace and one natural blocked trace. Blocked, partial,
+  cancelled, timed-out, compensated, rolled-back, and escalated paths must be as visible
+  as success. Every dispatched child reaches one terminal state; every residual has an
+  owner; effect inventory and final observed state reconcile exactly.
+- **Done:** independent join audit rejects orphan nodes, request/effect parent mismatch,
+  missing terminal acknowledgement, stale projections, residual loss, unobserved effects,
+  and incomplete rollback.
+
+#### `ASI-04` - Consolidation, retirement, and one-owner enforcement
+
+- **State:** `required_now`; owner Phases 0 and 19.
+- Build a bounded cleanup queue from duplicate scripts, reports, schemas, old chapter
+  summaries, superseded verification surfaces, and sidecars that duplicate VIEA, VCM,
+  SCF, Octopus, registry, artifact, proof, or evidence ownership.
+- Preserve negative evidence and immutable run artifacts; retire execution authority,
+  not history. Every retained generated report must have a registered consumer or a
+  retention/GC disposition.
+- **Done:** one canonical owner per abstraction, no ambiguous active successor, compact
+  current-state docs, and a decreasing unowned/stale/duplicate surface count.
+
+#### `ASI-05` - Executable Cognitive Kernel ABI
+
+- **State:** `pretraining_contract`; owner Phases 2, 3, 10, 11, 13, 14, and 16.
+- Replace the config-only ABI declaration with an executable protocol/trait and schema:
+  `initialize`, `propose`, `accept_receipt`, `checkpoint`, `restore`,
+  `parameter_accounting`, and `resource_accounting`. Requests bind task/consumer,
+  context and exact-state handles, model/state version, authority ceiling, resource and
+  stop policies, evaluator, evidence obligation, and fallback. Proposals bind kernel,
+  checkpoint/state schema, mutable-state lineage, assistance, uncertainty, requested
+  changes/effects, evidence handles, cost, and non-claims.
+- Implement real adapters first for the faithful MoECOT/sparse candidate and matched
+  dense control. Add SymLiquid only when its actual state satisfies the contract.
+  OneCell remains non-routeable until a real implementation exists.
+- **Done:** malicious/incompatible adapter tests reject forged authority, omitted mutable
+  state, unaccounted assistance, checkpoint mismatch, incompatible migration, hidden
+  effect commits, and incomplete restore. No fake adapter may satisfy conformance.
+
+#### `ASI-06` - Exact/latent state custody and full checkpoint semantics
+
+- **State:** `pretraining_contract`; owner Phases 2, 3, 7, 10, 11, and 14.
+- Standardize identity, authority, protected predicates, typed values, program state,
+  effects, receipts, provenance, revocation, resource leases, durable memory, online
+  adaptation, and checkpoint parentage as exact external state. Keep belief, prediction,
+  relevance, similarity, uncertainty, heuristic value, and learned representations
+  explicitly non-authoritative.
+- Any recurrent state, prefix/KV cache, test-time learning, neural memory, retrieval
+  write, optimizer-like online state, or mutable adapter becomes part of provenance,
+  privacy, poisoning, deletion, backup, restore, and descendant invalidation.
+- **Done:** save/reload/migrate/rollback restores every declared governed surface, not
+  weights alone; exact state is never embedded only inside an opaque latent checkpoint.
+
+#### `ASI-07` - Versioned intent interpretation and re-contracting
+
+- **State:** `required_now` contract plus `real_use_qualification`; owner Phases 1, 5,
+  and 18.
+- Upgrade the live assistant intent record to preserve a privacy-safe root-request
+  reference separately from desired outcome; allowed/forbidden means; authority basis
+  and ceiling; affected parties; source/privacy/retention/training/publication limits;
+  acceptance/evidence requirements; field provenance; confirmed assumptions, bounded
+  defaults, contested/open ambiguities; permitted consumers; expiry, revocation,
+  correction, appeal, stop, and re-contract conditions.
+- Material changes to means, authority, tools, affected parties, sources, publication,
+  evidence, support-state effect, or stop conditions create a new contract version and
+  cannot silently pass through planning.
+- **Done:** natural underspecified/urgent/trust/publication/private-source cases measure
+  unauthorized-action rate, clarification burden, useful bounded help, re-contract
+  precision/recall, correction/appeal success, and user satisfaction.
+
+#### `ASI-08` - Planning, typed jobs, semantic lowering, and runtime replanning
+
+- **State:** `real_use_qualification`; owner Phases 1, 3, 5, 13, and 15.
+- Make the accepted intent contract, typed job, dependency DAG, adequacy contract,
+  capability tier, verifier, cost envelope, authority, residual behavior, merge rule,
+  and terminal state the ordinary execution unit. Preserve requirement/constraint
+  provenance through Semantic IR and artifact lowering.
+- Compare direct execution, schema-only, fixed workflow, current planner, and human
+  baseline under matched information and resources. Measure decomposition correctness,
+  dependency completeness, plan churn, invalid cycles, requirement loss, dispatch
+  success, useful completion, replanning quality, and total cost.
+- **Done:** a natural task can replan after stale context, failed dependency, changed
+  evidence, cancellation, or partial result without widening authority or losing work.
+
+#### `ASI-09` - One empirical daily-use assistant lane
+
+- **State:** `real_use_qualification`; owner Phase 5 with existing Phase 1/3/6/14/15
+  dependencies.
+- Select one existing low-risk task Corben actually needs and run it repeatedly through
+  the joined trace. Do not create a new app or dashboard. Tool-assisted usefulness may
+  count as product value but remains separate from learned-generation credit.
+- Record invoked/ignored, accepted/missed/corrected/completed, time saved, downstream
+  action, abstention, verifier/human cost, effect/rollback result, and whether learned,
+  retrieval, tool, workflow, or human components caused the outcome.
+- **Done:** multi-day real-use evidence with at least one correction and one failure or
+  abstention path; the product gate may move to empirical only from real user events.
+
+#### `ASI-10` - Empirical procedural-memory foundry
+
+- **State:** `real_use_qualification`; owner Phases 5 and 15.
+- Mine repeated source-disjoint real traces for reusable procedure structure without
+  copying answer-bearing content. Compare against direct execution; require heldout
+  positive/negative triggers, shadow execution, cost/usefulness improvement, drift,
+  decompilation, rollback, retirement, and descendant invalidation.
+- Preserve the existing three adopted metadata workflows as mechanics evidence, not as
+  proof of general procedure discovery or learned capability.
+- **Done:** at least one procedure discovered from real repeated work earns guarded
+  adoption and later survives a natural heldout use; false triggers remain below a
+  preregistered ceiling.
+
+#### `ASI-11` - Runtime adapters, approvals, secrets, and effect classes
+
+- **State:** `real_use_qualification` for local effects and `external_dependency` for
+  production isolation; owner Phases 1, 2, 5, 6, and 18.
+- Keep proposal, interpretation, approval, execution, observation, and evaluation under
+  distinct ownership. Expand beyond the bounded route-authority file only when a daily
+  task needs a new effect class. Each class requires least privilege, secret substitution
+  outside model-visible context, exact inventory, independent observation, idempotency,
+  compensation, rollback, denial, confused-deputy, path/symlink, and partial-failure tests.
+- **Done:** every enabled effect class has one natural successful transaction and one
+  denied/rolled-back transaction; unregistered effects fail closed.
+
+#### `ASI-12` - VCM/context and Semantic IR natural-use campaign
+
+- **State:** `real_use_qualification`; owner Phases 3, 5, 13, and 14.
+- Compare full context, ordinary retrieval, schema-only packets, current VCM/QCSA
+  identity-address-route packets, and no-memory baselines on natural tasks. Instrument
+  exact objects/cells read, omissions, taint, freshness, contradiction, deletion,
+  consumer use, and whether the model actually used the supplied context.
+- Stress concurrent writers/readers, crash recovery, stale snapshots, poisoned mounts,
+  copy-on-write branches, supersession/retraction, compaction, migration, and deletion
+  closure. Separately test natural source-plan to Semantic IR to concrete artifact
+  preservation with independent source-target and artifact evaluators.
+- **Done:** a measured task or cost advantage with no authority/privacy regression, or a
+  scoped negative result for the exact implementation; native KV/prefix parity remains a
+  separate claim.
+
+#### `ASI-13` - Architecture-freeze package and common comparator identity
+
+- **State:** `pretraining_contract`; owner Phases 0, 7, 8, 10, 11, 14, and 16.
+- Extend the existing freeze package with Cognitive Kernel ABI/schema versions, exact
+  and latent state inventory, mutable online-state custody, adapter conformance,
+  proposal/effect separation, verifier identity, assistance disclosure, complete cost
+  schema, migration/rollback, and explicit OneCell/SymLiquid dispositions.
+- **Done:** faithful KERC closure plus a content-addressed package for conventional
+  surface-English, KERC English candidate, code arms, MoECOT, dense controls, data,
+  objectives, evaluators, and total-cost views. No long run begins from an older green
+  package.
+
+#### `ASI-14` - Verification-bandwidth allocator and context adequacy economics
+
+- **State:** `real_use_qualification`; owner Phases 3, 8, 14, and 16.
+- Replace fixture-derived capacity units and hardcoded latency constants with observed
+  wall/CPU/GPU/memory/storage, queue delay, human-review minutes, checks run, failures
+  caught, false accepts/rejects, repairs induced, downstream rework avoided, residual
+  risk, and marginal value of another check.
+- Route among verify now, stronger verifier, cheaper verifier, more context, abstain,
+  partial return, escalate, or stop. High-risk work cannot spend nonexistent verifier
+  capacity or replace independent checks with self-score.
+- **Done:** prospective budgets alter real route decisions and beat a fixed/all-checks
+  baseline on verified utility per total cost without raising the no-cheat or safety wall.
+
+#### `ASI-15` - Total lifecycle Resource OS
+
+- **State:** `real_use_qualification`; owner Phase 8 and every producing phase.
+- Make total lifecycle accounting ordinary per run: data acquisition, training,
+  inference, active/total parameters, memory, storage, retrieval, routing, search,
+  verification, repair, human cleanup, migration, recovery, idle/queue time, energy,
+  governance, rollback, maintenance, and residual failure cost.
+- Preserve equal-active-parameter, equal-total-parameter, equal-train-compute, and
+  equal-total-lifecycle-cost views separately. No route may displace cost outside its
+  ledger and then claim efficiency.
+- **Done:** measured rather than assigned timings for the daily-use and architecture
+  campaigns, uncertainty intervals, and reconciliation to system-level resource totals.
+
+#### `ASI-16` - Security kernel, supply chain, weight custody, and epistemic trust roots
+
+- **State:** `pretraining_contract` for loader/admission invariants;
+  `external_dependency` for real valuable-weight/hardware-root claims; owner Phases 0,
+  2, 7, 8, 14, and 18.
+- Preserve requested/resolved/observed identity, Ed25519 admission, advisory freshness,
+  anti-rollback generation, revocation, relocation, ownership/mode, purpose, encrypted-
+  storage, key-release, and derivative-invalidation gates. Add reproducible second build
+  or explicit residual, signed training/build/advisory/custody records, copy/recipient
+  inventory, key rotation/revocation rehearsal, and hardware/firmware/operator trust
+  assumptions when a valuable routeable checkpoint exists.
+- Record the epistemic TCB for every promotion: which producer, verifier, monitor,
+  evaluator, human, toolchain, source, and hardware facts are trusted and where
+  independence is only nominal.
+- **Done:** current loaders fail closed before deserialization; later custody/release
+  claims require real keys, encrypted storage, and available hardware evidence rather
+  than fixture signatures.
+
+#### `ASI-17` - Load-bearing proof-contract resolver
+
+- **State:** `pretraining_contract` for selected invariants; owner Phases 0, 2, 14,
+  and 18.
+- Do not port the book's entire Lean inventory. Register only load-bearing predicates:
+  non-increasing authority, proposal/effect separation, stale/revoked lease rejection,
+  public-benchmark training exclusion, hidden-target information-flow exclusion,
+  canonical/projection equality, complete rollback/residual conservation, and complete
+  governed checkpoint state.
+- Each target binds predicate, source claim, code/schema version, artifact lane,
+  verifier command/result, semantic adequacy review, consumer, support-state effect,
+  limitations, and non-claims. Finite-model proof does not imply runtime fidelity.
+- **Done:** at least one live consumer blocks on each selected invariant and mutation
+  controls show the monitor and proof artifact cannot be self-attested by the producer.
+
+#### `ASI-18` - Measured scalable oversight and human-review degradation
+
+- **State:** `real_use_qualification`; owner Phases 4, 8, 14, and 18.
+- Replace `*_measured: true` declarations with evidence references and observed metrics.
+  Freeze a scoped task cohort and compare direct review, assisted consultation,
+  adversarial review, and abstention using an independent outcome adjudicator.
+- Measure supervisor envelope, accuracy/calibration by risk, reviewer outcome
+  correlation, common model/tool/prompt/information access, persuasion versus
+  correctness, disagreement/dissent retention, random-audit coverage, false/missed
+  escalation, latency, operator minutes, queue load, fatigue/rubber-stamping, recursion
+  bottom, and stop criterion.
+- **Done:** one natural oversight campaign beats or fails against a strong direct-review
+  baseline under matched access/cost; the exact result remains scoped to that protocol.
+
+#### `ASI-19` - Capability commitments that measure capability
+
+- **State:** `pretraining_contract` for schema semantics and
+  `post_behavior_qualification` for real thresholds; owner Phases 2, 12, 14, and 18.
+- Rename the current effect-inventory-count record as an effect-exposure safeguard
+  commitment or replace its metric with a real domain-scoped capability assessment.
+  Bind model/checkpoint, task family, evaluator/instrument, uncertainty, threshold and
+  rationale, safeguard obligations, reassessment triggers, exception/expiry,
+  compensating controls, residual owner, and route/release effect.
+- Non-crossing never authorizes release; crossing never proves safeguards effective.
+- **Done:** the first real threshold is frozen prospectively and consumes an actual
+  assessment rather than record shape or declared effect count.
+
+#### `ASI-20` - Assurance graphs and evaluation-observation integrity
+
+- **State:** `real_use_qualification`; owner Phases 12, 14, and 18.
+- Move beyond selection of the first supported claim and an empty defeater list. Pick a
+  consequential Theseus claim prospectively; model top claim, subclaims, hazards,
+  evidence, assumptions, counterevidence, defeaters, monitor provenance, evaluator
+  independence, context perturbations, discrepancies, freshness, residuals, reviewer,
+  decision authority, and rereview triggers as separate graph nodes.
+- Require at least one real countercase and one intentionally unresolved or explicitly
+  resolved defeater. An empty generated list cannot satisfy a counterevidence search.
+- **Done:** independent review may reject or narrow the case; context discrepancy or
+  stale dependency invalidates its route effect and descendants.
+
+#### `ASI-21` - Empirical failure-boundary radar and incident lifecycle
+
+- **State:** `real_use_qualification`; owner Phases 0, 8, 14, and 18.
+- For stale evidence, hidden target leakage, evaluator common-mode error, unaccounted
+  test-time state, construct-invalid proxy substitution, contamination, teacher-cap
+  breach, unobserved effect, rollback failure, and authority widening, record detector,
+  observable, threshold, false-positive/negative estimate, time to detect/contain,
+  affected closure, recurrence, escalation, recovery, disclosure, and retirement.
+- **Done:** fault-injection and natural incidents exercise detection through terminal
+  containment; dashboards or static taxonomies alone do not satisfy the package.
+
+#### `ASI-22` - Constitutional predicates, value conflict, rights, appeal, and amendment
+
+- **State:** `real_use_qualification`; owner Phases 1, 5, 14, and 18.
+- Make least-sufficient-power, dignity/agency, consent, privacy, correction, refusal,
+  exit, export, deletion, dissent, fork, appeal, self-modification, and affected-party
+  constraints executable consumers of intent, plans, jobs, effects, policy updates,
+  and steward actions. Preserve uncertainty and minority reports rather than reducing
+  conflicts to one score.
+- Treat charter/policy changes as versioned amendment events with proposer authority,
+  affected scope, notice/review, conflict checks, expiry/rollback, and legitimacy
+  residuals. No steward or model may amend its own authority unilaterally.
+- **Done:** natural conflict, correction, appeal, and amendment cases alter real route
+  decisions and remain visible through the joined trace.
+
+#### `ASI-23` - Evaluation integrity, sandbagging, reward hacking, and interpretability
+
+- **State:** `post_behavior_qualification` except for pre-training information-flow and
+  provenance contracts; owner Phases 4, 7, 10, 12, 14, and 18.
+- Freeze elicitation, selection, reward, monitor, and evaluator provenance. Use blinded
+  holdouts where feasible; trusted/untrusted monitor separation; cross-context,
+  paraphrase, pressure, tool-access, and incentive perturbations; capability-elicitation
+  controls; discrepancy quarantine; and independent replay.
+- Treat interpretability features, probes, circuits, traces, and monitor scores as
+  scoped evidence with stability, causal intervention, false-positive, and evaluator
+  limits. Hidden reasoning is neither required evidence nor execution authority.
+- **Done:** only after a capable model exists, measure strategic underperformance,
+  reward hacking, monitor interference, and trace/action divergence against strong
+  baselines; until then, preserve contract-only support.
+
+#### `ASI-24` - Routing, deliberation, search, and fast-generation qualification
+
+- **State:** `post_behavior_qualification`; owner Phases 6, 8, 10, 12, 14, and 16.
+- After nonzero direct behavior, freeze naturally ambiguous requests and compare direct,
+  specialist/generalist, learned/rule routing, abstention/fallback, bounded revision,
+  candidate search, tool-assisted, and deliberative routes. Measure route versus answer
+  success separately, calibration/selective risk, first-hit/last-correct, overthinking
+  harm, verifier disagreement, branch credit, accepted verified output per second,
+  latency/memory/energy, and total lifecycle cost.
+- MTP, speculative decoding, self-draft, diffusion, LayerSkip, and other fast modes earn
+  adoption only at matched verified quality. Extra tokens, self-scores, and branches are
+  not evidence.
+- **Done:** causal ablations show which route/mode improved verified output and the
+  stopping policy beats fixed-compute baselines without weak-tail regression.
+
+#### `ASI-25` - Policy learning, feedback, and open-ended improvement efficacy
+
+- **State:** `post_behavior_qualification`; owner Phases 5, 7, 10, 14, 15, and 18.
+- Preserve the seven-target update lease, GVR kernel, objective contracts, disabled
+  autonomous campaign, full-state journal, negative knowledge, best/final identity,
+  debt ceilings, stop authority, and rollback. Activate only after a behavior-positive
+  proposer and independent verifier create a real numerator.
+- Compare no-update, supervised, preference, verifier-reward, and other selected
+  objectives under matched data/compute/tuning and full verifier/repair/human cost.
+  Track teacher share, self-generated verified share, forgetting, reward hacking,
+  distribution shift, weak tails, and rollback triggers.
+- **Done:** useful heldout behavior improves beyond matched controls and survives monitor
+  window, reproduction, rollback rehearsal, and no-cheat audit.
+
+#### `ASI-26` - Behavioral continual learning, unlearning, privacy, and descendant erasure
+
+- **State:** `post_behavior_qualification`; owner Phases 3, 7, 10, 12, and 14.
+- Extend the strong 13-kind full-state mechanics to measured acquisition/retention,
+  forgetting, source influence, deletion efficacy, membership/privacy leakage,
+  retained-capability damage, backups/caches/indexes/adapters, external-effect receipts,
+  retraining cost, and exact rollback.
+- Preserve source purpose, consent, license, synthetic ancestry/share, teacher caps,
+  contamination, retention, export/correction/deletion rights, and multi-user isolation.
+- **Done:** a learned datum or governed group can be removed with independently measured
+  influence/privacy reduction and bounded collateral damage; package deletion alone is
+  not behavioral unlearning.
+
+#### `ASI-27` - Compression, mathematical/search, cyclic, and alternative-substrate discovery
+
+- **State:** `post_behavior_qualification` for adoption; protected discovery lane under
+  Phases 6, 11, 13, and 14.
+- Preserve RankFold/NeuralFold, CGS, Circle, Coil Attention, CoilRA, SymLiquid, VSA,
+  liquid/KAN-like, program-search, and exact mathematical substrates as separately
+  identified candidates. Every campaign declares the causal mechanism, faithful
+  implementation, learnability/gradient/checkpoint/intervention sanity, strong ordinary
+  baselines, matched raw data/compute/tuning/inference/verifier/total cost, multiple
+  seeds, uncertainty, weak tails, source-disjoint evaluators, fallback, residuals, and
+  transfer.
+- Compressed artifacts are consumer-scoped candidates and keep the full artifact plus
+  residual/fallback until utility, decode fidelity, and downstream probes admit them.
+- **Done:** adopt or retire only the exact candidate/regime tested; discovery may not be
+  absorbed into the transformer survival lane or broadly falsified by a toy proxy.
+
+#### `ASI-28` - Deferred and external operations without roadmap loss
+
+- **State:** `external_dependency` or `deferred_by_breadth_freeze`; owner Phases 9, 17,
+  18, and the relevant existing phase only after entry.
+- Retain explicit entry conditions for: real multi-node Hive/federation; inter-stack
+  credentials/delegation/value/dispute/shutdown; public gateway/market operation;
+  confidential hardware roots; multi-user memory/privacy; vision/audio/sensor grounding;
+  world models; embodied actuation; autonomous scientific experiments; replication/
+  proliferation controls; incident response/decommissioning; mobile/Watch/spatial/voice;
+  and broader multi-agent economies.
+- **Done now:** no implementation lane, dashboard, or training blocker exists. **Entry:**
+  a current priority needs the capability, the required environment exists, authority is
+  explicit, and the new work reuses existing owners rather than duplicating the stack.
+
+#### `ASI-29` - Source-gap-owner-evidence graph and roadmap continuity
+
+- **State:** `required_now`; owner Phase 19.
+- Extend the existing matrix/registry rather than creating a new doc family. Every
+  source/chapter atom and accepted Theseus obligation links to owner, dependency,
+  implementation, verifier, current evidence, support state, residual, next falsifiable
+  action, defer/retire condition, and public-safe return path to the book.
+- Closing any active roadmap requires one exact successor in the same transaction;
+  completed programs remain immutable history and do not reacquire authority.
+- **Done:** the machine view can answer what is missing, why, who owns it, what blocks
+  it, what evidence would move it, and whether it is required now without reading a
+  pile of reports.
+
+#### `ASI-30` - Shared governed-lease envelope
+
+- **State:** `required_now` for schema consolidation and `pretraining_contract` where a
+  lease governs checkpoint/update authority; owner Phases 0, 2, 3, 7, 14, 16, and 18.
+- Normalize the recurring SCF substitution, VCM context, node/job, policy-update,
+  benchmark-instrument, capability-commitment, artifact-use, data/source, kernel-route,
+  and steward-action lease semantics without creating another execution engine. The
+  shared envelope binds lease/root identity, exact subject and consumer, use/scope,
+  authority ceiling, version/schema, evidence prerequisite, start/expiry, revocation,
+  correction/appeal, re-contract triggers, monitor/requalification, rollback,
+  descendant invalidation, residual owner, and non-claims; domain payloads remain owned
+  by their existing modules.
+- Adapters may translate legacy records during a finite migration, but cannot discard
+  authority, expiry, revocation, consumer, or rollback fields. Wrong-consumer, stale,
+  superseded, widened-authority, missing-evidence, and unacknowledged-revocation cases
+  fail closed across every adopting lease family.
+- **Done:** at least policy-update, VCM context, SCF substitution, and one runtime/effect
+  route consume the same envelope and pass cross-family replay/mutation tests; no two
+  lease families disagree on expiry, revocation, or authority-order semantics.
+
+### Mechanism-level coverage inventory
 
 Every load-bearing ASI Stack mechanism should eventually be represented in Theseus
-(see Book-Parity Invariants for what "represented" requires). Current remaining
-gaps route into the phases above:
+(see ASI Stack Completion Invariants for what "represented" requires). This detailed inventory
+is subordinate to the work packages and dependency waves above; it cannot override
+their sequencing or create a new flagship lane.
 
 | Book mechanism | Remaining gap | Phase |
 |---|---|---|
@@ -2812,19 +3344,19 @@ gaps route into the phases above:
 | Effect-complete governed execution | useful release, first/final effect identity, observer separation, exact rollback inventory, and governance tax are not one ordinary assistant transaction | 1, 2, 5, 14, 18 |
 | Recursive self-improvement boundaries | canonical transition record not yet universal across policy, data, route, and model changes | 2, 14 |
 | Open-ended improvement campaigns | pre-training mechanics are canonical: distinct generator/evaluator/promoter/stop/rollback authorities, single-axis matched-budget challengers, frozen holdout, novelty/coverage/weak-tail decisions, negative-knowledge retention, six-field debt ceilings, explicit shutdown handoff, hash-chained journal, full-state rollback, and fourteen rejecting mutations. Runtime activation and learned improvement remain unproven and disabled | 7, 10, 12, 14, 15, 18 |
-| Intent-to-execution contracts | runtime path does not yet require contracts for every meaningful task | 1 |
-| PlanForge DAGs + adequacy + arbitrage | not the default execution spine; adequacy contracts + arbitrage ledger missing | 1 |
+| Intent-to-execution contracts | structured runtime records exist, but the live assistant contract is thinner than the plan compiler and lacks versioned ambiguity, field provenance, affected-party, expiry/revocation/appeal, and material re-contract semantics on natural tasks | 1, 5, 18 |
+| PlanForge DAGs + adequacy + arbitrage | typed DAG/reflexive mechanics are wired; natural decomposition quality, requirement preservation, live replanning, and matched intelligence-arbitrage evidence remain unproved | 1, 5, 13 |
 | Cognitive compilation / semantic IR | failures reported more than repaired through IR-level localized feedback | 13 |
 | Kernel English + Hierarchical Residual Ledger | reopened after adequacy audit: exact packet/residual/codec interfaces and shared-trunk mechanics exist, and K1a now independently replays 256 bounded multi-frame/multi-claim MASC records without inflating source credit. The old campaign still tested a keyword/linear proxy, while broader semantics, typed nonliteral values, per-unit allocation, real global interaction dictionaries, coordinated learned stages, semantic verification, and utility remain absent or unproven. Complete K1-K8 before refreezing | 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, 18, 19 |
 | Data engines + continual learning + unlearning | canonical admission now carries 115,407 candidate receipts, five frozen policy simulations, contamination controls, 125,702 lineage edges, a 13-kind full-state inventory, descendant deletion, and bounded storage-erasure receipts. Real forgetting, influence, privacy, and unlearning efficacy remain post-training measurements | 3, 7, 12, 14 |
 | Full-state update causality | pre-training mechanics are unified: model/optimizer/scheduler/RNG/cache/index/checkpoint/backup/effect state is content-addressed, best and final authority are distinct, packages replay exactly, update exposure is lineage-bound and bounded, deletion reaches descendants, and rollback restores the exact pre-state digest. Behavioral unlearning and undeclared external erasure are explicit non-claims | 0, 2, 7, 10, 14 |
 | Durable semantic memory inside VCM | wired: stable objects, typed/temporal relations, additive ontology migration, transactional merge/supersession/retraction/compaction, sparse-vector/graph retrieval, bounded snapshots, and fresh-process replay; dense embedding and parametric unlearning remain explicit non-claims | 3, 14, 15 |
 | Question-Compiled Semantic Addressing | bounded pre-training disposition complete: VCM now owns stable SOID/address/route indirection, three authoritative facets, Semantic Address Certificates, authority-safe translation, and exact migration/rollback; the matched source campaign retired the full objective and adaptive-question policy from the first long run because they added cost without task advantage | 0, 1, 2, 3, 6, 8, 13, 14, 16, 18, 19 |
-| Verification bandwidth | verification not yet budgeted/routed as a scarce resource | 8 |
-| Claim ledgers + belief revision | claim/transition records + contradiction links not first-class per run | 14 |
+| Verification bandwidth | route/verifier capacity and governance-tax records exist, but current units and latency are synthetic formulas/constants rather than observed marginal value, false-accept/reject, human-load, and displaced-cost evidence | 3, 8, 14, 16 |
+| Claim ledgers + belief revision | claim/transition/contradiction records are widely materialized; canonical/projection freshness, natural-run causal use, and independent downgrade/defeater behavior remain incomplete | 0, 14, 19 |
 | Proof-carrying + tribunal/adversarial review | broader independent-review records not standard for architecture changes | 14, 18 |
 | Labor OS typed jobs / artifact graphs | typed job + unified artifact graph not the universal unit | 1, 14 |
-| Procedural memory | adoption discipline applied to only one trace so far | 15 |
+| Procedural memory | three metadata workflows have guarded adoption mechanics; real repeated-work discovery, direct-execution baselines, natural heldout reuse, false-trigger measurement, drift, and retirement remain missing | 5, 15 |
 | Routing heads + MoECOT + specialist cores | v8 shared trunk and five specialist deltas are trained and arm-evaluated; matched dense verdict, confirmation, live arm-card binding, typed composition, and route-versus-answer qualification remain | 10, 16 |
 | Reflexive Router / compiled reflexes | pre-training mechanics are wired through the canonical assistant: typed command/reflex registries, finite outcomes, precedence and qualification, Chronicle/cache invalidation, structured concurrency, sole-kernel reversible effects, compilation/decompilation interfaces, and a frozen 32-case/eight-track/ten-policy mechanics profile. Learned calibration, real route regret, diverse trace promotion, drift response, and answer-quality benefit remain post-training evidence | 0, 1, 2, 3, 5, 6, 8, 14, 15, 16, 18, 19 |
 | Ambiguous routing + adaptive deliberation | naturally ambiguous route corpus, fallback/abstention calibration, first-hit/last-correct, overthinking harm, branch credit, and verifier-disagreement accounting are missing on useful model outputs | 4, 6, 8, 10, 14, 16, 18 |
@@ -2833,27 +3365,95 @@ gaps route into the phases above:
 | Deterministic math/search substrates | not yet attached universally to planning/VCM/claim-ledger/assistant | 6 |
 | Benchmark ratchets | public-transfer story stale; remeasure only after private correctness improves | 12 |
 | Policy optimization (DPO/GRPO/RLVR) | shared update authority covers seven policy targets, and DPO/IPO/ORPO/KTO/SimPO plus GRPO/RLOO/ReMax/RLVR now execute through one disabled, provenance-bound, checkpointed, MLX-parity-tested objective contract with verifier-capacity and reward-hacking controls. Learned efficacy and objective selection remain post-training evidence | 7, 10 |
-| Integrated reference architecture | the missing canonical spine | 1 |
+| Integrated reference architecture | many canonical component records exist, but one natural request has not yet produced an independently joined happy trace plus blocked trace with complete parentage, terminal acknowledgement, effect/residual conservation, and dogfood outcome | 1, 2, 3, 5, 14, 15, 16, 18 |
 | Authority kernel / SCIF / failure boundaries / adapter receipts | no universal authority-transition ledger or SCIF receipt layer | 18 |
-| Scalable oversight | no trusted/untrusted monitor separation, correlation/collusion probe, weak-supervisor boundary, randomized audit policy, operator-load ledger, or recursion-bottom contract | 4, 14, 18 |
-| Capability commitments + safety cases | threshold/safeguard/exception commitments and dependency-invalidating assurance graphs are not consumed by release/default-route decisions | 2, 12, 14, 18 |
-| Weight custody + AI supply chain | local AIBOM now distinguishes more than 500 requested/resolved/observed identities across 19 domains, surface Merkle roots, runtime identity, and derivative invalidation; signed advisories, reproducible training/build attestation, attestation-gated load, weight custody, and key lifecycle remain | 0, 2, 7, 8, 14, 18 |
+| Scalable oversight | role separation, private-state partitions, risk routing, random-audit policy, and rejecting fixtures are wired synthetically; `*_measured` fields are not backed by outcome references, and direct-review baselines, weak-supervisor results, real correlation, persuasion, fatigue, operator load, and recursion-bottom evidence remain missing | 4, 8, 14, 18 |
+| Capability commitments + safety cases | a synthetic commitment and one assurance/evaluation-integrity case exist, but the commitment metric is declared local effect count rather than capability and the selected-claim assurance case has no real counterevidence/defeater campaign; rebuild or rename before route authority | 2, 12, 14, 18 |
+| Weight custody + AI supply chain | local AIBOM, descendant invalidation, fail-closed Ed25519 artifact admission, advisory/revocation/anti-rollback, relocation, and valuable-weight custody requirements exist; the current AIBOM still honestly reports unsigned supply chain, no reproducible second build, no real weight custody, and no hardware-root evidence | 0, 2, 7, 8, 14, 18 |
 | Inter-stack identity and exchange | federation lacks credential/delegation expiry, reserved budgets, value/accounting receipts, dispute, revocation, and shutdown-handoff interoperability | 1, 2, 9, 16, 18 |
 | Constitutional predicates / agency / value conflicts / governance rights | not first-class records consumed by planning and self-improvement | 18 |
-| Resource budgets + costed routes + generation-mode records | costed routes + accepted-output accounting not the normal artifact | 8 |
+| Resource budgets + costed routes + generation-mode records | many surfaces emit cost records, but actual wall/CPU/GPU/memory/storage/human/migration/recovery/residual totals are fragmented and not reconciled as the ordinary total-lifecycle artifact | 8, 14 |
 | Simulation contracts | no contract separating map from territory | 17 |
 | Semantic atoms/nodes + compact artifacts + substrate adoption | not the common substrate; adoption discipline not universal | 11, 13, 14 |
-| Research backlog | no unified source-gap-to-implementation backlog | 19 |
-| Receipt faithfulness / record-reality gap | effect receipts, gate reports, ledger writes not yet trap-tested or randomly re-audited | 14, 18 |
+| Research backlog | chapter crosswalk and source-sync machinery exist, but no canonical atom-to-owner/dependency/implementation/verifier/evidence/residual/next-action graph spans the live 55-chapter book | 0, 19 |
+| Receipt faithfulness / record-reality gap | extensive mutation controls exist, but registered API/verifier migrations, stale descendant reports, declared measurement booleans, generated empty-defeater lists, and canonical/projection disagreement still permit record/reality gaps | 0, 14, 18, 19 |
 | Epistemic trusted computing base | roots of trust, verifier independence, bounded trust propagation not yet explicit | 14, 18 |
 | Human oversight degradation | no measure/guard for review-capacity capture and rubber-stamping | 8, 18 |
 | Partition / distributed authority governance | stale-grant/revocation-race behavior across Hive nodes not modeled in runtime | 9, 18 |
 | Interpretability evidence discipline | interpretability claims not held to the same support-state/non-claim bar | 13, 14 |
 | Amendment legitimacy | governance/charter changes not treated as first-class amendment events with legitimacy checks | 18 |
 
+### Complete 55-chapter ownership index
+
+This index prevents a chapter from disappearing merely because its implementation is
+grouped into a cross-cutting package. `strong_mechanics` means preserve and qualify,
+not that the chapter core is demonstrated. `deferred` means the entry condition is
+retained under `ASI-28`; it is not permission to start the lane.
+
+| ASI Stack chapter | Primary package(s) | Current roadmap disposition |
+|---|---|---|
+| ASI Is a Stack, Not a Model | `ASI-03`, `ASI-29` | `required_now`: prove composition with joined traces rather than more component records |
+| The Efficient ASI Hypothesis | `ASI-15`, `ASI-27` | `post_behavior_qualification`: total lifecycle efficiency and matched architecture evidence |
+| System Boundaries and Authority | `ASI-03`, `ASI-11`, `ASI-22` | `strong_mechanics`; broaden only through required natural/effect cases |
+| Failure Modes of Ungoverned Intelligence | `ASI-21` | `real_use_qualification`: empirical detection/containment radar |
+| Evidence States and Claim Discipline | `ASI-01`, `ASI-20` | `strong_mechanics`; close projection freshness and defeater use |
+| Scalable Oversight and Adversarial AI Control | `ASI-18` | synthetic scaffold exists; measured natural campaign pending |
+| Human Intent as a Formal Input | `ASI-07` | thin runtime contract; versioned interpretation and re-contracting required |
+| Constitutional Alignment: Agency, Dignity, and Corrigibility | `ASI-22` | predicates exist; natural correction/refusal/appeal consumption pending |
+| Moral Uncertainty, Value Conflict, and Contestable Governance | `ASI-22` | preserve dissent/contestability; no universal value learner |
+| Stable Capability Fields | `ASI-01`, `ASI-13`, `ASI-30` | `strong_mechanics`; bind live evidence freshness and kernel qualification |
+| Capability Replacement and Rollback | `ASI-03`, `ASI-11`, `ASI-25` | `strong_mechanics`; make replacement ordinary for each admitted change class |
+| Security Kernel and Digital SCIFs | `ASI-11`, `ASI-16` | structural boundary exists; real isolation/secrets evidence is partial/external |
+| Model-Weight Custody and Hardware Roots of Trust | `ASI-16` | loader contract now; valuable-weight/hardware proof later |
+| AI Supply-Chain Integrity and Lifecycle Provenance | `ASI-01`, `ASI-16` | AIBOM/admission strong; signing/reproducibility/custody incomplete |
+| Recursive Self-Improvement Boundaries | `ASI-25` | `strong_mechanics`; learned efficacy remains disabled |
+| Open-Ended Improvement Engines | `ASI-25` | disabled controller preserved; behavior-positive entry required |
+| Command Contracts: From Intent to Executable Work | `ASI-03`, `ASI-07`, `ASI-08` | natural end-to-end preservation pending |
+| Planning as a Control Layer | `ASI-08` | mechanics wired; decomposition, replanning, and arbitrage evidence pending |
+| Cognitive Compilation and Semantic IR | `ASI-08`, `ASI-12` | natural obligation-preservation campaign pending |
+| The Virtual Context ABI | `ASI-06`, `ASI-12`, `ASI-30` | `strong_mechanics`; natural use, model-use attribution, and native parity separate |
+| Context Transactions, Snapshots, Mounts, and Taint | `ASI-12` | stress concurrency/crash/poison/stale/deletion paths |
+| Verification Bandwidth and Context Adequacy | `ASI-14` | synthetic accounting exists; observed allocation/economics pending |
+| Claim Ledgers and Belief Revision | `ASI-01`, `ASI-20` | `strong_mechanics`; natural causal downgrade and projection closure pending |
+| Proof-Carrying Claims and Adversarial Review | `ASI-17`, `ASI-20` | proof receipts exist; live adequacy/countercase consumption pending |
+| Labor OS and Typed Jobs | `ASI-08`, `ASI-28` | local typed jobs now; real worker/fleet economics later |
+| Artifact Graphs, Audit Logs, and Replay | `ASI-01`, `ASI-03` | `strong_mechanics`; stale projection and joined terminal reconciliation pending |
+| Runtime Adapters, Tool Permissions, and Human Approval | `ASI-11` | one effect class real; add only task-required classes with full controls |
+| Inter-Stack Protocols, Identity, and Economic Exchange | `ASI-28` | local fixtures retained; remote identity/value/network operation deferred |
+| Procedural Memory and Cognitive Loop Closure | `ASI-09`, `ASI-10` | three guarded routes; empirical discovery/reuse pending |
+| Routing Heads and Specialist Cores | `ASI-05`, `ASI-24` | mechanics wired; answer-quality numerator required before qualification |
+| Replaceable Cognitive Substrates: Beyond Transformer Monoculture | `ASI-05`, `ASI-06`, `ASI-13`, `ASI-27` | new live-book intake; executable common ABI required, tournament later |
+| Readiness Gates, Residual Escrow, and Quarantine | `ASI-01`, `ASI-13`, `ASI-30` | `strong_mechanics`; keep freshness and residual ownership exact |
+| Personal Compute Hives and Federated Edge Intelligence | `ASI-28` | trusted second-node evidence external; no current blocker |
+| Compact Generative Systems: Generate, Verify, Repair, and Residual Honesty | `ASI-24`, `ASI-27` | scoped mechanics/negatives retained; useful behavior pending |
+| Fast Generation Architectures | `ASI-24` | topology disposition preserved; matched accepted-output qualification later |
+| Governed Deliberation and Test-Time Scaling | `ASI-14`, `ASI-24` | contract belongs in existing route; empirical campaign waits for behavior |
+| RankFold, NeuralFold, and Artifact Compression | `ASI-27` | consumer-scoped admission with residual/fallback; no broad adoption yet |
+| Resource Economics and Token Budgets | `ASI-14`, `ASI-15` | fragmented/synthetic accounting must become observed lifecycle economics |
+| Mathematical and Search Substrates | `ASI-24`, `ASI-27` | deterministic tools useful; causal contribution and total cost pending |
+| Circle Calculus and Proof-Carrying AI Contracts | `ASI-17`, `ASI-27` | synthetic proof-contract substrate; no architectural privilege |
+| Coil Attention, Cyclic Memory, and Recurrence Contracts | `ASI-27` | protected discovery candidate; matched causal qualification required |
+| CoilRA, MultiCoil RoPE, and Cyclic Mixers | `ASI-27` | protected discovery candidate; matched causal qualification required |
+| Executable Specifications and Lean Proof Envelope | `ASI-17` | select load-bearing invariants; do not port the full book proof inventory |
+| Benchmark Ratchets and Anti-Goodhart Evidence | `ASI-01`, `ASI-23`, `ASI-24`, `ASI-30` | `strong_mechanics`; fresh public use only after material private improvement |
+| Capability Thresholds and Deployment Commitments | `ASI-19`, `ASI-30` | current effect-count scaffold must be renamed or rebuilt around capability |
+| Adversarial Evaluation, Sandbagging, and Training-Time Deception | `ASI-23` | pre-training provenance now; real capable-model tests later |
+| Safety Cases and Structured Assurance | `ASI-20` | one synthetic case exists; real hazards/counterevidence/defeaters pending |
+| Policy Optimization and Learning from Feedback | `ASI-25`, `ASI-30` | leases/objectives strong; matched learned improvement pending |
+| Data Engines, Continual Learning, and Unlearning | `ASI-06`, `ASI-26`, `ASI-30` | state mechanics strong; behavioral forgetting/privacy evidence later |
+| Artifact Steward Agents and Living Project Governance | `ASI-04`, `ASI-22`, `ASI-29`, `ASI-30` | governance strong; do not grant ambient autonomous management authority |
+| Integrated Reference Architecture | `ASI-03` | major missing natural joined happy/blocked vertical |
+| Project Theseus as Report-First Implementation Reference | `ASI-01`, `ASI-02`, `ASI-29` | preserve report discipline; reports lose authority on source/verifier drift |
+| Prototype Roadmap | `ASI-29` | phase machinery strong; successor continuity and generated summaries required |
+| Living Book Methodology | `ASI-00`, `ASI-29` | immutable pin process strong; current 55-chapter reconciliation due |
+| Open Research Agenda and Bibliography Plan | `ASI-29` | unify source-gap-owner-evidence graph in existing machine contract |
+
 ## Book-Futures Intake (classified, phase-routed)
 
-The ASI Stack now has 54 active chapters. Ten items from the earlier completeness
+The pinned Theseus crosswalk has 54 chapters; the live ASI Stack now has 55. The
+new replaceable-substrates chapter is owned by `ASI-05`, `ASI-06`, `ASI-13`, and
+`ASI-27` and enters the next reviewed pin transaction rather than a parallel lane.
+Ten items from the earlier completeness
 intake have been admitted and are owned by the chapter crosswalk rather than this
 future queue. The 13 remaining candidates/section routes below are **not new parallel
 lanes**. Each is owned by existing phases and classified by adoption cost. A candidate
@@ -2902,7 +3502,7 @@ dual-use profiles, provider concentration, portability, and shutdown handoff
 
 ## Quality Bars (definition of "done")
 
-### Book-Parity Invariants
+### ASI Stack Completion Invariants
 A book mechanism counts as represented in Theseus only when all hold:
 - registry-owned abstraction or explicit binding to one; no loose sidecar
   implementations;

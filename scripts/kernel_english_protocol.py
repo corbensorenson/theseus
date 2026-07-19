@@ -23,6 +23,8 @@ import re
 import unicodedata
 from collections import Counter
 from dataclasses import dataclass
+from datetime import datetime
+from decimal import Decimal
 from typing import Any, Callable, Iterable, Sequence
 
 from kerc_residual_economics import (
@@ -47,6 +49,7 @@ KERNEL_VERSION = "KE-1.0"
 PACKET_VERSION = "KPP-1.1"
 HRL_VERSION = "HRL-1.0"
 CODEBOOK_VERSION = "KE-CODEBOOK-1.0"
+SERIALIZATION_VERSION = "KE-SERIALIZATION-2.0"
 CODE_SPACES = ("V_S", "V_K", "V_P")
 RESIDUAL_MODES = {"SOURCE_RECONSTRUCTION", "OUTPUT_REALIZATION"}
 FIDELITY_MODES = {"semantic", "faithful", "lexical", "exact"}
@@ -70,7 +73,37 @@ MODALITIES = {
 }
 POLARITIES = {"AFFIRMED", "NEGATED", "UNKNOWN"}
 QUANTIFIERS = {"NONE", "EXISTS", "FORALL", "EXACT", "AT_LEAST", "AT_MOST", "UNKNOWN"}
-VALUE_TYPES = {"handle", "concept", "number", "node_ref", "list", "ambiguity", "byte_literal", "boolean", "null"}
+VALUE_TYPES = {
+    "handle",
+    "concept",
+    "number",
+    "quantity",
+    "temporal",
+    "text",
+    "symbol",
+    "node_ref",
+    "list",
+    "ambiguity",
+    "byte_literal",
+    "boolean",
+    "null",
+}
+QUANTITY_KINDS = {
+    "COUNT",
+    "LENGTH",
+    "MASS",
+    "DURATION",
+    "CURRENCY",
+    "PERCENT",
+    "TEMPERATURE",
+    "AREA",
+    "VOLUME",
+    "RATE",
+    "OTHER",
+}
+QUANTITY_RELATIONS = {"EXACT", "APPROX", "AT_LEAST", "AT_MOST", "BETWEEN", "UNKNOWN"}
+TEMPORAL_KINDS = {"DATE", "TIME", "DATETIME", "DURATION", "INTERVAL", "RELATIVE"}
+TEMPORAL_RELATIONS = {"AT", "BEFORE", "AFTER", "DURING", "OVERLAPS", "STARTS", "ENDS", "UNKNOWN"}
 HANDLE_PREFIX_BY_TYPE = {
     "ENTITY": "E",
     "PERSON": "E",
@@ -2363,10 +2396,27 @@ def validate_kernel_program(
     by_id: dict[str, dict[str, Any]] = {}
     refs: dict[str, set[str]] = {}
     handles_seen: set[str] = set()
+    node_fields = {
+        "node_id",
+        "operator",
+        "modality",
+        "polarity",
+        "quantifier",
+        "confidence",
+        "derivation",
+        "source_spans",
+        "arguments",
+    }
     for index, node in enumerate(nodes):
         path = f"program.nodes[{index}]"
         if not isinstance(node, dict):
             raise KernelProtocolFault("KERC_NODE_INVALID", str(node), path=path)
+        if set(node) - node_fields:
+            raise KernelProtocolFault(
+                "KERC_NODE_SCHEMA_INVALID",
+                canonical_json(sorted(set(node) - node_fields)),
+                path=path,
+            )
         node_id = str(node.get("node_id") or "")
         if not re.fullmatch(r"k[0-9]+", node_id) or node_id in by_id:
             raise KernelProtocolFault("KERC_NODE_ID_INVALID", node_id, path=f"{path}.node_id")
@@ -2394,7 +2444,11 @@ def validate_kernel_program(
         node_refs: set[str] = set()
         for arg_index, argument in enumerate(arguments):
             arg_path = f"{path}.arguments[{arg_index}]"
-            if not isinstance(argument, dict) or not re.fullmatch(r"[A-Z][A-Z0-9_]*", str(argument.get("role") or "")):
+            if (
+                not isinstance(argument, dict)
+                or set(argument) != {"role", "value"}
+                or not re.fullmatch(r"[A-Z][A-Z0-9_]*", str(argument.get("role") or ""))
+            ):
                 raise KernelProtocolFault("KERC_ROLE_INVALID", canonical_json(argument), path=arg_path)
             _validate_value(
                 argument.get("value"),
@@ -2410,7 +2464,17 @@ def validate_kernel_program(
             start, end = int(span[0]), int(span[1])
             if not 0 <= start < end <= source_character_length:
                 raise KernelProtocolFault("KERC_ALIGNMENT_SPAN_INVALID", f"{start}:{end}", path=f"{path}.source_spans[{span_index}]")
-        by_id[node_id] = copy.deepcopy(node)
+        by_id[node_id] = {
+            "node_id": node_id,
+            "operator": operator,
+            "modality": modality,
+            "polarity": polarity,
+            "quantifier": quantifier,
+            "confidence": confidence,
+            "derivation": derivation,
+            "source_spans": copy.deepcopy(node.get("source_spans") or []),
+            "arguments": copy.deepcopy(arguments),
+        }
         refs[node_id] = node_refs
     unknown_roots = sorted(set(str(root) for root in roots) - set(by_id))
     unknown_refs = sorted({ref for values in refs.values() for ref in values if ref not in by_id})
@@ -2441,7 +2505,10 @@ def serialize_kernel_program(
     *,
     macros: Sequence[dict[str, Any]] = (),
 ) -> dict[str, Any]:
-    tokens: list[dict[str, str]] = [token("V_P", f"VERSION:{KERNEL_VERSION}")]
+    tokens: list[dict[str, str]] = [
+        token("V_P", f"VERSION:{KERNEL_VERSION}"),
+        token("V_P", f"SERIALIZATION:{SERIALIZATION_VERSION}"),
+    ]
     for node in canonical_program["nodes"]:
         tokens.extend(
             [
@@ -2451,12 +2518,17 @@ def serialize_kernel_program(
                 token("V_K", f"MOD:{node.get('modality', 'ASSERTED')}"),
                 token("V_K", f"POL:{node.get('polarity', 'AFFIRMED')}"),
                 token("V_K", f"QUANT:{node.get('quantifier', 'NONE')}"),
+                token("V_P", f"CONF:{float(node.get('confidence', 1.0)):.17g}"),
+                token("V_P", f"DERIV:{node.get('derivation', '')}"),
+                token("V_P", f"SPANS:{canonical_json(node.get('source_spans') or [])}"),
             ]
         )
         for argument in node.get("arguments") or []:
             tokens.append(token("V_K", f"ROLE:{argument['role']}"))
             tokens.extend(_serialize_value(argument["value"]))
         tokens.append(token("V_P", "NODE_END"))
+    for root in canonical_program["roots"]:
+        tokens.append(token("V_P", f"ROOT:{root}"))
     tokens.append(token("V_P", "PROGRAM_END"))
     macro_registry = validate_macro_registry(macros)
     compact = apply_macros(tokens, macro_registry)
@@ -2464,7 +2536,8 @@ def serialize_kernel_program(
     if expanded != tokens:
         raise KernelProtocolFault("KERC_MACRO_ROUNDTRIP_MISMATCH", "expanded tokens differ", path="serialization")
     return {
-        "policy": "project_theseus_kernel_three_code_space_serialization_v1",
+        "policy": "project_theseus_kernel_three_code_space_serialization_v2",
+        "serialization_version": SERIALIZATION_VERSION,
         "expanded_tokens": tokens,
         "compact_tokens": compact,
         "macro_registry": macro_registry,
@@ -2474,6 +2547,123 @@ def serialize_kernel_program(
         "code_space_counts": {
             space: sum(1 for row in compact if row["space"] == space) for space in CODE_SPACES
         },
+        **NO_CHEAT,
+    }
+
+
+def deserialize_kernel_program(
+    serialization: dict[str, Any],
+    *,
+    protected_objects: dict[str, dict[str, Any]],
+    concept_capsules: dict[str, dict[str, Any]],
+    source_character_length: int,
+) -> dict[str, Any]:
+    """Decode the complete typed token stream and revalidate its program.
+
+    Macro replay alone is not a semantic round trip. This decoder requires every
+    program field that affects identity, including roots, source alignment,
+    confidence, and derivation, to survive the serialized form.
+    """
+
+    if (
+        not isinstance(serialization, dict)
+        or serialization.get("policy")
+        != "project_theseus_kernel_three_code_space_serialization_v2"
+        or serialization.get("serialization_version") != SERIALIZATION_VERSION
+    ):
+        raise KernelProtocolFault(
+            "KERC_SERIALIZATION_VERSION_INVALID",
+            str(serialization.get("serialization_version") if isinstance(serialization, dict) else type(serialization)),
+            path="serialization",
+        )
+    compact = serialization.get("compact_tokens")
+    macros = serialization.get("macro_registry")
+    if not isinstance(compact, list) or not isinstance(macros, list):
+        raise KernelProtocolFault(
+            "KERC_SERIALIZATION_TOKEN_STREAM_INVALID",
+            "compact tokens and macro registry must be lists",
+            path="serialization",
+        )
+    if stable_hash(compact) != serialization.get("compact_sha256"):
+        raise KernelProtocolFault(
+            "KERC_SERIALIZATION_COMPACT_STREAM_MISMATCH",
+            "compact token hash differs",
+            path="serialization.compact_tokens",
+        )
+    expanded = expand_macros(compact, macros)
+    stored_expanded = serialization.get("expanded_tokens")
+    if expanded != stored_expanded or stable_hash(expanded) != serialization.get("expanded_sha256"):
+        raise KernelProtocolFault(
+            "KERC_SERIALIZATION_EXPANDED_STREAM_MISMATCH",
+            "expanded tokens differ from the committed stream",
+            path="serialization.expanded_tokens",
+        )
+    cursor = _KernelTokenCursor(expanded)
+    cursor.expect("V_P", f"VERSION:{KERNEL_VERSION}")
+    cursor.expect("V_P", f"SERIALIZATION:{SERIALIZATION_VERSION}")
+    nodes: list[dict[str, Any]] = []
+    roots: list[str] = []
+    while not cursor.done:
+        current = cursor.peek()
+        if current == {"space": "V_P", "token": "PROGRAM_END"}:
+            cursor.take()
+            break
+        if current["space"] == "V_P" and current["token"].startswith("ROOT:"):
+            roots.append(cursor.take()["token"].removeprefix("ROOT:"))
+            continue
+        cursor.expect("V_P", "NODE_BEGIN")
+        node_id = cursor.expect_prefix("V_P", "NODE_ID:")
+        operator = cursor.expect_prefix("V_K", "OP:")
+        modality = cursor.expect_prefix("V_K", "MOD:")
+        polarity = cursor.expect_prefix("V_K", "POL:")
+        quantifier = cursor.expect_prefix("V_K", "QUANT:")
+        confidence_text = cursor.expect_prefix("V_P", "CONF:")
+        derivation = cursor.expect_prefix("V_P", "DERIV:")
+        spans_text = cursor.expect_prefix("V_P", "SPANS:")
+        try:
+            confidence = float(confidence_text)
+            source_spans = json.loads(spans_text)
+        except (TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise KernelProtocolFault(
+                "KERC_SERIALIZATION_NODE_METADATA_INVALID",
+                f"{node_id}:{exc}",
+                path="serialization.expanded_tokens",
+            ) from exc
+        arguments: list[dict[str, Any]] = []
+        while cursor.peek() != {"space": "V_P", "token": "NODE_END"}:
+            role = cursor.expect_prefix("V_K", "ROLE:")
+            arguments.append({"role": role, "value": _deserialize_value(cursor)})
+        cursor.take()
+        nodes.append(
+            {
+                "node_id": node_id,
+                "operator": operator,
+                "modality": modality,
+                "polarity": polarity,
+                "quantifier": quantifier,
+                "confidence": confidence,
+                "derivation": derivation,
+                "source_spans": source_spans,
+                "arguments": arguments,
+            }
+        )
+    if not cursor.done:
+        raise KernelProtocolFault(
+            "KERC_SERIALIZATION_TRAILING_TOKENS",
+            canonical_json(cursor.remaining()),
+            path="serialization.expanded_tokens",
+        )
+    validated = validate_kernel_program(
+        {"roots": roots, "nodes": nodes},
+        protected_objects=protected_objects,
+        concept_capsules=concept_capsules,
+        source_character_length=source_character_length,
+    )
+    return {
+        "state": "READY",
+        "canonical_program": validated["canonical_program"],
+        "expanded_sha256": stable_hash(expanded),
+        "exact_program_roundtrip": True,
         **NO_CHEAT,
     }
 
@@ -3442,9 +3632,18 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
             path="packet.program.program_sha256",
         )
     serialization = packet.get("serialization") if isinstance(packet.get("serialization"), dict) else {}
-    expanded = expand_macros(serialization.get("compact_tokens") or [], serialization.get("macro_registry") or [])
-    if stable_hash(expanded) != serialization.get("expanded_sha256"):
-        raise KernelProtocolFault("KERC_PACKET_SERIALIZATION_REPLAY_MISMATCH", "expanded token hash differs", path="packet.serialization")
+    decoded = deserialize_kernel_program(
+        serialization,
+        protected_objects=objects,
+        concept_capsules=concepts,
+        source_character_length=int(source.get("character_length") or 0),
+    )
+    if decoded["canonical_program"] != validated["canonical_program"]:
+        raise KernelProtocolFault(
+            "KERC_PACKET_SERIALIZATION_PROGRAM_MISMATCH",
+            "decoded token stream differs from authoritative program",
+            path="packet.serialization",
+        )
     missing_objects = sorted(set(validated["referenced_handles"]) - set(objects) - set(concepts))
     if missing_objects:
         raise KernelProtocolFault("KERC_PACKET_HANDLE_MISSING", ",".join(missing_objects), path="packet.program")
@@ -3454,6 +3653,7 @@ def validate_kernel_packet(packet: dict[str, Any], *, local_hrl_state: dict[str,
         "program_sha256": validated["canonical_program"]["program_sha256"],
         "state_hash_match": True,
         "serialization_replay_match": True,
+        "serialization_exact_program_roundtrip": True,
         "residual_codec": codec_receipt,
         "semantic_equivalence_claimed": False,
         **NO_CHEAT,
@@ -3771,10 +3971,31 @@ def _validate_value(
         if not re.fullmatch(r"[a-z][a-z0-9_.:-]*", str(payload or "")):
             raise KernelProtocolFault("KERC_CONCEPT_ID_INVALID", str(payload), path=path)
     elif value_type == "number":
-        if not isinstance(payload, dict) or not isinstance(payload.get("value"), (int, float)):
+        if (
+            not isinstance(payload, dict)
+            or isinstance(payload.get("value"), bool)
+            or not isinstance(payload.get("value"), (int, float))
+        ):
             raise KernelProtocolFault("KERC_NUMBER_INVALID", canonical_json(payload), path=path)
         if not math.isfinite(float(payload["value"])):
             raise KernelProtocolFault("KERC_NUMBER_INVALID", canonical_json(payload), path=path)
+    elif value_type == "quantity":
+        _validate_quantity(payload, path=path)
+    elif value_type == "temporal":
+        _validate_temporal(payload, path=path)
+    elif value_type == "text":
+        if (
+            not isinstance(payload, dict)
+            or set(payload) != {"text", "language"}
+            or not isinstance(payload.get("text"), str)
+            or not payload["text"]
+            or payload["text"] != unicodedata.normalize("NFC", payload["text"])
+            or payload.get("language") not in {None, "en"}
+        ):
+            raise KernelProtocolFault("KERC_TEXT_VALUE_INVALID", canonical_json(payload), path=path)
+    elif value_type == "symbol":
+        if not isinstance(payload, str) or not re.fullmatch(r"[A-Za-z?][A-Za-z0-9_.:+?/-]*", payload):
+            raise KernelProtocolFault("KERC_SYMBOL_VALUE_INVALID", canonical_json(payload), path=path)
     elif value_type == "node_ref":
         ref = str(payload or "")
         if not re.fullmatch(r"k[0-9]+", ref):
@@ -3790,7 +4011,12 @@ def _validate_value(
             raise KernelProtocolFault("KERC_AMBIGUITY_INVALID", canonical_json(payload), path=path)
         mass = 0.0
         for index, alternative in enumerate(payload):
-            if not isinstance(alternative, dict):
+            if (
+                not isinstance(alternative, dict)
+                or set(alternative) != {"probability", "value", "evidence"}
+                or not isinstance(alternative.get("evidence"), str)
+                or not alternative["evidence"].strip()
+            ):
                 raise KernelProtocolFault("KERC_AMBIGUITY_INVALID", canonical_json(alternative), path=f"{path}[{index}]")
             probability = float(alternative.get("probability") or 0.0)
             mass += probability
@@ -3819,6 +4045,14 @@ def _serialize_value(value: dict[str, Any]) -> list[dict[str, str]]:
         return [
             token("V_P", f"NUMBER:{canonical_json(payload)}"),
         ]
+    if value_type == "quantity":
+        return [token("V_P", f"QUANTITY:{canonical_json(payload)}")]
+    if value_type == "temporal":
+        return [token("V_P", f"TEMPORAL:{canonical_json(payload)}")]
+    if value_type == "text":
+        return [token("V_P", f"TEXT:{canonical_json(payload)}")]
+    if value_type == "symbol":
+        return [token("V_K", f"SYMBOL:{payload}")]
     if value_type == "node_ref":
         return [token("V_P", f"NODE_REF:{payload}")]
     if value_type == "list":
@@ -3830,7 +4064,8 @@ def _serialize_value(value: dict[str, Any]) -> list[dict[str, str]]:
     if value_type == "ambiguity":
         rows = [token("V_P", "AMBIG_BEGIN")]
         for alternative in payload:
-            rows.append(token("V_P", f"PROB:{alternative['probability']:.12g}"))
+            rows.append(token("V_P", f"PROB:{alternative['probability']:.17g}"))
+            rows.append(token("V_P", f"EVIDENCE:{canonical_json(alternative['evidence'])}"))
             rows.extend(_serialize_value(alternative["value"]))
         rows.append(token("V_P", "AMBIG_END"))
         return rows
@@ -3839,6 +4074,197 @@ def _serialize_value(value: dict[str, Any]) -> list[dict[str, str]]:
     if value_type == "boolean":
         return [token("V_K", "BOOL:TRUE" if payload else "BOOL:FALSE")]
     return [token("V_K", "NULL")]
+
+
+def _validate_decimal_text(value: Any, *, path: str) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?", value):
+        raise KernelProtocolFault("KERC_DECIMAL_VALUE_INVALID", canonical_json(value), path=path)
+    if value.startswith("-0") and value not in {"-0", "-0.0"}:
+        raise KernelProtocolFault("KERC_DECIMAL_VALUE_NONCANONICAL", value, path=path)
+    if "." in value and (value.endswith("0") or value.endswith(".")):
+        raise KernelProtocolFault("KERC_DECIMAL_VALUE_NONCANONICAL", value, path=path)
+    return value
+
+
+def _validate_quantity(payload: Any, *, path: str) -> None:
+    required = {"kind", "relation", "value", "lower", "upper", "unit_concept", "approximate"}
+    if not isinstance(payload, dict) or set(payload) != required:
+        raise KernelProtocolFault("KERC_QUANTITY_SCHEMA_INVALID", canonical_json(payload), path=path)
+    if payload["kind"] not in QUANTITY_KINDS or payload["relation"] not in QUANTITY_RELATIONS:
+        raise KernelProtocolFault("KERC_QUANTITY_KIND_INVALID", canonical_json(payload), path=path)
+    if not isinstance(payload["approximate"], bool):
+        raise KernelProtocolFault("KERC_QUANTITY_APPROXIMATION_INVALID", canonical_json(payload), path=path)
+    unit = payload["unit_concept"]
+    if unit is not None and not re.fullmatch(r"[a-z][a-z0-9_.:-]*", str(unit)):
+        raise KernelProtocolFault("KERC_QUANTITY_UNIT_INVALID", canonical_json(unit), path=path)
+    for field in ("value", "lower", "upper"):
+        if payload[field] is not None:
+            _validate_decimal_text(payload[field], path=f"{path}.{field}")
+    relation = payload["relation"]
+    if relation == "BETWEEN":
+        if payload["lower"] is None or payload["upper"] is None or payload["value"] is not None:
+            raise KernelProtocolFault("KERC_QUANTITY_BOUNDS_INVALID", canonical_json(payload), path=path)
+        if Decimal(payload["lower"]) > Decimal(payload["upper"]):
+            raise KernelProtocolFault("KERC_QUANTITY_BOUNDS_REVERSED", canonical_json(payload), path=path)
+    elif relation == "UNKNOWN":
+        if any(payload[field] is not None for field in ("value", "lower", "upper")):
+            raise KernelProtocolFault("KERC_QUANTITY_UNKNOWN_HAS_VALUE", canonical_json(payload), path=path)
+    elif payload["value"] is None or payload["lower"] is not None or payload["upper"] is not None:
+        raise KernelProtocolFault("KERC_QUANTITY_VALUE_INVALID", canonical_json(payload), path=path)
+    if payload["approximate"] != (relation == "APPROX"):
+        raise KernelProtocolFault("KERC_QUANTITY_APPROXIMATION_MISMATCH", canonical_json(payload), path=path)
+
+
+def _validate_temporal(payload: Any, *, path: str) -> None:
+    required = {"kind", "relation", "value", "anchor", "calendar"}
+    if not isinstance(payload, dict) or set(payload) != required:
+        raise KernelProtocolFault("KERC_TEMPORAL_SCHEMA_INVALID", canonical_json(payload), path=path)
+    if payload["kind"] not in TEMPORAL_KINDS or payload["relation"] not in TEMPORAL_RELATIONS:
+        raise KernelProtocolFault("KERC_TEMPORAL_KIND_INVALID", canonical_json(payload), path=path)
+    value = payload["value"]
+    if not isinstance(value, str) or not value or value != unicodedata.normalize("NFC", value):
+        raise KernelProtocolFault("KERC_TEMPORAL_VALUE_INVALID", canonical_json(value), path=path)
+    anchor = payload["anchor"]
+    if anchor is not None and not (
+        re.fullmatch(r"@[A-Z][0-9]+", str(anchor))
+        or re.fullmatch(r"[a-z][a-z0-9_.:-]*", str(anchor))
+    ):
+        raise KernelProtocolFault("KERC_TEMPORAL_ANCHOR_INVALID", canonical_json(anchor), path=path)
+    if payload["calendar"] not in {None, "ISO8601", "GREGORIAN"}:
+        raise KernelProtocolFault("KERC_TEMPORAL_CALENDAR_INVALID", canonical_json(payload["calendar"]), path=path)
+    kind = payload["kind"]
+    if kind == "DATE":
+        try:
+            datetime.strptime(value, "%Y-%m-%d")
+        except ValueError as exc:
+            raise KernelProtocolFault("KERC_TEMPORAL_DATE_INVALID", value, path=path) from exc
+        if payload["calendar"] is None:
+            raise KernelProtocolFault("KERC_TEMPORAL_CALENDAR_REQUIRED", value, path=path)
+    elif kind == "TIME":
+        if not re.fullmatch(r"(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9](?:\.[0-9]+)?)?(?:Z|[+-][0-2][0-9]:[0-5][0-9])?", value):
+            raise KernelProtocolFault("KERC_TEMPORAL_TIME_INVALID", value, path=path)
+    elif kind == "DATETIME":
+        try:
+            datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise KernelProtocolFault("KERC_TEMPORAL_DATETIME_INVALID", value, path=path) from exc
+        if "T" not in value:
+            raise KernelProtocolFault("KERC_TEMPORAL_DATETIME_INVALID", value, path=path)
+    elif kind == "DURATION":
+        if not re.fullmatch(r"P(?=\d|T\d)(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+(?:\.\d+)?S)?)?", value):
+            raise KernelProtocolFault("KERC_TEMPORAL_DURATION_INVALID", value, path=path)
+        if payload["calendar"] is not None:
+            raise KernelProtocolFault("KERC_TEMPORAL_DURATION_CALENDAR_INVALID", canonical_json(payload["calendar"]), path=path)
+    elif kind == "INTERVAL":
+        if value.count("/") != 1 or any(not endpoint for endpoint in value.split("/")):
+            raise KernelProtocolFault("KERC_TEMPORAL_INTERVAL_INVALID", value, path=path)
+    elif kind == "RELATIVE":
+        if not re.fullmatch(r"[a-z][a-z0-9_.:-]*", value) or anchor is None:
+            raise KernelProtocolFault("KERC_TEMPORAL_RELATIVE_INVALID", canonical_json(payload), path=path)
+        if payload["calendar"] is not None:
+            raise KernelProtocolFault("KERC_TEMPORAL_RELATIVE_CALENDAR_INVALID", canonical_json(payload["calendar"]), path=path)
+
+
+class _KernelTokenCursor:
+    def __init__(self, rows: Sequence[dict[str, str]]) -> None:
+        self.rows = [_validate_token(row, path=f"serialization.expanded_tokens[{index}]") for index, row in enumerate(rows)]
+        self.index = 0
+
+    @property
+    def done(self) -> bool:
+        return self.index == len(self.rows)
+
+    def peek(self) -> dict[str, str]:
+        if self.done:
+            raise KernelProtocolFault("KERC_SERIALIZATION_UNEXPECTED_END", "token stream ended", path="serialization.expanded_tokens")
+        return self.rows[self.index]
+
+    def take(self) -> dict[str, str]:
+        row = self.peek()
+        self.index += 1
+        return row
+
+    def expect(self, space: str, value: str) -> None:
+        row = self.take()
+        if row != {"space": space, "token": value}:
+            raise KernelProtocolFault("KERC_SERIALIZATION_TOKEN_UNEXPECTED", canonical_json(row), path=f"serialization.expanded_tokens[{self.index - 1}]")
+
+    def expect_prefix(self, space: str, prefix: str) -> str:
+        row = self.take()
+        if row["space"] != space or not row["token"].startswith(prefix):
+            raise KernelProtocolFault("KERC_SERIALIZATION_TOKEN_UNEXPECTED", canonical_json(row), path=f"serialization.expanded_tokens[{self.index - 1}]")
+        return row["token"][len(prefix):]
+
+    def remaining(self) -> list[dict[str, str]]:
+        return self.rows[self.index:]
+
+
+def _deserialize_json_value(cursor: _KernelTokenCursor, prefix: str, value_type: str) -> dict[str, Any]:
+    payload = cursor.expect_prefix("V_P", prefix)
+    try:
+        decoded = json.loads(payload)
+    except json.JSONDecodeError as exc:
+        raise KernelProtocolFault("KERC_SERIALIZATION_VALUE_JSON_INVALID", payload, path="serialization.expanded_tokens") from exc
+    return {"type": value_type, "value": decoded}
+
+
+def _deserialize_value(cursor: _KernelTokenCursor) -> dict[str, Any]:
+    row = cursor.peek()
+    space, value = row["space"], row["token"]
+    if space == "V_P" and value.startswith("HANDLE:"):
+        cursor.take()
+        return {"type": "handle", "value": value.removeprefix("HANDLE:")}
+    if space == "V_K" and value.startswith("CONCEPT:"):
+        cursor.take()
+        return {"type": "concept", "value": value.removeprefix("CONCEPT:")}
+    for prefix, value_type in (
+        ("NUMBER:", "number"),
+        ("QUANTITY:", "quantity"),
+        ("TEMPORAL:", "temporal"),
+        ("TEXT:", "text"),
+    ):
+        if space == "V_P" and value.startswith(prefix):
+            return _deserialize_json_value(cursor, prefix, value_type)
+    if space == "V_K" and value.startswith("SYMBOL:"):
+        cursor.take()
+        return {"type": "symbol", "value": value.removeprefix("SYMBOL:")}
+    if space == "V_P" and value.startswith("NODE_REF:"):
+        cursor.take()
+        return {"type": "node_ref", "value": value.removeprefix("NODE_REF:")}
+    if row == {"space": "V_P", "token": "LIST_BEGIN"}:
+        cursor.take()
+        values = []
+        while cursor.peek() != {"space": "V_P", "token": "LIST_END"}:
+            values.append(_deserialize_value(cursor))
+        cursor.take()
+        return {"type": "list", "value": values}
+    if row == {"space": "V_P", "token": "AMBIG_BEGIN"}:
+        cursor.take()
+        values = []
+        while cursor.peek() != {"space": "V_P", "token": "AMBIG_END"}:
+            probability_text = cursor.expect_prefix("V_P", "PROB:")
+            evidence_text = cursor.expect_prefix("V_P", "EVIDENCE:")
+            try:
+                probability = float(probability_text)
+                evidence = json.loads(evidence_text)
+            except (ValueError, json.JSONDecodeError) as exc:
+                raise KernelProtocolFault("KERC_SERIALIZATION_PROBABILITY_INVALID", probability_text, path="serialization.expanded_tokens") from exc
+            values.append({"probability": probability, "evidence": evidence, "value": _deserialize_value(cursor)})
+        cursor.take()
+        return {"type": "ambiguity", "value": values}
+    if space == "V_P" and value.startswith("BYTE:"):
+        cursor.take()
+        return {"type": "byte_literal", "value": value.removeprefix("BYTE:")}
+    if row == {"space": "V_K", "token": "BOOL:TRUE"}:
+        cursor.take()
+        return {"type": "boolean", "value": True}
+    if row == {"space": "V_K", "token": "BOOL:FALSE"}:
+        cursor.take()
+        return {"type": "boolean", "value": False}
+    if row == {"space": "V_K", "token": "NULL"}:
+        cursor.take()
+        return {"type": "null", "value": None}
+    raise KernelProtocolFault("KERC_SERIALIZATION_VALUE_TOKEN_INVALID", canonical_json(row), path="serialization.expanded_tokens")
 
 
 def _answer_constraints(packet: dict[str, Any], objects: dict[str, dict[str, Any]]) -> dict[str, Any]:
