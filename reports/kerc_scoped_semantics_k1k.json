@@ -160,8 +160,8 @@
   ],
   "policy": "project_theseus_kerc_scoped_semantic_adequacy_gate_v1",
   "public_training_rows_written": 0,
-  "remaining_wall": "Licensed non-benchmark proposition-level supervision and a learned source-to-Kernel compiler remain absent. PMB remains calibration-only and writes zero training rows.",
+  "remaining_wall": "Licensed non-benchmark proposition-level supervision is bounded to the K1l human eRST two-proposition mappings; broader construct coverage and a learned source-to-Kernel compiler remain absent. PMB remains calibration-only and writes zero training rows.",
   "renderer_credit": 0,
-  "report_sha256": "sha256:9a7d1a20616225501fa1bd7877bbd046df9207e8eb9a34c4bedc11a6ffc82411",
+  "report_sha256": "sha256:5dbccba97ab0b11a477f457282aafcd2fbb419b308f12b0808a1f7da64acd62e",
   "status": "GREEN"
 }

@@ -262,7 +262,7 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "a361003c03ecdf553049d36b941bc85718fc7937b698be1a825d58ddb9046069"
+          "sha256": "3ae38b95f3a8e6fdb504c2aeb426bc9723a7b577098775604af23724d60bdcd7"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
@@ -274,11 +274,11 @@
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "441c9e4dd23d27469218f793b9adf18db5a014ae43dc9f23ecd0719ab2c35a89"
+          "sha256": "70a807fda0da6c3951588cce28d1597f698ef4129b02d967b9e3b206be2810e3"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "3756bcc187a9f234981b8e4439ee26e5aa88835c225cfbfcf74cab8b9b2e869c"
+          "sha256": "7d6cbe65877081b037823bf5051686005defe1255474de44d497cdb607be7d14"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
@@ -286,7 +286,7 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "e2559653a2f6aa1d8b716511e7c8c449625712a4c3dfa53355fb5ffd5eec36d4"
+          "sha256": "ac28508c9870afaf145882a71a646fbad3de085b3e3f9e3e94d448275deb439d"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -322,11 +322,11 @@
         },
       "kerc_semantic_corpus_producer": {
         "path": "scripts/kerc_semantic_corpus.py",
-        "sha256": "5c4778d3defa4e91c39fe2eed1f10eb375b35764f94354ee646ee8f96e696955"
+        "sha256": "1deeb3e6c602f72120f693c94d77ed077cc7de0bd29542c5eeb13327880d1ffa"
       },
       "kerc_semantic_corpus_verifier": {
         "path": "scripts/kerc_semantic_corpus_verify.py",
-        "sha256": "eaeeae53b96d6a4c4486f7cf3b762ec3e175e3119c192869046e6714f5a379e3"
+        "sha256": "7dafc00b80286935e040aba4162477eac6b087ef290defcb62ebb84532f6492f"
       },
       "kerc_semantic_verifier_runtime": {
         "path": "configs/kerc_semantic_verifier_runtime.json",
@@ -378,7 +378,7 @@
         },
         "kerc_gum_discourse_tests": {
           "path": "tests/test_kerc_gum_discourse_relations.py",
-          "sha256": "65c4020af26d39a4232f5927dcd65561cffd52a139c0a355a98a09a9b91ae989"
+          "sha256": "4e0f88daf4fddb834d059a3a8cd887772d34a44b692dd9c4bf11cb29da98fb5c"
         },
         "kerc_gum_entity_coreference_tests": {
           "path": "tests/test_kerc_gum_entity_coreference.py",
@@ -430,7 +430,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "8a151165f1396de23e588a6edf600194296edefb290592b1f07f58daddc45492"
+          "sha256": "035fb8dec2beed2359f912987b05851f20b6984d1556cab874eb7cf4567b96b1"
         },
         "kerc_concept_registry_tests": {
           "path": "tests/test_kerc_concept_registry.py",
@@ -5513,6 +5513,7 @@
         "reports/moecot_kernel_english_stage.json",
         "reports/runtime/kerc_semantic_corpus_verification.json",
         "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
+        "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1l.json",
         "reports/runtime/kerc_concept_registry_verification.json",
         "reports/kerc_scoped_semantics_k1k.json",
         "reports/kerc_selective_replay_k1g.json",
@@ -5557,7 +5558,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI; K1j adds exact deterministic lookup over 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases with learned authority forbidden and ambiguous/unknown states preserved. K1k adds an explicit scoped-semantic ABI with exact ownership for 14 operators, independently verifies every route, distinguishes five modality/negation/role/quantifier interventions, rejects four topology/authority mutations, and upgrades Kernel serialization to exact root/argument/confidence/derivation/alignment decode-and-compare replay. This is fixture-backed ABI evidence only and writes zero training rows. The registry builds in 155.254s and independent full-source replay takes 76.655s while the canonical replay runs concurrently. Independent TSV reconstruction agrees byte-for-byte, native CoNLL confirms exact component membership in all 89 selected documents, CoNLL-U confirms 24,162 mentions and 13,436 components, and official heldouts remain quarantined. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. The complete 27,941-record corpus is migrated under KE-SERIALIZATION-2.0 and independently admitted with zero failures. Cold production is 3,642.746s. Host-aware bounded spawned admission with parent-only cache publication and pre-aggregate candidate ordering reduces the exact current-source verifier from 4,982.793s to 1,503.943s (3.31x) and semantic admission from 4,878.178s to 1,418.771s (3.44x), preserving candidate/canonical/ledger/aggregate/gate identities with zero failures. The 16-GiB host selects four workers, an 8-GiB profile selects two, unsafe oversubscription rejects, and measured peak footprint is 10,342,161,792 bytes with zero process-level swaps. The two stores cost 13.257 GiB. Construct validity still lacks licensed non-benchmark proposition-level supervision, cross-document learned linking/open-world definitions, temporal truth, complete semantics, truth, or learned competence. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. The prior 11,424-record canonical stage is stale and must be rebuilt only after K1 closes. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
+      "current_wall": "K0 independently binds the KERC paper, implementation sources, independent verifier, and all 27,941 current corpus records. Three mechanisms are faithful mechanics, ten remain approximate/fixture-only, three are inactive/absent, and H1-H8 remain inactive. K1a/K1b preserve bounded manual multi-frame and decision-semantic annotations; K1e preserves 13 complete event-coreference groups; K1f preserves 846 complete MPQA attribution graphs; K1h preserves 9,785 human GUM eRST neighborhoods; K1i preserves 5,361 complete document-local source-declared entity/coreference records and 7,180 concept capsules behind a leak-free compiler-target ABI; K1j adds exact deterministic lookup over 218,061 WordNet-derived relations, 174,480 stable identities, and 410,638 aliases with learned authority forbidden and ambiguous/unknown states preserved. K1k adds an explicit scoped-semantic ABI with exact ownership for 14 operators and exact full-program serialization. K1l adds 1,525 source-grounded two-proposition scope programs across seven direction-sensitive human eRST mappings, with independent raw-source reconstruction and 90 shared-endpoint multi-edge neighborhoods preserved as explicit exclusions. Exact scope programs reach the canonical compiler target and reasoner input without entering the source-only compiler view. Train/dev/eval counts are 1,127/204/194 with zero source-group overlap; dev/eval each retain five missing relation-by-genre cells. The corpus has 16,517 multi-node programs, 6,202 multi-root programs, 7,061 multi-claim packets, and 18,759 opaque byte literals. The complete 27,941-record corpus is independently admitted with zero failures. The latest selective verifier takes 658.590s, reuses 18,156 unrelated semantic admissions, and independently recomputes all 9,785 GUM discourse rows; canonical and ledger identities remain exact. The learned ABI now explicitly preserves all licensed tag families and all 256 composite FrameNet records. Its 6.498-second raw preflight covers the complete corpus. The first full current-corpus stage selects 21,209 records and writes 44,943 representable views, but remains RED after 5,519.207 seconds: hash-only selection misses five feasible objective floors and 24 grounded records, two raw sources cross fixed splits, and verbose program/answer transport pushes 1,232 positive plus four negative views beyond 8,192 tokens. This is INCONCLUSIVE_IMPLEMENTATION. The next repair is quota-aware source-disjoint selection, exact compact or hierarchical learned transport, and content-bound incremental replay. The content stores now cost 15,368,302,592 bytes, and the corrected warm producer path still peaks near 2.9 GB resident memory. Construct validity remains RED because K1l is bounded rather than complete and learned scope compilation, cross-document learned linking/open-world definitions, temporal truth, complete semantics, truth, and learned competence remain unproved. Correction alternatives, learned macros, nonempty interaction-global dictionaries, PARTIAL decisions, and per-unit allocation remain absent. The current private-evaluation wire remains economically negative at 3.946595x residual/source and 12.236852x total/source. Learned KERC, utility, efficiency, interaction amortization, and scientific-negative claims remain denied until K1-K7 establish construct validity; the matched H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

@@ -47,6 +47,110 @@ def test_learned_residual_view_compacts_typed_spans_without_losing_roles() -> No
     assert view["exact_handles"] == ["@E1"]
 
 
+def test_learned_residual_view_preserves_registered_semantic_tag_namespaces() -> None:
+    tags = [
+        ("ENTITY_MENTION:PLACE", ["EM", "PLACE", 0, 1]),
+        ("ERST_RELATION:CAUSAL_RESULT", ["DR", "CAUSAL_RESULT", 1, 2]),
+        ("MPQA:ATTITUDE", ["Q", "ATTITUDE", 2, 3]),
+        ("CB:COMMITTED_BELIEF", ["B", "COMMITTED_BELIEF", 3, 4]),
+        ("EVENT:MEETING", ["V", "MEETING", 4, 5]),
+        ("EVENT_COREFERENCE:WORK_EVENT", ["VC", "WORK_EVENT", 5, 6]),
+        ("ERST_DISCOURSE_UNIT", ["DU", 6, 7]),
+        ("MPQA_RELATION_EXPRESSION", ["QE", 7, 8]),
+        ("MPQA_RELATION_SOURCE", ["QS", 8, 9]),
+        ("MPQA_RELATION_ATTITUDE", ["QA", 9, 10]),
+        ("MPQA_RELATION_TARGET", ["QT", 10, 11]),
+    ]
+    view = kernel.learned_residual_view(
+        {
+            "mode": "SOURCE_RECONSTRUCTION",
+            "fidelity": "faithful",
+            "segment_frame": {},
+            "token_tags": [
+                {"tag": tag, "source_span": expected[-2:]}
+                for tag, expected in tags
+            ],
+            "exact_object_handles": [],
+        }
+    )
+
+    assert view["tokens"] == [expected for _tag, expected in tags]
+
+
+def test_learned_residual_view_preserves_composite_frames_and_union_roles() -> None:
+    view = kernel.learned_residual_view(
+        {
+            "mode": "SOURCE_RECONSTRUCTION",
+            "fidelity": "faithful",
+            "segment_frame": {
+                "schema": "framenet_composite_v1",
+                "frames": [
+                    {
+                        "node_id": "k0",
+                        "claim_id": "claim-1",
+                        "frame_name": "Progress",
+                        "lexical_unit": "development.n",
+                        "target_spans": [[10, 21]],
+                        "frame_roles": ["ENTITY"],
+                    },
+                    {
+                        "node_id": "k1",
+                        "claim_id": "claim-2",
+                        "frame_name": "People_by_religion",
+                        "lexical_unit": "pagan.n",
+                        "target_spans": [[0, 5]],
+                        "frame_roles": ["PERSON", "RELIGION", "ENTITY"],
+                    },
+                ],
+            },
+            "token_tags": [
+                {"tag": "FRAME_ROLE:PERSON", "source_span": [0, 5]},
+                {"tag": "FRAME_ROLE:ENTITY", "source_span": [22, 29]},
+            ],
+            "exact_object_handles": [],
+        }
+    )
+
+    assert view["segment"] == [
+        "COMPOSITE",
+        [
+            ["k0", "claim-1", "Progress", "development.n", [[10, 21]], ["ENTITY"]],
+            [
+                "k1",
+                "claim-2",
+                "People_by_religion",
+                "pagan.n",
+                [[0, 5]],
+                ["PERSON", "RELIGION", "ENTITY"],
+            ],
+        ],
+    ]
+    assert view["tokens"] == [["R", 1, 0, 5], ["R", 0, 22, 29]]
+
+
+@pytest.mark.parametrize(
+    "tag",
+    [
+        "UNREGISTERED:VALUE",
+        "ENTITY_MENTION:lowercase",
+        "ENTITY_MENTION:",
+        "ERST_DISCOURSE_UNIT:FORGED",
+        "MPQA_RELATION_UNKNOWN",
+    ],
+)
+def test_learned_residual_view_rejects_unregistered_or_malformed_tags(tag: str) -> None:
+    with pytest.raises(kernel.KernelProtocolFault, match="KERC_LEARNED_RESIDUAL_TAG_UNKNOWN"):
+        kernel.learned_residual_view(
+            {
+                "mode": "SOURCE_RECONSTRUCTION",
+                "fidelity": "faithful",
+                "segment_frame": {},
+                "token_tags": [{"tag": tag, "source_span": [0, 1]}],
+                "exact_object_handles": [],
+            }
+        )
+
+
 def scope(conversation: str = "test-conversation") -> dict:
     return {
         "user": "user-a",

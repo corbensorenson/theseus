@@ -151,6 +151,22 @@ TRAINING_TASK_TAGS = {
     "kernel_program_to_answer_packet_v1": "<KERC_TASK_KERNEL_TO_ANSWER>",
     "answer_packet_to_surface_v1": "<KERC_TASK_ANSWER_TO_SURFACE>",
 }
+LEARNED_RESIDUAL_TAG_NAMESPACE_CODES = {
+    "ENTITY": "E",
+    "ENTITY_MENTION": "EM",
+    "ERST_RELATION": "DR",
+    "MPQA": "Q",
+    "CB": "B",
+    "EVENT": "V",
+    "EVENT_COREFERENCE": "VC",
+}
+LEARNED_RESIDUAL_EXACT_TAG_CODES = {
+    "ERST_DISCOURSE_UNIT": "DU",
+    "MPQA_RELATION_EXPRESSION": "QE",
+    "MPQA_RELATION_SOURCE": "QS",
+    "MPQA_RELATION_ATTITUDE": "QA",
+    "MPQA_RELATION_TARGET": "QT",
+}
 KERC_RESIDUAL_CHANNELS = ("interaction", "segment", "token", "exact")
 KERC_FIDELITY_LABELS = {"semantic": 0, "faithful": 1, "lexical": 2, "exact": 3}
 KERC_VERIFIER_DIMENSIONS = (
@@ -1239,7 +1255,41 @@ def learned_residual_view(
     """
 
     segment = residual.get("segment_frame") or {}
-    roles = list(segment.get("frame_roles") or [])
+    composite_frames = segment.get("frames") or []
+    if composite_frames:
+        roles = list(
+            dict.fromkeys(
+                str(role)
+                for frame in composite_frames
+                for role in (frame.get("frame_roles") or [])
+            )
+        )
+        learned_segment: list[Any] = [
+            "COMPOSITE",
+            [
+                [
+                    str(frame.get("node_id") or ""),
+                    str(frame.get("claim_id") or ""),
+                    str(frame.get("frame_name") or ""),
+                    str(frame.get("lexical_unit") or ""),
+                    list(frame.get("target_spans") or []),
+                    list(frame.get("frame_roles") or []),
+                ]
+                for frame in composite_frames
+            ],
+        ]
+    else:
+        roles = list(segment.get("frame_roles") or [])
+        learned_segment = (
+            [
+                str(segment.get("frame_name") or ""),
+                str(segment.get("lexical_unit") or ""),
+                list(segment.get("target_spans") or []),
+                roles,
+            ]
+            if segment
+            else []
+        )
     compiled_tags: list[list[Any]] = []
     for row in residual.get("token_tags") or []:
         tag = str(row.get("tag") or "")
@@ -1253,8 +1303,20 @@ def learned_residual_view(
                     "KERC_LEARNED_RESIDUAL_ROLE_UNKNOWN", role, path="residual.token_tags"
                 )
             compiled_tags.append(["R", roles.index(role), start, end])
-        elif tag.startswith("ENTITY:"):
-            compiled_tags.append(["E", tag.split(":", 1)[1], start, end])
+        elif tag in LEARNED_RESIDUAL_EXACT_TAG_CODES:
+            compiled_tags.append(
+                [LEARNED_RESIDUAL_EXACT_TAG_CODES[tag], start, end]
+            )
+        elif ":" in tag:
+            namespace, payload = tag.split(":", 1)
+            code = LEARNED_RESIDUAL_TAG_NAMESPACE_CODES.get(namespace)
+            if code is None or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", payload):
+                raise KernelProtocolFault(
+                    "KERC_LEARNED_RESIDUAL_TAG_UNKNOWN",
+                    tag,
+                    path="residual.token_tags",
+                )
+            compiled_tags.append([code, payload, start, end])
         else:
             raise KernelProtocolFault(
                 "KERC_LEARNED_RESIDUAL_TAG_UNKNOWN", tag, path="residual.token_tags"
@@ -1274,16 +1336,7 @@ def learned_residual_view(
         "mode": str(residual.get("mode") or ""),
         "fidelity": str(residual.get("fidelity") or ""),
         "interaction": interaction,
-        "segment": (
-            [
-                str(segment.get("frame_name") or ""),
-                str(segment.get("lexical_unit") or ""),
-                list(segment.get("target_spans") or []),
-                roles,
-            ]
-            if segment
-            else []
-        ),
+        "segment": learned_segment,
         "tokens": compiled_tags,
         "exact_handles": list(residual.get("exact_object_handles") or []),
     }

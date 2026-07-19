@@ -36,7 +36,7 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "e2559653a2f6aa1d8b716511e7c8c449625712a4c3dfa53355fb5ffd5eec36d4"
+      "sha256": "ac28508c9870afaf145882a71a646fbad3de085b3e3f9e3e94d448275deb439d"
     },
     {
       "path": "scripts/kerc_scoped_semantics.py",
@@ -48,7 +48,7 @@
     },
     {
       "path": "scripts/kerc_scoped_semantics_gate.py",
-      "sha256": "210f7b01937aa1c18b702d45343f149100179d2d0e82d9c6af5eede18081c7a5"
+      "sha256": "3a87bace6bdb5d9a179fa11a26929ea2593663fc7dd1b1b23a9bc9d285429d1a"
     },
     {
       "path": "tests/test_kerc_scoped_semantics.py",
@@ -56,15 +56,15 @@
     },
     {
       "path": "reports/kerc_scoped_semantics_k1k.json",
-      "sha256": "b76fd1922ca5599c207126ea09fe4495f893c4894edc120f620f25ff9959a143"
+      "sha256": "5c1172965dea50cce996322fede79d611b92f790bff8eb98d076256998d5975c"
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "5c4778d3defa4e91c39fe2eed1f10eb375b35764f94354ee646ee8f96e696955"
+      "sha256": "1deeb3e6c602f72120f693c94d77ed077cc7de0bd29542c5eeb13327880d1ffa"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "eaeeae53b96d6a4c4486f7cf3b762ec3e175e3119c192869046e6714f5a379e3"
+      "sha256": "7dafc00b80286935e040aba4162477eac6b087ef290defcb62ebb84532f6492f"
     },
     {
       "path": "configs/kerc_semantic_verifier_runtime.json",
@@ -92,11 +92,11 @@
     },
     {
       "path": "scripts/moecot_source_conditioned_pretraining.py",
-      "sha256": "441c9e4dd23d27469218f793b9adf18db5a014ae43dc9f23ecd0719ab2c35a89"
+      "sha256": "70a807fda0da6c3951588cce28d1597f698ef4129b02d967b9e3b206be2810e3"
     },
     {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "a361003c03ecdf553049d36b941bc85718fc7937b698be1a825d58ddb9046069"
+      "sha256": "3ae38b95f3a8e6fdb504c2aeb426bc9723a7b577098775604af23724d60bdcd7"
     },
     {
       "path": "configs/kerc_concept_registry.json",
@@ -148,19 +148,27 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "b71f898b126d6b57253abeb42e1fb19d8fb879cc3d71012abc9c91ab71ea279c"
+      "sha256": "12676ede7d7fee375898ce2bb2e866768655a653052ef717241450fb339f44e2"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "aee506374a6ba544c27b7628358b565c64e02b680bd9b7aa0f93f82ea47fe134"
+      "sha256": "b9f0fc0098d2088c902c7622d1d63d3c4b8ec79410f0dbdcf418700713ed694a"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "aa0a5adb1a3a6ee1ec5d09a8bf3540eff615193690082b26c9ee03f4b702a9de"
+      "sha256": "08cfcd54d0b745fb690459ef41c3bc0233c3b96a56fbdcc7944697fab99f6f3d"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
       "sha256": "aa0a5adb1a3a6ee1ec5d09a8bf3540eff615193690082b26c9ee03f4b702a9de"
+    },
+    {
+      "path": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1l.json",
+      "sha256": "08cfcd54d0b745fb690459ef41c3bc0233c3b96a56fbdcc7944697fab99f6f3d"
+    },
+    {
+      "path": "tests/test_kerc_gum_discourse_relations.py",
+      "sha256": "4e0f88daf4fddb834d059a3a8cd887772d34a44b692dd9c4bf11cb29da98fb5c"
     },
     {
       "path": "reports/kerc_selective_replay_k1g.json",
@@ -168,11 +176,11 @@
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "97c6ef7223fe08289b70e518946a53437278063f17e21cda371ba0d99d01eb98"
+      "sha256": "87db1c759082e48806f9788c409f150e3900c3e4f1df90e2a0d83d6dc9884475"
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl",
-      "sha256": "d5c5fbae36901a0f0df46943df9991ddb25ab3ea55b546f21185cda2d4023d20"
+      "sha256": "b34ff60d0d55e224b2d0caf76174c9f50f68636a8518a6c92154bbe662402ef2"
     }
   ],
   "observed_corpus_contract": {
@@ -191,26 +199,29 @@
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
-    "status": "partial_green_k1k_serialization_migrated_full_independent_parallel_and_top_level_replay_evidence",
-    "evidence": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
+    "status": "partial_green_k1l_source_grounded_scope_selective_parallel_replay_evidence",
+    "evidence": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1l.json",
     "source_family_count": 11,
     "candidate_record_count": 27941,
     "producer_family_identity_independently_recomputed": true,
     "verifier_family_identity_independently_recomputed": true,
-    "producer_top_level_run_cache_hit": true,
-    "verifier_top_level_run_cache_hit": true,
-    "candidate_finalization_and_economics_warm_hits": 0,
-    "semantic_admission_warm_hits": 0,
-    "warm_per_object_work_bypassed_by_top_level_hit": true,
-    "warm_miss_count": 0,
+    "producer_top_level_run_cache_hit": false,
+    "verifier_top_level_run_cache_hit": false,
+    "candidate_finalization_and_economics_warm_hits": 27941,
+    "semantic_admission_warm_hits": 18156,
+    "warm_per_object_work_bypassed_by_top_level_hit": false,
+    "warm_miss_count": 9785,
     "producer_authority_reused_for_admission": false,
-    "producer_current_cold_runtime_ms": 3642746,
-    "verifier_previous_serial_cold_runtime_ms": 4982793,
-    "verifier_previous_serial_semantic_admission_ms": 4878178,
-    "verifier_current_cold_runtime_ms": 1503943,
-    "verifier_current_cold_semantic_admission_ms": 1418771,
-    "verifier_cold_runtime_speedup_ratio": 3.313153,
-    "verifier_semantic_admission_speedup_ratio": 3.438312,
+    "producer_k1l_changed_source_runtime_ms": 2005553,
+    "producer_k1l_corrected_warm_runtime_ms": 291794,
+    "verifier_k1l_selective_runtime_ms": 658590,
+    "verifier_k1l_selective_semantic_admission_ms": 577671,
+    "verifier_k1k_previous_serial_cold_runtime_ms": 4982793,
+    "verifier_k1k_previous_serial_semantic_admission_ms": 4878178,
+    "verifier_k1k_bounded_parallel_cold_runtime_ms": 1503943,
+    "verifier_k1k_bounded_parallel_semantic_admission_ms": 1418771,
+    "verifier_k1k_cold_runtime_speedup_ratio": 3.313153,
+    "verifier_k1k_semantic_admission_speedup_ratio": 3.438312,
     "verifier_current_worker_count": 4,
     "verifier_worker_selection": "host_resource_derived",
     "verifier_cache_publication": "single_writer_parent_process",
@@ -219,10 +230,8 @@
     "verifier_process_level_swap_count": 0,
     "canonical_and_ledger_byte_identity_preserved": true,
     "parallel_completion_order_restored_before_aggregate_replay": true,
-    "cold_rebuild_scope": "all 27,941 semantic admissions were forcibly recomputed under bounded spawned workers; candidate, canonical, ledger, aggregate, and gate identities were independently replayed",
-    "producer_warm_wall_runtime_ms": 3200,
-    "verifier_warm_wall_runtime_ms": 9430,
-    "combined_cache_bytes": 14234451968,
+    "k1l_rebuild_scope": "all 9,785 GUM discourse admissions were independently recomputed under bounded spawned workers while 18,156 unrelated semantic admissions were reused; candidate, canonical, ledger, aggregate, and gate identities were independently replayed",
+    "combined_cache_bytes": 15368302592,
     "warm_measurement_record_count": 27941,
     "current_warm_measurement_pending": false,
     "remaining_incremental_owners": [
@@ -278,7 +287,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kerc_semantic_corpus.py", "scripts/kerc_masc_event_coreference.py", "scripts/kerc_masc_event_coreference_verify.py", "scripts/kerc_masc_mpqa_relations.py", "scripts/kerc_masc_mpqa_relations_verify.py", "scripts/kerc_gum_discourse_relations.py", "scripts/kerc_gum_discourse_relations_verify.py", "scripts/kerc_gum_entity_coreference.py", "scripts/kerc_gum_entity_coreference_verify.py", "scripts/kerc_scoped_semantics.py", "scripts/kerc_scoped_semantics_verify.py", "scripts/standard_causal_transformer_model.py"],
       "evidence_refs": ["tests/test_kerc_masc_event_coreference.py", "tests/test_kerc_masc_mpqa_relations.py", "tests/test_kerc_gum_discourse_relations.py", "tests/test_kerc_gum_entity_coreference.py", "tests/test_kerc_scoped_semantics.py", "reports/kerc_scoped_semantics_k1k.json", "tests/test_kerc_semantic_corpus.py", "tests/test_moecot_source_conditioned_pretraining.py"],
-      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents with independently replayed primary/secondary topology. K1i adds 5,361 source-declared GUM entity/coreference records: 3,542 complete non-singleton coreference components and 1,819 bridging links with complete endpoint components. Native CoNLL independently confirms exact component membership, CoNLL-U confirms 24,162 mentions and 13,436 components, official GUM heldouts are excluded, and partial admission, inferred links, public score claims, fallback/template credit, and extra source credit are zero. K1k adds a source-independent scoped-semantic graph ABI with exact single ownership and explicit assertion, negation, possibility, necessity, question, conjunction, alternation, condition, consequence, contrast, continuation, explanation, attribution, and quotation operators. An implementation-independent reconstructor verifies all 14 operator routes, five causal scope/role/quantifier interventions remain identity-distinct, and four topology/authority mutations reject. This is fixture-backed ABI evidence only and writes zero training rows. Source-derived concept capsules are compiler targets rather than source-visible inputs. Licensed non-benchmark proposition-level supervision, truth, complete sentence semantics, and learned competence remain unclaimed; unsupported source fields remain opaque bytes.",
+      "current_finding": "A trainable stage route and separate code space exist. Two separately accounted 256-row MASC strata preserve either 2-8 independently replayed manual FrameNet annotations or aligned committed-belief, MPQA subjectivity, and event annotations as multi-node/multi-root programs with zero additional unique-source credit. A 13-row stratum reconstructs 215 mentions in complete manual named GATE event-coreference groups using independent alignment, bounded source windows, and whole-group rejection. A separate 846-row stratum preserves complete manually linked MPQA expression-to-attitude, attitude-to-target, and ordered nested-source graphs using independent regex and state-machine parsers; 613 incomplete or ambiguous linked expressions are wholly rejected. K1h adds 9,785 licensed human GUM eRST relation neighborhoods from 89 official-train documents with independently replayed primary/secondary topology. K1i adds 5,361 source-declared GUM entity/coreference records: 3,542 complete non-singleton coreference components and 1,819 bridging links with complete endpoint components. Native CoNLL independently confirms exact component membership, CoNLL-U confirms 24,162 mentions and 13,436 components, official GUM heldouts are excluded, and partial admission, inferred links, public score claims, fallback/template credit, and extra source credit are zero. K1k adds a source-independent scoped-semantic graph ABI with exact single ownership and 14 explicit operators. K1l maps seven direction-sensitive human eRST relation forms into 1,525 exact two-proposition condition, consequence, explanation, contrast, alternation, and continuation programs across source-disjoint train/dev/eval splits. A separate reconstructor verifies relation direction, endpoint spans, operator, roles, roots, and identity; 90 mapped shared-endpoint multi-edge neighborhoods remain explicit exclusions. The exact program reaches the canonical compiler target while remaining absent from the source-only compiler input, and the reasoner objective consumes the same packet program. Source-derived concept capsules are likewise compiler targets rather than source-visible inputs. This is bounded source-grounded supervision, not complete proposition semantics, truth, learned scope compilation, or learned competence; unsupported source fields remain opaque bytes.",
       "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
       "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
     },
@@ -318,7 +327,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py"],
-      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, complete MPQA-relation, GUM eRST, and GUM entity/coreference strata now produce 7,061 multi-claim packets and 16,517 multi-node programs. The entity/coreference stratum preserves 3,542 complete non-singleton source-declared components plus 1,819 bridge relations with complete endpoint components and 7,180 document-local capsules. These are annotation-preservation targets, not truth or learned reasoning. There are still no derivation proofs, contradictions, general quantities, complete proposition scope, quantification, compositional negation, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
+      "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, complete MPQA-relation, GUM eRST, and GUM entity/coreference strata produce 7,061 multi-claim packets and 16,517 multi-node programs. K1l gives 1,525 GUM rows bounded two-proposition scope and typed answer roles across six operators while preserving 90 ambiguous multi-edge neighborhoods as exclusions. The entity/coreference stratum preserves 3,542 complete non-singleton source-declared components plus 1,819 bridge relations with complete endpoint components and 7,180 document-local capsules. These are annotation-preservation and bounded scope targets, not truth or learned reasoning. There are still no derivation proofs, contradictions, general quantities, complete proposition semantics, broad quantification or compositional negation supervision, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
       "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
       "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
     },
@@ -338,7 +347,7 @@
       "status": "approximate",
       "implementation_refs": ["scripts/kernel_english_protocol.py", "scripts/kerc_scoped_semantics_verify.py", "scripts/standard_causal_transformer_model.py"],
       "evidence_refs": ["tests/test_kernel_english_protocol.py", "tests/test_kerc_scoped_semantics.py", "reports/kerc_scoped_semantics_k1k.json", "tests/test_standard_causal_transformer_survival.py"],
-      "current_finding": "KE-SERIALIZATION-2.0 now encodes and exactly decodes roots, every typed argument, confidence, derivation, and source alignment; packet validation compares the decoded canonical program with the authoritative program rather than checking only macro expansion. The scoped-semantic verifier is a separately implemented structural reconstructor and rejects operator, role, root, and identity-map mutations. The answer hard projection still ignores opaque byte-literal content and the learned verifier has not been independently calibrated on broad semantic corruptions.",
+      "current_finding": "KE-SERIALIZATION-2.0 encodes and exactly decodes roots, every typed argument, confidence, derivation, and source alignment; packet validation compares the decoded canonical program with the authoritative program rather than checking only macro expansion. The source-independent scoped-semantic verifier reconstructs all 14 ABI operators. K1l adds a second independent raw-source path that reconstructs 1,525 admitted human eRST scope programs and rejects relation-direction, role, span, authority, and shared-edge mutations. The answer hard projection still ignores opaque byte-literal content and the learned verifier has not been independently calibrated on broad semantic corruptions.",
       "claim_ceiling": "Listed structured-dimension mutation detection and verifier-head mechanics only; no semantic equivalence, truth, or verification-value claim.",
       "next_evidence": "Reject byte-literal substitution plus independently produced hard negatives for scope, time, causality, attribution, quantity, caveat, ambiguity, and correlated compiler/recompiler error."
     },

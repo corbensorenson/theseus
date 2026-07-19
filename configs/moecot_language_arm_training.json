@@ -808,6 +808,61 @@
           "kernel_program_to_answer_packet_v1"
         ],
         "claim_scope": "human eRST primary discourse dependencies plus source-declared secondary edges over complete projected discourse units; authority covers relation label, direction, nuclearity where declared, source alignment, and signal count only, not truth, full proposition scope, complete sentence semantics, public GUM/DISRPT performance, or learned competence",
+        "scoped_semantic_supervision": {
+          "policy": "project_theseus_kerc_gum_source_grounded_scoped_semantics_v1",
+          "admitted_relation_contract": {
+            "adversative-contrast_m": "CONTRAST:source_order_LEFT_RIGHT",
+            "causal-cause_r": "CONSEQUENCE:child_CAUSE_parent_RESULT",
+            "causal-result_r": "CONSEQUENCE:parent_CAUSE_child_RESULT",
+            "contingency-condition_r": "CONDITION:child_ANTECEDENT_parent_CONSEQUENT",
+            "explanation-evidence_r": "EXPLANATION:parent_CLAIM_child_EVIDENCE",
+            "joint-disjunction_m": "ALTERNATION:source_order_MEMBER_MEMBER",
+            "joint-sequence_m": "CONTINUATION:source_order_PREVIOUS_NEXT"
+          },
+          "admission_contract": "exactly_one_human_primary_edge_two_complete_endpoint_units_no_shared_secondary_ownership_v1",
+          "record_counts_by_split_and_relation": {
+            "private_train": {
+              "adversative-contrast_m": 110,
+              "causal-cause_r": 138,
+              "causal-result_r": 118,
+              "contingency-condition_r": 73,
+              "explanation-evidence_r": 313,
+              "joint-disjunction_m": 34,
+              "joint-sequence_m": 341
+            },
+            "private_dev": {
+              "adversative-contrast_m": 19,
+              "causal-cause_r": 30,
+              "causal-result_r": 24,
+              "contingency-condition_r": 30,
+              "explanation-evidence_r": 55,
+              "joint-disjunction_m": 6,
+              "joint-sequence_m": 40
+            },
+            "private_eval": {
+              "adversative-contrast_m": 27,
+              "causal-cause_r": 15,
+              "causal-result_r": 22,
+              "contingency-condition_r": 13,
+              "explanation-evidence_r": 46,
+              "joint-disjunction_m": 9,
+              "joint-sequence_m": 62
+            }
+          },
+          "record_counts_by_split": {
+            "private_train": 1127,
+            "private_dev": 204,
+            "private_eval": 194
+          },
+          "excluded_mapped_multi_edge_record_count": 90,
+          "minimum_relation_count_by_split": {
+            "private_train": 34,
+            "private_dev": 6,
+            "private_eval": 9
+          },
+          "unique_source_credit": 0,
+          "claim_scope": "licensed human eRST direction and endpoint spans support seven conservative two-proposition scope families only; multi-edge shared-endpoint neighborhoods and all other relations remain explicit missingness. This is not complete proposition semantics, sentence truth, learned competence, public performance, or KERC utility"
+        },
         "entity_coreference": {
           "policy": "project_theseus_kerc_gum_human_entity_coreference_v1",
           "relation_contract": "complete_source_declared_identity_component_or_bridge_endpoint_graph_v1",

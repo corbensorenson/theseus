@@ -76,6 +76,10 @@ from kerc_residual_economics import (
     reallocate_structural_receipt,
     residual_wire_bytes,
 )
+from kerc_scoped_semantics import (
+    POLICY as KERC_SCOPED_SEMANTIC_POLICY,
+    compile_scoped_semantic_graph,
+)
 from kerc_source_family_identity import (
     PRODUCER_FAMILY_ROOTS,
     family_identity_receipts,
@@ -117,6 +121,48 @@ MASC_MPQA_SEMANTIC_LABELS = {
     "direct-subjective",
     "expressive-subjectivity",
     "target",
+}
+GUM_SCOPED_SEMANTIC_SUPERVISION_POLICY = (
+    "project_theseus_kerc_gum_source_grounded_scoped_semantics_v1"
+)
+GUM_SCOPED_RELATION_CONTRACT = {
+    "contingency-condition_r": {
+        "operator": "CONDITION",
+        "roles": {"child": "ANTECEDENT", "parent": "CONSEQUENT"},
+    },
+    "causal-cause_r": {
+        "operator": "CONSEQUENCE",
+        "roles": {"child": "CAUSE", "parent": "RESULT"},
+    },
+    "causal-result_r": {
+        "operator": "CONSEQUENCE",
+        "roles": {"child": "RESULT", "parent": "CAUSE"},
+    },
+    "explanation-evidence_r": {
+        "operator": "EXPLANATION",
+        "roles": {"child": "EVIDENCE", "parent": "CLAIM"},
+    },
+    "adversative-contrast_m": {
+        "operator": "CONTRAST",
+        "ordered_roles": ["LEFT", "RIGHT"],
+    },
+    "joint-disjunction_m": {
+        "operator": "ALTERNATION",
+        "ordered_roles": ["MEMBER", "MEMBER"],
+    },
+    "joint-sequence_m": {
+        "operator": "CONTINUATION",
+        "ordered_roles": ["PREVIOUS", "NEXT"],
+    },
+}
+GUM_SCOPED_RELATION_DESCRIPTIONS = {
+    "adversative-contrast_m": "CONTRAST:source_order_LEFT_RIGHT",
+    "causal-cause_r": "CONSEQUENCE:child_CAUSE_parent_RESULT",
+    "causal-result_r": "CONSEQUENCE:parent_CAUSE_child_RESULT",
+    "contingency-condition_r": "CONDITION:child_ANTECEDENT_parent_CONSEQUENT",
+    "explanation-evidence_r": "EXPLANATION:parent_CLAIM_child_EVIDENCE",
+    "joint-disjunction_m": "ALTERNATION:source_order_MEMBER_MEMBER",
+    "joint-sequence_m": "CONTINUATION:source_order_PREVIOUS_NEXT",
 }
 DOLLY_QUESTION_FORM_RE = re.compile(
     r"^(who|what|when|where|which|how(?:\s+(?:many|much|long|old|far))?)\b",
@@ -171,7 +217,8 @@ def producer_family_identity_receipts() -> dict[str, dict[str, Any]]:
             "raw_relation_producer": scripts / "kerc_masc_mpqa_relations.py"
         },
         "gum_discourse": {
-            "raw_relation_producer": scripts / "kerc_gum_discourse_relations.py"
+            "raw_relation_producer": scripts / "kerc_gum_discourse_relations.py",
+            "scoped_semantic_compiler": scripts / "kerc_scoped_semantics.py",
         },
         "gum_entity_coreference": {
             "raw_relation_producer": scripts / "kerc_gum_entity_coreference.py"
@@ -2971,6 +3018,267 @@ def masc_mpqa_relation_record(
     return record
 
 
+def gum_source_grounded_scope_projection(
+    annotation: dict[str, Any],
+    *,
+    document_concept: str,
+) -> dict[str, Any]:
+    """Project only unambiguous human eRST edges into the scoped ABI."""
+
+    relation = str(annotation["primary_relation"])
+    contract = GUM_SCOPED_RELATION_CONTRACT.get(relation)
+    common = {
+        "policy": GUM_SCOPED_SEMANTIC_SUPERVISION_POLICY,
+        "scoped_graph_policy": KERC_SCOPED_SEMANTIC_POLICY,
+        "source_relation": relation,
+        "edge_count": len(annotation["edges"]),
+        "authority": "human_erst_primary_relation_direction_and_endpoint_spans",
+        "complete_sentence_semantics_claimed": False,
+        "truth_claimed": False,
+        "learned_competence_claimed": False,
+        "derived_view_unique_source_credit": 0,
+    }
+    if contract is None:
+        return {
+            **common,
+            "disposition": "EXCLUDED",
+            "exclusion_reason": "relation_outside_conservative_scope_contract",
+            "operator": None,
+            "target_roles": [],
+        }
+    edges = annotation["edges"]
+    if len(edges) != 1 or str(edges[0]["edge_kind"]) != "primary":
+        return {
+            **common,
+            "disposition": "EXCLUDED",
+            "exclusion_reason": "multi_edge_or_nonprimary_neighborhood_has_shared_endpoint_ownership",
+            "operator": str(contract["operator"]),
+            "target_roles": [],
+        }
+
+    units = sorted(annotation["units"], key=lambda unit: int(unit["edu_id"]))
+    if len(units) != 2:
+        return {
+            **common,
+            "disposition": "EXCLUDED",
+            "exclusion_reason": "single_primary_edge_does_not_project_exactly_two_units",
+            "operator": str(contract["operator"]),
+            "target_roles": [],
+        }
+    edge = edges[0]
+    unit_by_id = {int(unit["edu_id"]): unit for unit in units}
+    child = unit_by_id.get(int(edge["child_edu_id"]))
+    parent = unit_by_id.get(int(edge["parent_edu_id"]))
+    if child is None or parent is None or child is parent:
+        return {
+            **common,
+            "disposition": "EXCLUDED",
+            "exclusion_reason": "primary_edge_endpoint_projection_invalid",
+            "operator": str(contract["operator"]),
+            "target_roles": [],
+        }
+    proposition_id = {
+        int(unit["edu_id"]): f"p{index}" for index, unit in enumerate(units)
+    }
+    if "roles" in contract:
+        role_units = [
+            (str(contract["roles"]["child"]), child),
+            (str(contract["roles"]["parent"]), parent),
+        ]
+    else:
+        ordered = sorted(
+            (child, parent),
+            key=lambda unit: (int(unit["excerpt_span"][0]), int(unit["edu_id"])),
+        )
+        role_units = list(zip(contract["ordered_roles"], ordered))
+
+    propositions = []
+    for unit in units:
+        propositions.append(
+            {
+                "proposition_id": proposition_id[int(unit["edu_id"])],
+                "predicate": "DISCOURSE_UNIT",
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "derivation": "preserved",
+                "source_spans": [copy.deepcopy(unit["excerpt_span"])],
+                "arguments": [
+                    {
+                        "role": "DOCUMENT",
+                        "value": {"type": "concept", "value": document_concept},
+                    },
+                    {
+                        "role": "EDU_ID",
+                        "value": {
+                            "type": "number",
+                            "value": {
+                                "value": int(unit["edu_id"]),
+                                "unit": "identifier",
+                            },
+                        },
+                    },
+                ],
+            }
+        )
+    source_arguments = [
+        {
+            "role": "SOURCE_RELATION",
+            "value": {
+                "type": "concept",
+                "value": "erst.relation."
+                + relation.removesuffix("_m").removesuffix("_r").replace("-", "."),
+            },
+        },
+        {
+            "role": "NUCLEARITY",
+            "value": {
+                "type": "concept",
+                "value": "erst.nuclearity."
+                + ("multinuclear" if relation.endswith("_m") else "satellite_nucleus"),
+            },
+        },
+        {
+            "role": "EDGE_KIND",
+            "value": {"type": "concept", "value": "erst.edge_kind.primary"},
+        },
+    ]
+    targets = [
+        {"role": role, "target_id": proposition_id[int(unit["edu_id"])]}
+        for role, unit in role_units
+    ]
+    endpoint_concept = lambda unit: (
+        f"erst.edu.{annotation['document_id'].lower()}.{int(unit['edu_id'])}"
+    )
+    answer_arguments = [
+        {"role": role, "value": {"type": "concept", "value": endpoint_concept(unit)}}
+        for role, unit in role_units
+    ] + copy.deepcopy(source_arguments)
+    scope_spans = sorted(copy.deepcopy(unit["excerpt_span"]) for unit in units)
+    operator = str(contract["operator"])
+    return {
+        **common,
+        "disposition": "ADMITTED",
+        "exclusion_reason": None,
+        "operator": operator,
+        "target_roles": [role for role, _unit in role_units],
+        "graph": {
+            "policy": KERC_SCOPED_SEMANTIC_POLICY,
+            "roots": ["s0"],
+            "scopes": [
+                {
+                    "scope_id": "s0",
+                    "operator": operator,
+                    "targets": targets,
+                    "arguments": source_arguments,
+                    "source_spans": scope_spans,
+                }
+            ],
+            "propositions": propositions,
+        },
+        "answer_claims": [
+            {
+                "claim_id": "claim-1",
+                "predicate": "SCOPE_" + operator,
+                "modality": "ASSERTED",
+                "polarity": "AFFIRMED",
+                "quantifier": "NONE",
+                "confidence": 1.0,
+                "arguments": answer_arguments,
+            }
+        ],
+    }
+
+
+def gum_scoped_supervision_audit(
+    rows_by_split: dict[str, list[dict[str, Any]]],
+) -> dict[str, Any]:
+    relations: dict[str, Counter[str]] = defaultdict(Counter)
+    operators: dict[str, Counter[str]] = defaultdict(Counter)
+    genres: dict[str, Counter[str]] = defaultdict(Counter)
+    depths: dict[str, Counter[str]] = defaultdict(Counter)
+    exclusions: dict[str, Counter[str]] = defaultdict(Counter)
+    source_groups: dict[str, set[str]] = defaultdict(set)
+    for split, rows in rows_by_split.items():
+        for row in rows:
+            annotation = row["annotation"]
+            projection = gum_source_grounded_scope_projection(
+                annotation,
+                document_concept="gum.document.audit",
+            )
+            if projection["disposition"] != "ADMITTED":
+                if projection["operator"] is not None:
+                    exclusions[split][str(projection["exclusion_reason"])] += 1
+                continue
+            relation = str(annotation["primary_relation"])
+            relations[split][relation] += 1
+            operators[split][str(projection["operator"])] += 1
+            genres[split][f"{relation}:{annotation['genre']}"] += 1
+            units = {int(unit["edu_id"]): unit for unit in annotation["units"]}
+            edge = annotation["edges"][0]
+            depth = max(
+                int(units[int(edge["child_edu_id"])]["tree_depth"]),
+                int(units[int(edge["parent_edu_id"])]["tree_depth"]),
+            )
+            depths[split][f"{relation}:{min(depth, 5)}"] += 1
+            source_groups[split].add(str(row["source_group"]))
+    splits = ("private_train", "private_dev", "private_eval")
+    relation_names = sorted(GUM_SCOPED_RELATION_CONTRACT)
+    genre_names = ("academic", "bio", "court", "interview", "news", "voyage")
+    missing_cells = {
+        split: [
+            f"{relation}:{genre}"
+            for relation in relation_names
+            for genre in genre_names
+            if genres[split][f"{relation}:{genre}"] == 0
+        ]
+        for split in splits
+    }
+    groups = [source_groups[split] for split in splits]
+    return {
+        "policy": GUM_SCOPED_SEMANTIC_SUPERVISION_POLICY,
+        "admitted_relation_contract": GUM_SCOPED_RELATION_DESCRIPTIONS,
+        "record_counts_by_split_and_relation": {
+            split: dict(sorted(relations[split].items())) for split in splits
+        },
+        "record_counts_by_split": {
+            split: sum(relations[split].values()) for split in splits
+        },
+        "operator_counts_by_split": {
+            split: dict(sorted(operators[split].items())) for split in splits
+        },
+        "relation_genre_counts_by_split": {
+            split: dict(sorted(genres[split].items())) for split in splits
+        },
+        "relation_depth_counts_by_split": {
+            split: dict(sorted(depths[split].items())) for split in splits
+        },
+        "missing_relation_genre_cells_by_split": missing_cells,
+        "excluded_mapped_record_counts_by_split_and_reason": {
+            split: dict(sorted(exclusions[split].items())) for split in splits
+        },
+        "excluded_mapped_record_count": sum(
+            sum(exclusions[split].values()) for split in splits
+        ),
+        "source_group_counts_by_split": {
+            split: len(source_groups[split]) for split in splits
+        },
+        "cross_split_source_group_overlap_count": sum(
+            len(groups[left] & groups[right])
+            for left in range(len(groups))
+            for right in range(left + 1, len(groups))
+        ),
+        "minimum_relation_count_by_split": {
+            split: min(relations[split].values()) for split in splits
+        },
+        "unique_source_credit": 0,
+        "complete_sentence_semantics_claimed": False,
+        "truth_claimed": False,
+        "learned_competence_claimed": False,
+    }
+
+
 def gum_discourse_record(
     row: dict[str, Any],
     *,
@@ -3162,6 +3470,21 @@ def gum_discourse_record(
                 "authority": "licensed_manual_annotation",
             }
         )
+    scoped_projection = gum_source_grounded_scope_projection(
+        annotation,
+        document_concept=document_concept,
+    )
+    if scoped_projection["disposition"] == "ADMITTED":
+        compiled_scope = compile_scoped_semantic_graph(
+            scoped_projection["graph"],
+            protected_objects={},
+            concept_capsules={},
+            source_length=len(row["source_text"]),
+        )
+        nodes = compiled_scope["program"]["nodes"]
+        roots = compiled_scope["program"]["roots"]
+        claims = scoped_projection["answer_claims"]
+
     row_source = {**source, "license_spdx": row["license_spdx"]}
     record = base_record(
         split=row["split"],
@@ -3198,6 +3521,11 @@ def gum_discourse_record(
     record["semantic_supervision"]["erst_relation_authority"] = (
         "human_source_declared_primary_and_secondary_discourse_edges"
     )
+    record["semantic_supervision"]["scoped_semantic_projection"] = {
+        key: copy.deepcopy(value)
+        for key, value in scoped_projection.items()
+        if key not in {"graph", "answer_claims"}
+    }
     return record
 
 
@@ -3879,6 +4207,23 @@ def produce(
         or gum_audit["inferred_relation_count"] != 0
     ):
         raise ValueError("GUM eRST producer reconstruction mismatch")
+    gum_scoped_contract = gum_contract["scoped_semantic_supervision"]
+    gum_scoped_audit = gum_scoped_supervision_audit(gum_selected)
+    if (
+        gum_scoped_audit["policy"] != gum_scoped_contract["policy"]
+        or gum_scoped_audit["admitted_relation_contract"]
+        != gum_scoped_contract["admitted_relation_contract"]
+        or gum_scoped_audit["record_counts_by_split_and_relation"]
+        != gum_scoped_contract["record_counts_by_split_and_relation"]
+        or gum_scoped_audit["record_counts_by_split"]
+        != gum_scoped_contract["record_counts_by_split"]
+        or gum_scoped_audit["excluded_mapped_record_count"]
+        != int(gum_scoped_contract["excluded_mapped_multi_edge_record_count"])
+        or gum_scoped_audit["minimum_relation_count_by_split"]
+        != gum_scoped_contract["minimum_relation_count_by_split"]
+        or gum_scoped_audit["cross_split_source_group_overlap_count"] != 0
+    ):
+        raise ValueError("GUM scoped-semantic producer reconstruction mismatch")
     gum_entity_contract = gum_contract["entity_coreference"]
     gum_entity_selected, gum_entity_audit = reconstruct_gum_entity_coreference(
         source_root=resolve(gum_contract["source_root"]),
@@ -4166,7 +4511,14 @@ def produce(
         for row in gum_entity_selected[split]:
             record = materialize_candidate(
                 family="gum_entity_coreference",
-                inputs={"row": row, "source": corpus["gum"]},
+                inputs={
+                    "row": row,
+                    "source": {
+                        key: value
+                        for key, value in corpus["gum"].items()
+                        if key != "scoped_semantic_supervision"
+                    },
+                },
                 expected_source_id=row["source_id"],
                 build=lambda row=row: gum_entity_coreference_record(
                     row,
@@ -4624,6 +4976,11 @@ def produce(
         },
         "gum_erst_discourse": {
             **gum_audit,
+            "scoped_semantic_supervision": {
+                **gum_scoped_audit,
+                "admission_contract": gum_scoped_contract["admission_contract"],
+                "claim_scope": gum_scoped_contract["claim_scope"],
+            },
             "claim_scope": gum_contract["claim_scope"],
             "source_credit_unit": "document",
             "derived_view_unique_source_credit": 0,

@@ -40,6 +40,7 @@ from neural_seed_open_vocab import (
     populate_open_vocab,
 )
 from kernel_english_protocol import (
+    KernelProtocolFault,
     KERC_VERIFIER_DIMENSIONS,
     SEMANTIC_EVIDENCE_TIERS,
     TRAINING_OBJECTIVES,
@@ -47,6 +48,7 @@ from kernel_english_protocol import (
     canonical_json,
     compile_training_views,
     kernel_training_contract,
+    learned_residual_view,
     stable_hash,
     validate_training_disposition,
     validate_training_record,
@@ -1362,6 +1364,7 @@ def materialize_kernel_english(
             code = str(getattr(exc, "code", "KERC_RECORD_INVALID"))
             rejection_counts[code] += 1
             continue
+        validate_kernel_record_learned_abi(record, line_number=line_number)
         split = str(record["split"])
         candidate_count[split] += 1
         receipt = record["verification_receipt"]
@@ -1715,6 +1718,28 @@ def materialize_kernel_english(
     }
     write_json_atomic(stage_root / "manifest.json", report)
     return report
+
+
+def validate_kernel_record_learned_abi(
+    record: dict[str, Any], *, line_number: int
+) -> None:
+    """Fail before selection when a governed record cannot reach learned stages.
+
+    Corpus admission and packet replay are insufficient if the compact learned ABI
+    cannot represent the same record.  Running this check while streaming the source
+    makes an owner defect fail at its first source line instead of after the complete
+    bounded-selection pass.
+    """
+
+    try:
+        learned_residual_view(
+            record["kernel_packet"]["residual"], hrl_state=record["hrl_state"]
+        )
+    except KernelProtocolFault as exc:
+        raise ValueError(
+            "KERC learned ABI rejected governed record "
+            f"at line {line_number} ({record.get('record_sha256')}): {exc}"
+        ) from exc
 
 
 def kernel_english_split_overlap(

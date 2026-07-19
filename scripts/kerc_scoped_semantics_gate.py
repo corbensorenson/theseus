@@ -201,7 +201,7 @@ def run_gate() -> dict[str, Any]:
             "negative_mutation_rejection_count": sum(row["rejected"] for row in negative_mutations),
         },
         "claim_ceiling": "Fixture-backed scoped-semantic ABI, exact serialization, causal intervention, and independent structural replay mechanics only. No semantic parsing, truth, completeness, learned competence, public benchmark, utility, efficiency, SOTA, AGI, or ASI claim.",
-        "remaining_wall": "Licensed non-benchmark proposition-level supervision and a learned source-to-Kernel compiler remain absent. PMB remains calibration-only and writes zero training rows.",
+        "remaining_wall": "Licensed non-benchmark proposition-level supervision is bounded to the K1l human eRST two-proposition mappings; broader construct coverage and a learned source-to-Kernel compiler remain absent. PMB remains calibration-only and writes zero training rows.",
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         **NO_CHEAT,

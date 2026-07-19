@@ -124,12 +124,41 @@ share toward zero. Public benchmarks are calibration only.
   CPU host selects four workers; the tested 8-GiB/4-logical-CPU profile selects two.
   Peak footprint is `10,342,161,792` bytes with zero process-level swaps. The two object
   stores cost `14,234,451,968` bytes (`13.257 GiB`).
+  K1l now adds bounded source-grounded scope supervision from the same licensed human
+  GUM eRST source. Seven direction-sensitive relation mappings produce `1,525` exact
+  two-proposition scope programs (`1,127/204/194` train/dev/eval); `90` mapped multi-edge
+  neighborhoods remain explicit exclusions because shared endpoints do not provide exact
+  scope ownership. A separate verifier reconstructs operator, roles, direction, spans,
+  roots, and identity. The compiler target consumes the exact program without exposing it
+  in the source-only input, and the reasoner path consumes the same packet program. The
+  focused suite passes `43/43`; full replay writes all `27,941` canonical records with zero
+  failures. The latest selective verifier takes `658.590s`, reuses `18,156` unrelated
+  semantic admissions, and independently recomputes all `9,785` GUM discourse rows. Five
+  relation-by-genre cells remain missing in each of dev and eval, and the producer warm
+  path still peaks near `2.9 GB` resident memory. This evidence is bounded scope
+  supervision and learned-view projection, not a GREEN full canonical stage, complete semantics, truth, learned
+  competence, utility, SOTA, AGI, or ASI.
+  The first full current-corpus stage audit now reaches every governed record after closing
+  two learned-ABI defects: all licensed semantic tag namespaces are explicit and fail closed,
+  and all `256` composite FrameNet records preserve their frames and union role vocabulary
+  instead of collapsing to an empty single-frame view. A raw-corpus ABI preflight covers all
+  `27,941` records in `6.498s`; focused protocol/stage tests pass `58/58`. The unchanged
+  canonical materializer then selects `14,238/3,621/3,350` records and publishes `44,943`
+  representable learned views, but remains RED after `5,519.207s`. The blockers are not
+  learned-quality results: the hash-only bounded sampler misses five feasible per-objective
+  source-authority floors and all `96` configured grounded records (`72` survive selection,
+  producing `288/384` counterfactuals), two duplicate raw sources cross fixed splits, and
+  the verbose learned program/answer ABI makes `1,232` positive plus four verifier-negative
+  views exceed the `8,192`-token contract. This is `INCONCLUSIVE_IMPLEMENTATION`, not a KERC
+  failure. The next owner repair is source-group/raw-source-disjoint constrained selection,
+  exact grounded/objective quota preservation, compact invertible program/answer views or a
+  faithful hierarchical long-record route, and content-bound incremental stage replay.
   Three narrow mechanisms
   are faithful mechanics: the exact finite-state residual codec, packet-level structural
   allocation, and checkpoint/migration/MLX state handling. Ten mechanisms are
   approximate or fixture-only; three are inactive or absent; H1-H8 remain inactive.
   Broader K1 remains open: licensed non-benchmark proposition-level supervision is
-  absent, and the corpus has zero correction alternatives, learned macros,
+  bounded to the seven K1l two-proposition mappings, and the corpus has zero correction alternatives, learned macros,
   nonempty interaction-global dictionaries, PARTIAL decisions, or
   per-unit allocation receipts, and still contains 18,759 opaque byte-literal values.
   Observed decision and discourse labels supply bounded condition, causal, contrast,
@@ -197,7 +226,14 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** finish the remaining faithful KERC pre-training boundary
+- **Immediate dependency:** repair the RED current-corpus KERC stage before any optimizer
+  campaign. Replace hash-only sampling with deterministic constraint-aware selection that
+  preserves feasible objective and grounded-context quotas while enforcing raw-source and
+  source-group disjointness. Replace verbose learned program/answer transport with an exact
+  invertible compact ABI or a faithful hierarchical long-record route so no admitted view is
+  silently truncated; preserve excluded-tail accounting and equal treatment for controls.
+  Add content-bound selection/view caching and streaming/native hot paths against the
+  `5,519.207s` baseline. Then finish the remaining faithful KERC pre-training boundary
   through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,

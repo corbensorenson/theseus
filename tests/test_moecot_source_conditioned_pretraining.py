@@ -28,6 +28,7 @@ from moecot_source_conditioned_pretraining import (  # noqa: E402
     source_conditioning_dependencies,
     validate_config,
     validate_kernel_english_config,
+    validate_kernel_record_learned_abi,
     validate_manifest,
 )
 import kernel_english_protocol as kernel  # noqa: E402
@@ -961,6 +962,27 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(tmp_path: Pat
     replay = inspect_kernel_english(cfg, tmp_path / "config.json")
     assert replay["trigger_state"] == "RED"
     assert any("artifact_identity" in gap for gap in replay["hard_gaps"])
+
+
+def test_kernel_stage_preflights_learned_abi_before_bounded_selection() -> None:
+    record = kernel_record("private_train", 99)
+    record["kernel_packet"]["residual"]["segment_frame"] = {
+        "frame_name": "Progress",
+        "frame_roles": ["ENTITY"],
+    }
+    record["kernel_packet"]["residual"]["token_tags"] = [
+        {
+            "tag": "FRAME_ROLE:UNDECLARED_ROLE",
+            "source_span": [0, 8],
+            "authority": "licensed_manual_annotation",
+        }
+    ]
+
+    with pytest.raises(
+        ValueError,
+        match=r"learned ABI rejected governed record at line 41.*UNDECLARED_ROLE",
+    ):
+        validate_kernel_record_learned_abi(record, line_number=41)
 
 
 def test_semantic_source_catalog_rejects_public_calibration_sources(tmp_path: Path) -> None:
