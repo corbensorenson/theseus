@@ -34,7 +34,9 @@ share toward zero. Public benchmarks are calibration only.
   is mathematically equivalent to explicit KV tiling and raised the exact eight-step
   trunk canary from 786 to 1,108 target positions/second while loss fell from 10.424 to
   6.592. MLX compilation and batch 24 were rejected for this host after measured
-  regressions; eager float32 batch 16 remains the qualified route.
+  regressions; eager float32 batch 16 remains the qualified route. The relaunched full
+  campaign reached step 50 at 741 positions/second overall (about 792 over steps 26-50),
+  so the short canary is not used as the sustained-runtime estimate.
 - **Capability:** still unmeasured at the 57M rung. The historical 10.8M rung remains
   falsified for practical utility: MoECOT, dense-active, and dense-total each scored
   0/160 on the frozen functional surface. That result cannot be relabeled as 57M evidence.
@@ -106,9 +108,11 @@ python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-rea
 ## Current Wall
 
 There is no remaining architecture rationale for postponing the campaign. The current
-wall is empirical and computational: even after the native-GQA improvement, the frozen
-1.097-billion-position shared trunk projects to roughly 11.5 days on this M1 at the
-bounded-canary rate. Relaunch the exact resumable run, measure sustained throughput and
-checkpoint integrity, then train the matched alternatives and determine whether any
-candidate produces useful direct behavior. Do not reopen architecture work, create
-another benchmark family, or generate a nearby GREEN report in place of that run.
+wall is empirical and computational: the relaunched native-GQA run is healthy through
+step 50, with finite declining loss and about 741 target positions/second overall. The
+frozen 1.097-billion-position shared trunk therefore projects to roughly 16-17 days on
+this M1 if the later rate holds. Preserve the run through its first checkpoint/resume
+proof while qualifying a materially faster numerical or hardware route separately; do
+not change the frozen weights in flight. Then train the matched alternatives and decide
+whether any candidate produces useful direct behavior. Do not reopen architecture work,
+create another benchmark family, or generate a nearby GREEN report in place of that run.
