@@ -781,7 +781,12 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     for target_id, target in targets.items():
         if target.get("optimizer_repetition_ceiling_ready") is not True:
             gaps.append(f"optimizer_repetition_ceiling_exceeded:{target_id}")
-    checkpoint_inventory = inspect_checkpoint_inventory(targets, plan_identity, summary.get("stage_signature"))
+    checkpoint_inventory = inspect_checkpoint_inventory(
+        targets,
+        plan_identity,
+        summary.get("stage_signature"),
+        plan_identity_contract=config.get("plan_identity") or {},
+    )
     gaps.extend(checkpoint_inventory["hard_gaps"])
     return {
         "policy": "project_theseus_moecot_language_arm_training_plan_v1",
@@ -811,6 +816,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         "specialist_data_scaling": specialist_scaling,
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
+        "plan_identity": config.get("plan_identity") or {},
         "plan_sha256": plan_identity,
         "hard_gaps": sorted(set(gaps)),
         "non_claims": [
@@ -1048,7 +1054,11 @@ def audit_specialist_data_scaling(
         "capability_credit": "NONE",
     }
 def inspect_checkpoint_inventory(
-    targets: dict[str, Any], plan_identity: str, stage_signature: Any
+    targets: dict[str, Any],
+    plan_identity: str,
+    stage_signature: Any,
+    *,
+    plan_identity_contract: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     rows = []
     gaps = []
@@ -1069,7 +1079,11 @@ def inspect_checkpoint_inventory(
         try:
             validate_resume(
                 receipt,
-                {"plan_sha256": plan_identity, "stage": {"stage_signature": stage_signature}},
+                {
+                    "plan_sha256": plan_identity,
+                    "stage": {"stage_signature": stage_signature},
+                    "plan_identity": plan_identity_contract or {},
+                },
                 target,
                 checkpoint,
                 optimizer,
@@ -3999,6 +4013,7 @@ def train_target(
     prior_sft_positions = 0
     prior_checkpoint_hash = ""
     resumed = False
+    resume_plan_identity_migration: dict[str, Any] | None = None
     if resume and not receipt_path.is_file():
         orphaned_state = [
             relative(path)
@@ -4016,7 +4031,7 @@ def train_target(
         resume_optimizer = resolve(
             str(prior.get("optimizer_state") or optimizer_path)
         )
-        validate_resume(
+        resume_plan_identity_migration = validate_resume(
             prior,
             plan,
             target,
@@ -4553,6 +4568,7 @@ def train_target(
         "training_phase_selection": training_phase,
         "bounded_phase_canary": training_phase != "all",
         "resume_base_checkpoint_sha256": prior_checkpoint_hash,
+        "resume_plan_identity_migration": resume_plan_identity_migration,
         "phases": {
             "pretraining": pretrain_phase,
             "source_conditioned_pretraining": source_conditioned_phase,
@@ -4674,14 +4690,17 @@ def cleanup_progress_generation(
 
 def validate_resume(
     receipt: dict[str, Any], plan: dict[str, Any], target: dict[str, Any], checkpoint: Path, optimizer: Path
-) -> None:
+) -> dict[str, Any] | None:
     faults = []
+    plan_migration: dict[str, Any] | None = None
     if receipt.get("policy") != "project_theseus_moecot_language_arm_training_receipt_v1":
         faults.append("receipt_policy_mismatch")
     if receipt.get("target_id") != target["target_id"]:
         faults.append("target_identity_mismatch")
     if receipt.get("plan_sha256") != plan["plan_sha256"]:
-        faults.append("plan_identity_mismatch")
+        plan_migration = accepted_plan_identity_migration(receipt, plan, target)
+        if plan_migration is None:
+            faults.append("plan_identity_mismatch")
     if receipt.get("stage_signature") != plan["stage"]["stage_signature"]:
         faults.append("stage_identity_mismatch")
     if receipt.get("row_ranges") != target["row_ranges"]:
@@ -4721,6 +4740,40 @@ def validate_resume(
         faults.append("optimizer_identity_mismatch")
     if faults:
         raise ValueError("resume denied: " + ",".join(faults))
+    return plan_migration
+
+
+def accepted_plan_identity_migration(
+    receipt: dict[str, Any], plan: dict[str, Any], target: dict[str, Any]
+) -> dict[str, Any] | None:
+    contract = plan.get("plan_identity")
+    if not isinstance(contract, dict) or contract.get("policy") != (
+        "project_theseus_semantic_training_plan_identity_v2"
+    ):
+        return None
+    for row in contract.get("legacy_migrations") or []:
+        if not isinstance(row, dict):
+            continue
+        if (
+            row.get("target_id") == target.get("target_id")
+            and row.get("legacy_plan_sha256") == receipt.get("plan_sha256")
+            and row.get("required_current_plan_sha256") == plan.get("plan_sha256")
+            and row.get("required_stage_signature") == receipt.get("stage_signature")
+            and row.get("required_stage_signature")
+            == (plan.get("stage") or {}).get("stage_signature")
+        ):
+            return {
+                "policy": contract["policy"],
+                "migration_id": row.get("migration_id"),
+                "legacy_plan_sha256": row.get("legacy_plan_sha256"),
+                "current_plan_sha256": plan.get("plan_sha256"),
+                "legacy_scale_report_sha256": row.get(
+                    "legacy_scale_report_sha256"
+                ),
+                "evidence": row.get("evidence"),
+                "reason": row.get("reason"),
+            }
+    return None
 
 
 def plan_sha256(
@@ -4751,6 +4804,7 @@ def plan_sha256(
                 "boundaries",
             )
         },
+        "plan_identity_policy": (config.get("plan_identity") or {}).get("policy"),
         "stage_signature": (metadata.get("summary") or {}).get("stage_signature"),
         "arm_views": ((metadata.get("summary") or {}).get("canonical_pretrain_stage") or {}).get("arm_views"),
         "models": models,
@@ -4767,7 +4821,6 @@ def plan_sha256(
             for key in (
                 "candidate_id",
                 "config_sha256",
-                "report_sha256",
                 "evaluation_freeze_sha256",
                 "required_unique_positions",
                 "staged_unique_positions",

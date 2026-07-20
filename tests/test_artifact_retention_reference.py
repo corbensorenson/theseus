@@ -232,3 +232,11 @@ def test_hot_report_compaction_protects_current_citations_and_ledgers(
         "reports/historical.json",
         "reports/report_snapshots/registry/old.json",
     }
+
+
+def test_hot_report_default_threshold_catches_registry_sized_snapshots() -> None:
+    assert retention.MIN_BYTES == 256 * 1024 * 1024
+    assert retention.hot_report_candidate_min_bytes(None) == 1024 * 1024
+    assert retention.hot_report_candidate_min_bytes(None) < 9 * 1024 * 1024
+    assert retention.hot_report_candidate_min_bytes(4 * 1024 * 1024) == 4 * 1024 * 1024
+    assert retention.HOT_REPORT_MIN_AGE_HOURS == 0.0

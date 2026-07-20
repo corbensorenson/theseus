@@ -82,8 +82,7 @@
       "id": "roadmap.project_steward_coverage_v1",
       "objective": "Implement the roadmap's first revised-order item: project steward record, active work-contract coverage, event-taint intake, module DoD cards, and stale report-family steward decisions through the existing project registry.",
       "roadmap_refs": [
-        "roadmap.md:1573",
-        "roadmap.md:1995"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/project_steward.json",
@@ -143,8 +142,7 @@
       "id": "roadmap.generator_policy_optimization_v1",
       "objective": "Turn verifier-labelled strict-generator failures into a governed private preference/RLVR policy-optimization baseline without public benchmark training or deterministic renderer credit.",
       "roadmap_refs": [
-        "roadmap.md:1629",
-        "roadmap.md:607"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/policy_optimization_program.json",
@@ -197,8 +195,7 @@
       "id": "roadmap.generation_mode_runtime_accounting_v1",
       "objective": "Turn generation-mode and speed work into governed accepted-output accounting, separating proposed throughput, accepted candidates, verifier success, fallback burden, memory, and no-cheat counters.",
       "roadmap_refs": [
-        "roadmap.md:1745",
-        "roadmap.md:2063"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/generation_mode_registry.json",
@@ -252,8 +249,7 @@
       "id": "roadmap.semantic_patch_spine_v1",
       "objective": "Represent concrete Theseus repo/generator repairs as semantic atoms, semantic patches, deterministic effect logs, and localized repair fixtures under the plan/execution spine.",
       "roadmap_refs": [
-        "roadmap.md:1833",
-        "roadmap.md:2102"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/semantic_patch_registry.json",
@@ -311,7 +307,7 @@
       "id": "roadmap.vcm_context_governor_v1",
       "objective": "Make VCM the universal fail-closed context ABI across assistant, planner, verifier, tool, training-data, candidate-generation, and fanout paths, with source-bound certificates, copy-on-write transactions, leases, typed faults, causal on/off evidence, and an exact-backend MLX-LM KV-cache lifecycle proof.",
       "roadmap_refs": [
-        "roadmap.md:373"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/vcm_context_governor.json",
@@ -393,7 +389,7 @@
       "id": "roadmap.hive_policy_first_scheduler_v1",
       "objective": "Add Personal Hive policy-first scheduling records and gate: device resource cards, portal cards, job contracts, bids after policy filtering, approval receipts, and disabled-by-default federation leases.",
       "roadmap_refs": [
-        "roadmap.md:1960"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/hive_policy_first_scheduler.json",
@@ -449,7 +445,7 @@
       "id": "roadmap.procedural_memory_toolification_v1",
       "objective": "Convert repeated Theseus traces into procedural tool candidates with explicit invariants, parameters, preconditions, postconditions, monitoring, regressions, lifecycle state, and retirement criteria.",
       "roadmap_refs": [
-        "roadmap.md:2078"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/procedural_memory_toolification.json",
@@ -515,7 +511,7 @@
       "id": "roadmap.proof_carrying_contract_transfer_v1",
       "objective": "Make Circle/Coil/cyclic theorem-backed contracts first-class proof-boundary fixtures with theorem IDs, Lean artifact status, fingerprints, explicit non-claims, claim decisions, and substrate adoption records that cannot be credited as model-quality evidence without separate Theseus task results.",
       "roadmap_refs": [
-        "roadmap.md:2148"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/proof_carrying_contracts.json",
@@ -573,7 +569,7 @@
       "id": "roadmap.module_definition_of_done_v1",
       "objective": "Enforce the ASI Stack book-quality definition of done for every major Theseus registry surface through normalized module records, source crosswalks, validation commands, evidence refs, non-claims, deprecation routes, report-family caps, and steward decision linkage.",
       "roadmap_refs": [
-        "roadmap.md:2207"
+        "roadmap.md"
       ],
       "allowed_files": [
         "configs/module_definition_of_done.json",
@@ -5915,7 +5911,7 @@
       "decision": "retain_under_artifact_retention_policy",
       "reason": "Generated report history is evidence and residual context, but bulky variants should be compacted or archived by manifest instead of treated as source.",
       "evidence_refs": [
-        "roadmap.md:1607",
+        "roadmap.md",
         "configs/project_manifest_registry.json"
       ],
       "allowed_next_actions": [
@@ -5931,8 +5927,7 @@
       "decision": "retain_as_negative_evidence",
       "reason": "Failed private generator runs explain the current semantic wall and must remain linked to claims instead of being hidden.",
       "evidence_refs": [
-        "roadmap.md:1200",
-        "roadmap.md:1542"
+        "roadmap.md"
       ],
       "allowed_next_actions": [
         "mine residual classes",
@@ -5948,7 +5943,7 @@
       "reason": "Routers/templates/renderers are useful baselines or controls but cannot support learned-generation claims.",
       "evidence_refs": [
         "AGENTS.md",
-        "roadmap.md:607"
+        "roadmap.md"
       ],
       "allowed_next_actions": [
         "use as diagnostic baseline",
@@ -5963,7 +5958,7 @@
       "decision": "retain_only_with_taint_and_retention_manifest",
       "reason": "Public memory benchmark artifacts can calibrate VCM but must not flow into model training context.",
       "evidence_refs": [
-        "roadmap.md:1775",
+        "roadmap.md",
         "docs/reference/virtual_context_memory_v1.0/source/Virtual_Context_Memory_v1.0.md"
       ],
       "allowed_next_actions": [
@@ -5979,8 +5974,7 @@
       "decision": "defer_product_expansion_until_core_spine_health",
       "reason": "Hive product surfaces are retained but should not outrun generator, assistant, registry, VCM, and authority-spine health.",
       "evidence_refs": [
-        "roadmap.md:869",
-        "roadmap.md:1820"
+        "roadmap.md"
       ],
       "allowed_next_actions": [
         "fix installer blockers",

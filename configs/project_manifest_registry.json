@@ -290,15 +290,15 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "7eff0b7aab3ea33d8db8132367c5c32e0d72d70a23cd453d30430d4fb07688d0"
+          "sha256": "3a584f09d57306a68ac55098c732b312f94c3edb39ff6b1eefe7f7f82ff638f3"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "63afd7e6b77d6c62fe3f40671546865649413db1f5c4a9d54be9cd8db9ce15ce"
+          "sha256": "be2f309c825f2dd220c4f9b7e1e8e8dbc15c1721a35f4b863379df89f846b044"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "38e07d22bd1cbb7a518bc935a51e07ae85213f847c98d57b1142f441ca6e148e"
+          "sha256": "070bf2738e9ebc7154d2822439d7395de652f1a0395e8ea0f4c77faee244f762"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",

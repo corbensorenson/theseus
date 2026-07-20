@@ -35,8 +35,10 @@ share toward zero. Public benchmarks are calibration only.
   trunk canary from 786 to 1,108 target positions/second while loss fell from 10.424 to
   6.592. MLX compilation and batch 24 were rejected for this host after measured
   regressions; eager float32 batch 16 remains the qualified route. The relaunched full
-  campaign reached step 50 at 741 positions/second overall (about 792 over steps 26-50),
-  so the short canary is not used as the sustained-runtime estimate.
+  campaign reached transactional step 500 at loss 2.4848 and 3,837,367 positions. Its
+  first sustained interval measured 741 positions/second overall (about 792 over steps
+  26-50), so the short canary is not used as the sustained-runtime estimate. Model and
+  optimizer state then loaded exactly and committed step 501 with matching hashes.
 - **Capability:** still unmeasured at the 57M rung. The historical 10.8M rung remains
   falsified for practical utility: MoECOT, dense-active, and dense-total each scored
   0/160 on the frozen functional surface. That result cannot be relabeled as 57M evidence.
@@ -53,18 +55,20 @@ share toward zero. Public benchmarks are calibration only.
 - **Registry:** GREEN with no routing blockers, missing identities, or governance
   violations. The canonical project state is the registry plus the frozen package, not
   generated report volume.
-- **Repository hygiene:** the generated-artifact budget is GREEN after reference-aware
-  compaction replaced old, unreferenced registry snapshots with verified archive pointers.
-  Checkpoint volume remains above its warning target but below its hard ceiling. The
-  forward roadmap is still too long; compact its narrative after relaunch without dropping
-  matrix obligations or mutating the frozen training contract.
+- **Repository hygiene:** the forward roadmap is now a 457-line execution map backed by
+  the complete machine-readable matrix, down from 3,756 lines without deleting an open
+  obligation. Reference-aware retention replaces old, unreferenced registry snapshots
+  with verified archive pointers. Checkpoint volume remains above its warning target but
+  below its hard ceiling. The superseded strict-generator/code-LM route is being decoupled,
+  but cannot be honestly retired until its registered successor passes the same functional
+  contract or an explicit evidence-preserving demotion is recorded.
 
 ## Binding Next Action
 
 1. Preserve the independently replayed 70-artifact architecture package unchanged.
-2. Relaunch the shared-trunk MLX run under sleep prevention with resumable checkpoints.
-   The first launch reached step 75 and was stopped before any checkpoint because measured
-   throughput implied an infeasible host runtime; it has zero capability credit.
+2. Preserve the shared-trunk MLX lineage under sleep prevention. Transactional checkpoint
+   500 and exact load/update/save step 501 are proven. Resume from step 501 after the
+   source package is independently replayed; this remains training health, not capability.
 3. Train the five language arms from that exact trunk and both preregistered dense controls.
 4. Evaluate all candidates once on the frozen 160-case functional contract without tuning
    from heldout outcomes.
@@ -108,11 +112,12 @@ python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-rea
 ## Current Wall
 
 There is no remaining architecture rationale for postponing the campaign. The current
-wall is empirical and computational: the relaunched native-GQA run is healthy through
-step 50, with finite declining loss and about 741 target positions/second overall. The
+wall is empirical and computational: the native-GQA run has a verified resumable step-501
+lineage with finite declining loss; its first sustained interval measured about 741 target
+positions/second overall. The
 frozen 1.097-billion-position shared trunk therefore projects to roughly 16-17 days on
-this M1 if the later rate holds. Preserve the run through its first checkpoint/resume
-proof while qualifying a materially faster numerical or hardware route separately; do
+this M1 if the later rate holds. Preserve the resumed lineage while qualifying a
+materially faster numerical or hardware route separately; do
 not change the frozen weights in flight. Then train the matched alternatives and decide
 whether any candidate produces useful direct behavior. Do not reopen architecture work,
 create another benchmark family, or generate a nearby GREEN report in place of that run.

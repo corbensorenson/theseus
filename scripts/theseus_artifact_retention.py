@@ -42,6 +42,8 @@ DEFAULT_BUDGET_OUT = REPORTS / "theseus_artifact_budget_gate.json"
 DEFAULT_BUDGET_MARKDOWN = REPORTS / "theseus_artifact_budget_gate.md"
 DEFAULT_REGISTRY = ROOT / "configs" / "project_manifest_registry.json"
 MIN_BYTES = 256 * 1024 * 1024
+HOT_REPORT_MIN_BYTES = 1024 * 1024
+HOT_REPORT_MIN_AGE_HOURS = 0.0
 ARCHIVEABLE_PREFIXES = (
     "student_code_lm_checkpoint_fanout_speed_",
     "student_code_lm_checkpoint_frontier_private_only_train_once_smoke_",
@@ -97,7 +99,18 @@ def main() -> int:
     parser.add_argument("--repair-only", action="store_true")
     parser.add_argument("--compact-hot-reports", action="store_true")
     parser.add_argument("--hot-report-only", action="store_true")
-    parser.add_argument("--hot-report-min-age-hours", type=float, default=24.0)
+    parser.add_argument(
+        "--hot-report-min-bytes",
+        type=int,
+        default=None,
+        help="Minimum hot-report payload size; defaults to 1 MiB independently of checkpoint retention.",
+    )
+    parser.add_argument(
+        "--hot-report-min-age-hours",
+        type=float,
+        default=HOT_REPORT_MIN_AGE_HOURS,
+        help="Minimum unreferenced hot-report age; current references are protected independently.",
+    )
     parser.add_argument("--hot-report-target-bytes", type=int, default=0)
     parser.add_argument("--no-compress", action="store_true")
     parser.add_argument("--archive-root", default=str(ARCHIVE_ROOT.relative_to(ROOT)))
@@ -198,7 +211,7 @@ def main() -> int:
         candidates.extend(
             artifact_retention_reference.hot_report_archive_candidates(
                 hot_report_reference_index,
-                min_bytes=max(1, int(args.min_bytes)),
+                min_bytes=hot_report_candidate_min_bytes(args.hot_report_min_bytes),
                 min_age_hours=max(0.0, float(args.hot_report_min_age_hours)),
                 target_hot_bytes=max(0, hot_target),
             )
@@ -360,6 +373,7 @@ def main() -> int:
             "current_reference_aware_checkpoint_compaction": bool(args.compact_checkpoints),
             "checkpoint_min_age_hours": float(args.checkpoint_min_age_hours),
             "current_reference_aware_hot_report_compaction": bool(args.compact_hot_reports),
+            "hot_report_min_bytes": hot_report_candidate_min_bytes(args.hot_report_min_bytes),
             "hot_report_min_age_hours": float(args.hot_report_min_age_hours),
             "pointer_policy": ARCHIVE_POINTER_POLICY,
             "archiveable_prefixes": list(ARCHIVEABLE_PREFIXES),
@@ -377,6 +391,11 @@ def main() -> int:
     )
     print(json.dumps(retention_gate_view(payload), indent=2, sort_keys=True))
     return 0 if payload["trigger_state"] == "GREEN" else 2
+
+
+def hot_report_candidate_min_bytes(configured: int | None) -> int:
+    """Keep report snapshots compactable without lowering checkpoint thresholds."""
+    return max(1, int(HOT_REPORT_MIN_BYTES if configured is None else configured))
 
 
 def discover_candidates(

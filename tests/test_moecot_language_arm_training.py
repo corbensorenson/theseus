@@ -43,6 +43,7 @@ from moecot_language_arm_training import (  # noqa: E402
     materialize_target_supervision,
     model_accounting,
     pack_kerc_unit_allocator_batch,
+    plan_sha256,
     range_view,
     serialization_valid_local_ids,
     should_evaluate_target,
@@ -50,6 +51,7 @@ from moecot_language_arm_training import (  # noqa: E402
     target_optimizer_exposure,
     target_copy_identity_ranges,
     train_target,
+    accepted_plan_identity_migration,
     validate_config,
     validate_resume,
 )
@@ -1546,6 +1548,87 @@ def test_resume_rejects_tampered_checkpoint_optimizer_and_plan(tmp_path: Path) -
     plan["plan_sha256"] = "plan-b"
     with pytest.raises(ValueError, match="plan_identity_mismatch"):
         validate_resume(receipt, plan, target, checkpoint, optimizer)
+
+
+def test_resume_accepts_only_exact_semantic_plan_identity_migration(tmp_path: Path) -> None:
+    checkpoint = tmp_path / "weights.npz"
+    optimizer = tmp_path / "optimizer.safetensors"
+    checkpoint.write_bytes(b"weights")
+    optimizer.write_bytes(b"optimizer")
+    receipt = {
+        "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
+        "target_id": "shared_trunk",
+        "plan_sha256": "legacy-plan",
+        "stage_signature": "stage-a",
+        "row_ranges": [{"start": 0, "stop": 2}],
+        "checkpoint_sha256": hashlib.sha256(b"weights").hexdigest(),
+        "optimizer_state_sha256": hashlib.sha256(b"optimizer").hexdigest(),
+    }
+    target = {"target_id": "shared_trunk", "row_ranges": receipt["row_ranges"]}
+    plan = {
+        "plan_sha256": "semantic-plan",
+        "stage": {"stage_signature": "stage-a"},
+        "plan_identity": {
+            "policy": "project_theseus_semantic_training_plan_identity_v2",
+            "legacy_migrations": [
+                {
+                    "migration_id": "migration-a",
+                    "target_id": "shared_trunk",
+                    "legacy_plan_sha256": "legacy-plan",
+                    "required_current_plan_sha256": "semantic-plan",
+                    "required_stage_signature": "stage-a",
+                    "legacy_scale_report_sha256": "report-a",
+                    "evidence": "frozen-package-a",
+                    "reason": "volatile report hash removed",
+                }
+            ],
+        },
+    }
+
+    migration = validate_resume(receipt, plan, target, checkpoint, optimizer)
+    assert migration is not None
+    assert migration["migration_id"] == "migration-a"
+    assert accepted_plan_identity_migration(receipt, plan, target) == migration
+
+    plan["plan_sha256"] = "different-plan"
+    with pytest.raises(ValueError, match="plan_identity_mismatch"):
+        validate_resume(receipt, plan, target, checkpoint, optimizer)
+
+
+def test_semantic_plan_identity_excludes_volatile_preregistration_report_hash() -> None:
+    config = {
+        "policy": "training",
+        "seed": 1,
+        "topology": {"kind": "shared"},
+        "shared_trunk_model": {"d_model": 8},
+        "arm_model": {"d_model": 8},
+        "controls": {"dense": True},
+        "training": {"batch_size": 2},
+        "boundaries": {"public_training_rows_written": 0},
+        "plan_identity": {
+            "policy": "project_theseus_semantic_training_plan_identity_v2"
+        },
+    }
+    metadata = {
+        "summary": {
+            "stage_signature": "stage-a",
+            "canonical_pretrain_stage": {"arm_views": {"english": [0, 1]}},
+        }
+    }
+    scale = {
+        "candidate_id": "candidate-a",
+        "config_sha256": "config-a",
+        "report_sha256": "volatile-a",
+        "evaluation_freeze_sha256": "eval-a",
+        "required_unique_positions": 10,
+        "staged_unique_positions": 20,
+    }
+    args = (config, metadata, {"model": "a"}, {"artifacts": {}}, {"artifacts": {}}, {"artifacts": {}})
+    first = plan_sha256(*args, scale)
+    scale["report_sha256"] = "volatile-b"
+    assert plan_sha256(*args, scale) == first
+    scale["evaluation_freeze_sha256"] = "eval-b"
+    assert plan_sha256(*args, scale) != first
 
 
 def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(
