@@ -29,7 +29,12 @@ share toward zero. Public benchmarks are calibration only.
   Rust 45,548,655.
 - **MLX mechanics:** GREEN for the MoECOT active arm and both dense controls. Each full
   model produced finite loss, changed parameters, round-tripped weights and optimizer
-  state, and resumed training. Observed Metal peak memory was about 2.3-2.8 GB.
+  state, and resumed training. Earlier bounded canaries used about 2.3-2.8 GB. The exact
+  57M shared-trunk shape peaks near 9.1 GB on this M1. Native MLX grouped-query attention
+  is mathematically equivalent to explicit KV tiling and raised the exact eight-step
+  trunk canary from 786 to 1,108 target positions/second while loss fell from 10.424 to
+  6.592. MLX compilation and batch 24 were rejected for this host after measured
+  regressions; eager float32 batch 16 remains the qualified route.
 - **Capability:** still unmeasured at the 57M rung. The historical 10.8M rung remains
   falsified for practical utility: MoECOT, dense-active, and dense-total each scored
   0/160 on the frozen functional surface. That result cannot be relabeled as 57M evidence.
@@ -46,14 +51,18 @@ share toward zero. Public benchmarks are calibration only.
 - **Registry:** GREEN with no routing blockers, missing identities, or governance
   violations. The canonical project state is the registry plus the frozen package, not
   generated report volume.
-- **Repository hygiene:** reports remain over budget and the forward roadmap is too long.
-  Cleanup is required after campaign launch, using reference-aware compaction and explicit
-  retirement receipts. It must not delay or mutate the frozen training contract.
+- **Repository hygiene:** the generated-artifact budget is GREEN after reference-aware
+  compaction replaced old, unreferenced registry snapshots with verified archive pointers.
+  Checkpoint volume remains above its warning target but below its hard ceiling. The
+  forward roadmap is still too long; compact its narrative after relaunch without dropping
+  matrix obligations or mutating the frozen training contract.
 
 ## Binding Next Action
 
-1. Seal and independently replay the current architecture package.
-2. Launch the shared-trunk MLX run under sleep prevention with resumable checkpoints.
+1. Preserve the independently replayed 70-artifact architecture package unchanged.
+2. Relaunch the shared-trunk MLX run under sleep prevention with resumable checkpoints.
+   The first launch reached step 75 and was stopped before any checkpoint because measured
+   throughput implied an infeasible host runtime; it has zero capability credit.
 3. Train the five language arms from that exact trunk and both preregistered dense controls.
 4. Evaluate all candidates once on the frozen 160-case functional contract without tuning
    from heldout outcomes.
@@ -84,6 +93,7 @@ share toward zero. Public benchmarks are calibration only.
 - `configs/neural_seed_57m_functional_utility_freeze.json`
 - `configs/evaluation_history/neural_seed_v8_candidate_packet.json`
 - `reports/pretraining_architecture_freeze_package.json`
+- `reports/theseus_artifact_budget_gate_current.json`
 
 ## Canonical Checks
 
@@ -96,6 +106,9 @@ python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-rea
 ## Current Wall
 
 There is no remaining architecture rationale for postponing the campaign. The current
-wall is empirical: train the frozen 57M system and matched controls, then determine
-whether any candidate produces useful direct behavior. Do not reopen architecture work,
-create another benchmark family, or generate a nearby GREEN report in place of that run.
+wall is empirical and computational: even after the native-GQA improvement, the frozen
+1.097-billion-position shared trunk projects to roughly 11.5 days on this M1 at the
+bounded-canary rate. Relaunch the exact resumable run, measure sustained throughput and
+checkpoint integrity, then train the matched alternatives and determine whether any
+candidate produces useful direct behavior. Do not reopen architecture work, create
+another benchmark family, or generate a nearby GREEN report in place of that run.

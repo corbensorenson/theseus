@@ -55,8 +55,8 @@ support states by implication.
 
 | Gate | State | Exit condition | Work unlocked |
 |---|---|---|---|
-| `T0` — Finite architecture closure | `complete` | KERC is explicitly deferred as `INCONCLUSIVE_IMPLEMENTATION` with K0-K3 banked and zero first-campaign exposure; the 53-artifact package passes all eight independent replays and binds its generated effect/governance receipts. | Long optimizer spend. |
-| `T1` — Frozen neural-seed campaign | `ready_to_launch` | The preregistration, executable model topology, exact tokenizer/index capacity, 422,334,331-position stage, controls, checkpoint namespace, MLX canaries, and fresh 160-case functional identity agree before the first optimizer step. Train the shared trunk, five arms, and two matched dense controls with complete lineage. | Frozen functional evaluation. |
+| `T0` — Finite architecture closure | `complete` | KERC is explicitly deferred as `INCONCLUSIVE_IMPLEMENTATION` with K0-K3 banked and zero first-campaign exposure; the 70-artifact package passes all ten independent replays and binds its generated effect/governance receipts. | Long optimizer spend. |
+| `T1` — Frozen neural-seed campaign | `ready_to_relaunch` | The exact campaign reached step 75 before an operator stop with no checkpoint or capability credit. Native MLX GQA is parity-tested and improves the exact eight-step trunk canary from 786 to 1,108 target positions/second; eager float32 batch 16 is the qualified M1 route. Relaunch unchanged, prove sustained throughput and checkpoint/resume, then train the shared trunk, five arms, and two matched dense controls with complete lineage. | Frozen functional evaluation. |
 | `T2` — Honest behavioral numerator | `blocked_by_T1` | At least one lineage-bound arm produces nonzero, model-only, source-disjoint functional behavior; a zero result receives only the exact decision-grade scope earned. | Behavior-dependent search, routing, preference/RL, and fast-generation qualification. |
 | `T3` — Real daily-use lane | `ready_for_assisted_use`; learned credit waits for `T2` | At least one week or five distinct days of real low-risk use records accepted, missed, ignored, corrected, completed, failed, or abstained outcomes with time, verifier/human cost, effect, rollback, and component attribution. | Empirical product-usefulness and procedural-memory evidence. |
 | `T4` — Joined governed vertical | `blocked_by_T2_and_T3` | One natural happy path and one blocked or rollback path join intent, VCM, plan, route, candidate, verification, authority, effect observation, terminal acknowledgement, residual, and dogfood outcome without orphan or stale projection. | Book-importable implementation evidence. |
@@ -89,7 +89,13 @@ closure proves that selected mechanisms are real, integrated, checkpointable,
 migratable, resource-accounted, replayable, negatively tested, and represented in the
 frozen campaign. Prospectively bounded mechanics and representative-subset learnability
 canaries remain allowed when their data, step ceiling, stop rule, and non-claim are fixed
-before execution. Full-corpus training, architecture tuning from interim losses, public
+before execution, but they do not substitute for the campaign. The first exact launch reached step 75 and was
+stopped before checkpoint creation because the measured 619 target positions/second
+projected an infeasible host runtime. A subsequent exact-shape canary removed redundant
+KV-head tiling, proved native GQA equivalence, and reached 1,108 positions/second with
+finite declining loss. This is a mechanics result only; the frozen functional surface
+remains unconsumed and capability remains unmeasured.
+Full-corpus training, architecture tuning from interim losses, public
 calibration, and capability claims remain after the freeze.
 
 The closure is finite. New ideas discovered after the freeze target the successor
@@ -221,7 +227,7 @@ efficacy now requires the unchanged frozen campaign.
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but all five offline-preference and four verifier-reward objective adapters now execute through a shared frozen schema, checkpoint/reference identity, MLX parity probe, capacity ledger, update lease, exact rollback, and twelve rejecting controls | preserve zero exposure and run/select an objective only after a behavior-positive proposer creates honest private verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
-| Generator capability (held-out utility) | Phase 10 | the 10.8M regime remains closed at 0/160. The corrected 57.340M-active MoECOT arm and 57.349M/67.357M dense controls pass full MLX update, checkpoint/reload, optimizer-resume, data-lineage, and resource canaries. A fresh source-disjoint 160-case functional surface is frozen and unconsumed. | execute the frozen campaign once, evaluate all candidates without tuning from heldout outcomes, and publish the scoped verdict |
+| Generator capability (held-out utility) | Phase 10 | the 10.8M regime remains closed at 0/160. The corrected 57.340M-active MoECOT arm and 57.349M/67.357M dense controls pass full MLX update, checkpoint/reload, optimizer-resume, data-lineage, and resource canaries. The exact 57M launch reached step 75 but produced no checkpoint; native GQA now has an exact-shape parity and throughput canary. A fresh source-disjoint 160-case functional surface is frozen and unconsumed. | relaunch the unchanged campaign, prove sustained throughput and first checkpoint/resume, evaluate all completed candidates without tuning from heldout outcomes, and publish the scoped verdict |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
 | Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | K0-K3 are banked; the incomplete full candidate is deferred from the first practical run as `INCONCLUSIVE_IMPLEMENTATION`, with zero topology/objective/optimizer exposure. | After the practical capability run, complete K4 real coding/amortization, K5 renderer/verifier calibration, K6 lifecycle/security stress, and K7 total-cost instrumentation, then prospectively freeze K8. Never treat the deferral as a KERC failure. |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
@@ -231,7 +237,7 @@ efficacy now requires the unchanged frozen campaign.
 | Procedural memory + toolification | Phase 15 | implemented for the three guarded exact assets; the exact Reflexive Router/trace-to-reflex contract is now part of pre-training architecture closure, while learned promotion still requires real traces | wire qualification, dependency invalidation, differential/shadow/canary, quarantine, decompilation, and rollback interfaces before training; defer only empirical promotion and route-regret claims |
 | Authority kernel / SCIF | Phase 18 | replayable-reference-backed for the same bounded local effect; SCIF and wider authority controls remain synthetic | preserve exact effect/rollback auditing and expand support only when another real effect class earns it |
 | Assistant product | Phase 5 | assisted runtime wired; model-only general chat unavailable | dogfood deterministic/verified assistance now, but earn model usefulness only from real multi-day use after the local model clears its behavior floor |
-| Report/repository hygiene | Phases 0, 8, 14 | live reports are about 3.2 GB, runtime fell from 46 GB to 25 GB after removing 20 GB of reproducible deferred-KERC cache, archive remains 14 GB, and the superseded strict-generator/code-lm-closure family still occupies 17 scripts and about 50,865 Rust LOC | keep canonical evidence and training inputs intact; after campaign launch, execute the registered retirement proof and compact this roadmap below its 1,100-line target without dropping matrix obligations |
+| Report/repository hygiene | Phases 0, 8, 14 | the generated-artifact budget is GREEN after reference-aware snapshot compaction; checkpoints remain above the warning target but below the hard ceiling. Runtime is about 27 GB, archive about 14 GB, and the superseded strict-generator/code-lm-closure family still occupies 17 scripts and about 50,865 Rust LOC. | keep canonical evidence and training inputs intact; after campaign relaunch, execute the registered retirement proof and compact this roadmap below its 1,100-line target without dropping matrix obligations |
 | Book crosswalk / parity | Phase 19 | 54 chapters are bound to immutable AI_book commit `32635eb...`; live worktree changes are intake drift, not an architecture regression | reconcile and advance the pin only in a reviewed change after book edits are committed |
 | Book test obligations | Phase 19 + routed owners | 511 authored Codex tests; 109 remain planned or partial in the book | close by mechanism family with real controls, not checkbox fixtures |
 | Book futures intake | Phase 19 + routed owners | every accepted item is classified by training-invalidating effect; KERC, QCSA, Reflexive Router, OneCell disposition, update/data lifecycle, and generation-objective interfaces are on the finite pre-training docket | implement or explicitly retire every checkpoint-shaping item before training; retain genuinely modality-, peer-, real-use-, or behavior-dependent evidence as post-training qualification |
@@ -517,16 +523,16 @@ promoted; their purpose is to falsify or select the practical architecture.
   regression, omitted every major learned KERC stage, and trained on 128 authored
   templates. Preserve it as proxy-negative evidence, but do not use it to exclude KERC.
   This is the one concrete architecture defect that reopens the freeze.
-- The practical model lane is preregistered at 57.315M active parameters but is not
-  currently data-supported or executable-authorized. Exact replay through the actual
-  trainer tokenizer/index measures 422,334,331 unique positions against the 1,146,808,520
-  floor. A stopped step-1,000 run instantiated the old 10.8M topology and therefore has
-  zero 57M credit. KERC is banked and deferred; the only pre-launch work now allowed is
-  repairing the shared scale/data/execution contract, admitting high-quality licensed
-  in-scope data if the 57M rung is retained, freezing a fresh evaluation identity, and
-  replaying the unchanged MLX mechanics canaries. Learned qualification of STS, VCM,
-  search, preference/RL, and fast generation still waits for a nonzero model-only
-  numerator.
+- The practical model lane is now executable-authorized at 57.340M active parameters.
+  Exact replay through the actual trainer tokenizer/index measures 422,334,331 unique
+  positions and binds a 1,146,808,520-position optimizer target. The earlier stopped
+  step-1,000 run instantiated the old 10.8M topology and has zero 57M credit. The first
+  exact 57M launch reached step 75 but was stopped before checkpoint creation after its
+  observed 619 positions/second exposed a host-runtime problem. Native MLX GQA now has
+  an exact equivalence test and an eight-step exact-shape canary at 1,108 positions/second;
+  compile and batch-24 alternatives were measured and rejected on this M1. KERC remains
+  banked and deferred. Learned qualification of STS, VCM, search, preference/RL, and
+  fast generation still waits for a nonzero model-only numerator.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
@@ -1374,20 +1380,17 @@ evidence earns a different route.)
   Repeated positions, teacher paraphrases, target-only snippets, or optimizer epochs
   do not fund scale. A larger rung is denied if task-complete data support is absent.
 
-- **Frozen post-v8 proposal:** the smallest mechanically matched candidate is now
-  preregistered at `57,315,329` active parameters with a `54,811,649`-parameter
-  shared trunk and five `2,504,193`-parameter specialist deltas. Dense controls are
-  `57,323,520` active and `67,332,096` total, each within one indivisible FF-width
-  increment of its sparse accounting view. Earlier mechanics canaries produced finite
-  updates, exact checkpoint replay, optimizer resume, and temporary-artifact cleanup;
-  the pointer-generator scatter was made deterministic after a canary exposed an
-  invalid-index collision. Exact executable-tokenizer replay now measures `422,334,331`
-  unique positions (`7.369` per active parameter), so the preregistration is data-RED.
-  A purported 57M launch was also found to instantiate the old 10.8M model and checkpoint
-  namespace and was stopped at step 1,000. The trainer must consume this preregistration
-  as its sole topology owner, stage at least the prospectively required exact positions,
-  use a candidate-specific empty checkpoint namespace, bind a fresh functional-evaluation
-  identity, and replay all canaries before launch. This remains mechanics evidence only.
+- **Frozen post-v8 campaign:** the smallest mechanically matched candidate is
+  preregistered at `57,340,426` active parameters with a shared trunk and five
+  `2,504,193`-parameter specialist deltas. Dense controls are
+  `57,348,617` active and `67,357,193` total. Earlier mechanics canaries produced finite
+  updates, exact checkpoint replay, optimizer resume, and temporary-artifact cleanup.
+  Exact executable-tokenizer replay measures `422,334,331` unique positions (`7.365`
+  per active parameter), and the trainer consumes the preregistration as its topology
+  owner in a candidate-specific namespace with a fresh functional-evaluation identity.
+  The first exact launch reached step 75 and was stopped before checkpoint creation for
+  throughput repair; native GQA is now parity-tested and qualified at batch 16. This
+  remains mechanics evidence only until the full campaign produces evaluable weights.
 
 - **Product-aligned supervision:** consume Phase 7 `task_complete_training_unit`
   records. English emphasizes natural multi-turn dialogue, corrections, and useful

@@ -3597,6 +3597,8 @@ def train_phase(
     all_target_consumed = 0
     steps = 0
     losses: list[float] = []
+    optimizer_step_seconds: list[float] = []
+    optimizer_step_positions: list[int] = []
     batch_sequence_widths: list[int] = []
     static_sequence_width = int(inputs.shape[1])
     padded_positions_avoided = 0
@@ -3646,11 +3648,15 @@ def train_phase(
                 axis=0,
             )
             active_indices = np.flatnonzero(active_columns)
-            batch_width = int(active_indices[-1] + 1) if len(active_indices) else 1
+            batch_width = (
+                int(active_indices[-1] + 1) if len(active_indices) else 1
+            )
             if batch_width > static_sequence_width:
                 raise ValueError("dynamic batch width exceeds staged sequence width")
             batch_sequence_widths.append(batch_width)
-            padded_positions_avoided += len(indices) * (static_sequence_width - batch_width)
+            padded_positions_avoided += len(indices) * (
+                static_sequence_width - batch_width
+            )
             x = mx.array(batch_inputs[:, :batch_width], dtype=mx.int32)
             y = mx.array(batch_labels[:, :batch_width], dtype=mx.int32)
             all_targets = mx.array(batch_mask[:, :batch_width], dtype=mx.float32)
@@ -3727,6 +3733,7 @@ def train_phase(
                 if packed_units is not None
                 else None
             )
+            step_started = time.perf_counter()
             loss, grads = loss_and_grad(
                 model,
                 x,
@@ -3768,6 +3775,8 @@ def train_phase(
             grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
             optimizer.update(model, grads)
             mx.eval(model.parameters(), optimizer.state, loss, grad_norm)
+            optimizer_step_seconds.append(time.perf_counter() - step_started)
+            optimizer_step_positions.append(int(progress_mask[indices].sum()))
             loss_value = float(loss.item())
             losses.append(loss_value)
             consumed += int(progress_mask[indices].sum())
@@ -3818,6 +3827,21 @@ def train_phase(
             "bounded training did not exercise required coverage: "
             + ",".join(missing_coverage)
         )
+    warmup_step_index = (
+        int(np.argmax(np.asarray(optimizer_step_seconds)))
+        if optimizer_step_seconds
+        else -1
+    )
+    warmup_excluded_seconds = sum(
+        value
+        for index, value in enumerate(optimizer_step_seconds)
+        if index != warmup_step_index
+    )
+    warmup_excluded_positions = sum(
+        value
+        for index, value in enumerate(optimizer_step_positions)
+        if index != warmup_step_index
+    )
     return {
         "phase": phase_name,
         "optimizer_steps": steps,
@@ -3832,6 +3856,52 @@ def train_phase(
         "mean_loss": round(sum(losses) / max(1, len(losses)), 6),
         "final_loss": round(losses[-1], 6) if losses else None,
         "tokens_per_second": round(consumed / max(1e-9, time.perf_counter() - started), 3),
+        "first_optimizer_step_seconds": (
+            round(optimizer_step_seconds[0], 6)
+            if optimizer_step_seconds
+            else None
+        ),
+        "post_first_optimizer_tokens_per_second": (
+            round(
+                sum(optimizer_step_positions[1:])
+                / max(1e-9, sum(optimizer_step_seconds[1:])),
+                3,
+            )
+            if len(optimizer_step_seconds) > 1
+            else None
+        ),
+        "mean_post_first_optimizer_step_seconds": (
+            round(
+                sum(optimizer_step_seconds[1:])
+                / len(optimizer_step_seconds[1:]),
+                6,
+            )
+            if len(optimizer_step_seconds) > 1
+            else None
+        ),
+        "optimizer_step_seconds_prefix": [
+            round(value, 6) for value in optimizer_step_seconds[:8]
+        ],
+        "maximum_optimizer_step_seconds": (
+            round(max(optimizer_step_seconds), 6)
+            if optimizer_step_seconds
+            else None
+        ),
+        "median_optimizer_step_seconds": (
+            round(float(np.median(optimizer_step_seconds)), 6)
+            if optimizer_step_seconds
+            else None
+        ),
+        "warmup_step_index_zero_based": warmup_step_index,
+        "warmup_excluded_tokens_per_second": (
+            round(
+                warmup_excluded_positions
+                / max(1e-9, warmup_excluded_seconds),
+                3,
+            )
+            if len(optimizer_step_seconds) > 1
+            else None
+        ),
         "weighted_sampling": probabilities is not None,
         "static_sequence_width": static_sequence_width,
         "maximum_dynamic_batch_width": max(batch_sequence_widths or [0]),

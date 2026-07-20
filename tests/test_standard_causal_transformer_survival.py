@@ -758,6 +758,33 @@ def test_attention_policy_configuration_fails_closed() -> None:
         ).validate()
 
 
+def test_mlx_native_grouped_query_attention_matches_explicit_kv_tiling() -> None:
+    import mlx.core as mx
+
+    mx.random.seed(20260720)
+    query = mx.random.normal((2, 8, 7, 16))
+    key = mx.random.normal((2, 2, 7, 16))
+    value = mx.random.normal((2, 2, 7, 16))
+    native = mx.fast.scaled_dot_product_attention(
+        query,
+        key,
+        value,
+        scale=16 ** -0.5,
+        mask="causal",
+    )
+    explicit = mx.fast.scaled_dot_product_attention(
+        query,
+        mx.repeat(key, repeats=4, axis=1),
+        mx.repeat(value, repeats=4, axis=1),
+        scale=16 ** -0.5,
+        mask="causal",
+    )
+    mx.eval(native, explicit)
+
+    assert tuple(native.shape) == tuple(explicit.shape) == (2, 8, 7, 16)
+    assert bool(mx.allclose(native, explicit, atol=1e-5, rtol=1e-5))
+
+
 def test_prefix_lm_mask_is_bidirectional_only_inside_source_partition() -> None:
     import mlx.core as mx
     import mlx.nn as nn

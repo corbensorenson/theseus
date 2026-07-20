@@ -310,7 +310,7 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "3d0474e44dc8c2f11387b5a1ec52da070ce1464c1a07138e713af2f9dda3792c"
+          "sha256": "c5e75f00eb06fd65ec13f1ab585a5bccf8e76e862927bf13d0fa43beb6c45bf2"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -510,7 +510,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "85d664f62066c1fd258980243e2ad3d2c31df61810bc5c213d1cdcee9b1439e0"
+          "sha256": "f9668a4475a7df3f9726e14771da7980f528bf673b591a63c8593f61a9c7eebd"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -538,7 +538,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "0cb480e73a0037bdb35a0932bb7bb9372efaba27218bc20aa74931726293814f"
+          "sha256": "c1d6ea8c66d0262ac91561915517807894baa10d494423e2cabc66a40d1bb5ff"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",

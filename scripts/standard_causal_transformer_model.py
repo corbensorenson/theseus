@@ -434,10 +434,8 @@ def build_model(
                         mask = role_bias
                     else:
                         mask = mask[None, None, :, :] + role_bias
-            if config.num_kv_heads != config.num_heads:
-                repeats = config.num_heads // config.num_kv_heads
-                attention_key = mx.repeat(attention_key, repeats=repeats, axis=1)
-                attention_value = mx.repeat(attention_value, repeats=repeats, axis=1)
+            # MLX executes grouped-query attention directly. Pre-tiling KV heads
+            # multiplies memory traffic and defeats the native GQA kernel.
             attended = mx.fast.scaled_dot_product_attention(
                 query,
                 attention_key,
@@ -475,10 +473,6 @@ def build_model(
             value = self.v_proj(memory).reshape(
                 batch, slots, config.num_kv_heads, head_dim
             ).transpose(0, 2, 1, 3)
-            if config.num_kv_heads != config.num_heads:
-                repeats = config.num_heads // config.num_kv_heads
-                key = mx.repeat(key, repeats=repeats, axis=1)
-                value = mx.repeat(value, repeats=repeats, axis=1)
             attended = mx.fast.scaled_dot_product_attention(
                 query,
                 key,
