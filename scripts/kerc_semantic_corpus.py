@@ -27,6 +27,7 @@ import pyarrow.parquet as pq
 
 from kernel_english_protocol import (
     ANSWER_DECISION_POLICY,
+    PACKET_VERSION,
     SEMANTIC_SUPERVISION_POLICY,
     TRAINING_OBJECTIVES,
     TRAINING_RECORD_POLICY,
@@ -71,9 +72,12 @@ from kerc_content_cache import (
     publish_receipt,
 )
 from kerc_residual_economics import (
+    UNIT_PACKET_POLICY,
+    UNIT_PACKET_VERSION,
     build_structural_rate_distortion_allocation,
     calibrate_allocation_lambda,
     reallocate_structural_receipt,
+    residual_unit_allocation_receipt,
     residual_wire_bytes,
 )
 from kerc_scoped_semantics import (
@@ -100,6 +104,19 @@ DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 GRAF = "{http://www.xces.org/ns/GrAF/1.0/}"
 XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 PRODUCER_POLICY = "project_theseus_kerc_semantic_corpus_producer_v1"
+PACKET_CACHE_ABI_IDENTITY = stable_hash(
+    {
+        "packet_version": PACKET_VERSION,
+        "unit_packet_policy": UNIT_PACKET_POLICY,
+        "unit_packet_version": UNIT_PACKET_VERSION,
+        "kernel_protocol_sha256": hashlib.sha256(
+            (ROOT / "scripts" / "kernel_english_protocol.py").read_bytes()
+        ).hexdigest(),
+        "residual_economics_sha256": hashlib.sha256(
+            (ROOT / "scripts" / "kerc_residual_economics.py").read_bytes()
+        ).hexdigest(),
+    }
+)
 MASC_ENTITY_TYPES = {
     "person": "PERSON",
     "location": "PLACE",
@@ -266,6 +283,7 @@ def cached_candidate_record(
         dependencies={
             "family": family,
             "family_identity": family_identity,
+            "packet_cache_abi_identity": PACKET_CACHE_ABI_IDENTITY,
             "inputs": inputs,
         },
     )
@@ -527,10 +545,14 @@ def residual_supervision(
         "exact": 3 if residual["exact_object_handles"] else 0,
     }
     finalized = isinstance(importance, dict) and isinstance(allocation, dict)
+    unit_allocation = residual_unit_allocation_receipt(residual["unit_packet"])
     return {
         "policy": "project_theseus_kerc_residual_supervision_v1",
         "labels_by_channel": labels,
         "record_fidelity_label": fidelity_labels[residual["fidelity"]],
+        "record_fidelity_label_training_authority": False,
+        "packet_wide_fidelity_drives_training": False,
+        "residual_unit_allocation": unit_allocation,
         "allocation_target_authority": (
             "measured_structural_rate_distortion_with_calibrated_source_visible_importance"
             if finalized
@@ -561,6 +583,9 @@ def residual_supervision(
                 "allocation_sha256": (
                     allocation.get("allocation_sha256") if finalized else None
                 ),
+                "residual_unit_allocation_sha256": unit_allocation[
+                    "receipt_sha256"
+                ],
             }
         ),
     }
@@ -3148,9 +3173,8 @@ def gum_source_grounded_scope_projection(
         {"role": role, "target_id": proposition_id[int(unit["edu_id"])]}
         for role, unit in role_units
     ]
-    endpoint_concept = lambda unit: (
-        f"erst.edu.{annotation['document_id'].lower()}.{int(unit['edu_id'])}"
-    )
+    def endpoint_concept(unit: dict[str, Any]) -> str:
+        return f"erst.edu.{annotation['document_id'].lower()}.{int(unit['edu_id'])}"
     answer_arguments = [
         {"role": role, "value": {"type": "concept", "value": endpoint_concept(unit)}}
         for role, unit in role_units

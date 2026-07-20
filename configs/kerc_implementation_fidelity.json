@@ -36,7 +36,7 @@
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",
-      "sha256": "baff9261a1b75e6b513a7ef96eaeaaec553b515939a545461bf9718e460e62e6"
+      "sha256": "02ef332e030bf7f3a9db873ce28a4aec18f2ce4d73477fd9414c18ce9df63246"
     },
     {
       "path": "scripts/kerc_autoregressive_qualification.py",
@@ -64,11 +64,11 @@
     },
     {
       "path": "scripts/kerc_semantic_corpus.py",
-      "sha256": "1deeb3e6c602f72120f693c94d77ed077cc7de0bd29542c5eeb13327880d1ffa"
+      "sha256": "bef41105a52479d485aef076bccb4a77c00b504052f7d6d166701a82c65eb9c7"
     },
     {
       "path": "scripts/kerc_semantic_corpus_verify.py",
-      "sha256": "7dafc00b80286935e040aba4162477eac6b087ef290defcb62ebb84532f6492f"
+      "sha256": "455166c2ce7249c262de7db0932fe8960cf734c6e54ea08a96d42f1d0af3c8c5"
     },
     {
       "path": "configs/kerc_semantic_verifier_runtime.json",
@@ -144,7 +144,7 @@
     },
     {
       "path": "scripts/kerc_residual_economics.py",
-      "sha256": "d3127a7ab1ae09de5a693d26664fc42dbad47e68852e1fefcdc40588118b563c"
+      "sha256": "1ff9bcc89340aa5487485167e6dc47eab8767068a9e7a8b706de8ca55eca53cb"
     },
     {
       "path": "scripts/standard_causal_transformer_model.py",
@@ -152,15 +152,15 @@
     },
     {
       "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
-      "sha256": "12676ede7d7fee375898ce2bb2e866768655a653052ef717241450fb339f44e2"
+      "sha256": "9a9334f32d97ef500bf29e3b1d46e4ad94c1a174c16513702191d2ba94627021"
     },
     {
       "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
-      "sha256": "b9f0fc0098d2088c902c7622d1d63d3c4b8ec79410f0dbdcf418700713ed694a"
+      "sha256": "f9cbd0ee81d5c8d6663c8580e575148ad225fbc600e585b5b0969a2c34a27802"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification.json",
-      "sha256": "08cfcd54d0b745fb690459ef41c3bc0233c3b96a56fbdcc7944697fab99f6f3d"
+      "sha256": "d15a3cef75796bccdd82ca6edf3f602e7bae84d402f920fb82d1c8318acc6022"
     },
     {
       "path": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
@@ -180,11 +180,11 @@
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
-      "sha256": "87db1c759082e48806f9788c409f150e3900c3e4f1df90e2a0d83d6dc9884475"
+      "sha256": "6a6113d7c94ba0c4dd4189faeacbdf92dceb2bc558d3cdf3fb96355e21d4d956"
     },
     {
       "path": "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl",
-      "sha256": "b34ff60d0d55e224b2d0caf76174c9f50f68636a8518a6c92154bbe662402ef2"
+      "sha256": "34a103b2013c9ae9f4c2e711391dab0920fb6d6f5cda33a4f33417e0b41086b2"
     }
   ],
   "observed_corpus_contract": {
@@ -199,7 +199,7 @@
     "nonempty_macro_registry_count": 0,
     "nonempty_interaction_global_dictionary_count": 0,
     "partial_disposition_count": 0,
-    "per_unit_allocation_receipt_count": 0,
+    "per_unit_allocation_receipt_count": 229852,
     "interaction_presence_label_with_empty_global_count": 6809
   },
   "incremental_replay_contract": {
@@ -287,6 +287,7 @@
     "kerc.independent_roundtrip_verifier",
     "kerc.exact_conditional_codec",
     "kerc.packet_level_structural_allocation",
+    "kerc.per_unit_structural_packet",
     "kerc.learned_per_unit_allocator",
     "kerc.interaction_amortization",
     "kerc.coordinated_learned_architecture",
@@ -403,6 +404,16 @@
       "current_finding": "Four packet-level fidelity candidates are selected using measured encoded bits, omitted packet-owned residual mass, calibrated source-visible structural importance, and protected minima.",
       "claim_ceiling": "Faithful implementation of this narrow packet-level structural controller only; its distortion is not semantic utility and it is not the paper's learned per-unit allocator.",
       "next_evidence": "Keep as a matched baseline for the per-unit learned constrained policy."
+    },
+    {
+      "id": "kerc.per_unit_structural_packet",
+      "paper_sections": ["7.6", "9.7", "10.11"],
+      "status": "faithful",
+      "implementation_refs": ["scripts/kerc_residual_economics.py", "scripts/kernel_english_protocol.py", "scripts/kerc_semantic_corpus.py", "scripts/kerc_semantic_corpus_verify.py"],
+      "evidence_refs": ["tests/test_kerc_residual_economics.py", "tests/test_kernel_english_protocol.py", "tests/test_kerc_semantic_corpus.py", "reports/runtime/kerc_semantic_corpus_verification.json"],
+      "current_finding": "KPP-1.2 materializes 229,852 stable residual units across 27,941 independently replayed records: 27,941 interaction entries, 49,478 segment/frame units, 115,180 token residues, 7,180 concept realizations, and 30,073 exact objects. Every unit has four real typed payload candidates, exact dictionary-conditioned codec receipts, a compact 13-dimension structural-distortion vector, a per-unit hard minimum and ceiling, a separately typed source residual and render plan, and an independently recomputed selection. Causal conditioning excludes the priced unit while preserving strictly higher residual state. KPP-1.1 migration preserves every legacy payload field and rejects tampering or unknown versions. The cold producer is GREEN in 3,585.081 seconds, exact warm replay is 3.78 seconds, the four-worker independent verifier is GREEN in 1,974.212 seconds, and exact verifier replay is 12.14 seconds.",
+      "claim_ceiling": "Faithful K2 unit identity, payload, codec-cost, structural-constraint, selection, migration, cache-invalidation, and replay mechanics only. Structural distortion is not semantic or downstream utility; the selector is not learned or intervention-sensitive; no compression, efficiency, capability, or KERC-thesis win is claimed.",
+      "next_evidence": "K3 must derive source-disjoint intervention-sensitive targets with independent semantic and downstream evaluators, then train and calibrate the per-unit policy against structural, packet-wide, token-only, global-only, and oracle controls."
     },
     {
       "id": "kerc.learned_per_unit_allocator",

@@ -22,6 +22,7 @@ import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
+import zlib
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -4039,6 +4040,407 @@ def producer_finalization_identity_from_source() -> dict[str, Any]:
     )
 
 
+def _unit_pointer_token(value: Any) -> str:
+    return str(value).replace("~", "~0").replace("/", "~1")
+
+
+_UNIT_FIDELITIES = ("semantic", "faithful", "lexical", "exact")
+_UNIT_DISTORTION_DIMENSIONS = (
+    "semantic_proposition",
+    "entity_identity",
+    "value_unit_precision",
+    "scope",
+    "polarity",
+    "modality",
+    "temporal",
+    "causal",
+    "attribution",
+    "quote",
+    "terminology",
+    "style",
+    "byte",
+)
+_UNIT_DIMENSION_TERMS = {
+    "semantic_proposition": ("relation", "frame", "tag", "role", "operator"),
+    "entity_identity": ("entity", "alias", "identity", "handle", "person", "place"),
+    "value_unit_precision": ("number", "value", "unit", "precision", "money", "percent"),
+    "scope": ("scope", "quantifier", "target_span", "source_span"),
+    "polarity": ("polarity", "negat"),
+    "modality": ("modal", "possible", "required", "permitted", "forbidden"),
+    "temporal": ("time", "date", "duration", "temporal", "before", "after"),
+    "causal": ("cause", "causal", "result", "purpose"),
+    "attribution": ("source", "speaker", "author", "attitude", "attribution"),
+    "quote": ("quote", "code", "formula", "exact_text"),
+    "terminology": ("term", "lexical", "tag", "realization", "alias"),
+    "style": ("style", "format", "dialect", "register", "capital", "punct"),
+    "byte": ("byte", "inline", "encoding", "content_ref"),
+}
+_UNIT_PROVENANCE_KEYS = {
+    "object_sha256",
+    "provenance",
+    "provenance_hash",
+    "record_sha256",
+    "source_annotation_sha256",
+    "source_row_sha256",
+    "stable_identity",
+}
+_UNIT_EXACT_CONTENT_KEYS = {
+    "bytes",
+    "content_ref",
+    "inline_bytes_b64",
+    "value",
+}
+_UNIT_LEXICAL_KEYS = {
+    "aliases",
+    "capitalization",
+    "formatting",
+    "lexical_unit",
+    "morphology",
+    "realization",
+    "style",
+    "tag",
+    "terminology",
+}
+_UNIT_DISTORTION_CEILINGS = {
+    "interaction_entry": 0.5,
+    "segment_frame": 0.5,
+    "token_residue": 0.5,
+    "concept_realization": 0.25,
+    "exact_object": 0.0,
+}
+
+
+def _independent_unit_projection(value: Any, *, fidelity: str, unit_kind: str) -> Any:
+    if fidelity == "semantic":
+        return None
+    if fidelity == "exact":
+        return copy.deepcopy(value)
+
+    def project(current: Any, key: str = "") -> Any:
+        if isinstance(current, dict):
+            result = {}
+            for raw_key in sorted(current):
+                name = str(raw_key)
+                if name in _UNIT_PROVENANCE_KEYS or name.endswith("_sha256"):
+                    continue
+                if name in _UNIT_EXACT_CONTENT_KEYS:
+                    continue
+                if fidelity == "faithful" and name in _UNIT_LEXICAL_KEYS:
+                    if unit_kind == "token_residue" and name == "tag":
+                        result[name] = str(current[name]).split(":", 1)[0]
+                    continue
+                result[name] = project(current[name], name)
+            return result
+        if isinstance(current, list):
+            return [project(item, key) for item in current]
+        return copy.deepcopy(current)
+
+    return project(value)
+
+
+def _independent_unit_leaf_rows(
+    value: Any, path: tuple[str, ...] = ()
+) -> list[tuple[str, Any]]:
+    if isinstance(value, dict):
+        return [
+            row
+            for key in sorted(value)
+            for row in _independent_unit_leaf_rows(value[key], (*path, str(key)))
+        ]
+    if isinstance(value, (list, tuple)):
+        return [
+            row
+            for index, item in enumerate(value)
+            for row in _independent_unit_leaf_rows(item, (*path, str(index)))
+        ]
+    pointer = "/" + "/".join(_unit_pointer_token(part) for part in path)
+    return [(pointer, value)]
+
+
+def _independent_unit_distortion(
+    source: Any, candidate: Any
+) -> tuple[list[float | None], float]:
+    source_rows = dict(_independent_unit_leaf_rows(source))
+    candidate_rows = dict(_independent_unit_leaf_rows(candidate))
+    retained = sum(
+        1 for path, value in source_rows.items() if candidate_rows.get(path) == value
+    )
+    structural_loss = (max(1, len(source_rows)) - retained) / max(1, len(source_rows))
+    searchable = {
+        path: f"{path} {value}".lower() for path, value in source_rows.items()
+    }
+    vector: list[float | None] = []
+    for dimension in _UNIT_DISTORTION_DIMENSIONS:
+        terms = _UNIT_DIMENSION_TERMS[dimension]
+        relevant = [
+            path for path, text in searchable.items() if any(term in text for term in terms)
+        ]
+        if not relevant:
+            vector.append(None)
+            continue
+        preserved = sum(
+            1 for path in relevant if candidate_rows.get(path) == source_rows[path]
+        )
+        vector.append((len(relevant) - preserved) / len(relevant))
+    return vector, structural_loss
+
+
+def _independent_unit_minimum(kind: str, path: str, payload: Any) -> str:
+    if kind == "exact_object":
+        row = payload if isinstance(payload, dict) else {}
+        object_type = str(row.get("object_type") or "").upper()
+        copy_policy = str(row.get("copy_policy") or "").upper()
+        if copy_policy == "EXACT" or object_type in {
+            "CODE",
+            "EMAIL",
+            "FILE_PATH",
+            "FORMULA",
+            "HASH",
+            "MARKUP",
+            "QUOTE",
+            "URL",
+            "EXACT_TEXT",
+        }:
+            return "exact"
+        if copy_policy == "VALUE_AND_STYLE":
+            return "lexical"
+        if copy_policy in {"NORMALIZED_VALUE", "REFERENCE_ONLY"}:
+            return "faithful"
+    if kind == "token_residue" and isinstance(payload, dict):
+        if payload.get("authority") == "licensed_manual_annotation":
+            return "faithful"
+    if kind in {"concept_realization", "segment_frame"}:
+        return "faithful"
+    if kind == "interaction_entry":
+        lowered = path.lower()
+        if any(term in lowered for term in ("security", "privacy", "access_policy")):
+            return "exact"
+        if any(term in lowered for term in ("terminology", "alias", "unit")):
+            return "faithful"
+    return "semantic"
+
+
+def _independent_unit_candidate(
+    *, payload: Any, fidelity: str, unit_kind: str, conditioning: bytes, minimum: str
+) -> dict[str, Any]:
+    projected = _independent_unit_projection(
+        payload, fidelity=fidelity, unit_kind=unit_kind
+    )
+    wire = residual_wire_bytes(projected)
+    dictionary = conditioning[-32768:]
+    compressor = zlib.compressobj(level=9, wbits=-15, zdict=dictionary)
+    encoded = compressor.compress(wire) + compressor.flush()
+    decompressor = zlib.decompressobj(wbits=-15, zdict=dictionary)
+    decoded = decompressor.decompress(encoded) + decompressor.flush()
+    if decoded != wire:
+        raise ValueError("candidate residual-unit codec roundtrip mismatch")
+    codec_receipt = {
+        "policy": "project_theseus_kerc_unit_dictionary_deflate_codec_v1",
+        "conditioning_sha256": "sha256:" + hashlib.sha256(conditioning).hexdigest(),
+        "payload_sha256": "sha256:" + hashlib.sha256(wire).hexdigest(),
+        "encoded_sha256": "sha256:" + hashlib.sha256(encoded).hexdigest(),
+        "encoded_bits": len(encoded) * 8,
+        "uncompressed_bits": len(wire) * 8,
+        "exact_roundtrip": True,
+    }
+    codec_receipt["receipt_sha256"] = stable_hash(codec_receipt)
+    vector, structural_loss = _independent_unit_distortion(payload, projected)
+    return {
+        "fidelity": fidelity,
+        "payload_sha256": codec_receipt["payload_sha256"],
+        "encoded_bits": codec_receipt["encoded_bits"],
+        "uncompressed_bits": codec_receipt["uncompressed_bits"],
+        "codec_receipt_sha256": codec_receipt["receipt_sha256"],
+        "distortion_vector": vector,
+        "structural_loss": structural_loss,
+        "hard_blocked": _UNIT_FIDELITIES.index(fidelity)
+        < _UNIT_FIDELITIES.index(minimum),
+    }
+
+
+def _independent_higher_state_for_unit(
+    *, kind: str, global_state: dict[str, Any], segment: dict[str, Any]
+) -> dict[str, Any]:
+    if kind == "interaction_entry":
+        return {}
+    if kind == "segment_frame":
+        return {"interaction": global_state}
+    return {"interaction": global_state, "segment": segment}
+
+
+def independently_audit_residual_unit_packet(record: dict[str, Any]) -> dict[str, Any]:
+    packet = record.get("kernel_packet") or {}
+    residual = packet.get("residual") or {}
+    unit_packet = residual.get("unit_packet") or {}
+    core = {
+        key: copy.deepcopy(value)
+        for key, value in unit_packet.items()
+        if key != "packet_sha256"
+    }
+    if (
+        unit_packet.get("policy") != "project_theseus_kerc_residual_unit_packet_v1"
+        or unit_packet.get("schema_version") != "KERC-RU-1.0"
+        or unit_packet.get("packet_sha256") != stable_hash(core)
+        or unit_packet.get("packet_wide_fidelity_drives_training") is not False
+        or unit_packet.get("learned_allocator_claimed") is not False
+        or tuple(unit_packet.get("distortion_dimensions") or ())
+        != _UNIT_DISTORTION_DIMENSIONS
+        or unit_packet.get("unit_candidate_codec")
+        != "dictionary_conditioned_raw_deflate_level9_exact_v1"
+        or unit_packet.get("conditioning_excludes_current_unit") is not True
+        or unit_packet.get("candidate_conditioning")
+        != "kernel_plus_strictly_causally_prior_residual_state_plus_unit_identity"
+    ):
+        raise ValueError("candidate residual-unit packet identity or authority mismatch")
+
+    expected: list[tuple[str, str, Any]] = []
+    global_state = (record.get("hrl_state") or {}).get("global") or {}
+    for key in sorted(global_state):
+        value = global_state[key]
+        if value not in ({}, [], None, ""):
+            expected.append(
+                ("interaction_entry", f"/interaction/{_unit_pointer_token(key)}", value)
+            )
+    segment = residual.get("segment_frame") or {}
+    if segment:
+        handled = set()
+        for collection in ("frames", "edges", "units"):
+            values = segment.get(collection)
+            if isinstance(values, list):
+                handled.add(collection)
+                expected.extend(
+                    (
+                        "segment_frame",
+                        f"/segment/{collection}/{index}",
+                        value,
+                    )
+                    for index, value in enumerate(values)
+                )
+        remainder = {
+            key: copy.deepcopy(value)
+            for key, value in segment.items()
+            if key not in handled
+        }
+        if remainder or not handled:
+            expected.append(("segment_frame", "/segment/context", remainder or segment))
+    expected.extend(
+        ("token_residue", f"/token/{index}", value)
+        for index, value in enumerate(residual.get("token_tags") or [])
+    )
+    for handle, capsule in sorted((packet.get("concept_capsules") or {}).items()):
+        if isinstance(capsule, dict) and any(
+            key in capsule
+            for key in (
+                "aliases",
+                "lexical_unit",
+                "preferred_realization",
+                "realization",
+                "source_identity_values",
+                "stable_identity",
+            )
+        ):
+            expected.append(
+                ("concept_realization", f"/concept/{_unit_pointer_token(handle)}", capsule)
+            )
+    expected.extend(
+        ("exact_object", f"/exact/{_unit_pointer_token(handle)}", value)
+        for handle, value in sorted((packet.get("protected_objects") or {}).items())
+    )
+
+    source_identity = str((packet.get("source") or {}).get("record_sha256") or "")
+    units = unit_packet.get("units") if isinstance(unit_packet.get("units"), list) else []
+    if len(units) != len(expected):
+        raise ValueError("candidate residual-unit inventory size mismatch")
+    kernel_wire = residual_wire_bytes(packet.get("program") or {})
+    seen = set()
+    for observed, (kind, path, payload) in zip(units, expected):
+        identity = {
+            "source_record_sha256": source_identity,
+            "unit_kind": kind,
+            "source_path": path,
+        }
+        expected_id = "ru:" + stable_hash(identity).split(":", 1)[1][:24]
+        source_wire = residual_wire_bytes(payload)
+        source_payload_sha256 = "sha256:" + hashlib.sha256(source_wire).hexdigest()
+        if (
+            observed.get("unit_id") != expected_id
+            or observed.get("unit_kind") != kind
+            or observed.get("source_path") != path
+            or (observed.get("source_residual") or {}).get("payload_sha256")
+            != source_payload_sha256
+            or expected_id in seen
+        ):
+            raise ValueError("candidate residual-unit identity or source binding mismatch")
+        seen.add(expected_id)
+        candidates = observed.get("candidates") or []
+        minimum = _independent_unit_minimum(kind, path, payload)
+        conditioning = kernel_wire + b"\x00" + residual_wire_bytes(
+            {
+                "higher_state": _independent_higher_state_for_unit(
+                    kind=kind, global_state=global_state, segment=segment
+                ),
+                "source_path": path,
+                "unit_kind": kind,
+            }
+        )
+        expected_candidates = [
+            _independent_unit_candidate(
+                payload=payload,
+                fidelity=fidelity,
+                unit_kind=kind,
+                conditioning=conditioning,
+                minimum=minimum,
+            )
+            for fidelity in _UNIT_FIDELITIES
+        ]
+        if candidates != expected_candidates:
+            raise ValueError("candidate residual-unit fidelity inventory mismatch")
+        ceiling = _UNIT_DISTORTION_CEILINGS[kind]
+        admissible = [
+            row
+            for row in expected_candidates
+            if not row["hard_blocked"] and row["structural_loss"] <= ceiling
+        ]
+        selected = min(
+            admissible,
+            key=lambda row: (
+                row["encoded_bits"],
+                _UNIT_FIDELITIES.index(row["fidelity"]),
+            ),
+        )
+        if (
+            observed.get("minimum_fidelity") != minimum
+            or observed.get("maximum_structural_distortion") != ceiling
+            or observed.get("selected_fidelity") != selected["fidelity"]
+            or observed.get("selected_payload_sha256") != selected["payload_sha256"]
+            or int(selected.get("encoded_bits", -1))
+            != int(observed.get("selected_encoded_bits", -2))
+        ):
+            raise ValueError("candidate residual-unit selection mismatch")
+    supervision = record.get("residual_supervision") or {}
+    receipt = supervision.get("residual_unit_allocation") or {}
+    if (
+        receipt.get("unit_packet_sha256") != unit_packet.get("packet_sha256")
+        or receipt.get("packet_wide_fidelity_drives_training") is not False
+        or receipt.get("learned_allocator_claimed") is not False
+        or [row.get("unit_id") for row in receipt.get("unit_allocations") or []]
+        != [row.get("unit_id") for row in units]
+    ):
+        raise ValueError("candidate residual-unit allocation receipt mismatch")
+    return {
+        "policy": "project_theseus_kerc_independent_residual_unit_audit_v1",
+        "unit_count": len(units),
+        "unit_counts_by_kind": dict(Counter(kind for kind, _path, _payload in expected)),
+        "unit_packet_sha256": unit_packet["packet_sha256"],
+        "source_and_render_plan_separated": unit_packet.get(
+            "source_residual_and_render_plan_separated"
+        )
+        is True,
+        "packet_wide_fidelity_drives_training": False,
+        "learned_allocator_claimed": False,
+    }
+
+
 def verify_candidate_common(
     *,
     record: dict[str, Any],
@@ -4049,6 +4451,8 @@ def verify_candidate_common(
     producer_family_identity: str,
     verifier_route_identity: str,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    replay = copy.deepcopy(replay)
+    replay["residual_unit_packet"] = independently_audit_residual_unit_packet(record)
     supervision = record.get("residual_supervision") or {}
     if supervision.get("importance") != expected_importance:
         raise ValueError("candidate importance receipt replay mismatch")

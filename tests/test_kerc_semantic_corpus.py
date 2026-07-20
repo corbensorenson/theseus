@@ -19,6 +19,7 @@ import kerc_semantic_corpus_verify as verifier  # noqa: E402
 import kernel_english_protocol as kernel  # noqa: E402
 from kerc_content_cache import ContentObjectCache  # noqa: E402
 from kerc_residual_economics import (  # noqa: E402
+    build_residual_unit_packet,
     build_structural_rate_distortion_allocation,
 )
 import vcm_semantic_memory as memory  # noqa: E402
@@ -87,6 +88,53 @@ def test_candidate_record_cache_is_content_and_family_identity_bound(
     assert changed["semantic_supervision"]["producer_artifact_sha256"] != first[
         "semantic_supervision"
     ]["producer_artifact_sha256"]
+    assert build_count == 2
+
+
+def test_candidate_record_cache_key_binds_packet_implementation_identity(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    build_count = 0
+
+    def build() -> dict:
+        nonlocal build_count
+        build_count += 1
+        return {
+            "policy": kernel.TRAINING_RECORD_POLICY,
+            "provenance": {"source_id": "fixture:packet-abi"},
+            "semantic_supervision": {
+                "producer_artifact_sha256": "sha256:" + "5" * 64
+            },
+            "residual_supervision": {},
+            "verification_receipt": {"accepted": False},
+            "external_inference": False,
+            "fallback_return_count": 0,
+            "template_credit": 0,
+        }
+
+    with ContentObjectCache(
+        tmp_path / "candidate.sqlite3", namespace="fixture:candidate_record_v1"
+    ) as store:
+        common = {
+            "store": store,
+            "role": "fixture",
+            "layer": "candidate_record_v1",
+            "family": "fixture_family",
+            "family_identity": "sha256:" + "5" * 64,
+            "inputs": {"row": {"value": 1}},
+            "expected_source_id": "fixture:packet-abi",
+            "refresh_cache": False,
+            "build": build,
+        }
+        _, first_hit = producer.cached_candidate_record(**common)
+        _, second_hit = producer.cached_candidate_record(**common)
+        monkeypatch.setattr(
+            producer, "PACKET_CACHE_ABI_IDENTITY", "sha256:" + "6" * 64
+        )
+        _, changed_hit = producer.cached_candidate_record(**common)
+    assert first_hit is False
+    assert second_hit is True
+    assert changed_hit is False
     assert build_count == 2
 
 
@@ -1637,17 +1685,33 @@ def test_masc_mpqa_relation_replays_complete_graph_and_rejects_tampering() -> No
 
 
 def test_residual_supervision_matches_packet_mechanics() -> None:
+    state = memory.create_hierarchical_residual_state(
+        "fixture", scope=producer.scope("fixture")
+    )
     packet = {
         "residual": {
             "fidelity": "exact",
             "segment_frame": {},
             "token_tags": [],
             "exact_object_handles": ["@E1"],
+            "unit_packet": build_residual_unit_packet(
+                source_record_sha256="sha256:" + "1" * 64,
+                residual_mode="SOURCE_RECONSTRUCTION",
+                kernel_program={"nodes": []},
+                global_state=state["global"],
+                segment_residual={},
+                token_residuals=[],
+                concept_capsules={},
+                exact_objects={
+                    "@E1": {
+                        "object_type": "PERSON",
+                        "copy_policy": "EXACT",
+                        "inline_bytes_b64": "RXhhY3Q=",
+                    }
+                },
+            ),
         }
     }
-    state = memory.create_hierarchical_residual_state(
-        "fixture", scope=producer.scope("fixture")
-    )
     supervision = producer.residual_supervision(
         "fixture", packet=packet, hrl_state=state
     )

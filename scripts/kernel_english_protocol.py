@@ -31,9 +31,14 @@ from kerc_residual_economics import (
     ALLOCATION_POLICY,
     CODEC_POLICY,
     PROMOTION_POLICY,
+    UNIT_PACKET_POLICY,
+    UNIT_PACKET_VERSION,
     ResidualEconomicsFault,
     build_residual_codec,
+    build_residual_unit_packet,
     validate_residual_codec,
+    validate_residual_unit_packet,
+    validate_residual_unit_allocation_receipt,
     validate_structural_rate_distortion_allocation,
 )
 from vcm_semantic_memory import (
@@ -46,7 +51,8 @@ from vcm_semantic_memory import (
 
 POLICY = "project_theseus_kernel_packet_protocol_v1"
 KERNEL_VERSION = "KE-1.0"
-PACKET_VERSION = "KPP-1.1"
+PACKET_VERSION = "KPP-1.2"
+LEGACY_PACKET_VERSION = "KPP-1.1"
 HRL_VERSION = "HRL-1.0"
 CODEBOOK_VERSION = "KE-CODEBOOK-1.0"
 SERIALIZATION_VERSION = "KE-SERIALIZATION-2.0"
@@ -356,6 +362,9 @@ def kernel_training_contract() -> dict[str, Any]:
             "codec_channels": list(KERC_RESIDUAL_CHANNELS),
             "fidelity_target_authority": "independently_measured_rate_distortion_required",
             "bootstrap_fidelity_labels_are_optimality_evidence": False,
+            "unit_packet_policy": UNIT_PACKET_POLICY,
+            "unit_packet_version": UNIT_PACKET_VERSION,
+            "packet_wide_fidelity_drives_training": False,
         },
         "verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
         "semantic_supervision": {
@@ -1624,7 +1633,10 @@ def learned_residual_view(
         )
     return {
         "mode": str(residual.get("mode") or ""),
-        "fidelity": str(residual.get("fidelity") or ""),
+        "unit_fidelity": [
+            [str(unit.get("unit_id") or ""), str(unit.get("selected_fidelity") or "")]
+            for unit in (residual.get("unit_packet") or {}).get("units") or []
+        ],
         "interaction": interaction,
         "segment": learned_segment,
         "tokens": compiled_tags,
@@ -1641,7 +1653,14 @@ def validate_learned_residual_view(
 ) -> dict[str, Any]:
     """Validate the model-emitted residual ABI without granting evidence authority."""
 
-    required = {"mode", "fidelity", "interaction", "segment", "tokens", "exact_handles"}
+    required = {
+        "mode",
+        "unit_fidelity",
+        "interaction",
+        "segment",
+        "tokens",
+        "exact_handles",
+    }
     if not isinstance(view, dict) or set(view) != required:
         raise KernelProtocolFault(
             "KERC_LEARNED_RESIDUAL_SCHEMA_INVALID",
@@ -1650,12 +1669,28 @@ def validate_learned_residual_view(
         )
     if (
         view["mode"] != "SOURCE_RECONSTRUCTION"
-        or view["fidelity"] not in FIDELITY_MODES
     ):
         raise KernelProtocolFault(
             "KERC_LEARNED_RESIDUAL_POLICY_INVALID",
-            canonical_json({"mode": view["mode"], "fidelity": view["fidelity"]}),
+            canonical_json({"mode": view["mode"]}),
             path="compiler_output.residual",
+        )
+    unit_fidelity = view["unit_fidelity"]
+    if (
+        not isinstance(unit_fidelity, list)
+        or any(
+            not isinstance(row, list)
+            or len(row) != 2
+            or not re.fullmatch(r"ru:[0-9a-f]{24}", str(row[0]))
+            or str(row[1]) not in FIDELITY_MODES
+            for row in unit_fidelity
+        )
+        or len({str(row[0]) for row in unit_fidelity}) != len(unit_fidelity)
+    ):
+        raise KernelProtocolFault(
+            "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+            canonical_json(unit_fidelity),
+            path="compiler_output.residual.unit_fidelity",
         )
     expected_interaction = learned_interaction_residual_view(hrl_state)
     if view["interaction"] != expected_interaction:
@@ -2742,6 +2777,24 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                     int(record["residual_supervision"]["labels_by_channel"][channel])
                     for channel in KERC_RESIDUAL_CHANNELS
                 ],
+                "kerc_residual_unit_ids": [
+                    str(row["unit_id"])
+                    for row in record["residual_supervision"][
+                        "residual_unit_allocation"
+                    ]["unit_allocations"]
+                ],
+                "kerc_residual_unit_fidelity_labels": [
+                    int(
+                        KERC_FIDELITY_LABELS[str(row["selected_fidelity"])]
+                    )
+                    for row in record["residual_supervision"][
+                        "residual_unit_allocation"
+                    ]["unit_allocations"]
+                ],
+                "kerc_residual_unit_allocator_loss_enabled": False,
+                "kerc_residual_unit_target_authority": (
+                    "k2_structural_baseline_only_not_intervention_or_semantic_utility"
+                ),
                 "kerc_verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
                 "kerc_verifier_positive_labels": [1] * len(KERC_VERIFIER_DIMENSIONS),
                 "kerc_verifier_negative": verifier_negative,
@@ -3247,6 +3300,30 @@ def _validate_residual_supervision(
             canonical_json(supervision),
             path="record.residual_supervision.record_fidelity_label",
         )
+    if (
+        supervision.get("record_fidelity_label_training_authority") is not False
+        or supervision.get("packet_wide_fidelity_drives_training") is not False
+    ):
+        raise KernelProtocolFault(
+            "KERC_RESIDUAL_PACKET_WIDE_TRAINING_AUTHORITY_FORBIDDEN",
+            canonical_json(supervision),
+            path="record.residual_supervision",
+        )
+    try:
+        validate_residual_unit_allocation_receipt(
+            supervision.get("residual_unit_allocation")
+            if isinstance(supervision.get("residual_unit_allocation"), dict)
+            else {},
+            unit_packet=residual.get("unit_packet")
+            if isinstance(residual.get("unit_packet"), dict)
+            else {},
+        )
+    except ResidualEconomicsFault as exc:
+        raise KernelProtocolFault(
+            exc.code,
+            exc.detail,
+            path="record.residual_supervision.residual_unit_allocation",
+        ) from exc
     if residual.get("exact_object_handles") and labels["exact"] != 3:
         raise KernelProtocolFault(
             "KERC_RESIDUAL_SUPERVISION_EXACT_OBJECT_UNDERSPECIFIED",
@@ -5319,6 +5396,16 @@ def build_kernel_packet(
         token_residuals=normalized_tags,
         exact_objects=protected["protected_objects"],
     )
+    residual["unit_packet"] = build_residual_unit_packet(
+        source_record_sha256=source_record["record_sha256"],
+        residual_mode=residual_mode,
+        kernel_program=validated["canonical_program"],
+        global_state=hrl_state["global"],
+        segment_residual=normalized_segment,
+        token_residuals=normalized_tags,
+        concept_capsules=capsules,
+        exact_objects=protected["protected_objects"],
+    )
     packet_core = {
         "policy": POLICY,
         "packet_version": PACKET_VERSION,
@@ -5373,19 +5460,109 @@ def revise_kernel_packet_fidelity(
 ) -> dict[str, Any]:
     """Change only the declared residual fidelity and rebind packet identities."""
 
-    validate_kernel_packet(packet, local_hrl_state=local_hrl_state)
     if fidelity not in FIDELITY_MODES:
         raise KernelProtocolFault(
             "KERC_FIDELITY_INVALID", fidelity, path="residual.fidelity"
         )
+    validate_kernel_packet(packet, local_hrl_state=local_hrl_state)
     revised = copy.deepcopy(packet)
     revised["residual"]["fidelity"] = fidelity
     revised.pop("packet_id", None)
     revised.pop("packet_sha256", None)
     revised["packet_id"] = "kpacket:" + stable_hash(revised).split(":", 1)[1][:24]
     revised["packet_sha256"] = stable_hash(revised)
-    validate_kernel_packet(revised, local_hrl_state=local_hrl_state)
+    expected = copy.deepcopy(packet)
+    expected["residual"]["fidelity"] = fidelity
+    expected.pop("packet_id", None)
+    expected.pop("packet_sha256", None)
+    expected["packet_id"] = "kpacket:" + stable_hash(expected).split(":", 1)[1][:24]
+    expected["packet_sha256"] = stable_hash(expected)
+    if revised != expected:
+        raise KernelProtocolFault(
+            "KERC_FIDELITY_REVISION_SCOPE_VIOLATION",
+            stable_hash(revised),
+            path="packet",
+        )
     return revised
+
+
+def migrate_kernel_packet_kpp_1_1(
+    packet: dict[str, Any], *, local_hrl_state: dict[str, Any]
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Migrate a hash-valid KPP-1.1 packet without changing legacy payload fields."""
+
+    if packet.get("policy") != POLICY or packet.get("packet_version") != LEGACY_PACKET_VERSION:
+        raise KernelProtocolFault(
+            "KERC_PACKET_MIGRATION_SOURCE_UNSUPPORTED",
+            str(packet.get("packet_version")),
+            path="packet.packet_version",
+        )
+    expected_sha256 = stable_hash(
+        {key: value for key, value in packet.items() if key != "packet_sha256"}
+    )
+    if packet.get("packet_sha256") != expected_sha256:
+        raise KernelProtocolFault(
+            "KERC_PACKET_MIGRATION_SOURCE_IDENTITY_INVALID",
+            str(packet.get("packet_sha256")),
+            path="packet.packet_sha256",
+        )
+    legacy_payload = {
+        key: copy.deepcopy(value)
+        for key, value in packet.items()
+        if key not in {"packet_id", "packet_sha256", "packet_version"}
+    }
+    migrated = copy.deepcopy(packet)
+    migrated["packet_version"] = PACKET_VERSION
+    residual = migrated.get("residual")
+    source = migrated.get("source")
+    if not isinstance(residual, dict) or not isinstance(source, dict):
+        raise KernelProtocolFault(
+            "KERC_PACKET_MIGRATION_SOURCE_SCHEMA_INVALID",
+            str(type(residual)),
+            path="packet",
+        )
+    residual["unit_packet"] = build_residual_unit_packet(
+        source_record_sha256=str(source.get("record_sha256") or ""),
+        residual_mode=str(residual.get("mode") or ""),
+        kernel_program=migrated.get("program") or {},
+        global_state=local_hrl_state.get("global") or {},
+        segment_residual=residual.get("segment_frame") or {},
+        token_residuals=residual.get("token_tags") or [],
+        concept_capsules=migrated.get("concept_capsules") or {},
+        exact_objects=migrated.get("protected_objects") or {},
+    )
+    migrated.pop("packet_id", None)
+    migrated.pop("packet_sha256", None)
+    migrated["packet_id"] = "kpacket:" + stable_hash(migrated).split(":", 1)[1][:24]
+    migrated["packet_sha256"] = stable_hash(migrated)
+    validate_kernel_packet(migrated, local_hrl_state=local_hrl_state)
+    migrated_payload = {
+        key: copy.deepcopy(value)
+        for key, value in migrated.items()
+        if key not in {"packet_id", "packet_sha256", "packet_version"}
+    }
+    migrated_payload["residual"] = {
+        key: value
+        for key, value in migrated_payload["residual"].items()
+        if key != "unit_packet"
+    }
+    if migrated_payload != legacy_payload:
+        raise KernelProtocolFault(
+            "KERC_PACKET_MIGRATION_LEGACY_PAYLOAD_CHANGED",
+            stable_hash(migrated_payload),
+            path="packet",
+        )
+    receipt = {
+        "policy": "project_theseus_kerc_packet_migration_kpp_1_1_to_1_2_v1",
+        "source_packet_sha256": expected_sha256,
+        "target_packet_sha256": migrated["packet_sha256"],
+        "legacy_payload_sha256": stable_hash(legacy_payload),
+        "legacy_payload_preserved": True,
+        "unit_count": len(residual["unit_packet"]["units"]),
+        "fallback_return_count": 0,
+    }
+    receipt["receipt_sha256"] = stable_hash(receipt)
+    return migrated, receipt
 
 
 def validate_kernel_packet(
@@ -5513,6 +5690,24 @@ def validate_kernel_packet(
         if isinstance(packet.get("concept_capsules"), dict)
         else {}
     )
+    try:
+        unit_packet_receipt = validate_residual_unit_packet(
+            residual.get("unit_packet")
+            if isinstance(residual.get("unit_packet"), dict)
+            else {},
+            source_record_sha256=str(source.get("record_sha256") or ""),
+            residual_mode=str(residual.get("mode") or ""),
+            kernel_program=packet.get("program") or {},
+            global_state=local_hrl_state.get("global") or {},
+            segment_residual=segment,
+            token_residuals=tags,
+            concept_capsules=concepts,
+            exact_objects=objects,
+        )
+    except ResidualEconomicsFault as exc:
+        raise KernelProtocolFault(
+            exc.code, exc.detail, path="packet.residual.unit_packet"
+        ) from exc
     expected_source_record_sha256 = stable_hash(
         {key: value for key, value in source.items() if key != "record_sha256"}
     )
@@ -5580,6 +5775,12 @@ def validate_kernel_packet(
         "serialization_replay_match": True,
         "serialization_exact_program_roundtrip": True,
         "residual_codec": codec_receipt,
+        "residual_unit_packet": {
+            "policy": unit_packet_receipt["policy"],
+            "schema_version": unit_packet_receipt["schema_version"],
+            "unit_count": unit_packet_receipt["summary"]["unit_count"],
+            "packet_sha256": unit_packet_receipt["packet_sha256"],
+        },
         "semantic_equivalence_claimed": False,
         **NO_CHEAT,
     }

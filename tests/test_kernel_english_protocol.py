@@ -16,6 +16,7 @@ if str(SCRIPTS) not in sys.path:
 import kernel_english_protocol as kernel  # noqa: E402
 from kerc_residual_economics import (  # noqa: E402
     build_structural_rate_distortion_allocation,
+    residual_unit_allocation_receipt,
 )
 import vcm_semantic_memory as memory  # noqa: E402
 
@@ -45,6 +46,92 @@ def test_learned_residual_view_compacts_typed_spans_without_losing_roles() -> No
     assert view["segment"][3] == ["SELF_MOVER"]
     assert view["tokens"] == [["T", 6, 10], ["R", 0, 0, 5], ["E", "PERSON", 0, 5]]
     assert view["exact_handles"] == ["@E1"]
+    assert view["unit_fidelity"] == []
+
+
+def test_kpp_1_1_migration_preserves_legacy_payload_and_adds_unit_contract() -> None:
+    state = memory.create_hierarchical_residual_state(
+        "migration-test", scope=scope("migration-test")
+    )
+    packet = kernel.build_kernel_packet(
+        SOURCE,
+        program(),
+        hrl_state=state,
+        explicit_spans=[
+            {
+                "start": 0,
+                "end": len("Dr. Alvarez"),
+                "object_type": "PERSON",
+                "copy_policy": "EXACT",
+            }
+        ],
+        retain_objects_inline=True,
+    )
+    legacy = copy.deepcopy(packet)
+    legacy["packet_version"] = kernel.LEGACY_PACKET_VERSION
+    legacy["residual"].pop("unit_packet")
+    legacy.pop("packet_id")
+    legacy.pop("packet_sha256")
+    legacy["packet_id"] = (
+        "kpacket:" + kernel.stable_hash(legacy).split(":", 1)[1][:24]
+    )
+    legacy["packet_sha256"] = kernel.stable_hash(legacy)
+
+    migrated, receipt = kernel.migrate_kernel_packet_kpp_1_1(
+        legacy, local_hrl_state=state
+    )
+
+    assert migrated["packet_version"] == kernel.PACKET_VERSION
+    assert receipt["legacy_payload_preserved"] is True
+    assert receipt["unit_count"] == len(migrated["residual"]["unit_packet"]["units"])
+    assert kernel.validate_kernel_packet(migrated, local_hrl_state=state)["state"] == "READY"
+    for key in legacy:
+        if key not in {"packet_id", "packet_sha256", "packet_version", "residual"}:
+            assert migrated[key] == legacy[key]
+    legacy_residual = copy.deepcopy(legacy["residual"])
+    migrated_residual = copy.deepcopy(migrated["residual"])
+    migrated_residual.pop("unit_packet")
+    assert migrated_residual == legacy_residual
+
+
+def test_kpp_1_1_migration_rejects_tampered_or_unknown_sources() -> None:
+    state = memory.create_hierarchical_residual_state(
+        "migration-fault", scope=scope("migration-fault")
+    )
+    packet = kernel.build_kernel_packet(
+        SOURCE,
+        program(),
+        hrl_state=state,
+        explicit_spans=[
+            {
+                "start": 0,
+                "end": len("Dr. Alvarez"),
+                "object_type": "PERSON",
+                "copy_policy": "EXACT",
+            }
+        ],
+    )
+    legacy = copy.deepcopy(packet)
+    legacy["packet_version"] = kernel.LEGACY_PACKET_VERSION
+    legacy["residual"].pop("unit_packet")
+    legacy.pop("packet_id")
+    legacy.pop("packet_sha256")
+    legacy["packet_id"] = (
+        "kpacket:" + kernel.stable_hash(legacy).split(":", 1)[1][:24]
+    )
+    legacy["packet_sha256"] = kernel.stable_hash(legacy)
+    tampered = copy.deepcopy(legacy)
+    tampered["residual"]["fidelity"] = "semantic"
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="MIGRATION_SOURCE_IDENTITY_INVALID"
+    ):
+        kernel.migrate_kernel_packet_kpp_1_1(tampered, local_hrl_state=state)
+    unknown = copy.deepcopy(legacy)
+    unknown["packet_version"] = "KPP-0.9"
+    with pytest.raises(
+        kernel.KernelProtocolFault, match="MIGRATION_SOURCE_UNSUPPORTED"
+    ):
+        kernel.migrate_kernel_packet_kpp_1_1(unknown, local_hrl_state=state)
 
 
 def test_learned_protected_spans_materialize_exact_bytes_and_fail_closed() -> None:
@@ -782,10 +869,10 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
                         }
                     },
                     "program": learned_program_transport,
-                    "residual": {
-                        "mode": "SOURCE_RECONSTRUCTION",
-                        "fidelity": "lexical",
-                        "interaction": [],
+                        "residual": {
+                            "mode": "SOURCE_RECONSTRUCTION",
+                            "unit_fidelity": [],
+                            "interaction": [],
                         "segment": [],
                         "tokens": [],
                         "exact_handles": [],
@@ -834,7 +921,7 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
             continue
         residual = json.loads(prompt)["residual"]
         assert residual["mode"] == "SOURCE_RECONSTRUCTION"
-        assert residual["fidelity"] == "lexical"
+        assert residual["unit_fidelity"] == []
     assert resolution_requests == [
         {"surface": "example", "pos": "n"},
         {"surface": "example", "pos": "n"},
@@ -967,6 +1054,11 @@ def training_record(
         "record_fidelity_label": kernel.KERC_FIDELITY_LABELS[
             allocation["selected_fidelity"]
         ],
+        "record_fidelity_label_training_authority": False,
+        "packet_wide_fidelity_drives_training": False,
+        "residual_unit_allocation": residual_unit_allocation_receipt(
+            packet["residual"]["unit_packet"]
+        ),
         "allocation_target_authority": "measured_structural_rate_distortion_with_calibrated_source_visible_importance",
         "rate_distortion_optimality_claimed": False,
         "importance": importance,

@@ -16,13 +16,17 @@ import hashlib
 import json
 import math
 import struct
-from dataclasses import dataclass
+import zlib
 from typing import Any, Iterable
 
 
 CODEC_POLICY = "project_theseus_kerc_conditional_residual_codec_v1"
 ALLOCATION_POLICY = "project_theseus_kerc_rate_distortion_allocator_v1"
 PROMOTION_POLICY = "project_theseus_kerc_residual_promotion_economics_v1"
+UNIT_PACKET_POLICY = "project_theseus_kerc_residual_unit_packet_v1"
+UNIT_PACKET_VERSION = "KERC-RU-1.0"
+SOURCE_RESIDUAL_POLICY = "project_theseus_kerc_source_residual_unit_v1"
+RENDER_PLAN_POLICY = "project_theseus_kerc_render_plan_unit_v1"
 FIDELITY_ORDER = ("semantic", "faithful", "lexical", "exact")
 STATE_BITS = 32
 MAX_TOTAL = 1 << 15
@@ -792,6 +796,583 @@ def validate_structural_rate_distortion_allocation(
     if record != expected:
         raise ResidualEconomicsFault(
             "KERC_RESIDUAL_ALLOCATION_RECEIPT_INVALID", digest(record)
+        )
+    return expected
+
+
+_DISTORTION_DIMENSIONS = (
+    "semantic_proposition",
+    "entity_identity",
+    "value_unit_precision",
+    "scope",
+    "polarity",
+    "modality",
+    "temporal",
+    "causal",
+    "attribution",
+    "quote",
+    "terminology",
+    "style",
+    "byte",
+)
+_DIMENSION_TERMS = {
+    "semantic_proposition": ("relation", "frame", "tag", "role", "operator"),
+    "entity_identity": ("entity", "alias", "identity", "handle", "person", "place"),
+    "value_unit_precision": ("number", "value", "unit", "precision", "money", "percent"),
+    "scope": ("scope", "quantifier", "target_span", "source_span"),
+    "polarity": ("polarity", "negat"),
+    "modality": ("modal", "possible", "required", "permitted", "forbidden"),
+    "temporal": ("time", "date", "duration", "temporal", "before", "after"),
+    "causal": ("cause", "causal", "result", "purpose"),
+    "attribution": ("source", "speaker", "author", "attitude", "attribution"),
+    "quote": ("quote", "code", "formula", "exact_text"),
+    "terminology": ("term", "lexical", "tag", "realization", "alias"),
+    "style": ("style", "format", "dialect", "register", "capital", "punct"),
+    "byte": ("byte", "inline", "encoding", "content_ref"),
+}
+_PROVENANCE_KEYS = {
+    "object_sha256",
+    "provenance",
+    "provenance_hash",
+    "record_sha256",
+    "source_annotation_sha256",
+    "source_row_sha256",
+    "stable_identity",
+}
+_EXACT_CONTENT_KEYS = {
+    "bytes",
+    "content_ref",
+    "inline_bytes_b64",
+    "value",
+}
+_LEXICAL_KEYS = {
+    "aliases",
+    "capitalization",
+    "formatting",
+    "lexical_unit",
+    "morphology",
+    "realization",
+    "style",
+    "tag",
+    "terminology",
+}
+_UNIT_DISTORTION_CEILINGS = {
+    "interaction_entry": 0.5,
+    "segment_frame": 0.5,
+    "token_residue": 0.5,
+    "concept_realization": 0.25,
+    "exact_object": 0.0,
+}
+
+
+def _pointer_token(value: Any) -> str:
+    return str(value).replace("~", "~0").replace("/", "~1")
+
+
+def _leaf_rows(value: Any, path: tuple[str, ...] = ()) -> list[tuple[str, Any]]:
+    if isinstance(value, dict):
+        return [
+            row
+            for key in sorted(value)
+            for row in _leaf_rows(value[key], (*path, str(key)))
+        ]
+    if isinstance(value, (list, tuple)):
+        return [
+            row
+            for index, item in enumerate(value)
+            for row in _leaf_rows(item, (*path, str(index)))
+        ]
+    return [("/" + "/".join(_pointer_token(part) for part in path), value)]
+
+
+def _project_unit_payload(value: Any, *, fidelity: str, unit_kind: str) -> Any:
+    if fidelity == "semantic":
+        return None
+    if fidelity == "exact":
+        return copy.deepcopy(value)
+
+    def project(current: Any, key: str = "") -> Any:
+        if isinstance(current, dict):
+            result = {}
+            for raw_key in sorted(current):
+                name = str(raw_key)
+                if name in _PROVENANCE_KEYS or name.endswith("_sha256"):
+                    continue
+                if name in _EXACT_CONTENT_KEYS:
+                    continue
+                if fidelity == "faithful" and name in _LEXICAL_KEYS:
+                    if unit_kind == "token_residue" and name == "tag":
+                        tag = str(current[name])
+                        result[name] = tag.split(":", 1)[0]
+                    continue
+                result[name] = project(current[name], name)
+            return result
+        if isinstance(current, list):
+            return [project(item, key) for item in current]
+        return copy.deepcopy(current)
+
+    return project(value)
+
+
+def _distortion_vector(source: Any, candidate: Any) -> tuple[list[float | None], float]:
+    source_rows = dict(_leaf_rows(source))
+    candidate_rows = dict(_leaf_rows(candidate))
+    source_count = max(1, len(source_rows))
+    retained = sum(
+        1 for path, value in source_rows.items() if candidate_rows.get(path) == value
+    )
+    structural_loss = (source_count - retained) / source_count
+    vector: list[float | None] = []
+    searchable = {
+        path: f"{path} {value}".lower() for path, value in source_rows.items()
+    }
+    for dimension in _DISTORTION_DIMENSIONS:
+        terms = _DIMENSION_TERMS[dimension]
+        relevant = [
+            path for path, text in searchable.items() if any(term in text for term in terms)
+        ]
+        if not relevant:
+            vector.append(None)
+            continue
+        preserved = sum(
+            1 for path in relevant if candidate_rows.get(path) == source_rows[path]
+        )
+        vector.append((len(relevant) - preserved) / len(relevant))
+    return vector, structural_loss
+
+
+def _unit_candidate_codec(payload: bytes, conditioning: bytes) -> dict[str, Any]:
+    dictionary = conditioning[-32768:]
+    compressor = zlib.compressobj(level=9, wbits=-15, zdict=dictionary)
+    encoded = compressor.compress(payload) + compressor.flush()
+    decompressor = zlib.decompressobj(wbits=-15, zdict=dictionary)
+    decoded = decompressor.decompress(encoded) + decompressor.flush()
+    if decoded != payload:
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_CODEC_ROUNDTRIP_MISMATCH", digest_bytes(payload)
+        )
+    receipt = {
+        "policy": "project_theseus_kerc_unit_dictionary_deflate_codec_v1",
+        "conditioning_sha256": digest_bytes(conditioning),
+        "payload_sha256": digest_bytes(payload),
+        "encoded_sha256": digest_bytes(encoded),
+        "encoded_bits": len(encoded) * 8,
+        "uncompressed_bits": len(payload) * 8,
+        "exact_roundtrip": True,
+    }
+    receipt["receipt_sha256"] = digest(receipt)
+    return receipt
+
+
+def _minimum_unit_fidelity(
+    unit_kind: str, source_path: str, payload: Any
+) -> tuple[str, list[str]]:
+    reasons: list[str] = []
+    minimum = "semantic"
+    if unit_kind == "exact_object":
+        row = payload if isinstance(payload, dict) else {}
+        object_type = str(row.get("object_type") or "").upper()
+        copy_policy = str(row.get("copy_policy") or "").upper()
+        if copy_policy == "EXACT" or object_type in {
+            "CODE",
+            "EMAIL",
+            "FILE_PATH",
+            "FORMULA",
+            "HASH",
+            "MARKUP",
+            "QUOTE",
+            "URL",
+            "EXACT_TEXT",
+        }:
+            minimum = "exact"
+            reasons.append("exact_copy_or_form_sensitive_type")
+        elif copy_policy == "VALUE_AND_STYLE":
+            minimum = "lexical"
+            reasons.append("value_and_style_copy_policy")
+        elif copy_policy in {"NORMALIZED_VALUE", "REFERENCE_ONLY"}:
+            minimum = "faithful"
+            reasons.append("typed_value_or_reference_policy")
+    elif unit_kind == "token_residue" and isinstance(payload, dict):
+        if payload.get("authority") == "licensed_manual_annotation":
+            minimum = "faithful"
+            reasons.append("licensed_manual_annotation")
+    elif unit_kind == "concept_realization":
+        minimum = "faithful"
+        reasons.append("concept_identity_or_realization")
+    elif unit_kind == "segment_frame":
+        minimum = "faithful"
+        reasons.append("source_bound_segment_structure")
+    elif unit_kind == "interaction_entry":
+        lowered = source_path.lower()
+        if any(term in lowered for term in ("security", "privacy", "access_policy")):
+            minimum = "exact"
+            reasons.append("security_or_privacy_policy")
+        elif any(term in lowered for term in ("terminology", "alias", "unit")):
+            minimum = "faithful"
+            reasons.append("shared_interaction_contract")
+    if not reasons:
+        reasons.append("no_hard_minimum_beyond_semantic")
+    return minimum, reasons
+
+
+def _residual_units(
+    *,
+    source_record_sha256: str,
+    global_state: dict[str, Any],
+    segment_residual: dict[str, Any],
+    token_residuals: list[dict[str, Any]],
+    concept_capsules: dict[str, Any],
+    exact_objects: dict[str, Any],
+) -> list[dict[str, Any]]:
+    rows: list[tuple[str, str, Any]] = []
+    for key in sorted(global_state):
+        value = global_state[key]
+        if value not in ({}, [], None, ""):
+            rows.append(("interaction_entry", f"/interaction/{_pointer_token(key)}", value))
+    if segment_residual:
+        handled = set()
+        for collection in ("frames", "edges", "units"):
+            values = segment_residual.get(collection)
+            if isinstance(values, list):
+                handled.add(collection)
+                rows.extend(
+                    (
+                        "segment_frame",
+                        f"/segment/{collection}/{index}",
+                        value,
+                    )
+                    for index, value in enumerate(values)
+                )
+        remainder = {
+            key: copy.deepcopy(value)
+            for key, value in segment_residual.items()
+            if key not in handled
+        }
+        if remainder or not handled:
+            rows.append(("segment_frame", "/segment/context", remainder or segment_residual))
+    rows.extend(
+        ("token_residue", f"/token/{index}", value)
+        for index, value in enumerate(token_residuals)
+    )
+    for handle in sorted(concept_capsules):
+        capsule = concept_capsules[handle]
+        if isinstance(capsule, dict) and any(
+            key in capsule
+            for key in (
+                "aliases",
+                "lexical_unit",
+                "preferred_realization",
+                "realization",
+                "source_identity_values",
+                "stable_identity",
+            )
+        ):
+            rows.append(
+                ("concept_realization", f"/concept/{_pointer_token(handle)}", capsule)
+            )
+    rows.extend(
+        ("exact_object", f"/exact/{_pointer_token(handle)}", value)
+        for handle, value in sorted(exact_objects.items())
+    )
+    result = []
+    for unit_kind, source_path, payload in rows:
+        identity = {
+            "source_record_sha256": source_record_sha256,
+            "unit_kind": unit_kind,
+            "source_path": source_path,
+        }
+        unit_id = "ru:" + digest(identity).split(":", 1)[1][:24]
+        result.append(
+            {
+                "unit_id": unit_id,
+                "unit_kind": unit_kind,
+                "source_path": source_path,
+                "source_payload": copy.deepcopy(payload),
+            }
+        )
+    if len({row["unit_id"] for row in result}) != len(result):
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_ID_COLLISION", source_record_sha256
+        )
+    return result
+
+
+def _higher_state_for_unit(
+    *,
+    unit_kind: str,
+    global_state: dict[str, Any],
+    segment_residual: dict[str, Any],
+) -> dict[str, Any]:
+    """Return only causally prior residual state; never include the priced unit."""
+
+    if unit_kind == "interaction_entry":
+        return {}
+    if unit_kind == "segment_frame":
+        return {"interaction": global_state}
+    return {
+        "interaction": global_state,
+        "segment": segment_residual,
+    }
+
+
+def build_residual_unit_packet(
+    *,
+    source_record_sha256: str,
+    residual_mode: str,
+    kernel_program: dict[str, Any],
+    global_state: dict[str, Any],
+    segment_residual: dict[str, Any],
+    token_residuals: list[dict[str, Any]],
+    concept_capsules: dict[str, Any],
+    exact_objects: dict[str, Any],
+) -> dict[str, Any]:
+    """Build independently costed K2 residual units without learned-allocation credit."""
+
+    if not source_record_sha256.startswith("sha256:"):
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_SOURCE_IDENTITY_INVALID", source_record_sha256
+        )
+    units = _residual_units(
+        source_record_sha256=source_record_sha256,
+        global_state=global_state,
+        segment_residual=segment_residual,
+        token_residuals=token_residuals,
+        concept_capsules=concept_capsules,
+        exact_objects=exact_objects,
+    )
+    completed = []
+    kernel_wire = residual_wire_bytes(kernel_program)
+    for unit in units:
+        minimum, reasons = _minimum_unit_fidelity(
+            unit["unit_kind"], unit["source_path"], unit["source_payload"]
+        )
+        conditioning = kernel_wire + b"\x00" + residual_wire_bytes(
+            {
+                "higher_state": _higher_state_for_unit(
+                    unit_kind=unit["unit_kind"],
+                    global_state=global_state,
+                    segment_residual=segment_residual,
+                ),
+                "source_path": unit["source_path"],
+                "unit_kind": unit["unit_kind"],
+            }
+        )
+        candidates = []
+        minimum_index = FIDELITY_ORDER.index(minimum)
+        for fidelity in FIDELITY_ORDER:
+            payload = _project_unit_payload(
+                unit["source_payload"], fidelity=fidelity, unit_kind=unit["unit_kind"]
+            )
+            wire = residual_wire_bytes(payload)
+            payload_sha256 = digest_bytes(wire)
+            codec = _unit_candidate_codec(wire, conditioning)
+            vector, structural_loss = _distortion_vector(unit["source_payload"], payload)
+            candidates.append(
+                {
+                    "fidelity": fidelity,
+                    "payload_sha256": payload_sha256,
+                    "encoded_bits": int(codec["encoded_bits"]),
+                    "uncompressed_bits": int(codec["uncompressed_bits"]),
+                    "codec_receipt_sha256": str(codec["receipt_sha256"]),
+                    "distortion_vector": vector,
+                    "structural_loss": structural_loss,
+                    "hard_blocked": FIDELITY_ORDER.index(fidelity) < minimum_index,
+                }
+            )
+        ceiling = _UNIT_DISTORTION_CEILINGS[unit["unit_kind"]]
+        admissible = [
+            row
+            for row in candidates
+            if not row["hard_blocked"] and row["structural_loss"] <= ceiling
+        ]
+        if not admissible:
+            raise ResidualEconomicsFault(
+                "KERC_RESIDUAL_UNIT_NO_ADMISSIBLE_FIDELITY", unit["unit_id"]
+            )
+        selected = min(
+            admissible,
+            key=lambda row: (
+                row["encoded_bits"],
+                FIDELITY_ORDER.index(row["fidelity"]),
+            ),
+        )
+        source_payload_sha256 = digest_bytes(
+            residual_wire_bytes(unit["source_payload"])
+        )
+        completed.append(
+            {
+                "unit_id": unit["unit_id"],
+                "unit_kind": unit["unit_kind"],
+                "source_path": unit["source_path"],
+                "source_residual": {
+                    "policy": SOURCE_RESIDUAL_POLICY,
+                    "payload_sha256": source_payload_sha256,
+                    "authority": "source_bound_packet_content",
+                },
+                "render_plan": {
+                    "policy": RENDER_PLAN_POLICY,
+                    "operation": {
+                        "interaction_entry": "APPLY_INTERACTION_ENTRY",
+                        "segment_frame": "APPLY_SEGMENT_FRAME",
+                        "token_residue": "APPLY_TOKEN_RESIDUE",
+                        "concept_realization": "APPLY_CONCEPT_REALIZATION",
+                        "exact_object": "COPY_OR_REFERENCE_PROTECTED_OBJECT",
+                    }[unit["unit_kind"]],
+                    "source_unit_id": unit["unit_id"],
+                    "surface_text": None,
+                    "renderer_credit": 0,
+                },
+                "condition_sha256": digest_bytes(conditioning),
+                "minimum_fidelity": minimum,
+                "minimum_fidelity_reasons": reasons,
+                "maximum_structural_distortion": ceiling,
+                "candidates": candidates,
+                "selected_fidelity": selected["fidelity"],
+                "selected_payload_sha256": selected["payload_sha256"],
+                "selected_encoded_bits": selected["encoded_bits"],
+                "selection_authority": (
+                    "k2_measured_structural_baseline_not_learned_or_semantic_utility"
+                ),
+            }
+        )
+    counts = {fidelity: 0 for fidelity in FIDELITY_ORDER}
+    kinds: dict[str, int] = {}
+    for unit in completed:
+        counts[unit["selected_fidelity"]] += 1
+        kinds[unit["unit_kind"]] = kinds.get(unit["unit_kind"], 0) + 1
+    result = {
+        "policy": UNIT_PACKET_POLICY,
+        "schema_version": UNIT_PACKET_VERSION,
+        "residual_mode": residual_mode,
+        "source_record_sha256": source_record_sha256,
+        "kernel_program_sha256": digest(kernel_program),
+        "source_residual_and_render_plan_separated": True,
+        "unit_identity_authority": "source_identity_kind_and_canonical_path",
+        "candidate_conditioning": (
+            "kernel_plus_strictly_causally_prior_residual_state_plus_unit_identity"
+        ),
+        "conditioning_excludes_current_unit": True,
+        "distortion_authority": (
+            "multidimensional_structural_proxy_not_semantic_or_downstream_outcome"
+        ),
+        "distortion_dimensions": list(_DISTORTION_DIMENSIONS),
+        "distortion_vector_encoding": "null_not_applicable_else_fractional_structural_loss",
+        "unit_candidate_codec": "dictionary_conditioned_raw_deflate_level9_exact_v1",
+        "selection_policy": (
+            "minimum_measured_bits_subject_to_per_unit_hard_minimum_and_structural_ceiling"
+        ),
+        "packet_wide_fidelity_drives_training": False,
+        "learned_allocator_claimed": False,
+        "units": completed,
+        "summary": {
+            "unit_count": len(completed),
+            "unit_counts_by_kind": kinds,
+            "selected_fidelity_counts": counts,
+            "selected_encoded_bits": sum(
+                int(unit["selected_encoded_bits"]) for unit in completed
+            ),
+        },
+        "fallback_return_count": 0,
+    }
+    result["packet_sha256"] = digest(result)
+    return result
+
+
+def validate_residual_unit_packet(
+    record: dict[str, Any],
+    *,
+    source_record_sha256: str,
+    residual_mode: str,
+    kernel_program: dict[str, Any],
+    global_state: dict[str, Any],
+    segment_residual: dict[str, Any],
+    token_residuals: list[dict[str, Any]],
+    concept_capsules: dict[str, Any],
+    exact_objects: dict[str, Any],
+) -> dict[str, Any]:
+    expected = build_residual_unit_packet(
+        source_record_sha256=source_record_sha256,
+        residual_mode=residual_mode,
+        kernel_program=kernel_program,
+        global_state=global_state,
+        segment_residual=segment_residual,
+        token_residuals=token_residuals,
+        concept_capsules=concept_capsules,
+        exact_objects=exact_objects,
+    )
+    if record != expected:
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_PACKET_INVALID", digest(record)
+        )
+    return expected
+
+
+def residual_unit_allocation_receipt(unit_packet: dict[str, Any]) -> dict[str, Any]:
+    if (
+        unit_packet.get("policy") != UNIT_PACKET_POLICY
+        or unit_packet.get("schema_version") != UNIT_PACKET_VERSION
+        or unit_packet.get("packet_sha256")
+        != digest(
+            {
+                key: copy.deepcopy(value)
+                for key, value in unit_packet.items()
+                if key != "packet_sha256"
+            }
+        )
+    ):
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_PACKET_IDENTITY_INVALID",
+            str(unit_packet.get("packet_sha256")),
+        )
+    allocations = []
+    for unit in unit_packet.get("units") or []:
+        candidates = unit.get("candidates") or []
+        candidate = next(
+            (
+                row
+                for row in candidates
+                if row.get("fidelity") == unit.get("selected_fidelity")
+            ),
+            None,
+        )
+        if not isinstance(candidate, dict):
+            raise ResidualEconomicsFault(
+                "KERC_RESIDUAL_UNIT_SELECTION_MISSING", str(unit.get("unit_id"))
+            )
+        allocations.append(
+            {
+                "unit_id": str(unit["unit_id"]),
+                "unit_kind": str(unit["unit_kind"]),
+                "source_path": str(unit["source_path"]),
+                "minimum_fidelity": str(unit["minimum_fidelity"]),
+                "selected_fidelity": str(unit["selected_fidelity"]),
+                "selected_encoded_bits": int(unit["selected_encoded_bits"]),
+                "selected_structural_loss": float(candidate["structural_loss"]),
+                "candidate_set_sha256": digest(candidates),
+            }
+        )
+    result = {
+        "policy": "project_theseus_kerc_residual_unit_allocation_receipt_v1",
+        "unit_packet_sha256": unit_packet["packet_sha256"],
+        "unit_allocations": allocations,
+        "packet_wide_fidelity_drives_training": False,
+        "allocation_target_authority": (
+            "k2_measured_structural_baseline_not_intervention_or_semantic_utility"
+        ),
+        "learned_allocator_claimed": False,
+        "fallback_return_count": 0,
+    }
+    result["receipt_sha256"] = digest(result)
+    return result
+
+
+def validate_residual_unit_allocation_receipt(
+    receipt: dict[str, Any], *, unit_packet: dict[str, Any]
+) -> dict[str, Any]:
+    expected = residual_unit_allocation_receipt(unit_packet)
+    if receipt != expected:
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_ALLOCATION_RECEIPT_INVALID", digest(receipt)
         )
     return expected
 

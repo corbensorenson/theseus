@@ -10,10 +10,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from kerc_residual_economics import (
+from kerc_residual_economics import (  # noqa: E402
     ResidualEconomicsFault,
     allocate_rate_distortion,
     build_residual_codec,
+    build_residual_unit_packet,
     build_structural_rate_distortion_allocation,
     calibrate_allocation_lambda,
     decode_conditional_payload,
@@ -21,6 +22,7 @@ from kerc_residual_economics import (
     promotion_economics,
     validate_promotion_economics,
     validate_residual_codec,
+    validate_residual_unit_packet,
 )
 from vcm_semantic_memory import (  # noqa: E402
     HRLStateFault,
@@ -148,6 +150,189 @@ def test_structural_allocation_measures_candidates_and_protects_exact_objects() 
     }
     assert allocation["distortion_authority"].endswith("not_semantic_utility")
     assert allocation["capability_or_efficiency_claim"] is False
+
+
+def test_per_unit_packet_separates_units_payloads_render_plans_and_constraints() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "1" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {
+            "language": "en",
+            "terminology": {"APPROVE": "authorize"},
+        },
+        "segment_residual": {
+            "schema": "frame_v1",
+            "frames": [{"frame_name": "Statement", "frame_roles": ["TOPIC"]}],
+        },
+        "token_residuals": [
+            {
+                "tag": "ENTITY_MENTION:PLACE",
+                "source_span": [0, 5],
+                "authority": "licensed_manual_annotation",
+            }
+        ],
+        "concept_capsules": {
+            "@C0": {
+                "stable_identity": "concept.example",
+                "preferred_realization": "Example",
+            }
+        },
+        "exact_objects": {
+            "@Q1": {
+                "object_type": "QUOTE",
+                "copy_policy": "EXACT",
+                "inline_bytes_b64": "RXhhY3Q=",
+            }
+        },
+    }
+    packet = build_residual_unit_packet(**arguments)
+    assert validate_residual_unit_packet(packet, **arguments) == packet
+    assert packet["source_residual_and_render_plan_separated"] is True
+    assert packet["packet_wide_fidelity_drives_training"] is False
+    assert packet["learned_allocator_claimed"] is False
+    assert set(packet["summary"]["unit_counts_by_kind"]) == {
+        "interaction_entry",
+        "segment_frame",
+        "token_residue",
+        "concept_realization",
+        "exact_object",
+    }
+    assert all(
+        unit["source_residual"]["policy"]
+        != unit["render_plan"]["policy"]
+        for unit in packet["units"]
+    )
+    assert packet["distortion_dimensions"] == [
+        "semantic_proposition",
+        "entity_identity",
+        "value_unit_precision",
+        "scope",
+        "polarity",
+        "modality",
+        "temporal",
+        "causal",
+        "attribution",
+        "quote",
+        "terminology",
+        "style",
+        "byte",
+    ]
+    assert all(
+        len(candidate["distortion_vector"]) == len(packet["distortion_dimensions"])
+        and all(
+            value is None or 0.0 <= value <= 1.0
+            for value in candidate["distortion_vector"]
+        )
+        for unit in packet["units"]
+        for candidate in unit["candidates"]
+    )
+    exact = next(unit for unit in packet["units"] if unit["unit_kind"] == "exact_object")
+    assert exact["minimum_fidelity"] == "exact"
+    assert exact["selected_fidelity"] == "exact"
+    assert all(
+        candidate["hard_blocked"]
+        for candidate in exact["candidates"]
+        if candidate["fidelity"] != "exact"
+    )
+    unrelated = [
+        unit for unit in packet["units"] if unit["unit_kind"] != "exact_object"
+    ]
+    assert any(unit["minimum_fidelity"] != "exact" for unit in unrelated)
+    assert any(unit["selected_fidelity"] != "exact" for unit in unrelated)
+
+
+def test_per_unit_packet_is_replay_stable_and_tamper_evident() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "2" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {"language": "en"},
+        "segment_residual": {},
+        "token_residuals": [
+            {
+                "tag": "ENTITY:PERSON",
+                "source_span": [0, 4],
+                "authority": "licensed_manual_annotation",
+            }
+        ],
+        "concept_capsules": {},
+        "exact_objects": {},
+    }
+    first = build_residual_unit_packet(**arguments)
+    second = build_residual_unit_packet(**arguments)
+    assert first == second
+    assert len({unit["unit_id"] for unit in first["units"]}) == len(first["units"])
+    tampered = copy.deepcopy(first)
+    tampered["units"][0]["selected_encoded_bits"] += 1
+    with pytest.raises(ResidualEconomicsFault, match="UNIT_PACKET_INVALID"):
+        validate_residual_unit_packet(tampered, **arguments)
+
+
+def test_per_unit_codec_conditioning_cannot_include_the_priced_unit() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "3" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {"language": "en"},
+        "segment_residual": {},
+        "token_residuals": [],
+        "concept_capsules": {},
+        "exact_objects": {},
+    }
+    first = build_residual_unit_packet(**arguments)
+    changed = build_residual_unit_packet(
+        **{**arguments, "global_state": {"language": "changed-secret-value"}}
+    )
+    first_unit = first["units"][0]
+    changed_unit = changed["units"][0]
+    assert first["conditioning_excludes_current_unit"] is True
+    assert first_unit["unit_id"] == changed_unit["unit_id"]
+    assert first_unit["condition_sha256"] == changed_unit["condition_sha256"]
+    assert (
+        first_unit["source_residual"]["payload_sha256"]
+        != changed_unit["source_residual"]["payload_sha256"]
+    )
+
+
+def test_per_unit_codec_uses_only_strictly_higher_residual_state() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "4" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {"language": "en"},
+        "segment_residual": {"frames": [{"frame_name": "Statement"}]},
+        "token_residuals": [
+            {
+                "tag": "ENTITY:PERSON",
+                "source_span": [0, 4],
+                "authority": "licensed_manual_annotation",
+            }
+        ],
+        "concept_capsules": {},
+        "exact_objects": {},
+    }
+    first = build_residual_unit_packet(**arguments)
+    changed = build_residual_unit_packet(
+        **{
+            **arguments,
+            "segment_residual": {"frames": [{"frame_name": "Question"}]},
+        }
+    )
+    first_segment = next(
+        unit for unit in first["units"] if unit["unit_kind"] == "segment_frame"
+    )
+    changed_segment = next(
+        unit for unit in changed["units"] if unit["unit_kind"] == "segment_frame"
+    )
+    first_token = next(
+        unit for unit in first["units"] if unit["unit_kind"] == "token_residue"
+    )
+    changed_token = next(
+        unit for unit in changed["units"] if unit["unit_kind"] == "token_residue"
+    )
+    assert first_segment["condition_sha256"] == changed_segment["condition_sha256"]
+    assert first_token["condition_sha256"] != changed_token["condition_sha256"]
 
 
 def test_lambda_calibration_uses_smallest_dev_value_meeting_distortion_ceiling() -> None:

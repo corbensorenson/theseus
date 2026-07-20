@@ -2356,7 +2356,8 @@ paper mechanism.
    `0.1806` token-accuracy regression violates the frozen `0.05` preservation bound. The
    enclosing report is GREEN with no hard or inconclusive gaps. This closes bounded K1
    mechanics only; PARTIAL behavior, source-disjoint semantics, utility, efficiency,
-   interaction amortization, and the KERC thesis remain unclaimed. The next owner is K2.
+   interaction amortization, and the KERC thesis remain unclaimed. K2 is now closed by
+   the evidence below; K3 is the next owner.
    **K1 closure gate:** maintain a construct-by-domain-by-composition-depth coverage
    matrix, not one aggregate record count. Every claimed construct needs source-group-
    disjoint train/development/evaluation examples, adversarial minimal pairs, multiple
@@ -2377,6 +2378,25 @@ paper mechanism.
    results, provenance, and replay identity. The packet-wide fidelity is at most a
    derived summary and cannot drive training. Migrations from KPP-1.1 must be exact or
    explicitly reject unsupported legacy rows.
+
+   **K2 closure evidence (2026-07-19):** KPP-1.2 now materializes 229,852 stable
+   residual units over all 27,941 canonical records: 27,941 interaction entries,
+   49,478 segment/frame units, 115,180 token residues, 7,180 concept realizations,
+   and 30,073 exact objects. Each unit owns four real typed payload candidates, an
+   exact dictionary-conditioned codec receipt, a compact 13-dimension structural
+   distortion vector, a hard minimum and ceiling, and a separate source-residual and
+   render-plan identity. The independent verifier reconstructs the inventory,
+   candidate projections, codec costs, constraints, and selected action from source.
+   Codec conditioning excludes the priced unit and includes only strictly prior
+   residual state; dedicated causal-isolation tests prevent self-conditioning.
+   KPP-1.1 migration preserves every legacy payload field and fails closed on tampered
+   or unknown versions. The cold producer and four-worker verifier are GREEN with zero
+   hard gaps; exact warm replays preserve the corpus and governed-record hashes in
+   3.78 and 12.14 seconds. Cold production remains expensive at 3,585.081 seconds
+   (2,101.849 materialization and 1,400.937 finalization), so this is faithful K2
+   mechanics, not an efficiency win. The allocator remains a measured structural
+   baseline, not learned, intervention-sensitive, semantic, or utility evidence. K3
+   is the next owner.
 
 4. **K3 - intervention-sensitive learned allocation.** Build target labels by actually
    downgrading one unit at a time and measuring independently recomputed proposition,

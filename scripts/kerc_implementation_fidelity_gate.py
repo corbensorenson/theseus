@@ -258,11 +258,15 @@ def audit_corpus(path: Path) -> dict[str, Any]:
                 int(labels.get("interaction") or 0) > 0 and not global_nonempty
             )
             allocation = (
-                supervision.get("rate_distortion_allocation")
-                if isinstance(supervision.get("rate_distortion_allocation"), dict)
+                supervision.get("residual_unit_allocation")
+                if isinstance(supervision.get("residual_unit_allocation"), dict)
                 else {}
             )
-            unit_rows = allocation.get("unit_allocations") if isinstance(allocation.get("unit_allocations"), list) else []
+            unit_rows = (
+                allocation.get("unit_allocations")
+                if isinstance(allocation.get("unit_allocations"), list)
+                else []
+            )
             counts["per_unit_allocation_receipt_count"] += len(unit_rows)
     except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
         faults.append(fault("corpus_scan_failed", path=str(path), error=f"{type(exc).__name__}:{exc}"))
@@ -384,11 +388,32 @@ def audit_hypotheses(contract: dict[str, Any]) -> dict[str, Any]:
 
 def audit_behavioral_claim_probes(sample_record: dict[str, Any] | None) -> dict[str, Any]:
     faults: list[dict[str, Any]] = []
+    sample_packet = (
+        sample_record.get("kernel_packet")
+        if isinstance(sample_record, dict)
+        and isinstance(sample_record.get("kernel_packet"), dict)
+        else {}
+    )
+    sample_unit_packet = (
+        (sample_packet.get("residual") or {}).get("unit_packet")
+        if isinstance(sample_packet.get("residual"), dict)
+        else None
+    )
+    if not isinstance(sample_unit_packet, dict):
+        faults.append(fault("behavior_probe_unit_packet_missing"))
+        return {
+            "interaction_label_empty_segments": None,
+            "interaction_label_segment_state_only": None,
+            "interaction_label_depends_on_global_dictionary": None,
+            "byte_literal_mutation_rejected": None,
+            "faults": faults,
+        }
     residual = {
         "fidelity": "semantic",
         "segment_frame": {},
         "token_tags": {},
         "exact_object_handles": [],
+        "unit_packet": copy.deepcopy(sample_unit_packet),
     }
     empty = kerc_semantic_corpus.residual_supervision(
         "k0-empty",
@@ -410,7 +435,7 @@ def audit_behavioral_claim_probes(sample_record: dict[str, Any] | None) -> dict[
     byte_literal_mutation_rejected: bool | None = None
     if isinstance(sample_record, dict):
         answer = sample_record.get("answer_packet")
-        packet = sample_record.get("kernel_packet") if isinstance(sample_record.get("kernel_packet"), dict) else {}
+        packet = sample_packet
         protected = packet.get("protected_objects") if isinstance(packet.get("protected_objects"), dict) else {}
         if isinstance(answer, dict):
             changed = copy.deepcopy(answer)

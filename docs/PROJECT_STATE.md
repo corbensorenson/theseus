@@ -20,7 +20,8 @@ share toward zero. Public benchmarks are calibration only.
   overfit, real no-fallback autoregressive execution, causal generated-state interventions,
   protected-span reconstruction, checkpoint reload, repeated fresh-process resume, and
   joint-objective decision retention. The enclosing bounded mechanics canary is GREEN with
-  no hard or inconclusive gaps. The prior freeze package remains stale because K2-K7
+  no hard or inconclusive gaps. K2 now adds a fully source-replayed per-unit structural
+  packet and exact KPP-1.1 migration. The prior freeze package remains stale because K3-K7
   construct-validity owners and final cross-owner replay are still open.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -55,6 +56,11 @@ share toward zero. Public benchmarks are calibration only.
   balanced accuracy. Matched rehearsal reaches `1.0` decision macro accuracy but is not
   adopted because it regresses token accuracy by `0.1806`. K0 now independently binds the paper,
   implementation sources, independent verifier, and all 27,941 current corpus records.
+  K2 materializes and independently replays 229,852 stable residual units over all
+  27,941 records with separate source residual/render-plan identities, four real payload
+  candidates, exact conditional codec costs, per-unit constraints, causal no-self-
+  conditioning, and exact KPP-1.1 migration. The cold path is still expensive and the
+  selection policy remains structural rather than learned or semantic; K3 is therefore open.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim
@@ -238,10 +244,11 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** implement K2's per-unit packet and rate-distortion contract on
-  top of the now-qualified K1 mechanics before any long optimizer campaign. Preserve stable
-  residual-unit identities, independently selectable fidelity, real payload/bit accounting,
-  intervention-sensitive allocation, and hard exact-object constraints. Require matched
+- **Immediate dependency:** implement K3's intervention-sensitive learned per-unit allocator
+  on top of the qualified K1/K2 mechanics before any long optimizer campaign. Derive targets
+  by causal one-unit downgrades using source-disjoint independent semantic, typed, executable,
+  and downstream evaluators; train calibrated source-visible decisions with hard infinity
+  constraints and missing-signal masks. Require matched
   no-residual, token-only, global-only, and learned-allocation controls before attributing a
   benefit. Record inadequate mechanisms as owner-specific `INCONCLUSIVE_IMPLEMENTATION`,
   never as an architecture verdict. Then finish the remaining faithful KERC pre-training boundary

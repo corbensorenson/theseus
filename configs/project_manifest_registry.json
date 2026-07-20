@@ -278,7 +278,7 @@
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "1b4ae514b02aaa457fb5ce0a3649aa876ae13cc8b445fb47d7979ed0c5b730bf"
+          "sha256": "5ea9ff97e183cdb0c78f0e86abca6ca9f5d7ed5ab7a9667e96ec2dfe4230bd33"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
@@ -286,7 +286,7 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "baff9261a1b75e6b513a7ef96eaeaaec553b515939a545461bf9718e460e62e6"
+          "sha256": "02ef332e030bf7f3a9db873ce28a4aec18f2ce4d73477fd9414c18ce9df63246"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -306,7 +306,7 @@
         },
         "kerc_residual_economics": {
           "path": "scripts/kerc_residual_economics.py",
-          "sha256": "d3127a7ab1ae09de5a693d26664fc42dbad47e68852e1fefcdc40588118b563c"
+          "sha256": "1ff9bcc89340aa5487485167e6dc47eab8767068a9e7a8b706de8ca55eca53cb"
         },
         "vcm_residual_lifecycle": {
           "path": "scripts/vcm_semantic_memory.py",
@@ -322,11 +322,11 @@
         },
       "kerc_semantic_corpus_producer": {
         "path": "scripts/kerc_semantic_corpus.py",
-        "sha256": "1deeb3e6c602f72120f693c94d77ed077cc7de0bd29542c5eeb13327880d1ffa"
+        "sha256": "bef41105a52479d485aef076bccb4a77c00b504052f7d6d166701a82c65eb9c7"
       },
       "kerc_semantic_corpus_verifier": {
         "path": "scripts/kerc_semantic_corpus_verify.py",
-        "sha256": "7dafc00b80286935e040aba4162477eac6b087ef290defcb62ebb84532f6492f"
+        "sha256": "455166c2ce7249c262de7db0932fe8960cf734c6e54ea08a96d42f1d0af3c8c5"
       },
       "kerc_semantic_verifier_runtime": {
         "path": "configs/kerc_semantic_verifier_runtime.json",
@@ -374,7 +374,7 @@
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "38c504203bda776596c9ae991df828d0fbf33fdf2ad52b591bd92fef431f2606"
+          "sha256": "94b12fc6c890fbc0c2d6145b073061c89676a3a7b614bc752eaf92fb3378d628"
         },
         "kerc_gum_discourse_tests": {
           "path": "tests/test_kerc_gum_discourse_relations.py",
@@ -406,7 +406,7 @@
         },
         "kerc_residual_economics_tests": {
           "path": "tests/test_kerc_residual_economics.py",
-          "sha256": "1f108217c36007cd312216fccde71f9f4b66262722b5a734849f7370a0c893b0"
+          "sha256": "46de42e33334bbca559ea3094b8c6d7e9abbe7235cc13c3868b2f5bd88501283"
         },
         "vcm_residual_lifecycle_tests": {
           "path": "tests/test_vcm_semantic_memory.py",
@@ -434,7 +434,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "25062211592c08c890938c38627c64afad938f60ebc14a22b557499aa8cdf627"
+          "sha256": "0278bdc9b05c76d45f0aa328c6ff08b26d8c17941f060b5fbc4ae0e0e3f282bf"
         },
         "kerc_concept_registry_tests": {
           "path": "tests/test_kerc_concept_registry.py",
@@ -5563,7 +5563,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0-K1n independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, and two production-shaped autoregressive mechanics profiles while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 train/dev/eval records with zero raw-source or source-group overlap. It materializes 53,414 generator views, 53,414 verifier corruptions, and 384 generator-loss-disabled context counterfactuals from 18,033 unique raw sources / 4,721,570 raw bytes. Exact typed transports are invertible, iterative compiler and topological reasoner chunks carry only generated prior state, and encoded-length-only 8K/16K buckets retain every row without truncation. The canonical adequacy canary is GREEN with no hard or inconclusive gaps: protected-single and two-chunk hierarchical MLX profiles pass stage gradients, exact overfit, learned protected-span reconstruction, real no-fallback execution, causal prior-state interventions, exact checkpoint reload, and exact token recovery at 936 and 1,536 updates. Fresh-process continuation from an exact content-addressed checkpoint passes two calibration and two untouched validation seeds with identical discrete outcomes inside independently derived numerical envelopes. Plain 80-update joint training retains observed ANSWER/CLARIFY/ABSTAIN mechanics at 0.9333 macro balanced accuracy; matched rehearsal is not adopted because its decision gain costs 0.1806 token accuracy. Construct validity remains RED: per-unit residual allocation, interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. Next implement K2 per-unit packet/rate-distortion allocation without weakening the now-qualified K1 mechanics. The wire remains economically negative. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
+      "current_wall": "K0-K2 independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, production-shaped autoregressive mechanics, and a per-unit structural packet while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 source-disjoint train/dev/eval records. KPP-1.2 materializes 229,852 stable residual units across interaction, segment/frame, token, concept-realization, and exact-object kinds. Every unit has four real typed payload candidates, exact dictionary-conditioned cost, a 13-dimension structural-distortion vector, a hard minimum and ceiling, separate source-residual/render-plan identities, and independently replayed selection. Causal conditioning excludes the priced unit; exact KPP-1.1 migration preserves all legacy payload fields; packet-implementation identity now invalidates candidate caches. Cold production is GREEN but expensive at 3,585.081 seconds; exact warm replay is 3.78 seconds. The independent four-worker verifier is GREEN in 1,974.212 seconds and replays in 12.14 seconds. The K1 MLX canaries remain GREEN, including gradients, exact overfit, real no-fallback execution, causal generated-state interventions, checkpoint/reload/resume, and decision retention. Construct validity remains RED: the K2 selector is structural rather than learned or intervention-sensitive; interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. Next implement K3 causal target production and the learned constrained per-unit allocator without weakening K1/K2. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

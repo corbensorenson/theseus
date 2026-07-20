@@ -37,6 +37,7 @@ from moecot_source_conditioned_pretraining import (  # noqa: E402
 import kernel_english_protocol as kernel  # noqa: E402
 from kerc_residual_economics import (  # noqa: E402
     build_structural_rate_distortion_allocation,
+    residual_unit_allocation_receipt,
 )
 import vcm_semantic_memory as memory  # noqa: E402
 from neural_seed_open_vocab import reserve_byte_fallback_tokens  # noqa: E402
@@ -544,6 +545,11 @@ def kernel_record(split: str, index: int) -> dict:
             "record_fidelity_label": kernel.KERC_FIDELITY_LABELS[
                 allocation["selected_fidelity"]
             ],
+            "record_fidelity_label_training_authority": False,
+            "packet_wide_fidelity_drives_training": False,
+            "residual_unit_allocation": residual_unit_allocation_receipt(
+                packet["residual"]["unit_packet"]
+            ),
             "annotator_independent_of_model": True,
             "evidence_sha256": "sha256:" + "c" * 64,
             "allocation_target_authority": "measured_structural_rate_distortion_with_calibrated_source_visible_importance",
