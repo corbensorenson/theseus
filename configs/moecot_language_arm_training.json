@@ -31,9 +31,10 @@
     ]
   },
   "plan_identity": {
-    "policy": "project_theseus_semantic_training_plan_identity_v2",
+    "policy": "project_theseus_semantic_training_plan_identity_v3",
     "excluded_volatile_fields": [
-      "scale_preregistration.report_sha256"
+      "scale_preregistration.report_sha256",
+      "scale_preregistration.evaluation_freeze_sha256"
     ],
     "legacy_migrations": [
       {
@@ -41,10 +42,19 @@
         "target_id": "shared_trunk",
         "legacy_plan_sha256": "b55e7ae19ed5956b0e02ecc73809846fc0d51a867c20c83d15198daec4eeab9e",
         "legacy_scale_report_sha256": "b78d8036009d3fbc05fe8c6193a8cc3cf699638d7c0c4ff7bc95cc99b54c347e",
-        "required_current_plan_sha256": "49e2a4966ab0498a3a670f205b452b6d9905a351d4972bf49ba2399b8226039c",
+        "required_current_plan_sha256": "ed91f8b0900b62f74d8f2a846489228c51fb09d71023a684b04429205e20694c",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/pretraining_architecture_freeze_package.json generated_receipts reports/neural_seed_50m_scale_preregistration.json",
         "reason": "The v1 plan identity hashed a timestamp-bearing generated preregistration report. Independent replay reproduces the legacy plan hash exactly when the frozen report hash is substituted; model, data, stage, optimizer, and evaluation contracts are unchanged."
+      },
+      {
+        "migration_id": "shared_trunk_step501_evaluation_freeze_semantic_identity_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "49e2a4966ab0498a3a670f205b452b6d9905a351d4972bf49ba2399b8226039c",
+        "required_current_plan_sha256": "ed91f8b0900b62f74d8f2a846489228c51fb09d71023a684b04429205e20694c",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json configs/neural_seed_57m_functional_utility_freeze.json",
+        "reason": "The v2 plan identity still hashed the whole timestamp-bearing evaluation freeze. The v3 identity binds the unchanged case, candidate packet, compiler, verifier, rater, toolchain, and consumption contracts while excluding freeze bookkeeping and training-state snapshots."
       }
     ]
   },

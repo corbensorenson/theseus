@@ -32,6 +32,7 @@ from moecot_language_arm_training import (  # noqa: E402
     checkpoint_generation_paths,
     cleanup_progress_generation,
     ensure_shared_trunk_migration,
+    evaluation_freeze_semantic_sha256,
     generate_kerc_pipeline_text,
     generate_model_text,
     inspect_checkpoint_inventory,
@@ -1606,7 +1607,7 @@ def test_semantic_plan_identity_excludes_volatile_preregistration_report_hash() 
         "training": {"batch_size": 2},
         "boundaries": {"public_training_rows_written": 0},
         "plan_identity": {
-            "policy": "project_theseus_semantic_training_plan_identity_v2"
+            "policy": "project_theseus_semantic_training_plan_identity_v3"
         },
     }
     metadata = {
@@ -1620,6 +1621,7 @@ def test_semantic_plan_identity_excludes_volatile_preregistration_report_hash() 
         "config_sha256": "config-a",
         "report_sha256": "volatile-a",
         "evaluation_freeze_sha256": "eval-a",
+        "evaluation_freeze_semantic_sha256": "eval-semantic-a",
         "required_unique_positions": 10,
         "staged_unique_positions": 20,
     }
@@ -1628,7 +1630,43 @@ def test_semantic_plan_identity_excludes_volatile_preregistration_report_hash() 
     scale["report_sha256"] = "volatile-b"
     assert plan_sha256(*args, scale) == first
     scale["evaluation_freeze_sha256"] = "eval-b"
+    assert plan_sha256(*args, scale) == first
+    scale["evaluation_freeze_semantic_sha256"] = "eval-semantic-b"
     assert plan_sha256(*args, scale) != first
+
+
+def test_evaluation_freeze_semantic_identity_excludes_bookkeeping_only() -> None:
+    freeze = {
+        "policy": "project_theseus_private_functional_utility_freeze_v2",
+        "candidate_id": "candidate-a",
+        "candidate_packet_sha256": "packet-a",
+        "case_contract_sha256": "cases-a",
+        "case_count": 160,
+        "cases_by_arm": {"english": 32, "python": 32},
+        "compiler_sha256": "compiler-a",
+        "case_compiler_sha256": "case-compiler-a",
+        "generation_wrapper_sha256": "wrapper-a",
+        "verifier_sha256": "verifier-a",
+        "local_english_rater_config_sha256": "rater-config-a",
+        "local_english_rater_implementation_sha256": "rater-a",
+        "toolchain_identity_sha256": "toolchain-a",
+        "consumption_policy_sha256": "consumption-a",
+        "consumption_registry": "reports/consumption.jsonl",
+        "source_disjoint": True,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "templates_renderers_routers_tools_credit": 0,
+        "frozen_utc": "first",
+        "supersede_reason": "first",
+        "training_state_at_freeze": {"optimizer_steps": 500},
+    }
+    first = evaluation_freeze_semantic_sha256(freeze)
+    freeze["frozen_utc"] = "second"
+    freeze["supersede_reason"] = "second"
+    freeze["training_state_at_freeze"] = {"optimizer_steps": 501}
+    assert evaluation_freeze_semantic_sha256(freeze) == first
+    freeze["verifier_sha256"] = "verifier-b"
+    assert evaluation_freeze_semantic_sha256(freeze) != first
 
 
 def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(

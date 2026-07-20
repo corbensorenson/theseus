@@ -921,6 +921,9 @@ def audit_scale_preregistration(config: dict[str, Any]) -> dict[str, Any]:
         "evaluation_freeze_sha256": (
             sha256_file(evaluation_path) if evaluation_path.is_file() else ""
         ),
+        "evaluation_freeze_semantic_sha256": (
+            evaluation_freeze_semantic_sha256(evaluation) if evaluation else ""
+        ),
         "hard_gaps": gaps,
     }
 
@@ -4747,9 +4750,10 @@ def accepted_plan_identity_migration(
     receipt: dict[str, Any], plan: dict[str, Any], target: dict[str, Any]
 ) -> dict[str, Any] | None:
     contract = plan.get("plan_identity")
-    if not isinstance(contract, dict) or contract.get("policy") != (
-        "project_theseus_semantic_training_plan_identity_v2"
-    ):
+    if not isinstance(contract, dict) or contract.get("policy") not in {
+        "project_theseus_semantic_training_plan_identity_v2",
+        "project_theseus_semantic_training_plan_identity_v3",
+    }:
         return None
     for row in contract.get("legacy_migrations") or []:
         if not isinstance(row, dict):
@@ -4774,6 +4778,36 @@ def accepted_plan_identity_migration(
                 "reason": row.get("reason"),
             }
     return None
+
+
+def evaluation_freeze_semantic_sha256(evaluation: dict[str, Any]) -> str:
+    """Bind evaluation behavior while excluding timestamps and state snapshots."""
+
+    semantic_fields = (
+        "policy",
+        "candidate_id",
+        "candidate_packet_sha256",
+        "case_contract_sha256",
+        "case_count",
+        "cases_by_arm",
+        "compiler_sha256",
+        "case_compiler_sha256",
+        "generation_wrapper_sha256",
+        "verifier_sha256",
+        "local_english_rater_config_sha256",
+        "local_english_rater_implementation_sha256",
+        "toolchain_identity_sha256",
+        "consumption_policy_sha256",
+        "consumption_registry",
+        "source_disjoint",
+        "public_training_rows_written",
+        "external_inference_calls",
+        "templates_renderers_routers_tools_credit",
+    )
+    payload = {key: evaluation.get(key) for key in semantic_fields}
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def plan_sha256(
@@ -4805,6 +4839,7 @@ def plan_sha256(
             )
         },
         "plan_identity_policy": (config.get("plan_identity") or {}).get("policy"),
+        "training_implementation_sha256": sha256_file(Path(__file__).resolve()),
         "stage_signature": (metadata.get("summary") or {}).get("stage_signature"),
         "arm_views": ((metadata.get("summary") or {}).get("canonical_pretrain_stage") or {}).get("arm_views"),
         "models": models,
@@ -4821,7 +4856,7 @@ def plan_sha256(
             for key in (
                 "candidate_id",
                 "config_sha256",
-                "evaluation_freeze_sha256",
+                "evaluation_freeze_semantic_sha256",
                 "required_unique_positions",
                 "staged_unique_positions",
             )
