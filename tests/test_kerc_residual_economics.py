@@ -27,6 +27,7 @@ from kerc_residual_economics import (  # noqa: E402
 )
 from kerc_residual_interventions import (  # noqa: E402
     InterventionTargetFault,
+    TARGET_PRODUCER_ID,
     build_unit_intervention_targets,
     compact_allocator_targets,
     iter_authoritative_unit_examples,
@@ -388,17 +389,52 @@ def test_per_unit_interventions_execute_candidates_and_enforce_typed_constraints
     targets = build_unit_intervention_targets(
         unit_packet=packet,
         source_family="owned_private_kerc_annotations",
+        kernel_program=arguments["kernel_program"],
+        answer_packet={
+            "claims": [
+                {
+                    "predicate": "ENTITY_MENTION",
+                    "arguments": [
+                        {
+                            "role": "ENTITY",
+                            "value": {"type": "concept", "value": "concept.person"},
+                        }
+                    ],
+                }
+            ]
+        },
+        surface_target="The person is exact.",
         **{key: value for key, value in arguments.items() if key != "residual_mode" and key != "kernel_program"},
     )
     assert validate_unit_intervention_targets(
         targets,
         unit_packet=packet,
         source_family="owned_private_kerc_annotations",
+        kernel_program=arguments["kernel_program"],
+        answer_packet={
+            "claims": [
+                {
+                    "predicate": "ENTITY_MENTION",
+                    "arguments": [
+                        {
+                            "role": "ENTITY",
+                            "value": {"type": "concept", "value": "concept.person"},
+                        }
+                    ],
+                }
+            ]
+        },
+        surface_target="The person is exact.",
         **{key: value for key, value in arguments.items() if key != "residual_mode" and key != "kernel_program"},
     ) == targets
     assert targets["candidate_payloads_executed"] is True
     assert targets["summary"]["candidate_intervention_count"] == 4 * len(packet["units"])
     assert targets["summary"]["allocator_authority_unit_count"] > 0
+    assert targets["summary"]["source_dependent_decision_count"] > 0
+    assert sum(
+        count > 0
+        for count in targets["summary"]["authoritative_class_counts"].values()
+    ) >= 2
     assert len(list(iter_authoritative_unit_examples(targets))) == targets["summary"][
         "allocator_authority_unit_count"
     ]
@@ -417,6 +453,8 @@ def test_per_unit_interventions_execute_candidates_and_enforce_typed_constraints
         for intervention in row["interventions"]
     )
     compact = compact_allocator_targets(targets)
+    assert compact["target_producer_id"] == TARGET_PRODUCER_ID
+    assert "surface_target" not in compact
     for unit, target in zip(packet["units"], compact["targets"]):
         assert target["source_visible_candidates"] == [
             {
@@ -441,10 +479,25 @@ def test_per_unit_interventions_execute_candidates_and_enforce_typed_constraints
                 "fidelity_index",
                 "encoded_bits",
                 "hard_blocked",
-                "intervention_sha256",
             }
         for candidate in target["candidates"]
         )
+    unrelated = build_unit_intervention_targets(
+        unit_packet=packet,
+        source_family="owned_private_kerc_annotations",
+        kernel_program=arguments["kernel_program"],
+        answer_packet={"claims": []},
+        surface_target="unrelated output",
+        **{
+            key: value
+            for key, value in arguments.items()
+            if key not in {"residual_mode", "kernel_program"}
+        },
+    )
+    assert [row["allocator_loss_enabled"] for row in unrelated["targets"]] != [
+        row["allocator_loss_enabled"] for row in targets["targets"]
+    ]
+    assert unrelated["summary"]["withheld_uncertain_unit_count"] > 0
 
 
 def test_typed_residual_faults_survive_parallel_worker_serialization() -> None:
@@ -479,6 +532,9 @@ def test_per_unit_intervention_receipt_rejects_target_relabeling() -> None:
     receipt = build_unit_intervention_targets(
         unit_packet=packet,
         source_family="private_fold_a",
+        kernel_program=arguments["kernel_program"],
+        answer_packet={"claims": []},
+        surface_target="",
         **source_arguments,
     )
     tampered = copy.deepcopy(receipt)
@@ -490,6 +546,9 @@ def test_per_unit_intervention_receipt_rejects_target_relabeling() -> None:
             tampered,
             unit_packet=packet,
             source_family="private_fold_a",
+            kernel_program=arguments["kernel_program"],
+            answer_packet={"claims": []},
+            surface_target="",
             **source_arguments,
         )
 
@@ -534,18 +593,28 @@ def test_independent_allocator_evaluator_replays_consequences_not_target_labels(
     report = evaluate_allocator_predictions(
         unit_packet=packet,
         source_family="private_eval_family",
+        source_annotation={
+            "policy": "owned_private_annotation_v1",
+            "frame_name": "Statement",
+            "target_spans": [[0, 4]],
+            "object_type": "QUOTE",
+        },
         predictions=predictions,
-        training_target_producer_id="kerc_typed_causal_target_producer_v1",
+        training_target_producer_id=TARGET_PRODUCER_ID,
         **evaluation_arguments,
     )
     assert report["summary"]["hard_violation_count"] == 0
-    assert report["summary"]["confidence_brier"] == 0.0
+    assert 0.0 <= report["summary"]["confidence_brier"] <= 1.0
+    assert report["summary"]["human_gold_adjudicated_unit_count"] > 0
+    assert report["summary"]["human_gold_fact_count"] > 0
     assert report["training_labels_produced"] == 0
+    assert report["source_annotation_used_for_training"] is False
     assert report["organizationally_separate_from_target_producer"] is True
     with pytest.raises(AllocatorEvaluationFault, match="NOT_INDEPENDENT"):
         evaluate_allocator_predictions(
             unit_packet=packet,
             source_family="private_eval_family",
+            source_annotation={"policy": "owned_private_annotation_v1"},
             predictions=predictions,
             training_target_producer_id=EVALUATOR_ID,
             **evaluation_arguments,

@@ -1152,12 +1152,21 @@ def build_model(
             hidden = nn.silu(
                 hidden + self.kerc_unit_attention_output(attended)
             ) * unit_mask[:, :, None].astype(mx.float32)
-            candidate_hidden = nn.silu(
+            candidate_state = (
                 self.kerc_unit_candidate_projection(unit_candidate_features)
-                + hidden[:, :, None, :]
                 + self.kerc_unit_fidelity_feature_embedding(
                     mx.arange(choices, dtype=mx.int32)
                 )[None, None, :, :]
+            )
+            unit_state = hidden[:, :, None, :]
+            # Allocation is a source-candidate relation. The multiplicative term
+            # lets source semantics reorder an otherwise identical rate schedule.
+            candidate_hidden = nn.silu(
+                candidate_state
+                + unit_state
+                + candidate_state
+                * unit_state
+                / math.sqrt(config.kerc_residual_bottleneck_dim)
             )
             logits = self.kerc_unit_candidate_scorer(candidate_hidden)[..., 0]
             logits = mx.where(

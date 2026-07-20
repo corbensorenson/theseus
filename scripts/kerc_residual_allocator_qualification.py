@@ -23,6 +23,7 @@ from typing import Any, Iterable
 import numpy as np
 
 from moecot_language_arm_training import (
+    KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM,
     build_plan,
     materialize_kerc_unit_allocator_row,
     pack_kerc_unit_allocator_batch,
@@ -516,6 +517,7 @@ def independent_panel(
             concept_capsules=(packet.get("concept_capsules") or {}),
             exact_objects=(packet.get("protected_objects") or {}),
             source_family=str(record["provenance"]["source_group"]),
+            source_annotation=(record.get("source_annotation") or {}),
             predictions=[
                 {
                     "unit_id": unit_id,
@@ -537,11 +539,50 @@ def independent_panel(
             summary["independent_oracle_encoded_bits"]
         )
         totals["rate_regret_bits"] += int(summary["rate_regret_bits"])
+        for key in (
+            "human_gold_adjudicated_unit_count",
+            "human_gold_unadjudicated_unit_count",
+            "semantic_decision_agreement_count",
+            "human_gold_semantic_violation_count",
+            "human_gold_fact_count",
+            "retained_human_gold_fact_count",
+        ):
+            totals[key] += int(summary.get(key) or 0)
+        policy = str(receipt.get("source_annotation_policy") or "untyped_annotation")
+        kinds.setdefault("annotation_policy:" + policy, Counter()).update(
+            {
+                "record_count": 1,
+                "unit_count": int(summary["unit_count"]),
+                "adjudicated": int(summary["human_gold_adjudicated_unit_count"]),
+                "semantic_decision_agreement": int(
+                    summary["semantic_decision_agreement_count"]
+                ),
+                "semantic_violation": int(
+                    summary["human_gold_semantic_violation_count"]
+                ),
+            }
+        )
         for kind, counts in summary["by_unit_kind"].items():
             kinds[kind].update(counts)
         receipt_ids.append(receipt["receipt_sha256"])
+    adjudicated = int(totals["human_gold_adjudicated_unit_count"])
+    facts = int(totals["human_gold_fact_count"])
     return {
         **dict(totals),
+        "human_gold_panel_coverage": round(
+            adjudicated / max(1, int(totals["unit_count"])), 8
+        ),
+        "semantic_decision_agreement_rate": round(
+            int(totals["semantic_decision_agreement_count"]) / max(1, adjudicated), 8
+        ),
+        "human_gold_fact_recall": round(
+            int(totals["retained_human_gold_fact_count"]) / max(1, facts), 8
+        ),
+        "human_gold_semantic_violation_rate": round(
+            int(totals["human_gold_semantic_violation_count"])
+            / max(1, adjudicated),
+            8,
+        ),
         "by_unit_kind": {kind: dict(counts) for kind, counts in sorted(kinds.items())},
         "receipt_ledger_sha256": canonical_sha256(receipt_ids),
         "target_producer_is_final_evaluator": False,
@@ -554,30 +595,65 @@ def independent_panel(
 def ablated_rows(
     rows: list[dict[str, Any]], *, mode: str, seed: int
 ) -> list[dict[str, Any]]:
-    if mode not in {"content_shuffled", "candidate_features_zeroed", "unit_kind_zeroed"}:
+    if mode not in {
+        "content_shuffled",
+        "source_relation_shuffled",
+        "source_relation_zeroed",
+        "candidate_features_zeroed",
+        "unit_kind_zeroed",
+    }:
         raise ValueError(f"unknown KERC allocator ablation: {mode}")
-    result = []
-    payloads = [row["byte_rows"] for row in rows]
-    if mode == "content_shuffled":
-        order = list(range(len(rows)))
-        random.Random(seed).shuffle(order)
-        if len(order) > 1 and all(index == value for index, value in enumerate(order)):
-            order = order[1:] + order[:1]
+    result: list[dict[str, Any]] = []
+    if mode in {"content_shuffled", "source_relation_shuffled"}:
+        groups: dict[str, list[tuple[int, int]]] = defaultdict(list)
+        for row_index, row in enumerate(rows):
+            for unit_index, kind in enumerate(row["kind_ids"]):
+                key = (
+                    str(int(kind))
+                    if mode == "content_shuffled"
+                    else _candidate_schedule_signature(row, unit_index)
+                )
+                groups[key].append((row_index, unit_index))
+        donor_by_unit: dict[tuple[int, int], tuple[int, int]] = {}
+        rng = random.Random(seed)
+        for coordinates in groups.values():
+            shuffled = list(coordinates)
+            rng.shuffle(shuffled)
+            donors = shuffled[1:] + shuffled[:1] if len(shuffled) > 1 else shuffled
+            donor_by_unit.update(zip(shuffled, donors))
     else:
-        order = list(range(len(rows)))
+        donor_by_unit = {}
     for index, row in enumerate(rows):
         copy_row = dict(row)
         if mode == "content_shuffled":
-            donor = payloads[order[index]]
-            if len(donor) == len(row["byte_rows"]):
-                copy_row["byte_rows"] = tuple(
-                    np.asarray(value, dtype=np.int32) for value in donor
+            copy_row["byte_rows"] = tuple(
+                np.asarray(
+                    rows[donor_by_unit[(index, unit_index)][0]]["byte_rows"][
+                        donor_by_unit[(index, unit_index)][1]
+                    ],
+                    dtype=np.int32,
                 )
-            else:
-                copy_row["byte_rows"] = tuple(
-                    np.full_like(value, 63, dtype=np.int32)
-                    for value in row["byte_rows"]
-                )
+                for unit_index in range(len(row["unit_ids"]))
+            )
+        elif mode == "source_relation_shuffled":
+            copy_row["candidate_features"] = np.array(
+                row["candidate_features"], dtype=np.float32, copy=True
+            )
+            for unit_index in range(len(row["unit_ids"])):
+                donor_row, donor_unit = donor_by_unit[(index, unit_index)]
+                relation = rows[donor_row]["candidate_features"][
+                    donor_unit, 0, KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM:
+                ]
+                copy_row["candidate_features"][
+                    unit_index, :, KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM:
+                ] = relation[None, :]
+        elif mode == "source_relation_zeroed":
+            copy_row["candidate_features"] = np.array(
+                row["candidate_features"], dtype=np.float32, copy=True
+            )
+            copy_row["candidate_features"][
+                :, :, KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM:
+            ] = 0.0
         elif mode == "candidate_features_zeroed":
             copy_row["candidate_features"] = np.zeros_like(
                 row["candidate_features"], dtype=np.float32
@@ -588,20 +664,41 @@ def ablated_rows(
     return result
 
 
+def _candidate_schedule_signature(row: dict[str, Any], index: int) -> str:
+    return canonical_sha256(
+        {
+            "kind": int(row["kind_ids"][index]),
+            "base_features": np.round(
+                row["candidate_features"][
+                    index, :, :KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM
+                ],
+                6,
+            ).tolist(),
+            "hard": row["hard_block_mask"][index].astype(int).tolist(),
+        }
+    )
+
+
 def baseline_metrics(
     train_rows: list[dict[str, Any]], eval_rows: list[dict[str, Any]]
 ) -> dict[str, Any]:
     by_kind: dict[int, Counter[int]] = defaultdict(Counter)
+    by_schedule: dict[str, Counter[int]] = defaultdict(Counter)
     for row in train_rows:
-        for kind, label, authority in zip(row["kind_ids"], row["labels"], row["loss_mask"]):
+        for index, (kind, label, authority) in enumerate(
+            zip(row["kind_ids"], row["labels"], row["loss_mask"])
+        ):
             if float(authority) > 0.0:
                 by_kind[int(kind)][int(label)] += 1
+                by_schedule[_candidate_schedule_signature(row, index)][int(label)] += 1
     majority_predictions: list[np.ndarray] = []
+    schedule_predictions: list[np.ndarray] = []
     rate_predictions: list[np.ndarray] = []
     k2_predictions: list[np.ndarray] = []
     confidence: list[np.ndarray] = []
     for row in eval_rows:
         majority = []
+        schedule = []
         rate = []
         for index, kind in enumerate(row["kind_ids"]):
             allowed = np.flatnonzero(~row["hard_block_mask"][index])
@@ -609,14 +706,30 @@ def baseline_metrics(
                 raise ValueError("KERC allocator baseline has no admissible action")
             ranked = [label for label, _count in by_kind[int(kind)].most_common()]
             majority.append(next((label for label in ranked if label in allowed), int(allowed[-1])))
+            schedule_ranked = [
+                label
+                for label, _count in by_schedule[
+                    _candidate_schedule_signature(row, index)
+                ].most_common()
+            ]
+            schedule.append(
+                next(
+                    (label for label in schedule_ranked if label in allowed),
+                    majority[-1],
+                )
+            )
             encoded_rate = row["candidate_features"][index, :, 0]
             rate.append(int(allowed[np.argmin(encoded_rate[allowed])]))
         majority_predictions.append(np.asarray(majority, dtype=np.int32))
+        schedule_predictions.append(np.asarray(schedule, dtype=np.int32))
         rate_predictions.append(np.asarray(rate, dtype=np.int32))
         k2_predictions.append(np.asarray(row["k2_labels"], dtype=np.int32))
         confidence.append(np.ones(len(row["unit_ids"]), dtype=np.float32))
     return {
         "presence_by_kind": _flatten_predictions(eval_rows, majority_predictions, confidence),
+        "candidate_schedule_by_kind": _flatten_predictions(
+            eval_rows, schedule_predictions, confidence
+        ),
         "source_visible_constrained_rate": _flatten_predictions(eval_rows, rate_predictions, confidence),
         "k2_structural_selection": _flatten_predictions(eval_rows, k2_predictions, confidence),
     }
@@ -646,7 +759,18 @@ def train_seed(
     nn: Any,
     optim: Any,
     mx_utils: Any,
+    training_input_ablation: str | None = None,
+    run_interventions: bool = True,
 ) -> dict[str, Any]:
+    if training_input_ablation is not None:
+        if training_input_ablation != "source_relation_zeroed":
+            raise ValueError("unsupported KERC allocator training input ablation")
+        train_rows = ablated_rows(
+            train_rows, mode=training_input_ablation, seed=seed + 70000
+        )
+        eval_rows = ablated_rows(
+            eval_rows, mode=training_input_ablation, seed=seed + 80000
+        )
     optimization = config["optimization"]
     batch_size = int(optimization["batch_records"])
     model = build_allocator_model(target, seed=seed, mx=mx, nn=nn)
@@ -706,20 +830,27 @@ def train_seed(
     evaluation = evaluate_model(model, eval_rows, batch_size=batch_size, mx=mx)
     clean_predictions = list(evaluation["predictions"])
     interventions = {}
-    for mode in ("content_shuffled", "candidate_features_zeroed", "unit_kind_zeroed"):
-        ablated = evaluate_model(
-            model,
-            ablated_rows(eval_rows, mode=mode, seed=seed),
-            batch_size=batch_size,
-            mx=mx,
-        )
-        interventions[mode] = {
-            "accuracy": ablated["accuracy"],
-            "prediction_change_count": sum(
-                left != right
-                for left, right in zip(clean_predictions, ablated["predictions"])
-            ),
-        }
+    if run_interventions:
+        for mode in (
+            "content_shuffled",
+            "source_relation_shuffled",
+            "source_relation_zeroed",
+            "candidate_features_zeroed",
+            "unit_kind_zeroed",
+        ):
+            ablated = evaluate_model(
+                model,
+                ablated_rows(eval_rows, mode=mode, seed=seed),
+                batch_size=batch_size,
+                mx=mx,
+            )
+            interventions[mode] = {
+                "accuracy": ablated["accuracy"],
+                "prediction_change_count": sum(
+                    left != right
+                    for left, right in zip(clean_predictions, ablated["predictions"])
+                ),
+            }
     panel = (
         independent_panel(
             model,
@@ -749,6 +880,7 @@ def train_seed(
         reload_delta = float(np.max(np.abs(left - right)))
     return {
         "seed": seed,
+        "training_input_ablation": training_input_ablation or "none",
         "steps": step_cap,
         "first_gradient_norm": first_gradient_norm,
         "first_applied_gradient_norm": first_applied_gradient_norm,
@@ -880,6 +1012,25 @@ def run(config_path: Path) -> dict[str, Any]:
                 mx_utils=mx_utils,
             )
         )
+    retrained_source_blind = [
+        train_seed(
+            target=target,
+            train_rows=selected["private_train"],
+            eval_rows=selected["private_eval"],
+            seed=int(seed),
+            config=config,
+            checkpoint_path=None,
+            maximum_steps=None,
+            independent_records=None,
+            mx=mx,
+            nn=nn,
+            optim=optim,
+            mx_utils=mx_utils,
+            training_input_ablation="source_relation_zeroed",
+            run_interventions=False,
+        )
+        for seed in config["seeds"]
+    ]
     acceptance = config["acceptance"]
     accuracies = [float(row["evaluation"]["accuracy"]) for row in seed_reports]
     contested_accuracies = [
@@ -919,8 +1070,11 @@ def run(config_path: Path) -> dict[str, Any]:
         )
         >= int(acceptance["minimum_source_disjoint_eval_class_count"]),
     }
-    presence = float(baselines["presence_by_kind"]["contested_accuracy"])
-    learned_margin = min(contested_accuracies) - presence
+    strongest_source_blind = max(
+        float(baselines[name]["contested_accuracy"])
+        for name in ("presence_by_kind", "candidate_schedule_by_kind")
+    )
+    learned_margin = min(contested_accuracies) - strongest_source_blind
     learned_generalization = learned_margin >= float(
         acceptance["minimum_presence_baseline_margin"]
     )
@@ -938,26 +1092,60 @@ def run(config_path: Path) -> dict[str, Any]:
         }
         for mode in (
             "content_shuffled",
+            "source_relation_shuffled",
+            "source_relation_zeroed",
             "candidate_features_zeroed",
             "unit_kind_zeroed",
         )
     }
+    retrained_source_relation_margins = [
+        float(full["evaluation"]["contested_accuracy"])
+        - float(control["evaluation"]["contested_accuracy"])
+        for full, control in zip(seed_reports, retrained_source_blind)
+    ]
     independent_panel = seed_reports[0].get("independent_typed_panel") or {}
+    annotation_policy_count = sum(
+        key.startswith("annotation_policy:")
+        and int(value.get("adjudicated") or 0) > 0
+        for key, value in (independent_panel.get("by_unit_kind") or {}).items()
+    )
+    semantic_panel_checks = {
+        "coverage": float(independent_panel.get("human_gold_panel_coverage") or 0.0)
+        >= float(acceptance["minimum_human_gold_panel_coverage"]),
+        "decision_agreement": float(
+            independent_panel.get("semantic_decision_agreement_rate") or 0.0
+        )
+        >= float(acceptance["minimum_human_gold_semantic_agreement"]),
+        "fact_recall": float(independent_panel.get("human_gold_fact_recall") or 0.0)
+        >= float(acceptance["minimum_human_gold_fact_recall"]),
+        "semantic_violation_rate": float(
+            independent_panel.get("human_gold_semantic_violation_rate", 1.0)
+        )
+        <= float(acceptance["maximum_human_gold_semantic_violation_rate"]),
+        "annotation_policy_diversity": annotation_policy_count
+        >= int(acceptance["minimum_annotation_policy_count"]),
+    }
+    semantic_panel_complete = all(semantic_panel_checks.values())
     causal_adequacy_checks = {
-        "nontrivial_source_signal_use": all(
-            any(
-                int(row["interventions"][mode]["prediction_change_count"]) > 0
-                for mode in signal_diagnostics
-            )
-            for row in seed_reports
-        ),
+        "nontrivial_source_signal_use": min(retrained_source_relation_margins)
+        >= float(acceptance["minimum_paired_source_relation_margin"])
+        and sum(retrained_source_relation_margins)
+        / len(retrained_source_relation_margins)
+        >= float(acceptance["minimum_mean_source_relation_margin"]),
         "deterministic_constraint_engine_not_target_oracle": constrained_rate < 1.0,
         "independent_evaluator_zero_rate_regret": int(
             independent_panel.get("rate_regret_bits") or 0
         )
         == 0,
-        "independent_semantic_panel_complete": False,
+        "independent_semantic_panel_complete": semantic_panel_complete,
+        "source_dependent_target_population": int(
+            intervention_summary.get("source_dependent_decision_count") or 0
+        )
+        > 0,
     }
+    mechanics_green = all(mechanics_checks.values())
+    causal_green = all(causal_adequacy_checks.values())
+    qualified = mechanics_green and causal_green and learned_generalization
     report = {
         "policy": config["policy"],
         "config": str(config_path),
@@ -990,6 +1178,7 @@ def run(config_path: Path) -> dict[str, Any]:
         },
         "overfit": {**overfit, "selection": overfit_selection},
         "seeds": seed_reports,
+        "retrained_source_relation_zeroed_controls": retrained_source_blind,
         "aggregate": {
             "minimum_eval_accuracy": min(accuracies),
             "mean_eval_accuracy": sum(accuracies) / len(accuracies),
@@ -998,33 +1187,44 @@ def run(config_path: Path) -> dict[str, Any]:
             "mean_contested_eval_accuracy": sum(contested_accuracies)
             / len(contested_accuracies),
             "minimum_presence_baseline_margin": learned_margin,
+            "strongest_source_blind_contested_accuracy": strongest_source_blind,
             "constrained_rate_baseline_accuracy": constrained_rate,
         },
         "mechanics_checks": mechanics_checks,
-        "mechanics_trigger_state": "GREEN" if all(mechanics_checks.values()) else "RED",
+        "mechanics_trigger_state": "GREEN" if mechanics_green else "RED",
         "causal_signal_diagnostics": signal_diagnostics,
+        "retrained_source_relation_contested_margins": retrained_source_relation_margins,
+        "retrained_source_relation_margin_summary": {
+            "minimum": min(retrained_source_relation_margins),
+            "mean": sum(retrained_source_relation_margins)
+            / len(retrained_source_relation_margins),
+            "maximum": max(retrained_source_relation_margins),
+            "all_positive": all(value > 0.0 for value in retrained_source_relation_margins),
+        },
+        "semantic_panel_checks": semantic_panel_checks,
         "causal_adequacy_checks": causal_adequacy_checks,
-        "causal_adequacy_trigger_state": (
-            "GREEN" if all(causal_adequacy_checks.values()) else "RED"
-        ),
+        "causal_adequacy_trigger_state": "GREEN" if causal_green else "RED",
         "learned_generalization_above_presence": learned_generalization,
         "learned_allocator_needed_beyond_constraint_engine": max(accuracies) > constrained_rate,
-        "semantic_panel_complete": False,
-        "canonical_long_training_authorized": False,
-        "learned_allocator_claimed": False,
-        "trigger_state": "YELLOW" if all(mechanics_checks.values()) else "RED",
+        "semantic_panel_complete": semantic_panel_complete,
+        "canonical_long_training_authorized": qualified,
+        "learned_allocator_claimed": qualified,
+        "trigger_state": "GREEN" if qualified else "YELLOW" if mechanics_green else "RED",
         "disposition": (
-            "INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL"
-            if all(mechanics_checks.values())
+            "QUALIFIED_FOR_CANONICAL_LONG_TRAINING"
+            if qualified
+            else "INCONCLUSIVE_EXPERIMENT_CAUSAL_OR_GENERALIZATION_GAP"
+            if mechanics_green
             else "INCONCLUSIVE_IMPLEMENTATION_REPAIR_OWNER"
         ),
         "recommendation": (
-            "Retain the deterministic hard-constraint/rate engine; do not give the "
-            "neural allocator long-training authority until source-dependent soft "
-            "semantic consequences and an independent human/executable evaluator "
-            "panel produce nondegenerate decisions."
+            "Use the qualified learned allocator behind the existing hard-constraint "
+            "engine in canonical long training."
+            if qualified
+            else "Repair the failed causal, semantic-panel, or held-out generalization "
+            "owner; do not interpret this bounded result as a KERC architecture failure."
         ),
-        "utility_claimed": False,
+        "utility_claimed": qualified,
         "scientific_negative_claimed": False,
         "retirement_authority": False,
         "public_training_rows_written": 0,

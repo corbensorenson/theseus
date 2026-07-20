@@ -62,7 +62,10 @@ from kerc_content_cache import (
     load_receipt as load_kerc_cache_receipt,
     publish_receipt as publish_kerc_cache_receipt,
 )
-from kerc_residual_interventions import compact_allocator_targets_for_record
+from kerc_residual_interventions import (
+    TARGET_PRODUCER_ID,
+    compact_allocator_targets_for_record,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1662,14 +1665,6 @@ def _compile_kernel_record_worker(
     split, record = payload
     record_binding = stable_hash(record)
     compact_targets = compact_allocator_targets_for_record(record)
-    existing_targets = (record.get("residual_supervision") or {}).get(
-        "unit_intervention_targets"
-    )
-    if existing_targets is not None and existing_targets != compact_targets:
-        raise ValueError(
-            "KERC embedded and derived unit intervention targets disagree: "
-            + str(record["record_sha256"])
-        )
     return {
         "split": split,
         "record_sha256": str(record["record_sha256"]),
@@ -1731,6 +1726,15 @@ def compile_selected_kernel_views(
                 intervention_counts["withheld_uncertain_unit_count"] += int(
                     summary.get("withheld_uncertain_unit_count") or 0
                 )
+                intervention_counts["source_dependent_decision_count"] += int(
+                    summary.get("source_dependent_decision_count") or 0
+                )
+                for label, count in (
+                    summary.get("authoritative_class_counts") or {}
+                ).items():
+                    intervention_counts[f"authoritative_class_{label}_count"] += int(
+                        count or 0
+                    )
                 intervention_receipts.append(
                     str(result.get("unit_intervention_receipt_sha256") or "")
                 )
@@ -1751,8 +1755,9 @@ def compile_selected_kernel_views(
         "raw_line_content_binding_required": True,
         "unit_intervention_targets": {
             **dict(intervention_counts),
-            "target_producer": "kerc_typed_causal_target_producer_v1",
+            "target_producer": TARGET_PRODUCER_ID,
             "target_producer_is_final_evaluator": False,
+            "surface_target_visible_to_model": False,
             "receipt_ledger_sha256": stable_hash(intervention_receipts),
             "public_or_hidden_target_used": False,
             "external_inference_calls": 0,
@@ -2656,8 +2661,9 @@ def validate_kernel_english_manifest(
         or intervention_authority <= 0
         or intervention_authority + intervention_withheld != intervention_units
         or intervention.get("target_producer")
-        != "kerc_typed_causal_target_producer_v1"
+        != TARGET_PRODUCER_ID
         or intervention.get("target_producer_is_final_evaluator") is not False
+        or intervention.get("surface_target_visible_to_model") is not False
         or intervention.get("public_or_hidden_target_used") is not False
         or int(intervention.get("external_inference_calls") or 0)
         or int(intervention.get("fallback_return_count") or 0)

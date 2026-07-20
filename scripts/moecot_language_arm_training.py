@@ -14,8 +14,10 @@ import base64
 import difflib
 import hashlib
 import json
+import math
 import os
 import random
+import re
 import shutil
 import sqlite3
 import subprocess
@@ -35,7 +37,112 @@ KERC_UNIT_KIND_IDS = {
     "concept_realization": 3,
     "exact_object": 4,
 }
-KERC_UNIT_CANDIDATE_FEATURE_DIM = 18
+KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM = 18
+KERC_UNIT_SOURCE_RELATION_FEATURE_DIM = 64
+KERC_UNIT_CANDIDATE_FEATURE_DIM = (
+    KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM + KERC_UNIT_SOURCE_RELATION_FEATURE_DIM
+)
+_KERC_RELATION_TOKEN_RE = re.compile(
+    r"[A-Za-z_][A-Za-z0-9_.:-]{1,}|-?\d+(?:\.\d+)?"
+)
+
+
+def _kerc_relation_tokens(value: str | bytes) -> tuple[str, ...]:
+    text = value.decode("utf-8", errors="ignore") if isinstance(value, bytes) else value
+    tokens: set[str] = set()
+    for raw in _KERC_RELATION_TOKEN_RE.findall(text):
+        token = raw.casefold()
+        token = re.sub(r"[0-9a-f]{12,}", "<id>", token)
+        token = re.sub(r"\d+", "<n>", token)
+        for part in re.split(r"[.:-]+", token):
+            if len(part) >= 2:
+                tokens.add(part)
+    return tuple(sorted(tokens))
+
+
+def _signed_hash_sketch(tokens: tuple[str, ...], width: int, namespace: str) -> np.ndarray:
+    result = np.zeros(width, dtype=np.float32)
+    for token in tokens:
+        digest = hashlib.sha256(f"{namespace}:{token}".encode()).digest()
+        bucket = int.from_bytes(digest[:4], "big") % width
+        result[bucket] += 1.0 if digest[4] & 1 else -1.0
+    norm = float(np.linalg.norm(result))
+    return result / norm if norm > 0.0 else result
+
+
+def kerc_unit_source_relation_features(
+    *, prompt: str, source_path: str, payload: bytes
+) -> np.ndarray:
+    """Encode source-only unit-to-task relations without target/evaluator access."""
+
+    try:
+        parsed = json.loads(prompt)
+    except json.JSONDecodeError as exc:
+        raise ValueError("KERC allocator prompt must be canonical structured JSON") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError("KERC allocator prompt must contain a structured source object")
+    # The residual inventory itself would make every unit trivially overlap.  Task
+    # relevance is measured against the source-side program and governed objects.
+    context = {
+        key: parsed.get(key)
+        for key in (
+            "program",
+            "concept_capsules",
+            "protected_objects",
+            "source_character_length",
+        )
+        if key in parsed
+    }
+    context_text = json.dumps(
+        context, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    )
+    unit_tokens = _kerc_relation_tokens(payload)
+    path_tokens = _kerc_relation_tokens(source_path)
+    context_tokens = _kerc_relation_tokens(context_text)
+    unit_set = set(unit_tokens)
+    path_set = set(path_tokens)
+    context_set = set(context_tokens)
+    overlap = tuple(sorted(unit_set & context_set))
+    path_overlap = tuple(sorted(path_set & context_set))
+    payload_size = max(1, len(payload))
+    scalars = np.asarray(
+        [
+            min(1.0, math.log1p(len(payload)) / 12.0),
+            min(1.0, math.log1p(len(context_text.encode("utf-8"))) / 14.0),
+            min(1.0, math.log1p(len(source_path)) / 8.0),
+            sum(32 <= value < 127 for value in payload) / payload_size,
+            min(1.0, len(unit_tokens) / 64.0),
+            min(1.0, len(context_tokens) / 512.0),
+            min(1.0, len(overlap) / 16.0),
+            len(overlap) / max(1, len(unit_tokens)),
+            min(1.0, len(path_overlap) / 8.0),
+            len(path_overlap) / max(1, len(path_tokens)),
+            sum(48 <= value <= 57 for value in payload) / payload_size,
+            sum(65 <= value <= 90 for value in payload) / payload_size,
+            sum(value in b"{}[],:" for value in payload) / payload_size,
+            float(bool(parsed.get("protected_objects"))),
+            float(bool(parsed.get("concept_capsules"))),
+            float(bool((parsed.get("program") or {}).get("tokens"))),
+        ],
+        dtype=np.float32,
+    )
+    features = np.concatenate(
+        [
+            scalars,
+            _signed_hash_sketch(unit_tokens, 16, "unit"),
+            _signed_hash_sketch(context_tokens, 16, "context"),
+            _signed_hash_sketch(
+                tuple(sorted(set(overlap) | {f"path:{value}" for value in path_tokens})),
+                16,
+                "relation",
+            ),
+        ]
+    )
+    if features.shape != (KERC_UNIT_SOURCE_RELATION_FEATURE_DIM,) or not np.isfinite(
+        features
+    ).all():
+        raise ValueError("invalid KERC source-relation feature vector")
+    return features.astype(np.float32)
 
 
 def materialize_kerc_unit_allocator_row(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -54,6 +161,9 @@ def materialize_kerc_unit_allocator_row(row: dict[str, Any]) -> dict[str, Any] |
     confidence: list[float] = []
     authority: list[float] = []
     unit_ids: list[str] = []
+    prompt = str(row.get("prompt") or "")
+    if not prompt:
+        raise ValueError("KERC per-unit allocation row has no source prompt")
     for target in targets:
         unit_id = str(target.get("unit_id") or "")
         kind = str(target.get("unit_kind") or "")
@@ -81,6 +191,9 @@ def materialize_kerc_unit_allocator_row(row: dict[str, Any]) -> dict[str, Any] |
             ),
         )
         maximum_distortion = float(target.get("maximum_structural_distortion") or 0.0)
+        relation_features = kerc_unit_source_relation_features(
+            prompt=prompt, source_path=source_path, payload=payload
+        )
         features = []
         hard = []
         for index, (candidate, visible) in enumerate(zip(candidates, source_visible)):
@@ -102,6 +215,9 @@ def materialize_kerc_unit_allocator_row(row: dict[str, Any]) -> dict[str, Any] |
                 maximum_distortion,
                 *[-1.0 if value is None else float(value) for value in distortion],
             ]
+            if len(feature) != KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM:
+                raise ValueError(f"invalid KERC unit base feature vector: {unit_id}:{index}")
+            feature.extend(float(value) for value in relation_features)
             if len(feature) != KERC_UNIT_CANDIDATE_FEATURE_DIM or not np.isfinite(feature).all():
                 raise ValueError(f"invalid KERC unit feature vector: {unit_id}:{index}")
             features.append(feature)
@@ -842,7 +958,7 @@ def model_accounting(
             "kerc_residual_choice_count": 4,
             "kerc_residual_bottleneck_dim": 64,
             "kerc_residual_unit_kind_count": 5,
-            "kerc_residual_unit_feature_dim": 18,
+            "kerc_residual_unit_feature_dim": KERC_UNIT_CANDIDATE_FEATURE_DIM,
             "kerc_residual_unit_byte_vocab_size": 257,
             "kerc_verifier_dim": 64,
         }

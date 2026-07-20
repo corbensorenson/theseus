@@ -1,24 +1,24 @@
 {
   "artifacts": {
     "english:private_dev": {
-      "bytes": 253689871,
+      "bytes": 230459509,
       "path": "data/training_data/moecot_kernel_english_v1/private_dev.jsonl",
       "row_count": 8690,
-      "sha256": "22432e674dbe5c244622c03ee318fc088f6652a788496288318cf1e62a825042",
+      "sha256": "db2e80c0f141d36f6594ced6d298546227fd36c53fa0298612e51a3b471def09",
       "unique_record_count": 3621
     },
     "english:private_eval": {
-      "bytes": 183677222,
+      "bytes": 167747713,
       "path": "data/training_data/moecot_kernel_english_v1/private_eval.jsonl",
       "row_count": 7704,
-      "sha256": "ec8212cf449cf8193548d1788a01377ea812e67e4363556ebb2eacfe20480a9b",
+      "sha256": "550292a64180fcc1c08735a5718bff14e92eb416d001f7df4d6c69874c1ab444",
       "unique_record_count": 3350
     },
     "english:private_train": {
-      "bytes": 937046539,
+      "bytes": 857582173,
       "path": "data/training_data/moecot_kernel_english_v1/private_train.jsonl",
       "row_count": 37048,
-      "sha256": "d3c1dc7cd4c5be8f135d9f319d10367900dc25f0a54bd25f3fa9020cc82083ba",
+      "sha256": "6203a676954e119d9acd487861440db23cca2fc3ce4826f02597b1fa1fcf3d98",
       "unique_record_count": 14238
     }
   },
@@ -91,11 +91,11 @@
     "unique_source_credit": 0
   },
   "contract_sha256": "a15f7c4572a9e7abf422815ad46f09a98be9208eb6cf56d3f6fa405d39737a74",
-  "created_utc": "2026-07-20T04:49:23.918125Z",
+  "created_utc": "2026-07-20T06:35:31.406251Z",
   "derived_view_optimizer_exposure_count": 53442,
   "derived_view_unique_data_credit": 0,
   "deterministic_renderer_credit": 0,
-  "elapsed_seconds": 1872.238122,
+  "elapsed_seconds": 1998.077917,
   "encoded_length_stats": {
     "private_dev": {
       "maximum_sequence_tokens": 13963,
@@ -285,7 +285,7 @@
   },
   "materialization_cache": {
     "cache_hit_authorizes_capability_claim": false,
-    "cache_key_sha256": "f8cee00067169b37065b4f7e5f7d3540557df8ef23e20d46088043e81b0a6bc6",
+    "cache_key_sha256": "8b1b46c056a05eac7c9665caaca678b2cb921212f3aeab516640fbdf0761a143",
     "dependency_count": 12,
     "enabled": true,
     "exact_dependency_binding_required": true,
@@ -295,7 +295,7 @@
   },
   "materialization_execution": {
     "batch_rows": 256,
-    "compilation_seconds": 548.138319,
+    "compilation_seconds": 678.083178,
     "compilation_workers": 8,
     "compiled_record_count": 21209,
     "compiled_view_count": 53442,
@@ -304,20 +304,26 @@
     "policy": "project_theseus_kerc_bounded_parallel_materialization_v1",
     "raw_line_content_binding_required": true,
     "unit_intervention_targets": {
-      "allocator_authority_unit_count": 138930,
+      "allocator_authority_unit_count": 69979,
+      "authoritative_class_0_count": 0,
+      "authoritative_class_1_count": 34717,
+      "authoritative_class_2_count": 9667,
+      "authoritative_class_3_count": 25595,
       "candidate_intervention_count": 640556,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
       "public_or_hidden_target_used": false,
-      "receipt_ledger_sha256": "sha256:11efad604b307aa50bcd0e3009774059d34cf922331db29000d8996a8cbfd12a",
+      "receipt_ledger_sha256": "sha256:45c929e834a313dbb0a4fa8ff1294a25210dd898a98d595594032ba62dc927e3",
       "record_count": 21209,
-      "target_producer": "kerc_typed_causal_target_producer_v1",
+      "source_dependent_decision_count": 14395,
+      "surface_target_visible_to_model": false,
+      "target_producer": "kerc_typed_semantic_consequence_target_producer_v2",
       "target_producer_is_final_evaluator": false,
       "unit_count": 160139,
-      "withheld_uncertain_unit_count": 21209
+      "withheld_uncertain_unit_count": 90160
     },
     "validated_candidate_count": 27941,
-    "validation_seconds": 710.832876,
+    "validation_seconds": 692.551761,
     "validation_workers": 8
   },
   "mode": "materialized",

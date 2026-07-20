@@ -78,10 +78,7 @@ from kerc_residual_economics import (
     residual_wire_bytes,
     validate_structural_rate_distortion_allocation,
 )
-from kerc_residual_interventions import (
-    build_unit_intervention_targets,
-    compact_allocator_targets,
-)
+from kerc_residual_interventions import validate_compact_allocator_targets
 from kerc_source_family_identity import (
     PRODUCER_FAMILY_ROOTS,
     VERIFIER_FAMILY_ROOTS,
@@ -4279,23 +4276,10 @@ def independently_audit_residual_unit_packet(record: dict[str, Any]) -> dict[str
     compact_targets = supervision.get("unit_intervention_targets")
     target_audit = None
     if compact_targets is not None:
-        expected_targets = compact_allocator_targets(
-            build_unit_intervention_targets(
-                unit_packet=residual.get("unit_packet") or {},
-                source_record_sha256=str(
-                    (residual.get("unit_packet") or {}).get("source_record_sha256")
-                    or ""
-                ),
-                global_state=(record.get("hrl_state") or {}).get("global") or {},
-                segment_residual=residual.get("segment_frame") or {},
-                token_residuals=list(residual.get("token_tags") or []),
-                concept_capsules=packet.get("concept_capsules") or {},
-                exact_objects=packet.get("protected_objects") or {},
-                source_family=str((record.get("provenance") or {}).get("source_group") or ""),
-            )
+        expected_targets = validate_compact_allocator_targets(
+            compact_targets,
+            unit_packet=residual.get("unit_packet") or {},
         )
-        if compact_targets != expected_targets:
-            raise ValueError("candidate unit-intervention target replay mismatch")
         target_audit = {
             "receipt_sha256": expected_targets["receipt_sha256"],
             "unit_count": expected_targets["summary"]["unit_count"],
@@ -4303,6 +4287,8 @@ def independently_audit_residual_unit_packet(record: dict[str, Any]) -> dict[str
                 "allocator_authority_unit_count"
             ],
             "target_producer_is_final_evaluator": False,
+            "legacy_embedded_stage_projection": True,
+            "current_k3_owner": "canonical_compiled_training_stage",
         }
     unit_packet = residual.get("unit_packet") or {}
     core = {

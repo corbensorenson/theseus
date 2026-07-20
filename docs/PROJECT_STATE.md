@@ -21,10 +21,11 @@ share toward zero. Public benchmarks are calibration only.
   protected-span reconstruction, checkpoint reload, repeated fresh-process resume, and
   joint-objective decision retention. The enclosing bounded mechanics canary is GREEN with
   no hard or inconclusive gaps. K2 now adds a fully source-replayed per-unit structural
-  packet and exact KPP-1.1 migration. K3 now has a real ragged MLX per-unit allocator and
-  full-corpus intervention-target path, but its present target is degenerate under the
-  strong deterministic control; causal adequacy is RED and long training fails closed.
-  The prior freeze package remains stale because repaired K3 and K4-K7 construct-validity
+  packet and exact KPP-1.1 migration. K3 now has a causally qualified ragged MLX per-unit
+  allocator: five source-disjoint seeds beat both the strongest source-blind schedule
+  baseline and five matched retrained source-relation-zero controls, while the independent
+  human panel passes semantic, safety, and rate-regret checks. Canonical allocator loss is
+  authorized. The prior freeze package remains stale because K4-K7 construct-validity
   owners plus final cross-owner replay are still open.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
@@ -63,14 +64,14 @@ share toward zero. Public benchmarks are calibration only.
   27,941 records with separate source residual/render-plan identities, four real payload
   candidates, exact conditional codec costs, per-unit constraints, causal no-self-
   conditioning, and exact KPP-1.1 migration. K3 materializes 160,139 one-unit intervention
-  targets over 21,209 governed records, with 138,930 authoritative and 21,209 uncertainty-
-  withheld decisions. Three source-family-disjoint MLX seeds pass gradient, overfit, hard-
-  constraint, and strict-reload mechanics. They do not establish causal learning: the
-  constrained-rate baseline and every seed score 1.0, content shuffle and feature/kind
-  zeroing change zero predictions, and an independently implemented panel measures 408,064
-  bits of rate regret. The disposition is
-  `INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL`; the deterministic
-  engine remains authoritative and K3 stays open without a KERC failure claim.
+  targets over 21,209 governed records, with 69,979 authoritative and 90,160 uncertainty-
+  withheld decisions. Five source-family-disjoint MLX seeds reach `0.9697-0.9710`
+  contested accuracy versus `0.8638` for the strongest source-blind schedule baseline.
+  Five matched retrained source-relation-zero controls are worse on every seed by
+  `0.0094-0.1025` (mean `0.0326`). The independent human panel covers 3,061 adjudicated
+  units across ten policies with `0.9971` decision agreement, `0.9983` fact recall,
+  `0.00294` semantic violations, zero hard violations, and zero adjudicated rate regret.
+  K3 is qualified for canonical allocator loss; K4-K7 and end-to-end utility remain open.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim

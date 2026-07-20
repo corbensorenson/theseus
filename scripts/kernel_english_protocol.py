@@ -43,6 +43,7 @@ from kerc_residual_economics import (
 )
 from kerc_residual_interventions import (
     InterventionTargetFault,
+    TARGET_PRODUCER_ID,
     validate_compact_allocator_targets,
 )
 from vcm_semantic_memory import (
@@ -2565,11 +2566,20 @@ def compile_training_views(
     compact_unit_targets = derived_unit_intervention_targets or embedded_targets or {}
     if derived_unit_intervention_targets is not None:
         if embedded_targets is not None and embedded_targets != derived_unit_intervention_targets:
-            raise KernelProtocolFault(
-                "KERC_DERIVED_INTERVENTION_TARGET_MISMATCH",
-                str(record["record_sha256"]),
-                path="derived_unit_intervention_targets",
+            legacy_embedded = embedded_targets.get("target_producer_id") in {
+                None,
+                "kerc_typed_causal_target_producer_v1",
+            }
+            current_derived = (
+                derived_unit_intervention_targets.get("target_producer_id")
+                == TARGET_PRODUCER_ID
             )
+            if not (legacy_embedded and current_derived):
+                raise KernelProtocolFault(
+                    "KERC_DERIVED_INTERVENTION_TARGET_MISMATCH",
+                    str(record["record_sha256"]),
+                    path="derived_unit_intervention_targets",
+                )
         try:
             validate_compact_allocator_targets(
                 derived_unit_intervention_targets,

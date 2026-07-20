@@ -19,6 +19,7 @@ if str(SCRIPTS) not in sys.path:
 
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
+    KERC_UNIT_CANDIDATE_FEATURE_DIM,
     RaggedRows,
     architecture_training_authority,
     audit_arm_views,
@@ -110,6 +111,14 @@ def test_kerc_unit_allocator_rows_materialize_ragged_source_visible_features() -
     row = materialize_kerc_unit_allocator_row(
         {
             "kerc_residual_unit_allocator_loss_enabled": True,
+            "prompt": json.dumps(
+                {
+                    "program": {"tokens": ["KOP:FIXTURE"]},
+                    "concept_capsules": {},
+                    "protected_objects": {},
+                    "residual": {"tokens": ["typed-unit"]},
+                }
+            ),
             "kerc_residual_unit_targets": [
                 {
                     "unit_id": "ru:fixture",
@@ -127,7 +136,11 @@ def test_kerc_unit_allocator_rows_materialize_ragged_source_visible_features() -
         }
     )
     assert row is not None
-    assert row["candidate_features"].shape == (1, 4, 18)
+    assert row["candidate_features"].shape == (
+        1,
+        4,
+        KERC_UNIT_CANDIDATE_FEATURE_DIM,
+    )
     assert row["hard_block_mask"].tolist() == [[True, False, False, False]]
     packed = pack_kerc_unit_allocator_batch([row, None])
     assert packed is not None
@@ -145,6 +158,7 @@ def test_kerc_unit_allocator_long_training_fails_closed_without_semantic_authori
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
+    config["kerc_unit_allocator_qualification"] = "runtime/missing-qualification.json"
     authority = kerc_unit_allocator_training_authority(config)
     assert authority["authorized"] is False
     assert authority["gaps"]

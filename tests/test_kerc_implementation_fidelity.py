@@ -88,6 +88,9 @@ class KercImplementationFidelityTests(unittest.TestCase):
         contract = copy.deepcopy(self.contract)
         row = next(item for item in contract["mechanisms"] if item["id"] == "kerc.learned_per_unit_allocator")
         row["status"] = "faithful"
+        contract["observed_corpus_contract"]["per_unit_allocation_receipt_count"] = 0
+        contract["observed_corpus_contract"]["per_unit_intervention_target_count"] = 0
+        contract["observed_corpus_contract"]["per_unit_authoritative_target_count"] = 0
         report = fidelity.audit_mechanisms(
             contract,
             root=ROOT,
@@ -108,7 +111,7 @@ class KercImplementationFidelityTests(unittest.TestCase):
                         "candidate_intervention_count": 20,
                         "allocator_authority_unit_count": 4,
                         "withheld_uncertain_unit_count": 1,
-                        "target_producer": "kerc_typed_causal_target_producer_v1",
+                        "target_producer": "kerc_typed_semantic_consequence_target_producer_v2",
                         "target_producer_is_final_evaluator": False,
                         "public_or_hidden_target_used": False,
                         "external_inference_calls": 0,
@@ -121,7 +124,7 @@ class KercImplementationFidelityTests(unittest.TestCase):
                 "allocator_stage_evidence": {
                     "manifest_path": str(path),
                     "manifest_sha256": fidelity.sha256_file(path),
-                    "required_target_producer": "kerc_typed_causal_target_producer_v1",
+                    "required_target_producer": "kerc_typed_semantic_consequence_target_producer_v2",
                 }
             }
             report = fidelity.audit_allocator_stage(contract, root=ROOT)

@@ -119,7 +119,7 @@
     "kerc_residual_choice_count": 4,
     "kerc_residual_bottleneck_dim": 64,
     "kerc_residual_unit_kind_count": 5,
-    "kerc_residual_unit_feature_dim": 18,
+    "kerc_residual_unit_feature_dim": 82,
     "kerc_residual_unit_byte_vocab_size": 257,
     "kerc_verifier_dim": 64,
     "kerc_decision_bottleneck_dim": 64,

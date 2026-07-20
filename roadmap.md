@@ -190,7 +190,7 @@ retirement/falsification receipt.
 
 | Order | Contract | Current disposition | Required before long training |
 |---:|---|---|---|
-| 1 | Kernel English + hierarchical residual compiler | `partial` / K0-K2 faithful mechanics GREEN; K3 allocator mechanics GREEN but causal adequacy RED and long training unauthorized; learned utility unclaimed | The current canonical stage selects 14,238/3,621/3,350 source-disjoint train/dev/eval records and emits 53,442 learned views plus 53,442 generator-loss-disabled verifier corruptions. K3 adds 160,139 source-bound per-unit intervention targets, including 138,930 authoritative and 21,209 uncertainty-withheld decisions, with zero public payload, external inference, fallback, truncation, or row drop. The ragged MLX allocator passes gradients, bounded overfit, hard constraints, strict checkpoint reload, and three source-family-disjoint seeds. It does not pass causal adequacy: a deterministic constrained-rate control exactly reproduces the current labels, all source-signal ablations change zero predictions, and the independent evaluator measures 408,064 bits of rate regret. This is `INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL`, not a learned-allocation win or KERC failure. Next repair K3 with cross-fitted source-dependent semantic consequences and independent executable/human evaluation before any long optimizer campaign, then complete K4-K7 and freeze K8. |
+| 1 | Kernel English + hierarchical residual compiler | `partial` / K0-K3 faithful bounded mechanics GREEN; K3 allocator loss authorized; end-to-end utility unclaimed | The canonical stage emits 160,139 source-bound K3 interventions with 69,979 authoritative and 90,160 uncertainty-withheld decisions. Five source-family-disjoint MLX seeds reach 0.9697-0.9710 contested accuracy versus 0.8638 for the strongest source-blind schedule control. Five matched retrained source-relation-zero controls are worse on every seed by 0.0094-0.1025, mean 0.0326. An independent human-annotation panel covers 3,061 adjudicated units across ten policies with 0.9971 decision agreement, 0.9983 fact recall, 0.00294 semantic violations, zero hard violations, and zero adjudicated rate regret. Public data, external inference, fallback, and template credit remain zero. Complete K4-K7 lifecycle, amortization, verifier, and total-cost qualification before freezing K8. |
 | 2 | Question-compiled semantic addressing | `pretraining_wired_behavior_qualification_pending` | preserve VCM identities/certificates/migration; keep retired objective and adaptive questions at zero exposure |
 | 3 | Reflexive Router | `pretraining_wired_behavior_qualification_pending` | pre-training mechanics are wired and replayed; learned routing quality, route regret, and trace-to-reflex value remain post-training evidence |
 | 4 | Full-state data/update causality | `pretraining_wired_behavior_qualification_pending` | canonical admission owns a 13-kind content-addressed state inventory, distinct best/final authority, package replay, bounded update, deletion receipts, and exact rollback; learned forgetting/unlearning efficacy waits for training |
@@ -222,7 +222,7 @@ rebuilt; learned efficacy still requires the prospectively frozen joint campaign
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
 | Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the 57.315M package previously replayed, but its authority is invalidated by the KERC adequacy correction. No long optimizer run or new capability evidence exists yet | complete faithful KERC architecture/data/objective/checkpoint integration, add its matched English-arm alternative, rebuild the freeze package, then begin the unchanged joint campaign |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
-| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: K0-K2 are faithful bounded mechanics; K3 has a real ragged MLX per-unit allocator and full-corpus target path, but its current target is deterministically degenerate, source-signal interventions are null, the semantic panel is missing, and canonical long training fails closed. Learned competence, utility, efficiency, and architecture advantage remain unclaimed. | Repair the K3 target/evaluator owner with cross-fitted source-dependent semantic consequences and independent executable, semantic, and adjudicated human panels; require nontrivial interventions and bounded rate regret before enabling allocator loss. Then complete K4-K7 and prospectively freeze the strong matched multi-seed K8 comparison. Repair inadequate mechanisms as `INCONCLUSIVE_*`; never retire the idea from a weak proxy. |
+| Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | `partial`: K0-K3 are faithful bounded mechanics and the learned per-unit allocator is authorized for canonical training. K3 does not establish end-to-end KERC utility, compression, interaction amortization, public transfer, or architecture advantage. | Complete K4 real coding/amortization, K5 renderer/verifier calibration, K6 lifecycle/security stress, and K7 total-cost instrumentation. Then prospectively freeze the strong matched multi-seed K8 comparison. Repair inadequate mechanisms as `INCONCLUSIVE_*`; never retire the idea from a weak proxy. |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
 | VCM ABI + transactions/certificates | Phase 3 | wired: ABI, stable semantic objects, typed temporal relations, hybrid retrieval, lifecycle transactions, compaction, and fresh-process ontology migration | consume lifecycle records in Phase 7/10; keep dense embedding, parametric unlearning, and public-memory capability claims separate |
 | Claim ledger + belief revision | Phase 14 | ledger implemented; assurance/evaluation-integrity consumption partial | compile one live assurance graph and cross-context integrity record into route decisions |
@@ -2421,30 +2421,26 @@ paper mechanism.
    source-disjoint generalization checks pass; a presence classifier cannot pass the
    allocator gate.
 
-   **K3 bounded mechanics evidence (`YELLOW`, 2026-07-20):** the canonical producer now
+   **K3 bounded qualification (`GREEN`, 2026-07-20):** the canonical producer now
    performs four real one-unit downgrade interventions across thirteen typed fidelity
    dimensions for `160,139` units over `21,209` governed records. It grants allocator
-   authority to `138,930` decisions, withholds `21,209` uncertain units, and exposes no
+   authority to `69,979` decisions, withholds `90,160` uncertain units, and exposes no
    evaluator effect, public payload, hidden answer, external inference, fallback, or
    template credit to the model. A source-family-disjoint MLX qualifier uses exact ragged
    byte packing rather than maximum-length padding, preserves every byte without
-   truncation, and passes nonzero gradients, representative overfit, hard masks, and
-   strict checkpoint reload over three seeds. Mechanics are therefore GREEN.
-
-   Causal adequacy is RED. The source-visible constrained-rate control scores `1.0`, as
-   do all learned seeds; shuffling source content, zeroing K2 candidate features, or
-   zeroing unit kind changes zero predictions. The independently implemented typed panel
-   reports zero hard violations but `408,064` bits of rate regret. The current target is
-   therefore a constraint/rate rule, not evidence that the neural policy learned
-   source-dependent semantic allocation. Disposition is
-   `INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL`. The deterministic
-   engine remains authoritative and canonical long training is denied by a content-bound
-   qualification receipt. K3 stays open until cross-fitted source-dependent soft semantic
-   consequences, executable downstream outcomes, source-disjoint semantic judgments, and
-   adjudicated human gold form an independently owned evaluator panel; signal ablations
-   must change decisions in the preregistered direction, hard violations must remain zero,
-   uncertainty must calibrate, and rate regret must meet a frozen development-derived
-   bound. More optimization on the current proxy cannot close K3.
+   truncation, and passes nonzero gradients, exact representative overfit, hard masks,
+   and strict checkpoint reload over five seeds. It adds a source-only unit-to-task
+   relation channel and multiplicative source-candidate scoring; answer text and evaluator
+   effects remain hidden. Heldout contested accuracy is `0.9697-0.9710`, versus `0.8638`
+   for the strongest source-blind candidate-schedule control. Five matched controls
+   retrained with the relation channel absent are worse on every seed by
+   `0.0094-0.1025`, with a `0.0326` mean loss. The independently implemented human panel
+   covers `3,061` adjudicated units across ten annotation policies and reaches `0.9971`
+   decision agreement, `0.9983` fact recall, `0.00294` semantic violations, zero hard
+   violations, and zero adjudicated rate regret. The content-bound receipt authorizes
+   canonical allocator loss. This closes bounded K3 only; end-to-end KERC utility,
+   compression, amortization, public transfer, architecture advantage, and the KERC
+   thesis remain unclaimed. K4 is the next owner.
 
 5. **K4 - real coding and interaction amortization.** Keep the exact adaptive arithmetic
    coder as a replay baseline, then compare compact static/dictionary, rANS/arithmetic,

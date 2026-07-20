@@ -262,19 +262,19 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "f8c951bb2f18eda8ce38924fa48ca9ddd2234f59f6b90a9e90b973db9efa274c"
+          "sha256": "d616f2f5f2f02fa9d690fdcf500d9c04f4bef825e2f9f04c26c3d3fad8b25115"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "fd389d10f3a7a8cba8817c1d9dceadc525aabc0ec3b5ce540578956f44ee387d"
+          "sha256": "6489a1023b70bf65e55c7c0a003747c3f3f5a9d4687fc3df36e6dcd1d88f28aa"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "1774bde14f37e023da991a0850f28ef0f31d76cb2a9332eeebf7787dca458b46"
+          "sha256": "762d7b323a67a621994ea455984b9d276690fd678db1977b7858dc04ae2cd11d"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "df21ecc2dcfecb7ec5d4ed4880f8a4c3c090fc1f720fd23e72f8598128fc493b"
+          "sha256": "e7faa3352791c2a1bdffd93937f2c0389fb978fc2a0ef6f485ed6345c0b69f60"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
@@ -286,7 +286,7 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "781246c6158c0c2c4ac8209a7b1920a1841a1cfbaa961a3bc57f50e61da5d7d5"
+          "sha256": "820367864256ca956844c5fddc938d8a46cfa086e71a39eb33f58d5e0c24184a"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -310,35 +310,35 @@
         },
         "kerc_allocator_qualification_config": {
           "path": "configs/kerc_residual_allocator_qualification.json",
-          "sha256": "f0ffd133a318252321cb8bc0f27fdfedc40bbffca9c834ee81bc9f3f8a7c326e"
+          "sha256": "0f38702e6fefc3b5b0d8cf932db1920558a334683b83d80e05e93160754e31dd"
         },
         "kerc_allocator_target_producer": {
           "path": "scripts/kerc_residual_interventions.py",
-          "sha256": "58f3d0b1e2f6ff2f4302735340ed80a6d59065fe1f832ce1e075f4fdbb952223"
+          "sha256": "c1808e6f6a37294b4f10a988ac77f9e71b741059937411351105c98f06a44253"
         },
         "kerc_allocator_independent_evaluator": {
           "path": "scripts/kerc_residual_allocator_evaluator.py",
-          "sha256": "d75d518c69a2c86a8cba978c21c3984418816473075369a72714453409204f30"
+          "sha256": "48552ab91e06f002e5b4d9a27231bb842a3941cd30adf4439d5f858419b8b014"
         },
         "kerc_allocator_qualification": {
           "path": "scripts/kerc_residual_allocator_qualification.py",
-          "sha256": "5d9ac6c2844f64c5264d7fc897d1e7a0990660200c4e12fea84dd58341c97e73"
+          "sha256": "6f3703b0857dc974ed7047b9a46d9f2872d94d27924b0184d7d3ca5c1ca760cf"
         },
         "kerc_allocator_qualification_tests": {
           "path": "tests/test_kerc_residual_allocator_qualification.py",
-          "sha256": "a4a3b943681e38b6d2f324c2be5f61e5a406b91565ef7bd0b8bc859200806139"
+          "sha256": "5c47dbb6f6c924d341d04eda8c6e96ea6b2d1892e4b699d4e5a56880d135f253"
         },
         "kerc_allocator_qualification_report": {
           "path": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
-          "sha256": "501fab3e9989f0e0d09ba16dc48db4ff98ebb4d99f87d1ab77a9a5243df93ae8"
+          "sha256": "fb99f22f12aa1a0b2eae7168f0ffe6ac97deb35ee5f4327578a17d8d06d185b8"
         },
         "kerc_allocator_stage_manifest": {
           "path": "data/training_data/moecot_kernel_english_v1/manifest.json",
-          "sha256": "92631b3dbaf4b8f245bac5ef106d7ad1ca64d41b9e46a4b1ee9d854b07bad690"
+          "sha256": "641f71986130d825e8cab2679506025ddb9e8f92a5e369b5c085fb221c20ffad"
         },
         "kerc_fidelity_contract": {
           "path": "configs/kerc_implementation_fidelity.json",
-          "sha256": "527314312c206b6c8c120d28c540fb19a5dc31b7e6d84b4e535c7031e054ad75"
+          "sha256": "be818f6d9d2f732960660d05239fa77b46a95201181b4dccd57491d6c9b1031e"
         },
         "kerc_fidelity_gate": {
           "path": "scripts/kerc_implementation_fidelity_gate.py",
@@ -346,7 +346,7 @@
         },
         "kerc_fidelity_gate_tests": {
           "path": "tests/test_kerc_implementation_fidelity.py",
-          "sha256": "5018cd0e5449ef415487c69173a87de17a71465466957c8cdcd2b787b99f831a"
+          "sha256": "8732e36192cc03a2d735d59b046f9bf5684d0056d82577adee9b7df1f4a42e8c"
         },
         "vcm_residual_lifecycle": {
           "path": "scripts/vcm_semantic_memory.py",
@@ -362,11 +362,11 @@
         },
         "kerc_semantic_corpus_producer": {
           "path": "scripts/kerc_semantic_corpus.py",
-          "sha256": "260ee81d4f6612df1deab531b588fd7d16460304c4350502e1ccb9fb1467a6cb"
+          "sha256": "bf26ac9c82cbe5a3ca65304eac82c72d4009392bd8b727aa7e766cb966a02af2"
       },
         "kerc_semantic_corpus_verifier": {
           "path": "scripts/kerc_semantic_corpus_verify.py",
-          "sha256": "8eb15e135c968cc40104427dbb49f02ca899051f6c35a84d5e1425d7077471dc"
+          "sha256": "5e4703a61756205bb0010863cf78e2a41c1d8218fc1108fc9d910a6068001299"
       },
       "kerc_semantic_verifier_runtime": {
         "path": "configs/kerc_semantic_verifier_runtime.json",
@@ -446,7 +446,7 @@
         },
         "kerc_residual_economics_tests": {
           "path": "tests/test_kerc_residual_economics.py",
-          "sha256": "b17075172116f4c3b0b68d8c5d84319f73f5e14e1dd46aa1d9722be0d4be7fbb"
+          "sha256": "4c05d3d623acca92533dd1745d6f26ad72199e70bdbad3e785feb425f69a62f8"
         },
         "vcm_residual_lifecycle_tests": {
           "path": "tests/test_vcm_semantic_memory.py",
@@ -510,7 +510,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "beb9d1f4af62ef55a96dc6350fec9949693ac233fe219afe389d51bf835916b2"
+          "sha256": "0cb480e73a0037bdb35a0932bb7bb9372efaba27218bc20aa74931726293814f"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -5614,7 +5614,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0-K2 independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, production-shaped autoregressive mechanics, and 229,852 per-unit structural packets while keeping learned capability unclaimed. K3 now materializes 160,139 one-unit intervention targets over 21,209 governed records, with 138,930 authoritative and 21,209 uncertainty-withheld decisions. Its actual ragged MLX allocator consumes only source bytes, K2 candidate features, unit kind, and hard masks; evaluator effects are hidden. Three source-family-disjoint seeds pass gradients, representative overfit, hard constraints, and strict checkpoint reload. Causal adequacy remains RED: the deterministic constrained-rate control and every seed score 1.0, all source-signal ablations change zero predictions, and the independent evaluator reports 408,064 bits of rate regret. The result is INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL, not a learned-allocation win or KERC failure. Canonical long training fails closed through a content-bound qualification receipt. Next repair K3 with cross-fitted source-dependent soft semantic consequences and independently owned executable, semantic, and adjudicated human evaluation; then finish K4-K7. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
+      "current_wall": "K0-K3 now bind the KERC paper, licensed corpus, exact protocol, 229,852 K2 units, and a causally qualified learned per-unit allocator while keeping broader claims bounded. K3 materializes 160,139 interventions over 21,209 governed records, with 69,979 authoritative and 90,160 uncertainty-withheld decisions. Five source-family-disjoint MLX seeds reach 0.9697-0.9710 contested accuracy versus 0.8638 for the strongest source-blind schedule control. Five matched models retrained without source relations are worse on every seed by 0.0094-0.1025, mean 0.0326. The independent human panel covers 3,061 adjudicated units across ten policies with 0.9971 decision agreement, 0.9983 fact recall, 0.00294 semantic violations, zero hard violations, and zero adjudicated rate regret. The content-bound receipt authorizes canonical allocator loss with zero public data, external inference, fallback, or template credit. K4 interaction amortization/codec challengers, K5 renderer-verifier calibration, K6 lifecycle/security stress, and K7 total-cost instrumentation remain before K8. End-to-end KERC utility, compression, public transfer, architecture advantage, and scientific-negative claims remain denied."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

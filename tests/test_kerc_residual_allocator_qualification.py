@@ -13,12 +13,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from kerc_residual_allocator_qualification import (  # noqa: E402
+    ablated_rows,
     allocator_input_shape,
     baseline_metrics,
     load_independent_eval_records,
     load_split_rows,
     select_rows,
     validate_config,
+)
+from moecot_language_arm_training import (  # noqa: E402
+    KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM,
+    KERC_UNIT_CANDIDATE_FEATURE_DIM,
 )
 
 
@@ -147,3 +152,22 @@ def test_independent_evaluator_lookup_is_bound_to_record_not_unit_tuple(
     result = load_independent_eval_records(path, selected)
     assert set(result) == {"sha256:" + "b" * 64}
     assert result["sha256:" + "b" * 64]["variant"] == "b"
+
+
+def test_source_relation_shuffle_is_matched_and_never_zero_fills() -> None:
+    rows = [allocator_row(token, (2,)) for token in ("c", "d", "e")]
+    for index, row in enumerate(rows, 1):
+        expanded = np.zeros((1, 4, KERC_UNIT_CANDIDATE_FEATURE_DIM), dtype=np.float32)
+        expanded[:, :, :KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM] = row[
+            "candidate_features"
+        ]
+        expanded[:, :, KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM:] = float(index)
+        row["candidate_features"] = expanded
+        row["kind_ids"][:] = 2
+    shuffled = ablated_rows(rows, mode="source_relation_shuffled", seed=31)
+    observed = [
+        float(row["candidate_features"][0, 0, KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM])
+        for row in shuffled
+    ]
+    assert sorted(observed) == [1.0, 2.0, 3.0]
+    assert all(left != right for left, right in zip(observed, [1.0, 2.0, 3.0]))

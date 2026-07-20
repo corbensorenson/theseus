@@ -15,7 +15,6 @@ import copy
 import base64
 import hashlib
 import json
-import math
 import re
 from typing import Any, Iterable
 
@@ -31,8 +30,8 @@ from kerc_residual_economics import (
 
 
 POLICY = "project_theseus_kerc_unit_intervention_targets_v1"
-SCHEMA_VERSION = "KERC-IT-1.0"
-TARGET_PRODUCER_ID = "kerc_typed_causal_target_producer_v1"
+SCHEMA_VERSION = "KERC-IT-2.0"
+TARGET_PRODUCER_ID = "kerc_typed_semantic_consequence_target_producer_v2"
 DIMENSIONS = (
     "semantic_proposition",
     "entity_identity",
@@ -102,6 +101,14 @@ _FIELD_DIMENSIONS = {
     "byte": {"byte_end", "byte_start", "content_ref", "encoding", "inline_bytes_b64"},
 }
 _NAME_PARTS = re.compile(r"[^a-z0-9]+")
+_SEMANTIC_STOPWORDS = {
+    "affirmed", "asserted", "confidence", "derivation", "none", "preserved",
+    "required", "source", "source_authored", "supported", "unverified",
+}
+_SAFETY_PATH_PARTS = {
+    "access", "access_policy", "authority", "credential", "permission", "privacy",
+    "secret", "security",
+}
 
 
 class InterventionTargetFault(ValueError):
@@ -163,6 +170,112 @@ def _all_dimension_signatures(value: Any) -> dict[str, dict[str, Any]]:
     }
 
 
+def _normalized_semantic_values(value: Any) -> set[str]:
+    if value is None or isinstance(value, bool):
+        return set()
+    if isinstance(value, (int, float)):
+        return {f"number:{value}"}
+    raw = str(value).strip()
+    if not raw or raw.startswith("sha256:"):
+        return set()
+    lowered = raw.casefold()
+    parts = [part for part in _NAME_PARTS.split(lowered) if len(part) >= 2]
+    values = {part for part in parts if part not in _SEMANTIC_STOPWORDS}
+    if parts:
+        values.add(".".join(parts))
+        for width in range(2, min(5, len(parts) + 1)):
+            values.add(".".join(parts[-width:]))
+    return {item for item in values if item and item not in _SEMANTIC_STOPWORDS}
+
+
+def _reference_semantic_values(value: Any) -> set[str]:
+    values: set[str] = set()
+    if isinstance(value, dict):
+        value_type = str(value.get("type") or "")
+        if value_type == "byte_literal" and isinstance(value.get("value"), str):
+            try:
+                decoded = base64.b64decode(value["value"], validate=True).decode("utf-8")
+            except (ValueError, UnicodeDecodeError):
+                decoded = ""
+            values.update(_normalized_semantic_values(decoded))
+        for key, child in value.items():
+            if str(key).endswith("_sha256") or str(key) in {
+                "confidence", "program_sha256", "answer_packet_sha256",
+            }:
+                continue
+            values.update(_normalized_semantic_values(key))
+            values.update(_reference_semantic_values(child))
+    elif isinstance(value, (list, tuple)):
+        for child in value:
+            values.update(_reference_semantic_values(child))
+    else:
+        values.update(_normalized_semantic_values(value))
+    return values
+
+
+def _payload_semantic_atoms(value: Any) -> set[tuple[str, str]]:
+    atoms: set[tuple[str, str]] = set()
+    for path, leaf in _leaves(value):
+        if any(part.endswith("_sha256") for part in path):
+            continue
+        path_tokens = _field_tokens(path)
+        dimensions = [
+            dimension
+            for dimension, fields in _FIELD_DIMENSIONS.items()
+            if path_tokens & fields
+        ]
+        for dimension in dimensions:
+            atoms.update(
+                (dimension, normalized)
+                for normalized in _normalized_semantic_values(leaf)
+            )
+    return atoms
+
+
+def _target_obligations(
+    source_payload: Any,
+    *,
+    unit_kind: str,
+    kernel_program: dict[str, Any],
+    answer_packet: dict[str, Any],
+    surface_target: str,
+    other_source_payloads: Iterable[Any],
+) -> set[tuple[str, str]]:
+    reference = _reference_semantic_values(
+        {
+            "kernel_program": kernel_program,
+            "answer_packet": answer_packet,
+            "surface_target": surface_target,
+        }
+    )
+    other_values = {
+        atom[1]
+        for payload in other_source_payloads
+        for atom in _payload_semantic_atoms(payload)
+    }
+    obligations = {
+        atom
+        for atom in _payload_semantic_atoms(source_payload)
+        if atom[1] in reference and atom[1] not in other_values
+    }
+    if unit_kind == "concept_realization":
+        obligations.update(
+            atom
+            for atom in _payload_semantic_atoms(source_payload)
+            if atom[0] == "entity_identity" and atom[1] not in other_values
+        )
+    return obligations
+
+
+def _requires_exact_safety(unit: dict[str, Any]) -> bool:
+    if str(unit.get("unit_kind") or "") == "exact_object":
+        return True
+    if str(unit.get("unit_kind") or "") != "interaction_entry":
+        return False
+    path_parts = set(_NAME_PARTS.split(str(unit.get("source_path") or "").casefold()))
+    return bool(path_parts & _SAFETY_PATH_PARTS)
+
+
 def _typed_effect(
     source_signature: dict[str, Any],
     candidate_signature: dict[str, Any],
@@ -215,9 +328,12 @@ def _executable_checks(unit_kind: str, source: Any, candidate: Any) -> list[dict
         valid = all(isinstance(frame, dict) for frame in frames)
         checks.append({"check": "segment_frame_typed", "state": "PASS" if valid else "FAIL"})
     elif unit_kind == "concept_realization" and candidate is not None:
-        row = candidate if isinstance(candidate, dict) else {}
-        valid = any(key in row for key in ("stable_identity", "preferred_realization", "realization"))
-        checks.append({"check": "concept_identity_or_realization_present", "state": "PASS" if valid else "FAIL"})
+        checks.append(
+            {
+                "check": "concept_projection_typed",
+                "state": "PASS" if isinstance(candidate, dict) else "FAIL",
+            }
+        )
     elif unit_kind == "exact_object" and candidate is not None:
         valid = residual_wire_bytes(source) == residual_wire_bytes(candidate)
         checks.append({"check": "protected_object_exact_roundtrip", "state": "PASS" if valid else "FAIL"})
@@ -226,25 +342,14 @@ def _executable_checks(unit_kind: str, source: Any, candidate: Any) -> list[dict
     return checks
 
 
-def _required_dimensions(
-    unit: dict[str, Any], source_signatures: dict[str, dict[str, Any]]
+def _observed_dimensions(
+    source_signatures: dict[str, dict[str, Any]]
 ) -> list[str]:
-    applicable = [
+    return [
         dimension
         for dimension in DIMENSIONS
         if source_signatures[dimension]["applicable"]
     ]
-    kind = str(unit["unit_kind"])
-    required = set(applicable)
-    if kind == "exact_object":
-        required.update(("quote", "byte", "entity_identity"))
-    elif kind == "concept_realization":
-        required.update(("entity_identity", "terminology"))
-    elif kind == "segment_frame":
-        required.update(("semantic_proposition", "scope"))
-    elif kind == "token_residue":
-        required.update(("scope", "terminology"))
-    return [dimension for dimension in DIMENSIONS if dimension in required]
 
 
 def _candidate_intervention(
@@ -253,7 +358,9 @@ def _candidate_intervention(
     candidate: dict[str, Any],
     *,
     source_signatures: dict[str, dict[str, Any]],
-    required_dimensions: list[str],
+    observed_dimensions: list[str],
+    target_obligations: set[tuple[str, str]],
+    exact_safety_required: bool,
 ) -> dict[str, Any]:
     fidelity = str(candidate["fidelity"])
     projected = project_residual_unit_payload(
@@ -274,19 +381,9 @@ def _candidate_intervention(
         )
         for dimension in DIMENSIONS
     ]
-    effect_by_dimension = {row["dimension"]: row for row in effects}
-    required = required_dimensions
     hard_reasons = []
     if candidate.get("hard_blocked") is True:
         hard_reasons.append("k2_source_bound_minimum")
-    for dimension in required:
-        effect = effect_by_dimension[dimension]
-        if effect["state"] == "CHANGED":
-            hard_reasons.append(f"required_dimension_changed:{dimension}")
-        elif effect["state"] == "NOT_APPLICABLE" and dimension in {
-            "entity_identity", "scope", "terminology", "quote", "byte"
-        }:
-            hard_reasons.append(f"required_dimension_unmeasured:{dimension}")
     executable = _executable_checks(str(unit["unit_kind"]), source_payload, projected)
     hard_reasons.extend(
         f"executable_check_failed:{row['check']}"
@@ -297,10 +394,14 @@ def _candidate_intervention(
     mean_loss = sum(float(row["loss"]) for row in measured) / max(1, len(measured))
     missing_count = len(DIMENSIONS) - len(measured)
     exact = residual_wire_bytes(source_payload) == residual_wire_bytes(projected)
-    if exact:
-        hard_reasons = [
-            reason for reason in hard_reasons if not reason.startswith("required_dimension_unmeasured:")
-        ]
+    if exact_safety_required and not exact:
+        hard_reasons.append("exact_safety_constraint")
+    candidate_atoms = _payload_semantic_atoms(projected)
+    retained_obligations = target_obligations & candidate_atoms
+    obligation_loss = (
+        (len(target_obligations) - len(retained_obligations))
+        / max(1, len(target_obligations))
+    )
     # Missing semantic dimensions widen uncertainty; they are never silently zero.
     uncertainty_upper = 0.0 if exact else min(1.0, mean_loss + missing_count / len(DIMENSIONS))
     result = {
@@ -310,7 +411,11 @@ def _candidate_intervention(
         "intervened_payload_sha256": observed_payload_sha256,
         "encoded_bits": int(candidate["encoded_bits"]),
         "typed_effects": effects,
-        "required_dimensions": required,
+        "observed_dimensions": observed_dimensions,
+        "target_obligation_count": len(target_obligations),
+        "retained_target_obligation_count": len(retained_obligations),
+        "target_obligation_loss": round(obligation_loss, 8),
+        "target_obligation_sha256": digest(sorted(target_obligations)),
         "executable_checks": executable,
         "mean_measured_loss": round(mean_loss, 8),
         "measured_dimension_count": len(measured),
@@ -339,6 +444,9 @@ def build_unit_intervention_targets(
     concept_capsules: dict[str, Any],
     exact_objects: dict[str, Any],
     source_family: str,
+    kernel_program: dict[str, Any],
+    answer_packet: dict[str, Any],
+    surface_target: str,
 ) -> dict[str, Any]:
     """Execute and measure all one-unit fidelity interventions for one record."""
 
@@ -361,17 +469,34 @@ def build_unit_intervention_targets(
         )
     targets = []
     authoritative = 0
+    source_dependent = 0
+    class_counts: dict[str, int] = {str(index): 0 for index in range(len(FIDELITY_ORDER))}
     for unit in unit_packet.get("units") or []:
         source = source_by_id[str(unit["unit_id"])]["source_payload"]
         source_signatures = _all_dimension_signatures(source)
-        required_dimensions = _required_dimensions(unit, source_signatures)
+        observed_dimensions = _observed_dimensions(source_signatures)
+        target_obligations = _target_obligations(
+            source,
+            unit_kind=str(unit["unit_kind"]),
+            kernel_program=kernel_program,
+            answer_packet=answer_packet,
+            surface_target=surface_target,
+            other_source_payloads=(
+                row["source_payload"]
+                for unit_id, row in source_by_id.items()
+                if unit_id != str(unit["unit_id"])
+            ),
+        )
+        exact_safety_required = _requires_exact_safety(unit)
         interventions = [
             _candidate_intervention(
                 unit,
                 source,
                 candidate,
                 source_signatures=source_signatures,
-                required_dimensions=required_dimensions,
+                observed_dimensions=observed_dimensions,
+                target_obligations=target_obligations,
+                exact_safety_required=exact_safety_required,
             )
             for candidate in unit.get("candidates") or []
         ]
@@ -382,17 +507,37 @@ def build_unit_intervention_targets(
             raise InterventionTargetFault(
                 "KERC_INTERVENTION_NO_ADMISSIBLE_ACTION", str(unit["unit_id"])
             )
+        consequence_preserving = [
+            row for row in admissible if float(row["target_obligation_loss"]) == 0.0
+        ]
+        if target_obligations and not consequence_preserving:
+            raise InterventionTargetFault(
+                "KERC_INTERVENTION_NO_SEMANTICALLY_PRESERVING_ACTION",
+                str(unit["unit_id"]),
+            )
         selected = min(
+            consequence_preserving or admissible,
+            key=lambda row: (int(row["encoded_bits"]), int(row["fidelity_index"])),
+        )
+        determinate = bool(target_obligations) or exact_safety_required
+        authority = (
+            "source_dependent_semantic_consequence"
+            if target_obligations
+            else "hard_safety_exact"
+            if exact_safety_required
+            else "uncertain_target_withheld"
+        )
+        authoritative += int(determinate)
+        cheapest_hard_safe = min(
             admissible,
             key=lambda row: (int(row["encoded_bits"]), int(row["fidelity_index"])),
         )
-        determinate = (
-            selected["exact_payload"]
-            or selected["missing_dimension_count"] == 0
-            or bool(selected["required_dimensions"])
+        source_dependent += int(
+            determinate
+            and int(selected["fidelity_index"]) != int(cheapest_hard_safe["fidelity_index"])
         )
-        authority = "typed_causal_target" if determinate else "uncertain_target_withheld"
-        authoritative += int(determinate)
+        if determinate:
+            class_counts[str(selected["fidelity_index"])] += 1
         row = {
             "unit_id": str(unit["unit_id"]),
             "unit_kind": str(unit["unit_kind"]),
@@ -422,9 +567,13 @@ def build_unit_intervention_targets(
             "selected_encoded_bits": selected["encoded_bits"],
             "target_authority": authority,
             "allocator_loss_enabled": determinate,
-            "confidence_target": round(
-                1.0 - float(selected["distortion_interval"]["upper"]), 8
+            "semantic_obligation_count": len(target_obligations),
+            "semantic_obligation_sha256": digest(sorted(target_obligations)),
+            "source_dependent_beyond_constrained_rate": (
+                int(selected["fidelity_index"])
+                != int(cheapest_hard_safe["fidelity_index"])
             ),
+            "confidence_target": 1.0 if determinate else 0.0,
         }
         row["target_sha256"] = digest(row)
         targets.append(row)
@@ -447,9 +596,18 @@ def build_unit_intervention_targets(
             "candidate_intervention_count": sum(len(row["interventions"]) for row in targets),
             "allocator_authority_unit_count": authoritative,
             "withheld_uncertain_unit_count": len(targets) - authoritative,
+            "source_dependent_decision_count": source_dependent,
+            "authoritative_class_counts": class_counts,
         },
         "target_producer_is_final_evaluator": False,
-        "human_gold_available": False,
+        "target_inputs": [
+            "kernel_program",
+            "answer_packet",
+            "surface_target",
+            "source_bound_unit",
+        ],
+        "surface_target_visible_to_model": False,
+        "source_annotation_used": False,
         "human_gold_absence_preserved_as_uncertainty": True,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -470,6 +628,9 @@ def validate_unit_intervention_targets(
     concept_capsules: dict[str, Any],
     exact_objects: dict[str, Any],
     source_family: str,
+    kernel_program: dict[str, Any],
+    answer_packet: dict[str, Any],
+    surface_target: str,
 ) -> dict[str, Any]:
     expected = build_unit_intervention_targets(
         unit_packet=unit_packet,
@@ -480,6 +641,9 @@ def validate_unit_intervention_targets(
         concept_capsules=concept_capsules,
         exact_objects=exact_objects,
         source_family=source_family,
+        kernel_program=kernel_program,
+        answer_packet=answer_packet,
+        surface_target=surface_target,
     )
     if receipt != expected:
         raise InterventionTargetFault(
@@ -514,7 +678,6 @@ def compact_allocator_targets(receipt: dict[str, Any]) -> dict[str, Any]:
                     "fidelity_index": int(candidate["fidelity_index"]),
                     "encoded_bits": int(candidate["encoded_bits"]),
                     "hard_blocked": candidate["hard_constraint_cost"] == "INFINITY",
-                    "intervention_sha256": str(candidate["intervention_sha256"]),
                 }
             )
         target = {
@@ -547,6 +710,9 @@ def compact_allocator_targets(receipt: dict[str, Any]) -> dict[str, Any]:
         "targets": targets,
         "summary": copy.deepcopy(receipt["summary"]),
         "target_producer_is_final_evaluator": False,
+        "target_producer_id": str(receipt["target_producer_id"]),
+        "answer_packet_visible_to_model": False,
+        "surface_target_visible_to_model": False,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
@@ -601,6 +767,9 @@ def compact_allocator_targets_for_record(record: dict[str, Any]) -> dict[str, An
         concept_capsules=(packet.get("concept_capsules") or {}),
         exact_objects=(packet.get("protected_objects") or {}),
         source_family=source_family,
+        kernel_program=(packet.get("program") or {}),
+        answer_packet=(record.get("answer_packet") or {}),
+        surface_target=str(record.get("surface_target") or ""),
     )
     return compact_allocator_targets(receipt)
 
