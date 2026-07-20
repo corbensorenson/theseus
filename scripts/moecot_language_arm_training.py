@@ -3998,7 +3998,19 @@ def train_target(
     prior_kernel_positions = 0
     prior_sft_positions = 0
     prior_checkpoint_hash = ""
-    if resume:
+    resumed = False
+    if resume and not receipt_path.is_file():
+        orphaned_state = [
+            relative(path)
+            for path in (checkpoint, optimizer_path)
+            if path.is_file()
+        ]
+        if orphaned_state:
+            raise ValueError(
+                "resume receipt missing for existing campaign state: "
+                + ", ".join(orphaned_state)
+            )
+    if resume and receipt_path.is_file():
         prior = read_json(receipt_path)
         resume_checkpoint = resolve(str(prior.get("checkpoint") or checkpoint))
         resume_optimizer = resolve(
@@ -4026,6 +4038,7 @@ def train_target(
         )
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(resume_checkpoint)
+        resumed = True
     remaining_positions = (
         max(0, optimizer_target_positions - prior_pretrain_positions)
         if "pretraining" in active_phases
@@ -4535,7 +4548,8 @@ def train_target(
         "checkpoint_sha256": sha256_file(checkpoint),
         "optimizer_state": relative(optimizer_path),
         "optimizer_state_sha256": sha256_file(optimizer_path),
-        "resume": resume,
+        "resume_requested": resume,
+        "resume": resumed,
         "training_phase_selection": training_phase,
         "bounded_phase_canary": training_phase != "all",
         "resume_base_checkpoint_sha256": prior_checkpoint_hash,

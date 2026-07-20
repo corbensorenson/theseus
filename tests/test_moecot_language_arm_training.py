@@ -1637,6 +1637,75 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(
     )
 
 
+def test_resume_request_bootstraps_clean_target_but_rejects_orphaned_state(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = tiny_config(tmp_path)
+    model = build_model(
+        CausalTransformerConfig(vocab_size=64, **config["arm_model"]),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=None,
+    )
+    stage = SimpleNamespace(
+        pretrain_inputs=np.asarray([[1, 4, 5, 6]], dtype=np.int32),
+        pretrain_labels=np.asarray([[4, 5, 6, 2]], dtype=np.int32),
+        pretrain_mask=np.ones((1, 4), dtype=np.uint8),
+    )
+    checkpoint = tmp_path / "bootstrap" / "weights.npz"
+    target = {
+        "target_id": "bootstrap",
+        "role": "shared_trunk",
+        "row_ranges": [{"start": 0, "stop": 1}],
+        "unique_target_positions": 4,
+        "model": config["arm_model"],
+        "parameter_count": int(parameter_count(model, mlx_utils)),
+        "checkpoint": str(checkpoint),
+        "optimizer_state": str(checkpoint.parent / "optimizer.safetensors"),
+        "receipt": str(checkpoint.parent / "training_receipt.json"),
+    }
+    plan = {
+        "plan_sha256": "c" * 64,
+        "stage": {"stage_signature": "stage-c", "metadata_sha256": "d" * 64},
+        "models": {"vocab_size": 64},
+    }
+
+    first = train_target(
+        config,
+        plan,
+        target,
+        stage=stage,
+        max_steps=1,
+        resume=True,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+    )
+    assert first["resume_requested"] is True
+    assert first["resume"] is False
+
+    Path(target["receipt"]).unlink()
+    with pytest.raises(ValueError, match="resume receipt missing"):
+        train_target(
+            config,
+            plan,
+            target,
+            stage=stage,
+            max_steps=1,
+            resume=True,
+            mx=mx,
+            nn=nn,
+            optim=optim,
+            mlx_utils=mlx_utils,
+        )
+
+
 def test_source_and_kernel_phases_are_accounted_separately_before_sft(
     tmp_path: Path,
 ) -> None:

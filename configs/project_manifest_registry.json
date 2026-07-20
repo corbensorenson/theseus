@@ -294,11 +294,11 @@
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "cf634b4bbb251e22061822dc9bd2a1c675dd62c9bbae93c617a8efba9b151698"
+          "sha256": "63afd7e6b77d6c62fe3f40671546865649413db1f5c4a9d54be9cd8db9ce15ce"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "1bbfd5fb22999394e7045387f4780f4c5be466875948049fd4b3fc7b258beefb"
+          "sha256": "38e07d22bd1cbb7a518bc935a51e07ae85213f847c98d57b1142f441ca6e148e"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
