@@ -191,9 +191,23 @@ def test_hot_report_compaction_protects_current_citations_and_ledgers(
     roadmap_current = reports / "roadmap.json"
     ledger = reports / "work_ledger.jsonl"
     historical = reports / "historical.json"
-    for path in (current, roadmap_current, ledger, historical):
+    nested_historical = reports / "report_snapshots" / "registry" / "old.json"
+    nested_current = reports / "report_snapshots" / "registry" / "current.json"
+    nested_historical.parent.mkdir(parents=True)
+    for path in (
+        current,
+        roadmap_current,
+        ledger,
+        historical,
+        nested_historical,
+        nested_current,
+    ):
         path.write_text('{"payload":"' + ("x" * 1024) + '"}\n', encoding="utf-8")
         os.utime(path, (time.time() - 72 * 3600, time.time() - 72 * 3600))
+    write_json(
+        tmp_path / "configs" / "active.json",
+        {"report": "reports/report_snapshots/registry/current.json"},
+    )
     registry = {"surfaces": [{"report_outputs": ["reports/current.json"]}]}
     matrix = {"phases": [{"phase": 14, "current_evidence": ["reports/roadmap.json"]}]}
 
@@ -203,10 +217,18 @@ def test_hot_report_compaction_protects_current_citations_and_ledgers(
         index,
         min_bytes=1,
         min_age_hours=24,
-        target_hot_bytes=sum(row["bytes"] for row in index["file_records"]) - historical.stat().st_size,
+        target_hot_bytes=(
+            sum(row["bytes"] for row in index["file_records"])
+            - historical.stat().st_size
+            - nested_historical.stat().st_size
+        ),
     )
 
     assert by_path["reports/current.json"]["protected"]
     assert by_path["reports/roadmap.json"]["protected"]
     assert by_path["reports/work_ledger.jsonl"]["protected"]
-    assert [row["path"] for row in candidates] == ["reports/historical.json"]
+    assert by_path["reports/report_snapshots/registry/current.json"]["protected"]
+    assert {row["path"] for row in candidates} == {
+        "reports/historical.json",
+        "reports/report_snapshots/registry/old.json",
+    }

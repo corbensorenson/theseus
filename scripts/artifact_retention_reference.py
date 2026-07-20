@@ -24,6 +24,7 @@ CHECKPOINT_ROOT = ROOT / "checkpoints"
 REPORTS_ROOT = ROOT / "reports"
 MODEL_SUFFIXES = {".npz", ".pt", ".pth", ".bin", ".safetensors"}
 REFERENCE_PATTERN = re.compile(r"checkpoints/[A-Za-z0-9_.@+\-/]+")
+REPORT_REFERENCE_PATTERN = re.compile(r"reports/[A-Za-z0-9_.@+\-/]+")
 CONFIG_EXCLUSIONS = {
     "artifact_retention_budget_policy.json",
     "roadmap_implementation_matrix.json",
@@ -240,9 +241,21 @@ def build_hot_report_reference_index(
     for phase in list_dicts(roadmap_matrix.get("phases")):
         for value in list_values(phase.get("current_evidence")):
             add_report_reference(references, value, f"roadmap_phase_{phase.get('phase')}_current_evidence")
+    config_root = ROOT / "configs"
+    for source in config_root.iterdir() if config_root.exists() else []:
+        if (
+            not source.is_file()
+            or source.suffix.lower() not in {".json", ".toml", ".yaml", ".yml"}
+            or source.stat().st_size > 32 * 1024 * 1024
+        ):
+            continue
+        for report_ref in report_refs_in_text(
+            source.read_text(encoding="utf-8", errors="ignore")
+        ):
+            references[report_ref].add(f"operational_config:{rel(source)}")
 
     records = []
-    for path in REPORTS_ROOT.iterdir() if REPORTS_ROOT.exists() else []:
+    for path in REPORTS_ROOT.rglob("*") if REPORTS_ROOT.exists() else []:
         if not path.is_file():
             continue
         ref = rel(path)
@@ -368,6 +381,16 @@ def checkpoint_refs_in_text(text: str) -> list[str]:
             normalize_checkpoint_ref(match.group(0))
             for match in REFERENCE_PATTERN.finditer(text)
             if normalize_checkpoint_ref(match.group(0))
+        }
+    )
+
+
+def report_refs_in_text(text: str) -> list[str]:
+    return sorted(
+        {
+            match.group(0).rstrip(".,:;\"'")
+            for match in REPORT_REFERENCE_PATTERN.finditer(text)
+            if ".." not in Path(match.group(0)).parts
         }
     )
 
