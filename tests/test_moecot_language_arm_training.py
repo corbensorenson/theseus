@@ -51,6 +51,7 @@ from moecot_language_arm_training import (  # noqa: E402
     target_contracts,
     target_optimizer_exposure,
     target_copy_identity_ranges,
+    training_implementation_closure,
     train_target,
     accepted_plan_identity_migration,
     validate_config,
@@ -1576,6 +1577,10 @@ def test_resume_accepts_only_exact_semantic_plan_identity_migration(tmp_path: Pa
                     "migration_id": "migration-a",
                     "target_id": "shared_trunk",
                     "legacy_plan_sha256": "legacy-plan",
+                    "legacy_checkpoint_sha256": hashlib.sha256(b"weights").hexdigest(),
+                    "legacy_optimizer_state_sha256": hashlib.sha256(b"optimizer").hexdigest(),
+                    "legacy_optimizer_steps": 7,
+                    "legacy_optimizer_positions": 70,
                     "required_current_plan_sha256": "semantic-plan",
                     "required_stage_signature": "stage-a",
                     "legacy_scale_report_sha256": "report-a",
@@ -1585,11 +1590,18 @@ def test_resume_accepts_only_exact_semantic_plan_identity_migration(tmp_path: Pa
             ],
         },
     }
+    receipt["optimizer_steps"] = 7
+    receipt["optimizer_positions"] = 70
 
     migration = validate_resume(receipt, plan, target, checkpoint, optimizer)
     assert migration is not None
     assert migration["migration_id"] == "migration-a"
     assert accepted_plan_identity_migration(receipt, plan, target) == migration
+
+    receipt["optimizer_positions"] = 71
+    with pytest.raises(ValueError, match="plan_identity_mismatch"):
+        validate_resume(receipt, plan, target, checkpoint, optimizer)
+    receipt["optimizer_positions"] = 70
 
     plan["plan_sha256"] = "different-plan"
     with pytest.raises(ValueError, match="plan_identity_mismatch"):
@@ -1667,6 +1679,26 @@ def test_evaluation_freeze_semantic_identity_excludes_bookkeeping_only() -> None
     assert evaluation_freeze_semantic_sha256(freeze) == first
     freeze["verifier_sha256"] = "verifier-b"
     assert evaluation_freeze_semantic_sha256(freeze) != first
+
+
+def test_training_implementation_closure_is_content_addressed(tmp_path: Path) -> None:
+    first = tmp_path / "first.py"
+    second = tmp_path / "second.py"
+    first.write_text("VALUE = 1\n")
+    second.write_text("VALUE = 2\n")
+    config = {
+        "plan_identity": {
+            "implementation_closure": [str(second), str(first)],
+        }
+    }
+    before = training_implementation_closure(config)
+    assert [row["path"] for row in before] == sorted((str(first), str(second)))
+    first.write_text("VALUE = 3\n")
+    after = training_implementation_closure(config)
+    assert after[0]["sha256"] != before[0]["sha256"]
+    config["plan_identity"]["implementation_closure"].append(str(first))
+    with pytest.raises(ValueError, match="duplicate"):
+        training_implementation_closure(config)
 
 
 def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(

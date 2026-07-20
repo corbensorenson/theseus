@@ -70,6 +70,7 @@ from standard_causal_transformer_survival import (
     stage_materialization_lock,
     stage_signature,
     target_token_offset,
+    training_heartbeat_record,
     training_target_tokens,
     training_callable_signature,
     training_targets_complete,
@@ -97,6 +98,40 @@ def test_pretrain_stage_and_optimizer_targets_are_distinct_and_legacy_safe() -> 
     legacy = {"pretrain_target_token_positions": 215_552_020}
     assert survival.pretrain_stage_position_target(legacy) == 215_552_020
     assert survival.pretrain_optimizer_position_target(legacy) == 215_552_020
+
+
+def test_resumed_training_heartbeat_reports_phase_and_cumulative_positions() -> None:
+    row = training_heartbeat_record(
+        phase_name="pretrain",
+        global_step=525,
+        phase_step=24,
+        phase_positions_consumed=184_750,
+        phase_positions_requested=1_092_889_688,
+        position_offset=3_845_232,
+        position_target_total=1_096_734_920,
+        latest_loss=2.3966214,
+        elapsed_seconds=401.2349,
+    )
+    assert row["policy"] == "standard_causal_transformer_training_heartbeat_v2"
+    assert row["phase_target_positions_consumed"] == 184_750
+    assert row["phase_target_positions_requested"] == 1_092_889_688
+    assert row["position_offset"] == 3_845_232
+    assert row["target_positions_consumed"] == 4_029_982
+    assert row["target_positions_requested"] == 1_096_734_920
+    assert row["latest_loss"] == 2.396621
+
+
+def test_training_heartbeat_rejects_impossible_cumulative_positions() -> None:
+    with pytest.raises(ValueError, match="exceed target"):
+        training_heartbeat_record(
+            phase_name="pretrain",
+            global_step=1,
+            phase_step=1,
+            phase_positions_consumed=11,
+            phase_positions_requested=10,
+            latest_loss=1.0,
+            elapsed_seconds=1.0,
+        )
 
 
 def test_materialization_targets_may_exceed_but_not_weaken_scale_minima() -> None:

@@ -290,15 +290,15 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "5724272144088c43f5a06d7d226e744f9bcb3d29809ebfd31f435de6a7091ea4"
+          "sha256": "4da466362856f7735cd026e6274a51209d5443f10d76d76fbea1368f8b811b92"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "9d4a7db7f48e2e88b489cfff8aa208182082393f95852cfb6bb414d04f8902a5"
+          "sha256": "8de9aac5bd4085ff10a71eef38d5c9a0bd47f0cb0bdc5ba2b2ac97a2ccbe7439"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "8862d1809df89cf1acb7fb85d412dc207e9d4f4c298bb2937f80cba38029e5f3"
+          "sha256": "84e045e870050daf8c8cad7e74f466033acb89c86e1e800843295d7ec4378de5"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
@@ -310,7 +310,7 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "c5e75f00eb06fd65ec13f1ab585a5bccf8e76e862927bf13d0fa43beb6c45bf2"
+          "sha256": "0c5c543c685b7b41b19919f9edac5ddf5dae8ca9a7451bc3b4a2cd69f8a05371"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -510,7 +510,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "f9668a4475a7df3f9726e14771da7980f528bf673b591a63c8593f61a9c7eebd"
+          "sha256": "0f6a2c62be9a40f445ddca5407d7ae85d6d8866f4f5f93c9715ea7453c07535e"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",

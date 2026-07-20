@@ -3287,6 +3287,51 @@ def pointer_generator_auxiliary_loss(
     return alignment + gate_loss
 
 
+def training_heartbeat_record(
+    *,
+    phase_name: str,
+    global_step: int,
+    phase_step: int,
+    phase_positions_consumed: int,
+    phase_positions_requested: int,
+    position_offset: int = 0,
+    position_target_total: int | None = None,
+    latest_loss: float,
+    elapsed_seconds: float,
+) -> dict[str, Any]:
+    if min(
+        global_step,
+        phase_step,
+        phase_positions_consumed,
+        phase_positions_requested,
+        position_offset,
+    ) < 0:
+        raise ValueError("training heartbeat counters must be non-negative")
+    cumulative_consumed = position_offset + phase_positions_consumed
+    cumulative_requested = (
+        int(position_target_total)
+        if position_target_total is not None
+        else position_offset + phase_positions_requested
+    )
+    if cumulative_requested < cumulative_consumed:
+        raise ValueError("training heartbeat consumed positions exceed target")
+    return {
+        "policy": "standard_causal_transformer_training_heartbeat_v2",
+        "created_utc": now(),
+        "phase": phase_name,
+        "global_step": global_step,
+        "phase_step": phase_step,
+        "phase_target_positions_consumed": phase_positions_consumed,
+        "phase_target_positions_requested": phase_positions_requested,
+        "position_offset": position_offset,
+        "target_positions_consumed": cumulative_consumed,
+        "target_positions_requested": cumulative_requested,
+        "latest_loss": round(latest_loss, 6),
+        "elapsed_seconds": round(elapsed_seconds, 3),
+        "external_inference_calls": 0,
+    }
+
+
 def train_phase(
     model: Any,
     optimizer: Any,
@@ -3337,6 +3382,8 @@ def train_phase(
     checkpoint_every: int,
     heartbeat: Path,
     global_step_offset: int,
+    heartbeat_position_offset: int = 0,
+    heartbeat_position_target_total: int | None = None,
     mx: Any,
     optim: Any,
     checkpoint_callback: Any = None,
@@ -3786,18 +3833,17 @@ def train_phase(
             if global_step % 25 == 0:
                 write_json(
                     heartbeat,
-                    {
-                        "policy": "standard_causal_transformer_training_heartbeat_v1",
-                        "created_utc": now(),
-                        "phase": phase_name,
-                        "global_step": global_step,
-                        "phase_step": steps,
-                        "target_positions_consumed": consumed,
-                        "target_positions_requested": target_positions,
-                        "latest_loss": round(loss_value, 6),
-                        "elapsed_seconds": round(time.perf_counter() - started, 3),
-                        "external_inference_calls": 0,
-                    },
+                    training_heartbeat_record(
+                        phase_name=phase_name,
+                        global_step=global_step,
+                        phase_step=steps,
+                        phase_positions_consumed=consumed,
+                        phase_positions_requested=target_positions,
+                        position_offset=heartbeat_position_offset,
+                        position_target_total=heartbeat_position_target_total,
+                        latest_loss=loss_value,
+                        elapsed_seconds=time.perf_counter() - started,
+                    ),
                 )
                 print(
                     f"phase={phase_name} step={steps} global={global_step} "

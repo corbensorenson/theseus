@@ -817,6 +817,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
         "plan_identity": config.get("plan_identity") or {},
+        "training_implementation_closure": training_implementation_closure(config),
         "plan_sha256": plan_identity,
         "hard_gaps": sorted(set(gaps)),
         "non_claims": [
@@ -4176,6 +4177,8 @@ def train_target(
             "optimizer_state_sha256": sha256_file(generation_optimizer),
             "complete": False,
             "transactional_progress": progress,
+            "resume_base_checkpoint_sha256": prior_checkpoint_hash,
+            "resume_plan_identity_migration": resume_plan_identity_migration,
             "capability_claim": "NOT_EVALUATED",
             "hard_gaps": [],
             **no_cheat(config),
@@ -4218,6 +4221,8 @@ def train_target(
         checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
         heartbeat=heartbeat,
         global_step_offset=prior_steps,
+        heartbeat_position_offset=prior_pretrain_positions,
+        heartbeat_position_target_total=optimizer_target_positions,
         mx=mx,
         optim=optim,
         checkpoint_callback=commit_progress_checkpoint,
@@ -4266,6 +4271,8 @@ def train_target(
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
             global_step_offset=prior_steps + used_steps,
+            heartbeat_position_offset=prior_source_positions,
+            heartbeat_position_target_total=source_positions,
             mx=mx,
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
@@ -4430,6 +4437,8 @@ def train_target(
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
             global_step_offset=prior_steps + used_steps,
+            heartbeat_position_offset=prior_kernel_positions,
+            heartbeat_position_target_total=kernel_positions,
             mx=mx,
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
@@ -4474,6 +4483,8 @@ def train_target(
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
             global_step_offset=prior_steps + used_steps,
+            heartbeat_position_offset=prior_sft_positions,
+            heartbeat_position_target_total=sft_positions,
             mx=mx,
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
@@ -4761,6 +4772,7 @@ def accepted_plan_identity_migration(
         if (
             row.get("target_id") == target.get("target_id")
             and row.get("legacy_plan_sha256") == receipt.get("plan_sha256")
+            and migration_receipt_identity_matches(row, receipt)
             and row.get("required_current_plan_sha256") == plan.get("plan_sha256")
             and row.get("required_stage_signature") == receipt.get("stage_signature")
             and row.get("required_stage_signature")
@@ -4774,10 +4786,34 @@ def accepted_plan_identity_migration(
                 "legacy_scale_report_sha256": row.get(
                     "legacy_scale_report_sha256"
                 ),
+                "legacy_checkpoint_sha256": row.get("legacy_checkpoint_sha256"),
+                "legacy_optimizer_state_sha256": row.get(
+                    "legacy_optimizer_state_sha256"
+                ),
+                "legacy_optimizer_steps": row.get("legacy_optimizer_steps"),
+                "legacy_optimizer_positions": row.get(
+                    "legacy_optimizer_positions"
+                ),
                 "evidence": row.get("evidence"),
                 "reason": row.get("reason"),
             }
     return None
+
+
+def migration_receipt_identity_matches(
+    migration: dict[str, Any], receipt: dict[str, Any]
+) -> bool:
+    fields = (
+        ("legacy_checkpoint_sha256", "checkpoint_sha256"),
+        ("legacy_optimizer_state_sha256", "optimizer_state_sha256"),
+        ("legacy_optimizer_steps", "optimizer_steps"),
+        ("legacy_optimizer_positions", "optimizer_positions"),
+    )
+    for migration_field, receipt_field in fields:
+        expected = migration.get(migration_field)
+        if expected is not None and expected != receipt.get(receipt_field):
+            return False
+    return True
 
 
 def evaluation_freeze_semantic_sha256(evaluation: dict[str, Any]) -> str:
@@ -4810,6 +4846,25 @@ def evaluation_freeze_semantic_sha256(evaluation: dict[str, Any]) -> str:
     ).hexdigest()
 
 
+def training_implementation_closure(config: dict[str, Any]) -> list[dict[str, str]]:
+    contract = config.get("plan_identity") or {}
+    paths = contract.get("implementation_closure") or []
+    if not isinstance(paths, list) or not paths:
+        return []
+    rows = []
+    seen = set()
+    for declared in paths:
+        path = resolve(str(declared))
+        canonical = relative(path)
+        if canonical in seen:
+            raise ValueError(f"duplicate training implementation closure path: {canonical}")
+        if not path.is_file():
+            raise ValueError(f"training implementation closure path is missing: {canonical}")
+        seen.add(canonical)
+        rows.append({"path": canonical, "sha256": sha256_file(path)})
+    return sorted(rows, key=lambda row: row["path"])
+
+
 def plan_sha256(
     config: dict[str, Any],
     metadata: dict[str, Any],
@@ -4839,7 +4894,7 @@ def plan_sha256(
             )
         },
         "plan_identity_policy": (config.get("plan_identity") or {}).get("policy"),
-        "training_implementation_sha256": sha256_file(Path(__file__).resolve()),
+        "training_implementation_closure": training_implementation_closure(config),
         "stage_signature": (metadata.get("summary") or {}).get("stage_signature"),
         "arm_views": ((metadata.get("summary") or {}).get("canonical_pretrain_stage") or {}).get("arm_views"),
         "models": models,
@@ -4882,6 +4937,20 @@ def validate_config(config: dict[str, Any]) -> None:
         "--require-pre-training-ready",
     ]:
         raise ValueError("architecture readiness gate command mismatch")
+    identity = config.get("plan_identity") or {}
+    if identity.get("policy") == "project_theseus_semantic_training_plan_identity_v3":
+        closure = training_implementation_closure(config)
+        required = {
+            "scripts/moecot_language_arm_training.py",
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/standard_causal_transformer_survival.py",
+        }
+        observed = {row["path"] for row in closure}
+        missing = sorted(required - observed)
+        if missing:
+            raise ValueError(
+                "training implementation closure is incomplete: " + ",".join(missing)
+            )
     generation = config.get("generation_architecture") or {}
     contract_path = resolve(str(generation.get("contract") or ""))
     if not contract_path.is_file():
