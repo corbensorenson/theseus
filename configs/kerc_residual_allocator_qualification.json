@@ -1,0 +1,54 @@
+{
+  "policy": "project_theseus_kerc_residual_allocator_qualification_v1",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "target_id": "english_kerc",
+  "stage_root": "data/training_data/moecot_kernel_english_v1",
+  "output_root": "runtime/kerc_residual_allocator_qualification_v1",
+  "report": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+  "seeds": [731, 947, 1201],
+  "selection": {
+    "maximum_train_records": 512,
+    "maximum_dev_records": 256,
+    "maximum_eval_records": 512,
+    "minimum_authoritative_units_per_class": 32,
+    "selection_visible_fields": [
+      "source_record_sha256",
+      "split",
+      "unit_kind",
+      "selected_fidelity_index"
+    ],
+    "answer_text_visible": false,
+    "model_outcomes_visible": false
+  },
+  "optimization": {
+    "batch_records": 8,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "maximum_steps": 512,
+    "evaluation_every_steps": 32,
+    "overfit_records": 24,
+    "overfit_maximum_steps": 768,
+    "confidence_loss_weight": 0.2,
+    "class_balance_maximum": 16.0,
+    "gradient_clip_norm": 1.0
+  },
+  "acceptance": {
+    "minimum_overfit_accuracy": 0.98,
+    "minimum_nonzero_gradient_norm": 1e-8,
+    "maximum_reload_logit_delta": 1e-6,
+    "maximum_hard_violation_count": 0,
+    "minimum_source_disjoint_eval_class_count": 3,
+    "minimum_seed_count": 3,
+    "minimum_presence_baseline_margin": 0.02,
+    "retirement_authority": false,
+    "utility_claim_requires_independent_semantic_panel": true
+  },
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "public_benchmark_payload_count": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "template_credit": 0,
+    "evaluator_effect_features_visible_to_model": false
+  }
+}

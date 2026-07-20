@@ -85,6 +85,9 @@ def audit_contract(
     corpus_path = source_report.get("corpus_path")
     corpus_report = audit_corpus(corpus_path) if isinstance(corpus_path, Path) and corpus_path.exists() else empty_corpus_report()
     faults.extend(corpus_report["faults"])
+    allocator_stage_report = audit_allocator_stage(contract, root=root)
+    faults.extend(allocator_stage_report["faults"])
+    corpus_report["observed"].update(allocator_stage_report["observed"])
 
     expected_facts = contract.get("observed_corpus_contract")
     if not isinstance(expected_facts, dict):
@@ -149,6 +152,7 @@ def audit_contract(
             key: value for key, value in source_report.items() if key != "corpus_path"
         },
         "corpus_audit": {key: value for key, value in corpus_report.items() if key != "sample_record"},
+        "allocator_stage_audit": allocator_stage_report,
         "mechanism_audit": mechanism_report,
         "hypothesis_audit": hypothesis_report,
         "behavioral_claim_probes": behavior_report,
@@ -161,6 +165,65 @@ def audit_contract(
             "No H1-H8 hypothesis is active before the preregistered matched campaign.",
             "The current corpus and verifier cannot support a scientific KERC failure verdict.",
         ],
+    }
+
+
+def audit_allocator_stage(contract: dict[str, Any], *, root: Path) -> dict[str, Any]:
+    configured = contract.get("allocator_stage_evidence")
+    if not isinstance(configured, dict):
+        return {
+            "state": "NOT_REGISTERED",
+            "observed": {
+                "per_unit_intervention_target_count": 0,
+                "per_unit_authoritative_target_count": 0,
+            },
+            "faults": [],
+        }
+    path = resolve(str(configured.get("manifest_path") or ""), root=root)
+    expected_sha256 = normalize_sha(configured.get("manifest_sha256"))
+    observed_sha256 = sha256_file(path) if path.is_file() else None
+    payload = read_json(path) if path.is_file() else {}
+    target = (payload.get("materialization_execution") or {}).get(
+        "unit_intervention_targets"
+    ) or {}
+    unit_count = int(target.get("unit_count") or 0)
+    authority_count = int(target.get("allocator_authority_unit_count") or 0)
+    withheld_count = int(target.get("withheld_uncertain_unit_count") or 0)
+    faults: list[dict[str, Any]] = []
+    if expected_sha256 != observed_sha256:
+        faults.append(
+            fault(
+                "allocator_stage_manifest_identity_mismatch",
+                expected=expected_sha256,
+                observed=observed_sha256,
+            )
+        )
+    if (
+        payload.get("trigger_state") != "GREEN"
+        or payload.get("hard_gaps") != []
+        or target.get("target_producer")
+        != configured.get("required_target_producer")
+        or target.get("target_producer_is_final_evaluator") is not False
+        or target.get("public_or_hidden_target_used") is not False
+        or int(target.get("external_inference_calls") or 0)
+        or int(target.get("fallback_return_count") or 0)
+        or unit_count <= 0
+        or authority_count <= 0
+        or authority_count + withheld_count != unit_count
+        or int(target.get("candidate_intervention_count") or 0) != 4 * unit_count
+    ):
+        faults.append(fault("allocator_stage_contract_invalid"))
+    return {
+        "path": relative(path, root),
+        "expected_sha256": expected_sha256,
+        "observed_sha256": observed_sha256,
+        "state": "GREEN" if not faults else "RED",
+        "observed": {
+            "per_unit_intervention_target_count": unit_count,
+            "per_unit_authoritative_target_count": authority_count,
+        },
+        "target_summary": copy.deepcopy(target),
+        "faults": faults,
     }
 
 
@@ -268,6 +331,22 @@ def audit_corpus(path: Path) -> dict[str, Any]:
                 else []
             )
             counts["per_unit_allocation_receipt_count"] += len(unit_rows)
+            unit_targets = (
+                supervision.get("unit_intervention_targets")
+                if isinstance(supervision.get("unit_intervention_targets"), dict)
+                else {}
+            )
+            target_rows = (
+                unit_targets.get("targets")
+                if isinstance(unit_targets.get("targets"), list)
+                else []
+            )
+            counts["per_unit_intervention_target_count"] += len(target_rows)
+            counts["per_unit_authoritative_target_count"] += sum(
+                row.get("allocator_loss_enabled") is True
+                for row in target_rows
+                if isinstance(row, dict)
+            )
     except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
         faults.append(fault("corpus_scan_failed", path=str(path), error=f"{type(exc).__name__}:{exc}"))
     observed = {
@@ -285,6 +364,8 @@ def audit_corpus(path: Path) -> dict[str, Any]:
             "nonempty_interaction_global_dictionary_count",
             "partial_disposition_count",
             "per_unit_allocation_receipt_count",
+            "per_unit_intervention_target_count",
+            "per_unit_authoritative_target_count",
             "interaction_presence_label_with_empty_global_count",
         )
     }
@@ -337,8 +418,44 @@ def audit_mechanisms(
 
     facts = corpus_report.get("observed") if isinstance(corpus_report.get("observed"), dict) else {}
     per_unit = by_id.get("kerc.learned_per_unit_allocator", {})
-    if facts.get("per_unit_allocation_receipt_count") == 0 and per_unit.get("status") != "absent":
+    allocator_evidence = (
+        contract.get("allocator_stage_evidence")
+        if isinstance(contract.get("allocator_stage_evidence"), dict)
+        else {}
+    )
+    qualification_path = resolve(
+        str(allocator_evidence.get("qualification_report") or ""), root=root
+    )
+    qualification = read_json(qualification_path) if qualification_path.is_file() else {}
+    per_unit_mechanics_exist = (
+        facts.get("per_unit_allocation_receipt_count", 0) > 0
+        and facts.get("per_unit_intervention_target_count", 0) > 0
+        and facts.get("per_unit_authoritative_target_count", 0) > 0
+    )
+    per_unit_decision_grade = (
+        qualification.get("causal_adequacy_trigger_state") == "GREEN"
+        and qualification.get("semantic_panel_complete") is True
+        and qualification.get("canonical_long_training_authorized") is True
+    )
+    if not per_unit_mechanics_exist and per_unit.get("status") not in {"absent", "inactive"}:
         faults.append(fault("per_unit_allocator_overclaimed", status=per_unit.get("status")))
+    if (
+        per_unit.get("status") in {"faithful", "stronger_registered_alternative"}
+        and not per_unit_decision_grade
+    ):
+        faults.append(
+            fault(
+                "per_unit_allocator_overclaimed",
+                status=per_unit.get("status"),
+                causal_adequacy_trigger_state=qualification.get(
+                    "causal_adequacy_trigger_state"
+                ),
+                semantic_panel_complete=qualification.get("semantic_panel_complete"),
+                canonical_long_training_authorized=qualification.get(
+                    "canonical_long_training_authorized"
+                ),
+            )
+        )
     interaction = by_id.get("kerc.interaction_amortization", {})
     if facts.get("nonempty_interaction_global_dictionary_count") == 0 and interaction.get("status") not in {"inactive", "absent"}:
         faults.append(fault("interaction_amortization_overclaimed", status=interaction.get("status")))

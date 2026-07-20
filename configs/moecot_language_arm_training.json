@@ -23,6 +23,7 @@
       "--require-pre-training-ready"
     ]
   },
+  "kerc_unit_allocator_qualification": "configs/kerc_residual_allocator_qualification.json",
   "vocabulary": {
     "policy": "project_theseus_moecot_exact_language_vocabulary_v1",
     "output": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
@@ -117,6 +118,9 @@
     "kerc_stage_adapter_dim": 64,
     "kerc_residual_choice_count": 4,
     "kerc_residual_bottleneck_dim": 64,
+    "kerc_residual_unit_kind_count": 5,
+    "kerc_residual_unit_feature_dim": 18,
+    "kerc_residual_unit_byte_vocab_size": 257,
     "kerc_verifier_dim": 64,
     "kerc_decision_bottleneck_dim": 64,
     "kerc_decision_output_dim": 4,
@@ -1025,6 +1029,7 @@
       "cache_miss_behavior": "recompute_complete_stage_and_publish_atomic_receipt"
     },
   "residual_auxiliary_weight": 0.25,
+  "unit_residual_auxiliary_weight": 0.25,
   "verifier_auxiliary_weight": 0.5,
   "decision_auxiliary_weight": 0.25,
   "decision_class_balance_maximum": 16.0,

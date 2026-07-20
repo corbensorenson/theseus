@@ -87,6 +87,9 @@ class ResidualEconomicsFault(ValueError):
         self.code = code
         self.detail = detail
 
+    def __reduce__(self) -> tuple[Any, tuple[str, str]]:
+        return self.__class__, (self.code, self.detail)
+
 
 def canonical_bytes(value: Any) -> bytes:
     return json.dumps(
@@ -885,7 +888,21 @@ def _leaf_rows(value: Any, path: tuple[str, ...] = ()) -> list[tuple[str, Any]]:
     return [("/" + "/".join(_pointer_token(part) for part in path), value)]
 
 
-def _project_unit_payload(value: Any, *, fidelity: str, unit_kind: str) -> Any:
+def project_residual_unit_payload(
+    value: Any, *, fidelity: str, unit_kind: str
+) -> Any:
+    """Project one source-bound unit to a declared fidelity.
+
+    K3 intervention production must execute the same concrete candidate payloads
+    that K2 prices.  Keeping this operation public avoids reimplementing a subtly
+    different downgrade in the target producer while the independent evaluator
+    remains free to recompute semantic effects through a separate implementation.
+    """
+
+    if fidelity not in FIDELITY_ORDER:
+        raise ResidualEconomicsFault(
+            "KERC_RESIDUAL_UNIT_FIDELITY_INVALID", str(fidelity)
+        )
     if fidelity == "semantic":
         return None
     if fidelity == "exact":
@@ -912,6 +929,32 @@ def _project_unit_payload(value: Any, *, fidelity: str, unit_kind: str) -> Any:
         return copy.deepcopy(current)
 
     return project(value)
+
+
+def residual_unit_sources(
+    *,
+    source_record_sha256: str,
+    global_state: dict[str, Any],
+    segment_residual: dict[str, Any],
+    token_residuals: list[dict[str, Any]],
+    concept_capsules: dict[str, Any],
+    exact_objects: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Return stable source payloads for the K2/K3 residual units.
+
+    Source payloads intentionally stay outside the compact KPP-1.2 packet.  This
+    function is the canonical reconstruction boundary for training features and
+    causal interventions; callers bind its result to the packet unit identities.
+    """
+
+    return _residual_units(
+        source_record_sha256=source_record_sha256,
+        global_state=global_state,
+        segment_residual=segment_residual,
+        token_residuals=token_residuals,
+        concept_capsules=concept_capsules,
+        exact_objects=exact_objects,
+    )
 
 
 def _distortion_vector(source: Any, candidate: Any) -> tuple[list[float | None], float]:
@@ -1160,7 +1203,7 @@ def build_residual_unit_packet(
         candidates = []
         minimum_index = FIDELITY_ORDER.index(minimum)
         for fidelity in FIDELITY_ORDER:
-            payload = _project_unit_payload(
+            payload = project_residual_unit_payload(
                 unit["source_payload"], fidelity=fidelity, unit_kind=unit["unit_kind"]
             )
             wire = residual_wire_bytes(payload)

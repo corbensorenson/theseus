@@ -262,31 +262,31 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "479de7282d4d9955748356bf7f34d64234f937724b583004215058b6bb12fd59"
+          "sha256": "f8c951bb2f18eda8ce38924fa48ca9ddd2234f59f6b90a9e90b973db9efa274c"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "d9d8f7df9370f734b38785e878857bfe76c6822cdc102214ee7011fee108bd0b"
+          "sha256": "fd389d10f3a7a8cba8817c1d9dceadc525aabc0ec3b5ce540578956f44ee387d"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "51ef0accc8aec2df86cd33291e5c44b4507b04dab902c1cdcaa4224f26f067f6"
+          "sha256": "1774bde14f37e023da991a0850f28ef0f31d76cb2a9332eeebf7787dca458b46"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "08055d96c1b0e530b5ec5ee8f74c21cd2779bab4cbbf86fb24f32fe63bbfb577"
+          "sha256": "df21ecc2dcfecb7ec5d4ed4880f8a4c3c090fc1f720fd23e72f8598128fc493b"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "5ea9ff97e183cdb0c78f0e86abca6ca9f5d7ed5ab7a9667e96ec2dfe4230bd33"
+          "sha256": "6423b542b9a7b22cec10b4931cc90ea0e62b6955e0c77e4255de560dcbf477a7"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "fb7aa1d2bc2b3429357301239697a0057e4235142d7110982f4194c32a923b5c"
+          "sha256": "058f0e09b2490e896aeb00aa6a4b1a670ec44b30d8cf0e1ed7df462798cec4cf"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "02ef332e030bf7f3a9db873ce28a4aec18f2ce4d73477fd9414c18ce9df63246"
+          "sha256": "781246c6158c0c2c4ac8209a7b1920a1841a1cfbaa961a3bc57f50e61da5d7d5"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -306,7 +306,47 @@
         },
         "kerc_residual_economics": {
           "path": "scripts/kerc_residual_economics.py",
-          "sha256": "1ff9bcc89340aa5487485167e6dc47eab8767068a9e7a8b706de8ca55eca53cb"
+          "sha256": "728ab03e67f974afb438053bf5cd2021612671cee70978b96330b5aedd65d8e3"
+        },
+        "kerc_allocator_qualification_config": {
+          "path": "configs/kerc_residual_allocator_qualification.json",
+          "sha256": "f0ffd133a318252321cb8bc0f27fdfedc40bbffca9c834ee81bc9f3f8a7c326e"
+        },
+        "kerc_allocator_target_producer": {
+          "path": "scripts/kerc_residual_interventions.py",
+          "sha256": "58f3d0b1e2f6ff2f4302735340ed80a6d59065fe1f832ce1e075f4fdbb952223"
+        },
+        "kerc_allocator_independent_evaluator": {
+          "path": "scripts/kerc_residual_allocator_evaluator.py",
+          "sha256": "d75d518c69a2c86a8cba978c21c3984418816473075369a72714453409204f30"
+        },
+        "kerc_allocator_qualification": {
+          "path": "scripts/kerc_residual_allocator_qualification.py",
+          "sha256": "5d9ac6c2844f64c5264d7fc897d1e7a0990660200c4e12fea84dd58341c97e73"
+        },
+        "kerc_allocator_qualification_tests": {
+          "path": "tests/test_kerc_residual_allocator_qualification.py",
+          "sha256": "a4a3b943681e38b6d2f324c2be5f61e5a406b91565ef7bd0b8bc859200806139"
+        },
+        "kerc_allocator_qualification_report": {
+          "path": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+          "sha256": "501fab3e9989f0e0d09ba16dc48db4ff98ebb4d99f87d1ab77a9a5243df93ae8"
+        },
+        "kerc_allocator_stage_manifest": {
+          "path": "data/training_data/moecot_kernel_english_v1/manifest.json",
+          "sha256": "92631b3dbaf4b8f245bac5ef106d7ad1ca64d41b9e46a4b1ee9d854b07bad690"
+        },
+        "kerc_fidelity_contract": {
+          "path": "configs/kerc_implementation_fidelity.json",
+          "sha256": "527314312c206b6c8c120d28c540fb19a5dc31b7e6d84b4e535c7031e054ad75"
+        },
+        "kerc_fidelity_gate": {
+          "path": "scripts/kerc_implementation_fidelity_gate.py",
+          "sha256": "f842b05498bcca91578285b803c0154d65574506c9b663dc6429d918a70881ff"
+        },
+        "kerc_fidelity_gate_tests": {
+          "path": "tests/test_kerc_implementation_fidelity.py",
+          "sha256": "5018cd0e5449ef415487c69173a87de17a71465466957c8cdcd2b787b99f831a"
         },
         "vcm_residual_lifecycle": {
           "path": "scripts/vcm_semantic_memory.py",
@@ -320,13 +360,13 @@
           "path": "tests/test_neural_seed_open_vocab.py",
           "sha256": "9e24ba0c912a6efa04658c11db570178bc886842eff86d72221e4663cd863aaa"
         },
-      "kerc_semantic_corpus_producer": {
-        "path": "scripts/kerc_semantic_corpus.py",
-        "sha256": "bef41105a52479d485aef076bccb4a77c00b504052f7d6d166701a82c65eb9c7"
+        "kerc_semantic_corpus_producer": {
+          "path": "scripts/kerc_semantic_corpus.py",
+          "sha256": "260ee81d4f6612df1deab531b588fd7d16460304c4350502e1ccb9fb1467a6cb"
       },
-      "kerc_semantic_corpus_verifier": {
-        "path": "scripts/kerc_semantic_corpus_verify.py",
-        "sha256": "455166c2ce7249c262de7db0932fe8960cf734c6e54ea08a96d42f1d0af3c8c5"
+        "kerc_semantic_corpus_verifier": {
+          "path": "scripts/kerc_semantic_corpus_verify.py",
+          "sha256": "8eb15e135c968cc40104427dbb49f02ca899051f6c35a84d5e1425d7077471dc"
       },
       "kerc_semantic_verifier_runtime": {
         "path": "configs/kerc_semantic_verifier_runtime.json",
@@ -374,7 +414,7 @@
         },
         "kerc_semantic_corpus_tests": {
           "path": "tests/test_kerc_semantic_corpus.py",
-          "sha256": "94b12fc6c890fbc0c2d6145b073061c89676a3a7b614bc752eaf92fb3378d628"
+          "sha256": "5bb2f3fe987093a529323bf65567b7049e0cb2ae13d15b9210a3c755b47492dd"
         },
         "kerc_gum_discourse_tests": {
           "path": "tests/test_kerc_gum_discourse_relations.py",
@@ -406,7 +446,7 @@
         },
         "kerc_residual_economics_tests": {
           "path": "tests/test_kerc_residual_economics.py",
-          "sha256": "46de42e33334bbca559ea3094b8c6d7e9abbe7235cc13c3868b2f5bd88501283"
+          "sha256": "b17075172116f4c3b0b68d8c5d84319f73f5e14e1dd46aa1d9722be0d4be7fbb"
         },
         "vcm_residual_lifecycle_tests": {
           "path": "tests/test_vcm_semantic_memory.py",
@@ -442,7 +482,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "b27e09f7fcb44628358c2352ed684bb6823e71dbf241b1a65dbd6585eca2dfe7"
+          "sha256": "e06ee102753cd4c473958e87145ef02a4569db520088c94995253d09b52c737c"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -470,7 +510,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "bc0ae438ca2a889521aef3a6841946749d4006d12dc07b987604c1245ba21e34"
+          "sha256": "beb9d1f4af62ef55a96dc6350fec9949693ac233fe219afe389d51bf835916b2"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -520,7 +560,9 @@
         "runtime/standard_causal_transformer_source_offset_repair/report.json",
         "runtime/standard_causal_transformer_stage_v1/training_heartbeat.json",
         "reports/policy_optimization_program.json",
-        "reports/generation_mode_registry.json"
+        "reports/generation_mode_registry.json",
+        "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+        "data/training_data/moecot_kernel_english_v1/manifest.json"
       ],
       "no_cheat_counters": {
         "public_training_rows_written": 0,
@@ -5422,11 +5464,11 @@
       "surface_id": "neural_seed_and_decoder",
       "status": "experimental",
       "implementation_type": "independent_language_arm_mlx_training_runtime",
-      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_fail_closed_kerc_mechanics_candidate_and_matched_surface_english_targets",
+      "backend": "python_mlx_apple_shared_trunk_language_experts_plus_ragged_per_unit_kerc_allocator_with_fail_closed_semantic_authority",
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_kerc_implementation_fidelity.py tests/test_kerc_content_cache.py tests/test_kerc_source_family_identity.py tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kerc_masc_event_coreference.py tests/test_kerc_masc_mpqa_relations.py tests/test_kerc_gum_discourse_relations.py tests/test_kerc_gum_entity_coreference.py tests/test_kerc_concept_registry.py tests/test_kerc_scoped_semantics.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_scoped_semantics_gate.py && python3 scripts/kerc_implementation_fidelity_gate.py --gate && python3 scripts/kerc_concept_registry_verify.py --gate && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 -m pytest -q tests/test_kerc_implementation_fidelity.py tests/test_kerc_content_cache.py tests/test_kerc_source_family_identity.py tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kerc_residual_allocator_qualification.py tests/test_kerc_masc_event_coreference.py tests/test_kerc_masc_mpqa_relations.py tests/test_kerc_gum_discourse_relations.py tests/test_kerc_gum_entity_coreference.py tests/test_kerc_concept_registry.py tests/test_kerc_scoped_semantics.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_scoped_semantics_gate.py && python3 scripts/kerc_implementation_fidelity_gate.py --gate && python3 scripts/kerc_concept_registry_verify.py --gate && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_residual_allocator_qualification.py && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
@@ -5434,6 +5476,7 @@
         "configs/moecot_language_arm_training.json",
         "configs/kerc_adequacy_canary.json",
         "configs/kerc_implementation_fidelity.json",
+        "configs/kerc_residual_allocator_qualification.json",
         "configs/kerc_concept_registry.json",
         "configs/standard_causal_transformer_survival.json",
         "configs/neural_seed_functional_utility.json",
@@ -5451,6 +5494,9 @@
         "scripts/moecot_source_conditioned_pretraining.py",
         "scripts/kerc_importance_policy.py",
         "scripts/kerc_residual_economics.py",
+        "scripts/kerc_residual_interventions.py",
+        "scripts/kerc_residual_allocator_evaluator.py",
+        "scripts/kerc_residual_allocator_qualification.py",
         "scripts/kerc_content_cache.py",
         "scripts/kerc_source_family_identity.py",
         "scripts/kerc_semantic_corpus.py",
@@ -5492,6 +5538,7 @@
         "tests/test_moecot_source_conditioned_pretraining.py",
         "tests/test_kerc_importance_policy.py",
         "tests/test_kerc_residual_economics.py",
+        "tests/test_kerc_residual_allocator_qualification.py",
         "tests/test_kerc_content_cache.py",
         "tests/test_kerc_source_family_identity.py",
         "tests/test_kerc_semantic_corpus.py",
@@ -5524,6 +5571,8 @@
         "reports/kerc_selective_replay_k1g.json",
         "reports/kerc_adequacy_canary.json",
         "reports/kerc_implementation_fidelity_gate.json",
+        "reports/runtime/kerc_k3_canonical_materialization.json",
+        "reports/runtime/kerc_residual_allocator_qualification_v1.json",
         "reports/moecot_language_vocabulary.json"
       ],
       "attd_hooks": {
@@ -5547,6 +5596,8 @@
           "kerc_shared_residual_promotion_economics_changed",
           "kerc_exact_roundtrip_constraint_inventory_changed",
           "kerc_scoped_semantic_operator_ownership_or_serialization_changed",
+          "kerc_allocator_target_evaluator_ownership_or_causal_signal_changed",
+          "kerc_allocator_long_training_authority_changed",
           "kerc_implementation_fidelity_or_claim_ceiling_changed"
         ],
         "maintenance_packet_prefix": "registry_impl_moecot_language_arm_training_v1"
@@ -5563,7 +5614,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0-K2 independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, production-shaped autoregressive mechanics, and a per-unit structural packet while keeping learned capability unclaimed. The repaired canonical stage is GREEN on all 27,941 validated candidates and deterministically selects 14,238/3,621/3,350 source-disjoint train/dev/eval records. KPP-1.2 materializes 229,852 stable residual units across interaction, segment/frame, token, concept-realization, and exact-object kinds. Every unit has four real typed payload candidates, exact dictionary-conditioned cost, a 13-dimension structural-distortion vector, a hard minimum and ceiling, separate source-residual/render-plan identities, and independently replayed selection. Causal conditioning excludes the priced unit; exact KPP-1.1 migration preserves all legacy payload fields; packet-implementation identity now invalidates candidate caches. Cold production is GREEN but expensive at 3,585.081 seconds; exact warm replay is 3.78 seconds. The independent four-worker verifier is GREEN in 1,974.212 seconds and replays in 12.14 seconds. The K1 MLX canaries remain GREEN, including gradients, exact overfit, real no-fallback execution, causal generated-state interventions, checkpoint/reload/resume, and decision retention. Construct validity remains RED: the K2 selector is structural rather than learned or intervention-sensitive; interaction amortization, calibrated semantic verification, correction alternatives, learned macros, PARTIAL decisions, broader proposition/truth semantics, and source-disjoint utility remain unproved. Next implement K3 causal target production and the learned constrained per-unit allocator without weakening K1/K2. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
+      "current_wall": "K0-K2 independently bind the KERC paper, implementation, licensed corpus, exact protocol mechanics, source-grounded semantic families, production-shaped autoregressive mechanics, and 229,852 per-unit structural packets while keeping learned capability unclaimed. K3 now materializes 160,139 one-unit intervention targets over 21,209 governed records, with 138,930 authoritative and 21,209 uncertainty-withheld decisions. Its actual ragged MLX allocator consumes only source bytes, K2 candidate features, unit kind, and hard masks; evaluator effects are hidden. Three source-family-disjoint seeds pass gradients, representative overfit, hard constraints, and strict checkpoint reload. Causal adequacy remains RED: the deterministic constrained-rate control and every seed score 1.0, all source-signal ablations change zero predictions, and the independent evaluator reports 408,064 bits of rate regret. The result is INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL, not a learned-allocation win or KERC failure. Canonical long training fails closed through a content-bound qualification receipt. Next repair K3 with cross-fitted source-dependent soft semantic consequences and independently owned executable, semantic, and adjudicated human evaluation; then finish K4-K7. Learned KERC, utility, efficiency, interaction-amortization, and scientific-negative claims remain denied until K1-K7 pass; the matched multi-seed H1-H8 campaign remains K8."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

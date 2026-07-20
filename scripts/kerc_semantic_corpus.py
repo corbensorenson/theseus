@@ -80,6 +80,10 @@ from kerc_residual_economics import (
     residual_unit_allocation_receipt,
     residual_wire_bytes,
 )
+from kerc_residual_interventions import (
+    build_unit_intervention_targets,
+    compact_allocator_targets,
+)
 from kerc_scoped_semantics import (
     POLICY as KERC_SCOPED_SEMANTIC_POLICY,
     compile_scoped_semantic_graph,
@@ -339,6 +343,7 @@ def finalize_candidate_record(
         str(record["provenance"]["source_id"]),
         packet=packet,
         hrl_state=record["hrl_state"],
+        source_family=str(record["provenance"]["source_group"]),
         importance=importance,
         allocation=allocation,
     )
@@ -533,6 +538,7 @@ def residual_supervision(
     *,
     packet: dict[str, Any],
     hrl_state: dict[str, Any],
+    source_family: str = "",
     importance: dict[str, Any] | None = None,
     allocation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -546,6 +552,19 @@ def residual_supervision(
     }
     finalized = isinstance(importance, dict) and isinstance(allocation, dict)
     unit_allocation = residual_unit_allocation_receipt(residual["unit_packet"])
+    compact_targets = None
+    if finalized and "concept_capsules" in packet and "protected_objects" in packet:
+        intervention_receipt = build_unit_intervention_targets(
+            unit_packet=residual["unit_packet"],
+            source_record_sha256=str(residual["unit_packet"]["source_record_sha256"]),
+            global_state=(hrl_state.get("global") or {}),
+            segment_residual=(residual.get("segment_frame") or {}),
+            token_residuals=list(residual.get("token_tags") or []),
+            concept_capsules=(packet.get("concept_capsules") or {}),
+            exact_objects=(packet.get("protected_objects") or {}),
+            source_family=source_family or identity,
+        )
+        compact_targets = compact_allocator_targets(intervention_receipt)
     return {
         "policy": "project_theseus_kerc_residual_supervision_v1",
         "labels_by_channel": labels,
@@ -553,6 +572,17 @@ def residual_supervision(
         "record_fidelity_label_training_authority": False,
         "packet_wide_fidelity_drives_training": False,
         "residual_unit_allocation": unit_allocation,
+        **(
+            {
+                "unit_intervention_targets": compact_targets,
+                "unit_intervention_target_authority": (
+                    "source_visible_typed_causal_interventions_provisional_until_independent_heldout_evaluation"
+                ),
+                "unit_intervention_target_producer_is_final_evaluator": False,
+            }
+            if compact_targets is not None
+            else {}
+        ),
         "allocation_target_authority": (
             "measured_structural_rate_distortion_with_calibrated_source_visible_importance"
             if finalized
@@ -586,6 +616,11 @@ def residual_supervision(
                 "residual_unit_allocation_sha256": unit_allocation[
                     "receipt_sha256"
                 ],
+                "unit_intervention_targets_sha256": (
+                    compact_targets["receipt_sha256"]
+                    if compact_targets is not None
+                    else None
+                ),
             }
         ),
     }
@@ -707,7 +742,10 @@ def base_record(
             producer_sha256=producer_sha256,
         ),
         "residual_supervision": residual_supervision(
-            identity, packet=packet, hrl_state=state
+            identity,
+            packet=packet,
+            hrl_state=state,
+            source_family=source_group,
         ),
         "verification_receipt": provisional_receipt(identity[:24]),
         "source_annotation": source_annotation,

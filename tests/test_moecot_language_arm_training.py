@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import inspect
 import hashlib
+import base64
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -33,9 +34,12 @@ from moecot_language_arm_training import (  # noqa: E402
     inspect_checkpoint_inventory,
     kerc_global_token_rows,
     kerc_serialization_valid_ids,
+    kerc_unit_allocator_training_authority,
     matched_decoder_only_config,
+    materialize_kerc_unit_allocator_row,
     materialize_target_supervision,
     model_accounting,
+    pack_kerc_unit_allocator_batch,
     range_view,
     serialization_valid_local_ids,
     should_evaluate_target,
@@ -74,6 +78,76 @@ def arm_views() -> dict:
         "mixed_dense_control": {"row_ranges": [{"start": 0, "stop": 10}]},
         "hidden_generalist_fallback": "forbidden",
     }
+
+
+def test_kerc_unit_allocator_rows_materialize_ragged_source_visible_features() -> None:
+    candidates = [
+        {
+            "fidelity_index": index,
+            "encoded_bits": 8 * (index + 1),
+            "hard_blocked": index < 1,
+            "distortion_lower": 0.25 / (index + 1),
+            "distortion_upper": 0.5 / (index + 1),
+            "dimension_losses": [None if offset % 2 else 0.0 for offset in range(13)],
+            "executable_pass_fraction": 1.0,
+        }
+        for index in range(4)
+    ]
+    source_visible_candidates = [
+        {
+            "fidelity_index": index,
+            "encoded_bits": 8 * (index + 1),
+            "uncompressed_bits": 64,
+            "structural_loss": 0.25 / (index + 1),
+            "distortion_vector": [
+                None if offset % 2 else 0.0 for offset in range(13)
+            ],
+            "k2_hard_blocked": index < 1,
+            "payload_sha256": "sha256:" + str(index) * 64,
+        }
+        for index in range(4)
+    ]
+    row = materialize_kerc_unit_allocator_row(
+        {
+            "kerc_residual_unit_allocator_loss_enabled": True,
+            "kerc_residual_unit_targets": [
+                {
+                    "unit_id": "ru:fixture",
+                    "unit_kind": "token_residue",
+                    "source_path": "/token/fixture",
+                    "source_payload_wire_b64": base64.b64encode(b"typed-unit").decode(),
+                    "source_visible_candidates": source_visible_candidates,
+                    "maximum_structural_distortion": 0.5,
+                    "candidates": candidates,
+                    "selected_fidelity_index": 2,
+                    "confidence_target": 0.75,
+                    "allocator_loss_enabled": True,
+                }
+            ],
+        }
+    )
+    assert row is not None
+    assert row["candidate_features"].shape == (1, 4, 18)
+    assert row["hard_block_mask"].tolist() == [[True, False, False, False]]
+    packed = pack_kerc_unit_allocator_batch([row, None])
+    assert packed is not None
+    assert packed["byte_ids"].shape == (len(b"/token/fixture\x00typed-unit"),)
+    assert packed["byte_offsets"].tolist() == [
+        [[0, len(b"/token/fixture\x00typed-unit")]],
+        [[0, 0]],
+    ]
+    assert packed["unit_mask"].tolist() == [[1.0], [0.0]]
+    assert packed["loss_mask"].tolist() == [[1.0], [0.0]]
+    assert packed["hard_block_mask"][1].all()
+
+
+def test_kerc_unit_allocator_long_training_fails_closed_without_semantic_authority() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    authority = kerc_unit_allocator_training_authority(config)
+    assert authority["authorized"] is False
+    assert authority["gaps"]
 
 
 def test_ragged_rows_isolates_long_sequences_without_dense_corpus_padding() -> None:

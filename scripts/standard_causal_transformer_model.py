@@ -47,6 +47,9 @@ class CausalTransformerConfig:
     kerc_stage_adapter_dim: int = 0
     kerc_residual_choice_count: int = 0
     kerc_residual_bottleneck_dim: int = 0
+    kerc_residual_unit_kind_count: int = 0
+    kerc_residual_unit_feature_dim: int = 0
+    kerc_residual_unit_byte_vocab_size: int = 0
     kerc_verifier_dim: int = 0
     kerc_verifier_output_dim: int = 4
     kerc_decision_bottleneck_dim: int = 0
@@ -211,6 +214,21 @@ class CausalTransformerConfig:
                 raise ValueError("KERC requires at least four residual fidelity choices")
             if self.kerc_residual_bottleneck_dim <= 0:
                 raise ValueError("KERC requires a learned residual bottleneck")
+            unit_allocator_enabled = any(
+                (
+                    self.kerc_residual_unit_kind_count,
+                    self.kerc_residual_unit_feature_dim,
+                    self.kerc_residual_unit_byte_vocab_size,
+                )
+            )
+            if unit_allocator_enabled and (
+                self.kerc_residual_unit_kind_count < 5
+                or self.kerc_residual_unit_feature_dim <= 0
+                or self.kerc_residual_unit_byte_vocab_size != 257
+            ):
+                raise ValueError(
+                    "KERC per-unit allocation requires five kinds, positive candidate features, and 257 byte symbols"
+                )
             if self.kerc_verifier_dim <= 0:
                 raise ValueError("KERC requires an independent verifier dimension")
             if self.kerc_verifier_output_dim <= 0:
@@ -238,6 +256,9 @@ class CausalTransformerConfig:
                 self.kerc_stage_adapter_dim,
                 self.kerc_residual_choice_count,
                 self.kerc_residual_bottleneck_dim,
+                self.kerc_residual_unit_kind_count,
+                self.kerc_residual_unit_feature_dim,
+                self.kerc_residual_unit_byte_vocab_size,
                 self.kerc_verifier_dim,
                 self.kerc_decision_bottleneck_dim,
                 self.kerc_decision_output_dim,
@@ -275,6 +296,10 @@ def build_model(
     pointer_generator_enabled = config.source_copy_mode == "pointer_generator"
     expert_adapter_enabled = config.expert_adapter_dim > 0
     source_expert_adapter_enabled = config.source_expert_adapter_dim > 0
+    kerc_enabled = bool(config.kerc_task_token_ids)
+    kerc_unit_allocator_enabled = bool(
+        kerc_enabled and config.kerc_residual_unit_feature_dim > 0
+    )
     if pointer_generator_enabled:
         if source_to_target_lookup is None:
             raise ValueError("pointer-generator mode requires a source-to-target lookup")
@@ -286,7 +311,6 @@ def build_model(
         plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
     )
     mtp_enabled = bool(config.mtp_future_offsets)
-    kerc_enabled = bool(config.kerc_task_token_ids)
     if state_enabled:
         if state_role_lookup is None:
             raise ValueError("enabled state memory requires a causal token-role lookup")
@@ -693,6 +717,61 @@ def build_model(
                 self.kerc_residual_values = nn.Embedding(
                     4 * config.kerc_residual_choice_count, config.d_model
                 )
+                if kerc_unit_allocator_enabled:
+                    self.kerc_unit_byte_embedding = nn.Embedding(
+                        config.kerc_residual_unit_byte_vocab_size, config.d_model
+                    )
+                    self.kerc_unit_kind_embedding = nn.Embedding(
+                        config.kerc_residual_unit_kind_count, config.d_model
+                    )
+                    self.kerc_unit_content_projection = nn.Linear(
+                        config.d_model,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_source_projection = nn.Linear(
+                        config.d_model,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_query = nn.Linear(
+                        config.kerc_residual_bottleneck_dim,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_key = nn.Linear(
+                        config.kerc_residual_bottleneck_dim,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_value = nn.Linear(
+                        config.kerc_residual_bottleneck_dim,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_attention_output = nn.Linear(
+                        config.kerc_residual_bottleneck_dim,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_candidate_projection = nn.Linear(
+                        config.kerc_residual_unit_feature_dim,
+                        config.kerc_residual_bottleneck_dim,
+                        bias=False,
+                    )
+                    self.kerc_unit_fidelity_feature_embedding = nn.Embedding(
+                        config.kerc_residual_choice_count,
+                        config.kerc_residual_bottleneck_dim,
+                    )
+                    self.kerc_unit_candidate_scorer = nn.Linear(
+                        config.kerc_residual_bottleneck_dim, 1, bias=True
+                    )
+                    self.kerc_unit_confidence = nn.Linear(
+                        config.kerc_residual_bottleneck_dim, 1, bias=True
+                    )
+                    self.kerc_unit_fidelity_values = nn.Embedding(
+                        config.kerc_residual_choice_count, config.d_model
+                    )
                 # The verifier intentionally has its own token embedding and projections;
                 # it does not reuse answer-producing hidden states.
                 self.kerc_verifier_embedding = nn.Embedding(
@@ -975,12 +1054,162 @@ def build_model(
                 return mx.zeros_like(weights)
             return weights
 
+        def kerc_allocate_units(
+            self,
+            *,
+            unit_byte_ids: Any,
+            unit_byte_mask: Any | None,
+            unit_kind_ids: Any,
+            unit_candidate_features: Any,
+            unit_mask: Any,
+            unit_hard_block_mask: Any,
+            unit_byte_offsets: Any | None = None,
+            source_summary: Any | None = None,
+        ) -> dict[str, Any]:
+            """Score concrete residual candidates after compiler unit creation."""
+
+            if not kerc_unit_allocator_enabled:
+                raise ValueError("KERC per-unit allocator is not configured")
+            batch, unit_count = (int(value) for value in unit_kind_ids.shape)
+            choices = int(config.kerc_residual_choice_count)
+            if tuple(unit_candidate_features.shape) != (
+                batch,
+                unit_count,
+                choices,
+                int(config.kerc_residual_unit_feature_dim),
+            ):
+                raise ValueError("KERC unit candidate feature shape mismatch")
+            if tuple(unit_mask.shape) != (batch, unit_count):
+                raise ValueError("KERC unit mask shape mismatch")
+            if tuple(unit_hard_block_mask.shape) != (batch, unit_count, choices):
+                raise ValueError("KERC unit hard-block mask shape mismatch")
+            if unit_byte_offsets is not None:
+                if unit_byte_mask is not None or len(unit_byte_ids.shape) != 1:
+                    raise ValueError("KERC ragged bytes require flat IDs without a mask")
+                if tuple(unit_byte_offsets.shape) != (batch, unit_count, 2):
+                    raise ValueError("KERC unit byte offsets shape mismatch")
+                embedded = self.kerc_unit_byte_embedding(
+                    unit_byte_ids.astype(mx.int32)
+                )
+                prefix = mx.concatenate(
+                    [
+                        mx.zeros((1, config.d_model), dtype=embedded.dtype),
+                        mx.cumsum(embedded, axis=0),
+                    ],
+                    axis=0,
+                )
+                starts = unit_byte_offsets[:, :, 0].astype(mx.int32)
+                ends = unit_byte_offsets[:, :, 1].astype(mx.int32)
+                byte_denominator = mx.maximum(
+                    (ends - starts).astype(mx.float32)[:, :, None], 1.0
+                )
+                content = (
+                    mx.take(prefix, ends, axis=0)
+                    - mx.take(prefix, starts, axis=0)
+                ) / byte_denominator
+            else:
+                if len(unit_byte_ids.shape) != 3:
+                    raise ValueError("KERC dense bytes require rank-three IDs")
+                byte_width = int(unit_byte_ids.shape[2])
+                if unit_byte_mask is None or tuple(unit_byte_mask.shape) != (
+                    batch,
+                    unit_count,
+                    byte_width,
+                ):
+                    raise ValueError("KERC unit byte mask shape mismatch")
+                embedded = self.kerc_unit_byte_embedding(
+                    unit_byte_ids.astype(mx.int32)
+                )
+                byte_authority = unit_byte_mask.astype(mx.float32)
+                byte_denominator = mx.maximum(
+                    mx.sum(byte_authority, axis=2, keepdims=True), 1.0
+                )
+                content = mx.sum(
+                    embedded * byte_authority[:, :, :, None], axis=2
+                ) / byte_denominator
+            content = content + self.kerc_unit_kind_embedding(
+                unit_kind_ids.astype(mx.int32)
+            )
+            hidden = self.kerc_unit_content_projection(content)
+            if source_summary is not None:
+                if tuple(source_summary.shape) != (batch, config.d_model):
+                    raise ValueError("KERC unit source summary shape mismatch")
+                hidden = hidden + self.kerc_unit_source_projection(source_summary)[:, None, :]
+            hidden = nn.silu(hidden)
+            query = self.kerc_unit_query(hidden)
+            key = self.kerc_unit_key(hidden)
+            value = self.kerc_unit_value(hidden)
+            scores = mx.matmul(query, mx.swapaxes(key, 1, 2)) / math.sqrt(
+                config.kerc_residual_bottleneck_dim
+            )
+            key_mask = unit_mask.astype(mx.float32)[:, None, :]
+            scores = mx.where(
+                key_mask > 0.0,
+                scores,
+                mx.full(scores.shape, -1e9, dtype=mx.float32),
+            )
+            attended = mx.matmul(mx.softmax(scores, axis=-1), value)
+            hidden = nn.silu(
+                hidden + self.kerc_unit_attention_output(attended)
+            ) * unit_mask[:, :, None].astype(mx.float32)
+            candidate_hidden = nn.silu(
+                self.kerc_unit_candidate_projection(unit_candidate_features)
+                + hidden[:, :, None, :]
+                + self.kerc_unit_fidelity_feature_embedding(
+                    mx.arange(choices, dtype=mx.int32)
+                )[None, None, :, :]
+            )
+            logits = self.kerc_unit_candidate_scorer(candidate_hidden)[..., 0]
+            logits = mx.where(
+                unit_hard_block_mask.astype(mx.bool_),
+                mx.full(logits.shape, -1e9, dtype=mx.float32),
+                logits,
+            )
+            logits = mx.where(
+                unit_mask[:, :, None] > 0,
+                logits,
+                mx.zeros_like(logits),
+            )
+            confidence_logits = self.kerc_unit_confidence(hidden)[..., 0]
+            probabilities = mx.softmax(logits, axis=-1)
+            fidelity_values = self.kerc_unit_fidelity_values(
+                mx.arange(choices, dtype=mx.int32)
+            )
+            selected_context = mx.sum(
+                probabilities[:, :, :, None] * fidelity_values[None, None, :, :],
+                axis=2,
+            )
+            denominator = mx.maximum(
+                mx.sum(unit_mask.astype(mx.float32), axis=1, keepdims=True), 1.0
+            )
+            residual_context = mx.sum(
+                selected_context * unit_mask[:, :, None].astype(mx.float32), axis=1
+            ) / denominator
+            if config.kerc_residual_ablation == "zero":
+                logits = mx.zeros_like(logits)
+                confidence_logits = mx.zeros_like(confidence_logits)
+                residual_context = mx.zeros_like(residual_context)
+            return {
+                "logits": logits,
+                "confidence_logits": confidence_logits,
+                "residual_context": residual_context,
+                "unit_hidden": hidden,
+            }
+
         def kerc_context(
             self,
             tokens: Any,
             source_memory: Any | None,
             source_mask: Any | None,
-        ) -> tuple[Any, Any, Any]:
+            *,
+            unit_byte_ids: Any | None = None,
+            unit_byte_mask: Any | None = None,
+            unit_byte_offsets: Any | None = None,
+            unit_kind_ids: Any | None = None,
+            unit_candidate_features: Any | None = None,
+            unit_mask: Any | None = None,
+            unit_hard_block_mask: Any | None = None,
+        ) -> tuple[Any, Any, Any, Any | None, Any | None]:
             stage_weights = self.kerc_stage_weights(tokens)
             if stage_weights is None or source_memory is None or source_mask is None:
                 batch = int(tokens.shape[0])
@@ -991,6 +1220,8 @@ def build_model(
                         (batch, 4, config.kerc_residual_choice_count),
                         dtype=mx.float32,
                     ),
+                    None,
+                    None,
                 )
             denominator = mx.maximum(mx.sum(source_mask, axis=1, keepdims=True), 1.0)
             summary = mx.sum(source_memory * source_mask[:, :, None], axis=1) / denominator
@@ -1028,6 +1259,35 @@ def build_model(
                     axis=1,
                 )
             residual_context = mx.mean(residual_levels, axis=1)
+            unit_logits = None
+            unit_confidence_logits = None
+            unit_arguments = (
+                unit_byte_ids,
+                unit_kind_ids,
+                unit_candidate_features,
+                unit_mask,
+                unit_hard_block_mask,
+            )
+            if any(value is not None for value in unit_arguments):
+                if not all(value is not None for value in unit_arguments):
+                    raise ValueError("KERC per-unit allocator inputs must be supplied together")
+                if (unit_byte_mask is None) == (unit_byte_offsets is None):
+                    raise ValueError(
+                        "KERC per-unit allocator requires exactly one byte layout"
+                    )
+                unit_aux = self.kerc_allocate_units(
+                    unit_byte_ids=unit_byte_ids,
+                    unit_byte_mask=unit_byte_mask,
+                    unit_byte_offsets=unit_byte_offsets,
+                    unit_kind_ids=unit_kind_ids,
+                    unit_candidate_features=unit_candidate_features,
+                    unit_mask=unit_mask,
+                    unit_hard_block_mask=unit_hard_block_mask,
+                    source_summary=summary,
+                )
+                residual_context = unit_aux["residual_context"]
+                unit_logits = unit_aux["logits"]
+                unit_confidence_logits = unit_aux["confidence_logits"]
             if config.kerc_residual_ablation == "zero":
                 residual_logits = mx.zeros_like(residual_logits)
                 residual_context = mx.zeros_like(residual_context)
@@ -1038,6 +1298,8 @@ def build_model(
                 stage_context + residual_context * residual_access,
                 stage_weights,
                 residual_logits,
+                unit_logits,
+                unit_confidence_logits,
             )
 
         def kerc_generator_logits(
@@ -1277,6 +1539,13 @@ def build_model(
             return_plan_logits: bool = False,
             return_copy_aux: bool = False,
             return_training_aux: bool = False,
+            kerc_unit_byte_ids: Any | None = None,
+            kerc_unit_byte_mask: Any | None = None,
+            kerc_unit_byte_offsets: Any | None = None,
+            kerc_unit_kind_ids: Any | None = None,
+            kerc_unit_candidate_features: Any | None = None,
+            kerc_unit_mask: Any | None = None,
+            kerc_unit_hard_block_mask: Any | None = None,
         ) -> Any:
             if return_training_aux and (return_plan_logits or return_copy_aux):
                 raise ValueError(
@@ -1289,14 +1558,28 @@ def build_model(
             cached_kerc_context = None
             cached_kerc_stage_weights = None
             cached_kerc_residual_logits = None
+            cached_kerc_unit_logits = None
+            cached_kerc_unit_confidence_logits = None
             layer_cache_input = cache
             trailing = 0
             if kerc_enabled and cache is not None and len(cache) > config.num_layers:
-                (
-                    cached_kerc_context,
-                    cached_kerc_stage_weights,
-                    cached_kerc_residual_logits,
-                ) = cache[-1]
+                kerc_cache = cache[-1]
+                if len(kerc_cache) == 3:
+                    (
+                        cached_kerc_context,
+                        cached_kerc_stage_weights,
+                        cached_kerc_residual_logits,
+                    ) = kerc_cache
+                elif len(kerc_cache) == 5:
+                    (
+                        cached_kerc_context,
+                        cached_kerc_stage_weights,
+                        cached_kerc_residual_logits,
+                        cached_kerc_unit_logits,
+                        cached_kerc_unit_confidence_logits,
+                    ) = kerc_cache
+                else:
+                    raise ValueError("KERC cache entry has an unsupported shape")
                 trailing += 1
             if (
                 plan_enabled
@@ -1340,11 +1623,26 @@ def build_model(
                         kerc_context,
                         kerc_stage_weights,
                         kerc_residual_logits,
-                    ) = self.kerc_context(tokens, source_memory, source_mask)
+                        kerc_unit_logits,
+                        kerc_unit_confidence_logits,
+                    ) = self.kerc_context(
+                        tokens,
+                        source_memory,
+                        source_mask,
+                        unit_byte_ids=kerc_unit_byte_ids,
+                        unit_byte_mask=kerc_unit_byte_mask,
+                        unit_byte_offsets=kerc_unit_byte_offsets,
+                        unit_kind_ids=kerc_unit_kind_ids,
+                        unit_candidate_features=kerc_unit_candidate_features,
+                        unit_mask=kerc_unit_mask,
+                        unit_hard_block_mask=kerc_unit_hard_block_mask,
+                    )
                 else:
                     kerc_context = cached_kerc_context
                     kerc_stage_weights = cached_kerc_stage_weights
                     kerc_residual_logits = cached_kerc_residual_logits
+                    kerc_unit_logits = cached_kerc_unit_logits
+                    kerc_unit_confidence_logits = cached_kerc_unit_confidence_logits
                 kerc_access = (
                     source_access
                     if source_access is not None
@@ -1358,6 +1656,8 @@ def build_model(
                 kerc_context = None
                 kerc_stage_weights = None
                 kerc_residual_logits = None
+                kerc_unit_logits = None
+                kerc_unit_confidence_logits = None
             attention_mask = self.sequence_attention_mask(tokens, cache)
             if not state_enabled:
                 hidden = conditioned_hidden
@@ -1381,7 +1681,13 @@ def build_model(
                     next_cache.append((plan_context,))
                 if kerc_enabled:
                     next_cache.append(
-                        (kerc_context, kerc_stage_weights, kerc_residual_logits)
+                        (
+                            kerc_context,
+                            kerc_stage_weights,
+                            kerc_residual_logits,
+                            kerc_unit_logits,
+                            kerc_unit_confidence_logits,
+                        )
                     )
                 final_hidden = self.final_norm(hidden)
                 generator_logits = self.kerc_generator_logits(
@@ -1412,6 +1718,8 @@ def build_model(
                         "kerc": {
                             "stage_weights": kerc_stage_weights,
                             "residual_logits": kerc_residual_logits,
+                            "unit_residual_logits": kerc_unit_logits,
+                            "unit_confidence_logits": kerc_unit_confidence_logits,
                             "verifier_logits": (
                                 self.kerc_verifier_logits(tokens)
                                 if cache is None

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import base64
 import difflib
 import hashlib
 import json
@@ -25,6 +26,173 @@ from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
+
+
+KERC_UNIT_KIND_IDS = {
+    "interaction_entry": 0,
+    "segment_frame": 1,
+    "token_residue": 2,
+    "concept_realization": 3,
+    "exact_object": 4,
+}
+KERC_UNIT_CANDIDATE_FEATURE_DIM = 18
+
+
+def materialize_kerc_unit_allocator_row(row: dict[str, Any]) -> dict[str, Any] | None:
+    """Decode bounded K3 source-visible unit supervision without evaluator fields."""
+
+    if row.get("kerc_residual_unit_allocator_loss_enabled") is not True:
+        return None
+    targets = list(row.get("kerc_residual_unit_targets") or [])
+    if not targets:
+        raise ValueError("enabled KERC per-unit allocation row has no unit targets")
+    byte_rows: list[np.ndarray] = []
+    kind_ids: list[int] = []
+    candidate_features: list[np.ndarray] = []
+    hard_masks: list[np.ndarray] = []
+    labels: list[int] = []
+    confidence: list[float] = []
+    authority: list[float] = []
+    unit_ids: list[str] = []
+    for target in targets:
+        unit_id = str(target.get("unit_id") or "")
+        kind = str(target.get("unit_kind") or "")
+        source_path = str(target.get("source_path") or "")
+        try:
+            payload = base64.b64decode(
+                str(target.get("source_payload_wire_b64") or ""), validate=True
+            )
+        except ValueError as exc:
+            raise ValueError(f"invalid KERC unit payload encoding: {unit_id}") from exc
+        if not unit_id or kind not in KERC_UNIT_KIND_IDS or not source_path or not payload:
+            raise ValueError(f"invalid KERC unit identity or payload: {unit_id}")
+        candidates = list(target.get("candidates") or [])
+        source_visible = list(target.get("source_visible_candidates") or [])
+        if len(candidates) != 4 or len(source_visible) != 4:
+            raise ValueError(f"KERC unit requires four candidate actions: {unit_id}")
+        maximum_bits = max(
+            1, max(int(candidate.get("encoded_bits") or 0) for candidate in source_visible)
+        )
+        maximum_uncompressed = max(
+            1,
+            max(
+                int(candidate.get("uncompressed_bits") or 0)
+                for candidate in source_visible
+            ),
+        )
+        maximum_distortion = float(target.get("maximum_structural_distortion") or 0.0)
+        features = []
+        hard = []
+        for index, (candidate, visible) in enumerate(zip(candidates, source_visible)):
+            distortion = list(visible.get("distortion_vector") or [])
+            encoded_bits = int(visible.get("encoded_bits") or 0)
+            uncompressed_bits = int(visible.get("uncompressed_bits") or 0)
+            if (
+                len(distortion) != 13
+                or int(candidate.get("fidelity_index", -1)) != index
+                or int(visible.get("fidelity_index", -1)) != index
+                or encoded_bits != int(candidate.get("encoded_bits") or 0)
+            ):
+                raise ValueError(f"invalid KERC unit candidate features: {unit_id}:{index}")
+            feature = [
+                encoded_bits / maximum_bits,
+                uncompressed_bits / maximum_uncompressed,
+                encoded_bits / max(1, uncompressed_bits),
+                float(visible.get("structural_loss") or 0.0),
+                maximum_distortion,
+                *[-1.0 if value is None else float(value) for value in distortion],
+            ]
+            if len(feature) != KERC_UNIT_CANDIDATE_FEATURE_DIM or not np.isfinite(feature).all():
+                raise ValueError(f"invalid KERC unit feature vector: {unit_id}:{index}")
+            features.append(feature)
+            hard.append(bool(candidate.get("hard_blocked")))
+        selected = int(target.get("selected_fidelity_index", -1))
+        if selected not in range(4) or hard[selected]:
+            raise ValueError(f"invalid KERC unit target choice: {unit_id}")
+        source_visible_bytes = source_path.encode("utf-8") + b"\x00" + payload
+        byte_rows.append(
+            np.frombuffer(source_visible_bytes, dtype=np.uint8).astype(np.int32)
+        )
+        kind_ids.append(KERC_UNIT_KIND_IDS[kind])
+        candidate_features.append(np.asarray(features, dtype=np.float32))
+        hard_masks.append(np.asarray(hard, dtype=bool))
+        labels.append(selected)
+        confidence.append(float(target.get("confidence_target") or 0.0))
+        authority.append(float(bool(target.get("allocator_loss_enabled"))))
+        unit_ids.append(unit_id)
+    if not any(authority):
+        raise ValueError("KERC per-unit allocation row has no authoritative target")
+    return {
+        "unit_ids": tuple(unit_ids),
+        "byte_rows": tuple(byte_rows),
+        "kind_ids": np.asarray(kind_ids, dtype=np.int32),
+        "candidate_features": np.asarray(candidate_features, dtype=np.float32),
+        "hard_block_mask": np.asarray(hard_masks, dtype=bool),
+        "labels": np.asarray(labels, dtype=np.int32),
+        "confidence_targets": np.asarray(confidence, dtype=np.float32),
+        "loss_mask": np.asarray(authority, dtype=np.float32),
+    }
+
+
+def without_kerc_unit_loss(row: dict[str, Any] | None) -> dict[str, Any] | None:
+    if row is None:
+        return None
+    result = dict(row)
+    result["loss_mask"] = np.zeros_like(row["loss_mask"], dtype=np.float32)
+    return result
+
+
+def pack_kerc_unit_allocator_batch(
+    rows: list[dict[str, Any] | None],
+) -> dict[str, np.ndarray] | None:
+    active = [row for row in rows if row is not None]
+    if not active:
+        return None
+    maximum_units = max(len(row["unit_ids"]) for row in active)
+    batch = len(rows)
+    flat_byte_rows: list[np.ndarray] = []
+    byte_offsets = np.zeros((batch, maximum_units, 2), dtype=np.int64)
+    kind_ids = np.zeros((batch, maximum_units), dtype=np.int32)
+    features = np.zeros(
+        (batch, maximum_units, 4, KERC_UNIT_CANDIDATE_FEATURE_DIM),
+        dtype=np.float32,
+    )
+    hard = np.ones((batch, maximum_units, 4), dtype=bool)
+    labels = np.zeros((batch, maximum_units), dtype=np.int32)
+    confidence = np.zeros((batch, maximum_units), dtype=np.float32)
+    unit_mask = np.zeros((batch, maximum_units), dtype=np.float32)
+    loss_mask = np.zeros((batch, maximum_units), dtype=np.float32)
+    byte_cursor = 0
+    for batch_index, row in enumerate(rows):
+        if row is None:
+            continue
+        count = len(row["unit_ids"])
+        kind_ids[batch_index, :count] = row["kind_ids"]
+        features[batch_index, :count] = row["candidate_features"]
+        hard[batch_index, :count] = row["hard_block_mask"]
+        labels[batch_index, :count] = row["labels"]
+        confidence[batch_index, :count] = row["confidence_targets"]
+        unit_mask[batch_index, :count] = 1.0
+        loss_mask[batch_index, :count] = row["loss_mask"]
+        for unit_index, payload in enumerate(row["byte_rows"]):
+            start = byte_cursor
+            flat_byte_rows.append(np.asarray(payload, dtype=np.int32))
+            byte_cursor += len(payload)
+            byte_offsets[batch_index, unit_index] = (start, byte_cursor)
+    if np.any((unit_mask == 1.0) & hard.all(axis=-1)):
+        raise ValueError("KERC per-unit batch contains a unit with no admissible action")
+    byte_ids = np.concatenate(flat_byte_rows)
+    return {
+        "byte_ids": byte_ids,
+        "byte_offsets": byte_offsets,
+        "kind_ids": kind_ids,
+        "candidate_features": features,
+        "hard_block_mask": hard,
+        "labels": labels,
+        "confidence_targets": confidence,
+        "unit_mask": unit_mask,
+        "loss_mask": loss_mask,
+    }
 
 from kerc_checkpoint_schema import CURRENT_SCHEMA, CURRENT_SCHEMA_VERSION, POLICY as KERC_CHECKPOINT_POLICY
 from kerc_concept_registry import ConceptRegistry
@@ -72,6 +240,57 @@ import vcm_semantic_memory
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
+
+
+def kerc_unit_allocator_training_authority(config: dict[str, Any]) -> dict[str, Any]:
+    """Admit K3 loss to long training only after decision-grade qualification."""
+
+    configured = str(config.get("kerc_unit_allocator_qualification") or "")
+    gaps: list[str] = []
+    qualification_config_path = ROOT / configured if configured else Path()
+    if not configured or not qualification_config_path.is_file():
+        gaps.append("qualification_config_missing")
+        qualification_config: dict[str, Any] = {}
+    else:
+        qualification_config = json.loads(
+            qualification_config_path.read_text(encoding="utf-8")
+        )
+    report_value = str(qualification_config.get("report") or "")
+    report_path = ROOT / report_value if report_value else Path()
+    if not report_value or not report_path.is_file():
+        gaps.append("qualification_report_missing")
+        report: dict[str, Any] = {}
+    else:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    config_path = ROOT / "configs" / "moecot_language_arm_training.json"
+    checks = {
+        "qualification_config_bound": bool(qualification_config)
+        and report.get("config_sha256") == sha256_file(qualification_config_path),
+        "training_config_bound": bool(report)
+        and report.get("training_config_sha256") == sha256_file(config_path),
+        "mechanics_green": report.get("mechanics_trigger_state") == "GREEN",
+        "causal_adequacy_green": report.get("causal_adequacy_trigger_state")
+        == "GREEN",
+        "semantic_panel_complete": report.get("semantic_panel_complete") is True,
+        "canonical_long_training_authorized": report.get(
+            "canonical_long_training_authorized"
+        )
+        is True,
+        "no_public_training_rows": int(report.get("public_training_rows_written") or 0)
+        == 0,
+        "no_external_inference": int(report.get("external_inference_calls") or 0)
+        == 0,
+        "no_fallback": int(report.get("fallback_return_count") or 0) == 0,
+    }
+    gaps.extend(key for key, passed in checks.items() if not passed)
+    return {
+        "authorized": not gaps,
+        "checks": checks,
+        "gaps": sorted(set(gaps)),
+        "qualification_config": configured,
+        "qualification_report": report_value,
+        "qualification_receipt_sha256": str(report.get("receipt_sha256") or ""),
+    }
 
 
 class RaggedRows:
@@ -622,6 +841,9 @@ def model_accounting(
             "kerc_stage_adapter_dim": 64,
             "kerc_residual_choice_count": 4,
             "kerc_residual_bottleneck_dim": 64,
+            "kerc_residual_unit_kind_count": 5,
+            "kerc_residual_unit_feature_dim": 18,
+            "kerc_residual_unit_byte_vocab_size": 257,
             "kerc_verifier_dim": 64,
         }
     )
@@ -759,6 +981,9 @@ def matched_encoder_decoder_config(
         "kerc_stage_adapter_dim",
         "kerc_residual_choice_count",
         "kerc_residual_bottleneck_dim",
+        "kerc_residual_unit_kind_count",
+        "kerc_residual_unit_feature_dim",
+        "kerc_residual_unit_byte_vocab_size",
         "kerc_verifier_dim",
         "kerc_verifier_output_dim",
         "kerc_decision_bottleneck_dim",
@@ -1689,6 +1914,7 @@ def materialize_target_supervision(
     sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
     kerc_residual_loss_enabled: list[bool] = []
+    kerc_unit_allocator_rows: list[dict[str, Any] | None] = []
     kerc_verifier_rows: list[list[int]] = []
     kerc_decision_rows: list[int] = []
     kerc_decision_loss_enabled: list[bool] = []
@@ -1813,6 +2039,7 @@ def materialize_target_supervision(
                     raise ValueError(f"invalid supervision sampling weight: {key}:{source_rows - 1}")
                 sampling_weights.append(sampling_weight)
                 if kerc_mode:
+                    unit_allocator_row = materialize_kerc_unit_allocator_row(row)
                     residual = list(row.get("kerc_residual_labels") or [])
                     residual_channels = list(row.get("kerc_residual_channels") or [])
                     verifier_dimensions = list(row.get("kerc_verifier_dimensions") or [])
@@ -1883,6 +2110,7 @@ def materialize_target_supervision(
                         )
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_residual_loss_enabled.append(True)
+                    kerc_unit_allocator_rows.append(unit_allocator_row)
                     kerc_verifier_rows.append([1] * len(KERC_VERIFIER_DIMENSIONS))
                     kerc_decision_rows.append(
                         ANSWER_DISPOSITION_ORDER.index(disposition)
@@ -1896,6 +2124,7 @@ def materialize_target_supervision(
                     sampling_weights.append(sampling_weight)
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_residual_loss_enabled.append(False)
+                    kerc_unit_allocator_rows.append(without_kerc_unit_loss(unit_allocator_row))
                     kerc_verifier_rows.append([int(value) for value in negative_labels])
                     kerc_decision_rows.append(
                         ANSWER_DISPOSITION_ORDER.index(disposition)
@@ -2047,6 +2276,9 @@ def materialize_target_supervision(
                         sampling_weights.append(sampling_weight)
                         kerc_residual_rows.append([int(value) for value in residual])
                         kerc_residual_loss_enabled.append(False)
+                        kerc_unit_allocator_rows.append(
+                            without_kerc_unit_loss(unit_allocator_row)
+                        )
                         kerc_verifier_rows.append(
                             [int(value) for value in counter_labels]
                         )
@@ -2231,6 +2463,29 @@ def materialize_target_supervision(
         "kerc_residual_supervision_row_count": (
             sum(kerc_residual_loss_enabled) if kerc_mode else 0
         ),
+        "kerc_per_unit_allocator_supervision_row_count": (
+            sum(
+                row is not None and bool(np.asarray(row["loss_mask"]).any())
+                for row in kerc_unit_allocator_rows
+            )
+            if kerc_mode
+            else 0
+        ),
+        "kerc_per_unit_allocator_supervised_unit_count": (
+            sum(
+                int(np.asarray(row["loss_mask"]).sum())
+                for row in kerc_unit_allocator_rows
+                if row is not None
+            )
+            if kerc_mode
+            else 0
+        ),
+        "legacy_four_channel_allocator_training_authority": not any(
+            row is not None and bool(np.asarray(row["loss_mask"]).any())
+            for row in kerc_unit_allocator_rows
+        )
+        if kerc_mode
+        else False,
         "kerc_context_counterfactuals_receive_unique_source_credit": 0,
         "kerc_context_counterfactuals_receive_candidate_generation_credit": 0,
         "canary_coverage_catalog": (
@@ -2259,6 +2514,9 @@ def materialize_target_supervision(
             np.asarray(kerc_residual_loss_enabled, dtype=np.float32)
             if kerc_mode
             else None
+        ),
+        kerc_unit_allocator_rows=(
+            tuple(kerc_unit_allocator_rows) if kerc_mode else None
         ),
         kerc_verifier_labels=(
             np.asarray(kerc_verifier_rows, dtype=np.float32) if kerc_mode else None
@@ -3535,11 +3793,31 @@ def train_target(
         "mean_loss": None,
         "final_loss": None,
     }
+    unit_allocator_rows_present = False
+    unit_allocator_active = False
+    unit_allocator_authority = kerc_unit_allocator_training_authority(config)
     if (
         kernel_english_stage is not None
         and remaining_kernel_positions > 0
         and used_steps < allowed_steps
     ):
+        kerc_target = str(target.get("role") or "") == "kerc_english_candidate"
+        unit_allocator_rows = (
+            getattr(kernel_english_stage, "kerc_unit_allocator_rows", None)
+            if kerc_target
+            else None
+        )
+        unit_allocator_rows_present = bool(
+            unit_allocator_rows
+            and any(
+                row is not None and bool(np.asarray(row["loss_mask"]).any())
+                for row in unit_allocator_rows
+            )
+        )
+        unit_allocator_active = (
+            unit_allocator_rows_present
+            and unit_allocator_authority["authorized"] is True
+        )
         kernel_english_phase = train_phase(
             model,
             optimizer,
@@ -3559,18 +3837,33 @@ def train_target(
             plan_factor_group_sizes=(),
             kerc_residual_labels=(
                 kernel_english_stage.kerc_residual_labels
-                if str(target.get("role") or "") == "kerc_english_candidate"
+                if kerc_target and not unit_allocator_rows_present
                 else None
             ),
             kerc_residual_weight=(
                 float(config["kernel_english_training"]["residual_auxiliary_weight"])
-                if str(target.get("role") or "") == "kerc_english_candidate"
+                if kerc_target and not unit_allocator_rows_present
                 else 0.0
             ),
             kerc_residual_loss_mask=(
                 kernel_english_stage.kerc_residual_loss_mask
-                if str(target.get("role") or "") == "kerc_english_candidate"
+                if kerc_target and not unit_allocator_rows_present
                 else None
+            ),
+            kerc_unit_allocator_rows=(
+                unit_allocator_rows if unit_allocator_active else None
+            ),
+            kerc_unit_batch_packer=(
+                pack_kerc_unit_allocator_batch if unit_allocator_active else None
+            ),
+            kerc_unit_residual_weight=(
+                float(
+                    config["kernel_english_training"][
+                        "unit_residual_auxiliary_weight"
+                    ]
+                )
+                if unit_allocator_active
+                else 0.0
             ),
             kerc_verifier_labels=(
                 kernel_english_stage.kerc_verifier_labels
@@ -3766,6 +4059,9 @@ def train_target(
         "unique_kernel_english_target_positions": unique_kernel_positions,
         "kernel_english_optimizer_target_positions": kernel_positions,
         "kernel_english_optimizer_repetitions": kernel_repetitions,
+        "kerc_unit_allocator_rows_present": unit_allocator_rows_present,
+        "kerc_unit_allocator_training_active": unit_allocator_active,
+        "kerc_unit_allocator_training_authority": unit_allocator_authority,
         "unique_supervision_target_positions": unique_sft_positions,
         "supervision_optimizer_target_positions": sft_positions,
         "supervision_optimizer_repetitions": sft_repetitions,
@@ -4066,6 +4362,9 @@ def validate_config(config: dict[str, Any]) -> None:
                 "kerc_stage_adapter_dim",
                 "kerc_residual_choice_count",
                 "kerc_residual_bottleneck_dim",
+                "kerc_residual_unit_kind_count",
+                "kerc_residual_unit_feature_dim",
+                "kerc_residual_unit_byte_vocab_size",
                 "kerc_verifier_dim",
                 "kerc_verifier_output_dim",
                 "kerc_decision_bottleneck_dim",
@@ -4078,6 +4377,9 @@ def validate_config(config: dict[str, Any]) -> None:
             kerc_dimensions["kerc_stage_adapter_dim"] <= 0
             or kerc_dimensions["kerc_residual_choice_count"] < 4
             or kerc_dimensions["kerc_residual_bottleneck_dim"] <= 0
+            or kerc_dimensions["kerc_residual_unit_kind_count"] < 5
+            or kerc_dimensions["kerc_residual_unit_feature_dim"] <= 0
+            or kerc_dimensions["kerc_residual_unit_byte_vocab_size"] != 257
             or kerc_dimensions["kerc_verifier_dim"] <= 0
             or kerc_dimensions["kerc_verifier_output_dim"]
             != len(KERC_VERIFIER_DIMENSIONS)
@@ -4188,8 +4490,18 @@ def validate_config(config: dict[str, Any]) -> None:
         or sequence_buckets.get("long_bucket_capability_credit") is not False
     ):
         raise ValueError("KERC sequence-bucket contract is incomplete")
-    for key in ("residual_auxiliary_weight", "verifier_auxiliary_weight"):
-        value = float(kernel_cfg.get(key) or 0.0)
+    for key in (
+        "residual_auxiliary_weight",
+        "unit_residual_auxiliary_weight",
+        "verifier_auxiliary_weight",
+    ):
+        value = float(
+            kernel_cfg.get(
+                key,
+                kernel_cfg.get("residual_auxiliary_weight", 0.0),
+            )
+            or 0.0
+        )
         if not 0.0 < value <= 1.0:
             raise ValueError(f"KERC {key} must be positive and no greater than one")
     code_vocabulary = kernel_cfg.get("code_vocabulary") or {}

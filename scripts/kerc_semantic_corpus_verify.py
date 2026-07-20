@@ -78,6 +78,10 @@ from kerc_residual_economics import (
     residual_wire_bytes,
     validate_structural_rate_distortion_allocation,
 )
+from kerc_residual_interventions import (
+    build_unit_intervention_targets,
+    compact_allocator_targets,
+)
 from kerc_source_family_identity import (
     PRODUCER_FAMILY_ROOTS,
     VERIFIER_FAMILY_ROOTS,
@@ -4271,6 +4275,35 @@ def _independent_higher_state_for_unit(
 def independently_audit_residual_unit_packet(record: dict[str, Any]) -> dict[str, Any]:
     packet = record.get("kernel_packet") or {}
     residual = packet.get("residual") or {}
+    supervision = record.get("residual_supervision") or {}
+    compact_targets = supervision.get("unit_intervention_targets")
+    target_audit = None
+    if compact_targets is not None:
+        expected_targets = compact_allocator_targets(
+            build_unit_intervention_targets(
+                unit_packet=residual.get("unit_packet") or {},
+                source_record_sha256=str(
+                    (residual.get("unit_packet") or {}).get("source_record_sha256")
+                    or ""
+                ),
+                global_state=(record.get("hrl_state") or {}).get("global") or {},
+                segment_residual=residual.get("segment_frame") or {},
+                token_residuals=list(residual.get("token_tags") or []),
+                concept_capsules=packet.get("concept_capsules") or {},
+                exact_objects=packet.get("protected_objects") or {},
+                source_family=str((record.get("provenance") or {}).get("source_group") or ""),
+            )
+        )
+        if compact_targets != expected_targets:
+            raise ValueError("candidate unit-intervention target replay mismatch")
+        target_audit = {
+            "receipt_sha256": expected_targets["receipt_sha256"],
+            "unit_count": expected_targets["summary"]["unit_count"],
+            "authoritative_unit_count": expected_targets["summary"][
+                "allocator_authority_unit_count"
+            ],
+            "target_producer_is_final_evaluator": False,
+        }
     unit_packet = residual.get("unit_packet") or {}
     core = {
         key: copy.deepcopy(value)
@@ -4438,6 +4471,7 @@ def independently_audit_residual_unit_packet(record: dict[str, Any]) -> dict[str
         is True,
         "packet_wide_fidelity_drives_training": False,
         "learned_allocator_claimed": False,
+        "unit_intervention_targets": target_audit,
     }
 
 

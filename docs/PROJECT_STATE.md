@@ -1,5 +1,5 @@
 # Project State
-Last consolidated: 2026-07-19 UTC.
+Last consolidated: 2026-07-20 UTC.
 
 This is the bounded current-wall page. The machine contract is
 `configs/roadmap_implementation_matrix.json`, the forward plan is `roadmap.md`, and
@@ -21,8 +21,11 @@ share toward zero. Public benchmarks are calibration only.
   protected-span reconstruction, checkpoint reload, repeated fresh-process resume, and
   joint-objective decision retention. The enclosing bounded mechanics canary is GREEN with
   no hard or inconclusive gaps. K2 now adds a fully source-replayed per-unit structural
-  packet and exact KPP-1.1 migration. The prior freeze package remains stale because K3-K7
-  construct-validity owners and final cross-owner replay are still open.
+  packet and exact KPP-1.1 migration. K3 now has a real ragged MLX per-unit allocator and
+  full-corpus intervention-target path, but its present target is degenerate under the
+  strong deterministic control; causal adequacy is RED and long training fails closed.
+  The prior freeze package remains stale because repaired K3 and K4-K7 construct-validity
+  owners plus final cross-owner replay are still open.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -59,8 +62,15 @@ share toward zero. Public benchmarks are calibration only.
   K2 materializes and independently replays 229,852 stable residual units over all
   27,941 records with separate source residual/render-plan identities, four real payload
   candidates, exact conditional codec costs, per-unit constraints, causal no-self-
-  conditioning, and exact KPP-1.1 migration. The cold path is still expensive and the
-  selection policy remains structural rather than learned or semantic; K3 is therefore open.
+  conditioning, and exact KPP-1.1 migration. K3 materializes 160,139 one-unit intervention
+  targets over 21,209 governed records, with 138,930 authoritative and 21,209 uncertainty-
+  withheld decisions. Three source-family-disjoint MLX seeds pass gradient, overfit, hard-
+  constraint, and strict-reload mechanics. They do not establish causal learning: the
+  constrained-rate baseline and every seed score 1.0, content shuffle and feature/kind
+  zeroing change zero predictions, and an independently implemented panel measures 408,064
+  bits of rate regret. The disposition is
+  `INCONCLUSIVE_EXPERIMENT_DEGENERATE_TARGET_PENDING_SEMANTIC_PANEL`; the deterministic
+  engine remains authoritative and K3 stays open without a KERC failure claim.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim
@@ -244,14 +254,15 @@ share toward zero. Public benchmarks are calibration only.
   paths receive zero learned-generation credit. Forty-four focused integration tests pass.
   The real bounded repair canary reduces two type faults but remains 0/2 behavior passes,
   so no repair-efficacy or model-capability gain is claimed.
-- **Immediate dependency:** implement K3's intervention-sensitive learned per-unit allocator
-  on top of the qualified K1/K2 mechanics before any long optimizer campaign. Derive targets
-  by causal one-unit downgrades using source-disjoint independent semantic, typed, executable,
-  and downstream evaluators; train calibrated source-visible decisions with hard infinity
-  constraints and missing-signal masks. Require matched
-  no-residual, token-only, global-only, and learned-allocation controls before attributing a
-  benefit. Record inadequate mechanisms as owner-specific `INCONCLUSIVE_IMPLEMENTATION`,
-  never as an architecture verdict. Then finish the remaining faithful KERC pre-training boundary
+- **Immediate dependency:** repair K3's target and evaluator owner before any long optimizer
+  campaign. The allocator architecture and MLX mechanics now exist; more optimization on the
+  current proxy is unauthorized because a deterministic constraint/rate rule exactly reproduces
+  its labels. Build cross-fitted source-dependent soft semantic consequences from independently
+  owned executable, source-disjoint semantic, and adjudicated human panels. Require nontrivial
+  source-signal interventions, calibrated uncertainty, zero hard violations, bounded independent
+  rate regret, and matched no-residual/token-only/global-only/deterministic controls. Record the
+  current result as `INCONCLUSIVE_EXPERIMENT`, never an architecture verdict. Then finish the
+  remaining faithful KERC pre-training boundary
   through the existing English-arm, Semantic-IR, VCM, SCF, MLX, checkpoint, and verifier
   owners. The governed corpus, V_K/V_P codebook, canonical stage, full-size learning,
   scoped intervention, verifier, checkpoint/reload, optimizer-resume, mismatch-rejection,

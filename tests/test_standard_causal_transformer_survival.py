@@ -890,6 +890,203 @@ def test_kerc_configuration_requires_complete_modular_architecture() -> None:
         CausalTransformerConfig(**common, kerc_stage_adapter_dim=8).validate()
 
 
+def test_kerc_per_unit_allocator_is_content_sensitive_and_hard_constrained() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(71)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_residual_unit_kind_count=5,
+        kerc_residual_unit_feature_dim=18,
+        kerc_residual_unit_byte_vocab_size=257,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    unit_bytes = mx.array([[[1, 2, 3, 256], [4, 5, 256, 256]]], dtype=mx.int32)
+    byte_mask = mx.array([[[1, 1, 1, 0], [1, 1, 0, 0]]], dtype=mx.float32)
+    kinds = mx.array([[0, 4]], dtype=mx.int32)
+    features = mx.zeros((1, 2, 4, 18), dtype=mx.float32)
+    unit_mask = mx.ones((1, 2), dtype=mx.float32)
+    hard = mx.array(
+        [[[0, 0, 0, 0], [1, 1, 1, 0]]], dtype=mx.bool_
+    )
+    first = model.kerc_allocate_units(
+        unit_byte_ids=unit_bytes,
+        unit_byte_mask=byte_mask,
+        unit_kind_ids=kinds,
+        unit_candidate_features=features,
+        unit_mask=unit_mask,
+        unit_hard_block_mask=hard,
+        source_summary=mx.zeros((1, 32), dtype=mx.float32),
+    )
+    ragged = model.kerc_allocate_units(
+        unit_byte_ids=mx.array([1, 2, 3, 4, 5], dtype=mx.int32),
+        unit_byte_mask=None,
+        unit_byte_offsets=mx.array([[[0, 3], [3, 5]]], dtype=mx.int64),
+        unit_kind_ids=kinds,
+        unit_candidate_features=features,
+        unit_mask=unit_mask,
+        unit_hard_block_mask=hard,
+        source_summary=mx.zeros((1, 32), dtype=mx.float32),
+    )
+    changed_bytes = mx.array([[[1, 9, 3, 256], [4, 5, 256, 256]]], dtype=mx.int32)
+    second = model.kerc_allocate_units(
+        unit_byte_ids=changed_bytes,
+        unit_byte_mask=byte_mask,
+        unit_kind_ids=kinds,
+        unit_candidate_features=features,
+        unit_mask=unit_mask,
+        unit_hard_block_mask=hard,
+        source_summary=mx.zeros((1, 32), dtype=mx.float32),
+    )
+    mx.eval(
+        first["logits"],
+        first["confidence_logits"],
+        first["residual_context"],
+        ragged["logits"],
+        second["logits"],
+    )
+    assert tuple(first["logits"].shape) == (1, 2, 4)
+    assert tuple(first["confidence_logits"].shape) == (1, 2)
+    assert float(first["logits"][0, 1, 3].item()) > -1e8
+    assert all(float(first["logits"][0, 1, index].item()) < -1e8 for index in range(3))
+    assert bool(mx.allclose(first["logits"], ragged["logits"], atol=1e-5))
+    assert not bool(mx.allclose(first["logits"][0, 0], second["logits"][0, 0]))
+
+
+def test_kerc_per_unit_allocator_receives_gradient_without_legacy_channel_loss() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    mx.random.seed(73)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_residual_unit_kind_count=5,
+        kerc_residual_unit_feature_dim=18,
+        kerc_residual_unit_byte_vocab_size=257,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    inputs = mx.array([[1, 11, 20, 2, 45], [1, 13, 21, 2, 31]], dtype=mx.int32)
+    labels = mx.zeros(inputs.shape, dtype=mx.int32)
+    token_mask = mx.zeros(inputs.shape, dtype=mx.float32)
+    unit_bytes = mx.array(
+        [[[1, 2, 256], [3, 4, 256]], [[5, 6, 256], [7, 8, 256]]],
+        dtype=mx.int32,
+    )
+    byte_mask = mx.array(
+        [[[1, 1, 0], [1, 1, 0]], [[1, 1, 0], [1, 1, 0]]],
+        dtype=mx.float32,
+    )
+    kinds = mx.array([[0, 1], [2, 4]], dtype=mx.int32)
+    features = mx.zeros((2, 2, 4, 18), dtype=mx.float32)
+    unit_mask = mx.ones((2, 2), dtype=mx.float32)
+    hard = mx.array(
+        [
+            [[0, 0, 0, 0], [1, 0, 0, 0]],
+            [[0, 0, 0, 0], [1, 1, 1, 0]],
+        ],
+        dtype=mx.bool_,
+    )
+    targets = mx.array([[0, 1], [2, 3]], dtype=mx.int32)
+    authority = mx.ones((2, 2), dtype=mx.float32)
+    confidence = mx.array([[0.9, 0.8], [0.7, 1.0]], dtype=mx.float32)
+    before = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(model.parameters())
+        if "kerc_unit" in name
+    }
+    optimizer = optim.SGD(learning_rate=0.05)
+    loss_and_grad = nn.value_and_grad(model, causal_loss)
+    loss, gradients = loss_and_grad(
+        model,
+        inputs,
+        labels,
+        token_mask,
+        mx,
+        nn,
+        kerc_unit_residual_labels=targets,
+        kerc_unit_residual_weight=1.0,
+        kerc_unit_residual_loss_mask=authority,
+        kerc_unit_confidence_targets=confidence,
+        kerc_unit_byte_ids=unit_bytes,
+        kerc_unit_byte_mask=byte_mask,
+        kerc_unit_kind_ids=kinds,
+        kerc_unit_candidate_features=features,
+        kerc_unit_mask=unit_mask,
+        kerc_unit_hard_block_mask=hard,
+    )
+    optimizer.update(model, gradients)
+    mx.eval(model.parameters(), optimizer.state, loss)
+    after = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(model.parameters())
+        if "kerc_unit" in name
+    }
+    changed = {name for name in before if not np.array_equal(before[name], after[name])}
+    assert float(loss.item()) > 0.0
+    assert any("candidate" in name for name in changed)
+    assert any("content" in name or "byte" in name for name in changed)
+    assert any("confidence" in name for name in changed)
+
+
 def test_kerc_verifier_zero_ablation_preserves_configured_output_contract() -> None:
     import mlx.core as mx
     import mlx.nn as nn

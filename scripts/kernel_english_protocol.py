@@ -41,6 +41,10 @@ from kerc_residual_economics import (
     validate_residual_unit_allocation_receipt,
     validate_structural_rate_distortion_allocation,
 )
+from kerc_residual_interventions import (
+    InterventionTargetFault,
+    validate_compact_allocator_targets,
+)
 from vcm_semantic_memory import (
     HRLStateFault,
     create_hierarchical_residual_state,
@@ -263,6 +267,9 @@ class KernelProtocolFault(ValueError):
         self.detail = detail
         self.path = path
 
+    def __reduce__(self) -> tuple[Any, tuple[str, str, str]]:
+        return _restore_kernel_protocol_fault, (self.code, self.detail, self.path)
+
     def record(self) -> dict[str, Any]:
         return {
             "fault_type": self.code,
@@ -270,6 +277,12 @@ class KernelProtocolFault(ValueError):
             "path": self.path,
             "failure_behavior": "reject_without_fallback",
         }
+
+
+def _restore_kernel_protocol_fault(
+    code: str, detail: str, path: str
+) -> KernelProtocolFault:
+    return KernelProtocolFault(code, detail, path=path)
 
 
 @dataclass(frozen=True)
@@ -2528,11 +2541,54 @@ def merge_hierarchical_answer_packets(
     return validate_answer_packet(merged, require_explicit_decision=True)
 
 
-def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
+def compact_allocator_targets_have_authority(compact: dict[str, Any]) -> bool:
+    """Return whether a compact K3 packet contains a supervised unit decision."""
+
+    return any(
+        bool(unit.get("allocator_loss_enabled"))
+        for unit in compact.get("targets", [])
+    )
+
+
+def compile_training_views(
+    record: dict[str, Any],
+    *,
+    derived_unit_intervention_targets: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     """Compile matched learned objectives without multiplying unique-data credit."""
 
     record = validate_training_record(record)
     packet = record["kernel_packet"]
+    embedded_targets = record["residual_supervision"].get(
+        "unit_intervention_targets"
+    )
+    compact_unit_targets = derived_unit_intervention_targets or embedded_targets or {}
+    if derived_unit_intervention_targets is not None:
+        if embedded_targets is not None and embedded_targets != derived_unit_intervention_targets:
+            raise KernelProtocolFault(
+                "KERC_DERIVED_INTERVENTION_TARGET_MISMATCH",
+                str(record["record_sha256"]),
+                path="derived_unit_intervention_targets",
+            )
+        try:
+            validate_compact_allocator_targets(
+                derived_unit_intervention_targets,
+                unit_packet=packet["residual"]["unit_packet"],
+            )
+        except InterventionTargetFault as exc:
+            raise KernelProtocolFault(
+                exc.code,
+                exc.detail,
+                path="derived_unit_intervention_targets",
+            ) from exc
+        if str(derived_unit_intervention_targets.get("source_family") or "") != str(
+            record["provenance"]["source_group"]
+        ):
+            raise KernelProtocolFault(
+                "KERC_DERIVED_INTERVENTION_SOURCE_FAMILY_INVALID",
+                str(derived_unit_intervention_targets.get("source_family")),
+                path="derived_unit_intervention_targets.source_family",
+            )
     learned_objects = learned_protected_object_view(packet["protected_objects"])
     protected_context = {
         "protected_objects": learned_objects,
@@ -2737,6 +2793,14 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
             protected_objects=packet["protected_objects"],
             record_identity=f"{record['record_sha256']}:{realization_id}",
         )
+        allocator_units_causally_visible = (
+            bool(compact_unit_targets)
+            and objective == "kernel_program_to_answer_packet_v1"
+        )
+        allocator_loss_enabled = (
+            allocator_units_causally_visible
+            and compact_allocator_targets_have_authority(compact_unit_targets)
+        )
         compiled.append(
             {
                 "policy": TRAINING_VIEW_POLICY,
@@ -2791,9 +2855,26 @@ def compile_training_views(record: dict[str, Any]) -> list[dict[str, Any]]:
                         "residual_unit_allocation"
                     ]["unit_allocations"]
                 ],
-                "kerc_residual_unit_allocator_loss_enabled": False,
+                "kerc_residual_unit_targets": copy.deepcopy(
+                    compact_unit_targets.get("targets", [])
+                    if allocator_units_causally_visible
+                    else []
+                ),
+                "kerc_residual_unit_allocator_loss_enabled": (
+                    allocator_loss_enabled
+                ),
                 "kerc_residual_unit_target_authority": (
-                    "k2_structural_baseline_only_not_intervention_or_semantic_utility"
+                    record["residual_supervision"].get(
+                        "unit_intervention_target_authority"
+                    )
+                    or "k2_structural_baseline_only_not_intervention_or_semantic_utility"
+                ),
+                "kerc_residual_unit_causal_stage": (
+                    "single_authority_post_compiler_unit_allocation"
+                    if allocator_loss_enabled
+                    else "withheld_no_authoritative_unit_target"
+                    if allocator_units_causally_visible
+                    else "withheld_outside_single_post_compiler_authority_point"
                 ),
                 "kerc_verifier_dimensions": list(KERC_VERIFIER_DIMENSIONS),
                 "kerc_verifier_positive_labels": [1] * len(KERC_VERIFIER_DIMENSIONS),
@@ -3324,6 +3405,40 @@ def _validate_residual_supervision(
             exc.detail,
             path="record.residual_supervision.residual_unit_allocation",
         ) from exc
+    compact_targets = supervision.get("unit_intervention_targets")
+    if compact_targets is not None:
+        if (
+            supervision.get("unit_intervention_target_authority")
+            != "source_visible_typed_causal_interventions_provisional_until_independent_heldout_evaluation"
+            or supervision.get("unit_intervention_target_producer_is_final_evaluator")
+            is not False
+        ):
+            raise KernelProtocolFault(
+                "KERC_UNIT_INTERVENTION_TARGET_AUTHORITY_INVALID",
+                canonical_json(supervision),
+                path="record.residual_supervision.unit_intervention_target_authority",
+            )
+        try:
+            validate_compact_allocator_targets(
+                compact_targets,
+                unit_packet=residual.get("unit_packet")
+                if isinstance(residual.get("unit_packet"), dict)
+                else {},
+            )
+        except InterventionTargetFault as exc:
+            raise KernelProtocolFault(
+                exc.code,
+                exc.detail,
+                path="record.residual_supervision.unit_intervention_targets",
+            ) from exc
+        if str(compact_targets.get("source_family") or "") != str(
+            (record.get("provenance") or {}).get("source_group") or ""
+        ):
+            raise KernelProtocolFault(
+                "KERC_UNIT_INTERVENTION_SOURCE_FAMILY_INVALID",
+                str(compact_targets.get("source_family")),
+                path="record.residual_supervision.unit_intervention_targets.source_family",
+            )
     if residual.get("exact_object_handles") and labels["exact"] != 3:
         raise KernelProtocolFault(
             "KERC_RESIDUAL_SUPERVISION_EXACT_OBJECT_UNDERSPECIFIED",

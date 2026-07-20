@@ -190,6 +190,7 @@ def finalize_fixture_economics(record: dict) -> dict:
         record["provenance"]["source_id"],
         packet=packet,
         hrl_state=record["hrl_state"],
+        source_family=record["provenance"]["source_group"],
         importance=importance,
         allocation=allocation,
     )

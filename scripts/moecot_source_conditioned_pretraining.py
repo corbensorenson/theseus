@@ -62,6 +62,7 @@ from kerc_content_cache import (
     load_receipt as load_kerc_cache_receipt,
     publish_receipt as publish_kerc_cache_receipt,
 )
+from kerc_residual_interventions import compact_allocator_targets_for_record
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1660,11 +1661,24 @@ def _compile_kernel_record_worker(
 ) -> dict[str, Any]:
     split, record = payload
     record_binding = stable_hash(record)
+    compact_targets = compact_allocator_targets_for_record(record)
+    existing_targets = (record.get("residual_supervision") or {}).get(
+        "unit_intervention_targets"
+    )
+    if existing_targets is not None and existing_targets != compact_targets:
+        raise ValueError(
+            "KERC embedded and derived unit intervention targets disagree: "
+            + str(record["record_sha256"])
+        )
     return {
         "split": split,
         "record_sha256": str(record["record_sha256"]),
         "record_binding_sha256": record_binding,
-        "views": compile_training_views(record),
+        "views": compile_training_views(
+            record, derived_unit_intervention_targets=compact_targets
+        ),
+        "unit_intervention_summary": copy.deepcopy(compact_targets["summary"]),
+        "unit_intervention_receipt_sha256": str(compact_targets["receipt_sha256"]),
     }
 
 
@@ -1682,6 +1696,8 @@ def compile_selected_kernel_views(
         for record in records
     ]
     compiled = {split: [] for split in selected}
+    intervention_counts: Counter[str] = Counter()
+    intervention_receipts: list[str] = []
     executor = ProcessPoolExecutor(max_workers=workers) if workers > 1 else None
     try:
         for batch in _bounded_batches(ordered, batch_rows):
@@ -1703,6 +1719,21 @@ def compile_selected_kernel_views(
                         + str(record["record_sha256"])
                     )
                 compiled[split].extend(result["views"])
+                summary = result.get("unit_intervention_summary") or {}
+                intervention_counts["record_count"] += 1
+                intervention_counts["unit_count"] += int(summary.get("unit_count") or 0)
+                intervention_counts["candidate_intervention_count"] += int(
+                    summary.get("candidate_intervention_count") or 0
+                )
+                intervention_counts["allocator_authority_unit_count"] += int(
+                    summary.get("allocator_authority_unit_count") or 0
+                )
+                intervention_counts["withheld_uncertain_unit_count"] += int(
+                    summary.get("withheld_uncertain_unit_count") or 0
+                )
+                intervention_receipts.append(
+                    str(result.get("unit_intervention_receipt_sha256") or "")
+                )
     finally:
         if executor is not None:
             executor.shutdown(wait=True, cancel_futures=True)
@@ -1718,6 +1749,15 @@ def compile_selected_kernel_views(
         "compilation_seconds": round(time.perf_counter() - started, 6),
         "deterministic_input_order": True,
         "raw_line_content_binding_required": True,
+        "unit_intervention_targets": {
+            **dict(intervention_counts),
+            "target_producer": "kerc_typed_causal_target_producer_v1",
+            "target_producer_is_final_evaluator": False,
+            "receipt_ledger_sha256": stable_hash(intervention_receipts),
+            "public_or_hidden_target_used": False,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        },
         "fallback_return_count": 0,
     }
 
@@ -1743,6 +1783,8 @@ def kernel_stage_cache_contract(
             "language_tokenizer_owner": ROOT / "scripts" / "moecot_language_tokenizer.py",
             "open_vocabulary_owner": ROOT / "scripts" / "neural_seed_open_vocab.py",
             "cache_integrity_owner": ROOT / "scripts" / "kerc_content_cache.py",
+            "residual_economics_owner": ROOT / "scripts" / "kerc_residual_economics.py",
+            "unit_intervention_target_owner": ROOT / "scripts" / "kerc_residual_interventions.py",
         }
     )
     encoded_config = canonical_json(cfg).encode("utf-8")
@@ -2595,6 +2637,36 @@ def validate_kernel_english_manifest(
         gaps.append("kernel_stage_verifier_corruption_count_mismatch")
     if payload.get("verifier_corruptions_receive_generator_loss") is not False:
         gaps.append("kernel_stage_verifier_corruption_generator_credit")
+    intervention = (payload.get("materialization_execution") or {}).get(
+        "unit_intervention_targets"
+    ) or {}
+    intervention_units = int(intervention.get("unit_count") or 0)
+    intervention_authority = int(
+        intervention.get("allocator_authority_unit_count") or 0
+    )
+    intervention_withheld = int(
+        intervention.get("withheld_uncertain_unit_count") or 0
+    )
+    if (
+        int(intervention.get("record_count") or 0)
+        != sum(int(value) for value in cfg["records_by_split"].values())
+        or intervention_units <= 0
+        or int(intervention.get("candidate_intervention_count") or 0)
+        != 4 * intervention_units
+        or intervention_authority <= 0
+        or intervention_authority + intervention_withheld != intervention_units
+        or intervention.get("target_producer")
+        != "kerc_typed_causal_target_producer_v1"
+        or intervention.get("target_producer_is_final_evaluator") is not False
+        or intervention.get("public_or_hidden_target_used") is not False
+        or int(intervention.get("external_inference_calls") or 0)
+        or int(intervention.get("fallback_return_count") or 0)
+        or not re.fullmatch(
+            r"sha256:[0-9a-f]{64}",
+            str(intervention.get("receipt_ledger_sha256") or ""),
+        )
+    ):
+        gaps.append("kernel_stage_unit_intervention_target_contract_invalid")
     counterfactuals = payload.get("context_counterfactuals") or {}
     counterfactual_counts = counterfactuals.get("counts") or {}
     expected_counterfactual_count = 4 * sum(

@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -94,6 +95,47 @@ class KercImplementationFidelityTests(unittest.TestCase):
         )
 
         self.assertIn("per_unit_allocator_overclaimed", [item["kind"] for item in report["faults"]])
+
+    def test_allocator_stage_requires_bound_target_authority(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "manifest.json"
+            payload = {
+                "trigger_state": "GREEN",
+                "hard_gaps": [],
+                "materialization_execution": {
+                    "unit_intervention_targets": {
+                        "unit_count": 5,
+                        "candidate_intervention_count": 20,
+                        "allocator_authority_unit_count": 4,
+                        "withheld_uncertain_unit_count": 1,
+                        "target_producer": "kerc_typed_causal_target_producer_v1",
+                        "target_producer_is_final_evaluator": False,
+                        "public_or_hidden_target_used": False,
+                        "external_inference_calls": 0,
+                        "fallback_return_count": 0,
+                    }
+                },
+            }
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            contract = {
+                "allocator_stage_evidence": {
+                    "manifest_path": str(path),
+                    "manifest_sha256": fidelity.sha256_file(path),
+                    "required_target_producer": "kerc_typed_causal_target_producer_v1",
+                }
+            }
+            report = fidelity.audit_allocator_stage(contract, root=ROOT)
+            self.assertEqual(report["state"], "GREEN")
+            self.assertEqual(
+                report["observed"]["per_unit_authoritative_target_count"], 4
+            )
+
+            payload["materialization_execution"]["unit_intervention_targets"][
+                "allocator_authority_unit_count"
+            ] = 6
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            report = fidelity.audit_allocator_stage(contract, root=ROOT)
+            self.assertEqual(report["state"], "RED")
 
     def test_empty_interaction_dictionary_cannot_support_amortization_claim(self) -> None:
         contract = copy.deepcopy(self.contract)

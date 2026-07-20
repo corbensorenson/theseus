@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import random
+import pickle
 import sys
 from pathlib import Path
 
@@ -23,6 +24,18 @@ from kerc_residual_economics import (  # noqa: E402
     validate_promotion_economics,
     validate_residual_codec,
     validate_residual_unit_packet,
+)
+from kerc_residual_interventions import (  # noqa: E402
+    InterventionTargetFault,
+    build_unit_intervention_targets,
+    compact_allocator_targets,
+    iter_authoritative_unit_examples,
+    validate_unit_intervention_targets,
+)
+from kerc_residual_allocator_evaluator import (  # noqa: E402
+    AllocatorEvaluationFault,
+    EVALUATOR_ID,
+    evaluate_allocator_predictions,
 )
 from vcm_semantic_memory import (  # noqa: E402
     HRLStateFault,
@@ -333,6 +346,210 @@ def test_per_unit_codec_uses_only_strictly_higher_residual_state() -> None:
     )
     assert first_segment["condition_sha256"] == changed_segment["condition_sha256"]
     assert first_token["condition_sha256"] != changed_token["condition_sha256"]
+
+
+def test_per_unit_interventions_execute_candidates_and_enforce_typed_constraints() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "5" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {"terminology": {"KERC": "Kernel English"}},
+        "segment_residual": {
+            "frames": [
+                {
+                    "frame_name": "Statement",
+                    "frame_roles": ["TOPIC"],
+                    "target_spans": [[0, 4]],
+                }
+            ]
+        },
+        "token_residuals": [
+            {
+                "tag": "ENTITY_MENTION:PERSON",
+                "source_span": [0, 4],
+                "authority": "licensed_manual_annotation",
+            }
+        ],
+        "concept_capsules": {
+            "@C0": {
+                "stable_identity": "concept.person",
+                "preferred_realization": "person",
+            }
+        },
+        "exact_objects": {
+            "@Q0": {
+                "object_type": "QUOTE",
+                "copy_policy": "EXACT",
+                "inline_bytes_b64": "ZXhhY3Q=",
+            }
+        },
+    }
+    packet = build_residual_unit_packet(**arguments)
+    targets = build_unit_intervention_targets(
+        unit_packet=packet,
+        source_family="owned_private_kerc_annotations",
+        **{key: value for key, value in arguments.items() if key != "residual_mode" and key != "kernel_program"},
+    )
+    assert validate_unit_intervention_targets(
+        targets,
+        unit_packet=packet,
+        source_family="owned_private_kerc_annotations",
+        **{key: value for key, value in arguments.items() if key != "residual_mode" and key != "kernel_program"},
+    ) == targets
+    assert targets["candidate_payloads_executed"] is True
+    assert targets["summary"]["candidate_intervention_count"] == 4 * len(packet["units"])
+    assert targets["summary"]["allocator_authority_unit_count"] > 0
+    assert len(list(iter_authoritative_unit_examples(targets))) == targets["summary"][
+        "allocator_authority_unit_count"
+    ]
+    exact = next(row for row in targets["targets"] if row["unit_kind"] == "exact_object")
+    assert exact["selected_fidelity"] == "exact"
+    assert exact["allocator_loss_enabled"] is True
+    assert all(
+        intervention["hard_constraint_cost"] == "INFINITY"
+        for intervention in exact["interventions"]
+        if intervention["fidelity"] != "exact"
+    )
+    assert all(
+        intervention["public_or_hidden_target_used"] is False
+        and intervention["evaluator_only_answer_used"] is False
+        for row in targets["targets"]
+        for intervention in row["interventions"]
+    )
+    compact = compact_allocator_targets(targets)
+    for unit, target in zip(packet["units"], compact["targets"]):
+        assert target["source_visible_candidates"] == [
+            {
+                "fidelity_index": index,
+                "encoded_bits": int(candidate["encoded_bits"]),
+                "uncompressed_bits": int(candidate["uncompressed_bits"]),
+                "structural_loss": float(candidate["structural_loss"]),
+                "distortion_vector": candidate["distortion_vector"],
+                "k2_hard_blocked": bool(candidate["hard_blocked"]),
+                "payload_sha256": candidate["payload_sha256"],
+            }
+            for index, candidate in enumerate(unit["candidates"])
+        ]
+        assert all(
+            "typed_effects" not in candidate
+            and "dimension_losses" not in candidate
+            for candidate in target["source_visible_candidates"]
+        )
+        assert all(
+            set(candidate)
+            == {
+                "fidelity_index",
+                "encoded_bits",
+                "hard_blocked",
+                "intervention_sha256",
+            }
+        for candidate in target["candidates"]
+        )
+
+
+def test_typed_residual_faults_survive_parallel_worker_serialization() -> None:
+    for error in (
+        ResidualEconomicsFault("KERC_FIXTURE", "economics"),
+        InterventionTargetFault("KERC_FIXTURE", "intervention"),
+        AllocatorEvaluationFault("KERC_FIXTURE", "evaluation"),
+    ):
+        restored = pickle.loads(pickle.dumps(error))
+        assert type(restored) is type(error)
+        assert restored.code == error.code
+        assert restored.detail == error.detail
+
+
+def test_per_unit_intervention_receipt_rejects_target_relabeling() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "6" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {"language": "en"},
+        "segment_residual": {},
+        "token_residuals": [],
+        "concept_capsules": {},
+        "exact_objects": {},
+    }
+    packet = build_residual_unit_packet(**arguments)
+    source_arguments = {
+        key: value
+        for key, value in arguments.items()
+        if key not in {"residual_mode", "kernel_program"}
+    }
+    receipt = build_unit_intervention_targets(
+        unit_packet=packet,
+        source_family="private_fold_a",
+        **source_arguments,
+    )
+    tampered = copy.deepcopy(receipt)
+    tampered["targets"][0]["selected_fidelity_index"] = (
+        int(tampered["targets"][0]["selected_fidelity_index"]) + 1
+    ) % 4
+    with pytest.raises(InterventionTargetFault, match="TARGET_RECEIPT_INVALID"):
+        validate_unit_intervention_targets(
+            tampered,
+            unit_packet=packet,
+            source_family="private_fold_a",
+            **source_arguments,
+        )
+
+
+def test_independent_allocator_evaluator_replays_consequences_not_target_labels() -> None:
+    arguments = {
+        "source_record_sha256": "sha256:" + "7" * 64,
+        "residual_mode": "SOURCE_RECONSTRUCTION",
+        "kernel_program": {"nodes": [{"operator": "ASSERT"}]},
+        "global_state": {"language": "en"},
+        "segment_residual": {"frames": [{"frame_name": "Statement"}]},
+        "token_residuals": [
+            {
+                "tag": "ENTITY:PERSON",
+                "source_span": [0, 4],
+                "authority": "licensed_manual_annotation",
+            }
+        ],
+        "concept_capsules": {},
+        "exact_objects": {
+            "@Q": {
+                "object_type": "QUOTE",
+                "copy_policy": "EXACT",
+                "inline_bytes_b64": "ZXhhY3Q=",
+            }
+        },
+    }
+    packet = build_residual_unit_packet(**arguments)
+    predictions = [
+        {
+            "unit_id": unit["unit_id"],
+            "selected_fidelity_index": 3,
+            "confidence": 1.0,
+        }
+        for unit in packet["units"]
+    ]
+    evaluation_arguments = {
+        key: value
+        for key, value in arguments.items()
+        if key not in {"residual_mode", "kernel_program"}
+    }
+    report = evaluate_allocator_predictions(
+        unit_packet=packet,
+        source_family="private_eval_family",
+        predictions=predictions,
+        training_target_producer_id="kerc_typed_causal_target_producer_v1",
+        **evaluation_arguments,
+    )
+    assert report["summary"]["hard_violation_count"] == 0
+    assert report["summary"]["confidence_brier"] == 0.0
+    assert report["training_labels_produced"] == 0
+    assert report["organizationally_separate_from_target_producer"] is True
+    with pytest.raises(AllocatorEvaluationFault, match="NOT_INDEPENDENT"):
+        evaluate_allocator_predictions(
+            unit_packet=packet,
+            source_family="private_eval_family",
+            predictions=predictions,
+            training_target_producer_id=EVALUATOR_ID,
+            **evaluation_arguments,
+        )
 
 
 def test_lambda_calibration_uses_smallest_dev_value_meeting_distortion_ceiling() -> None:

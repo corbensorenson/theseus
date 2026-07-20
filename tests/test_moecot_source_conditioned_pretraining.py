@@ -581,6 +581,20 @@ def kernel_record(split: str, index: int) -> dict:
     return record
 
 
+def test_compact_allocator_authority_requires_an_enabled_unit() -> None:
+    assert kernel.compact_allocator_targets_have_authority(
+        {"targets": [{"allocator_loss_enabled": False}]}
+    ) is False
+    assert kernel.compact_allocator_targets_have_authority(
+        {
+            "targets": [
+                {"allocator_loss_enabled": False},
+                {"allocator_loss_enabled": True},
+            ]
+        }
+    ) is True
+
+
 def test_config_rejects_cross_arm_data_and_nonzero_boundaries() -> None:
     cfg = config()
     validate_config(cfg)
@@ -1012,6 +1026,14 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(
     assert report["materialization_execution"]["compilation_workers"] == 2
     assert report["materialization_execution"]["compiled_record_count"] == 3
     assert report["materialization_execution"]["compiled_view_count"] == 12
+    intervention = report["materialization_execution"]["unit_intervention_targets"]
+    assert intervention["record_count"] == 3
+    assert intervention["unit_count"] == 6
+    assert intervention["candidate_intervention_count"] == 24
+    assert intervention["allocator_authority_unit_count"] == 3
+    assert intervention["withheld_uncertain_unit_count"] == 3
+    assert intervention["target_producer_is_final_evaluator"] is False
+    assert intervention["public_or_hidden_target_used"] is False
     assert report["semantic_supervision"][
         "decision_grade_record_counts_by_split_and_objective"
     ] == {
@@ -1033,10 +1055,16 @@ def test_kernel_stage_materializes_replays_and_cleans_atomic_files(
     train_artifact = Path(report["artifacts"]["english:private_train"]["path"])
     if not train_artifact.is_absolute():
         train_artifact = ROOT / train_artifact
+    train_views = [json.loads(line) for line in train_artifact.read_text().splitlines()]
     compiler_view = next(
-        json.loads(line)
-        for line in train_artifact.read_text().splitlines()
-        if json.loads(line)["objective"] == "surface_to_kernel_program_v1"
+        row for row in train_views if row["objective"] == "surface_to_kernel_program_v1"
+    )
+    assert compiler_view["kerc_residual_unit_allocator_loss_enabled"] is False
+    assert all(
+        bool(row["kerc_residual_unit_targets"])
+        == row["kerc_residual_unit_allocator_loss_enabled"]
+        == (row["objective"] == "kernel_program_to_answer_packet_v1")
+        for row in train_views
     )
     assert compiler_view["semantic_evidence_tier"] == "audited_human_gold"
     assert compiler_view["decision_grade_reference"] is True
