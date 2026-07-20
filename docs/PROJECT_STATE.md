@@ -13,7 +13,8 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Current Verdict
 
-- **Architecture readiness:** GREEN and authorized for the frozen practical campaign.
+- **Architecture readiness:** the finite architecture docket is banked, but the
+  executable 57M campaign contract is RED and training is not authorized yet.
   All thirteen finite checkpoint-shaping contracts have explicit
   first-campaign dispositions. KERC's canonical
   architecture/data stage is GREEN and exact-replayable after replacing the toy proxy.
@@ -31,8 +32,13 @@ share toward zero. Public benchmarks are calibration only.
   target, matched-control, and optimizer exposure. The strengthened 53-artifact freeze
   package independently passes all eight replays, binds the two generated effect/governance
   receipts, and records its non-circular package identity in
-  `reports/pretraining_architecture_freeze_package.json`. T0 is complete; the
-  eight-target 57.315M MLX campaign is the active owner.
+  `reports/pretraining_architecture_freeze_package.json`. T0 remains complete. A
+  subsequently launched run was stopped at shared-trunk step 1,000 because the
+  trainer still instantiated the old 10.8M topology and checkpoint namespace. It is
+  preserved as `INVALID_FOR_PREREGISTERED_57M_CAMPAIGN` with zero capability,
+  architecture-comparison, or 57M-training credit. The trainer now binds model shape,
+  parameter accounting, checkpoint namespace, exact corpus capacity, and evaluation
+  identity to one preregistration before execution.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -42,12 +48,16 @@ share toward zero. Public benchmarks are calibration only.
   qualification then scored MoECOT, dense-active, and dense-total at `0/160`, with
   `0/32` in every English and code arm. This falsifies the 10.8M-active systems-
   canary rung; it does not select an architecture or authorize a route.
-- **Data gate:** GREEN for the frozen 57.315M proposal. The content-bound audit
-  credits `1,293,454,903 / 1,146,808,520` required unique governed model-visible
-  positions with no repetition credit, public training rows, external inference, or
-  fallback returns. Every specialist clears its 20:1 owned-parameter floor; HTML/CSS
-  is now `71,416,629 / 50,083,860`. Every task-complete arm floor and all three MLX
-  finite-loss/update/checkpoint/reload/resume/cleanup canaries are GREEN.
+- **Data gate:** RED for the 57.315M proposal. The previous `1,293,454,903` count used
+  structural body tokens and was not the tokenizer/index ABI executed by training.
+  Exact replay of the admitted index through `moecot_language_tokenizer.exact_text_v1`
+  measures `422,334,331 / 1,146,808,520` required unique positions, with no repetition
+  credit, public training rows, external inference, or fallback returns. The current
+  exact per-family counts are English conversation `42,542,553`, English broad
+  `117,653,923`, Python `116,242,500`, JS/TS `82,769,680`, HTML/CSS `17,577,020`, and
+  Rust `45,548,655`. The next campaign must either admit enough high-quality licensed
+  source under this exact ABI or prospectively choose and name a smaller data-supported
+  rung; it may not relabel optimizer repetition as unique data.
 - **Control-plane health:** RED for fleet/autonomy freshness, not for the current KERC
   tranche. The current snapshot has 15 stale reports, including the autonomy watchdog,
   service supervisor, and system-efficiency views. The project registry itself is GREEN

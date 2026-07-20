@@ -56,7 +56,7 @@ support states by implication.
 | Gate | State | Exit condition | Work unlocked |
 |---|---|---|---|
 | `T0` — Finite architecture closure | `complete` | KERC is explicitly deferred as `INCONCLUSIVE_IMPLEMENTATION` with K0-K3 banked and zero first-campaign exposure; the 53-artifact package passes all eight independent replays and binds its generated effect/governance receipts. | Long optimizer spend. |
-| `T1` — Frozen neural-seed campaign | `ready_to_launch` | Five arms and the two matched dense controls train from the exact eight-target frozen package with data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage. | Frozen functional evaluation. |
+| `T1` — Frozen neural-seed campaign | `contract_repair_required` | The preregistration, executable model topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then five arms and two matched dense controls train with complete lineage. | Frozen functional evaluation. |
 | `T2` — Honest behavioral numerator | `blocked_by_T1` | At least one lineage-bound arm produces nonzero, model-only, source-disjoint functional behavior; a zero result receives only the exact decision-grade scope earned. | Behavior-dependent search, routing, preference/RL, and fast-generation qualification. |
 | `T3` — Real daily-use lane | `ready_for_assisted_use`; learned credit waits for `T2` | At least one week or five distinct days of real low-risk use records accepted, missed, ignored, corrected, completed, failed, or abstained outcomes with time, verifier/human cost, effect, rollback, and component attribution. | Empirical product-usefulness and procedural-memory evidence. |
 | `T4` — Joined governed vertical | `blocked_by_T2_and_T3` | One natural happy path and one blocked or rollback path join intent, VCM, plan, route, candidate, verification, authority, effect observation, terminal acknowledgement, residual, and dogfood outcome without orphan or stale projection. | Book-importable implementation evidence. |
@@ -217,13 +217,13 @@ efficacy now requires the unchanged frozen campaign.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | GREEN for the frozen 57.315M proposal: 1,293,454,903 broad unique positions versus 1,146,808,520 required; every task-complete floor is GREEN; HTML/CSS now has 71,416,629 unique positions versus 50,083,860 required; source/vocabulary/supervision identities replay exactly | preserve the content-bound corpus and receipts unchanged while the finite architecture docket closes; any architecture change that alters ownership or tokenization must recompute, never assume, these floors |
+| Data engine + curriculum | Track 0 / Phase 7 | RED for the 57.315M proposal: exact executable-tokenizer replay measures 422,334,331 unique positions versus 1,146,808,520 required. The old 1,293,454,903 body-token estimate is historical planning evidence and cannot authorize training. | expand only high-quality licensed in-scope data under the exact index/tokenizer ABI, or prospectively select a smaller honestly named data-supported rung; never count repetition as unique data |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but all five offline-preference and four verifier-reward objective adapters now execute through a shared frozen schema, checkpoint/reference identity, MLX parity probe, capacity ledger, update lease, exact rollback, and twelve rejecting controls | preserve zero exposure and run/select an objective only after a behavior-positive proposer creates honest private verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
-| Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed; the practical 57.315M eight-target package is frozen with KERC deferred at zero exposure. The 53-artifact package and all eight replays are GREEN; no long optimizer run or new capability evidence exists yet | begin the frozen joint campaign, preserving exact package identity and per-target lineage |
+| Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed. A purported 57M launch was stopped at step 1,000 after independent audit found it executed the old 10.8M topology/checkpoint namespace; it has zero 57M or capability credit. KERC remains deferred at zero exposure. | make the executable campaign match one preregistration and exact data authority, freeze a fresh source-disjoint functional surface, pass MLX/resource canaries, then launch once |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
 | Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | K0-K3 are banked; the incomplete full candidate is deferred from the first practical run as `INCONCLUSIVE_IMPLEMENTATION`, with zero topology/objective/optimizer exposure. | After the practical capability run, complete K4 real coding/amortization, K5 renderer/verifier calibration, K6 lifecycle/security stress, and K7 total-cost instrumentation, then prospectively freeze K8. Never treat the deferral as a KERC failure. |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |
@@ -519,15 +519,16 @@ promoted; their purpose is to falsify or select the practical architecture.
   regression, omitted every major learned KERC stage, and trained on 128 authored
   templates. Preserve it as proxy-negative evidence, but do not use it to exclude KERC.
   This is the one concrete architecture defect that reopens the freeze.
-- The practical model lane is now data-supported at 57.315M active parameters. The
-  canonical corpus has 1,293,454,903 unique positions, every specialist clears its
-  20:1 owned-parameter floor, every task-complete floor is GREEN, and all three MLX
-  mechanics canaries pass with temporary artifacts removed. It is **not the current
-  primary execution lane**: first close the finite architecture docket and freeze the
-  joint campaign, then replay these canaries against the final package before optimizer
-  spend. Learned qualification of STS, VCM conditioning, search, preference/RL, and
-  fast generation still waits for a nonzero model-only numerator; their
-  training-invalidating interfaces do not.
+- The practical model lane is preregistered at 57.315M active parameters but is not
+  currently data-supported or executable-authorized. Exact replay through the actual
+  trainer tokenizer/index measures 422,334,331 unique positions against the 1,146,808,520
+  floor. A stopped step-1,000 run instantiated the old 10.8M topology and therefore has
+  zero 57M credit. KERC is banked and deferred; the only pre-launch work now allowed is
+  repairing the shared scale/data/execution contract, admitting high-quality licensed
+  in-scope data if the 57M rung is retained, freezing a fresh evaluation identity, and
+  replaying the unchanged MLX mechanics canaries. Learned qualification of STS, VCM,
+  search, preference/RL, and fast generation still waits for a nonzero model-only
+  numerator.
 - Public calibration follows a material, confirmation-qualified model change. It is
   measurement only and never a source of prompts, tests, solutions, traces, labels,
   templates, or residual training rows.
@@ -556,13 +557,14 @@ to Track 1).
 - Establish a data/model scaling contract before the next capability run. Count
   unique admitted model-visible positions separately from repeated optimizer
   exposure and choose a published compute-optimal planning band before training.
-  The current content-bound audit measures `1,293,454,903` unique positions versus
-  `1,146,808,520` required (`22.557469` per active parameter). Every arm clears its
-  `50,083,860`-position floor: English `546,946,708`, Python `186,888,952`, JS/TS
-  `283,990,104`, HTML/CSS `71,416,629`, and Rust `188,216,352`. Every task-complete
-  unit/position floor and the training-admission TCB are GREEN. Preserve these exact
-  receipts while KERC adds a separately accounted English view; derived KERC views do
-  not create new unique source credit.
+  The exact executable-tokenizer audit measures `422,334,331` unique positions versus
+  `1,146,808,520` required (`7.369` per preregistered active parameter): English
+  conversation `42,542,553`, English broad `117,653,923`, Python `116,242,500`, JS/TS
+  `82,769,680`, HTML/CSS `17,577,020`, and Rust `45,548,655`. The superseded
+  `1,293,454,903` body-token estimate is not executable scale authority. Task-complete
+  coverage and the training-admission TCB remain separate evidence; neither can replace
+  the broad position floor. Derived KERC views and optimizer repetition create no new
+  unique-source credit.
 - Keep the three data budgets mechanically separate in every scale decision:
   `broad_pretraining_unique_positions`, `task_complete_unique_target_positions`, and
   `optimizer_exposure_positions`. Task-complete targets measure product supervision;
@@ -1167,10 +1169,11 @@ require admitted row hashes. The lifecycle surface remains `YELLOW`, not
 `GREEN`, because recursive synthetic share is `0.459053`; that is a data-risk
 warning, not proof of model collapse. The policy comparison is simulation, and
 deletion closure is graph evidence, not physical unlearning.
-The historical v8 materializer measured 683.25M content-bound positions and froze
-215.55M for that completed matched comparison. The current canonical broad receipt
-  is `1,293,454,903` positions for the preregistered 57.315M rung. These receipts prove quantity,
-lineage, and tokenizer integrity, not product suitability. Most v8 development rows carry prompt and target
+The historical v8 materializer measured 683.25M under its earlier accounting and froze
+215.55M for that completed matched comparison. The current exact trainer-ABI receipt is
+`422,334,331` positions and does not fund the preregistered 57.315M rung. Earlier
+body-token receipts remain lineage diagnostics, not tokenizer-integrity or training
+authority. Most v8 development rows carry prompt and target
 without executable tests or task-level utility contracts; no later score may relabel
 them as functionally verified examples.
 - The task-complete contract is now implemented inside canonical admission. Its full
@@ -1190,8 +1193,9 @@ them as functionally verified examples.
   identity; zero public overlap, teacher calls, external inference, and fallback
   returns were observed. Rust is GREEN at `1,162,003` verified target positions, all
   five arm floors pass, and the complete task corpus contains `36,552,344` target
-  positions. The separately governed broad corpus is now GREEN at `1,293,454,903`
-  unique positions; task targets and optimizer exposure remain separate budgets.
+  positions. The separately governed broad corpus currently measures `422,334,331`
+  exact executable positions and is RED for the 57.315M rung; task targets and optimizer
+  exposure remain separate budgets.
 - Add a registered `task_complete_training_unit` to the existing data contract, not a
   new lane. Every supervised unit binds visible context, complete target, task family,
   language/toolchain, verifier or rubric artifact, expected observable behavior,
@@ -1379,12 +1383,13 @@ evidence earns a different route.)
   increment of its sparse accounting view. Earlier mechanics canaries produced finite
   updates, exact checkpoint replay, optimizer resume, and temporary-artifact cleanup;
   the pointer-generator scatter was made deterministic after a canary exposed an
-  invalid-index collision. The current hash-bound preregistration is data-GREEN at
-  `1,293,454,903` unique positions (`22.557469` per active parameter), every task arm is
-  GREEN. The previous package no longer grants training authority because it binds the
-  inadequate KERC retirement. Rebuild it only after the faithful KERC alternative and
-  its matched conventional-English control are fully implemented and all unchanged
-  canaries replay against that contract. This remains mechanics evidence only.
+  invalid-index collision. Exact executable-tokenizer replay now measures `422,334,331`
+  unique positions (`7.369` per active parameter), so the preregistration is data-RED.
+  A purported 57M launch was also found to instantiate the old 10.8M model and checkpoint
+  namespace and was stopped at step 1,000. The trainer must consume this preregistration
+  as its sole topology owner, stage at least the prospectively required exact positions,
+  use a candidate-specific empty checkpoint namespace, bind a fresh functional-evaluation
+  identity, and replay all canaries before launch. This remains mechanics evidence only.
 
 - **Product-aligned supervision:** consume Phase 7 `task_complete_training_unit`
   records. English emphasizes natural multi-turn dialogue, corrections, and useful

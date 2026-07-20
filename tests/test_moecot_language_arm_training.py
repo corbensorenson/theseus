@@ -23,10 +23,12 @@ from moecot_language_arm_training import (  # noqa: E402
     RaggedRows,
     architecture_training_authority,
     audit_arm_views,
+    audit_scale_preregistration,
     audit_specialist_data_scaling,
     audit_tokenizer_stage,
     build_source_to_target_lookup,
     behavior_diagnostics,
+    bind_scale_preregistration,
     checkpoint_generation_paths,
     cleanup_progress_generation,
     ensure_shared_trunk_migration,
@@ -60,6 +62,9 @@ from neural_seed_open_vocab import (  # noqa: E402
     TARGET_BYTE_BEGIN,
     TARGET_BYTE_END,
     reserve_byte_fallback_tokens,
+)
+from neural_seed_50m_scale_preregistration import (  # noqa: E402
+    architecture_contract as scale_architecture_contract,
 )
 from moecot_source_conditioned_pretraining import (  # noqa: E402
     build_kerc_code_vocabulary,
@@ -591,6 +596,150 @@ def test_config_rejects_capability_credit_and_hidden_fallback(tmp_path: Path) ->
     config["boundaries"]["hidden_generalist_fallback"] = "allowed"
     with pytest.raises(ValueError, match="hidden generalist"):
         validate_config(config)
+
+
+def test_scale_preregistration_is_the_only_executable_model_owner(
+    tmp_path: Path,
+) -> None:
+    config = tiny_config(tmp_path)
+    candidate_id = "fixture_57m_candidate"
+    prereg_path = tmp_path / "scale.json"
+    prereg = {
+        "policy": "scale_fixture_v1",
+        "candidate": {
+            "id": candidate_id,
+            "expert_trainable_scope": config["topology"]["expert_trainable_scope"],
+            "shared_trunk_model": config["shared_trunk_model"],
+            "arm_model": config["arm_model"],
+        },
+    }
+    prereg_path.write_text(json.dumps(prereg), encoding="utf-8")
+    config["scale_preregistration"] = {
+        "config": str(prereg_path),
+        "report": str(tmp_path / "missing-report.json"),
+        "required_policy": "scale_fixture_v1",
+        "candidate_id": candidate_id,
+        "evaluation_freeze": str(tmp_path / "missing-evaluation.json"),
+    }
+    config["checkpoint_root"] = str(tmp_path / candidate_id)
+    config.pop("shared_trunk_model")
+    config.pop("arm_model")
+
+    bound = bind_scale_preregistration(config)
+    assert bound["shared_trunk_model"] == prereg["candidate"]["shared_trunk_model"]
+    assert bound["arm_model"] == prereg["candidate"]["arm_model"]
+    assert audit_scale_preregistration(bound)["hard_gaps"] == [
+        "scale_preregistration_report_missing",
+        "fresh_functional_evaluation_freeze_missing",
+    ]
+
+    config["shared_trunk_model"] = {"d_model": 999}
+    with pytest.raises(ValueError, match="duplicate executable shared_trunk_model"):
+        bind_scale_preregistration(config)
+
+
+def test_scale_preregistration_requires_authorized_report_fresh_eval_and_namespace(
+    tmp_path: Path,
+) -> None:
+    config = tiny_config(tmp_path)
+    candidate_id = "fixture_57m_candidate"
+    prereg_path = tmp_path / "scale.json"
+    report_path = tmp_path / "scale-report.json"
+    evaluation_path = tmp_path / "evaluation-freeze.json"
+    prereg = {
+        "policy": "scale_fixture_v1",
+        "candidate": {
+            "id": candidate_id,
+            "expert_trainable_scope": config["topology"]["expert_trainable_scope"],
+            "shared_trunk_model": config["shared_trunk_model"],
+            "arm_model": config["arm_model"],
+        },
+    }
+    prereg_path.write_text(json.dumps(prereg), encoding="utf-8")
+    prereg_sha = hashlib.sha256(prereg_path.read_bytes()).hexdigest()
+    report_path.write_text(
+        json.dumps(
+            {
+                "policy": "scale_fixture_v1",
+                "training_authorized": True,
+                "proposal_state": "AUTHORIZED_FOR_FROZEN_TRAINING_PLAN",
+                "config": {"path": str(prereg_path), "sha256": prereg_sha},
+                "architecture": {"candidate_id": candidate_id},
+            }
+        ),
+        encoding="utf-8",
+    )
+    evaluation_path.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_private_functional_utility_freeze_v2",
+                "immutable": True,
+                "evaluation_state": "NOT_EVALUATED",
+                "candidate_id": candidate_id,
+                "source_disjoint": True,
+                "consumed_case_count": 0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    config.update(
+        {
+            "scale_preregistration": {
+                "config": str(prereg_path),
+                "report": str(report_path),
+                "required_policy": "scale_fixture_v1",
+                "candidate_id": candidate_id,
+                "evaluation_freeze": str(evaluation_path),
+            },
+            "checkpoint_root": str(tmp_path / candidate_id),
+        }
+    )
+    bound = bind_scale_preregistration(config)
+    assert audit_scale_preregistration(bound)["hard_gaps"] == []
+
+    bound["checkpoint_root"] = str(tmp_path / "old-campaign")
+    assert "checkpoint_namespace_not_bound_to_scale_candidate" in (
+        audit_scale_preregistration(bound)["hard_gaps"]
+    )
+
+
+def test_live_trainer_parameter_accounting_matches_scale_preregistration() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    bound = bind_scale_preregistration(config)
+    base = json.loads((ROOT / bound["base_config"]).read_text())
+    metadata = json.loads(
+        (ROOT / bound["stage_dir"] / "stage_metadata_v1.json").read_text()
+    )
+    models = model_accounting(bound, base, metadata)
+    prereg = json.loads(
+        (ROOT / config["scale_preregistration"]["config"]).read_text()
+    )
+    vocabulary = json.loads(
+        (ROOT / config["vocabulary"]["output"]).read_text()
+    )
+    expected = scale_architecture_contract(prereg, vocabulary)
+
+    assert models["moecot_system"]["shared_trunk_model"] == expected[
+        "shared_trunk_model"
+    ]
+    assert models["moecot_system"]["arm_model"] == expected["arm_model"]
+    assert models["moecot_system"]["shared_trunk_parameter_count"] == expected[
+        "shared_trunk_parameter_count"
+    ]
+    assert models["moecot_system"]["active_parameter_count_per_request"] == expected[
+        "active_parameter_count_per_request"
+    ]
+    assert models["moecot_system"]["total_parameter_count"] == expected[
+        "total_parameter_count"
+    ]
+    assert models["dense_active_parameter"]["parameter_count"] == expected[
+        "dense_active_parameter"
+    ]["parameter_count"]
+    assert models["dense_total_parameter"]["parameter_count"] == expected[
+        "dense_total_parameter"
+    ]["parameter_count"]
 
 
 def test_only_executable_compositions_receive_direct_evaluation() -> None:

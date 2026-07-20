@@ -71,7 +71,7 @@ def materialize_pretrain_stage(
     contract = config["data_model_scaling_contract"]
     targets = category_targets(contract)
     max_seq = int(config["tokenization"]["max_sequence_tokens"])
-    index_path = stage_dir / "canonical_pretrain_index_v1.sqlite3"
+    index_path = stage_dir / "canonical_pretrain_index_v2.sqlite3"
     index_summary = build_document_index(config, root=root, index_path=index_path)
     outputs = pretrain_array_paths(stage_dir)
     temporary = {key: path.with_suffix(path.suffix + f".{os.getpid()}.tmp") for key, path in outputs.items()}
@@ -91,10 +91,10 @@ def materialize_pretrain_stage(
                 for category in CATEGORY_ORDER:
                     category_start = row_count
                     cursor = connection.execute(
-                        "SELECT digest, path, byte_offset, byte_length FROM documents WHERE category = ? ORDER BY digest",
+                        "SELECT digest, path, byte_offset, byte_length, record_kind FROM documents WHERE category = ? ORDER BY digest",
                         (category,),
                     )
-                    for digest, path_value, byte_offset, byte_length in cursor:
+                    for digest, path_value, byte_offset, byte_length, record_kind in cursor:
                         if consumed[category] >= targets[category]:
                             break
                         handle = handles.get(path_value)
@@ -103,8 +103,15 @@ def materialize_pretrain_stage(
                             handles[path_value] = handle
                         handle.seek(int(byte_offset))
                         raw = handle.read(int(byte_length))
-                        row = json.loads(raw)
-                        text = str(row.get("text") if category in CATEGORY_ORDER[2:] else row.get("causal_text") or "")
+                        if record_kind == "raw_text":
+                            text = raw.decode("utf-8", errors="replace")
+                        else:
+                            row = json.loads(raw)
+                            text = str(
+                                row.get("text")
+                                if category in CATEGORY_ORDER[2:]
+                                else row.get("causal_text") or ""
+                            )
                         logical_tokens, encoded, encoding_receipt = tokenize_and_encode(text, category)
                         if int(encoding_receipt.get("unknown_token_count") or 0):
                             excluded["tokenizer_unrepresentable"] += 1
@@ -230,21 +237,25 @@ def measure_pretrain_index_capacity(
     try:
         with sqlite3.connect(index_path) as connection:
             cursor = connection.execute(
-                "SELECT category, digest, path, byte_offset, byte_length "
+                "SELECT category, digest, path, byte_offset, byte_length, record_kind "
                 "FROM documents ORDER BY category, digest"
             )
-            for category, digest, path_value, byte_offset, byte_length in cursor:
+            for category, digest, path_value, byte_offset, byte_length, record_kind in cursor:
                 handle = handles.get(path_value)
                 if handle is None:
                     handle = Path(path_value).open("rb")
                     handles[path_value] = handle
                 handle.seek(int(byte_offset))
-                row = json.loads(handle.read(int(byte_length)))
-                text = str(
-                    row.get("text")
-                    if category in CATEGORY_ORDER[2:]
-                    else row.get("causal_text") or ""
-                )
+                raw = handle.read(int(byte_length))
+                if record_kind == "raw_text":
+                    text = raw.decode("utf-8", errors="replace")
+                else:
+                    row = json.loads(raw)
+                    text = str(
+                        row.get("text")
+                        if category in CATEGORY_ORDER[2:]
+                        else row.get("causal_text") or ""
+                    )
                 logical_tokens, encoded, receipt = tokenize_and_encode(text, category)
                 if int(receipt.get("unknown_token_count") or 0):
                     excluded[f"{category}:tokenizer_unrepresentable"] += 1
@@ -357,8 +368,65 @@ def build_document_index(config: dict[str, Any], *, root: Path, index_path: Path
     english_deduper = ConversationDeduper(max_hamming_distance=int(corpus.get("near_duplicate_hamming_distance") or 3))
     with sqlite3.connect(temporary) as connection:
         connection.execute(
-            "CREATE TABLE documents (category TEXT NOT NULL, digest TEXT NOT NULL, path TEXT NOT NULL, byte_offset INTEGER NOT NULL, byte_length INTEGER NOT NULL, PRIMARY KEY(category, digest))"
+            "CREATE TABLE documents (category TEXT NOT NULL, digest TEXT NOT NULL, path TEXT NOT NULL, byte_offset INTEGER NOT NULL, byte_length INTEGER NOT NULL, record_kind TEXT NOT NULL, PRIMARY KEY(category, digest))"
         )
+        for manifest_value in corpus.get("code_manifests") or []:
+            manifest_path = resolve(root, manifest_value)
+            manifest = read_json(manifest_path)
+            if manifest.get("policy") not in {
+                "project_theseus_narrow_corpus_manifest_v1",
+                "project_theseus_narrow_corpus_manifest_ladder_v1",
+            }:
+                raise ValueError(f"canonical direct-code manifest policy mismatch: {manifest_path}")
+            identities.append(identity_row(manifest_path))
+            for row in manifest.get("sources") or []:
+                if not isinstance(row, dict) or row.get("admitted") is not True:
+                    continue
+                if (
+                    row.get("license_allowed") is not True
+                    or row.get("public_benchmark_payload_detected") is True
+                    or row.get("eval_overlap_detected") is True
+                ):
+                    raise ValueError(
+                        "admitted direct-code source violates governance boundary: "
+                        + str(row.get("path") or "")
+                    )
+                source_path = resolve(root, str(row.get("path") or ""))
+                expected_sha = str(row.get("sha256") or "")
+                if (
+                    not source_path.is_file()
+                    or not expected_sha
+                    or file_sha256(source_path) != expected_sha
+                ):
+                    exclusions["direct_code_source_identity_mismatch"] += 1
+                    continue
+                category = code_category(
+                    str(row.get("content_type") or ""), str(source_path)
+                )
+                if not category:
+                    exclusions["direct_code_outside_language_scope"] += 1
+                    continue
+                text = source_path.read_text(encoding="utf-8", errors="replace")
+                quality_reasons = code_quality_rejection_reasons(
+                    corpus, path=str(source_path), text=text, category=category
+                )
+                if quality_reasons:
+                    for reason in quality_reasons:
+                        exclusions[f"direct_code_quality:{reason}"] += 1
+                    continue
+                identities.append(identity_row(source_path))
+                add_index_row(
+                    connection,
+                    code_deduper,
+                    category,
+                    text,
+                    source_path,
+                    0,
+                    source_path.stat().st_size,
+                    counts,
+                    exclusions,
+                    record_kind="raw_text",
+                )
         for manifest_value in corpus.get("code_shard_manifests") or []:
             manifest_path = resolve(root, manifest_value)
             manifest = read_json(manifest_path)
@@ -559,6 +627,7 @@ def code_quality_rejection_reasons(
 def add_index_row(
     connection: sqlite3.Connection, deduper: ConversationDeduper, category: str, text: str,
     path: Path, offset: int, length: int, counts: Counter[str], exclusions: Counter[str],
+    *, record_kind: str = "jsonl",
 ) -> None:
     digest = sha256_text(" ".join(text.lower().split()))
     duplicate = deduper.classify(text, digest)
@@ -567,8 +636,8 @@ def add_index_row(
         return
     deduper.add(text, digest)
     connection.execute(
-        "INSERT INTO documents(category, digest, path, byte_offset, byte_length) VALUES (?, ?, ?, ?, ?)",
-        (category, digest, str(path), offset, length),
+        "INSERT INTO documents(category, digest, path, byte_offset, byte_length, record_kind) VALUES (?, ?, ?, ?, ?, ?)",
+        (category, digest, str(path), offset, length, record_kind),
     )
     counts[category] += 1
 

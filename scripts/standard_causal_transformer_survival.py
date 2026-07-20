@@ -143,6 +143,11 @@ def main() -> int:
     parser.add_argument("--audit-corpus", action="store_true")
     parser.add_argument("--measure-corpus-capacity", action="store_true")
     parser.add_argument(
+        "--capacity-index",
+        default="",
+        help="Explicit content-bound index to measure; defaults to the staged index.",
+    )
+    parser.add_argument(
         "--materialize-stage-only",
         action="store_true",
         help="Build and audit the canonical stage without instantiating or training a model.",
@@ -166,8 +171,13 @@ def main() -> int:
         return 2 if receipt["trigger_state"] == "RED" else 0
     if args.measure_corpus_capacity:
         validate_config(config)
-        metadata = read_json(resolve(args.stage_dir) / "stage_metadata_v1.json")
-        index_path = Path(metadata["summary"]["canonical_pretrain_stage"]["index"]["path"])
+        if args.capacity_index:
+            index_path = resolve(args.capacity_index)
+        else:
+            metadata = read_json(resolve(args.stage_dir) / "stage_metadata_v1.json")
+            index_path = Path(
+                metadata["summary"]["canonical_pretrain_stage"]["index"]["path"]
+            )
         vocab_payload = read_json(resolve(config["tokenization"]["source_vocab"]))
         target_vocab = dict(vocab_payload["target_vocab"])
         eval_rows, _families = select_family_disjoint_eval(config)

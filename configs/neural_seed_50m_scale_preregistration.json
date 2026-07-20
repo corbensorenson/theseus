@@ -8,7 +8,7 @@
     "task_complete_report": "reports/task_complete_training_units_v1.json",
     "training_admission_report": "reports/training_data_admission_v1.json",
     "training_admission_epistemic_tcb": "reports/training_admission_epistemic_tcb.json",
-    "canonical_capacity_report": "reports/standard_causal_transformer_scale_v2_plan.json",
+    "canonical_capacity_report": "runtime/standard_causal_transformer_scale_v2/canonical_pretrain_capacity_v2.json",
     "vocabulary": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
     "generation_architecture_contract": "configs/generation_architecture_contracts.json"
   },

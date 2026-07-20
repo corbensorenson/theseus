@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import ast
 import base64
+import copy
 import difflib
 import hashlib
 import json
@@ -539,7 +540,7 @@ def main() -> int:
         parser.error("--max-steps cannot be negative")
 
     config_path = resolve(args.config)
-    config = read_json(config_path)
+    config = bind_scale_preregistration(read_json(config_path))
     plan = build_plan(config, config_path=config_path)
     if plan["trigger_state"] == "RED":
         write_json(resolve(args.out or config["report"]), plan)
@@ -632,11 +633,70 @@ def architecture_training_authority(
     }
 
 
+def bind_scale_preregistration(config: dict[str, Any]) -> dict[str, Any]:
+    """Resolve one preregistered model owner into the executable training config."""
+
+    reference = config.get("scale_preregistration")
+    if not isinstance(reference, dict):
+        return config
+    prereg_path = resolve(str(reference.get("config") or ""))
+    if not prereg_path.is_file():
+        raise ValueError("scale preregistration config is missing")
+    prereg = read_json(prereg_path)
+    required_policy = str(reference.get("required_policy") or "")
+    candidate = prereg.get("candidate") if isinstance(prereg.get("candidate"), dict) else {}
+    if prereg.get("policy") != required_policy:
+        raise ValueError("scale preregistration policy mismatch")
+    if candidate.get("id") != reference.get("candidate_id"):
+        raise ValueError("scale preregistration candidate mismatch")
+    if candidate.get("expert_trainable_scope") != (
+        (config.get("topology") or {}).get("expert_trainable_scope")
+    ):
+        raise ValueError("scale preregistration expert scope mismatch")
+
+    bound = copy.deepcopy(config)
+    for key in ("shared_trunk_model", "arm_model"):
+        declared = bound.get(key)
+        selected = candidate.get(key)
+        if not isinstance(selected, dict):
+            raise ValueError(f"scale preregistration is missing {key}")
+        if declared is not None and declared != selected:
+            raise ValueError(f"duplicate executable {key} disagrees with preregistration")
+        bound[key] = copy.deepcopy(selected)
+    topology = bound.get("topology") or {}
+    for field in ("expert_adapter_dim", "source_expert_adapter_dim"):
+        selected = int((candidate.get("arm_model") or {}).get(field) or 0)
+        if int(topology.get(field) or 0) != selected:
+            raise ValueError(f"topology {field} disagrees with preregistration")
+
+    # A deferred KERC model shares the selected trunk shape but retains its own
+    # explicitly registered heads. It receives no first-campaign optimizer credit.
+    if isinstance(bound.get("kerc_english_model"), dict):
+        kerc_only = {
+            key: value
+            for key, value in bound["kerc_english_model"].items()
+            if key not in bound["shared_trunk_model"]
+        }
+        bound["kerc_english_model"] = {
+            **copy.deepcopy(bound["shared_trunk_model"]),
+            **kerc_only,
+        }
+    bound["_resolved_scale_preregistration"] = {
+        "config": relative(prereg_path),
+        "config_sha256": sha256_file(prereg_path),
+        "candidate_id": str(candidate["id"]),
+    }
+    return bound
+
+
 def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
+    config = bind_scale_preregistration(config)
     gaps: list[str] = []
     validate_config(config)
     base_path = resolve(str(config["base_config"]))
     base = read_json(base_path)
+    scale_audit = audit_scale_preregistration(config)
+    gaps.extend(scale_audit["hard_gaps"])
     stage_dir = resolve(str(config["stage_dir"]))
     metadata_path = stage_dir / "stage_metadata_v1.json"
     if not metadata_path.is_file():
@@ -650,6 +710,11 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         if isinstance(summary.get("canonical_pretrain_stage"), dict)
         else {}
     )
+    scale_stage_audit = audit_scale_stage_contract(
+        config, base, canonical, scale_audit=scale_audit
+    )
+    scale_audit.update(scale_stage_audit)
+    gaps.extend(scale_stage_audit["hard_gaps"])
     arm_views = canonical.get("arm_views") if isinstance(canonical.get("arm_views"), dict) else {}
     range_audit = audit_arm_views(arm_views, int(canonical.get("window_count") or 0))
     gaps.extend(range_audit["hard_gaps"])
@@ -670,6 +735,9 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
     models: dict[str, Any] = {}
     if metadata:
         models = model_accounting(config, base, metadata)
+        scale_model_audit = audit_scale_model_accounting(config, models, scale_audit)
+        scale_audit.update(scale_model_audit)
+        gaps.extend(scale_model_audit["hard_gaps"])
         dense_total = int(models["dense_total_parameter"]["parameter_count"])
         arm_total = int(models["moecot_system"]["total_parameter_count"])
         delta = abs(arm_total - dense_total) / max(1, dense_total)
@@ -693,6 +761,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         supervision_audit,
         source_conditioned_audit,
         kernel_english_audit,
+        scale_audit,
     )
     targets = target_contracts(
         config,
@@ -731,6 +800,7 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             "tokenizer_audit": tokenizer_audit,
         },
         "models": models,
+        "scale_preregistration": scale_audit,
         "supervision": supervision_audit,
         "source_conditioned_pretraining": source_conditioned_audit,
         "kernel_english_training": kernel_english_audit,
@@ -747,6 +817,160 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
             "neither accounting view may be selected after results are known",
         ],
         **no_cheat(config),
+    }
+
+
+def audit_scale_preregistration(config: dict[str, Any]) -> dict[str, Any]:
+    reference = config.get("scale_preregistration")
+    if not isinstance(reference, dict):
+        return {
+            "state": "NOT_REQUIRED",
+            "candidate_id": "",
+            "hard_gaps": [],
+        }
+    prereg_path = resolve(str(reference.get("config") or ""))
+    report_path = resolve(str(reference.get("report") or ""))
+    gaps: list[str] = []
+    prereg = read_json(prereg_path) if prereg_path.is_file() else {}
+    report = read_json(report_path) if report_path.is_file() else {}
+    candidate_id = str(reference.get("candidate_id") or "")
+    if not prereg:
+        gaps.append("scale_preregistration_config_missing")
+    if not report:
+        gaps.append("scale_preregistration_report_missing")
+    if prereg.get("policy") != reference.get("required_policy"):
+        gaps.append("scale_preregistration_policy_mismatch")
+    if (prereg.get("candidate") or {}).get("id") != candidate_id:
+        gaps.append("scale_preregistration_candidate_mismatch")
+    if report:
+        if report.get("policy") != reference.get("required_policy"):
+            gaps.append("scale_preregistration_report_policy_mismatch")
+        if report.get("training_authorized") is not True:
+            gaps.append("scale_preregistration_training_not_authorized")
+        if report.get("proposal_state") != "AUTHORIZED_FOR_FROZEN_TRAINING_PLAN":
+            gaps.append("scale_preregistration_proposal_not_authorized")
+        config_ref = report.get("config") if isinstance(report.get("config"), dict) else {}
+        if (
+            config_ref.get("path") != relative(prereg_path)
+            or config_ref.get("sha256") != sha256_file(prereg_path)
+        ):
+            gaps.append("scale_preregistration_report_config_identity_mismatch")
+        if (report.get("architecture") or {}).get("candidate_id") != candidate_id:
+            gaps.append("scale_preregistration_report_candidate_mismatch")
+    evaluation_path = resolve(str(reference.get("evaluation_freeze") or ""))
+    evaluation = read_json(evaluation_path) if evaluation_path.is_file() else {}
+    if not evaluation:
+        gaps.append("fresh_functional_evaluation_freeze_missing")
+    elif (
+        evaluation.get("policy")
+        != "project_theseus_private_functional_utility_freeze_v2"
+        or evaluation.get("immutable") is not True
+        or evaluation.get("evaluation_state") != "NOT_EVALUATED"
+        or evaluation.get("candidate_id") != candidate_id
+        or evaluation.get("source_disjoint") is not True
+        or int(evaluation.get("consumed_case_count") or 0) != 0
+    ):
+        gaps.append("fresh_functional_evaluation_freeze_invalid")
+    checkpoint_root = resolve(str(config.get("checkpoint_root") or ""))
+    if checkpoint_root.name != candidate_id:
+        gaps.append("checkpoint_namespace_not_bound_to_scale_candidate")
+    return {
+        "policy": "project_theseus_executable_scale_binding_v1",
+        "state": "GREEN" if not gaps else "RED",
+        "candidate_id": candidate_id,
+        "config": relative(prereg_path),
+        "config_sha256": sha256_file(prereg_path) if prereg_path.is_file() else "",
+        "report": relative(report_path),
+        "report_sha256": sha256_file(report_path) if report_path.is_file() else "",
+        "architecture": report.get("architecture") or {},
+        "data_support": report.get("data_support") or {},
+        "heldout_utility_contract": report.get("heldout_utility_contract") or {},
+        "evaluation_freeze": relative(evaluation_path),
+        "evaluation_freeze_sha256": (
+            sha256_file(evaluation_path) if evaluation_path.is_file() else ""
+        ),
+        "hard_gaps": gaps,
+    }
+
+
+def audit_scale_stage_contract(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    canonical: dict[str, Any],
+    *,
+    scale_audit: dict[str, Any],
+) -> dict[str, Any]:
+    if not isinstance(config.get("scale_preregistration"), dict):
+        return {"stage_contract_state": "NOT_REQUIRED", "hard_gaps": []}
+    gaps: list[str] = []
+    architecture = scale_audit.get("architecture") or {}
+    active_parameters = int(architecture.get("active_parameter_count_per_request") or 0)
+    minimum_ratio = float(
+        ((read_json(resolve(str(config["scale_preregistration"]["config"]))).get("scaling_contract") or {}).get(
+            "minimum_unique_positions_per_active_parameter"
+        ) or 0.0)
+    )
+    required_positions = int(math.ceil(active_parameters * minimum_ratio))
+    staged_positions = int(canonical.get("materialized_positions") or 0)
+    selected_rung = (base.get("data_model_scaling_contract") or {}).get("selected_rung") or {}
+    if selected_rung.get("id") != config["scale_preregistration"].get("candidate_id"):
+        gaps.append("base_scale_rung_not_bound_to_preregistered_candidate")
+    if int(selected_rung.get("active_parameter_count") or 0) != active_parameters:
+        gaps.append("base_scale_parameter_count_mismatch")
+    if required_positions <= 0 or staged_positions < required_positions:
+        gaps.append("staged_unique_position_floor_not_met_for_scale_candidate")
+    return {
+        "stage_contract_state": "GREEN" if not gaps else "RED",
+        "required_unique_positions": required_positions,
+        "staged_unique_positions": staged_positions,
+        "hard_gaps": gaps,
+    }
+
+
+def audit_scale_model_accounting(
+    config: dict[str, Any], models: dict[str, Any], scale_audit: dict[str, Any]
+) -> dict[str, Any]:
+    if not isinstance(config.get("scale_preregistration"), dict):
+        return {"model_accounting_state": "NOT_REQUIRED", "hard_gaps": []}
+    expected = scale_audit.get("architecture") or {}
+    observed = models.get("moecot_system") or {}
+    gaps: list[str] = []
+    comparisons = {
+        "shared_trunk_parameter_count": (
+            int(expected.get("shared_trunk_parameter_count") or 0),
+            int(observed.get("shared_trunk_parameter_count") or 0),
+        ),
+        "expert_parameter_count_per_arm": (
+            int(expected.get("expert_parameter_count_per_arm") or 0),
+            int(observed.get("expert_parameter_count_per_arm") or 0),
+        ),
+        "active_parameter_count_per_request": (
+            int(expected.get("active_parameter_count_per_request") or 0),
+            int(observed.get("active_parameter_count_per_request") or 0),
+        ),
+        "total_parameter_count": (
+            int(expected.get("total_parameter_count") or 0),
+            int(observed.get("total_parameter_count") or 0),
+        ),
+        "dense_active_parameter_count": (
+            int((expected.get("dense_active_parameter") or {}).get("parameter_count") or 0),
+            int((models.get("dense_active_parameter") or {}).get("parameter_count") or 0),
+        ),
+        "dense_total_parameter_count": (
+            int((expected.get("dense_total_parameter") or {}).get("parameter_count") or 0),
+            int((models.get("dense_total_parameter") or {}).get("parameter_count") or 0),
+        ),
+    }
+    for field, (wanted, actual) in comparisons.items():
+        if wanted <= 0 or wanted != actual:
+            gaps.append(f"scale_model_accounting_mismatch:{field}")
+    return {
+        "model_accounting_state": "GREEN" if not gaps else "RED",
+        "parameter_comparisons": {
+            field: {"expected": wanted, "observed": actual}
+            for field, (wanted, actual) in comparisons.items()
+        },
+        "hard_gaps": gaps,
     }
 
 
@@ -797,8 +1021,6 @@ def audit_specialist_data_scaling(
         "optimizer_repetition_counted_as_unique_data": False,
         "capability_credit": "NONE",
     }
-
-
 def inspect_checkpoint_inventory(
     targets: dict[str, Any], plan_identity: str, stage_signature: Any
 ) -> dict[str, Any]:
@@ -882,6 +1104,7 @@ def inspect_checkpoint_inventory(
 def model_accounting(
     config: dict[str, Any], base: dict[str, Any], metadata: dict[str, Any]
 ) -> dict[str, Any]:
+    config = bind_scale_preregistration(config)
     import mlx.core as mx
     import mlx.nn as nn
     import mlx.utils as mlx_utils
@@ -948,7 +1171,7 @@ def model_accounting(
         arm_count, config["arm_model"], count=count
     )
     dense_total_model, dense_total_count = matched_decoder_only_config(
-        system_total, base["model"], count=count
+        system_total, config["arm_model"], count=count
     )
     result = {
         "moecot_system": {
@@ -4384,6 +4607,7 @@ def plan_sha256(
     supervision: dict[str, Any],
     source_conditioned: dict[str, Any],
     kernel_english: dict[str, Any],
+    scale_preregistration: dict[str, Any],
 ) -> str:
     training_artifacts = {
         key: value
@@ -4415,6 +4639,17 @@ def plan_sha256(
             "learned_pipeline_contract"
         )
         or {},
+        "scale_preregistration": {
+            key: scale_preregistration.get(key)
+            for key in (
+                "candidate_id",
+                "config_sha256",
+                "report_sha256",
+                "evaluation_freeze_sha256",
+                "required_unique_positions",
+                "staged_unique_positions",
+            )
+        },
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 

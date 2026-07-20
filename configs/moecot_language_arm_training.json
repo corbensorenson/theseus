@@ -1,8 +1,15 @@
 {
   "policy": "project_theseus_moecot_language_arm_training_v1",
   "base_config": "configs/standard_causal_transformer_survival.json",
+  "scale_preregistration": {
+    "config": "configs/neural_seed_50m_scale_preregistration.json",
+    "report": "reports/neural_seed_50m_scale_preregistration.json",
+    "required_policy": "project_theseus_neural_seed_50m_scale_preregistration_v1",
+    "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+    "evaluation_freeze": "configs/neural_seed_57m_functional_utility_freeze.json"
+  },
   "stage_dir": "runtime/standard_causal_transformer_scale_v2",
-  "checkpoint_root": "checkpoints/moecot_language_seed_v9_architecture_freeze",
+  "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1",
   "report": "reports/moecot_language_arm_training.json",
   "seed": 20260712,
   "generation_architecture": {
@@ -49,53 +56,13 @@
     "shared_parameter_ownership": "one_checkpoint_loaded_once",
     "expert_parameter_ownership": "one_independent_low_rank_source_delta_per_language",
     "expert_trainable_scope": "low_rank_source_adapters",
-    "expert_adapter_dim": 64,
-    "source_expert_adapter_dim": 32,
+    "expert_adapter_dim": 128,
+    "source_expert_adapter_dim": 64,
     "shared_trunk_initialization": {
       "policy": "project_theseus_seeded_fresh_trunk_initialization_v1",
       "seed": 20260712,
       "reason": "The retained 3.716M shared trunk and the data-bounded 10.78M rung have incompatible tensor shapes; initialize the preregistered larger trunk from its frozen seed rather than pretending weight migration is valid."
     }
-  },
-  "shared_trunk_model": {
-    "d_model": 256,
-    "num_layers": 8,
-    "num_heads": 8,
-    "num_kv_heads": 2,
-    "ff_dim": 672,
-    "rope_base": 10000.0,
-    "rms_norm_eps": 0.00001,
-    "attention_policy": "encoder_decoder",
-    "source_target_separator_token_id": 2,
-    "source_encoder_layers": 2,
-    "source_copy_mode": "pointer_generator",
-    "source_copy_auxiliary_loss_weight": 0.25,
-    "mtp_future_offsets": [2, 3, 4],
-    "mtp_low_rank": 1,
-    "mtp_loss_weights": [0.3, 0.2, 0.1],
-    "mtp_loss_scale": 0.0,
-    "mtp_maximum_head_parameter_overhead_ratio": 0.25
-  },
-  "arm_model": {
-    "d_model": 256,
-    "num_layers": 8,
-    "num_heads": 8,
-    "num_kv_heads": 2,
-    "ff_dim": 672,
-    "rope_base": 10000.0,
-    "rms_norm_eps": 0.00001,
-    "attention_policy": "encoder_decoder",
-    "source_target_separator_token_id": 2,
-    "source_encoder_layers": 2,
-    "source_copy_mode": "pointer_generator",
-    "source_copy_auxiliary_loss_weight": 0.25,
-    "mtp_future_offsets": [2, 3, 4],
-    "mtp_low_rank": 1,
-    "mtp_loss_weights": [0.3, 0.2, 0.1],
-    "mtp_loss_scale": 0.0,
-    "mtp_maximum_head_parameter_overhead_ratio": 0.25,
-    "expert_adapter_dim": 64,
-    "source_expert_adapter_dim": 32
   },
   "kerc_english_model": {
     "d_model": 256,
@@ -128,7 +95,7 @@
   },
   "controls": {
     "dense_total_parameter": {
-      "model_source": "base_config",
+      "model_source": "scale_preregistration.arm_model",
       "data_view": "mixed_dense_control",
       "purpose": "mechanically match total MoECOT encoder-decoder arm parameters with a decoder-only prefix-LM control exposed to the same unique system positions"
     },

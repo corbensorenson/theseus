@@ -161,6 +161,37 @@ def fixture(tmp_path: Path) -> dict:
     }
 
 
+def add_direct_code_manifest(config: dict, tmp_path: Path) -> Path:
+    source = tmp_path / "direct" / "module.py"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text(
+        "def direct_source(value):\n    return value * 3\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "direct" / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_narrow_corpus_manifest_v1",
+                "sources": [
+                    {
+                        "admitted": True,
+                        "content_type": "code_python",
+                        "eval_overlap_detected": False,
+                        "license_allowed": True,
+                        "path": str(source),
+                        "public_benchmark_payload_detected": False,
+                        "sha256": digest(source),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    config["canonical_corpus"]["code_manifests"] = [str(manifest)]
+    return source
+
+
 def encode(text: str, _category: str) -> tuple[list[str], list[int], dict]:
     tokens = text.split()
     return tokens, list(range(1, len(tokens) + 1)), {"unknown_token_count": 0}
@@ -260,7 +291,7 @@ def test_capacity_measurement_scans_only_the_content_bound_index(tmp_path: Path)
         eval_body_patterns=set(),
     )
     measured = measure_pretrain_index_capacity(
-        stage_dir / "canonical_pretrain_index_v1.sqlite3",
+        stage_dir / "canonical_pretrain_index_v2.sqlite3",
         tokenize_and_encode=encode,
         eval_body_patterns=set(),
     )
@@ -278,6 +309,67 @@ def test_capacity_measurement_scans_only_the_content_bound_index(tmp_path: Path)
     )
     assert measured["public_training_rows_written"] == 0
     assert measured["score_semantics"].startswith("capacity planning only")
+
+
+def test_direct_code_manifest_is_indexed_and_content_bound(tmp_path: Path) -> None:
+    config = fixture(tmp_path)
+    source = add_direct_code_manifest(config, tmp_path)
+    stage_dir = tmp_path / "stage"
+    stage_dir.mkdir()
+
+    materialize_pretrain_stage(
+        config,
+        root=tmp_path,
+        stage_dir=stage_dir,
+        target_vocab={},
+        target_offset=100,
+        tokenize_and_encode=encode,
+        eval_body_patterns=set(),
+    )
+    measured = measure_pretrain_index_capacity(
+        stage_dir / "canonical_pretrain_index_v2.sqlite3",
+        tokenize_and_encode=encode,
+        eval_body_patterns=set(),
+    )
+    assert measured["documents_by_category"]["python"] == 2
+
+    source.write_text("def changed(value):\n    return value\n", encoding="utf-8")
+    changed_stage = tmp_path / "changed-stage"
+    changed_stage.mkdir()
+    _inputs, _labels, _mask, changed = materialize_pretrain_stage(
+        config,
+        root=tmp_path,
+        stage_dir=changed_stage,
+        target_vocab={},
+        target_offset=100,
+        tokenize_and_encode=encode,
+        eval_body_patterns=set(),
+    )
+    assert changed["index"]["excluded_counts"][
+        "direct_code_source_identity_mismatch"
+    ] == 1
+
+
+def test_direct_code_manifest_rejects_admitted_benchmark_payload(tmp_path: Path) -> None:
+    config = fixture(tmp_path)
+    add_direct_code_manifest(config, tmp_path)
+    manifest = Path(config["canonical_corpus"]["code_manifests"][0])
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    payload["sources"][0]["public_benchmark_payload_detected"] = True
+    manifest.write_text(json.dumps(payload), encoding="utf-8")
+    stage_dir = tmp_path / "stage"
+    stage_dir.mkdir()
+
+    with pytest.raises(ValueError, match="violates governance boundary"):
+        materialize_pretrain_stage(
+            config,
+            root=tmp_path,
+            stage_dir=stage_dir,
+            target_vocab={},
+            target_offset=100,
+            tokenize_and_encode=encode,
+            eval_body_patterns=set(),
+        )
 
 
 def test_materialization_refuses_stale_source_shard(tmp_path: Path) -> None:

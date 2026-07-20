@@ -107,21 +107,87 @@ def test_canary_encoding_has_target_only_loss_mask() -> None:
     assert first_supervised > separator
 
 
-def test_capacity_receipt_does_not_treat_repetition_as_unique_data() -> None:
+def test_capacity_receipt_does_not_treat_repetition_as_unique_data(
+    tmp_path: Path,
+) -> None:
+    index_path = tmp_path / "index.sqlite3"
+    config_path = tmp_path / "source-config.json"
+    index_path.write_bytes(b"content-bound-index")
+    config_path.write_text('{"policy":"fixture"}', encoding="utf-8")
     observed = scale.canonical_capacity({
-        "data_model_scaling_contract": {
-            "canonical_corpus_receipt": {
-                "valid": True,
-                "content_bound": True,
-                "unique_model_visible_positions": 123,
-                "optimizer_token_positions": 999999,
-                "hard_gaps": [],
-            }
-        }
+        "policy": "project_theseus_admitted_index_exact_capacity_measurement_v1",
+        "positions_by_category": {
+            "english_conversation_instruction": 20,
+            "english_broad": 20,
+            "python": 20,
+            "javascript_typescript": 20,
+            "html_css": 20,
+            "rust": 23,
+        },
+        "total_unique_positions": 123,
+        "index": str(index_path),
+        "index_sha256": scale.file_sha256(index_path),
+        "selected_document_digest": "b" * 64,
+        "config": str(config_path),
+        "config_sha256": scale.file_sha256(config_path),
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "optimizer_token_positions": 999999,
     })
     assert observed["receipt_valid"] is True
     assert observed["unique_model_visible_positions"] == 123
     assert observed["optimizer_repetition_counted_as_unique_data"] is False
+    assert observed["index_identity_valid"] is True
+    assert observed["source_config_identity_valid"] is True
+
+    index_path.write_bytes(b"tampered")
+    assert scale.canonical_capacity({
+        "policy": "project_theseus_admitted_index_exact_capacity_measurement_v1",
+        "positions_by_category": {
+            "english_conversation_instruction": 20,
+            "english_broad": 20,
+            "python": 20,
+            "javascript_typescript": 20,
+            "html_css": 20,
+            "rust": 23,
+        },
+        "total_unique_positions": 123,
+        "index": str(index_path),
+        "index_sha256": observed["index_sha256"],
+        "selected_document_digest": "b" * 64,
+        "config": str(config_path),
+        "config_sha256": scale.file_sha256(config_path),
+    })["receipt_valid"] is False
+
+
+def test_capacity_receipt_rejects_legacy_or_internally_inconsistent_accounting() -> None:
+    legacy = scale.canonical_capacity({
+        "data_model_scaling_contract": {
+            "canonical_corpus_receipt": {
+                "valid": True,
+                "unique_model_visible_positions": 1_000_000_000,
+            }
+        }
+    })
+    assert legacy["receipt_valid"] is False
+
+    inconsistent = scale.canonical_capacity({
+        "policy": "project_theseus_admitted_index_exact_capacity_measurement_v1",
+        "positions_by_category": {
+            "english_conversation_instruction": 1,
+            "english_broad": 1,
+            "python": 1,
+            "javascript_typescript": 1,
+            "html_css": 1,
+            "rust": 1,
+        },
+        "total_unique_positions": 99,
+        "index_sha256": "a" * 64,
+        "selected_document_digest": "b" * 64,
+        "config_sha256": "c" * 64,
+    })
+    assert inconsistent["receipt_valid"] is False
 
 
 def test_specialist_data_support_fails_closed_per_parameter_owner() -> None:

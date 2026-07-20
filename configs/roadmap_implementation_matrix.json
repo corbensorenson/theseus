@@ -969,8 +969,8 @@
         10
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "implemented",
-      "dependency": "v8 diagnostics and exact-once private functional qualification are complete; 1.293B broad unique positions and every specialist/task-complete floor are green; the unchanged 57.315M MoECOT and both dense controls pass finite-loss, update, checkpoint/reload, optimizer-resume, cleanup, and bounded MLX resource canaries. Preserve this evidence while the finite architecture docket closes, then replay canaries against the final frozen package before long training",
+      "status": "partial",
+      "dependency": "v8 diagnostics and exact-once private functional qualification are complete, but exact replay through the executable trainer tokenizer/index measures 422,334,331 broad unique positions against the 1,146,808,520 floor. The earlier 1.293B body-token receipt is historical planning evidence only. A stopped step-1,000 launch also instantiated the old 10.8M topology and checkpoint namespace, so it has zero 57M or capability credit. Repair the shared preregistration/data/stage/checkpoint/evaluation contract, admit enough high-quality licensed in-scope data or prospectively select a smaller data-supported rung, then replay MLX canaries before long training.",
       "acceptance_gate": "Every counted product unit binds complete target behavior to a pinned verifier or blind English rubric, split, license/provenance, contamination result, and toolchain. Scale authorization reports broad_pretraining_unique_positions, task_complete_unique_target_positions, and optimizer_exposure_positions as non-interchangeable budgets; requires the 1.146B broad unique-position floor and every frozen per-arm task-complete unit/position floor simultaneously; and independently prevents cross-source or cross-budget double credit. If every 10.8M code path is functionally zero, close the rung and preregister the smallest 50M-100M active model supported by those budgets, MLX canaries, matched controls, and stop criteria.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "Bulk positions, optimizer repetition, target-only snippets, teacher paraphrases, task-complete target positions without admitted full model-visible rows, or metadata-complete receipts do not prove product-task quality or justify scale. Rust remains in the frozen five-arm contract and cannot be dropped post-outcome to clear the gate."
@@ -3883,9 +3883,9 @@
       },
       {
         "id": "T1",
-        "state": "ready_to_launch",
+        "state": "contract_repair_required",
         "depends_on": ["T0"],
-        "exit": "The five frozen arms and matched dense control finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
+        "exit": "The preregistration, executable topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then the five frozen arms and matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
       },
       {
         "id": "T2",

@@ -648,15 +648,76 @@ def training_admission_contract(
 
 
 def canonical_capacity(report: dict[str, Any]) -> dict[str, Any]:
-    contract = report.get("data_model_scaling_contract") if isinstance(report.get("data_model_scaling_contract"), dict) else {}
-    receipt = contract.get("canonical_corpus_receipt") if isinstance(contract.get("canonical_corpus_receipt"), dict) else {}
+    positions = (
+        report.get("positions_by_category")
+        if isinstance(report.get("positions_by_category"), dict)
+        else {}
+    )
+    normalized = {
+        key: int(positions.get(key) or 0)
+        for key in (
+            "english_conversation_instruction",
+            "english_broad",
+            "python",
+            "javascript_typescript",
+            "html_css",
+            "rust",
+        )
+    }
+    observed_total = int(report.get("total_unique_positions") or 0)
+    recomputed_total = sum(normalized.values())
+    index_path = resolve(str(report.get("index") or ""))
+    source_config_path = resolve(str(report.get("config") or ""))
+    index_identity_valid = bool(
+        index_path.is_file()
+        and file_sha256(index_path) == str(report.get("index_sha256") or "")
+    )
+    source_config_identity_valid = bool(
+        source_config_path.is_file()
+        and file_sha256(source_config_path)
+        == str(report.get("config_sha256") or "")
+    )
+    receipt_valid = bool(
+        report.get("policy")
+        == "project_theseus_admitted_index_exact_capacity_measurement_v1"
+        and observed_total > 0
+        and observed_total == recomputed_total
+        and index_identity_valid
+        and len(str(report.get("selected_document_digest") or "")) == 64
+        and source_config_identity_valid
+        and int(report.get("public_training_rows_written") or 0) == 0
+        and int(report.get("external_inference_calls") or 0) == 0
+        and int(report.get("fallback_return_count") or 0) == 0
+    )
     return {
-        "receipt_valid": bool(receipt.get("valid") and receipt.get("content_bound") and not receipt.get("hard_gaps")),
-        "unique_model_visible_positions": int(receipt.get("unique_model_visible_positions") or 0),
-        "domain_unique_positions": dict(receipt.get("domain_unique_positions") or {}),
-        "code_language_unique_positions": dict(
-            receipt.get("code_language_unique_positions") or {}
+        "receipt_valid": receipt_valid,
+        "accounting_abi": "moecot_language_tokenizer.exact_text_v1",
+        "index": str(report.get("index") or ""),
+        "index_sha256": str(report.get("index_sha256") or ""),
+        "index_identity_valid": index_identity_valid,
+        "source_config": str(report.get("config") or ""),
+        "source_config_sha256": str(report.get("config_sha256") or ""),
+        "source_config_identity_valid": source_config_identity_valid,
+        "selected_document_digest": str(
+            report.get("selected_document_digest") or ""
         ),
+        "unique_model_visible_positions": observed_total,
+        "domain_unique_positions": {
+            "english_natural_language_total": (
+                normalized["english_conversation_instruction"]
+                + normalized["english_broad"]
+            ),
+            "english_conversation_instruction": normalized[
+                "english_conversation_instruction"
+            ],
+            "code_total": sum(normalized[key] for key in normalized if key not in {
+                "english_conversation_instruction", "english_broad"
+            }),
+        },
+        "code_language_unique_positions": {
+            key: normalized[key]
+            for key in ("python", "javascript_typescript", "html_css", "rust")
+        },
         "optimizer_repetition_counted_as_unique_data": False,
     }
 
