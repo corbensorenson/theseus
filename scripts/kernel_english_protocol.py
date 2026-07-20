@@ -463,13 +463,15 @@ def validate_training_disposition(cfg: dict[str, Any]) -> dict[str, Any]:
         }
         if required
         else {
-            "state": "RETIRED_FROM_FIRST_LONG_RUN",
-            "retirement_scope": "full_compiler_core_renderer_training_path_only",
-            "evidence_scope": "bounded_authored_synthetic_campaign",
-            "broad_efficiency_gate_passed": False,
+            "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+            "deferral_scope": "full_kerc_candidate_pending_k4_through_k8",
+            "evidence_scope": "decision_grade_k0_through_k3_with_explicit_remaining_gaps",
+            "terminal_evidence_state": "INCONCLUSIVE_IMPLEMENTATION",
             "full_kerc_training_enabled": False,
             "general_kerc_falsification_claimed": False,
             "learned_capability_claimed": False,
+            "first_campaign_topology_exposure": 0,
+            "first_campaign_optimizer_repetitions": 0,
         }
     )
     for key, expected in expected_scalars.items():
@@ -486,6 +488,7 @@ def validate_training_disposition(cfg: dict[str, Any]) -> dict[str, Any]:
         else (
             "protected_exact_object_path",
             "scoped_interaction_glossary_residual",
+            "source_conditioned_per_unit_allocator_k3",
         )
     )
     if retained != expected_retained:
@@ -494,7 +497,54 @@ def validate_training_disposition(cfg: dict[str, Any]) -> dict[str, Any]:
             canonical_json(retained),
             path="kernel_english_training.disposition.retained_mechanisms",
         )
-    evidence_key = "superseded_proxy_evidence" if required else "evidence"
+    if not required:
+        evidence = disposition.get("qualification_evidence")
+        evidence_path = "kernel_english_training.disposition.qualification_evidence"
+        if not isinstance(evidence, dict):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_DISPOSITION_EVIDENCE_MISSING",
+                str(evidence),
+                path=evidence_path,
+            )
+        expected = {
+            "qualification_report": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+            "causal_adequacy_trigger_state": "GREEN",
+            "canonical_allocator_training_authorized": True,
+            "source_family_disjoint_seed_count": 5,
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+            "template_credit": 0,
+        }
+        for key, value in expected.items():
+            if evidence.get(key) != value:
+                raise KernelProtocolFault(
+                    "KERC_TRAINING_DISPOSITION_EVIDENCE_INVALID",
+                    f"{key}={evidence.get(key)!r}",
+                    path=f"{evidence_path}.{key}",
+                )
+        if tuple(evidence.get("remaining_phases") or ()) != (
+            "K4_interaction_amortization",
+            "K5_coordinated_learned_architecture",
+            "K6_construct_valid_verification_and_lifecycle_security",
+            "K7_total_cost_instrumentation",
+            "K8_matched_campaign",
+        ):
+            raise KernelProtocolFault(
+                "KERC_TRAINING_DISPOSITION_REMAINING_PHASES_INVALID",
+                canonical_json(evidence.get("remaining_phases")),
+                path=f"{evidence_path}.remaining_phases",
+            )
+        for key in ("qualification_report_sha256", "qualification_receipt_sha256"):
+            if not re.fullmatch(r"(?:sha256:)?[0-9a-f]{64}", str(evidence.get(key) or "")):
+                raise KernelProtocolFault(
+                    "KERC_TRAINING_DISPOSITION_HASH_INVALID",
+                    f"{key}={evidence.get(key)}",
+                    path=f"{evidence_path}.{key}",
+                )
+        return copy.deepcopy(disposition)
+
+    evidence_key = "superseded_proxy_evidence"
     evidence = disposition.get(evidence_key)
     evidence_path = f"kernel_english_training.disposition.{evidence_key}"
     if not isinstance(evidence, dict):

@@ -833,7 +833,7 @@ def validate_kernel_english_config(config: dict[str, Any]) -> dict[str, Any]:
         validate_kerc_semantic_program(cfg)
         validate_kerc_semantic_corpus_config(cfg)
     elif any(int(value or 0) != 0 for value in rows.values()):
-        raise ValueError("retired KERC stage must request zero records")
+        raise ValueError("deferred KERC stage must request zero records")
     if int(cfg.get("maximum_sequence_tokens") or 0) <= 0:
         raise ValueError("KERC maximum sequence tokens must be positive")
     sequence_buckets = cfg.get("sequence_buckets") or {}
@@ -2815,7 +2815,7 @@ def kernel_english_base_report(
     return {
         "policy": cfg["policy"],
         "created_utc": now(),
-        "mode": "inspection" if enabled else "retired_from_first_long_run",
+        "mode": "inspection" if enabled else "deferred_from_first_long_run",
         "trigger_state": state,
         "config": relative(config_path),
         "contract_sha256": kernel_english_stage_contract_sha256(cfg),

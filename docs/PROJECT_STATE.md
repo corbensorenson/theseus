@@ -13,8 +13,9 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Current Verdict
 
-- **Architecture readiness:** not ready for long training. Twelve of thirteen finite
-  checkpoint-shaping contracts retain complete mechanics dispositions. KERC's canonical
+- **Architecture readiness:** GREEN and authorized for the frozen practical campaign.
+  All thirteen finite checkpoint-shaping contracts have explicit
+  first-campaign dispositions. KERC's canonical
   architecture/data stage is GREEN and exact-replayable after replacing the toy proxy.
   Its protected-single and two-chunk hierarchical MLX profiles now pass gradients, exact
   overfit, real no-fallback autoregressive execution, causal generated-state interventions,
@@ -25,8 +26,13 @@ share toward zero. Public benchmarks are calibration only.
   allocator: five source-disjoint seeds beat both the strongest source-blind schedule
   baseline and five matched retrained source-relation-zero controls, while the independent
   human panel passes semantic, safety, and rate-regret checks. Canonical allocator loss is
-  authorized. The prior freeze package remains stale because K4-K7 construct-validity
-  owners plus final cross-owner replay are still open.
+  authorized. K4-K8 remain incomplete, so the full KERC candidate is deferred from the
+  first practical run as `INCONCLUSIVE_IMPLEMENTATION`, with zero topology, objective,
+  target, matched-control, and optimizer exposure. The strengthened 53-artifact freeze
+  package independently passes all eight replays, binds the two generated effect/governance
+  receipts, and records its non-circular package identity in
+  `reports/pretraining_architecture_freeze_package.json`. T0 is complete; the
+  eight-target 57.315M MLX campaign is the active owner.
 - **Practical model lane:** the seed is a shared transformer trunk plus separately
   checkpointed English, Python, JS/TS, HTML/CSS, and Rust experts. Dense decoder-only
   models remain matched falsification controls. Search, preference/RL, and fast
@@ -45,11 +51,14 @@ share toward zero. Public benchmarks are calibration only.
 - **Control-plane health:** RED for fleet/autonomy freshness, not for the current KERC
   tranche. The current snapshot has 15 stale reports, including the autonomy watchdog,
   service supervisor, and system-efficiency views. The project registry itself is GREEN
-  with zero unregistered active sources or governance violations; the roadmap gate is
-  YELLOW with zero hard gaps because faithful KERC and one queued capability obligation
-  remain open; ATT-D is YELLOW with every hard cap passing. Do not refresh unrelated
-  reports merely to recolor this state.
-- **KERC disposition:** `partial`; architecture/data materialization and the bounded K1
+  with zero unregistered active sources or governance violations; the general roadmap
+  gate is YELLOW with zero hard gaps from pinned-book intake drift and one queued
+  capability obligation, while strict pretraining architecture readiness is GREEN;
+  ATT-D is YELLOW with every hard cap passing. Do not refresh unrelated reports merely
+  to recolor this state.
+- **KERC disposition:** `pretraining_wired_behavior_qualification_pending`; K0-K3 are
+  banked, while the full candidate is explicitly deferred from the first practical run.
+  Architecture/data materialization and the bounded K1
   production-shaped mechanics qualification are GREEN, while construct validity and learned
   utility remain RED/unclaimed. The hierarchical
   profile learns a two-compiler/two-core chain and executes the exact nine-stage round trip
@@ -71,7 +80,8 @@ share toward zero. Public benchmarks are calibration only.
   `0.0094-0.1025` (mean `0.0326`). The independent human panel covers 3,061 adjudicated
   units across ten policies with `0.9971` decision agreement, `0.9983` fact recall,
   `0.00294` semantic violations, zero hard violations, and zero adjudicated rate regret.
-  K3 is qualified for canonical allocator loss; K4-K7 and end-to-end utility remain open.
+  K3 is qualified for canonical allocator loss; K4-K8 and end-to-end utility remain open
+  as a successor discovery campaign. This deferral is not a KERC failure or retirement.
   K1a adds 256 separately accounted MASC records with 2-8 manual FrameNet annotations.
   K1b adds another 256 from manual committed-belief, MPQA subjectivity, and event
   annotations. Together they produce 512 multi-node/multi-root programs and multi-claim

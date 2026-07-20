@@ -262,23 +262,23 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "d616f2f5f2f02fa9d690fdcf500d9c04f4bef825e2f9f04c26c3d3fad8b25115"
+          "sha256": "7aa2c3fb2681a9d4b15012fd8935d6bfd1ae18d5f061035aa300c7f5aeabcfc0"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "6489a1023b70bf65e55c7c0a003747c3f3f5a9d4687fc3df36e6dcd1d88f28aa"
+          "sha256": "d424bdd4b2ad79abe778bbc8416e5f2b5bedc2fb74acbd41bea3958f0d34b85a"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "762d7b323a67a621994ea455984b9d276690fd678db1977b7858dc04ae2cd11d"
+          "sha256": "3e76db7968337e9157db5ebfddd2c47fb6d6bb75d6ec4d76b1d1689517dfacce"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "e7faa3352791c2a1bdffd93937f2c0389fb978fc2a0ef6f485ed6345c0b69f60"
+          "sha256": "f5645f468d196933fc720c894cd2e178900fee01abe64efcbd892364376b4d3c"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
-          "sha256": "6423b542b9a7b22cec10b4931cc90ea0e62b6955e0c77e4255de560dcbf477a7"
+          "sha256": "f058281ff55f265a3ae135d6684e8592c788e46696af453b6944efa6d221aa40"
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
@@ -286,7 +286,7 @@
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "820367864256ca956844c5fddc938d8a46cfa086e71a39eb33f58d5e0c24184a"
+          "sha256": "7ed73bfec9605159ac4f33dd4aca6ac7c1dd350d0c30e044f18265a84b7670c6"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -338,7 +338,7 @@
         },
         "kerc_fidelity_contract": {
           "path": "configs/kerc_implementation_fidelity.json",
-          "sha256": "be818f6d9d2f732960660d05239fa77b46a95201181b4dccd57491d6c9b1031e"
+          "sha256": "9be5b3b815362e5fc07de98f5f84ec0ac9eb0ef8f9e0221ca520a136febc680c"
         },
         "kerc_fidelity_gate": {
           "path": "scripts/kerc_implementation_fidelity_gate.py",
@@ -474,7 +474,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "0278bdc9b05c76d45f0aa328c6ff08b26d8c17941f060b5fbc4ae0e0e3f282bf"
+          "sha256": "f5129a6f7ba332c9a414809e6671f7c4697987ec24c3f0b96baf111fd992e8c9"
         },
         "kerc_concept_registry_tests": {
           "path": "tests/test_kerc_concept_registry.py",
@@ -5614,7 +5614,7 @@
         "learned_generation_claim_allowed": false
       },
       "retirement_policy": "Retain the frozen plan, smoke receipts, and any negative comparison result until a registered successor supersedes the language-arm training contract.",
-      "current_wall": "K0-K3 now bind the KERC paper, licensed corpus, exact protocol, 229,852 K2 units, and a causally qualified learned per-unit allocator while keeping broader claims bounded. K3 materializes 160,139 interventions over 21,209 governed records, with 69,979 authoritative and 90,160 uncertainty-withheld decisions. Five source-family-disjoint MLX seeds reach 0.9697-0.9710 contested accuracy versus 0.8638 for the strongest source-blind schedule control. Five matched models retrained without source relations are worse on every seed by 0.0094-0.1025, mean 0.0326. The independent human panel covers 3,061 adjudicated units across ten policies with 0.9971 decision agreement, 0.9983 fact recall, 0.00294 semantic violations, zero hard violations, and zero adjudicated rate regret. The content-bound receipt authorizes canonical allocator loss with zero public data, external inference, fallback, or template credit. K4 interaction amortization/codec challengers, K5 renderer-verifier calibration, K6 lifecycle/security stress, and K7 total-cost instrumentation remain before K8. End-to-end KERC utility, compression, public transfer, architecture advantage, and scientific-negative claims remain denied."
+      "current_wall": "K0-K3 bind the KERC paper, licensed corpus, exact protocol, 229,852 K2 units, and a causally qualified learned per-unit allocator while keeping broader claims bounded. Five source-family-disjoint MLX seeds and five matched retrained source-relation-zero controls establish a positive source-relation effect; the independent ten-policy human panel passes semantic, hard-constraint, and rate-regret checks. K4-K8 remain incomplete, so the full KERC candidate is deferred from the first practical campaign as INCONCLUSIVE_IMPLEMENTATION. The first campaign has exactly eight targets and gives KERC zero topology, objective, matched-control, or optimizer exposure. K4-K8 remain a separately frozen successor discovery campaign. End-to-end KERC utility, compression, public transfer, architecture advantage, and scientific-negative claims remain denied."
     },
     {
       "id": "impl.candidate_integrity_harness.v1",

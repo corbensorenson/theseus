@@ -13,14 +13,28 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import theseus_assistant_runtime as runtime  # noqa: E402
+import reflexive_dispatch  # noqa: E402
 from viea_spine_records import audit_effect_complete_transaction  # noqa: E402
 
 
-def route_packet() -> dict:
-    return {
-        "ready": True,
-        "selected_route": {"id": "route.procedural.planning.v1"},
-    }
+def effect_dispatch(*, qualified: bool = True) -> dict:
+    event = reflexive_dispatch.canonical_event(
+        payload="change local route authority",
+        principal="local-user",
+        authenticated=True,
+        origin="local_user_control",
+        authority_refs=["local_assistant_read", "local_effect_write", "local_tool_read"],
+        context_handles=["vcm://test/effect"],
+        deadline_ms=30_000,
+    )
+    return reflexive_dispatch.dispatch(
+        event,
+        intent="chat",
+        requested_route=(
+            "assistant.route_authority_effect" if qualified else "assistant.missing"
+        ),
+        fallback_policy="no_fallback",
+    )
 
 
 class AssistantEffectTransactionTests(unittest.TestCase):
@@ -44,7 +58,7 @@ class AssistantEffectTransactionTests(unittest.TestCase):
             session_id="test-session",
             intent="planning",
             prompt_hash="a" * 64,
-            procedural_default_route=route_packet(),
+            reflexive_dispatch_trace=effect_dispatch(),
         )
 
     def test_new_route_authority_file_is_observed_then_removed(self) -> None:
@@ -93,12 +107,12 @@ class AssistantEffectTransactionTests(unittest.TestCase):
             session_id="test-session",
             intent="planning",
             prompt_hash="a" * 64,
-            procedural_default_route={"ready": False, "selected_route": {}},
+            reflexive_dispatch_trace=effect_dispatch(qualified=False),
         )
 
         self.assertFalse(result["ready"])
-        self.assertFalse(result["observation"]["matches_intent"])
-        self.assertTrue(result["rollback"]["complete"])
+        self.assertFalse(result["dispatch_bound"])
+        self.assertEqual(result["residuals"], [{"kind": "effect_dispatch_binding_invalid"}])
         self.assertFalse(self.target.exists())
 
     def test_canonical_effect_receipt_passes_independent_audit_and_mutations_fail(self) -> None:

@@ -34,6 +34,8 @@
     "scripts/full_state_update_causality.py",
     "scripts/open_ended_improvement_campaign.py",
     "scripts/governance_rights_receipt_suite.py",
+    "scripts/theseus_assistant_runtime.py",
+    "scripts/viea_spine_records.py",
     "scripts/gvr_state_machine.py",
     "scripts/reflexive_dispatch.py",
     "scripts/onecell_rwm_pretraining_disposition.py",
@@ -48,6 +50,8 @@
     "tests/test_full_state_update_causality.py",
     "tests/test_open_ended_improvement_campaign.py",
     "tests/test_governance_architecture_kernel.py",
+    "tests/test_assistant_reflexive_dispatch.py",
+    "tests/test_theseus_assistant_effect_transaction.py",
     "tests/test_gvr_state_machine.py",
     "tests/test_reflexive_dispatch.py",
     "tests/test_onecell_rwm_pretraining_disposition.py",
@@ -55,13 +59,18 @@
     "tests/test_roadmap_pretraining_gate.py"
   ],
   "replay_commands": [
-    ["python3", "-m", "pytest", "-q", "tests/test_standard_causal_transformer_survival.py", "tests/test_neural_seed_50m_scale_preregistration.py", "tests/test_moecot_language_arm_training.py", "tests/test_generation_architecture_contracts.py", "tests/test_policy_objective_contracts.py", "tests/test_policy_update_lease.py", "tests/test_full_state_update_causality.py", "tests/test_open_ended_improvement_campaign.py", "tests/test_governance_architecture_kernel.py", "tests/test_gvr_state_machine.py", "tests/test_reflexive_dispatch.py", "tests/test_onecell_rwm_pretraining_disposition.py", "tests/test_roadmap_pretraining_gate.py"],
+    ["python3", "-m", "pytest", "-q", "tests/test_standard_causal_transformer_survival.py", "tests/test_neural_seed_50m_scale_preregistration.py", "tests/test_moecot_language_arm_training.py", "tests/test_generation_architecture_contracts.py", "tests/test_policy_objective_contracts.py", "tests/test_policy_update_lease.py", "tests/test_full_state_update_causality.py", "tests/test_open_ended_improvement_campaign.py", "tests/test_governance_architecture_kernel.py", "tests/test_gvr_state_machine.py", "tests/test_reflexive_dispatch.py", "tests/test_assistant_reflexive_dispatch.py", "tests/test_theseus_assistant_effect_transaction.py", "tests/test_onecell_rwm_pretraining_disposition.py", "tests/test_pretraining_architecture_freeze.py", "tests/test_roadmap_pretraining_gate.py"],
     ["python3", "scripts/generation_mode_gate.py"],
     ["python3", "scripts/policy_optimization_gate.py"],
+    ["python3", "scripts/theseus_assistant_runtime.py", "--prompt", "Execute the bounded local route-authority effect and rollback canary, then report only its governed completion state.", "--surface", "local_assistant", "--intent", "planning", "--session-id", "architecture_freeze_effect_canary", "--fallback-policy", "no_fallback", "--effect-canary", "--effect-target", "runtime/assistant_effects/default_route_authority.json", "--out", "reports/theseus_assistant_effect_complete_canary.json", "--markdown-out", "reports/theseus_assistant_effect_complete_canary.md", "--events-out", "reports/theseus_assistant_effect_complete_canary_events.jsonl", "--viea-trace-out", "reports/theseus_assistant_effect_complete_canary_trace.jsonl", "--print-answer"],
     ["python3", "scripts/governance_rights_receipt_suite.py"],
     ["python3", "scripts/onecell_rwm_pretraining_disposition.py"],
     ["python3", "scripts/neural_seed_50m_scale_preregistration.py", "--execute-canaries"],
     ["python3", "scripts/theseus_project_registry.py", "--gate"]
+  ],
+  "generated_receipts": [
+    "reports/theseus_assistant_effect_complete_canary.json",
+    "reports/governance_rights_receipt_suite.json"
   ],
   "required_ready_backlog_statuses": [
     "pretraining_wired_behavior_qualification_pending",

@@ -44,6 +44,7 @@ from moecot_language_arm_training import (  # noqa: E402
     range_view,
     serialization_valid_local_ids,
     should_evaluate_target,
+    target_contracts,
     target_copy_identity_ranges,
     train_target,
     validate_config,
@@ -281,7 +282,21 @@ def tiny_config(tmp_path: Path) -> dict:
             "termination_loss_weight": 4.0,
             "byte_boundary_loss_weight": 2.0,
         },
-        "comparison_contract": {"preregistered_before_training": True},
+        "comparison_contract": {
+            "preregistered_before_training": True,
+            "first_campaign_candidate_ids": [
+                "shared_trunk",
+                "english",
+                "python",
+                "javascript_typescript",
+                "html_css",
+                "rust",
+                "dense_total_parameter",
+                "dense_active_parameter",
+                "english_surface_control",
+                "english_kerc",
+            ],
+        },
         "kernel_english_training": {
             "policy": "project_theseus_moecot_kernel_english_stage_v1",
             "required": True,
@@ -371,7 +386,7 @@ def test_training_authority_allows_bounded_canaries_but_gates_long_runs(
     ]
 
 
-def test_retired_kerc_path_has_zero_optimizer_exposure(tmp_path: Path) -> None:
+def test_deferred_kerc_path_has_zero_optimizer_and_target_exposure(tmp_path: Path) -> None:
     cfg = tiny_config(tmp_path)
     canonical = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
@@ -380,18 +395,17 @@ def test_retired_kerc_path_has_zero_optimizer_exposure(tmp_path: Path) -> None:
     active = cfg["kernel_english_training"]["disposition"]
     cfg["kernel_english_training"]["disposition"] = {
         "policy": active["policy"],
-        "state": "RETIRED_FROM_FIRST_LONG_RUN",
-        "retirement_scope": "full_compiler_core_renderer_training_path_only",
-        "evidence_scope": "bounded_authored_synthetic_campaign",
-        "broad_efficiency_gate_passed": False,
+        "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+        "deferral_scope": "full_kerc_candidate_pending_k4_through_k8",
+        "evidence_scope": "decision_grade_k0_through_k3_with_explicit_remaining_gaps",
+        "terminal_evidence_state": "INCONCLUSIVE_IMPLEMENTATION",
         "full_kerc_training_enabled": False,
         "general_kerc_falsification_claimed": False,
         "learned_capability_claimed": False,
-        "retained_mechanisms": [
-            "protected_exact_object_path",
-            "scoped_interaction_glossary_residual",
-        ],
-        "evidence": active["superseded_proxy_evidence"],
+        "first_campaign_topology_exposure": 0,
+        "first_campaign_optimizer_repetitions": 0,
+        "retained_mechanisms": active["retained_mechanisms"],
+        "qualification_evidence": active["qualification_evidence"],
         "non_claims": active["non_claims"],
     }
     cfg["kernel_english_training"]["required"] = False
@@ -401,14 +415,46 @@ def test_retired_kerc_path_has_zero_optimizer_exposure(tmp_path: Path) -> None:
         "private_eval": 0,
     }
     cfg["training"]["kernel_english_optimizer_repetitions"] = 0
+    cfg["comparison_contract"]["first_campaign_candidate_ids"] = canonical[
+        "comparison_contract"
+    ]["first_campaign_candidate_ids"]
 
     validate_config(cfg)
+
+    targets = target_contracts(
+        cfg,
+        arm_views(),
+        {
+            "moecot_system": {
+                "shared_trunk_model": cfg["shared_trunk_model"],
+                "shared_trunk_parameter_count": 10,
+                "arm_model": cfg["arm_model"],
+                "arm_parameter_count": 12,
+            },
+            "dense_total_parameter": {"model": {}, "parameter_count": 14},
+            "dense_active_parameter": {"model": {}, "parameter_count": 12},
+            "canonical_vocab_size": 32,
+        },
+        "plan",
+        supervision_audit={"artifacts": {}},
+        source_conditioned_audit={"artifacts": {}},
+        kernel_english_audit={"artifacts": {}, "learned_pipeline_contract": {}},
+    )
+    assert "english_kerc" not in targets
+    assert "english_surface_control" not in targets
 
     tampered = json.loads(json.dumps(cfg))
     tampered["training"]["kernel_english_optimizer_repetitions"] = 1
     with pytest.raises(
         ValueError, match="retired KERC path must receive zero optimizer repetitions"
     ):
+        validate_config(tampered)
+
+    tampered = json.loads(json.dumps(cfg))
+    tampered["comparison_contract"]["first_campaign_candidate_ids"].append(
+        "english_kerc"
+    )
+    with pytest.raises(ValueError, match="first-campaign candidate inventory mismatch"):
         validate_config(tampered)
 
     tampered = json.loads(json.dumps(cfg))
@@ -1003,6 +1049,24 @@ def test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_mat
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
+    kernel_cfg = config["kernel_english_training"]
+    deferred = kernel_cfg["disposition"]
+    kernel_cfg["required"] = True
+    kernel_cfg["records_by_split"] = kernel_cfg[
+        "deferred_candidate_records_by_split"
+    ]
+    kernel_cfg["disposition"] = {
+        "policy": deferred["policy"],
+        "state": "CANDIDATE_REQUIRED",
+        "qualification_scope": "faithful_full_compiler_core_renderer_candidate",
+        "basis": "adequacy_audit_reopened_after_toy_proxy",
+        "full_kerc_training_enabled": True,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+        "retained_mechanisms": [],
+        "superseded_proxy_evidence": deferred["superseded_proxy_evidence"],
+        "non_claims": deferred["non_claims"],
+    }
     base = json.loads((ROOT / config["base_config"]).read_text())
     metadata = json.loads(
         (ROOT / config["stage_dir"] / "stage_metadata_v1.json").read_text()

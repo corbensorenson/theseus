@@ -134,6 +134,20 @@ def artifact_manifest(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return manifest
 
 
+def receipt_manifest(config: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    manifest = {}
+    for value in config.get("generated_receipts") or []:
+        path = resolve(value)
+        if not path.is_file():
+            raise ArchitectureFreezeFault(f"generated_receipt_missing:{value}")
+        manifest[value] = {
+            "path": value,
+            "sha256": sha256(path),
+            "bytes": path.stat().st_size,
+        }
+    return manifest
+
+
 def run_replays(config: dict[str, Any]) -> list[dict[str, Any]]:
     receipts = []
     for index, command in enumerate(config["replay_commands"]):
@@ -167,9 +181,11 @@ def build_report(config: dict[str, Any], *, execute_replays: bool) -> dict[str, 
     if not execute_replays:
         raise ArchitectureFreezeFault("independent_replay_required")
     manifest = artifact_manifest(config)
+    receipts = receipt_manifest(config)
     package_identity = digest({
         "campaign_id": config["campaign_id"],
         "artifacts": manifest,
+        "generated_receipts": receipts,
         "dispositions": dispositions,
         "commands": config["replay_commands"],
         "boundaries": config["boundaries"],
@@ -183,10 +199,12 @@ def build_report(config: dict[str, Any], *, execute_replays: bool) -> dict[str, 
         "campaign_id": config["campaign_id"],
         "package_identity": package_identity,
         "source_artifacts": manifest,
+        "generated_receipts": receipts,
         "architecture_dispositions": dispositions,
         "replay_receipts": replays,
         "summary": {
             "artifact_count": len(manifest),
+            "generated_receipt_count": len(receipts),
             "architecture_contract_count": dispositions["required_count"],
             "ready_architecture_contract_count": dispositions["ready_count"],
             "replay_count": len(replays),

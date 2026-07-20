@@ -867,8 +867,8 @@
         19
       ],
       "track_id": "C_capability_research_survival_lane",
-      "status": "partial",
-      "implementation_state": "k0_through_k2_faithful_bounded_mechanics_green_k3_decision_grade_source_conditioned_allocator_green_k4_through_k8_pending",
+      "status": "pretraining_wired_behavior_qualification_pending",
+      "implementation_state": "k0_through_k3_banked_k4_through_k8_pending_full_kerc_deferred_from_first_long_run_with_zero_exposure",
       "implemented_contracts": [
         "K0 independently binds the paper, implementation sources, independent verifier, all 27,941 current corpus records, 16 mechanism statuses, and H1-H8 claim ceilings; mutation tests reject inflated per-unit-allocation, interaction-amortization, macro, compiler, verifier, or hypothesis claims",
         "versioned immutable-source Kernel Packet, protect-before-correct objects, ambiguity-preserving correction-lattice schema, typed Kernel program, V_S/V_K/V_P serialization, macro compatibility schema, and structured answer round-trip verification",
@@ -926,7 +926,7 @@
         "VCM global promotion now accepts PROMOTE_SHARED_RESIDUAL only when a replayed definition/direct/reference bit receipt crosses the strict interaction-amortization break-even threshold; premature, tampered, or document-authority promotions fail transactionally",
         "the p4-m8-kerc-runtime-001 evidence package is preserved as a content-bound toy-proxy result only: its keyword compiler/renderer and TF-IDF logistic-regression core do not satisfy mechanism fidelity and cannot retire KERC"
       ],
-      "remaining_pre_training_evidence": [
+      "remaining_successor_campaign_evidence": [
         "complete K1 beyond the now-explicit scoped-semantic ABI and the source-replayed frame, decision, document-local coreference/bridging, MPQA attribution, eRST discourse, and deterministic concept-registry families: add licensed non-benchmark proposition-level supervision for nested scope, conditionals, compositional negation, quantification, broader causal/temporal graph semantics, attribution beyond the admitted MPQA family, natural-context cross-document linking, aliases and open-world capsule definitions, unresolved ambiguity, correction alternatives, grammar-aware macros, typed quantities/units grounded in source, remaining source fields, derivations, PARTIAL decisions, adversarial near-equivalents, and multiple valid graph/answer realizations with train/dev/eval weak-tail evidence and independent mutations. PMB is calibration-only and contributes zero training rows",
         "extend the passing exact-run and K1g source-family candidate/finalization/economics/admission caches to raw parsing, split reconstruction, aggregate calibration, and serialization; changed inputs must recompute only affected descendants while source/config/protocol/verifier mutations remain fail-closed, byte-identical outputs are preserved, and producer/verifier semantic implementations remain independent; reduce the measured 2.369 GiB cache and approximately 2.64 GB peak resident cost without weakening replay",
         "preserve the GREEN K3 content-bound qualification: five source-family-disjoint learned seeds beat the strongest source-blind schedule control and five matched retrained source-relation-zero controls, while the independent ten-policy human panel passes agreement, fact-recall, semantic-violation, hard-constraint, and adjudicated rate-regret checks; any target, evaluator, feature, model, split, or optimization change requires complete requalification",
@@ -937,11 +937,11 @@
         "expand targeted verifier corruptions into governed hard-negative and ambiguity/abstention coverage, train and calibrate the copy-aware renderer plus independently parameterized verifier, and add calibrated neural-verifier decisions to the now-executable learned recompile-and-compare route rather than treating raw logits or multiple reviewed answers as proof",
         "prospectively frozen multi-seed matched-total-cost KERC versus conventional English campaign with strong faithful baselines, confidence intervals, weak-tail floors, and adequate power"
       ],
-      "dependency": "OPEN AFTER K3. The bounded learned per-unit allocator is now causally qualified under source-disjoint private evidence. Complete K4 interaction amortization and codec challengers, K5 renderer/verifier calibration, K6 lifecycle/security stress, K7 total-cost instrumentation, and the content-bound K8 matched campaign before refreezing the architecture.",
-      "pre_training_acceptance_boundary": "Unsatisfied after K3. Pre-training readiness still requires K4-K7 lifecycle, amortization, verifier, security, and total-cost owners plus the K8 matched campaign contract to be content-bound and mechanically replayable. Learned end-to-end efficacy remains post-training evidence.",
+      "dependency": "FIRST PRACTICAL CAMPAIGN UNBLOCKED AFTER K3 DEFERRAL. The decision-grade allocator evidence is banked, while the incomplete full KERC candidate is explicitly deferred as INCONCLUSIVE_IMPLEMENTATION. The first long run contains no KERC target, topology, objective, optimizer repetition, or matched KERC control. K4-K8 remain a separately preregistered successor discovery campaign and cannot inherit a negative verdict from this deferral.",
+      "pre_training_acceptance_boundary": "Satisfied for the first practical campaign by a content-bound exclusion rather than a capability claim: K0-K3 evidence is preserved, K4-K8 gaps are explicit, the full KERC candidate receives zero topology/objective/optimizer exposure, and re-entry requires a separately frozen matched-total-cost campaign. Learned end-to-end KERC efficacy remains unmeasured.",
       "acceptance_gate": "Implement a versioned immutable-source Kernel Packet; protect-before-correct extraction; calibrated ambiguity-preserving Surface-to-Kernel compilation; stable concept identities separate from compact codes; surface, Kernel, and pointer vocabularies; typed handles, capsules, expandable grammar-safe macros, and byte fallback; a VCM-backed interaction/segment/token/exact residual lifecycle with authority, privacy, synchronization, migration, revocation, and deletion; structured answer packets; copy-aware learned rendering; and round-trip exact plus semantic verification. Run a frozen source-disjoint multi-seed comparison against strong surface-token, byte, dynamic-chunking, compression, compact-reasoning, semantic-graph, and KERC ablation controls under equal raw bytes, total train FLOPs, and end-to-end inference cost. Charge all parameters, bits, state, objects, registries, KV/cache, retries, verification, migration, security, and human work; report learned utility, fidelity, amortization, robustness, and complete lifecycle cost; retain only a preregistered Pareto gain without weak-tail regression.",
       "support_state_target": "empirical-test-backed",
-      "no_claim_boundary": "The bounded authored synthetic verdict rejects only p4-m8-kerc-runtime-001. It does not justify removing faithful KERC from the first architecture comparison and does not establish KERC utility, general semantic preservation, independent verifier validity, security, transfer, production efficiency, SOTA, AGI, or ASI. Exact-object and scoped-glossary mechanisms remain deterministic infrastructure with zero learned capability credit."
+      "no_claim_boundary": "The bounded authored synthetic verdict rejects only p4-m8-kerc-runtime-001. K3 establishes only source-conditioned per-unit allocation under its exact corpus and budget. Deferral from the first practical campaign is an engineering sequencing decision labeled INCONCLUSIVE_IMPLEMENTATION, not a KERC failure or retirement. KERC utility, compression, interaction amortization, general semantic preservation, security, transfer, production efficiency, SOTA, AGI, and ASI remain unclaimed."
     },
     {
       "backlog_id": "planned.private_functional_utility_qualification_v1",
@@ -3877,13 +3877,13 @@
     "critical_path": [
       {
         "id": "T0",
-        "state": "in_progress",
+        "state": "complete",
         "depends_on": [],
         "exit": "KERC reaches a faithful campaign-ready boundary or is explicitly excluded as INCONCLUSIVE_IMPLEMENTATION, followed by independent cross-owner replay and a content-addressed architecture freeze."
       },
       {
         "id": "T1",
-        "state": "blocked_by_T0",
+        "state": "ready_to_launch",
         "depends_on": ["T0"],
         "exit": "The five frozen arms and matched dense control finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
       },
@@ -4028,9 +4028,9 @@
   "book_reference_core_before_training": {
     "policy": "book_reference_core_before_training_focus_v1",
     "scope": "Architecture readiness record and active capability-slice selector; it is not a ban on governed training or fresh useful measurement.",
-    "rule": "The reference slices have reached prototype-backed or better, but the strict architecture-readiness gate is currently RED because the KERC checkpoint-shaping boundary was reopened. Keep the completed contracts live, close that finite blocker, then direct primary work through the active C1 capability slice until the current model establishes positive direct behavior.",
+    "rule": "The reference slices have reached prototype-backed or better and the strict architecture-readiness gate is GREEN under the content-addressed freeze package. Preserve that exact package and direct primary work through the active C1 capability slice until the current model establishes positive direct behavior.",
     "architecture_readiness_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
-    "architecture_readiness_rule": "Training, public calibration, and score-chasing are not the primary path while this strict readiness mode is RED. Normal roadmap YELLOW can still be acceptable for implementation work if hard_gap_count=0.",
+    "architecture_readiness_rule": "Long training is authorized only while the strict readiness mode remains GREEN for the exact frozen package. Normal roadmap YELLOW from pinned-book intake drift remains non-blocking when hard_gap_count=0.",
     "required_slices": [
       {
         "slice_id": "A1_claim_ledger_trace_kernel",

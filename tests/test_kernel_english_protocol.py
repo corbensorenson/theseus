@@ -1075,28 +1075,11 @@ def training_record(
     return record
 
 
-def retired_training_config() -> dict:
+def deferred_training_config() -> dict:
     payload = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
     cfg = payload["kernel_english_training"]
-    active = cfg["disposition"]
-    cfg["disposition"] = {
-        "policy": active["policy"],
-        "state": "RETIRED_FROM_FIRST_LONG_RUN",
-        "retirement_scope": "full_compiler_core_renderer_training_path_only",
-        "evidence_scope": "bounded_authored_synthetic_campaign",
-        "broad_efficiency_gate_passed": False,
-        "full_kerc_training_enabled": False,
-        "general_kerc_falsification_claimed": False,
-        "learned_capability_claimed": False,
-        "retained_mechanisms": [
-            "protected_exact_object_path",
-            "scoped_interaction_glossary_residual",
-        ],
-        "evidence": active["superseded_proxy_evidence"],
-        "non_claims": active["non_claims"],
-    }
     cfg["required"] = False
     cfg["records_by_split"] = {
         "private_train": 0,
@@ -1106,22 +1089,26 @@ def retired_training_config() -> dict:
     return cfg
 
 
-def test_bounded_kerc_retirement_is_content_bound_and_narrow() -> None:
-    cfg = retired_training_config()
+def test_bounded_kerc_deferral_is_content_bound_and_narrow() -> None:
+    cfg = deferred_training_config()
     disposition = kernel.validate_training_disposition(cfg)
 
-    assert disposition["state"] == "RETIRED_FROM_FIRST_LONG_RUN"
+    assert disposition["state"] == "DEFERRED_FROM_FIRST_LONG_RUN"
+    assert disposition["terminal_evidence_state"] == "INCONCLUSIVE_IMPLEMENTATION"
     assert disposition["full_kerc_training_enabled"] is False
     assert disposition["general_kerc_falsification_claimed"] is False
     assert disposition["retained_mechanisms"] == [
         "protected_exact_object_path",
         "scoped_interaction_glossary_residual",
+        "source_conditioned_per_unit_allocator_k3",
     ]
 
     tampered = copy.deepcopy(cfg)
-    tampered["disposition"]["evidence"]["measurements"]["packet_mean_bytes"] = 70.0
+    tampered["disposition"]["qualification_evidence"][
+        "qualification_report_sha256"
+    ] = "invalid"
     with pytest.raises(
-        kernel.KernelProtocolFault, match="KERC_TRAINING_DISPOSITION_COST_INVALID"
+        kernel.KernelProtocolFault, match="KERC_TRAINING_DISPOSITION_HASH_INVALID"
     ):
         kernel.validate_training_disposition(tampered)
 
@@ -1133,6 +1120,20 @@ def test_active_kerc_candidate_preserves_proxy_negative_without_inheriting_retir
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
     cfg = payload["kernel_english_training"]
+    deferred = cfg["disposition"]
+    cfg["required"] = True
+    cfg["disposition"] = {
+        "policy": deferred["policy"],
+        "state": "CANDIDATE_REQUIRED",
+        "qualification_scope": "faithful_full_compiler_core_renderer_candidate",
+        "basis": "adequacy_audit_reopened_after_toy_proxy",
+        "full_kerc_training_enabled": True,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+        "retained_mechanisms": [],
+        "superseded_proxy_evidence": deferred["superseded_proxy_evidence"],
+        "non_claims": deferred["non_claims"],
+    }
 
     disposition = kernel.validate_training_disposition(cfg)
 

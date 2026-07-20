@@ -930,6 +930,24 @@ def test_kerc_gum_entity_coreference_contract_fails_closed(tmp_path: Path) -> No
     cfg = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
+    kernel_cfg = cfg["kernel_english_training"]
+    deferred = kernel_cfg["disposition"]
+    kernel_cfg["required"] = True
+    kernel_cfg["records_by_split"] = kernel_cfg[
+        "deferred_candidate_records_by_split"
+    ]
+    kernel_cfg["disposition"] = {
+        "policy": deferred["policy"],
+        "state": "CANDIDATE_REQUIRED",
+        "qualification_scope": "faithful_full_compiler_core_renderer_candidate",
+        "basis": "adequacy_audit_reopened_after_toy_proxy",
+        "full_kerc_training_enabled": True,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+        "retained_mechanisms": [],
+        "superseded_proxy_evidence": deferred["superseded_proxy_evidence"],
+        "non_claims": deferred["non_claims"],
+    }
     validate_kernel_english_config(cfg)
     for path, invalid in (
         (("relation_contract",), "pairwise_proxy"),
@@ -1337,37 +1355,20 @@ def test_semantic_source_catalog_rejects_public_calibration_sources(
     ]
 
 
-def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
+def test_deferred_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
     tmp_path: Path,
 ) -> None:
     canonical = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )["kernel_english_training"]
-    active = canonical["disposition"]
-    canonical["disposition"] = {
-        "policy": active["policy"],
-        "state": "RETIRED_FROM_FIRST_LONG_RUN",
-        "retirement_scope": "full_compiler_core_renderer_training_path_only",
-        "evidence_scope": "bounded_authored_synthetic_campaign",
-        "broad_efficiency_gate_passed": False,
-        "full_kerc_training_enabled": False,
-        "general_kerc_falsification_claimed": False,
-        "learned_capability_claimed": False,
-        "retained_mechanisms": [
-            "protected_exact_object_path",
-            "scoped_interaction_glossary_residual",
-        ],
-        "evidence": active["superseded_proxy_evidence"],
-        "non_claims": active["non_claims"],
-    }
     canonical["required"] = False
     canonical["records_by_split"] = {
         "private_train": 0,
         "private_dev": 0,
         "private_eval": 0,
     }
-    canonical["stage_root"] = str(tmp_path / "retired-kernel-stage")
-    canonical["report"] = str(tmp_path / "retired-kernel-report.json")
+    canonical["stage_root"] = str(tmp_path / "deferred-kernel-stage")
+    canonical["report"] = str(tmp_path / "deferred-kernel-report.json")
     canonical["records_jsonl"] = str(tmp_path / "must-not-exist-records.jsonl")
     canonical["verification_ledger_jsonl"] = str(
         tmp_path / "must-not-exist-ledger.jsonl"
@@ -1382,7 +1383,7 @@ def test_retired_kernel_stage_needs_no_records_and_writes_zero_exposure_receipt(
     assert inspected["verification_ledger_required"] is False
 
     materialized = materialize_kernel_english(cfg, tmp_path / "config.json")
-    assert materialized["mode"] == "retired_from_first_long_run"
+    assert materialized["mode"] == "deferred_from_first_long_run"
     assert materialized["selected_record_count_by_split"] == {
         "private_train": 0,
         "private_dev": 0,

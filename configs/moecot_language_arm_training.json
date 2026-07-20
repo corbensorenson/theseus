@@ -152,7 +152,7 @@
     "maximum_source_conditioned_optimizer_repetitions": 2,
     "source_conditioned_optimizer_repetitions": 1,
     "maximum_kernel_english_optimizer_repetitions": 2,
-    "kernel_english_optimizer_repetitions": 1,
+    "kernel_english_optimizer_repetitions": 0,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0
   },
@@ -308,16 +308,42 @@
   },
   "kernel_english_training": {
     "policy": "project_theseus_moecot_kernel_english_stage_v1",
-    "required": true,
+    "required": false,
     "disposition": {
       "policy": "project_theseus_kerc_pretraining_disposition_v1",
-      "state": "CANDIDATE_REQUIRED",
-      "qualification_scope": "faithful_full_compiler_core_renderer_candidate",
-      "basis": "adequacy_audit_reopened_after_toy_proxy",
-      "full_kerc_training_enabled": true,
+      "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+      "deferral_scope": "full_kerc_candidate_pending_k4_through_k8",
+      "evidence_scope": "decision_grade_k0_through_k3_with_explicit_remaining_gaps",
+      "terminal_evidence_state": "INCONCLUSIVE_IMPLEMENTATION",
+      "full_kerc_training_enabled": false,
       "general_kerc_falsification_claimed": false,
       "learned_capability_claimed": false,
-      "retained_mechanisms": [],
+      "first_campaign_topology_exposure": 0,
+      "first_campaign_optimizer_repetitions": 0,
+      "retained_mechanisms": [
+        "protected_exact_object_path",
+        "scoped_interaction_glossary_residual",
+        "source_conditioned_per_unit_allocator_k3"
+      ],
+      "qualification_evidence": {
+        "qualification_report": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+        "qualification_report_sha256": "fb99f22f12aa1a0b2eae7168f0ffe6ac97deb35ee5f4327578a17d8d06d185b8",
+        "qualification_receipt_sha256": "sha256:a3686edd0cf4c59d6d60d029016ac01e45b7558bc2ff59c58f75b0926e06a29c",
+        "causal_adequacy_trigger_state": "GREEN",
+        "canonical_allocator_training_authorized": true,
+        "source_family_disjoint_seed_count": 5,
+        "remaining_phases": [
+          "K4_interaction_amortization",
+          "K5_coordinated_learned_architecture",
+          "K6_construct_valid_verification_and_lifecycle_security",
+          "K7_total_cost_instrumentation",
+          "K8_matched_campaign"
+        ],
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "template_credit": 0
+      },
       "superseded_proxy_evidence": {
         "campaign_id": "p4-m8-kerc-runtime-001",
         "source_project": "AI_book",
@@ -388,6 +414,11 @@
       "answer_packet_to_surface_v1"
     ],
     "records_by_split": {
+      "private_train": 0,
+      "private_dev": 0,
+      "private_eval": 0
+    },
+    "deferred_candidate_records_by_split": {
       "private_train": 14238,
       "private_dev": 3621,
       "private_eval": 3350
@@ -1072,8 +1103,17 @@
     "preregistered_before_training": true,
     "required_views": [
       "equal_unique_system_positions_total_parameter_control",
-      "equal_active_parameters_active_compute_control",
-      "matched_english_raw_bytes_training_flops_and_total_system_cost"
+      "equal_active_parameters_active_compute_control"
+    ],
+    "first_campaign_candidate_ids": [
+      "shared_trunk",
+      "english",
+      "python",
+      "javascript_typescript",
+      "html_css",
+      "rust",
+      "dense_total_parameter",
+      "dense_active_parameter"
     ],
     "required_metrics": [
       "direct_family_disjoint_verifier_pass_rate",
@@ -1089,7 +1129,12 @@
       "wall_seconds",
       "peak_memory_bytes",
       "energy_joules_when_available",
-      "verifier_and_search_budget",
+      "verifier_and_search_budget"
+    ],
+    "deferred_kerc_views": [
+      "matched_english_raw_bytes_training_flops_and_total_system_cost"
+    ],
+    "deferred_kerc_metrics": [
       "kerc_compiler_core_renderer_verifier_stage_cost",
       "kerc_residual_bits_by_level_and_interaction_amortization",
       "protected_object_copy_and_semantic_roundtrip_fidelity"

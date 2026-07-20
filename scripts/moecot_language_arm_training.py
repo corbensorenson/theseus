@@ -891,9 +891,13 @@ def model_accounting(
         dict(metadata.get("source_vocab") or {}),
         dict(metadata.get("target_vocab") or {}),
     )
+    kernel_disposition = validate_training_disposition(
+        config["kernel_english_training"]
+    )
+    kerc_enabled = kernel_disposition.get("full_kerc_training_enabled") is True
     code_contract = config["kernel_english_training"]["code_vocabulary"]
-    kernel_capacity = int(code_contract["kernel_max_vocab"])
-    pointer_capacity = int(code_contract["pointer_max_vocab"])
+    kernel_capacity = int(code_contract["kernel_max_vocab"]) if kerc_enabled else 0
+    pointer_capacity = int(code_contract["pointer_max_vocab"]) if kerc_enabled else 0
     kerc_vocab_size = canonical_vocab_size + kernel_capacity + pointer_capacity
     copy_lookup = build_source_to_target_lookup(
         base, metadata, vocab_size=canonical_vocab_size
@@ -940,64 +944,13 @@ def model_accounting(
     if expert_count <= 0:
         raise ValueError("language expert must add parameters to the shared trunk")
     system_total = trunk_count + expert_count * len(ARM_IDS)
-    source_vocab = dict(metadata.get("source_vocab") or {})
-    source_offset = source_token_offset(base, source_vocab)
-    missing_kerc_tokens = [
-        token for token in TRAINING_TASK_TAGS.values() if token not in source_vocab
-    ]
-    if missing_kerc_tokens:
-        raise ValueError(
-            "KERC trusted task tokens missing from canonical vocabulary: "
-            + ",".join(missing_kerc_tokens)
-        )
-    kerc_model = dict(
-        config.get("kerc_english_model")
-        or {
-            **config["shared_trunk_model"],
-            "kerc_stage_adapter_dim": 64,
-            "kerc_residual_choice_count": 4,
-            "kerc_residual_bottleneck_dim": 64,
-            "kerc_residual_unit_kind_count": 5,
-            "kerc_residual_unit_feature_dim": KERC_UNIT_CANDIDATE_FEATURE_DIM,
-            "kerc_residual_unit_byte_vocab_size": 257,
-            "kerc_verifier_dim": 64,
-        }
-    )
-    kerc_model["kerc_task_token_ids"] = [
-        source_offset + int(source_vocab[TRAINING_TASK_TAGS[objective]])
-        for objective in TRAINING_TASK_TAGS
-    ]
-    kerc_model["kerc_verifier_output_dim"] = len(KERC_VERIFIER_DIMENSIONS)
-    kerc_model["kerc_decision_output_dim"] = len(ANSWER_DISPOSITION_ORDER)
-    canonical_target_start = target_token_offset(base, source_vocab)
-    kerc_model.update(
-        {
-            "kerc_surface_token_start": canonical_target_start,
-            "kerc_surface_token_end": canonical_vocab_size,
-            "kerc_kernel_token_start": canonical_vocab_size,
-            "kerc_kernel_token_end": canonical_vocab_size + kernel_capacity,
-            "kerc_pointer_token_start": canonical_vocab_size + kernel_capacity,
-            "kerc_pointer_token_end": kerc_vocab_size,
-            "kerc_end_token_id": canonical_target_start
-            + int((metadata.get("target_vocab") or {})["<eos>"]),
-        }
-    )
-    kerc_count = count(kerc_model, vocab_size=kerc_vocab_size)
-    def surface_count_fn(model: dict[str, Any]) -> int:
-        return count(model, vocab_size=canonical_vocab_size)
-
-    surface_model, surface_count = matched_encoder_decoder_config(
-        kerc_count,
-        config["shared_trunk_model"],
-        count=surface_count_fn,
-    )
     dense_active_model, dense_active_count = matched_decoder_only_config(
         arm_count, config["arm_model"], count=count
     )
     dense_total_model, dense_total_count = matched_decoder_only_config(
         system_total, base["model"], count=count
     )
-    return {
+    result = {
         "moecot_system": {
             "topology": config["topology"],
             "shared_trunk_model": config["shared_trunk_model"],
@@ -1027,29 +980,81 @@ def model_accounting(
             "parameter_delta_vs_active_arm": dense_active_count - arm_count,
             "architecture": "decoder_only_prefix_lm_control",
         },
-        KERC_ENGLISH_ID: {
-            "model": kerc_model,
-            "parameter_count": kerc_count,
-            "active_parameter_count_per_request": kerc_count,
-            "architecture": "kerc_modular_shared_trunk_candidate",
-            "vocab_size": kerc_vocab_size,
-            "code_vocabulary_capacity": {
-                "kernel": kernel_capacity,
-                "pointer": pointer_capacity,
-            },
-        },
-        SURFACE_ENGLISH_CONTROL_ID: {
-            "model": surface_model,
-            "parameter_count": surface_count,
-            "active_parameter_count_per_request": surface_count,
-            "parameter_delta_vs_kerc": surface_count - kerc_count,
-            "architecture": "matched_surface_encoder_decoder_control",
-            "vocab_size": canonical_vocab_size,
-        },
         "vocab_size": canonical_vocab_size,
         "canonical_vocab_size": canonical_vocab_size,
         "kerc_vocab_size": kerc_vocab_size,
     }
+    if not kerc_enabled:
+        result["deferred_architecture_candidates"] = {
+            KERC_ENGLISH_ID: {
+                "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+                "topology_exposure": 0,
+                "optimizer_repetitions": 0,
+                "terminal_evidence_state": "INCONCLUSIVE_IMPLEMENTATION",
+            }
+        }
+        return result
+
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    source_offset = source_token_offset(base, source_vocab)
+    missing_kerc_tokens = [
+        token for token in TRAINING_TASK_TAGS.values() if token not in source_vocab
+    ]
+    if missing_kerc_tokens:
+        raise ValueError(
+            "KERC trusted task tokens missing from canonical vocabulary: "
+            + ",".join(missing_kerc_tokens)
+        )
+    kerc_model = dict(config["kerc_english_model"])
+    kerc_model["kerc_task_token_ids"] = [
+        source_offset + int(source_vocab[TRAINING_TASK_TAGS[objective]])
+        for objective in TRAINING_TASK_TAGS
+    ]
+    kerc_model["kerc_verifier_output_dim"] = len(KERC_VERIFIER_DIMENSIONS)
+    kerc_model["kerc_decision_output_dim"] = len(ANSWER_DISPOSITION_ORDER)
+    canonical_target_start = target_token_offset(base, source_vocab)
+    kerc_model.update(
+        {
+            "kerc_surface_token_start": canonical_target_start,
+            "kerc_surface_token_end": canonical_vocab_size,
+            "kerc_kernel_token_start": canonical_vocab_size,
+            "kerc_kernel_token_end": canonical_vocab_size + kernel_capacity,
+            "kerc_pointer_token_start": canonical_vocab_size + kernel_capacity,
+            "kerc_pointer_token_end": kerc_vocab_size,
+            "kerc_end_token_id": canonical_target_start
+            + int((metadata.get("target_vocab") or {})["<eos>"]),
+        }
+    )
+    kerc_count = count(kerc_model, vocab_size=kerc_vocab_size)
+
+    def surface_count_fn(model: dict[str, Any]) -> int:
+        return count(model, vocab_size=canonical_vocab_size)
+
+    surface_model, surface_count = matched_encoder_decoder_config(
+        kerc_count,
+        config["shared_trunk_model"],
+        count=surface_count_fn,
+    )
+    result[KERC_ENGLISH_ID] = {
+        "model": kerc_model,
+        "parameter_count": kerc_count,
+        "active_parameter_count_per_request": kerc_count,
+        "architecture": "kerc_modular_shared_trunk_candidate",
+        "vocab_size": kerc_vocab_size,
+        "code_vocabulary_capacity": {
+            "kernel": kernel_capacity,
+            "pointer": pointer_capacity,
+        },
+    }
+    result[SURFACE_ENGLISH_CONTROL_ID] = {
+        "model": surface_model,
+        "parameter_count": surface_count,
+        "active_parameter_count_per_request": surface_count,
+        "parameter_delta_vs_kerc": surface_count - kerc_count,
+        "architecture": "matched_surface_encoder_decoder_control",
+        "vocab_size": canonical_vocab_size,
+    }
+    return result
 
 
 def matched_decoder_only_config(
@@ -1180,11 +1185,18 @@ def target_contracts(
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
+    kernel_cfg = config.get("kernel_english_training") or {}
+    kernel_disposition = validate_training_disposition(kernel_cfg)
+    english_comparison_ids = (
+        ENGLISH_COMPARISON_IDS
+        if kernel_disposition.get("full_kerc_training_enabled") is True
+        else ()
+    )
     for target in (
         SHARED_TRUNK_ID,
         *ARM_IDS,
         *CONTROL_IDS,
-        *ENGLISH_COMPARISON_IDS,
+        *english_comparison_ids,
     ):
         if target == SHARED_TRUNK_ID:
             view = arm_views.get("mixed_dense_control") or {}
@@ -1530,7 +1542,7 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
     disposition = validate_training_disposition(cfg)
     if disposition.get("full_kerc_training_enabled") is not True:
         return {
-            "state": "RETIRED_FROM_FIRST_LONG_RUN",
+            "state": "DEFERRED_FROM_FIRST_LONG_RUN",
             "manifest": "",
             "manifest_sha256": "",
             "artifacts": {},
@@ -4453,7 +4465,8 @@ def validate_config(config: dict[str, Any]) -> None:
         model = config.get(model_id) or {}
         if {key: model.get(key) for key in expected_mtp} != expected_mtp:
             raise ValueError(f"{model_id} does not consume the frozen MTP contract")
-    if config.get("comparison_contract", {}).get("preregistered_before_training") is not True:
+    comparison = config.get("comparison_contract") or {}
+    if comparison.get("preregistered_before_training") is not True:
         raise ValueError("comparison contract must be preregistered")
     topology = config.get("topology") or {}
     if topology.get("policy") not in {
@@ -4569,6 +4582,16 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("KERC training contract is required")
     kernel_disposition = validate_training_disposition(kernel_cfg)
     kernel_enabled = kernel_disposition.get("full_kerc_training_enabled") is True
+    expected_first_campaign = (
+        SHARED_TRUNK_ID,
+        *ARM_IDS,
+        *CONTROL_IDS,
+        *(ENGLISH_COMPARISON_IDS if kernel_enabled else ()),
+    )
+    if tuple(comparison.get("first_campaign_candidate_ids") or ()) != tuple(
+        expected_first_campaign
+    ):
+        raise ValueError("first-campaign candidate inventory mismatch")
     if tuple(kernel_cfg.get("objective_order") or ()) != (
         "surface_direct_control_v1",
         "surface_to_kernel_program_v1",

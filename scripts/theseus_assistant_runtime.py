@@ -2074,6 +2074,7 @@ def run_local_effect_canary(
     dispatch_trace_id = str(reflexive_dispatch_trace.get("trace_id") or "")
     decision_digest = str(reflexive_dispatch_trace.get("decision_digest") or "")
     selected_capabilities = selected_reflexive_capabilities(reflexive_dispatch_trace)
+    route_id = selected_capabilities[0] if len(selected_capabilities) == 1 else ""
     try:
         dispatch_verification = reflexive_dispatch.verify_trace(reflexive_dispatch_trace)
     except reflexive_dispatch.ReflexiveDispatchFault:
@@ -2106,6 +2107,7 @@ def run_local_effect_canary(
         "dispatch_trace_id": dispatch_trace_id,
         "dispatch_decision_digest": decision_digest,
         "selected_capability_ids": selected_capabilities,
+        "route_id": route_id,
         "dispatch_bound": dispatch_bound,
         "target": rel(target),
         "effect_inventory": [],
@@ -2136,6 +2138,7 @@ def run_local_effect_canary(
         "dispatch_trace_id": dispatch_trace_id,
         "dispatch_decision_digest": decision_digest,
         "capability_id": "assistant.route_authority_effect",
+        "route_id": route_id,
         "intent": intent,
         "assistant_surface": "local_assistant",
         "authority_ceiling": ["bounded_local_metadata_route"],
@@ -2175,6 +2178,7 @@ def run_local_effect_canary(
         and parsed.get("dispatch_trace_id") == dispatch_trace_id
         and parsed.get("dispatch_decision_digest") == decision_digest
         and parsed.get("capability_id") == "assistant.route_authority_effect"
+        and parsed.get("route_id") == route_id
         and dispatch_bound
     )
     base["observation"] = {
@@ -2183,6 +2187,7 @@ def run_local_effect_canary(
         "expected_content_sha256": intended_sha,
         "expected_dispatch_trace_id": dispatch_trace_id,
         "expected_dispatch_decision_digest": decision_digest,
+        "expected_route_id": route_id,
         "write_fault": write_fault,
     }
 
