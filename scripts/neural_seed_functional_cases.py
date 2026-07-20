@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministically materialize the frozen v8 functional-utility cases."""
+"""Deterministically materialize source-disjoint functional-utility cases."""
 
 from __future__ import annotations
 
@@ -44,14 +44,15 @@ def build_case(arm_id: str, family: str, variant: int, seed: int) -> dict[str, A
     identity = f"{arm_id}:{family}:{variant}:{seed}"
     case_id = f"fu-{arm_id}-{family}-{variant + 1:02d}-{hashlib.sha256(identity.encode()).hexdigest()[:10]}"
     rng = random.Random(int(hashlib.sha256(identity.encode()).hexdigest()[:16], 16))
+    surface_variant = variant + (seed % 997) * 16
     if arm_id == "english":
-        payload = english_case(family, variant)
+        payload = english_case(family, surface_variant)
     elif arm_id in {"python", "javascript_typescript"}:
-        payload = dynamic_language_case(arm_id, family, variant, rng)
+        payload = dynamic_language_case(arm_id, family, surface_variant, rng)
     elif arm_id == "rust":
-        payload = rust_case(family, variant, rng)
+        payload = rust_case(family, surface_variant, rng)
     elif arm_id == "html_css":
-        payload = html_case(family, variant)
+        payload = html_case(family, surface_variant)
     else:
         raise ValueError(f"unsupported arm: {arm_id}")
     return {
@@ -68,12 +69,14 @@ def build_case(arm_id: str, family: str, variant: int, seed: int) -> dict[str, A
 
 
 def english_case(family: str, variant: int) -> dict[str, Any]:
-    names = ("Mara", "Jonah", "Priya", "Luis")
-    projects = ("Atlas", "Lantern", "Harbor", "Juniper")
-    colors = ("teal", "amber", "indigo", "crimson")
-    name = names[variant]
-    project = projects[variant]
-    color = colors[variant]
+    names = ("Mara", "Jonah", "Priya", "Luis", "Amina", "Theo", "Mei", "Nora")
+    projects = ("Atlas", "Lantern", "Harbor", "Juniper", "Cedar", "Orbit", "Mosaic", "Beacon")
+    colors = ("teal", "amber", "indigo", "crimson", "cobalt", "plum", "forest", "coral")
+    slot = variant % len(names)
+    cohort = variant // len(names)
+    name = names[slot]
+    project = f"{projects[slot]}-{cohort + 1}"
+    color = f"{colors[slot]}_{cohort + 1}"
     builders: dict[str, Callable[[], tuple[str, list[str], list[str]]]] = {
         "correction_following": lambda: (
             f"Conversation:\nUser: For {project}, use {color} and deliver a PDF on Friday.\n"

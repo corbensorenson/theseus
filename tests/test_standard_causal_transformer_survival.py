@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import hashlib
 import subprocess
+import sqlite3
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -18,6 +19,7 @@ if str(SCRIPTS) not in sys.path:
 
 import semantic_ir
 import standard_causal_transformer_survival as survival
+import standard_causal_transformer_corpus as corpus
 from standard_causal_transformer_model import (
     CausalTransformerConfig,
     build_model,
@@ -83,6 +85,102 @@ from standard_causal_transformer_conditioning import (
     validate_config as validate_conditioning_config,
 )
 from code_lm_private_verifier import evaluate_all_private_candidates
+
+
+def test_pretrain_stage_and_optimizer_targets_are_distinct_and_legacy_safe() -> None:
+    current = {
+        "pretrain_stage_unique_positions": 422_334_331,
+        "pretrain_optimizer_target_positions": 1_146_808_520,
+    }
+    assert survival.pretrain_stage_position_target(current) == 422_334_331
+    assert survival.pretrain_optimizer_position_target(current) == 1_146_808_520
+    legacy = {"pretrain_target_token_positions": 215_552_020}
+    assert survival.pretrain_stage_position_target(legacy) == 215_552_020
+    assert survival.pretrain_optimizer_position_target(legacy) == 215_552_020
+
+
+def test_materialization_targets_may_exceed_but_not_weaken_scale_minima() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "standard_causal_transformer_survival.json").read_text()
+    )
+    contract = config["data_model_scaling_contract"]
+    minimums = corpus.minimum_category_targets(contract)
+    targets = corpus.category_targets(contract)
+    assert sum(minimums.values()) == contract["required_unique_positions"]
+    assert sum(targets.values()) == contract["materialization_unique_positions"]
+    assert all(targets[key] >= minimums[key] for key in targets)
+
+    invalid = json.loads(json.dumps(contract))
+    invalid["materialization_category_positions"]["html_css"] = 1
+    with pytest.raises(ValueError, match="cannot fall below"):
+        corpus.category_targets(invalid)
+
+
+def test_capacity_identity_refresh_allows_only_nonmeasurement_config_changes(
+    tmp_path: Path,
+) -> None:
+    index = tmp_path / "index.sqlite3"
+    with sqlite3.connect(index) as connection:
+        connection.execute("CREATE TABLE documents (category TEXT, digest TEXT)")
+        connection.executemany(
+            "INSERT INTO documents VALUES (?, ?)",
+            [("english_broad", "a" * 64), ("python", "b" * 64)],
+        )
+    prior = {
+        "canonical_corpus": {"policy": "fixture"},
+        "tokenization": {},
+        "sources": {},
+        "evaluation": {},
+        "training": {"pretrain_target_token_positions": 10},
+    }
+    current = json.loads(json.dumps(prior))
+    current["training"] = {
+        "pretrain_stage_unique_positions": 10,
+        "pretrain_optimizer_target_positions": 20,
+    }
+    prior_path = tmp_path / "prior.json"
+    current_path = tmp_path / "current.json"
+    prior_path.write_text(json.dumps(prior), encoding="utf-8")
+    current_path.write_text(json.dumps(current), encoding="utf-8")
+    selected = [f"english_broad:{'a' * 64}", f"python:{'b' * 64}"]
+    report_path = tmp_path / "capacity.json"
+    report_path.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_admitted_index_exact_capacity_measurement_v1",
+                "index": str(index),
+                "index_sha256": survival.file_content_sha256(index),
+                "selected_document_count": 2,
+                "selected_document_digest": survival.sha("\n".join(selected)),
+                "config_sha256": survival.file_content_sha256(prior_path),
+                "positions_by_category": {},
+                "total_unique_positions": 10,
+            }
+        ),
+        encoding="utf-8",
+    )
+    migrated = survival.refresh_capacity_identity(
+        report_path,
+        current_config_path=current_path,
+        prior_config_path=prior_path,
+    )
+    assert migrated["config_sha256"] == survival.file_content_sha256(current_path)
+    assert migrated["identity_migration"]["measurement_contract_unchanged"] is True
+    assert migrated["identity_migration"]["exact_index_bytes_replayed"] is True
+    assert migrated["identity_migration"]["indexed_document_inventory_replayed"] is True
+    assert migrated["identity_migration"]["selected_documents_recomputed"] is False
+    assert migrated["identity_migration"]["position_counts_recomputed"] is False
+
+    changed = json.loads(json.dumps(current))
+    changed["canonical_corpus"]["policy"] = "changed"
+    changed_path = tmp_path / "changed.json"
+    changed_path.write_text(json.dumps(changed), encoding="utf-8")
+    with pytest.raises(ValueError, match="full remeasurement"):
+        survival.refresh_capacity_identity(
+            report_path,
+            current_config_path=changed_path,
+            prior_config_path=prior_path,
+        )
 from standard_causal_transformer_preference import (
     PreferenceArrays,
     build_preference_pairs,

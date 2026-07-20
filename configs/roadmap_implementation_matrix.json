@@ -9,6 +9,22 @@
     "required_policy": "project_theseus_kerc_implementation_fidelity_v1",
     "required_gate": "scripts/kerc_implementation_fidelity_gate.py through scripts/roadmap_implementation_gate.py",
     "required_report": "reports/kerc_implementation_fidelity_gate.json",
+    "first_practical_campaign_exclusion": {
+      "policy": "project_theseus_kerc_first_campaign_exclusion_v1",
+      "config": "configs/moecot_language_arm_training.json",
+      "required_disposition_state": "DEFERRED_FROM_FIRST_LONG_RUN",
+      "forbidden_candidate_ids": [
+        "kernel_english",
+        "kerc",
+        "kerc_english"
+      ],
+      "required_zero_fields": [
+        "kernel_english_training.disposition.first_campaign_topology_exposure",
+        "kernel_english_training.disposition.first_campaign_optimizer_repetitions",
+        "training.kernel_english_optimizer_repetitions"
+      ],
+      "rule": "A stale KERC discovery receipt cannot silently authorize KERC claims, but source drift confined to an explicitly zero-exposure deferred lane cannot block the separately frozen practical campaign. Any non-source-identity fidelity fault or any exclusion fault remains hard."
+    },
     "claim_rule": "Protocol mechanics, stage-path execution, channel-presence learnability, or packet-level structural allocation may not be promoted into learned KERC, utility, efficiency, or scientific-negative claims."
   },
   "pre_training_architecture_contract": {
@@ -3883,7 +3899,7 @@
       },
       {
         "id": "T1",
-        "state": "contract_repair_required",
+        "state": "ready_to_launch",
         "depends_on": ["T0"],
         "exit": "The preregistration, executable topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then the five frozen arms and matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
       },

@@ -116,35 +116,46 @@
     "policy": "project_theseus_dense_mlx_data_model_scaling_contract_v1",
     "state": "frozen_before_training",
     "selected_rung": {
-      "id": "moecot_mlx_10_78m_v1",
-      "active_parameter_count": 10777601,
+      "id": "moecot_mlx_57m_active_preregistered_v1",
+      "active_parameter_count": 57340426,
       "architecture_family": "shared_transformer_low_rank_language_specialists",
       "tokenizer_abi": "standard_causal_split_source_target_open_vocab_v1"
     },
     "planning_basis": {
       "reference": "Hoffmann et al. 2022, Training Compute-Optimal Large Language Models, arXiv:2203.15556",
       "reference_url": "https://arxiv.org/abs/2203.15556",
-      "minimum_unique_positions_per_active_parameter": 20.0,
+      "minimum_unique_positions_per_active_parameter": 5.0,
+      "minimum_optimizer_positions_per_active_parameter": 20.0,
       "maximum_optimizer_repetition_factor": 4.0,
       "repetition_reference": "Muennighoff et al. 2023, Scaling Data-Constrained Language Models, arXiv:2305.16264",
       "repetition_reference_url": "https://arxiv.org/abs/2305.16264",
-      "interpretation": "The 20:1 ratio is a conservative planning floor for unique admitted model-visible positions. Repeated optimizer exposure is measured separately and never increases unique-data credit."
+      "interpretation": "The 20:1 target applies to total optimizer exposure. Unique admitted model-visible positions are reported separately at a 5:1 floor, so the maximum four-pass schedule cannot manufacture data credit."
     },
-    "required_unique_positions": 215552020,
+    "required_unique_positions": 286702130,
+    "materialization_unique_positions": 422334331,
+    "materialization_category_positions": {
+      "english_conversation_instruction": 42542553,
+      "english_broad": 117653923,
+      "python": 116242500,
+      "javascript_typescript": 82769680,
+      "html_css": 17577020,
+      "rust": 45548655
+    },
+    "required_optimizer_positions": 1146808520,
     "domain_minimum_positions": {
-      "english_natural_language_total": 87397060,
-      "code_total": 128154960,
+      "english_natural_language_total": 108749556,
+      "code_total": 177952574,
       "flexible_tail_reserve": 0
     },
     "subset_minimum_positions": {
-      "english_conversation_instruction": 41684669
+      "english_conversation_instruction": 28880059
     },
     "maximum_recursive_synthetic_position_share": 0.25,
     "code_language_minimum_positions": {
-      "python": 62624233,
-      "javascript_typescript": 32401815,
-      "html_css": 8847956,
-      "rust": 24280956
+      "python": 78631494,
+      "javascript_typescript": 55989019,
+      "html_css": 12520965,
+      "rust": 30811096
     },
     "required_evidence_dimensions": [
       "authority_and_license",
@@ -186,7 +197,9 @@
       }
     ],
     "canonical_corpus_receipt": {
-      "path": "runtime/standard_causal_transformer_scale_v2/canonical_mixed_corpus_receipt.json"
+      "path": "runtime/standard_causal_transformer_scale_v2/canonical_pretrain_capacity_v2.json",
+      "stage_metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+      "governance_receipt": "runtime/standard_causal_transformer_scale_v2/canonical_mixed_corpus_receipt.json"
     },
     "training_authorization": "deny_until_canonical_mixed_corpus_receipt_meets_all_requirements",
     "public_training_rows_written": 0,
@@ -288,7 +301,8 @@
   },
   "training": {
     "batch_size": 16,
-    "pretrain_target_token_positions": 215552020,
+    "pretrain_stage_unique_positions": 422334331,
+    "pretrain_optimizer_target_positions": 1146808520,
     "sft_target_token_positions": 8000000,
     "private_body_sampling_weight": 16.0,
     "learning_rate": 0.0003,

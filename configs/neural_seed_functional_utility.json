@@ -2,9 +2,11 @@
   "policy": "project_theseus_private_functional_utility_contract_v1",
   "surface_id": "neural_seed_and_decoder",
   "abstraction_id": "candidate_generation_contract",
-  "seed": 20260714,
-  "v8_plan_sha256": "810f2d42e1321859ac0fb6ae3490dcd9a75db350e95ab0c499705bb91c9bf293",
-  "v8_stage_signature": "1b3b9c9e8dacf47569b8e97b9173ce64736d01a102c2f2905bae604acf9fc921",
+  "seed": 20260720,
+  "campaign_binding": {
+    "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+    "training_config": "configs/moecot_language_arm_training.json"
+  },
   "variants_per_family": 4,
   "expected_cases_per_arm": 32,
   "arms": {
@@ -80,6 +82,12 @@
       "private_train",
       "private_dev",
       "private_eval"
+    ],
+    "prior_candidate_packets": [
+      {
+        "path": "configs/evaluation_history/neural_seed_v8_candidate_packet.json",
+        "sha256": "83ac6d3ad447cc04bba708a87881792622683775e2e3f13d93319c4362f5670c"
+      }
     ],
     "forbid_exact_prompt_overlap": true,
     "forbid_normalized_prompt_overlap": true,

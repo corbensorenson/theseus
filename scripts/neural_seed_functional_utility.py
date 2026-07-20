@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import moecot_language_arm_training as training
+
 from neural_seed_functional_cases import ARMS, materialize_cases, stable_hash
 from neural_seed_functional_verifiers import (
     english_candidate_binding,
@@ -303,7 +305,8 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "evaluator_metadata_present": False,
         "public_benchmark_payload_count": 0,
     }
-    training = current_training_state(config)
+    campaign = campaign_binding(config)
+    training_state = current_training_state(config, campaign)
     toolchains = toolchain_identity()
     return {
         "policy": config["policy"],
@@ -322,8 +325,12 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "local_english_rater_implementation_sha256": sha256_file(LOCAL_RATER_IMPLEMENTATION),
         "toolchain_identity": toolchains,
         "toolchain_identity_sha256": stable_hash(toolchains),
-        "v8_plan_sha256": config["v8_plan_sha256"],
-        "v8_stage_signature": config["v8_stage_signature"],
+        "candidate_id": campaign["candidate_id"],
+        "training_config": campaign["training_config"],
+        "training_config_sha256": campaign["training_config_sha256"],
+        "training_base_config_sha256": campaign["training_base_config_sha256"],
+        "training_stage_signature": campaign["training_stage_signature"],
+        "checkpoint_root": campaign["checkpoint_root"],
         "case_contract_sha256": case_contract_sha,
         "case_count": len(cases),
         "cases_by_arm": {arm: sum(case["arm_id"] == arm for case in cases) for arm in ARMS},
@@ -331,7 +338,7 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "candidate_packet_sha256": stable_hash(candidate_packet),
         "consumption": dict(config.get("consumption") or {}),
         "source_disjoint_audit": overlap,
-        "training_state_at_materialization": training,
+        "training_state_at_materialization": training_state,
         "evaluator_cases": cases,
         "hard_gaps": gaps,
         "boundaries": {
@@ -425,7 +432,7 @@ def build_freeze(
         raise ValueError("cannot freeze an invalid functional contract")
     training = manifest["training_state_at_materialization"]
     return {
-        "policy": "project_theseus_private_functional_utility_freeze_v1",
+        "policy": "project_theseus_private_functional_utility_freeze_v2",
         "frozen_utc": now(),
         "immutable": True,
         "config": relative(config_path),
@@ -440,13 +447,19 @@ def build_freeze(
         "toolchain_identity_sha256": manifest["toolchain_identity_sha256"],
         "case_contract_sha256": manifest["case_contract_sha256"],
         "candidate_packet_sha256": manifest["candidate_packet_sha256"],
-        "v8_plan_sha256": manifest["v8_plan_sha256"],
-        "v8_stage_signature": manifest["v8_stage_signature"],
+        "candidate_id": manifest["candidate_id"],
+        "training_config": manifest["training_config"],
+        "training_config_sha256": manifest["training_config_sha256"],
+        "training_base_config_sha256": manifest["training_base_config_sha256"],
+        "training_stage_signature": manifest["training_stage_signature"],
+        "checkpoint_root": manifest["checkpoint_root"],
         "case_count": manifest["case_count"],
         "cases_by_arm": manifest["cases_by_arm"],
         "dense_controls_complete_at_freeze": training["dense_controls_complete"],
         "training_state_at_freeze": training,
         "evaluation_state": "NOT_EVALUATED",
+        "source_disjoint": True,
+        "consumed_case_count": 0,
         "capability_claim": "NOT_EVALUATED",
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -463,6 +476,8 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
     prompt_hashes: dict[str, str] = {}
     normalized: dict[str, str] = {}
     target_hashes: set[str] = set()
+    prior_prompt_hashes: set[str] = set()
+    prior_normalized_prompts: set[str] = set()
     files = []
     rows_scanned = 0
     for split in config["source_disjoint"]["scan_splits"]:
@@ -482,6 +497,24 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
     exact = []
     normalized_hits = []
     target_as_prompt = []
+    prior_surface_overlap = []
+    for packet_value in config["source_disjoint"].get("prior_candidate_packets") or []:
+        packet_ref = packet_value if isinstance(packet_value, dict) else {
+            "path": str(packet_value), "sha256": ""
+        }
+        packet_path = resolve(str(packet_ref.get("path") or ""))
+        if (
+            not packet_path.is_file()
+            or sha256_file(packet_path) != str(packet_ref.get("sha256") or "")
+        ):
+            gaps.append("prior_functional_surface_identity_mismatch")
+            continue
+        packet = read_json(packet_path)
+        for row in packet.get("rows") or []:
+            prompt = str(row.get("prompt") or "")
+            if prompt:
+                prior_prompt_hashes.add(hashlib.sha256(prompt.encode()).hexdigest())
+                prior_normalized_prompts.add(normalize_text(prompt))
     for case in cases:
         prompt_hash = case["prompt_sha256"]
         if prompt_hash in prompt_hashes:
@@ -491,12 +524,16 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
             normalized_hits.append({"case_id": case["case_id"], "row_id": normalized[norm]})
         if prompt_hash in target_hashes:
             target_as_prompt.append(case["case_id"])
+        if prompt_hash in prior_prompt_hashes or norm in prior_normalized_prompts:
+            prior_surface_overlap.append(case["case_id"])
     if exact:
         gaps.append("exact_supervision_prompt_overlap")
     if normalized_hits:
         gaps.append("normalized_supervision_prompt_overlap")
     if target_as_prompt:
         gaps.append("supervision_target_reused_as_prompt")
+    if prior_surface_overlap:
+        gaps.append("prior_functional_surface_prompt_overlap")
     return {
         "state": "GREEN" if not gaps else "RED",
         "rows_scanned": rows_scanned,
@@ -504,12 +541,37 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
         "exact_prompt_overlaps": exact,
         "normalized_prompt_overlaps": normalized_hits,
         "target_hash_as_prompt": target_as_prompt,
+        "prior_surface_prompt_overlap": prior_surface_overlap,
         "hard_gaps": gaps,
     }
 
 
-def current_training_state(config: dict[str, Any]) -> dict[str, Any]:
-    checkpoint_root = ROOT / "checkpoints/moecot_language_seed_v8"
+def campaign_binding(config: dict[str, Any]) -> dict[str, Any]:
+    binding = config.get("campaign_binding") or {}
+    training_config_path = resolve(str(binding.get("training_config") or TRAINING_CONFIG))
+    training_config = training.bind_scale_preregistration(read_json(training_config_path))
+    base_path = resolve(str(training_config["base_config"]))
+    stage_metadata_path = resolve(str(training_config["stage_dir"])) / "stage_metadata_v1.json"
+    stage_metadata = read_json(stage_metadata_path) if stage_metadata_path.is_file() else {}
+    candidate_id = str(binding.get("candidate_id") or "")
+    if not candidate_id or candidate_id != str(
+        (training_config.get("scale_preregistration") or {}).get("candidate_id") or ""
+    ):
+        raise ValueError("functional campaign candidate does not match training owner")
+    return {
+        "candidate_id": candidate_id,
+        "training_config": relative(training_config_path),
+        "training_config_sha256": sha256_file(training_config_path),
+        "training_base_config_sha256": sha256_file(base_path),
+        "training_stage_signature": str(stage_metadata.get("stage_signature") or ""),
+        "checkpoint_root": relative(resolve(str(training_config["checkpoint_root"]))),
+    }
+
+
+def current_training_state(
+    config: dict[str, Any], campaign: dict[str, Any]
+) -> dict[str, Any]:
+    checkpoint_root = resolve(str(campaign["checkpoint_root"]))
     controls = {}
     for target in ("dense_total_parameter", "dense_active_parameter"):
         directory = checkpoint_root / target
@@ -526,6 +588,8 @@ def current_training_state(config: dict[str, Any]) -> dict[str, Any]:
             "plan_sha256": receipt_row.get("plan_sha256"),
         }
     return {
+        "candidate_id": campaign["candidate_id"],
+        "checkpoint_root": relative(checkpoint_root),
         "controls": controls,
         "dense_controls_complete": all(row["complete"] for row in controls.values()),
         "functional_contract_frozen_before_control_completion": not all(row["complete"] for row in controls.values()),
@@ -737,13 +801,23 @@ def audit_candidate_provenance(
         if not path.is_file() or sha256_file(path) != str(row.get("sha256") or ""):
             gaps.append(f"checkpoint_identity_mismatch:{artifact_target}")
             continue
-        receipt_path = root / "checkpoints/moecot_language_seed_v8" / artifact_target / "training_receipt.json"
+        checkpoint_root = resolve_from(
+            root,
+            str(freeze.get("checkpoint_root") or "checkpoints/moecot_language_seed_v8"),
+        )
+        receipt_path = checkpoint_root / artifact_target / "training_receipt.json"
         receipt = read_json(receipt_path) if receipt_path.is_file() else {}
         if not receipt.get("complete"):
             gaps.append(f"checkpoint_receipt_incomplete:{artifact_target}")
-        if receipt.get("plan_sha256") != freeze.get("v8_plan_sha256"):
+        expected_plan = bundle.get("training_plan_sha256") or freeze.get(
+            "v8_plan_sha256"
+        )
+        expected_stage = freeze.get("training_stage_signature") or freeze.get(
+            "v8_stage_signature"
+        )
+        if receipt.get("plan_sha256") != expected_plan:
             gaps.append(f"checkpoint_receipt_plan_mismatch:{artifact_target}")
-        if receipt.get("stage_signature") != freeze.get("v8_stage_signature"):
+        if receipt.get("stage_signature") != expected_stage:
             gaps.append(f"checkpoint_receipt_stage_mismatch:{artifact_target}")
         receipt_checkpoint = resolve_from(root, str(receipt.get("checkpoint") or ""))
         if receipt_checkpoint.resolve() != path.resolve() or receipt.get("checkpoint_sha256") != row.get("sha256"):
@@ -753,7 +827,7 @@ def audit_candidate_provenance(
         shared_row = artifact_map.get("shared_trunk") or {}
         shared_path = resolve_from(root, str(shared_row.get("path") or ""))
         for arm in ("english", "python", "javascript_typescript", "html_css", "rust"):
-            receipt_path = root / "checkpoints/moecot_language_seed_v8" / arm / "training_receipt.json"
+            receipt_path = checkpoint_root / arm / "training_receipt.json"
             receipt = read_json(receipt_path) if receipt_path.is_file() else {}
             declared_path = resolve_from(root, str(receipt.get("shared_trunk_checkpoint") or ""))
             if declared_path.resolve() != shared_path.resolve() or receipt.get("shared_trunk_checkpoint_sha256") != shared_row.get("sha256"):
@@ -1178,7 +1252,7 @@ def close_timing_total(value: Any, expected: float) -> bool:
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:
     gaps = []
-    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "v8_plan_sha256", "v8_stage_signature"):
+    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "candidate_id", "training_config", "training_config_sha256", "training_base_config_sha256", "training_stage_signature", "checkpoint_root"):
         if manifest.get(key) != freeze.get(key):
             gaps.append(f"freeze_identity_mismatch:{key}")
     if freeze.get("consumption_registry") != (manifest.get("consumption") or {}).get("registry"):

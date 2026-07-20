@@ -778,6 +778,9 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         models,
     )
     gaps.extend(specialist_scaling["hard_gaps"])
+    for target_id, target in targets.items():
+        if target.get("optimizer_repetition_ceiling_ready") is not True:
+            gaps.append(f"optimizer_repetition_ceiling_exceeded:{target_id}")
     checkpoint_inventory = inspect_checkpoint_inventory(targets, plan_identity, summary.get("stage_signature"))
     gaps.extend(checkpoint_inventory["hard_gaps"])
     return {
@@ -857,6 +860,29 @@ def audit_scale_preregistration(config: dict[str, Any]) -> dict[str, Any]:
             gaps.append("scale_preregistration_report_config_identity_mismatch")
         if (report.get("architecture") or {}).get("candidate_id") != candidate_id:
             gaps.append("scale_preregistration_report_candidate_mismatch")
+        for input_id, artifact in (report.get("input_artifacts") or {}).items():
+            if not isinstance(artifact, dict):
+                gaps.append(f"scale_preregistration_input_invalid:{input_id}")
+                continue
+            artifact_path = resolve(str(artifact.get("path") or ""))
+            if (
+                not artifact_path.is_file()
+                or sha256_file(artifact_path) != str(artifact.get("sha256") or "")
+            ):
+                gaps.append(f"scale_preregistration_input_stale:{input_id}")
+        capacity_artifact = (report.get("input_artifacts") or {}).get(
+            "canonical_capacity_report"
+        ) or {}
+        capacity_path = resolve(str(capacity_artifact.get("path") or ""))
+        if capacity_path.is_file():
+            from neural_seed_50m_scale_preregistration import (
+                canonical_capacity as replay_canonical_capacity,
+            )
+
+            if not replay_canonical_capacity(read_json(capacity_path))["receipt_valid"]:
+                gaps.append(
+                    "scale_preregistration_capacity_receipt_no_longer_replays"
+                )
     evaluation_path = resolve(str(reference.get("evaluation_freeze") or ""))
     evaluation = read_json(evaluation_path) if evaluation_path.is_file() else {}
     if not evaluation:
@@ -1408,6 +1434,22 @@ def target_contracts(
 ) -> dict[str, Any]:
     root = resolve(str(config["checkpoint_root"]))
     targets: dict[str, Any] = {}
+    scale_reference = config.get("scale_preregistration")
+    if isinstance(scale_reference, dict):
+        prereg = read_json(resolve(str(scale_reference["config"])))
+        scaling = prereg.get("scaling_contract") or {}
+        optimizer_ratio = float(
+            scaling.get("minimum_optimizer_positions_per_active_parameter") or 0.0
+        )
+        maximum_repetitions = float(
+            scaling.get("maximum_optimizer_repetition_factor") or 0.0
+        )
+    else:
+        optimizer_ratio = 1.0
+        maximum_repetitions = float(
+            (config.get("training") or {}).get("maximum_optimizer_repetitions")
+            or 1.0
+        )
     kernel_cfg = config.get("kernel_english_training") or {}
     kernel_disposition = validate_training_disposition(kernel_cfg)
     english_comparison_ids = (
@@ -1431,17 +1473,23 @@ def target_contracts(
                 (models.get(model_key) or {}).get("shared_trunk_parameter_count") or 0
             )
             role = "shared_trunk"
+            owned_parameter_count = parameter_count_value
         elif target in ARM_IDS:
             view = (arm_views.get("arms") or {}).get(target) or {}
             model_key = "moecot_system"
             model = (models.get(model_key) or {}).get("arm_model") or config["arm_model"]
             parameter_count_value = int((models.get(model_key) or {}).get("arm_parameter_count") or 0)
             role = "language_expert"
+            owned_parameter_count = int(
+                (models.get(model_key) or {}).get("expert_parameter_count_per_arm")
+                or 0
+            )
         elif target in CONTROL_IDS:
             view = arm_views.get("mixed_dense_control") or {}
             model = (models.get(target) or {}).get("model") or {}
             parameter_count_value = int((models.get(target) or {}).get("parameter_count") or 0)
             role = "dense_control"
+            owned_parameter_count = parameter_count_value
         else:
             view = (arm_views.get("arms") or {}).get("english") or {}
             model = (models.get(target) or {}).get("model") or {}
@@ -1453,6 +1501,7 @@ def target_contracts(
                 if target == KERC_ENGLISH_ID
                 else "english_surface_control"
             )
+            owned_parameter_count = parameter_count_value
         directory = root / target
         checkpoint_name = (
             "expert_delta.safetensors"
@@ -1460,6 +1509,13 @@ def target_contracts(
             else "weights.safetensors"
             if target == KERC_ENGLISH_ID
             else "weights.npz"
+        )
+        unique_target_positions = int(view.get("target_positions") or 0)
+        exposure = target_optimizer_exposure(
+            owned_parameter_count=owned_parameter_count,
+            unique_target_positions=unique_target_positions,
+            minimum_optimizer_ratio=optimizer_ratio,
+            maximum_repetitions=maximum_repetitions,
         )
         targets[target] = {
             "target_id": target,
@@ -1471,7 +1527,18 @@ def target_contracts(
             ),
             "row_ranges": list(view.get("row_ranges") or []),
             "row_count": sum(int(row["stop"]) - int(row["start"]) for row in view.get("row_ranges") or []),
-            "unique_target_positions": int(view.get("target_positions") or 0),
+            "unique_target_positions": unique_target_positions,
+            "owned_parameter_count": owned_parameter_count,
+            "minimum_optimizer_positions": exposure[
+                "minimum_optimizer_positions"
+            ],
+            "optimizer_target_positions": exposure["optimizer_target_positions"],
+            "optimizer_repetition_factor": exposure["optimizer_repetition_factor"],
+            "maximum_optimizer_repetition_factor": maximum_repetitions,
+            "optimizer_repetition_ceiling_ready": exposure[
+                "optimizer_repetition_ceiling_ready"
+            ],
+            "optimizer_repetition_counted_as_unique_data": False,
             "model": model,
             "vocab_size": int(
                 (models.get(target) or {}).get("vocab_size")
@@ -1480,8 +1547,8 @@ def target_contracts(
                 or 0
             ),
             "parameter_count": parameter_count_value,
-            "estimated_parameter_token_product": parameter_count_value
-            * int(view.get("target_positions") or 0),
+            "estimated_parameter_token_product": owned_parameter_count
+            * exposure["optimizer_target_positions"],
             "checkpoint": relative(
                 directory / checkpoint_name
             ),
@@ -1572,6 +1639,29 @@ def target_contracts(
             ),
         }
     return targets
+
+
+def target_optimizer_exposure(
+    *,
+    owned_parameter_count: int,
+    unique_target_positions: int,
+    minimum_optimizer_ratio: float,
+    maximum_repetitions: float,
+) -> dict[str, Any]:
+    """Predeclare target-specific optimizer exposure without inventing data."""
+
+    minimum = int(math.ceil(owned_parameter_count * minimum_optimizer_ratio))
+    optimizer_positions = max(unique_target_positions, minimum)
+    repetition = optimizer_positions / max(1, unique_target_positions)
+    return {
+        "minimum_optimizer_positions": minimum,
+        "optimizer_target_positions": optimizer_positions,
+        "optimizer_repetition_factor": round(repetition, 8),
+        "optimizer_repetition_ceiling_ready": bool(
+            unique_target_positions > 0 and repetition <= maximum_repetitions
+        ),
+        "optimizer_repetition_counted_as_unique_data": False,
+    }
 
 
 def audit_arm_views(arm_views: dict[str, Any], window_count: int) -> dict[str, Any]:
@@ -3826,7 +3916,23 @@ def train_target(
     receipt_path = resolve(str(target["receipt"]))
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     training = config["training"]
-    planned_steps = required_steps(mask, int(training["batch_size"]), int(target["unique_target_positions"]))
+    optimizer_target_positions = int(
+        target.get("optimizer_target_positions")
+        or target.get("unique_target_positions")
+        or 0
+    )
+    optimizer_repetition_factor = float(
+        target.get("optimizer_repetition_factor")
+        or (
+            optimizer_target_positions
+            / max(1, int(target.get("unique_target_positions") or 0))
+        )
+    )
+    planned_steps = required_steps(
+        mask,
+        int(training["batch_size"]),
+        optimizer_target_positions,
+    )
     unique_sft_positions = int(supervision_stage.mask.sum()) if supervision_stage is not None else 0
     sft_repetitions = int(training.get("supervision_optimizer_repetitions") or 1)
     sft_positions = unique_sft_positions * sft_repetitions
@@ -3921,7 +4027,7 @@ def train_target(
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(resume_checkpoint)
     remaining_positions = (
-        max(0, int(target["unique_target_positions"]) - prior_pretrain_positions)
+        max(0, optimizer_target_positions - prior_pretrain_positions)
         if "pretraining" in active_phases
         else 0
     )
@@ -4032,6 +4138,7 @@ def train_target(
             "kernel_english_optimizer_positions": positions["kernel"],
             "supervision_optimizer_positions": positions["supervision"],
             "unique_target_positions": int(target["unique_target_positions"]),
+            "optimizer_target_positions": optimizer_target_positions,
             "checkpoint": relative(generation_checkpoint),
             "checkpoint_sha256": sha256_file(generation_checkpoint),
             "optimizer_state": relative(generation_optimizer),
@@ -4404,6 +4511,8 @@ def train_target(
         "kernel_english_optimizer_positions": total_kernel_positions,
         "supervision_optimizer_positions": total_sft_positions,
         "unique_target_positions": int(target["unique_target_positions"]),
+        "optimizer_target_positions": optimizer_target_positions,
+        "optimizer_repetition_factor": optimizer_repetition_factor,
         "unique_source_conditioned_target_positions": unique_source_positions,
         "source_conditioned_optimizer_target_positions": source_positions,
         "source_conditioned_optimizer_repetitions": source_repetitions,
@@ -4417,7 +4526,7 @@ def train_target(
         "supervision_optimizer_target_positions": sft_positions,
         "supervision_optimizer_repetitions": sft_repetitions,
         "complete": (
-            total_pretrain_positions >= int(target["unique_target_positions"])
+            total_pretrain_positions >= optimizer_target_positions
             and total_source_positions >= source_positions
             and total_kernel_positions >= kernel_positions
             and total_sft_positions >= sft_positions

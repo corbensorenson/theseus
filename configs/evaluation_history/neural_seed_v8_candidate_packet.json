@@ -1,0 +1,814 @@
+{
+  "contract_sha256": "d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792",
+  "evaluator_metadata_present": false,
+  "generator_visible_fields": [
+    "case_id",
+    "arm_id",
+    "prompt"
+  ],
+  "policy": "project_theseus_private_functional_candidate_packet_v1",
+  "public_benchmark_payload_count": 0,
+  "row_count": 160,
+  "rows": [
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-correction_following-01-73cfafd296",
+      "prompt": "Conversation:\nUser: For Atlas, use teal and deliver a PDF on Friday.\nUser: Correction: use grayscale, deliver a Markdown file on Thursday, and keep the project name.\nAssistant: Understood.\nUser: State the final deliverable in one sentence."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-correction_following-02-bbec63e0ca",
+      "prompt": "Conversation:\nUser: For Lantern, use amber and deliver a PDF on Friday.\nUser: Correction: use grayscale, deliver a Markdown file on Thursday, and keep the project name.\nAssistant: Understood.\nUser: State the final deliverable in one sentence."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-correction_following-03-cf38c74677",
+      "prompt": "Conversation:\nUser: For Harbor, use indigo and deliver a PDF on Friday.\nUser: Correction: use grayscale, deliver a Markdown file on Thursday, and keep the project name.\nAssistant: Understood.\nUser: State the final deliverable in one sentence."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-correction_following-04-20ca2fb164",
+      "prompt": "Conversation:\nUser: For Juniper, use crimson and deliver a PDF on Friday.\nUser: Correction: use grayscale, deliver a Markdown file on Thursday, and keep the project name.\nAssistant: Understood.\nUser: State the final deliverable in one sentence."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-constraint_tracking-01-c86d98c19d",
+      "prompt": "Conversation:\nUser: Plan a review for Atlas. It must last 25 minutes, include Mara and two reviewers, avoid Monday, and end with one written decision.\nUser: Give a concise plan that preserves every constraint."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-constraint_tracking-02-0449f470e4",
+      "prompt": "Conversation:\nUser: Plan a review for Lantern. It must last 25 minutes, include Jonah and two reviewers, avoid Monday, and end with one written decision.\nUser: Give a concise plan that preserves every constraint."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-constraint_tracking-03-a22a2c3c46",
+      "prompt": "Conversation:\nUser: Plan a review for Harbor. It must last 25 minutes, include Priya and two reviewers, avoid Monday, and end with one written decision.\nUser: Give a concise plan that preserves every constraint."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-constraint_tracking-04-b29f04db0b",
+      "prompt": "Conversation:\nUser: Plan a review for Juniper. It must last 25 minutes, include Luis and two reviewers, avoid Monday, and end with one written decision.\nUser: Give a concise plan that preserves every constraint."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-grounded_synthesis-01-62fa819e5f",
+      "prompt": "Context:\n- Atlas processed 40 jobs.\n- 3 jobs failed validation.\n- The retry queue is owned by Mara.\nQuestion: Summarize the operational state using only supplied facts and name the owner."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-grounded_synthesis-02-8e91867cc1",
+      "prompt": "Context:\n- Lantern processed 47 jobs.\n- 4 jobs failed validation.\n- The retry queue is owned by Jonah.\nQuestion: Summarize the operational state using only supplied facts and name the owner."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-grounded_synthesis-03-9413a1cdfa",
+      "prompt": "Context:\n- Harbor processed 54 jobs.\n- 5 jobs failed validation.\n- The retry queue is owned by Priya.\nQuestion: Summarize the operational state using only supplied facts and name the owner."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-grounded_synthesis-04-5368814716",
+      "prompt": "Context:\n- Juniper processed 61 jobs.\n- 6 jobs failed validation.\n- The retry queue is owned by Luis.\nQuestion: Summarize the operational state using only supplied facts and name the owner."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-ambiguity_clarification-01-5b9d651978",
+      "prompt": "Conversation:\nUser: Send the Atlas report when it is ready.\nAssistant: I can help prepare that.\nUser: Go ahead.\nRespond with the clarification needed before any external effect."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-ambiguity_clarification-02-e203a77773",
+      "prompt": "Conversation:\nUser: Send the Lantern report when it is ready.\nAssistant: I can help prepare that.\nUser: Go ahead.\nRespond with the clarification needed before any external effect."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-ambiguity_clarification-03-407ddfc7f1",
+      "prompt": "Conversation:\nUser: Send the Harbor report when it is ready.\nAssistant: I can help prepare that.\nUser: Go ahead.\nRespond with the clarification needed before any external effect."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-ambiguity_clarification-04-9cfab5bcce",
+      "prompt": "Conversation:\nUser: Send the Juniper report when it is ready.\nAssistant: I can help prepare that.\nUser: Go ahead.\nRespond with the clarification needed before any external effect."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-calibrated_abstention-01-b65dfa6142",
+      "prompt": "Context:\nThe Atlas build started at 09:00. The log ends after dependency resolution.\nQuestion: What exact time did the build finish? State what is known and what evidence is missing."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-calibrated_abstention-02-641391f6f1",
+      "prompt": "Context:\nThe Lantern build started at 09:00. The log ends after dependency resolution.\nQuestion: What exact time did the build finish? State what is known and what evidence is missing."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-calibrated_abstention-03-a7b5e80bb3",
+      "prompt": "Context:\nThe Harbor build started at 09:00. The log ends after dependency resolution.\nQuestion: What exact time did the build finish? State what is known and what evidence is missing."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-calibrated_abstention-04-52c4d2a3d0",
+      "prompt": "Context:\nThe Juniper build started at 09:00. The log ends after dependency resolution.\nQuestion: What exact time did the build finish? State what is known and what evidence is missing."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-conversation_continuity-01-e04d9eaef4",
+      "prompt": "Conversation:\nUser: My name is Mara. For status notes, use bullets and never include emojis.\nUser: The current project is Atlas; its status is blocked on review.\nUser: Write my status note while following my saved preferences."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-conversation_continuity-02-00cebf4ba5",
+      "prompt": "Conversation:\nUser: My name is Jonah. For status notes, use bullets and never include emojis.\nUser: The current project is Lantern; its status is blocked on review.\nUser: Write my status note while following my saved preferences."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-conversation_continuity-03-0eca35df18",
+      "prompt": "Conversation:\nUser: My name is Priya. For status notes, use bullets and never include emojis.\nUser: The current project is Harbor; its status is blocked on review.\nUser: Write my status note while following my saved preferences."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-conversation_continuity-04-1eec8cc157",
+      "prompt": "Conversation:\nUser: My name is Luis. For status notes, use bullets and never include emojis.\nUser: The current project is Juniper; its status is blocked on review.\nUser: Write my status note while following my saved preferences."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-structured_transformation-01-15333009ad",
+      "prompt": "Source: Atlas added caching. Startup improved by 12 percent. Memory rose by 2 percent.\nTransform this into exactly three labeled bullets: Change, Benefit, Cost. Do not add facts."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-structured_transformation-02-f76cbc5660",
+      "prompt": "Source: Lantern added caching. Startup improved by 15 percent. Memory rose by 3 percent.\nTransform this into exactly three labeled bullets: Change, Benefit, Cost. Do not add facts."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-structured_transformation-03-ed88883f96",
+      "prompt": "Source: Harbor added caching. Startup improved by 18 percent. Memory rose by 4 percent.\nTransform this into exactly three labeled bullets: Change, Benefit, Cost. Do not add facts."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-structured_transformation-04-97dd822f3b",
+      "prompt": "Source: Juniper added caching. Startup improved by 21 percent. Memory rose by 5 percent.\nTransform this into exactly three labeled bullets: Change, Benefit, Cost. Do not add facts."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-repository_planning-01-8b544f142c",
+      "prompt": "Repository task: rename config key `teal_mode` to `display_mode` in parser.py and settings.ts. Preserve backward-compatible reads for one release, update tests, and provide rollback. Return an ordered implementation and verification plan."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-repository_planning-02-70aa988005",
+      "prompt": "Repository task: rename config key `amber_mode` to `display_mode` in parser.py and settings.ts. Preserve backward-compatible reads for one release, update tests, and provide rollback. Return an ordered implementation and verification plan."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-repository_planning-03-d85c3f70bf",
+      "prompt": "Repository task: rename config key `indigo_mode` to `display_mode` in parser.py and settings.ts. Preserve backward-compatible reads for one release, update tests, and provide rollback. Return an ordered implementation and verification plan."
+    },
+    {
+      "arm_id": "english",
+      "case_id": "fu-english-repository_planning-04-eea539bf64",
+      "prompt": "Repository task: rename config key `crimson_mode` to `display_mode` in parser.py and settings.ts. Preserve backward-compatible reads for one release, update tests, and provide rollback. Return an ordered implementation and verification plan."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-stable_unique-01-35025ee14c",
+      "prompt": "Write a complete standalone Python module implementing `def stable_unique_1(values: list[int]) -> list[int]`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-stable_unique-02-31e4670a5f",
+      "prompt": "Write a complete standalone Python module implementing `def stable_unique_2(values: list[int]) -> list[int]`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-stable_unique-03-28a24a115b",
+      "prompt": "Write a complete standalone Python module implementing `def stable_unique_3(values: list[int]) -> list[int]`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-stable_unique-04-0f619e2741",
+      "prompt": "Write a complete standalone Python module implementing `def stable_unique_4(values: list[int]) -> list[int]`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-clamp_values-01-9d396cbe26",
+      "prompt": "Write a complete standalone Python module implementing `def clamp_values_1(values: list[int], low: int, high: int) -> list[int]`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-clamp_values-02-4cc77bcf70",
+      "prompt": "Write a complete standalone Python module implementing `def clamp_values_2(values: list[int], low: int, high: int) -> list[int]`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-clamp_values-03-5aebf89596",
+      "prompt": "Write a complete standalone Python module implementing `def clamp_values_3(values: list[int], low: int, high: int) -> list[int]`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-clamp_values-04-e80203adb6",
+      "prompt": "Write a complete standalone Python module implementing `def clamp_values_4(values: list[int], low: int, high: int) -> list[int]`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-merge_counts-01-fcfb43515a",
+      "prompt": "Write a complete standalone Python module implementing `def merge_counts_1(left: dict[str, int], right: dict[str, int]) -> dict[str, int]`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-merge_counts-02-f5af503beb",
+      "prompt": "Write a complete standalone Python module implementing `def merge_counts_2(left: dict[str, int], right: dict[str, int]) -> dict[str, int]`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-merge_counts-03-ac11ca18ad",
+      "prompt": "Write a complete standalone Python module implementing `def merge_counts_3(left: dict[str, int], right: dict[str, int]) -> dict[str, int]`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-merge_counts-04-f55e07d843",
+      "prompt": "Write a complete standalone Python module implementing `def merge_counts_4(left: dict[str, int], right: dict[str, int]) -> dict[str, int]`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-chunk_values-01-0685271cc8",
+      "prompt": "Write a complete standalone Python module implementing `def chunk_values_1(values: list[int], size: int) -> list[list[int]]`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-chunk_values-02-f8aed2646f",
+      "prompt": "Write a complete standalone Python module implementing `def chunk_values_2(values: list[int], size: int) -> list[list[int]]`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-chunk_values-03-b853b963fc",
+      "prompt": "Write a complete standalone Python module implementing `def chunk_values_3(values: list[int], size: int) -> list[list[int]]`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-chunk_values-04-5f7807959a",
+      "prompt": "Write a complete standalone Python module implementing `def chunk_values_4(values: list[int], size: int) -> list[list[int]]`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-parse_duration-01-18134d6edc",
+      "prompt": "Write a complete standalone Python module implementing `def parse_duration_1(text: str) -> int`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-parse_duration-02-2a843faa26",
+      "prompt": "Write a complete standalone Python module implementing `def parse_duration_2(text: str) -> int`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-parse_duration-03-52c0ea368c",
+      "prompt": "Write a complete standalone Python module implementing `def parse_duration_3(text: str) -> int`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-parse_duration-04-9b009f67e6",
+      "prompt": "Write a complete standalone Python module implementing `def parse_duration_4(text: str) -> int`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-normalize_slug-01-e4263b8d95",
+      "prompt": "Write a complete standalone Python module implementing `def normalize_slug_1(text: str) -> str`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-normalize_slug-02-941f7d1868",
+      "prompt": "Write a complete standalone Python module implementing `def normalize_slug_2(text: str) -> str`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-normalize_slug-03-ffa4bfee2c",
+      "prompt": "Write a complete standalone Python module implementing `def normalize_slug_3(text: str) -> str`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-normalize_slug-04-6938d41b8a",
+      "prompt": "Write a complete standalone Python module implementing `def normalize_slug_4(text: str) -> str`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-select_active-01-786867c8e7",
+      "prompt": "Write a complete standalone Python module implementing `def select_active_1(records: list[dict]) -> list[str]`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-select_active-02-ba3a73b95a",
+      "prompt": "Write a complete standalone Python module implementing `def select_active_2(records: list[dict]) -> list[str]`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-select_active-03-8c039d2c08",
+      "prompt": "Write a complete standalone Python module implementing `def select_active_3(records: list[dict]) -> list[str]`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-select_active-04-9fc2920362",
+      "prompt": "Write a complete standalone Python module implementing `def select_active_4(records: list[dict]) -> list[str]`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-repository_edit-01-319a0c74ed",
+      "prompt": "Apply this repository edit to the complete Python module: change RETRY_LIMIT from 2 to 6, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1000.\n\nCurrent module:\nRETRY_LIMIT = 2\n\ndef should_retry(attempt):\n    return attempt < RETRY_LIMIT\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-repository_edit-02-ad3146b535",
+      "prompt": "Apply this repository edit to the complete Python module: change RETRY_LIMIT from 3 to 7, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1250.\n\nCurrent module:\nRETRY_LIMIT = 3\n\ndef should_retry(attempt):\n    return attempt < RETRY_LIMIT\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-repository_edit-03-bc37086505",
+      "prompt": "Apply this repository edit to the complete Python module: change RETRY_LIMIT from 4 to 8, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1500.\n\nCurrent module:\nRETRY_LIMIT = 4\n\ndef should_retry(attempt):\n    return attempt < RETRY_LIMIT\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "python",
+      "case_id": "fu-python-repository_edit-04-b77d342764",
+      "prompt": "Apply this repository edit to the complete Python module: change RETRY_LIMIT from 5 to 9, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1750.\n\nCurrent module:\nRETRY_LIMIT = 5\n\ndef should_retry(attempt):\n    return attempt < RETRY_LIMIT\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-stable_unique-01-a82733e167",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function stable_unique_1(values)`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-stable_unique-02-467dfc50a6",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function stable_unique_2(values: number[]): number[]`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-stable_unique-03-dd41270c73",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function stable_unique_3(values)`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-stable_unique-04-dbfb8de586",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function stable_unique_4(values: number[]): number[]`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-clamp_values-01-436c3d72b8",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function clamp_values_1(values, low, high)`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-clamp_values-02-9d9c6197aa",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function clamp_values_2(values: number[], low: number, high: number): number[]`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-clamp_values-03-772044eeb7",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function clamp_values_3(values, low, high)`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-clamp_values-04-084d2156a5",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function clamp_values_4(values: number[], low: number, high: number): number[]`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-merge_counts-01-e56130fcae",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function merge_counts_1(left, right)`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-merge_counts-02-22fa426e5e",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function merge_counts_2(left: Record<string, number>, right: Record<string, number>): Record<string, number>`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-merge_counts-03-1df0d5c63d",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function merge_counts_3(left, right)`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-merge_counts-04-33da72c1d9",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function merge_counts_4(left: Record<string, number>, right: Record<string, number>): Record<string, number>`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-chunk_values-01-c4530eda97",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function chunk_values_1(values, size)`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-chunk_values-02-969d082a64",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function chunk_values_2(values: number[], size: number): number[][]`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-chunk_values-03-f07b42c55a",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function chunk_values_3(values, size)`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-chunk_values-04-447d407603",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function chunk_values_4(values: number[], size: number): number[][]`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-parse_duration-01-50e4de4248",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function parse_duration_1(text)`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-parse_duration-02-539d7fcdec",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function parse_duration_2(text: string): number`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-parse_duration-03-0161e84b9d",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function parse_duration_3(text)`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-parse_duration-04-39b1ae0822",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function parse_duration_4(text: string): number`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-normalize_slug-01-56bf1111b6",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function normalize_slug_1(text)`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-normalize_slug-02-18e2387191",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function normalize_slug_2(text: string): string`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-normalize_slug-03-19b989ba45",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function normalize_slug_3(text)`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-normalize_slug-04-3c272d2390",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function normalize_slug_4(text: string): string`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-select_active-01-2b7b83ceb6",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function select_active_1(records)`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-select_active-02-95f4bcabd0",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function select_active_2(records: {name: string; enabled: boolean; priority: number}[]): string[]`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-select_active-03-62fb1a731b",
+      "prompt": "Write a complete standalone JavaScript module implementing `export function select_active_3(records)`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-select_active-04-841a46a7e1",
+      "prompt": "Write a complete standalone TypeScript module implementing `export function select_active_4(records: {name: string; enabled: boolean; priority: number}[]): string[]`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete module source."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-repository_edit-01-a026c64ea0",
+      "prompt": "Apply this repository edit to the complete JavaScript module: change RETRY_LIMIT from 2 to 6, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1000.\n\nCurrent module:\nexport const RETRY_LIMIT = 2;\nexport function shouldRetry(attempt) {\n  return attempt < RETRY_LIMIT;\n}\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-repository_edit-02-41903d8475",
+      "prompt": "Apply this repository edit to the complete TypeScript module: change RETRY_LIMIT from 3 to 7, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1250.\n\nCurrent module:\nexport const RETRY_LIMIT = 3;\nexport function shouldRetry(attempt) {\n  return attempt < RETRY_LIMIT;\n}\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-repository_edit-03-be14e3be35",
+      "prompt": "Apply this repository edit to the complete JavaScript module: change RETRY_LIMIT from 4 to 8, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1500.\n\nCurrent module:\nexport const RETRY_LIMIT = 4;\nexport function shouldRetry(attempt) {\n  return attempt < RETRY_LIMIT;\n}\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "javascript_typescript",
+      "case_id": "fu-javascript_typescript-repository_edit-04-4f8fe18f00",
+      "prompt": "Apply this repository edit to the complete TypeScript module: change RETRY_LIMIT from 5 to 9, preserve the retry boundary behavior, and add a named DEFAULT_TIMEOUT_MS constant set to 1750.\n\nCurrent module:\nexport const RETRY_LIMIT = 5;\nexport function shouldRetry(attempt) {\n  return attempt < RETRY_LIMIT;\n}\n\nReturn only the complete revised module."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-accessible_form-01-76edb577bb",
+      "prompt": "Create a signup form titled Account 1 with labeled email and password fields, validation help, and a submit button. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-accessible_form-02-c57b22d3ac",
+      "prompt": "Create a signup form titled Account 2 with labeled email and password fields, validation help, and a submit button. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-accessible_form-03-8acd1e3242",
+      "prompt": "Create a signup form titled Account 3 with labeled email and password fields, validation help, and a submit button. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-accessible_form-04-d0d77cdf58",
+      "prompt": "Create a signup form titled Account 4 with labeled email and password fields, validation help, and a submit button. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-landmark_navigation-01-7982877195",
+      "prompt": "Create a documentation page for Release 1 with skip link, header, labeled navigation, main article, and footer. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-landmark_navigation-02-37514ab251",
+      "prompt": "Create a documentation page for Release 2 with skip link, header, labeled navigation, main article, and footer. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-landmark_navigation-03-a9ceab3174",
+      "prompt": "Create a documentation page for Release 3 with skip link, header, labeled navigation, main article, and footer. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-landmark_navigation-04-347a3ab549",
+      "prompt": "Create a documentation page for Release 4 with skip link, header, labeled navigation, main article, and footer. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-data_table-01-e3bb1270f7",
+      "prompt": "Create a responsive table captioned Build 1 results with Name, Status, and Duration columns and two data rows. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-data_table-02-aee4044a68",
+      "prompt": "Create a responsive table captioned Build 2 results with Name, Status, and Duration columns and two data rows. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-data_table-03-3915015d5d",
+      "prompt": "Create a responsive table captioned Build 3 results with Name, Status, and Duration columns and two data rows. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-data_table-04-ca1c8e1f1d",
+      "prompt": "Create a responsive table captioned Build 4 results with Name, Status, and Duration columns and two data rows. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-status_alert-01-94e1c64374",
+      "prompt": "Create a status panel announcing Sync 1 failed, with an accessible alert, retry button, and visually distinct error state. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-status_alert-02-47607fce47",
+      "prompt": "Create a status panel announcing Sync 2 failed, with an accessible alert, retry button, and visually distinct error state. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-status_alert-03-915f1fd64f",
+      "prompt": "Create a status panel announcing Sync 3 failed, with an accessible alert, retry button, and visually distinct error state. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-status_alert-04-7d03833f51",
+      "prompt": "Create a status panel announcing Sync 4 failed, with an accessible alert, retry button, and visually distinct error state. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-responsive_cards-01-ee56ca6e8b",
+      "prompt": "Create a Projects 1 card grid with three articles that is one column on narrow screens and three columns at 48rem. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-responsive_cards-02-234172e492",
+      "prompt": "Create a Projects 2 card grid with three articles that is one column on narrow screens and three columns at 48rem. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-responsive_cards-03-ed2847fa5d",
+      "prompt": "Create a Projects 3 card grid with three articles that is one column on narrow screens and three columns at 48rem. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-responsive_cards-04-b8c94d7803",
+      "prompt": "Create a Projects 4 card grid with three articles that is one column on narrow screens and three columns at 48rem. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-theme_variables-01-a9a712a115",
+      "prompt": "Create a Theme 1 preview using CSS custom properties for surface, text, accent, and focus colors plus dark-scheme overrides. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-theme_variables-02-e9b7ff35f1",
+      "prompt": "Create a Theme 2 preview using CSS custom properties for surface, text, accent, and focus colors plus dark-scheme overrides. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-theme_variables-03-20c5256738",
+      "prompt": "Create a Theme 3 preview using CSS custom properties for surface, text, accent, and focus colors plus dark-scheme overrides. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-theme_variables-04-a569f947e8",
+      "prompt": "Create a Theme 4 preview using CSS custom properties for surface, text, accent, and focus colors plus dark-scheme overrides. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-modal_dialog-01-0877438e1f",
+      "prompt": "Create a visible confirmation dialog for Archive 1 with title, description, cancel, and confirm controls. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-modal_dialog-02-7b50ca63b5",
+      "prompt": "Create a visible confirmation dialog for Archive 2 with title, description, cancel, and confirm controls. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-modal_dialog-03-17a2e21ba7",
+      "prompt": "Create a visible confirmation dialog for Archive 3 with title, description, cancel, and confirm controls. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-modal_dialog-04-a4b9d52300",
+      "prompt": "Create a visible confirmation dialog for Archive 4 with title, description, cancel, and confirm controls. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-media_figure-01-e29506d46f",
+      "prompt": "Create a performance figure titled Throughput 1 with an image, useful alt text, caption, and responsive sizing. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-media_figure-02-4cfe3200b7",
+      "prompt": "Create a performance figure titled Throughput 2 with an image, useful alt text, caption, and responsive sizing. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-media_figure-03-2a9ad68ed9",
+      "prompt": "Create a performance figure titled Throughput 3 with an image, useful alt text, caption, and responsive sizing. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "html_css",
+      "case_id": "fu-html_css-media_figure-04-7a44a09c5e",
+      "prompt": "Create a performance figure titled Throughput 4 with an image, useful alt text, caption, and responsive sizing. Return one complete HTML document with embedded CSS and no JavaScript or external resources."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-stable_unique-01-ce1424692a",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn stable_unique_1(values: &[i32]) -> Vec<i32>`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-stable_unique-02-65de4492b9",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn stable_unique_2(values: &[i32]) -> Vec<i32>`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-stable_unique-03-231d7871d3",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn stable_unique_3(values: &[i32]) -> Vec<i32>`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-stable_unique-04-9a1e70c73a",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn stable_unique_4(values: &[i32]) -> Vec<i32>`. Return values in first-seen order with duplicates removed and do not mutate the input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-clamp_values-01-1a3a78193f",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn clamp_values_1(values: &[i32], low: i32, high: i32) -> Result<Vec<i32>, String>`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-clamp_values-02-0d84c5d0af",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn clamp_values_2(values: &[i32], low: i32, high: i32) -> Result<Vec<i32>, String>`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-clamp_values-03-de78d2b64d",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn clamp_values_3(values: &[i32], low: i32, high: i32) -> Result<Vec<i32>, String>`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-clamp_values-04-4dc6e364fc",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn clamp_values_4(values: &[i32], low: i32, high: i32) -> Result<Vec<i32>, String>`. Clamp every value inclusively to [low, high], preserving order; reject low greater than high. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-merge_counts-01-095397391e",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn merge_counts_1(left: &[(String, i32)], right: &[(String, i32)]) -> Vec<(String, i32)>`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-merge_counts-02-17c292e692",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn merge_counts_2(left: &[(String, i32)], right: &[(String, i32)]) -> Vec<(String, i32)>`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-merge_counts-03-16e2c36cc0",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn merge_counts_3(left: &[(String, i32)], right: &[(String, i32)]) -> Vec<(String, i32)>`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-merge_counts-04-6c9789dda5",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn merge_counts_4(left: &[(String, i32)], right: &[(String, i32)]) -> Vec<(String, i32)>`. Return a new key-sorted mapping whose values sum matching keys without mutating inputs. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-chunk_values-01-2fd1ff6e25",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn chunk_values_1(values: &[i32], size: usize) -> Result<Vec<Vec<i32>>, String>`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-chunk_values-02-2e0c78ec60",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn chunk_values_2(values: &[i32], size: usize) -> Result<Vec<Vec<i32>>, String>`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-chunk_values-03-2e2be86dd6",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn chunk_values_3(values: &[i32], size: usize) -> Result<Vec<Vec<i32>>, String>`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-chunk_values-04-1013a01b75",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn chunk_values_4(values: &[i32], size: usize) -> Result<Vec<Vec<i32>>, String>`. Split values into consecutive chunks, retaining a short final chunk; reject non-positive size. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-parse_duration-01-927fa4e0cf",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn parse_duration_1(text: &str) -> Result<u64, String>`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-parse_duration-02-30a47aad71",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn parse_duration_2(text: &str) -> Result<u64, String>`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-parse_duration-03-14f2c08a6c",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn parse_duration_3(text: &str) -> Result<u64, String>`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-parse_duration-04-1ff3bfbfc9",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn parse_duration_4(text: &str) -> Result<u64, String>`. Parse optional h, m, and s integer components separated by spaces into total seconds; reject malformed text. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-normalize_slug-01-fbaf16e3be",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn normalize_slug_1(text: &str) -> String`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-normalize_slug-02-43356c816a",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn normalize_slug_2(text: &str) -> String`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-normalize_slug-03-17f99e483e",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn normalize_slug_3(text: &str) -> String`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-normalize_slug-04-a575ad3e5f",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn normalize_slug_4(text: &str) -> String`. Lowercase, collapse every run of non-alphanumeric characters to one hyphen, and trim boundary hyphens. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-select_active-01-ab3e51aadf",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn select_active_1(records: &[(String, bool, i32)]) -> Vec<String>`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-select_active-02-6e2a260526",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn select_active_2(records: &[(String, bool, i32)]) -> Vec<String>`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-select_active-03-0724254aa4",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn select_active_3(records: &[(String, bool, i32)]) -> Vec<String>`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-select_active-04-99059fc329",
+      "prompt": "Write a complete standalone Rust library implementing `pub fn select_active_4(records: &[(String, bool, i32)]) -> Vec<String>`. Select enabled records, sort by descending priority then ascending name, and return names without mutating input. Return only the complete src/lib.rs source."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-repository_edit-01-0ee8de93de",
+      "prompt": "Apply this repository edit to the complete Rust library: change RETRY_LIMIT from 2 to 6, preserve should_retry's boundary behavior, and add `pub const DEFAULT_TIMEOUT_MS: u64 = 1000;`.\n\nCurrent library:\npub const RETRY_LIMIT: u32 = 2;\npub fn should_retry(attempt: u32) -> bool { attempt < RETRY_LIMIT }\n\nReturn only the complete revised src/lib.rs."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-repository_edit-02-741396a770",
+      "prompt": "Apply this repository edit to the complete Rust library: change RETRY_LIMIT from 3 to 7, preserve should_retry's boundary behavior, and add `pub const DEFAULT_TIMEOUT_MS: u64 = 1250;`.\n\nCurrent library:\npub const RETRY_LIMIT: u32 = 3;\npub fn should_retry(attempt: u32) -> bool { attempt < RETRY_LIMIT }\n\nReturn only the complete revised src/lib.rs."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-repository_edit-03-e659adaf63",
+      "prompt": "Apply this repository edit to the complete Rust library: change RETRY_LIMIT from 4 to 8, preserve should_retry's boundary behavior, and add `pub const DEFAULT_TIMEOUT_MS: u64 = 1500;`.\n\nCurrent library:\npub const RETRY_LIMIT: u32 = 4;\npub fn should_retry(attempt: u32) -> bool { attempt < RETRY_LIMIT }\n\nReturn only the complete revised src/lib.rs."
+    },
+    {
+      "arm_id": "rust",
+      "case_id": "fu-rust-repository_edit-04-9eb11cc2da",
+      "prompt": "Apply this repository edit to the complete Rust library: change RETRY_LIMIT from 5 to 9, preserve should_retry's boundary behavior, and add `pub const DEFAULT_TIMEOUT_MS: u64 = 1750;`.\n\nCurrent library:\npub const RETRY_LIMIT: u32 = 5;\npub fn should_retry(attempt: u32) -> bool { attempt < RETRY_LIMIT }\n\nReturn only the complete revised src/lib.rs."
+    }
+  ]
+}

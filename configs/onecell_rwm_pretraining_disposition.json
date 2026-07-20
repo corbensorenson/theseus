@@ -8,7 +8,7 @@
   },
   "first_campaign": {
     "config": "configs/neural_seed_50m_scale_preregistration.json",
-    "sha256": "b2cc394c38592e2bb33cdacf328a5b53a28afd3439a3a4d80675a7a211573dbd",
+    "sha256": "164527919ec1cb94a2f2d6f714f67af2db9d0f811aba147e8291c21a735c7c4e",
     "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
     "disposition": "retired_from_first_language_campaign",
     "routeable": false,

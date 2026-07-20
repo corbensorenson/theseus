@@ -7,6 +7,8 @@ import argparse
 import copy
 import hashlib
 import json
+import re
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -233,6 +235,22 @@ def audit_sources(contract: dict[str, Any], *, root: Path) -> dict[str, Any]:
     declared = contract.get("source_artifacts") if isinstance(contract.get("source_artifacts"), list) else []
     paper = contract.get("paper") if isinstance(contract.get("paper"), dict) else {}
     declared = [{"path": paper.get("path"), "sha256": paper.get("sha256"), "kind": "paper"}, *declared]
+    snapshot = (
+        contract.get("source_snapshot")
+        if isinstance(contract.get("source_snapshot"), dict)
+        else {}
+    )
+    snapshot_commit = str(snapshot.get("git_commit") or "")
+    live_paths = {
+        str(value)
+        for value in snapshot.get("live_artifact_paths", [])
+        if isinstance(value, str) and value
+    }
+    if snapshot:
+        if snapshot.get("policy") != "project_theseus_banked_kerc_source_snapshot_v1":
+            faults.append(fault("source_snapshot_policy_invalid"))
+        if not re.fullmatch(r"[0-9a-f]{40}", snapshot_commit):
+            faults.append(fault("source_snapshot_commit_invalid", observed=snapshot_commit))
     corpus_path: Path | None = None
     for item in declared:
         if not isinstance(item, dict):
@@ -241,13 +259,30 @@ def audit_sources(contract: dict[str, Any], *, root: Path) -> dict[str, Any]:
         raw_path = str(item.get("path") or "")
         candidate = resolve(raw_path, root=root)
         expected = normalize_sha(item.get("sha256"))
-        observed = sha256_file(candidate) if candidate.exists() and candidate.is_file() else None
+        use_snapshot = bool(
+            snapshot_commit
+            and item.get("kind") != "paper"
+            and raw_path not in live_paths
+        )
+        snapshot_bytes = (
+            git_blob_bytes(root, snapshot_commit, raw_path) if use_snapshot else None
+        )
+        observed = (
+            hashlib.sha256(snapshot_bytes).hexdigest()
+            if snapshot_bytes is not None
+            else sha256_file(candidate)
+            if not use_snapshot and candidate.exists() and candidate.is_file()
+            else None
+        )
+        exists = snapshot_bytes is not None if use_snapshot else candidate.exists()
         valid = bool(raw_path and expected and observed == expected)
         rows.append(
             {
                 "path": relative(candidate, root),
                 "kind": item.get("kind") or "implementation_or_evidence",
-                "exists": candidate.exists(),
+                "authority": "git_snapshot" if use_snapshot else "live_content_addressed_artifact",
+                "snapshot_commit": snapshot_commit if use_snapshot else None,
+                "exists": exists,
                 "expected_sha256": expected,
                 "observed_sha256": observed,
                 "valid": valid,
@@ -271,6 +306,19 @@ def audit_sources(contract: dict[str, Any], *, root: Path) -> dict[str, Any]:
         "corpus_path": corpus_path,
         "faults": faults,
     }
+
+
+def git_blob_bytes(root: Path, commit: str, path: str) -> bytes | None:
+    if not re.fullmatch(r"[0-9a-f]{40}", commit) or not path or Path(path).is_absolute():
+        return None
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return result.stdout if result.returncode == 0 else None
 
 
 def audit_corpus(path: Path) -> dict[str, Any]:

@@ -33,6 +33,20 @@
     "scientific_negative": "NOT_CLAIMED",
     "required_failure_label_before_k7": "INCONCLUSIVE_IMPLEMENTATION"
   },
+  "source_snapshot": {
+    "policy": "project_theseus_banked_kerc_source_snapshot_v1",
+    "git_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+    "live_artifact_paths": [
+      "resource_pantry/kerc/conceptnet-assertions-5.7.0.csv.gz",
+      "resource_pantry/kerc/gum-v12.1.0/LICENSE.md",
+      "runtime/kerc_semantic_corpus/producer_manifest.json",
+      "runtime/kerc_semantic_corpus/candidate_records.jsonl",
+      "reports/runtime/kerc_semantic_corpus_verification.json",
+      "data/training_data/kernel_english_governed_v1/records.jsonl",
+      "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl"
+    ],
+    "rule": "Tracked K0-K3 sources are audited from the immutable bank commit. Runtime corpus and evidence payloads remain live content-addressed artifacts. Later practical-lane edits cannot silently rewrite the banked KERC claim or force KERC back into the zero-exposure first campaign."
+  },
   "source_artifacts": [
     {
       "path": "scripts/kernel_english_protocol.py",

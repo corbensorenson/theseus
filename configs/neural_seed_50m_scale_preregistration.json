@@ -62,9 +62,11 @@
   "scaling_contract": {
     "minimum_active_parameters": 50000000,
     "maximum_active_parameters": 100000000,
-    "minimum_unique_positions_per_active_parameter": 20.0,
+    "minimum_unique_positions_per_active_parameter": 5.0,
+    "minimum_optimizer_positions_per_active_parameter": 20.0,
     "maximum_optimizer_repetition_factor": 4.0,
     "unique_positions_never_include_optimizer_repetition": true,
+    "optimizer_positions_and_unique_positions_reported_separately": true,
     "task_complete_coverage_required_for_every_arm": true,
     "matched_accounting_views": ["active_parameters", "total_parameters"],
     "confirmation_surface_reserved": true

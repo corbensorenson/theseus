@@ -30,7 +30,7 @@ CATEGORY_ORDER = (
 )
 
 
-def category_targets(contract: dict[str, Any]) -> dict[str, int]:
+def minimum_category_targets(contract: dict[str, Any]) -> dict[str, int]:
     domains = contract.get("domain_minimum_positions") or {}
     subsets = contract.get("subset_minimum_positions") or {}
     languages = contract.get("code_language_minimum_positions") or {}
@@ -55,6 +55,22 @@ def category_targets(contract: dict[str, Any]) -> dict[str, int]:
     required = int(contract.get("required_unique_positions") or 0)
     if sum(targets.values()) != required:
         raise ValueError("canonical category targets must partition required positions")
+    return targets
+
+
+def category_targets(contract: dict[str, Any]) -> dict[str, int]:
+    """Return the frozen stage composition, which may exceed adequacy minima."""
+
+    minimums = minimum_category_targets(contract)
+    materialization = contract.get("materialization_category_positions")
+    if not isinstance(materialization, dict):
+        return minimums
+    targets = {key: int(materialization.get(key) or 0) for key in CATEGORY_ORDER}
+    if any(targets[key] < minimums[key] for key in CATEGORY_ORDER):
+        raise ValueError("materialized category positions cannot fall below category minima")
+    expected = int(contract.get("materialization_unique_positions") or 0)
+    if expected <= 0 or sum(targets.values()) != expected:
+        raise ValueError("materialized category positions must partition stage positions")
     return targets
 
 
@@ -214,7 +230,7 @@ def materialize_pretrain_stage(
         "external_inference_calls": 0,
         "fallback_return_count": 0,
     }
-    if report["materialized_positions"] != int(contract["required_unique_positions"]):
+    if report["materialized_positions"] != sum(targets.values()):
         raise ValueError("canonical stage position count mismatch")
     return arrays[0], arrays[1], arrays[2], report
 

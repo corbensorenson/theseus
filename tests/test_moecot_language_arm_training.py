@@ -47,6 +47,7 @@ from moecot_language_arm_training import (  # noqa: E402
     serialization_valid_local_ids,
     should_evaluate_target,
     target_contracts,
+    target_optimizer_exposure,
     target_copy_identity_ranges,
     train_target,
     validate_config,
@@ -85,6 +86,29 @@ def arm_views() -> dict:
         "mixed_dense_control": {"row_ranges": [{"start": 0, "stop": 10}]},
         "hidden_generalist_fallback": "forbidden",
     }
+
+
+def test_target_optimizer_exposure_uses_owned_parameters_and_caps_repetition() -> None:
+    accepted = target_optimizer_exposure(
+        owned_parameter_count=2_504_193,
+        unique_target_positions=17_577_020,
+        minimum_optimizer_ratio=20.0,
+        maximum_repetitions=4.0,
+    )
+    assert accepted["minimum_optimizer_positions"] == 50_083_860
+    assert accepted["optimizer_target_positions"] == 50_083_860
+    assert accepted["optimizer_repetition_factor"] == 2.84939427
+    assert accepted["optimizer_repetition_ceiling_ready"] is True
+    assert accepted["optimizer_repetition_counted_as_unique_data"] is False
+
+    rejected = target_optimizer_exposure(
+        owned_parameter_count=100,
+        unique_target_positions=499,
+        minimum_optimizer_ratio=20.0,
+        maximum_repetitions=4.0,
+    )
+    assert rejected["optimizer_repetition_factor"] > 4.0
+    assert rejected["optimizer_repetition_ceiling_ready"] is False
 
 
 def test_kerc_unit_allocator_rows_materialize_ragged_source_visible_features() -> None:
@@ -699,6 +723,76 @@ def test_scale_preregistration_requires_authorized_report_fresh_eval_and_namespa
 
     bound["checkpoint_root"] = str(tmp_path / "old-campaign")
     assert "checkpoint_namespace_not_bound_to_scale_candidate" in (
+        audit_scale_preregistration(bound)["hard_gaps"]
+    )
+
+
+def test_scale_preregistration_rejects_nested_input_identity_drift(
+    tmp_path: Path,
+) -> None:
+    config = tiny_config(tmp_path)
+    candidate_id = "fixture_57m_candidate"
+    prereg_path = tmp_path / "scale.json"
+    report_path = tmp_path / "scale-report.json"
+    evaluation_path = tmp_path / "evaluation-freeze.json"
+    nested = tmp_path / "capacity.json"
+    prereg = {
+        "policy": "scale_fixture_v1",
+        "candidate": {
+            "id": candidate_id,
+            "expert_trainable_scope": config["topology"]["expert_trainable_scope"],
+            "shared_trunk_model": config["shared_trunk_model"],
+            "arm_model": config["arm_model"],
+        },
+    }
+    prereg_path.write_text(json.dumps(prereg), encoding="utf-8")
+    nested.write_text('{"policy":"fixture"}', encoding="utf-8")
+    report_path.write_text(
+        json.dumps(
+            {
+                "policy": "scale_fixture_v1",
+                "training_authorized": True,
+                "proposal_state": "AUTHORIZED_FOR_FROZEN_TRAINING_PLAN",
+                "config": {
+                    "path": str(prereg_path),
+                    "sha256": hashlib.sha256(prereg_path.read_bytes()).hexdigest(),
+                },
+                "architecture": {"candidate_id": candidate_id},
+                "input_artifacts": {
+                    "diagnostic": {
+                        "path": str(nested),
+                        "sha256": hashlib.sha256(nested.read_bytes()).hexdigest(),
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    evaluation_path.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_private_functional_utility_freeze_v2",
+                "immutable": True,
+                "evaluation_state": "NOT_EVALUATED",
+                "candidate_id": candidate_id,
+                "source_disjoint": True,
+                "consumed_case_count": 0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    config["scale_preregistration"] = {
+        "config": str(prereg_path),
+        "report": str(report_path),
+        "required_policy": "scale_fixture_v1",
+        "candidate_id": candidate_id,
+        "evaluation_freeze": str(evaluation_path),
+    }
+    config["checkpoint_root"] = str(tmp_path / candidate_id)
+    bound = bind_scale_preregistration(config)
+    assert audit_scale_preregistration(bound)["hard_gaps"] == []
+    nested.write_text('{"policy":"tampered"}', encoding="utf-8")
+    assert "scale_preregistration_input_stale:diagnostic" in (
         audit_scale_preregistration(bound)["hard_gaps"]
     )
 

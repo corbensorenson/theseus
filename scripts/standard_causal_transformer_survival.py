@@ -14,6 +14,7 @@ import math
 import os
 import random
 import re
+import sqlite3
 import symtable
 import time
 from collections import Counter
@@ -142,6 +143,8 @@ def main() -> int:
     parser.add_argument("--generation-mode-canary", action="store_true")
     parser.add_argument("--audit-corpus", action="store_true")
     parser.add_argument("--measure-corpus-capacity", action="store_true")
+    parser.add_argument("--refresh-capacity-identity", action="store_true")
+    parser.add_argument("--prior-config", default="")
     parser.add_argument(
         "--capacity-index",
         default="",
@@ -199,6 +202,17 @@ def main() -> int:
         write_json(resolve(args.out), receipt)
         print(json.dumps(receipt, indent=2, sort_keys=True))
         return 0
+    if args.refresh_capacity_identity:
+        if not args.prior_config:
+            parser.error("--refresh-capacity-identity requires --prior-config")
+        report = refresh_capacity_identity(
+            resolve(args.out),
+            current_config_path=resolve(args.config),
+            prior_config_path=resolve(args.prior_config),
+        )
+        write_json(resolve(args.out), report)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     if args.materialize_stage_only:
         receipt = materialize_stage_only_receipt(
             config,
@@ -246,6 +260,95 @@ def publish_candidate_artifact(
     return True
 
 
+def capacity_measurement_contract(config: dict[str, Any]) -> dict[str, Any]:
+    """Hash only inputs that can alter exact index capacity measurement."""
+
+    vocab_path = resolve(str((config.get("tokenization") or {}).get("source_vocab") or ""))
+    private_eval = resolve(str((config.get("sources") or {}).get("private_eval") or ""))
+    payload = {
+        "canonical_corpus": config.get("canonical_corpus") or {},
+        "tokenization": config.get("tokenization") or {},
+        "vocabulary_sha256": (
+            file_content_sha256(vocab_path) if vocab_path.is_file() else ""
+        ),
+        "private_eval_sha256": (
+            file_content_sha256(private_eval) if private_eval.is_file() else ""
+        ),
+        "evaluation_selection": config.get("evaluation") or {},
+        "measurement_function_sha256": sha(inspect.getsource(measure_pretrain_index_capacity)),
+        "encoding_function_sha256": sha(inspect.getsource(encode_canonical_pretrain_document)),
+    }
+    return {
+        "policy": "project_theseus_exact_capacity_measurement_contract_v1",
+        "payload": payload,
+        "sha256": sha(json.dumps(payload, sort_keys=True)),
+    }
+
+
+def refresh_capacity_identity(
+    report_path: Path,
+    *,
+    current_config_path: Path,
+    prior_config_path: Path,
+) -> dict[str, Any]:
+    """Migrate config identity only when every measurement input is unchanged."""
+
+    report = read_json(report_path)
+    prior = read_json(prior_config_path)
+    current = read_json(current_config_path)
+    if report.get("policy") != "project_theseus_admitted_index_exact_capacity_measurement_v1":
+        raise ValueError("capacity identity refresh requires the exact capacity policy")
+    if str(report.get("config_sha256") or "") != file_content_sha256(
+        prior_config_path
+    ):
+        raise ValueError("prior config does not match the measured capacity receipt")
+    prior_contract = capacity_measurement_contract(prior)
+    current_contract = capacity_measurement_contract(current)
+    if prior_contract["sha256"] != current_contract["sha256"]:
+        raise ValueError("capacity measurement inputs changed; full remeasurement required")
+    index_path = resolve(str(report.get("index") or ""))
+    if (
+        not index_path.is_file()
+        or file_content_sha256(index_path) != str(report.get("index_sha256") or "")
+    ):
+        raise ValueError("capacity index identity changed; full remeasurement required")
+    with sqlite3.connect(index_path) as connection:
+        indexed = [
+            f"{category}:{digest}"
+            for category, digest in connection.execute(
+                "SELECT category, digest FROM documents ORDER BY category, digest"
+            )
+        ]
+    indexed_digest = sha("\n".join(indexed))
+    prior_indexed_count = report.get("indexed_document_count")
+    prior_indexed_digest = report.get("indexed_document_digest")
+    if prior_indexed_count is not None and int(prior_indexed_count) != len(indexed):
+        raise ValueError("capacity indexed-document count changed")
+    if prior_indexed_digest is not None and str(prior_indexed_digest) != indexed_digest:
+        raise ValueError("capacity indexed-document identity changed")
+    predecessor_sha = file_content_sha256(report_path)
+    migrated = copy.deepcopy(report)
+    migrated["config"] = rel(current_config_path)
+    migrated["config_sha256"] = file_content_sha256(current_config_path)
+    migrated["indexed_document_count"] = len(indexed)
+    migrated["indexed_document_digest"] = indexed_digest
+    migrated["measurement_contract"] = current_contract
+    migrated["identity_migration"] = {
+        "policy": "project_theseus_capacity_config_identity_migration_v1",
+        "created_utc": now(),
+        "predecessor_report_sha256": predecessor_sha,
+        "prior_config_sha256": file_content_sha256(prior_config_path),
+        "current_config_sha256": file_content_sha256(current_config_path),
+        "measurement_contract_unchanged": True,
+        "exact_index_bytes_replayed": True,
+        "indexed_document_inventory_replayed": True,
+        "selected_documents_recomputed": False,
+        "position_counts_recomputed": False,
+        "position_counts_changed": False,
+    }
+    return migrated
+
+
 def materialize_stage_only_receipt(
     config: dict[str, Any],
     *,
@@ -257,15 +360,10 @@ def materialize_stage_only_receipt(
 
     validate_config(config)
     scaling = build_data_model_scaling_contract(config)
-    if scaling["training_authorized"] is not True:
-        raise ValueError(
-            "stage materialization denied by frozen data/model scaling contract: "
-            + ", ".join(scaling["hard_gaps"])
-        )
     started = time.perf_counter()
     stage = materialize_stage(config, stage_dir=stage_dir, force=force)
     canonical = stage.summary["canonical_pretrain_stage"]
-    expected = int(config["training"]["pretrain_target_token_positions"])
+    expected = pretrain_stage_position_target(config["training"])
     observed = int(canonical["target_positions"])
     gaps: list[str] = []
     if observed != expected:
@@ -276,10 +374,13 @@ def materialize_stage_only_receipt(
         gaps.append("public_training_rows_nonzero")
     if int(stage.summary.get("external_inference_calls") or 0):
         gaps.append("external_inference_calls_nonzero")
+    scaling_gaps = list(scaling.get("hard_gaps") or [])
     metadata = stage_dir / "stage_metadata_v1.json"
     return {
         "policy": "project_theseus_standard_causal_stage_materialization_receipt_v1",
-        "trigger_state": "GREEN" if not gaps else "RED",
+        "trigger_state": (
+            "GREEN" if not gaps and not scaling_gaps else "YELLOW" if not gaps else "RED"
+        ),
         "created_utc": now(),
         "config": rel(resolve(config_path)),
         "config_sha256": file_content_sha256(resolve(config_path)),
@@ -303,10 +404,14 @@ def materialize_stage_only_receipt(
             "selected_rung": scaling["selected_rung"],
             "required_unique_positions": scaling["required_unique_positions"],
             "training_authorized": scaling["training_authorized"],
+            "hard_gaps": scaling_gaps,
         },
         "hard_gaps": gaps,
         "runtime_ms": int((time.perf_counter() - started) * 1000),
         "capability_credit": "NONE",
+        "training_authority_credit": bool(
+            not gaps and not scaling_gaps and scaling["training_authorized"] is True
+        ),
         "model_training_performed": False,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -383,7 +488,7 @@ def run(
     pretrain_steps = required_steps(
         stage.pretrain_mask,
         int(training_cfg["batch_size"]),
-        int(training_cfg["pretrain_target_token_positions"]),
+        pretrain_optimizer_position_target(training_cfg),
     )
     sft_steps = required_steps(
         stage.sft_body_mask,
@@ -574,7 +679,7 @@ def run(
                 stage.pretrain_mask,
                 None,
                 None,
-                int(training_cfg["pretrain_target_token_positions"]),
+                pretrain_optimizer_position_target(training_cfg),
                 pretrain_steps,
             ),
             (
@@ -1241,7 +1346,7 @@ def build_pretrain_windows(
     stride = int(token_cfg["raw_code_window_stride"])
     source_vocab = read_json(resolve(token_cfg["source_vocab"]))["source_vocab"]
     target_offset = target_token_offset(config, source_vocab)
-    wanted = int(config["training"]["pretrain_target_token_positions"])
+    wanted = pretrain_stage_position_target(config["training"])
     windows: list[list[int]] = []
     positions = 0
     overlap_sources: list[str] = []
@@ -2509,6 +2614,26 @@ def required_steps(
     return max(1, math.ceil(target_positions / (mean_positions * batch_size)))
 
 
+def pretrain_stage_position_target(training_config: dict[str, Any]) -> int:
+    """Unique positions materialized once; legacy configs retain their old field."""
+
+    return int(
+        training_config.get("pretrain_stage_unique_positions")
+        or training_config.get("pretrain_target_token_positions")
+        or 0
+    )
+
+
+def pretrain_optimizer_position_target(training_config: dict[str, Any]) -> int:
+    """Total optimizer exposure, including bounded repeated passes."""
+
+    return int(
+        training_config.get("pretrain_optimizer_target_positions")
+        or training_config.get("pretrain_target_token_positions")
+        or 0
+    )
+
+
 def phase_target_positions(phase_reports: list[dict[str, Any]], phase_prefix: str) -> int:
     return sum(
         int(row.get("target_positions_consumed") or 0)
@@ -2522,7 +2647,7 @@ def training_targets_complete(
 ) -> bool:
     return bool(
         phase_target_positions(phase_reports, "licensed_module_causal_pretraining")
-        >= int(training_config["pretrain_target_token_positions"])
+        >= pretrain_optimizer_position_target(training_config)
         and phase_target_positions(phase_reports, "prompt_signature_body_sft")
         >= int(training_config["sft_target_token_positions"])
     )
@@ -5226,8 +5351,18 @@ def build_data_model_scaling_contract(config: dict[str, Any]) -> dict[str, Any]:
     planning = contract.get("planning_basis") if isinstance(contract.get("planning_basis"), dict) else {}
     active_parameters = int(selected.get("active_parameter_count") or 0)
     minimum_ratio = float(planning.get("minimum_unique_positions_per_active_parameter") or 0.0)
+    minimum_optimizer_ratio = float(
+        planning.get("minimum_optimizer_positions_per_active_parameter") or 0.0
+    )
     required_positions = int(contract.get("required_unique_positions") or 0)
+    required_optimizer_positions = int(
+        contract.get("required_optimizer_positions") or 0
+    )
     expected_required = math.ceil(active_parameters * minimum_ratio)
+    expected_optimizer = math.ceil(active_parameters * minimum_optimizer_ratio)
+    materialized_positions = int(
+        contract.get("materialization_unique_positions") or required_positions
+    )
     receipt_audits = []
     planning_positions = 0
     for row in contract.get("planning_receipts") or []:
@@ -5327,6 +5462,16 @@ def build_data_model_scaling_contract(config: dict[str, Any]) -> dict[str, Any]:
         hard_gaps.append("active_parameter_count_missing")
     if minimum_ratio <= 0.0 or required_positions != expected_required:
         hard_gaps.append("required_unique_positions_not_bound_to_selected_rung")
+    if (
+        minimum_optimizer_ratio < minimum_ratio
+        or required_optimizer_positions != expected_optimizer
+    ):
+        hard_gaps.append("required_optimizer_positions_not_bound_to_selected_rung")
+    planned_repetition = required_optimizer_positions / max(1, materialized_positions)
+    if planned_repetition > float(
+        planning.get("maximum_optimizer_repetition_factor") or 0.0
+    ):
+        hard_gaps.append("planned_optimizer_repetition_above_predeclared_maximum")
     if not receipt_audits or any(not row["valid_planning_receipt"] for row in receipt_audits):
         hard_gaps.append("planning_receipt_invalid_or_stale")
     if not governance_audits or any(not row["content_bound_and_clean"] for row in governance_audits):
@@ -5344,6 +5489,9 @@ def build_data_model_scaling_contract(config: dict[str, Any]) -> dict[str, Any]:
         "selected_rung": selected,
         "planning_basis": planning,
         "required_unique_positions": required_positions,
+        "materialization_unique_positions": materialized_positions,
+        "required_optimizer_positions": required_optimizer_positions,
+        "planned_optimizer_repetition_factor": round(planned_repetition, 8),
         "domain_minimum_positions": contract.get("domain_minimum_positions") or {},
         "subset_minimum_positions": contract.get("subset_minimum_positions") or {},
         "code_language_minimum_positions": contract.get("code_language_minimum_positions") or {},
@@ -5781,6 +5929,9 @@ def scaling_contract_sha256(contract: dict[str, Any]) -> str:
             "selected_rung",
             "planning_basis",
             "required_unique_positions",
+            "materialization_unique_positions",
+            "materialization_category_positions",
+            "required_optimizer_positions",
             "domain_minimum_positions",
             "subset_minimum_positions",
             "maximum_recursive_synthetic_position_share",
@@ -5846,6 +5997,10 @@ def audit_canonical_mixed_corpus_receipt(contract: dict[str, Any], receipt_ref: 
             "hard_gaps": ["canonical_mixed_corpus_receipt_missing"],
         }
     payload = read_json(path) if actual_sha else {}
+    if payload.get("policy") == "project_theseus_admitted_index_exact_capacity_measurement_v1":
+        return audit_exact_capacity_stage_authority(
+            contract, receipt_ref, payload, path=path, actual_sha=actual_sha
+        )
     summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
     selected = contract.get("selected_rung") if isinstance(contract.get("selected_rung"), dict) else {}
     domain_positions = summary.get("domain_unique_positions") if isinstance(summary.get("domain_unique_positions"), dict) else {}
@@ -5891,6 +6046,148 @@ def audit_canonical_mixed_corpus_receipt(contract: dict[str, Any], receipt_ref: 
         "code_language_unique_positions": language_positions,
         "evidence_dimensions": evidence,
         "hard_gaps": gaps,
+    }
+
+
+def audit_exact_capacity_stage_authority(
+    contract: dict[str, Any],
+    receipt_ref: dict[str, Any],
+    payload: dict[str, Any],
+    *,
+    path: Path,
+    actual_sha: str,
+) -> dict[str, Any]:
+    """Join exact tokenizer capacity to the materialized stage and source index."""
+
+    gaps: list[str] = []
+    index_path = resolve(str(payload.get("index") or ""))
+    if (
+        not index_path.is_file()
+        or file_content_sha256(index_path) != str(payload.get("index_sha256") or "")
+    ):
+        gaps.append("canonical_exact_capacity_index_identity_mismatch")
+    config_path = resolve(str(payload.get("config") or ""))
+    if (
+        not config_path.is_file()
+        or file_content_sha256(config_path) != str(payload.get("config_sha256") or "")
+    ):
+        gaps.append("canonical_exact_capacity_config_identity_mismatch")
+    stage_path = resolve(str(receipt_ref.get("stage_metadata") or ""))
+    stage = read_json(stage_path) if stage_path.is_file() else {}
+    if not stage:
+        gaps.append("canonical_exact_capacity_stage_metadata_missing")
+    canonical = ((stage.get("summary") or {}).get("canonical_pretrain_stage") or {})
+    stage_index = canonical.get("index") or {}
+    if (
+        str(stage_index.get("path") or "") != str(index_path)
+        or str(stage_index.get("sha256") or "")
+        != str(payload.get("index_sha256") or "")
+    ):
+        gaps.append("canonical_exact_capacity_stage_index_mismatch")
+    positions = {
+        key: int((payload.get("positions_by_category") or {}).get(key) or 0)
+        for key in (
+            "english_conversation_instruction",
+            "english_broad",
+            "python",
+            "javascript_typescript",
+            "html_css",
+            "rust",
+        )
+    }
+    total = int(payload.get("total_unique_positions") or 0)
+    if total <= 0 or total != sum(positions.values()):
+        gaps.append("canonical_exact_capacity_position_accounting_invalid")
+    if (
+        int(canonical.get("materialized_positions") or 0) != total
+        or dict(canonical.get("category_positions") or {}) != positions
+    ):
+        gaps.append("canonical_exact_capacity_stage_positions_mismatch")
+    tokenizer = canonical.get("tokenizer_audit") or {}
+    if (
+        int(tokenizer.get("roundtrip_failure_count") or 0) != 0
+        or int(tokenizer.get("admitted_unknown_token_position_count") or 0) != 0
+    ):
+        gaps.append("canonical_exact_capacity_tokenizer_roundtrip_invalid")
+    governance_path = resolve(str(receipt_ref.get("governance_receipt") or ""))
+    governance = read_json(governance_path) if governance_path.is_file() else {}
+    governance_summary = governance.get("summary") or {}
+    governance_evidence = governance_summary.get("evidence_dimensions") or {}
+    if (
+        governance.get("policy")
+        != "project_theseus_canonical_mixed_corpus_receipt_v1"
+        or governance.get("trigger_state") != "GREEN"
+    ):
+        gaps.append("canonical_exact_capacity_governance_receipt_invalid")
+    stale_governance_sources = []
+    for row in governance.get("source_identities") or []:
+        source_path = resolve(str(row.get("path") or ""))
+        if (
+            not source_path.is_file()
+            or file_content_sha256(source_path) != str(row.get("sha256") or "")
+        ):
+            stale_governance_sources.append(rel(source_path))
+    if not governance.get("source_identities") or stale_governance_sources:
+        gaps.append("canonical_exact_capacity_governance_source_identity_stale")
+    selected = contract.get("selected_rung") or {}
+    summary = {
+        "unique_model_visible_positions": total,
+        "domain_unique_positions": {
+            "english_natural_language_total": (
+                positions["english_conversation_instruction"]
+                + positions["english_broad"]
+            ),
+            "english_conversation_instruction": positions[
+                "english_conversation_instruction"
+            ],
+            "code_total": sum(
+                positions[key]
+                for key in ("python", "javascript_typescript", "html_css", "rust")
+            ),
+            "flexible_tail_reserve": max(
+                0,
+                total
+                - int((contract.get("domain_minimum_positions") or {}).get("code_total") or 0)
+                - int((contract.get("domain_minimum_positions") or {}).get("english_natural_language_total") or 0),
+            ),
+        },
+        "code_language_unique_positions": {
+            key: positions[key]
+            for key in ("python", "javascript_typescript", "html_css", "rust")
+        },
+        "evidence_dimensions": {
+            key: governance_evidence.get(key) is True
+            for key in contract.get("required_evidence_dimensions") or []
+        },
+        "language_scope": stage_index.get("language_scope") or {},
+        "code_quality_policy": stage_index.get("code_quality_policy") or {},
+    }
+    gaps.extend(canonical_corpus_requirement_gaps(contract, summary))
+    if any(
+        int(payload.get(key) or 0) != 0
+        for key in (
+            "public_training_rows_written",
+            "external_inference_calls",
+            "fallback_return_count",
+        )
+    ):
+        gaps.append("canonical_corpus_no_cheat_counter_fault")
+    return {
+        "configured": True,
+        "valid": not gaps,
+        "path": rel(path),
+        "content_bound": bool(actual_sha) and not gaps,
+        "authority_policy": "exact_tokenizer_capacity_plus_materialized_stage_v1",
+        "tokenizer_abi": str(selected.get("tokenizer_abi") or ""),
+        "unique_model_visible_positions": total,
+        "optimizer_token_positions": 0,
+        "optimizer_repetition_factor": 0.0,
+        "domain_unique_positions": summary["domain_unique_positions"],
+        "code_language_unique_positions": summary[
+            "code_language_unique_positions"
+        ],
+        "evidence_dimensions": summary["evidence_dimensions"],
+        "hard_gaps": list(dict.fromkeys(gaps)),
     }
 
 
@@ -5985,6 +6282,15 @@ def validate_config(config: dict[str, Any]) -> None:
         )
         if int(scaling.get("required_unique_positions") or 0) != expected:
             raise ValueError("scaling unique-position floor must equal active parameters times planning ratio")
+        optimizer_expected = math.ceil(
+            int(selected.get("active_parameter_count") or 0)
+            * float(
+                planning.get("minimum_optimizer_positions_per_active_parameter")
+                or 0.0
+            )
+        )
+        if int(scaling.get("required_optimizer_positions") or 0) != optimizer_expected:
+            raise ValueError("scaling optimizer-position floor must equal active parameters times planning ratio")
         if sum(int(value or 0) for value in (scaling.get("domain_minimum_positions") or {}).values()) != expected:
             raise ValueError("scaling domain minima must partition the unique-position floor")
         subsets = scaling.get("subset_minimum_positions") or {}
@@ -5992,6 +6298,26 @@ def validate_config(config: dict[str, Any]) -> None:
         english_minimum = int((scaling.get("domain_minimum_positions") or {}).get("english_natural_language_total") or 0)
         if conversation_minimum <= 0 or conversation_minimum > english_minimum:
             raise ValueError("conversation subset minimum must be positive and contained by English total")
+        materialization = int(
+            scaling.get("materialization_unique_positions") or expected
+        )
+        category_positions = scaling.get("materialization_category_positions")
+        if isinstance(category_positions, dict) and sum(
+            int(category_positions.get(key) or 0)
+            for key in (
+                "english_conversation_instruction",
+                "english_broad",
+                "python",
+                "javascript_typescript",
+                "html_css",
+                "rust",
+            )
+        ) != materialization:
+            raise ValueError("materialization category positions must partition the unique stage")
+        if pretrain_stage_position_target(config["training"]) != materialization:
+            raise ValueError("training stage position target must match scaling materialization")
+        if pretrain_optimizer_position_target(config["training"]) != optimizer_expected:
+            raise ValueError("training optimizer target must match scaling optimizer floor")
     contract_policy = (
         config.get("sft_contract_admission")
         if isinstance(config.get("sft_contract_admission"), dict)
@@ -6586,7 +6912,12 @@ def stage_signature(config: dict[str, Any]) -> str:
         "sources": config["sources"],
         "tokenization": config["tokenization"],
         "training": {
-            "pretrain_target_token_positions": config["training"]["pretrain_target_token_positions"],
+            "pretrain_stage_unique_positions": pretrain_stage_position_target(
+                config["training"]
+            ),
+            "pretrain_optimizer_target_positions": pretrain_optimizer_position_target(
+                config["training"]
+            ),
             "private_body_sampling_weight": config["training"]["private_body_sampling_weight"],
         },
         "canonical_corpus": canonical_corpus,

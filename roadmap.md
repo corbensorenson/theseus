@@ -56,7 +56,7 @@ support states by implication.
 | Gate | State | Exit condition | Work unlocked |
 |---|---|---|---|
 | `T0` — Finite architecture closure | `complete` | KERC is explicitly deferred as `INCONCLUSIVE_IMPLEMENTATION` with K0-K3 banked and zero first-campaign exposure; the 53-artifact package passes all eight independent replays and binds its generated effect/governance receipts. | Long optimizer spend. |
-| `T1` — Frozen neural-seed campaign | `contract_repair_required` | The preregistration, executable model topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then five arms and two matched dense controls train with complete lineage. | Frozen functional evaluation. |
+| `T1` — Frozen neural-seed campaign | `ready_to_launch` | The preregistration, executable model topology, exact tokenizer/index capacity, 422,334,331-position stage, controls, checkpoint namespace, MLX canaries, and fresh 160-case functional identity agree before the first optimizer step. Train the shared trunk, five arms, and two matched dense controls with complete lineage. | Frozen functional evaluation. |
 | `T2` — Honest behavioral numerator | `blocked_by_T1` | At least one lineage-bound arm produces nonzero, model-only, source-disjoint functional behavior; a zero result receives only the exact decision-grade scope earned. | Behavior-dependent search, routing, preference/RL, and fast-generation qualification. |
 | `T3` — Real daily-use lane | `ready_for_assisted_use`; learned credit waits for `T2` | At least one week or five distinct days of real low-risk use records accepted, missed, ignored, corrected, completed, failed, or abstained outcomes with time, verifier/human cost, effect, rollback, and component attribution. | Empirical product-usefulness and procedural-memory evidence. |
 | `T4` — Joined governed vertical | `blocked_by_T2_and_T3` | One natural happy path and one blocked or rollback path join intent, VCM, plan, route, candidate, verification, authority, effect observation, terminal acknowledgement, residual, and dogfood outcome without orphan or stale projection. | Book-importable implementation evidence. |
@@ -70,21 +70,19 @@ perfect governance trace around a zero-capability proposer cannot establish usef
 governed intelligence. All other roadmap work is either a dependency of these gates,
 continuous integrity maintenance, or deferred under the breadth freeze.
 
-## Current Operating Decision: Architecture Before Long Training
+## Current Operating Decision: Launch The Frozen Campaign
 
-The current priority is **finite architecture closure**, not corpus-scale optimizer
-work. Theseus will not spend a long training run on an architecture that is already
-known to be missing accepted representation, objective, context, routing, generation,
-update, checkpoint, or self-improvement contracts. The 13-item matrix-owned docket
-briefly reached 13 recorded dispositions, but the 2026-07-17 evidence-adequacy audit
-reopened KERC: its retirement relied on a hand-coded/linear proxy that did not exercise
-the proposed learned architecture. K3 now supplies decision-grade bounded allocator
-evidence, while K4-K8 remain incomplete. Rather than convert that incompleteness into a
-false negative or let it postpone the practical lane indefinitely, the full KERC
-candidate is deferred from the first run as `INCONCLUSIVE_IMPLEMENTATION`: it receives
-zero topology, objective, target, matched-control, and optimizer exposure. Training
-authority now depends on rebuilding and independently replaying the resulting
-eight-target package.
+Finite architecture closure for the first practical campaign is complete. The current
+priority is the unchanged **57M-active MLX training and matched-control campaign**, not
+another architecture, report, or private benchmark. The exact admitted corpus contains
+422,334,331 unique model-visible positions (7.365 per active parameter); the frozen
+optimizer target is 1,146,808,520 positions (2.715 passes), and repetition receives no
+unique-data credit. Full KERC remains deferred as `INCONCLUSIVE_IMPLEMENTATION` with
+K0-K3 banked and exactly zero first-campaign topology, objective, target, matched-control,
+and optimizer exposure. OneCell and optional generation modes are likewise excluded by
+machine-checked zero-exposure contracts. These dispositions may not be reopened during
+the campaign unless a concrete correctness, security, information-flow, checkpoint,
+migration, or replay defect invalidates the frozen package.
 
 This is not a demand to prove learned efficacy without learned weights. Pre-training
 closure proves that selected mechanisms are real, integrated, checkpointable,
@@ -217,13 +215,13 @@ efficacy now requires the unchanged frozen campaign.
 
 | Area | Owner | State | Next concrete action |
 |---|---|---|---|
-| Data engine + curriculum | Track 0 / Phase 7 | RED for the 57.315M proposal: exact executable-tokenizer replay measures 422,334,331 unique positions versus 1,146,808,520 required. The old 1,293,454,903 body-token estimate is historical planning evidence and cannot authorize training. | expand only high-quality licensed in-scope data under the exact index/tokenizer ABI, or prospectively select a smaller honestly named data-supported rung; never count repetition as unique data |
+| Data engine + curriculum | Track 0 / Phase 7 | GREEN for the 57.340M-active campaign: exact executable-tokenizer replay measures 422,334,331 unique positions (7.365 per active parameter). The preregistered optimizer target is 1,146,808,520 positions over 2.715 passes, below the 4-pass ceiling; repetition is reported separately and receives no unique-data credit. | keep the index, tokenizer ABI, split identities, and optimizer exposure frozen through the campaign |
 | Dense transformer control | Phase 10 | both v8 controls completed unchanged; each is 0/544 exact, with Python syntax 46/128 (active) and 48/128 (total) | retain as immutable 10.8M-rung falsification evidence; do not spend confirmation or patch this rung |
 | MoECOT language-specialist seed | Track 1 / Phases 10, 16 | v8 trunk/specialists are complete; exact recovery is English 1/128 and code 0, while frozen functional utility is 0/160 | retain as negative modular evidence; do not let routing hide the behavior-zero result |
 | Verifier-guided search | Track 2 / Phases 6, 10 | architecture wired, amplifier waiting for signal | preserve the bounded kernel and replay contract; qualify it only after one-shot generation sometimes succeeds and search materially increases held-out pass |
 | Correctness training (DPO->GRPO/RLVR) | Track 3 / Phase 10 | learned optimization remains premature at the zero-pass floor, but all five offline-preference and four verifier-reward objective adapters now execute through a shared frozen schema, checkpoint/reference identity, MLX parity probe, capacity ledger, update lease, exact rollback, and twelve rejecting controls | preserve zero exposure and run/select an objective only after a behavior-positive proposer creates honest private verifier signal |
 | Fast-gen modes (MTP/diffusion/self-draft) | Track 4 / Phases 8, 10 | pre-training topology is closed: AR is canonical; checkpointed low-rank MTP is campaign-bound at zero initial loss scale; Medusa/EAGLE/LayerSkip/sketch-first are explicitly retired; speculative decode is disabled and post-hoc compatible. Canonical MLX forward/loss/save/reload passes at 21.875% output-head overhead with zero reload drift | preserve the frozen disposition; set any nonzero MTP schedule prospectively and adopt any fast mode only from accepted verified output per second under matched quality/cost accounting |
-| Generator capability (held-out utility) | Phase 10 | the 10.8M scale regime is closed. A purported 57M launch was stopped at step 1,000 after independent audit found it executed the old 10.8M topology/checkpoint namespace; it has zero 57M or capability credit. KERC remains deferred at zero exposure. | make the executable campaign match one preregistration and exact data authority, freeze a fresh source-disjoint functional surface, pass MLX/resource canaries, then launch once |
+| Generator capability (held-out utility) | Phase 10 | the 10.8M regime remains closed at 0/160. The corrected 57.340M-active MoECOT arm and 57.349M/67.357M dense controls pass full MLX update, checkpoint/reload, optimizer-resume, data-lineage, and resource canaries. A fresh source-disjoint 160-case functional surface is frozen and unconsumed. | execute the frozen campaign once, evaluate all candidates without tuning from heldout outcomes, and publish the scoped verdict |
 | Cognitive-kernel discovery | Phase 11 | OneCell-RWM is non-routeable and retired from the first language campaign with zero optimizer/checkpoint exposure; its ABI, exact/latent boundary, objective/checkpoint groups, owner reuse, and separate successor-campaign prerequisites are content-bound, but no OneCell substrate or learned capability is claimed | preserve the successor experiment without appending it to first-campaign weights; re-enter only after exact substrate and a separately preregistered matched cognitive-kernel campaign exist |
 | Kernel English + hierarchical residual compiler | Phases 3, 10, 13, 14, 16 | K0-K3 are banked; the incomplete full candidate is deferred from the first practical run as `INCONCLUSIVE_IMPLEMENTATION`, with zero topology/objective/optimizer exposure. | After the practical capability run, complete K4 real coding/amortization, K5 renderer/verifier calibration, K6 lifecycle/security stress, and K7 total-cost instrumentation, then prospectively freeze K8. Never treat the deferral as a KERC failure. |
 | Self-improvement flywheel | Tracks 0, 3 / Phases 7, 10 | the disabled campaign controller is now canonical through governance and the existing overnight entrypoint: it separates authorities, freezes holdouts/budgets, preserves rejected families, accounts debt, stops transactionally, and restores exact state; behavior remains at the zero-pass floor | preserve the disabled mechanics and enable generate->verify->admit->retrain only after an independently verified behavior-positive proposer receipt exists |

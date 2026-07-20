@@ -42,6 +42,54 @@ def matrix(required_status: str = "implemented") -> dict:
 
 
 class PreTrainingArchitectureGateTests(unittest.TestCase):
+    def test_deferred_kerc_campaign_exclusion_is_machine_checked(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "campaign.json"
+            config = {
+                "comparison_contract": {
+                    "first_campaign_candidate_ids": ["english", "python"]
+                },
+                "training": {"kernel_english_optimizer_repetitions": 0},
+                "kernel_english_training": {
+                    "required": False,
+                    "disposition": {
+                        "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+                        "full_kerc_training_enabled": False,
+                        "first_campaign_topology_exposure": 0,
+                        "first_campaign_optimizer_repetitions": 0,
+                    },
+                },
+            }
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            binding = {
+                "first_practical_campaign_exclusion": {
+                    "policy": "project_theseus_kerc_first_campaign_exclusion_v1",
+                    "config": str(config_path),
+                    "required_disposition_state": "DEFERRED_FROM_FIRST_LONG_RUN",
+                    "forbidden_candidate_ids": ["kernel_english", "kerc"],
+                    "required_zero_fields": [
+                        "kernel_english_training.disposition.first_campaign_topology_exposure",
+                        "kernel_english_training.disposition.first_campaign_optimizer_repetitions",
+                        "training.kernel_english_optimizer_repetitions",
+                    ],
+                }
+            }
+            report = gate.audit_kerc_first_campaign_exclusion(binding)
+            self.assertTrue(report["ready"])
+            self.assertEqual(report["faults"], [])
+
+            config["comparison_contract"]["first_campaign_candidate_ids"].append(
+                "kernel_english"
+            )
+            config_path.write_text(json.dumps(config), encoding="utf-8")
+            exposed = gate.audit_kerc_first_campaign_exclusion(binding)
+            self.assertFalse(exposed["ready"])
+            self.assertIn(
+                "kerc_candidate_exposed:kernel_english", exposed["faults"]
+            )
+
     def test_training_phase_does_not_circularly_block_architecture(self) -> None:
         report = gate.audit_pre_training_architecture_readiness(
             matrix=matrix(),

@@ -217,6 +217,49 @@ def test_specialist_data_support_fails_closed_per_parameter_owner() -> None:
     assert accepted["shortfall_arms"] == []
 
 
+def test_scale_contract_separates_unique_coverage_from_optimizer_exposure() -> None:
+    observed = scale.optimizer_exposure_support(
+        active_parameters=57_340_426,
+        observed_unique_positions=422_334_331,
+        minimum_unique_ratio=5.0,
+        minimum_optimizer_ratio=20.0,
+        maximum_repetition_factor=4.0,
+    )
+    assert observed["required_unique_positions"] == 286_702_130
+    assert observed["required_optimizer_positions"] == 1_146_808_520
+    assert observed["unique_position_floor_ready"] is True
+    assert observed["planned_optimizer_repetition_factor"] == 2.71540445
+    assert observed["optimizer_repetition_ceiling_ready"] is True
+    assert observed["optimizer_repetition_counted_as_unique_data"] is False
+
+
+def test_scale_contract_rejects_exposure_that_requires_too_many_repeats() -> None:
+    observed = scale.optimizer_exposure_support(
+        active_parameters=100,
+        observed_unique_positions=499,
+        minimum_unique_ratio=5.0,
+        minimum_optimizer_ratio=20.0,
+        maximum_repetition_factor=4.0,
+    )
+    assert observed["unique_position_floor_ready"] is False
+    assert observed["planned_optimizer_repetition_factor"] > 4.0
+    assert observed["optimizer_repetition_ceiling_ready"] is False
+
+
+def test_scale_contract_configuration_fails_closed_on_impossible_accounting() -> None:
+    config = scale.read_json(
+        ROOT / "configs" / "neural_seed_50m_scale_preregistration.json"
+    )
+    invalid = json.loads(json.dumps(config))
+    invalid["scaling_contract"]["minimum_optimizer_positions_per_active_parameter"] = 21.0
+    try:
+        scale.validate_config(invalid)
+    except ValueError as exc:
+        assert "impossible" in str(exc)
+    else:
+        raise AssertionError("impossible optimizer exposure contract was accepted")
+
+
 def test_pointer_generator_forward_and_checkpoint_replay_are_deterministic(
     tmp_path: Path,
 ) -> None:

@@ -36,6 +36,8 @@ def test_freeze_binds_generated_effect_and_governance_receipts() -> None:
 
     assert set(receipts) == {
         "reports/governance_rights_receipt_suite.json",
+        "reports/neural_seed_50m_scale_preregistration.json",
+        "reports/onecell_rwm_pretraining_disposition.json",
         "reports/theseus_assistant_effect_complete_canary.json",
     }
     assert all(len(row["sha256"]) == 64 and row["bytes"] > 0 for row in receipts.values())

@@ -245,6 +245,7 @@ def build_report(
     hard_gaps.extend(book_contract_report["hard_gaps"])
     hard_gaps.extend(kerc_fidelity_report["roadmap_hard_gaps"])
     warnings.extend(book_contract_report["warnings"])
+    warnings.extend(kerc_fidelity_report.get("roadmap_warnings") or [])
     for row in phase_reports:
         hard_gaps.extend(row["hard_gaps"])
         warnings.extend(row["warnings"])
@@ -423,7 +424,88 @@ def audit_kerc_fidelity_contract(matrix: dict[str, Any]) -> dict[str, Any]:
         )
         for row in report["faults"]
     ]
-    return {**report, "roadmap_hard_gaps": roadmap_gaps}
+    exclusion = audit_kerc_first_campaign_exclusion(binding)
+    suppressible_source_drift = bool(report["faults"]) and all(
+        row.get("kind") == "source_artifact_stale_or_missing"
+        for row in report["faults"]
+    )
+    roadmap_warnings: list[dict[str, Any]] = []
+    if suppressible_source_drift and exclusion["ready"]:
+        roadmap_warnings = [
+            {
+                **row,
+                "severity": "warning",
+                "campaign_effect": "none_zero_exposure_kerc_exclusion_verified",
+                "claim_effect": "kerc_fidelity_claim_stale_until_requalified",
+            }
+            for row in roadmap_gaps
+        ]
+        roadmap_gaps = []
+    elif not exclusion["ready"]:
+        roadmap_gaps.append(
+            gap(
+                "kerc_implementation_fidelity",
+                "first_practical_campaign_exclusion_invalid",
+                exclusion,
+            )
+        )
+    return {
+        **report,
+        "first_practical_campaign_exclusion": exclusion,
+        "roadmap_hard_gaps": roadmap_gaps,
+        "roadmap_warnings": roadmap_warnings,
+    }
+
+
+def audit_kerc_first_campaign_exclusion(binding: dict[str, Any]) -> dict[str, Any]:
+    contract = dict_value(binding.get("first_practical_campaign_exclusion"))
+    faults: list[str] = []
+    if contract.get("policy") != "project_theseus_kerc_first_campaign_exclusion_v1":
+        faults.append("wrong_or_missing_policy")
+    config_path = resolve(str(contract.get("config") or ""))
+    config = read_json(config_path)
+    if not config:
+        faults.append("campaign_config_missing_or_invalid")
+    comparison = dict_value(config.get("comparison_contract"))
+    candidate_ids = {
+        str(value)
+        for value in list_values(comparison.get("first_campaign_candidate_ids"))
+    }
+    forbidden = {
+        str(value)
+        for value in list_values(contract.get("forbidden_candidate_ids"))
+    }
+    exposed = sorted(candidate_ids & forbidden)
+    if exposed:
+        faults.append("kerc_candidate_exposed:" + ",".join(exposed))
+    kernel = dict_value(config.get("kernel_english_training"))
+    disposition = dict_value(kernel.get("disposition"))
+    if kernel.get("required") is not False:
+        faults.append("kernel_english_training_not_optional")
+    if disposition.get("state") != contract.get("required_disposition_state"):
+        faults.append("kerc_disposition_state_mismatch")
+    if disposition.get("full_kerc_training_enabled") is not False:
+        faults.append("full_kerc_training_enabled")
+    zero_values: dict[str, Any] = {}
+    for field in list_values(contract.get("required_zero_fields")):
+        path = str(field)
+        cursor: Any = config
+        for part in path.split("."):
+            cursor = cursor.get(part) if isinstance(cursor, dict) else None
+        zero_values[path] = cursor
+        if cursor != 0:
+            faults.append("nonzero_or_missing:" + path)
+    return {
+        "policy": "project_theseus_kerc_first_campaign_exclusion_audit_v1",
+        "ready": not faults,
+        "config": rel(config_path),
+        "config_sha256": hash_file(config_path) if config_path.is_file() else None,
+        "candidate_ids": sorted(candidate_ids),
+        "forbidden_candidate_ids": sorted(forbidden),
+        "zero_values": zero_values,
+        "faults": faults,
+        "claim_boundary": "This permits only the separately frozen practical campaign. It grants no current KERC fidelity, capability, utility, efficiency, or negative claim.",
+    }
 
 
 def audit_hive_artifact_citations() -> dict[str, Any]:

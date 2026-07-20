@@ -136,12 +136,35 @@ def build_report(
         mlx_fault = f"{type(exc).__name__}: {exc}"
         hard_gaps.append({"kind": "mlx_architecture_instantiation_failed", "error": mlx_fault})
     scale = config["scaling_contract"]
-    required_positions = int(math.ceil(
-        int(architecture.get("active_parameter_count_per_request") or 0)
-        * float(scale["minimum_unique_positions_per_active_parameter"])
-    ))
+    exposure = optimizer_exposure_support(
+        active_parameters=int(
+            architecture.get("active_parameter_count_per_request") or 0
+        ),
+        observed_unique_positions=int(capacity["unique_model_visible_positions"]),
+        minimum_unique_ratio=float(
+            scale["minimum_unique_positions_per_active_parameter"]
+        ),
+        minimum_optimizer_ratio=float(
+            scale["minimum_optimizer_positions_per_active_parameter"]
+        ),
+        maximum_repetition_factor=float(
+            scale["maximum_optimizer_repetition_factor"]
+        ),
+    )
+    required_positions = exposure["required_unique_positions"]
+    required_optimizer_positions = exposure["required_optimizer_positions"]
     observed_positions = int(capacity["unique_model_visible_positions"])
-    unique_position_ready = bool(required_positions and observed_positions >= required_positions)
+    unique_position_ready = exposure["unique_position_floor_ready"]
+    planned_repetition_factor = exposure["planned_optimizer_repetition_factor"]
+    repetition_ready = exposure["optimizer_repetition_ceiling_ready"]
+    if not repetition_ready:
+        hard_gaps.append({
+            "kind": "optimizer_repetition_ceiling_exceeded",
+            "planned_repetition_factor": round(planned_repetition_factor, 8),
+            "maximum_repetition_factor": float(
+                scale["maximum_optimizer_repetition_factor"]
+            ),
+        })
     specialist_support = specialist_data_support(
         architecture,
         capacity,
@@ -163,6 +186,15 @@ def build_report(
         "minimum_unique_positions_per_active_parameter": float(
             scale["minimum_unique_positions_per_active_parameter"]
         ),
+        "required_optimizer_positions": required_optimizer_positions,
+        "minimum_optimizer_positions_per_active_parameter": float(
+            scale["minimum_optimizer_positions_per_active_parameter"]
+        ),
+        "planned_optimizer_repetition_factor": round(planned_repetition_factor, 8),
+        "maximum_optimizer_repetition_factor": float(
+            scale["maximum_optimizer_repetition_factor"]
+        ),
+        "optimizer_repetition_ceiling_ready": repetition_ready,
         "unique_position_floor_ready": unique_position_ready,
         "specialist_unique_position_floor_ready": specialist_support["ready"],
         "specialist_unique_position_support": specialist_support["arms"],
@@ -173,7 +205,10 @@ def build_report(
         "training_admission_epistemic_tcb_qualified": admission_contract["tcb_qualified"],
         "training_admission_epistemic_tcb_surviving_mutants": admission_contract["surviving_mutant_count"],
         "training_data_supported": (
-            unique_position_ready and specialist_support["ready"] and coverage_ready
+            unique_position_ready
+            and repetition_ready
+            and specialist_support["ready"]
+            and coverage_ready
         ),
         "optimizer_repetition_counted_as_unique_data": False,
     }
@@ -231,6 +266,7 @@ def build_report(
         "non_claims": [
             "A successful optimizer/checkpoint canary is not evidence that the model can answer a task.",
             "Canonical bulk positions do not replace per-arm task-complete coverage.",
+            "The 20:1 planning target applies to optimizer positions; unique positions remain separately reported and repetition is capped prospectively.",
             "A preregistered architecture is not authorized while any data or resource floor is unmet.",
             "The consumed 10.8M rung remains immutable and is not restarted by this proposal.",
         ],
@@ -768,6 +804,38 @@ def specialist_data_support(
     }
 
 
+def optimizer_exposure_support(
+    *,
+    active_parameters: int,
+    observed_unique_positions: int,
+    minimum_unique_ratio: float,
+    minimum_optimizer_ratio: float,
+    maximum_repetition_factor: float,
+) -> dict[str, Any]:
+    """Keep unique corpus coverage distinct from repeated optimizer exposure."""
+
+    required_unique = int(math.ceil(active_parameters * minimum_unique_ratio))
+    required_optimizer = int(math.ceil(active_parameters * minimum_optimizer_ratio))
+    repetition = (
+        required_optimizer / observed_unique_positions
+        if observed_unique_positions > 0
+        else math.inf
+    )
+    return {
+        "required_unique_positions": required_unique,
+        "required_optimizer_positions": required_optimizer,
+        "unique_position_floor_ready": bool(
+            required_unique > 0 and observed_unique_positions >= required_unique
+        ),
+        "planned_optimizer_repetition_factor": round(repetition, 8),
+        "optimizer_repetition_ceiling_ready": bool(
+            observed_unique_positions > 0
+            and repetition <= maximum_repetition_factor
+        ),
+        "optimizer_repetition_counted_as_unique_data": False,
+    }
+
+
 def validate_config(config: dict[str, Any]) -> None:
     if config.get("policy") != "project_theseus_neural_seed_50m_scale_preregistration_v1":
         raise ValueError("unexpected 50M scale preregistration policy")
@@ -781,6 +849,30 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("falsified rung restart must remain forbidden")
     if "generation_architecture_contract" not in config.get("inputs", {}):
         raise ValueError("generation architecture contract input is required")
+    scaling = config.get("scaling_contract") or {}
+    minimum_unique = float(
+        scaling.get("minimum_unique_positions_per_active_parameter") or 0.0
+    )
+    minimum_optimizer = float(
+        scaling.get("minimum_optimizer_positions_per_active_parameter") or 0.0
+    )
+    maximum_repetition = float(
+        scaling.get("maximum_optimizer_repetition_factor") or 0.0
+    )
+    if minimum_unique <= 0.0:
+        raise ValueError("minimum unique-position ratio must be positive")
+    if minimum_optimizer < minimum_unique:
+        raise ValueError("optimizer-position ratio cannot be below unique-position ratio")
+    if maximum_repetition < 1.0:
+        raise ValueError("maximum optimizer repetition must permit at least one pass")
+    if minimum_optimizer > minimum_unique * maximum_repetition:
+        raise ValueError(
+            "optimizer-position floor is impossible at the minimum unique-data floor"
+        )
+    if scaling.get("unique_positions_never_include_optimizer_repetition") is not True:
+        raise ValueError("optimizer repetition must never receive unique-data credit")
+    if scaling.get("optimizer_positions_and_unique_positions_reported_separately") is not True:
+        raise ValueError("unique and optimizer positions must be reported separately")
 
 
 def generation_architecture_alignment(

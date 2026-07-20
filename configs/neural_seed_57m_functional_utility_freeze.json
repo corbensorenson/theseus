@@ -1,0 +1,69 @@
+{
+  "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+  "candidate_packet_sha256": "32af1b736f73050cb4c9f31e9836a47b7cd684e5ae0fe3a85f251322dc9125d2",
+  "capability_claim": "NOT_EVALUATED",
+  "case_compiler_sha256": "9076444f1a6618b22b92fc2693b57be2c260182a45b15baa2915d8bf711bb181",
+  "case_contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+  "case_count": 160,
+  "cases_by_arm": {
+    "english": 32,
+    "html_css": 32,
+    "javascript_typescript": 32,
+    "python": 32,
+    "rust": 32
+  },
+  "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1",
+  "compiler_sha256": "4530f603901d21bcebd2e17e3da88ea087228da89cf3c4e667118ee653d39f0f",
+  "config": "configs/neural_seed_functional_utility.json",
+  "config_sha256": "f7d65b888e555c2504b35116fce74f84619feb2179600fb8e780427548c89b3f",
+  "consumed_case_count": 0,
+  "consumption_policy_sha256": "fbb925f92d301b744f90c3d45429f75109ec48b14ba6d2c5345ee1b3633ff4dd",
+  "consumption_registry": "reports/private_functional_consumption_registry.jsonl",
+  "dense_controls_complete_at_freeze": false,
+  "evaluation_state": "NOT_EVALUATED",
+  "external_inference_calls": 0,
+  "frozen_utc": "2026-07-20T12:14:43.179569Z",
+  "generation_wrapper_sha256": "76bf5714f999e4e68c96f27b7179a0368a4bb5ee273cd46d29f89d5a78ad08d6",
+  "immutable": true,
+  "local_english_rater_config_sha256": "48ce47f0351d49660afacc6bddb02b6c196a5590a9982b1177c10eb0e22fecf6",
+  "local_english_rater_implementation_sha256": "e28663f7e7660fdc79c79cfbddfa8ac8eec45e1edb8cbb5ad7d0d230552d692b",
+  "policy": "project_theseus_private_functional_utility_freeze_v2",
+  "public_training_rows_written": 0,
+  "source_disjoint": true,
+  "supersede_reason": "",
+  "supersedes_freeze_sha256": "",
+  "templates_renderers_routers_tools_credit": 0,
+  "toolchain_identity_sha256": "5271eca43ea4bcd331821e14bf25f29474c456889e0b0336e94de80c17f302ce",
+  "training_base_config_sha256": "22e334af476b0243b8017f7930130662dfde81febaa4c5a4bfe7781b5e0dbdb2",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "training_config_sha256": "7eff0b7aab3ea33d8db8132367c5c32e0d72d70a23cd453d30430d4fb07688d0",
+  "training_generator_sha256": "cf634b4bbb251e22061822dc9bd2a1c675dd62c9bbae93c617a8efba9b151698",
+  "training_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+  "training_state_at_freeze": {
+    "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+    "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1",
+    "controls": {
+      "dense_active_parameter": {
+        "complete": false,
+        "heartbeat": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_active_parameter/training_heartbeat.json",
+        "heartbeat_sha256": "",
+        "optimizer_steps": 0,
+        "plan_sha256": null,
+        "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_active_parameter/training_receipt.json",
+        "receipt_sha256": ""
+      },
+      "dense_total_parameter": {
+        "complete": false,
+        "heartbeat": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_total_parameter/training_heartbeat.json",
+        "heartbeat_sha256": "",
+        "optimizer_steps": 0,
+        "plan_sha256": null,
+        "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_total_parameter/training_receipt.json",
+        "receipt_sha256": ""
+      }
+    },
+    "dense_controls_complete": false,
+    "functional_contract_frozen_before_control_completion": true
+  },
+  "verifier_sha256": "a792cc6d206829b0742e79925e446c07f3a9e19dbfba50055bc992de4ed68701"
+}

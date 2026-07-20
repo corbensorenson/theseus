@@ -100,7 +100,10 @@ def build_generation_contract(
     packet = read_json(packet_path) if packet_path.is_file() else {}
     config = read_json(config_path)
     plan = training.build_plan(config, config_path=config_path)
-    if freeze.get("policy") != "project_theseus_private_functional_utility_freeze_v1":
+    if freeze.get("policy") not in {
+        "project_theseus_private_functional_utility_freeze_v1",
+        "project_theseus_private_functional_utility_freeze_v2",
+    }:
         gaps.append("functional_freeze_missing_or_invalid")
     if freeze.get("candidate_packet_sha256") != stable_hash(packet):
         gaps.append("candidate_packet_freeze_mismatch")
@@ -118,10 +121,16 @@ def build_generation_contract(
         gaps.append("candidate_packet_case_count_mismatch")
     if any(set(row) != {"case_id", "arm_id", "prompt"} for row in rows):
         gaps.append("candidate_packet_contains_evaluator_metadata")
-    if plan.get("plan_sha256") != freeze.get("v8_plan_sha256"):
-        gaps.append("training_plan_freeze_mismatch")
-    if (plan.get("stage") or {}).get("stage_signature") != freeze.get("v8_stage_signature"):
+    expected_stage = freeze.get("training_stage_signature") or freeze.get(
+        "v8_stage_signature"
+    )
+    if (plan.get("stage") or {}).get("stage_signature") != expected_stage:
         gaps.append("training_stage_freeze_mismatch")
+    if freeze.get("candidate_id") and (
+        (plan.get("scale_preregistration") or {}).get("candidate_id")
+        != freeze.get("candidate_id")
+    ):
+        gaps.append("training_candidate_freeze_mismatch")
     target_ids = list(training.ARM_IDS) if target_id == "moecot_system" else [target_id]
     targets = []
     checkpoint_artifacts = []
@@ -131,9 +140,9 @@ def build_generation_contract(
         receipt = read_json(receipt_path) if receipt_path.is_file() else {}
         if not receipt.get("complete"):
             gaps.append(f"checkpoint_incomplete:{item}")
-        if receipt.get("plan_sha256") != freeze.get("v8_plan_sha256"):
+        if receipt.get("plan_sha256") != plan.get("plan_sha256"):
             gaps.append(f"checkpoint_plan_mismatch:{item}")
-        if receipt.get("stage_signature") != freeze.get("v8_stage_signature"):
+        if receipt.get("stage_signature") != expected_stage:
             gaps.append(f"checkpoint_stage_mismatch:{item}")
         checkpoint = resolve(str(receipt.get("checkpoint") or target.get("checkpoint") or ""))
         if not checkpoint.is_file() or sha256_file(checkpoint) != str(receipt.get("checkpoint_sha256") or ""):
@@ -277,6 +286,10 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
         "generation_wrapper_sha256": sha256_file(Path(__file__).resolve()),
         "training_generator_sha256": sha256_file(ROOT / "scripts/moecot_language_arm_training.py"),
         "checkpoint_artifacts": contract["checkpoint_artifacts"],
+        "training_plan_sha256": contract["plan"]["plan_sha256"],
+        "training_stage_signature": (contract["plan"].get("stage") or {}).get(
+            "stage_signature"
+        ),
         "candidate_count": len(candidates),
         "candidates": candidates,
         "timing": {
