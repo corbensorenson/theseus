@@ -37,6 +37,7 @@ DEFAULT_ASSISTANT_TRACE_SCHEMA = ROOT / "configs" / "assistant_trace_schema.json
 DEFAULT_PROCEDURAL_ADOPTION_REPORT = REPORTS / "procedural_memory_route_adoption.json"
 DEFAULT_EFFECT_ROOT = ROOT / "runtime" / "assistant_effects"
 DEFAULT_EFFECT_TARGET = DEFAULT_EFFECT_ROOT / "default_route_authority.json"
+DEFAULT_REFRESH_CACHE = ROOT / "runtime" / "cache" / "assistant_context_refresh_v1.json"
 DOGFOOD_EVENTS = ROOT / "runtime" / "dogfood" / "daily_use_events.jsonl"
 DEFAULT_ALLOWED_FEEDBACK = {"", "accepted", "missed", "ignored", "corrected", "completed"}
 ASSISTANT_VIEA_REQUIRED_RECORD_TYPES = viea_spine_records.ASSISTANT_RUNTIME_REQUIRED_RECORDS
@@ -554,14 +555,134 @@ def refresh_context(config: dict[str, Any]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     if config.get("refresh_context_by_default") is False:
         return rows
+    cache_path = resolve(
+        str(config.get("context_refresh_cache") or rel(DEFAULT_REFRESH_CACHE))
+    )
+    cache = read_json(cache_path, {})
+    entries = cache.get("entries") if isinstance(cache.get("entries"), dict) else {}
+    next_entries: dict[str, Any] = dict(entries)
     for item in config.get("context_refresh_commands", []) if isinstance(config.get("context_refresh_commands"), list) else []:
         if not isinstance(item, dict):
             continue
         command = [str(part) for part in item.get("command", []) if str(part)]
         if not command:
             continue
-        rows.append(run_command(str(item.get("id") or command[-1]), command, int(item.get("timeout_seconds") or 120)))
+        command_id = str(item.get("id") or command[-1])
+        decision = refresh_cache_decision(item, entries.get(command_id), command)
+        if decision["reusable"]:
+            rows.append(
+                {
+                    "id": command_id,
+                    "command": command,
+                    "returncode": 0,
+                    "runtime_ms": int(decision["lookup_ms"]),
+                    "cache_state": "HIT",
+                    "cached_command_runtime_ms": int(
+                        (entries.get(command_id) or {}).get("command_runtime_ms") or 0
+                    ),
+                    "input_fingerprint": decision["input_fingerprint"],
+                    "output_count": len(decision["output_artifacts"]),
+                    "stdout_tail": "",
+                    "stderr_tail": "",
+                }
+            )
+            continue
+        result = run_command(command_id, command, int(item.get("timeout_seconds") or 120))
+        result["cache_state"] = "MISS"
+        result["cache_miss_reasons"] = decision["reasons"]
+        result["input_fingerprint"] = decision["input_fingerprint"]
+        rows.append(result)
+        outputs = refresh_output_artifacts(item)
+        if result.get("returncode") == 0 and outputs and all(row["exists"] for row in outputs):
+            next_entries[command_id] = {
+                "policy": "theseus_assistant_refresh_cache_entry_v1",
+                "recorded_unix_seconds": time.time(),
+                "command": command,
+                "input_fingerprint": decision["input_fingerprint"],
+                "output_artifacts": outputs,
+                "command_runtime_ms": int(result.get("runtime_ms") or 0),
+            }
+        else:
+            next_entries.pop(command_id, None)
+    write_json(
+        cache_path,
+        {
+            "policy": "project_theseus_assistant_context_refresh_cache_v1",
+            "created_utc": now(),
+            "entries": next_entries,
+            "authorization": (
+                "Reuse only exact command/input/output identities inside the declared TTL; "
+                "a miss executes the registered command and failures are never cached."
+            ),
+        },
+    )
     return rows
+
+
+def refresh_cache_decision(
+    item: dict[str, Any],
+    prior: Any,
+    command: list[str],
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    cache_contract = item.get("cache") if isinstance(item.get("cache"), dict) else {}
+    ttl_seconds = max(0, int(cache_contract.get("ttl_seconds") or 0))
+    input_fingerprint = refresh_input_fingerprint(item, command)
+    outputs = refresh_output_artifacts(item)
+    reasons: list[str] = []
+    if ttl_seconds <= 0:
+        reasons.append("cache_not_authorized")
+    if not isinstance(prior, dict):
+        reasons.append("prior_entry_missing")
+        prior = {}
+    if prior.get("command") != command:
+        reasons.append("command_identity_changed")
+    if prior.get("input_fingerprint") != input_fingerprint:
+        reasons.append("input_identity_changed")
+    age = max(0.0, time.time() - float(prior.get("recorded_unix_seconds") or 0.0))
+    if age > ttl_seconds:
+        reasons.append("freshness_window_expired")
+    prior_outputs = prior.get("output_artifacts") if isinstance(prior.get("output_artifacts"), list) else []
+    if not outputs or prior_outputs != outputs or not all(row["exists"] for row in outputs):
+        reasons.append("output_identity_changed_or_missing")
+    return {
+        "reusable": not reasons,
+        "reasons": sorted(set(reasons)),
+        "ttl_seconds": ttl_seconds,
+        "age_seconds": round(age, 6),
+        "input_fingerprint": input_fingerprint,
+        "output_artifacts": outputs,
+        "lookup_ms": round((time.perf_counter() - started) * 1000.0, 3),
+    }
+
+
+def refresh_input_fingerprint(item: dict[str, Any], command: list[str]) -> str:
+    cache_contract = item.get("cache") if isinstance(item.get("cache"), dict) else {}
+    paths = [resolve(str(value)) for value in cache_contract.get("inputs", []) if str(value)]
+    payload = {
+        "command": command,
+        "inputs": [refresh_artifact(path) for path in paths],
+    }
+    return sha256_text(json.dumps(payload, sort_keys=True, separators=(",", ":")))
+
+
+def refresh_output_artifacts(item: dict[str, Any]) -> list[dict[str, Any]]:
+    cache_contract = item.get("cache") if isinstance(item.get("cache"), dict) else {}
+    return [
+        refresh_artifact(resolve(str(value)))
+        for value in cache_contract.get("outputs", [])
+        if str(value)
+    ]
+
+
+def refresh_artifact(path: Path) -> dict[str, Any]:
+    exists = path.is_file()
+    return {
+        "path": rel(path),
+        "exists": exists,
+        "bytes": path.stat().st_size if exists else 0,
+        "sha256": sha256_file(path) if exists else "",
+    }
 
 
 def assistant_materialized_view_receipt() -> dict[str, Any]:

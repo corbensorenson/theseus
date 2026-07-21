@@ -282,23 +282,23 @@
         },
         "functional_utility_implementation": {
           "path": "scripts/neural_seed_functional_utility.py",
-          "sha256": "4530f603901d21bcebd2e17e3da88ea087228da89cf3c4e667118ee653d39f0f"
+          "sha256": "78831afdf223603749d91673566b490dd371eef80e495e9f53ae7f7def1657cd"
         },
         "functional_utility_tests": {
           "path": "tests/test_neural_seed_functional_utility.py",
-          "sha256": "bcfa530d7d346d7ad5dbc771289e8fc2e38f8d359c71ff6635575050dd588477"
+          "sha256": "ab899b4415b5684879a9b2e2e9bbb34ed57cd4ad4a8720e9cc8530211b201f9f"
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "1c533828c3722eb6fbb8d4dc29e3491c9938e2d79dbabe5451c778765b147ec5"
+          "sha256": "cadf463abdd1be512f5fb377f433828f2649a5962706c01eddf43f2dc422c3f1"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "8de9aac5bd4085ff10a71eef38d5c9a0bd47f0cb0bdc5ba2b2ac97a2ccbe7439"
+          "sha256": "dfc86a1088a7b1bb7fa60047321a23697a5f6249c4c0a4a046c8075d38c6bd04"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "84e045e870050daf8c8cad7e74f466033acb89c86e1e800843295d7ec4378de5"
+          "sha256": "777724e363beeca1732aa6bd9fba184eafba9af3a5a309d5556928758405db30"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
@@ -310,7 +310,7 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "0c5c543c685b7b41b19919f9edac5ddf5dae8ca9a7451bc3b4a2cd69f8a05371"
+          "sha256": "162554ab55022ed35d91e1867c275c1d5a7376d052e83da9c4fb32c23d295a38"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -510,7 +510,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "0f6a2c62be9a40f445ddca5407d7ae85d6d8866f4f5f93c9715ea7453c07535e"
+          "sha256": "aa584f1ff865bd69dfccd41d30d13510672a7f6bbd378f2201895695becc5bfe"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -538,7 +538,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "c1d6ea8c66d0262ac91561915517807894baa10d494423e2cabc66a40d1bb5ff"
+          "sha256": "4f5ce199e11ba834d6654531756355bf30c25c3ff7c9fabc2c6b8f20cccf7ea4"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -6932,17 +6932,24 @@
       "abstraction_id": "resource_acceleration_contract",
       "surface_id": "resource_and_acceleration",
       "status": "live",
-      "implementation_type": "resource_policy_and_platform_doctors",
+      "implementation_type": "resource_policy_platform_doctors_and_acceleration_qualification",
       "backend": "python_cuda_mlx_metal_cpu_policy",
       "canonical_entrypoint": "scripts/resource_aware_execution_policy.py",
       "swappable_under_contract": true,
       "replacement_policy": "Backend replacements must keep route-policy evidence separate from parity claims.",
-      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 scripts/resource_acceleration_qualification.py && python3 -m pytest -q tests/test_resource_acceleration_qualification.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/resource_acceleration_qualification.py scripts/theseus_assistant_runtime.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "acceleration",
       "trust_tier": "platform_resource_route",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "scripts/resource_aware_execution_policy.py",
+        "scripts/resource_acceleration_qualification.py",
+        "configs/theseus_assistant_runtime.json",
+        "scripts/theseus_assistant_runtime.py",
+        "tests/test_resource_acceleration_qualification.py",
+        "tests/test_assistant_reflexive_dispatch.py",
+        "scripts/moecot_language_arm_training.py",
+        "scripts/standard_causal_transformer_survival.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/neural_seed_full_state_pretraining.py",
@@ -6952,6 +6959,8 @@
       ],
       "evidence_outputs": [
         "reports/resource_aware_execution_policy.json",
+        "reports/resource_acceleration_qualification.json",
+        "reports/resource_acceleration_qualification.md",
         "reports/windows_cuda_doctor.json",
         "reports/macos_mlx_environment_diagnosis.json"
       ],
@@ -7003,10 +7012,17 @@
         "state_compatibility": {
           "reads": [
             "configs/project_manifest_registry.json",
-            "scripts/resource_aware_execution_policy.py"
+            "scripts/resource_aware_execution_policy.py",
+            "scripts/resource_acceleration_qualification.py",
+            "configs/theseus_assistant_runtime.json",
+            "scripts/theseus_assistant_runtime.py",
+            "scripts/moecot_language_arm_training.py",
+            "scripts/standard_causal_transformer_survival.py"
           ],
           "writes": [
             "reports/resource_aware_execution_policy.json",
+            "reports/resource_acceleration_qualification.json",
+            "reports/resource_acceleration_qualification.md",
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
           ],
@@ -7020,14 +7036,21 @@
         "evidence_binding": {
           "evidence_outputs": [
             "reports/resource_aware_execution_policy.json",
+            "reports/resource_acceleration_qualification.json",
+            "reports/resource_acceleration_qualification.md",
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
           ],
-          "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+          "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 scripts/resource_acceleration_qualification.py && python3 -m pytest -q tests/test_resource_acceleration_qualification.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/resource_acceleration_qualification.py scripts/theseus_assistant_runtime.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
-            "scripts/resource_aware_execution_policy.py"
+            "scripts/resource_aware_execution_policy.py",
+            "scripts/resource_acceleration_qualification.py",
+            "configs/theseus_assistant_runtime.json",
+            "scripts/theseus_assistant_runtime.py",
+            "scripts/moecot_language_arm_training.py",
+            "scripts/standard_causal_transformer_survival.py"
           ]
         },
         "observability_binding": {
@@ -8287,10 +8310,12 @@
       "canonical": "scripts/resource_aware_execution_policy.py",
       "report_outputs": [
         "reports/resource_aware_execution_policy.json",
+        "reports/resource_acceleration_qualification.json",
+        "reports/resource_acceleration_qualification.md",
         "reports/windows_cuda_doctor.json",
         "reports/macos_mlx_environment_diagnosis.json"
       ],
-      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 scripts/resource_acceleration_qualification.py && python3 -m pytest -q tests/test_resource_acceleration_qualification.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile scripts/resource_acceleration_qualification.py scripts/theseus_assistant_runtime.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "host-specific reports must not leak stale Windows paths into Mac scheduling",
       "abstraction_id": "resource_acceleration_contract",
       "major_surface": true,

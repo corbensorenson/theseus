@@ -326,10 +326,14 @@ from standard_causal_transformer_corpus import load_pretrain_memmaps, pretrain_a
 from standard_causal_transformer_survival import (
     GLOBAL_BOS_ID,
     SOURCE_TARGET_SEPARATOR_ID,
+    batched_beam_advance as advance_beams_batched,
     build_schedule,
+    cache_arrays,
     causal_loss,
+    evaluate_loss,
     model_vocab_size,
     required_steps,
+    serial_beam_advance as advance_beams_serial,
     source_token_offset,
     target_token_offset,
     train_phase,
@@ -531,11 +535,23 @@ def main() -> int:
         help="Run the full ordered curriculum or one canonical phase for a bounded mechanics canary.",
     )
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument(
+        "--evaluate-progress",
+        action="store_true",
+        help="Measure source-disjoint private-development loss for an incomplete checkpoint.",
+    )
+    parser.add_argument(
+        "--baseline-checkpoint",
+        default="",
+        help="Optional earlier checkpoint for a matched learning-curve comparison.",
+    )
     args = parser.parse_args()
+    if args.evaluate_progress and args.execute:
+        parser.error("--evaluate-progress and --execute are mutually exclusive")
     if args.resume and not args.execute:
         parser.error("--resume requires --execute")
-    if args.execute and not args.target:
-        parser.error("--execute requires at least one explicit --target")
+    if (args.execute or args.evaluate_progress) and not args.target:
+        parser.error("execution or progress evaluation requires at least one explicit --target")
     if args.max_steps < 0:
         parser.error("--max-steps cannot be negative")
 
@@ -547,7 +563,14 @@ def main() -> int:
         print(json.dumps(plan, indent=2, sort_keys=True))
         return 2
     report = plan
-    if args.execute:
+    if args.evaluate_progress:
+        report = evaluate_training_progress(
+            config,
+            plan,
+            targets=list(dict.fromkeys(args.target or [])),
+            baseline_checkpoint=args.baseline_checkpoint,
+        )
+    elif args.execute:
         authority = architecture_training_authority(config, max_steps=args.max_steps)
         if authority["trigger_state"] != "GREEN":
             report = {
@@ -2180,6 +2203,185 @@ def execute_targets(
     }
 
 
+def evaluate_training_progress(
+    config: dict[str, Any],
+    plan: dict[str, Any],
+    *,
+    targets: list[str],
+    baseline_checkpoint: str = "",
+) -> dict[str, Any]:
+    """Measure private-development loss without requiring campaign completion."""
+
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    stage_dir = resolve(str(config["stage_dir"]))
+    metadata = read_json(stage_dir / "stage_metadata_v1.json")
+    base = read_json(resolve(str(config["base_config"])))
+    results = []
+    gaps = []
+    for target_id in targets:
+        target = copy.deepcopy(plan["targets"][target_id])
+        receipt_path = resolve(str(target["receipt"]))
+        if not receipt_path.is_file():
+            gaps.append(f"{target_id}:training_receipt_missing")
+            continue
+        receipt = read_json(receipt_path)
+        current_checkpoint = resolve(str(receipt.get("checkpoint") or ""))
+        checkpoints = [("current", current_checkpoint)]
+        if baseline_checkpoint:
+            checkpoints.insert(0, ("baseline", resolve(baseline_checkpoint)))
+        checkpoint_reports = []
+        for label, checkpoint in checkpoints:
+            if not checkpoint.is_file():
+                gaps.append(f"{target_id}:{label}_checkpoint_missing")
+                continue
+            trained_vocab_size = int(
+                target.get("vocab_size") or plan["models"]["vocab_size"]
+            )
+            model = build_model(
+                CausalTransformerConfig(
+                    vocab_size=trained_vocab_size,
+                    **target["model"],
+                ),
+                mx=mx,
+                nn=nn,
+                state_role_lookup=None,
+                source_to_target_lookup=build_source_to_target_lookup(
+                    base,
+                    metadata,
+                    vocab_size=trained_vocab_size,
+                    identity_ranges=target_copy_identity_ranges(target),
+                ),
+            )
+            if target.get("role") == "language_expert":
+                shared = resolve(str(target.get("shared_trunk_checkpoint") or ""))
+                if not shared.is_file():
+                    raise ValueError(
+                        "expert progress evaluation requires shared trunk checkpoint"
+                    )
+                model.load_weights(str(shared), strict=False)
+                model.load_weights(str(checkpoint), strict=False)
+            else:
+                model.load_weights(str(checkpoint))
+            mx.eval(model.parameters())
+            by_arm = {}
+            weighted_loss = 0.0
+            weighted_positions = 0
+            for arm_id in ARM_IDS:
+                arm_target = copy.deepcopy(target)
+                artifacts = arm_target.get("supervision_artifacts") or {}
+                arm_target["supervision_artifacts"] = {
+                    key: value
+                    for key, value in artifacts.items()
+                    if key == f"{arm_id}:private_dev"
+                }
+                if not arm_target["supervision_artifacts"]:
+                    continue
+                development = materialize_target_supervision(
+                    config,
+                    base,
+                    arm_target,
+                    metadata=metadata,
+                    split="private_dev",
+                )
+                started = time.perf_counter()
+                loss = evaluate_loss(
+                    model,
+                    development.inputs,
+                    development.labels,
+                    development.loss_mask,
+                    batch_size=int(config["training"]["batch_size"]),
+                    mx=mx,
+                    nn=nn,
+                )
+                positions = int(development.mask.sum())
+                by_arm[arm_id] = {
+                    "teacher_forced_loss": loss,
+                    "row_count": len(development.inputs),
+                    "target_positions": positions,
+                    "wall_seconds": round(time.perf_counter() - started, 6),
+                }
+                weighted_loss += loss * positions
+                weighted_positions += positions
+            checkpoint_reports.append(
+                {
+                    "label": label,
+                    "checkpoint": relative(checkpoint),
+                    "checkpoint_sha256": sha256_file(checkpoint),
+                    "optimizer_steps": (
+                        int(receipt.get("optimizer_steps") or 0)
+                        if label == "current"
+                        else None
+                    ),
+                    "optimizer_positions": (
+                        int(receipt.get("optimizer_positions") or 0)
+                        if label == "current"
+                        else None
+                    ),
+                    "teacher_forced_loss": round(
+                        weighted_loss / max(1, weighted_positions), 6
+                    ),
+                    "target_positions": weighted_positions,
+                    "by_arm": by_arm,
+                }
+            )
+            del model
+            if hasattr(mx, "clear_cache"):
+                mx.clear_cache()
+        comparison = None
+        if len(checkpoint_reports) == 2:
+            baseline, current = checkpoint_reports
+            baseline_loss = float(baseline["teacher_forced_loss"])
+            current_loss = float(current["teacher_forced_loss"])
+            arm_deltas = {
+                arm_id: round(
+                    float(current["by_arm"][arm_id]["teacher_forced_loss"])
+                    - float(baseline["by_arm"][arm_id]["teacher_forced_loss"]),
+                    6,
+                )
+                for arm_id in sorted(set(baseline["by_arm"]) & set(current["by_arm"]))
+            }
+            comparison = {
+                "absolute_loss_delta": round(current_loss - baseline_loss, 6),
+                "relative_loss_reduction": round(
+                    (baseline_loss - current_loss) / max(1e-12, baseline_loss),
+                    8,
+                ),
+                "improved": current_loss < baseline_loss,
+                "regressed_arms": sorted(
+                    arm_id for arm_id, delta in arm_deltas.items() if delta > 0.0
+                ),
+                "loss_delta_by_arm": arm_deltas,
+            }
+        results.append(
+            {
+                "target_id": target_id,
+                "receipt": relative(receipt_path),
+                "receipt_complete": bool(receipt.get("complete")),
+                "checkpoints": checkpoint_reports,
+                "comparison": comparison,
+            }
+        )
+    return {
+        **plan,
+        "created_utc": now(),
+        "mode": "private_development_learning_curve",
+        "trigger_state": "RED" if gaps else "GREEN",
+        "results": results,
+        "hard_gaps": gaps,
+        "evaluation_split": "private_dev",
+        "confirmation_split_consumed": False,
+        "public_calibration_consumed": False,
+        "capability_claim": "NOT_EVALUATED",
+        "score_semantics": (
+            "Teacher-forced source-disjoint private-development learning signal only; "
+            "not direct generation utility or a promotion claim."
+        ),
+        **no_cheat(config),
+    }
+
+
 def ensure_shared_trunk_migration(
     config: dict[str, Any],
     plan: dict[str, Any],
@@ -2342,8 +2544,12 @@ def materialize_target_supervision(
     receipt_policy: str = "project_theseus_moecot_exact_supervision_arrays_v1",
     maximum_sequence_tokens: int | None = None,
     objective_filter: tuple[str, ...] = (),
+    split: str = "private_train",
 ) -> Any:
-    """Encode the frozen train split without truncation or hidden-field routing."""
+    """Encode one frozen private split without truncation or hidden-field routing."""
+
+    if split not in {"private_train", "private_dev", "private_eval"}:
+        raise ValueError(f"unsupported private supervision split: {split}")
 
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
@@ -2360,7 +2566,7 @@ def materialize_target_supervision(
     selected = [
         (key, row)
         for key, row in artifacts.items()
-        if key == "private_train" or str(key).endswith(":private_train")
+        if key == split or str(key).endswith(f":{split}")
     ]
     if not selected:
         raise ValueError(
@@ -2409,7 +2615,7 @@ def materialize_target_supervision(
             for line in handle:
                 row = json.loads(line)
                 source_rows += 1
-                if row.get("split") != "private_train" or row.get("public_benchmark") is not False:
+                if row.get("split") != split or row.get("public_benchmark") is not False:
                     raise ValueError(f"invalid supervision boundary: {key}:{source_rows - 1}")
                 if objective_filter and str(row.get("objective") or "") not in objective_filter:
                     continue
@@ -3579,10 +3785,18 @@ def generate_model_text(
     structured_source_code_vocabulary: dict[str, Any] | None = None,
     structured_source_kernel_offset: int = 0,
     structured_source_pointer_offset: int = 0,
+    batched_beam_advance: bool = True,
+    device_logit_filter: bool = True,
+    preprune_beam_expansions: bool = True,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
 
+    acceleration = generation_acceleration_receipt(
+        batched_beam_advance=batched_beam_advance,
+        device_logit_filter=device_logit_filter,
+        preprune_beam_expansions=preprune_beam_expansions,
+    )
     structured_source = bool(structured_source_code_vocabulary)
     if structured_source:
         source_ids, source_receipt = encode_kerc_global_target(
@@ -3604,11 +3818,17 @@ def generate_model_text(
             prompt_tokens, source_vocab, stream="source"
         )
     if int(source_receipt.get("unknown_token_count") or 0):
-        return "", generation_fault("source_unrepresentable")
+        return "", {**generation_fault("source_unrepresentable"), **acceleration}
     if any(token not in source_vocab for token in trusted_source_prefix_tokens):
-        return "", generation_fault("trusted_source_prefix_unrepresentable")
+        return "", {
+            **generation_fault("trusted_source_prefix_unrepresentable"),
+            **acceleration,
+        }
     if len(trusted_source_prefix_tokens) > 1:
-        return "", generation_fault("trusted_source_prefix_ambiguous")
+        return "", {
+            **generation_fault("trusted_source_prefix_ambiguous"),
+            **acceleration,
+        }
     source_offset = source_token_offset(base, source_vocab)
     source_ids = [
         *(
@@ -3622,50 +3842,71 @@ def generate_model_text(
         ),
     ]
     if len(source_ids) > max_source_tokens:
-        return "", generation_fault("source_requires_truncation")
+        return "", {**generation_fault("source_requires_truncation"), **acceleration}
     target_offset = target_token_offset(base, source_vocab)
     prompt_ids = [GLOBAL_BOS_ID]
     prompt_ids.extend(int(value) for value in source_ids)
     prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
     prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
-    mx.eval(logits)
+    mx.eval(logits, *cache_arrays(cache))
     inverse = {int(value): str(token) for token, value in target_vocab.items()}
-    beams = [{"tokens": [], "score": 0.0, "logits": logits, "cache": cache}]
+    serialization_states = serialization_allowed_local_ids(inverse)
+    beams = [
+        {"tokens": [], "score": 0.0, "logits": logits[0, -1], "cache": cache}
+    ]
     complete: list[dict[str, Any]] = []
     for _ in range(max_tokens):
-        expansions: list[dict[str, Any]] = []
+        expansion_specs: list[dict[str, Any]] = []
         for beam in beams:
-            allowed = serialization_valid_local_ids(beam["tokens"], inverse)
+            allowed = serialization_states[
+                bool(active_target_span(beam["tokens"])["active"])
+            ]
             if not allowed:
                 continue
-            values = np.asarray(
-                beam["logits"][0, -1, target_offset : target_offset + len(target_vocab)]
-            ).astype(np.float64)
-            allowed_values = np.asarray([values[index] for index in allowed], dtype=np.float64)
-            maximum = float(allowed_values.max())
-            normalizer = maximum + float(np.log(np.exp(allowed_values - maximum).sum()))
-            ranked = sorted(allowed, key=lambda index: float(values[index]), reverse=True)[
-                : max(1, branching_factor)
-            ]
-            for local_id in ranked:
+            ranked = rank_allowed_logits(
+                beam["logits"],
+                allowed,
+                id_offset=target_offset,
+                branching_factor=branching_factor,
+                device_filter=device_logit_filter,
+                mx=mx,
+            )
+            for local_id, log_probability in ranked:
                 token = inverse[local_id]
-                score = float(beam["score"]) + float(values[local_id]) - normalizer
+                score = float(beam["score"]) + log_probability
                 if token == "<eos>":
                     complete.append({"tokens": list(beam["tokens"]), "score": score})
                     continue
-                next_logits, next_cache = model(
-                    mx.array([[target_offset + local_id]], dtype=mx.int32), beam["cache"]
-                )
-                mx.eval(next_logits)
-                expansions.append(
+                expansion_specs.append(
                     {
-                        "tokens": [*beam["tokens"], token],
-                        "score": score,
-                        "logits": next_logits,
-                        "cache": next_cache,
+                        "beam": beam,
+                        "local_id": local_id,
+                        "token": token,
+                        "log_probability": log_probability,
                     }
                 )
+        if preprune_beam_expansions:
+            expansion_specs = prune_text_expansion_specs(
+                expansion_specs,
+                limit=beam_width,
+                length_penalty=length_penalty,
+            )
+        expansions = (
+            advance_beams_batched(
+                model,
+                expansion_specs,
+                target_offset=target_offset,
+                mx=mx,
+            )
+            if batched_beam_advance
+            else advance_beams_serial(
+                model,
+                expansion_specs,
+                target_offset=target_offset,
+                mx=mx,
+            )
+        )
         beams = sorted(
             expansions,
             key=lambda row: beam_score(row, length_penalty),
@@ -3692,17 +3933,22 @@ def generate_model_text(
         generated_tokens = list(selected["tokens"])
         stop_reason = "max_tokens"
     else:
-        return "", generation_fault("no_serialization_valid_sequence")
+        return "", {
+            **generation_fault("no_serialization_valid_sequence"),
+            **acceleration,
+        }
     decoded, decode_receipt = decode_target_tokens(generated_tokens)
     if decode_receipt.get("state") != "READY":
         return "", {
             **generation_fault("byte_serialization_fault"),
+            **acceleration,
             "decode_receipt": decode_receipt,
         }
     text = "".join(decoded)
     return text, {
         "state": "GREEN",
         "decoder": "beam_exact_text_with_byte_span_grammar_v1",
+        **acceleration,
         "beam_width": int(beam_width),
         "branching_factor": int(branching_factor),
         "stop_reason": stop_reason,
@@ -3717,21 +3963,126 @@ def generate_model_text(
     }
 
 
+def generation_acceleration_receipt(
+    *,
+    batched_beam_advance: bool,
+    device_logit_filter: bool,
+    preprune_beam_expansions: bool,
+) -> dict[str, Any]:
+    """Expose the decode route even when generation rejects its output."""
+
+    return {
+        "beam_advance": (
+            "mlx_batched_per_token_v1"
+            if batched_beam_advance
+            else "mlx_serial_per_expansion_reference_v1"
+        ),
+        "logit_filter": (
+            "mlx_allowed_ids_device_topk_v1"
+            if device_logit_filter
+            else "numpy_target_vocab_reference_v1"
+        ),
+        "preprune_beam_expansions": bool(preprune_beam_expansions),
+    }
+
+
 def serialization_valid_local_ids(
     generated_tokens: list[str], inverse: dict[int, str]
 ) -> list[int]:
     active = bool(active_target_span(generated_tokens)["active"])
-    allowed: list[int] = []
+    return serialization_allowed_local_ids(inverse)[active]
+
+
+def serialization_allowed_local_ids(
+    inverse: dict[int, str],
+) -> dict[bool, list[int]]:
+    """Compile both byte-serialization grammar states once per request."""
+
+    outside: list[int] = []
+    inside: list[int] = []
     for local_id, token in inverse.items():
-        if active:
-            if is_byte_token(token) or token == TARGET_BYTE_END:
-                allowed.append(local_id)
-        elif token == "<eos>" or token == TARGET_BYTE_BEGIN or (
+        if is_byte_token(token) or token == TARGET_BYTE_END:
+            inside.append(local_id)
+        if token == "<eos>" or token == TARGET_BYTE_BEGIN or (
             token not in {"<pad>", "<unk>", "<bos>", TARGET_BYTE_END}
             and not is_byte_token(token)
         ):
-            allowed.append(local_id)
-    return allowed
+            outside.append(local_id)
+    return {False: outside, True: inside}
+
+
+def rank_allowed_logits(
+    logits: Any,
+    allowed_ids: list[int],
+    *,
+    id_offset: int,
+    branching_factor: int,
+    device_filter: bool,
+    mx: Any,
+) -> list[tuple[int, float]]:
+    """Rank an admissible subset without transferring the full vocabulary."""
+
+    if not allowed_ids:
+        return []
+    limit = min(len(allowed_ids), max(1, int(branching_factor)))
+    if not device_filter:
+        values = np.asarray(logits[id_offset:]).astype(np.float64)
+        allowed_values = np.asarray(
+            [values[token_id] for token_id in allowed_ids], dtype=np.float64
+        )
+        maximum = float(allowed_values.max())
+        normalizer = maximum + float(
+            np.log(np.exp(allowed_values - maximum).sum())
+        )
+        ranked = sorted(
+            allowed_ids,
+            key=lambda token_id: float(values[token_id]),
+            reverse=True,
+        )[:limit]
+        return [
+            (token_id, float(values[token_id]) - normalizer)
+            for token_id in ranked
+        ]
+
+    local_ids = mx.array(allowed_ids, dtype=mx.int32)
+    global_ids = local_ids + int(id_offset)
+    allowed_logits = mx.take(logits, global_ids, axis=0)
+    log_normalizer = mx.logsumexp(allowed_logits, axis=0)
+    selected_positions = mx.argsort(allowed_logits, axis=0)[-limit:]
+    selected_logits = mx.take(allowed_logits, selected_positions, axis=0)
+    mx.eval(selected_positions, selected_logits, log_normalizer)
+    positions = np.asarray(selected_positions, dtype=np.int64)[::-1]
+    values = np.asarray(selected_logits, dtype=np.float64)[::-1]
+    normalizer = float(log_normalizer.item())
+    return [
+        (int(allowed_ids[int(position)]), float(value) - normalizer)
+        for position, value in zip(positions, values)
+    ]
+
+
+def prune_text_expansion_specs(
+    specs: list[dict[str, Any]],
+    *,
+    limit: int,
+    length_penalty: float,
+) -> list[dict[str, Any]]:
+    """Prune by the exact score used after advance, before paying for logits."""
+
+    unique: dict[tuple[str, ...], tuple[dict[str, Any], float]] = {}
+    for spec in specs:
+        beam = spec["beam"]
+        tokens = (*beam["tokens"], str(spec["token"]))
+        score = float(beam["score"]) + float(spec["log_probability"])
+        rank = score / (max(1, len(tokens)) ** max(0.0, float(length_penalty)))
+        prior = unique.get(tokens)
+        if prior is None or rank > prior[1]:
+            unique[tokens] = (spec, rank)
+    return [
+        row[0]
+        for row in sorted(
+            unique.values(), key=lambda row: row[1], reverse=True
+        )[: max(1, int(limit))]
+    ]
 
 
 def beam_score(row: dict[str, Any], length_penalty: float) -> float:
@@ -4125,17 +4476,18 @@ def train_target(
             global_step,
         )
         previous = read_json(receipt_path) if receipt_path.is_file() else {}
-        publish_model(
+        publication = publish_checkpoint_pair(
             model,
             generation_checkpoint,
             generation_checkpoint.with_name(
                 generation_checkpoint.stem + ".partial" + generation_checkpoint.suffix
             ),
+            optimizer,
+            generation_optimizer,
             mx=mx,
             mlx_utils=mlx_utils,
             trainable_only=expert_mode,
         )
-        publish_optimizer(mx, mlx_utils, optimizer, generation_optimizer)
         progress_receipt = {
             "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
             "created_utc": now(),
@@ -4172,9 +4524,10 @@ def train_target(
             "unique_target_positions": int(target["unique_target_positions"]),
             "optimizer_target_positions": optimizer_target_positions,
             "checkpoint": relative(generation_checkpoint),
-            "checkpoint_sha256": sha256_file(generation_checkpoint),
+            "checkpoint_sha256": publication["checkpoint_sha256"],
             "optimizer_state": relative(generation_optimizer),
-            "optimizer_state_sha256": sha256_file(generation_optimizer),
+            "optimizer_state_sha256": publication["optimizer_state_sha256"],
+            "checkpoint_publication": publication,
             "complete": False,
             "transactional_progress": progress,
             "resume_base_checkpoint_sha256": prior_checkpoint_hash,
@@ -4226,6 +4579,7 @@ def train_target(
         mx=mx,
         optim=optim,
         checkpoint_callback=commit_progress_checkpoint,
+        source_conditioning=False,
     )
     completed_positions["pretrain"] = prior_pretrain_positions + int(
         pretrain_phase["target_positions_consumed"]
@@ -4489,15 +4843,16 @@ def train_target(
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
         )
-    publish_model(
+    publication = publish_checkpoint_pair(
         model,
         checkpoint,
         temporary_checkpoint,
+        optimizer,
+        optimizer_path,
         mx=mx,
         mlx_utils=mlx_utils,
         trainable_only=expert_mode,
     )
-    publish_optimizer(mx, mlx_utils, optimizer, optimizer_path)
     total_steps = prior_steps + used_steps + int(supervision_phase["optimizer_steps"])
     total_pretrain_positions = prior_pretrain_positions + int(
         pretrain_phase["target_positions_consumed"]
@@ -4574,9 +4929,10 @@ def train_target(
             and total_sft_positions >= sft_positions
         ),
         "checkpoint": relative(checkpoint),
-        "checkpoint_sha256": sha256_file(checkpoint),
+        "checkpoint_sha256": publication["checkpoint_sha256"],
         "optimizer_state": relative(optimizer_path),
-        "optimizer_state_sha256": sha256_file(optimizer_path),
+        "optimizer_state_sha256": publication["optimizer_state_sha256"],
+        "checkpoint_publication": publication,
         "resume_requested": resume,
         "resume": resumed,
         "training_phase_selection": training_phase,
@@ -4660,6 +5016,51 @@ def publish_optimizer(mx: Any, mlx_utils: Any, optimizer: Any, path: Path) -> No
     flat = {name: value for name, value in mlx_utils.tree_flatten(optimizer.state)}
     mx.save_safetensors(str(temporary), flat, metadata={"policy": "moecot_optimizer_state_v1"})
     os.replace(temporary, path)
+
+
+def publish_checkpoint_pair(
+    model: Any,
+    checkpoint: Path,
+    temporary_checkpoint: Path,
+    optimizer: Any,
+    optimizer_path: Path,
+    *,
+    mx: Any,
+    mlx_utils: Any,
+    trainable_only: bool,
+) -> dict[str, Any]:
+    """Publish model and optimizer atomically per file with measured durable costs."""
+
+    started = time.perf_counter()
+    publish_model(
+        model,
+        checkpoint,
+        temporary_checkpoint,
+        mx=mx,
+        mlx_utils=mlx_utils,
+        trainable_only=trainable_only,
+    )
+    model_seconds = time.perf_counter() - started
+    optimizer_started = time.perf_counter()
+    publish_optimizer(mx, mlx_utils, optimizer, optimizer_path)
+    optimizer_seconds = time.perf_counter() - optimizer_started
+    hash_started = time.perf_counter()
+    checkpoint_sha256 = sha256_file(checkpoint)
+    optimizer_state_sha256 = sha256_file(optimizer_path)
+    hash_seconds = time.perf_counter() - hash_started
+    return {
+        "policy": "project_theseus_checkpoint_publication_timing_v1",
+        "model_serialization_seconds": round(model_seconds, 6),
+        "optimizer_serialization_seconds": round(optimizer_seconds, 6),
+        "content_hash_seconds": round(hash_seconds, 6),
+        "total_seconds": round(time.perf_counter() - started, 6),
+        "checkpoint_bytes": checkpoint.stat().st_size,
+        "optimizer_state_bytes": optimizer_path.stat().st_size,
+        "checkpoint_sha256": checkpoint_sha256,
+        "optimizer_state_sha256": optimizer_state_sha256,
+        "atomic_file_replacement": True,
+        "background_serialization": False,
+    }
 
 
 def checkpoint_generation_paths(

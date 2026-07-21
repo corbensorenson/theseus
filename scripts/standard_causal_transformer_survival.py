@@ -21,6 +21,7 @@ from collections import Counter
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -2945,6 +2946,7 @@ def causal_loss(
     kerc_unit_mask: Any | None = None,
     kerc_unit_hard_block_mask: Any | None = None,
     kerc_unit_class_weights: Any | None = None,
+    source_conditioning: bool | None = None,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -2960,6 +2962,7 @@ def causal_loss(
     if needs_plan or copy_weight > 0.0 or mtp_weight > 0.0 or needs_kerc:
         logits, _cache, training_aux = model(
             inputs,
+            source_conditioning=source_conditioning,
             return_training_aux=True,
             kerc_unit_byte_ids=kerc_unit_byte_ids,
             kerc_unit_byte_mask=kerc_unit_byte_mask,
@@ -2978,7 +2981,7 @@ def causal_loss(
         if needs_kerc and not isinstance(kerc_aux, dict):
             raise ValueError("KERC labels require the faithful learned KERC modules")
     else:
-        logits, _cache = model(inputs)
+        logits, _cache = model(inputs, source_conditioning=source_conditioning)
         plan_logits = None
         mtp_logits = []
         kerc_aux = None
@@ -3387,6 +3390,8 @@ def train_phase(
     mx: Any,
     optim: Any,
     checkpoint_callback: Any = None,
+    source_conditioning: bool = True,
+    training_step_mode: str = "auto",
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
@@ -3647,11 +3652,75 @@ def train_phase(
     optimizer_step_seconds: list[float] = []
     optimizer_step_positions: list[int] = []
     batch_sequence_widths: list[int] = []
+    execution_batch_sequence_widths: list[int] = []
     static_sequence_width = int(inputs.shape[1])
     padded_positions_avoided = 0
     started = time.perf_counter()
     epoch = 0
     model.train()
+    if training_step_mode not in {"auto", "compiled", "eager"}:
+        raise ValueError(f"unsupported training step mode: {training_step_mode}")
+    compiled_step = None
+    compile_width_quantum = 64
+    compiled_microbatch_size = 4
+    compile_eligible = training_step_mode != "eager" and source_conditioning is False and all(
+        value is None
+        for value in (
+            prepared_plan_labels,
+            kerc_residual_labels,
+            kerc_verifier_labels,
+            kerc_decision_labels,
+            kerc_unit_allocator_rows,
+        )
+    )
+    if training_step_mode == "compiled" and not compile_eligible:
+        raise ValueError("forced compiled training is incompatible with active auxiliary inputs")
+    if compile_eligible:
+        if not optimizer.state:
+            optimizer.init(model.trainable_parameters())
+            mx.eval(optimizer.state)
+        compiled_state = [model.state, optimizer.state]
+        tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
+        tree_flatten = __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten
+
+        @partial(
+            mx.compile,
+            inputs=compiled_state,
+            outputs=compiled_state,
+        )
+        def compiled_token_step(
+            x: Any,
+            y: Any,
+            m: Any,
+            weight: Any,
+            prior_grads: Any,
+            apply_update: bool,
+        ) -> tuple[Any, Any, Any]:
+            loss, grads = loss_and_grad(
+                model,
+                x,
+                y,
+                m,
+                mx,
+                __import__("mlx.nn", fromlist=["nn"]),
+                source_conditioning=source_conditioning,
+            )
+            loss = loss * weight
+            grads = tree_map(lambda value: value * weight, grads)
+            if prior_grads is not None:
+                grads = tree_map(
+                    lambda value, prior: value + prior,
+                    grads,
+                    prior_grads,
+                )
+            grad_norm = mx.array(0.0, dtype=mx.float32)
+            if apply_update:
+                grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
+                optimizer.update(model, grads)
+                grads = None
+            return loss, grad_norm, grads
+
+        compiled_step = compiled_token_step
     while consumed < target_positions and steps < max_steps:
         if hasattr(inputs, "length_bucketed_order"):
             order = inputs.length_bucketed_order(
@@ -3698,9 +3767,21 @@ def train_phase(
             batch_width = (
                 int(active_indices[-1] + 1) if len(active_indices) else 1
             )
+            batch_sequence_widths.append(batch_width)
+            if compiled_step is not None:
+                batch_width = min(
+                    static_sequence_width,
+                    max(
+                        1,
+                        int(
+                            math.ceil(batch_width / compile_width_quantum)
+                            * compile_width_quantum
+                        ),
+                    ),
+                )
             if batch_width > static_sequence_width:
                 raise ValueError("dynamic batch width exceeds staged sequence width")
-            batch_sequence_widths.append(batch_width)
+            execution_batch_sequence_widths.append(batch_width)
             padded_positions_avoided += len(indices) * (
                 static_sequence_width - batch_width
             )
@@ -3781,46 +3862,84 @@ def train_phase(
                 else None
             )
             step_started = time.perf_counter()
-            loss, grads = loss_and_grad(
-                model,
-                x,
-                y,
-                m,
-                mx,
-                __import__("mlx.nn", fromlist=["nn"]),
-                batch_plan,
-                float(plan_auxiliary_weight),
-                matrix_positive_weights,
-                plan_loss_mode,
-                plan_slot_count,
-                plan_factor_group_sizes,
-                batch_kerc_residual,
-                float(kerc_residual_weight),
-                batch_kerc_verifier,
-                float(kerc_verifier_weight),
-                matrix_verifier_positive_weights,
-                matrix_verifier_negative_weights,
-                matrix_residual_class_weights,
-                batch_kerc_residual_mask,
-                batch_kerc_decision,
-                float(kerc_decision_weight),
-                matrix_decision_class_weights,
-                batch_kerc_decision_mask,
-                batch_unit_arrays["labels"] if batch_unit_arrays else None,
-                float(kerc_unit_residual_weight),
-                batch_unit_arrays["loss_mask"] if batch_unit_arrays else None,
-                batch_unit_arrays["confidence"] if batch_unit_arrays else None,
-                batch_unit_arrays["byte_ids"] if batch_unit_arrays else None,
-                None,
-                batch_unit_arrays["byte_offsets"] if batch_unit_arrays else None,
-                batch_unit_arrays["kind_ids"] if batch_unit_arrays else None,
-                batch_unit_arrays["features"] if batch_unit_arrays else None,
-                batch_unit_arrays["unit_mask"] if batch_unit_arrays else None,
-                batch_unit_arrays["hard"] if batch_unit_arrays else None,
-                matrix_unit_class_weights,
-            )
-            grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
-            optimizer.update(model, grads)
+            if compiled_step is not None:
+                accumulated_grads = None
+                weighted_losses = []
+                total_loss_mass = float(batch_mask[:, :batch_width].sum())
+                if total_loss_mass <= 0.0:
+                    raise ValueError("compiled pretraining batch has no loss mass")
+                for micro_start in range(0, len(indices), compiled_microbatch_size):
+                    micro_stop = min(
+                        len(indices), micro_start + compiled_microbatch_size
+                    )
+                    micro_mask = m[micro_start:micro_stop]
+                    micro_mass = float(
+                        np.asarray(
+                            batch_mask[micro_start:micro_stop, :batch_width]
+                        ).sum()
+                    )
+                    apply_update = micro_stop == len(indices)
+                    micro_loss, grad_norm, accumulated_grads = compiled_step(
+                        x[micro_start:micro_stop],
+                        y[micro_start:micro_stop],
+                        micro_mask,
+                        mx.array(
+                            micro_mass / total_loss_mass,
+                            dtype=mx.float32,
+                        ),
+                        accumulated_grads,
+                        apply_update,
+                    )
+                    grad_arrays = (
+                        [value for _name, value in tree_flatten(accumulated_grads)]
+                        if accumulated_grads is not None
+                        else []
+                    )
+                    mx.eval(micro_loss, grad_norm, *grad_arrays)
+                    weighted_losses.append(micro_loss)
+                loss = mx.sum(mx.stack(weighted_losses))
+            else:
+                loss, grads = loss_and_grad(
+                    model,
+                    x,
+                    y,
+                    m,
+                    mx,
+                    __import__("mlx.nn", fromlist=["nn"]),
+                    batch_plan,
+                    float(plan_auxiliary_weight),
+                    matrix_positive_weights,
+                    plan_loss_mode,
+                    plan_slot_count,
+                    plan_factor_group_sizes,
+                    batch_kerc_residual,
+                    float(kerc_residual_weight),
+                    batch_kerc_verifier,
+                    float(kerc_verifier_weight),
+                    matrix_verifier_positive_weights,
+                    matrix_verifier_negative_weights,
+                    matrix_residual_class_weights,
+                    batch_kerc_residual_mask,
+                    batch_kerc_decision,
+                    float(kerc_decision_weight),
+                    matrix_decision_class_weights,
+                    batch_kerc_decision_mask,
+                    batch_unit_arrays["labels"] if batch_unit_arrays else None,
+                    float(kerc_unit_residual_weight),
+                    batch_unit_arrays["loss_mask"] if batch_unit_arrays else None,
+                    batch_unit_arrays["confidence"] if batch_unit_arrays else None,
+                    batch_unit_arrays["byte_ids"] if batch_unit_arrays else None,
+                    None,
+                    batch_unit_arrays["byte_offsets"] if batch_unit_arrays else None,
+                    batch_unit_arrays["kind_ids"] if batch_unit_arrays else None,
+                    batch_unit_arrays["features"] if batch_unit_arrays else None,
+                    batch_unit_arrays["unit_mask"] if batch_unit_arrays else None,
+                    batch_unit_arrays["hard"] if batch_unit_arrays else None,
+                    matrix_unit_class_weights,
+                    source_conditioning,
+                )
+                grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
+                optimizer.update(model, grads)
             mx.eval(model.parameters(), optimizer.state, loss, grad_norm)
             optimizer_step_seconds.append(time.perf_counter() - step_started)
             optimizer_step_positions.append(int(progress_mask[indices].sum()))
@@ -3954,8 +4073,23 @@ def train_phase(
         "mean_dynamic_batch_width": round(
             sum(batch_sequence_widths) / max(1, len(batch_sequence_widths)), 3
         ),
+        "maximum_execution_batch_width": max(
+            execution_batch_sequence_widths or [0]
+        ),
         "padded_positions_avoided": padded_positions_avoided,
         "dynamic_batch_cropping": True,
+        "training_step_execution": (
+            "mlx_compiled_shape_bucket_v1"
+            if compiled_step is not None
+            else "mlx_eager_auxiliary_objective_v1"
+        ),
+        "training_step_mode_requested": training_step_mode,
+        "compile_width_quantum": (
+            compile_width_quantum if compiled_step is not None else 0
+        ),
+        "compiled_microbatch_size": (
+            compiled_microbatch_size if compiled_step is not None else 0
+        ),
         "sampling_effective_size": (
             round(float(1.0 / np.square(probabilities).sum()), 3)
             if probabilities is not None

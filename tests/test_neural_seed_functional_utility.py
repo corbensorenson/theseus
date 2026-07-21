@@ -20,6 +20,7 @@ from neural_seed_functional_utility import (
     build_manifest,
     compare_qualifications,
     evaluate_bundle,
+    semantic_training_config_sha256,
     validate_precomputed_code_evaluation,
     validate_freeze,
 )
@@ -28,6 +29,34 @@ from neural_seed_functional_cases import stable_hash
 
 CONFIG_PATH = ROOT / "configs/neural_seed_functional_utility.json"
 CONFIG = json.loads(CONFIG_PATH.read_text())
+
+
+def test_training_config_identity_excludes_only_checkpoint_migration_ledger(
+    tmp_path: Path,
+) -> None:
+    baseline = json.loads(
+        (ROOT / "configs/moecot_language_arm_training.json").read_text()
+    )
+    first = tmp_path / "first.json"
+    first.write_text(json.dumps(baseline))
+
+    migrated = copy.deepcopy(baseline)
+    migrated["plan_identity"]["legacy_migrations"].append(
+        {"migration_id": "test-only-lineage-entry"}
+    )
+    second = tmp_path / "second.json"
+    second.write_text(json.dumps(migrated))
+    assert semantic_training_config_sha256(first) == semantic_training_config_sha256(
+        second
+    )
+
+    changed = copy.deepcopy(baseline)
+    changed["training"]["batch_size"] += 1
+    third = tmp_path / "third.json"
+    third.write_text(json.dumps(changed))
+    assert semantic_training_config_sha256(first) != semantic_training_config_sha256(
+        third
+    )
 
 
 def test_manifest_is_green_disjoint_and_candidate_packet_is_blind() -> None:

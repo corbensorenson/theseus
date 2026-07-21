@@ -1682,6 +1682,132 @@ def test_encoder_decoder_preserves_separator_free_causal_pretraining_cache() -> 
     assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
 
 
+def test_encoder_decoder_separator_free_pretraining_forward_is_compilable() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    mx.random.seed(49)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=64,
+            d_model=32,
+            num_layers=2,
+            num_heads=4,
+            num_kv_heads=2,
+            ff_dim=64,
+            attention_policy="encoder_decoder",
+            source_encoder_layers=1,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    mx.eval(model.parameters())
+
+    def forward(tokens):
+        return model(tokens, source_conditioning=False)[0]
+
+    compiled_forward = mx.compile(forward)
+    for sequence in (
+        mx.array([[1, 10, 11, 12, 13, 14]], dtype=mx.int32),
+        mx.array([[1, 10, 11, 12]], dtype=mx.int32),
+    ):
+        eager = forward(sequence)
+        compiled = compiled_forward(sequence)
+        mx.eval(eager, compiled)
+        assert bool(mx.allclose(eager, compiled, atol=1e-6))
+
+
+def test_compiled_microbatch_pretraining_matches_eager_full_batch(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(51)
+    compiled_model = build_model(config, mx=mx, nn=nn)
+    mx.eval(compiled_model.parameters())
+    eager_model = build_model(config, mx=mx, nn=nn)
+    eager_model.load_weights(
+        list(mlx_utils.tree_flatten(compiled_model.parameters()))
+    )
+    mx.eval(eager_model.parameters())
+    rng = np.random.default_rng(19)
+    inputs = rng.integers(3, 64, size=(8, 16), dtype=np.int32)
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.ones_like(inputs, dtype=np.float32)
+    common = {
+        "inputs": inputs,
+        "labels": labels,
+        "mask": mask,
+        "progress_mask": mask,
+        "ordered_plan_loss_weight": 1.0,
+        "sample_weights": None,
+        "plan_labels": None,
+        "plan_label_mode": "none",
+        "plan_auxiliary_weight": 0.0,
+        "plan_shuffle_seed": 0,
+        "plan_loss_mode": "binary_multilabel",
+        "plan_slot_count": 0,
+        "plan_factor_group_sizes": (),
+        "phase_name": "compiled-parity",
+        "target_positions": int(mask.sum()),
+        "batch_size": 8,
+        "gradient_clip": 1.0,
+        "seed": 23,
+        "max_steps": 1,
+        "checkpoint": tmp_path / "unused.npz",
+        "checkpoint_every": 99,
+        "heartbeat": tmp_path / "heartbeat.json",
+        "global_step_offset": 0,
+        "mx": mx,
+        "optim": optim,
+    }
+    compiled_report = survival.train_phase(
+        compiled_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(compiled_model, causal_loss),
+        source_conditioning=False,
+        **common,
+    )
+    eager_report = survival.train_phase(
+        eager_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(eager_model, causal_loss),
+        source_conditioning=False,
+        training_step_mode="eager",
+        **common,
+    )
+    compiled_parameters = dict(mlx_utils.tree_flatten(compiled_model.parameters()))
+    eager_parameters = dict(mlx_utils.tree_flatten(eager_model.parameters()))
+    maximum_delta = max(
+        float(mx.max(mx.abs(compiled_parameters[name] - eager_parameters[name])).item())
+        for name in compiled_parameters
+    )
+
+    assert compiled_report["training_step_execution"] == (
+        "mlx_compiled_shape_bucket_v1"
+    )
+    assert eager_report["training_step_execution"] == (
+        "mlx_eager_auxiliary_objective_v1"
+    )
+    assert compiled_report["training_step_mode_requested"] == "auto"
+    assert eager_report["training_step_mode_requested"] == "eager"
+    assert compiled_report["final_loss"] == pytest.approx(
+        eager_report["final_loss"], abs=2e-6
+    )
+    assert maximum_delta < 5e-6
+
+
 def test_zero_initialized_expert_adapter_preserves_trunk_and_freezes_exactly() -> None:
     import mlx.core as mx
     import mlx.nn as nn

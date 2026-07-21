@@ -17,6 +17,7 @@
   "external_inference_at_runtime_allowed": false,
   "fallback_returns_allowed": false,
   "refresh_context_by_default": true,
+  "context_refresh_cache": "runtime/cache/assistant_context_refresh_v1.json",
   "procedural_memory_default_route": {
     "enabled": true,
     "report": "reports/procedural_memory_route_adoption.json",
@@ -39,20 +40,57 @@
   },
   "context_refresh_commands": [
     {
-      "id": "vcm_task_context_bridge",
-      "command": [
-        "python3",
-        "scripts/vcm_task_context_bridge.py"
-      ],
-      "timeout_seconds": 120
-    },
-    {
       "id": "vcm_context_governor",
       "command": [
         "python3",
         "scripts/vcm_context_governor_gate.py"
       ],
-      "timeout_seconds": 120
+      "timeout_seconds": 120,
+      "cache": {
+        "ttl_seconds": 300,
+        "inputs": [
+          "configs/theseus_assistant_runtime.json",
+          "scripts/vcm_context_governor_gate.py",
+          "configs/vcm_context_governor.json"
+        ],
+        "outputs": [
+          "reports/vcm_context_governor.json",
+          "reports/vcm_mission_brief.json",
+          "reports/vcm_deletion_closure.json",
+          "reports/vcm_context_governor.md"
+        ]
+      }
+    },
+    {
+      "id": "vcm_task_context_bridge",
+      "command": [
+        "python3",
+        "scripts/vcm_task_context_bridge.py"
+      ],
+      "timeout_seconds": 120,
+      "cache": {
+        "ttl_seconds": 300,
+        "inputs": [
+          "configs/theseus_assistant_runtime.json",
+          "scripts/vcm_task_context_bridge.py",
+          "scripts/vcm_consumer_abi.py",
+          "configs/vcm_task_context_policy.json",
+          "reports/virtual_context_memory_index.json",
+          "reports/virtual_context_compiled_context.json",
+          "reports/virtual_context_memory_probe.json",
+          "reports/virtual_context_memory_status.json",
+          "reports/virtual_context_memory_training_admission.json",
+          "reports/virtual_context_memory_consumer_audit.json",
+          "reports/vcm_runtime_claim_readiness.json",
+          "reports/vcm_release_conformance_audit.json",
+          "reports/vcm_context_governor.json"
+        ],
+        "outputs": [
+          "reports/vcm_task_context_bridge.json",
+          "reports/vcm_task_contexts.json",
+          "reports/vcm_task_context_bridge.md"
+        ]
+      }
     },
     {
       "id": "deterministic_tool_registry",
@@ -60,7 +98,24 @@
         "python3",
         "scripts/theseus_deterministic_tool_substrate.py"
       ],
-      "timeout_seconds": 120
+      "timeout_seconds": 120,
+      "cache": {
+        "ttl_seconds": 300,
+        "inputs": [
+          "configs/theseus_assistant_runtime.json",
+          "scripts/theseus_deterministic_tool_substrate.py",
+          "scripts/vcm_consumer_abi.py",
+          "configs/deterministic_tool_substrate.json",
+          "reports/vcm_context_governor.json"
+        ],
+        "outputs": [
+          "reports/deterministic_tool_substrate.json",
+          "reports/deterministic_tool_registry.json",
+          "reports/deterministic_tool_trace.jsonl",
+          "reports/deterministic_tool_ablation.json",
+          "reports/deterministic_tool_artifact_graph.json"
+        ]
+      }
     },
     {
       "id": "plan_compiler",
@@ -68,7 +123,30 @@
         "python3",
         "scripts/theseus_plan_compiler.py"
       ],
-      "timeout_seconds": 120
+      "timeout_seconds": 120,
+      "cache": {
+        "ttl_seconds": 300,
+        "inputs": [
+          "configs/theseus_assistant_runtime.json",
+          "scripts/theseus_plan_compiler.py",
+          "scripts/vcm_consumer_abi.py",
+          "configs/theseus_plan_compiler.json",
+          "configs/project_manifest_registry.json",
+          "reports/vcm_task_contexts.json",
+          "reports/vcm_context_governor.json",
+          "reports/deterministic_tool_registry.json",
+          "reports/deterministic_tool_substrate.json",
+          "reports/procedural_memory_toolification.json",
+          "reports/procedural_memory_route_adoption.json"
+        ],
+        "outputs": [
+          "reports/theseus_plan_compiler.json",
+          "reports/theseus_plan_compiled_dags.json",
+          "reports/theseus_plan_trace_bundle.jsonl",
+          "reports/theseus_plan_compiler_ablation.json",
+          "reports/theseus_plan_compiler.md"
+        ]
+      }
     },
     {
       "id": "private_verifier_spine_smoke",
@@ -77,7 +155,23 @@
         "scripts/code_lm_private_verifier.py",
         "--spine-smoke"
       ],
-      "timeout_seconds": 60
+      "timeout_seconds": 60,
+      "cache": {
+        "ttl_seconds": 300,
+        "inputs": [
+          "configs/theseus_assistant_runtime.json",
+          "scripts/code_lm_private_verifier.py",
+          "scripts/real_code_benchmark_support.py",
+          "scripts/viea_spine_records.py",
+          "scripts/vcm_consumer_abi.py",
+          "scripts/semantic_ir.py",
+          "reports/vcm_context_governor.json"
+        ],
+        "outputs": [
+          "reports/private_verifier_spine_smoke.json",
+          "reports/private_verifier_spine_smoke.md"
+        ]
+      }
     }
   ],
   "intent_routes": {

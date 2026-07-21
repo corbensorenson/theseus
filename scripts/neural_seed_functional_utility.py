@@ -328,6 +328,7 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "candidate_id": campaign["candidate_id"],
         "training_config": campaign["training_config"],
         "training_config_sha256": campaign["training_config_sha256"],
+        "training_config_identity": campaign["training_config_identity"],
         "training_base_config_sha256": campaign["training_base_config_sha256"],
         "training_stage_signature": campaign["training_stage_signature"],
         "checkpoint_root": campaign["checkpoint_root"],
@@ -450,6 +451,7 @@ def build_freeze(
         "candidate_id": manifest["candidate_id"],
         "training_config": manifest["training_config"],
         "training_config_sha256": manifest["training_config_sha256"],
+        "training_config_identity": manifest["training_config_identity"],
         "training_base_config_sha256": manifest["training_base_config_sha256"],
         "training_stage_signature": manifest["training_stage_signature"],
         "checkpoint_root": manifest["checkpoint_root"],
@@ -561,11 +563,31 @@ def campaign_binding(config: dict[str, Any]) -> dict[str, Any]:
     return {
         "candidate_id": candidate_id,
         "training_config": relative(training_config_path),
-        "training_config_sha256": sha256_file(training_config_path),
+        "training_config_sha256": semantic_training_config_sha256(
+            training_config_path
+        ),
+        "training_config_identity": {
+            "policy": "project_theseus_functional_training_config_semantic_identity_v1",
+            "excluded_fields": ["plan_identity.legacy_migrations"],
+            "reason": (
+                "Checkpoint lineage migrations do not change model, data, objective, "
+                "schedule, generator, or evaluation behavior."
+            ),
+        },
         "training_base_config_sha256": sha256_file(base_path),
         "training_stage_signature": str(stage_metadata.get("stage_signature") or ""),
         "checkpoint_root": relative(resolve(str(training_config["checkpoint_root"]))),
     }
+
+
+def semantic_training_config_sha256(path: Path) -> str:
+    """Bind training behavior without making the migration ledger self-referential."""
+
+    payload = read_json(path)
+    identity = dict(payload.get("plan_identity") or {})
+    identity.pop("legacy_migrations", None)
+    payload["plan_identity"] = identity
+    return stable_hash(payload)
 
 
 def current_training_state(
@@ -1252,7 +1274,7 @@ def close_timing_total(value: Any, expected: float) -> bool:
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:
     gaps = []
-    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "candidate_id", "training_config", "training_config_sha256", "training_base_config_sha256", "training_stage_signature", "checkpoint_root"):
+    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "candidate_id", "training_config", "training_config_sha256", "training_config_identity", "training_base_config_sha256", "training_stage_signature", "checkpoint_root"):
         if manifest.get(key) != freeze.get(key):
             gaps.append(f"freeze_identity_mismatch:{key}")
     if freeze.get("consumption_registry") != (manifest.get("consumption") or {}).get("registry"):

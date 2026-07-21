@@ -923,14 +923,14 @@ def build_model(
             return source_mask, target_access, has_separator
 
         def encode_source(
-            self, tokens: Any
+            self, tokens: Any, *, assume_separator: bool = False
         ) -> tuple[Any | None, Any | None, Any | None, Any | None]:
             """Encode only the prompt partition; target values cannot affect this memory."""
 
             if not source_encoder_enabled:
                 return None, None, None, None
             source_mask, target_access, has_separator = self.source_partition(tokens)
-            if not bool(mx.any(has_separator > 0)):
+            if not assume_separator and not bool(mx.any(has_separator > 0)):
                 return None, None, None, None
             hidden = self.token_embedding(tokens) * self.scale
             hidden = hidden * source_mask[:, :, None]
@@ -1539,6 +1539,7 @@ def build_model(
             tokens: Any,
             cache: list[tuple[Any, ...]] | None = None,
             *,
+            source_conditioning: bool | None = None,
             return_plan_logits: bool = False,
             return_copy_aux: bool = False,
             return_training_aux: bool = False,
@@ -1605,14 +1606,16 @@ def build_model(
             source_mask = cached_source_mask
             source_copy_ids = cached_source_copy_ids
             source_access = None
-            if source_encoder_enabled:
+            if source_encoder_enabled and source_conditioning is not False:
                 if source_memory is None:
                     (
                         source_memory,
                         source_mask,
                         source_access,
                         source_copy_ids,
-                    ) = self.encode_source(tokens)
+                    ) = self.encode_source(
+                        tokens, assume_separator=source_conditioning is True
+                    )
                 elif cache is not None:
                     source_access = mx.ones(tokens.shape, dtype=mx.float32)
             conditioned_hidden, plan_context, plan_logits, plan_access = self.conditioned_embeddings(

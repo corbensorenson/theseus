@@ -1113,6 +1113,64 @@ def test_exact_supervision_masks_only_target_and_never_truncates(
         )
 
 
+def test_exact_supervision_can_materialize_private_dev_without_training_credit(
+    tmp_path: Path,
+) -> None:
+    source_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
+    target_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
+    reserve_byte_fallback_tokens(source_vocab, max_vocab=270, stream="source")
+    reserve_byte_fallback_tokens(target_vocab, max_vocab=270, stream="target")
+    row = {
+        "split": "private_dev",
+        "arm_id": "english",
+        "public_benchmark": False,
+        "prompt": "Summarize this record.",
+        "target": "The record is complete.",
+    }
+    artifact = tmp_path / "dev.jsonl"
+    artifact.write_text(json.dumps(row) + "\n")
+    target = {
+        "target_id": "shared_trunk",
+        "supervision_artifacts": {
+            "english:private_dev": {
+                "path": str(artifact),
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "row_count": 1,
+            }
+        },
+    }
+    stage = materialize_target_supervision(
+        {
+            "training": {
+                "termination_loss_weight": 4.0,
+                "byte_boundary_loss_weight": 2.0,
+            }
+        },
+        {
+            "tokenization": {
+                "max_sequence_tokens": 256,
+                "shared_source_target_vocabulary": False,
+            }
+        },
+        target,
+        metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+        split="private_dev",
+    )
+
+    assert len(stage.inputs) == 1
+    assert stage.receipt["public_training_rows_written"] == 0
+    assert stage.receipt["target_positions"] > 0
+
+    with pytest.raises(ValueError, match="unsupported private supervision split"):
+        materialize_target_supervision(
+            {"training": {"termination_loss_weight": 1.0, "byte_boundary_loss_weight": 1.0}},
+            {"tokenization": {"max_sequence_tokens": 64}},
+            target,
+            metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+            split="public_test",
+        )
+
+
 def test_kerc_materialization_trains_verifier_negatives_without_generator_credit(
     tmp_path: Path,
 ) -> None:
@@ -1344,6 +1402,107 @@ def test_generation_api_cannot_receive_hidden_target() -> None:
     pipeline_parameters = inspect.signature(generate_kerc_pipeline_text).parameters
     assert "prompt" in pipeline_parameters
     assert "expected" not in pipeline_parameters
+
+
+def test_batched_text_beam_advance_matches_serial_reference() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    vocabulary = json.loads(
+        (ROOT / "runtime/moecot_language_seed_v1/exact_language_vocab.json").read_text()
+    )
+    source_vocab = vocabulary["source_vocab"]
+    target_vocab = vocabulary["target_vocab"]
+    base = json.loads(
+        (ROOT / "configs/standard_causal_transformer_survival.json").read_text()
+    )
+    mx.random.seed(61)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=3 + len(source_vocab) + len(target_vocab),
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    mx.eval(model.parameters())
+    common = {
+        "model": model,
+        "prompt": "hello",
+        "source_vocab": source_vocab,
+        "target_vocab": target_vocab,
+        "base": base,
+        "max_tokens": 8,
+        "max_source_tokens": 16,
+        "beam_width": 3,
+        "branching_factor": 3,
+        "length_penalty": 1.0,
+        "mx": mx,
+    }
+
+    reference_text, reference_receipt = generate_model_text(
+        **common,
+        batched_beam_advance=False,
+        device_logit_filter=False,
+        preprune_beam_expansions=False,
+    )
+    serial_text, serial_receipt = generate_model_text(
+        **common, batched_beam_advance=False, device_logit_filter=True
+    )
+    batched_text, batched_receipt = generate_model_text(
+        **common, batched_beam_advance=True
+    )
+
+    assert batched_text == serial_text == reference_text
+    assert (
+        batched_receipt["generated_token_sha256"]
+        == serial_receipt["generated_token_sha256"]
+        == reference_receipt["generated_token_sha256"]
+    )
+    assert batched_receipt["stop_reason"] == serial_receipt["stop_reason"]
+    assert batched_receipt["beam_advance"] == "mlx_batched_per_token_v1"
+    assert serial_receipt["beam_advance"] == (
+        "mlx_serial_per_expansion_reference_v1"
+    )
+    assert batched_receipt["logit_filter"] == "mlx_allowed_ids_device_topk_v1"
+    assert reference_receipt["logit_filter"] == "numpy_target_vocab_reference_v1"
+
+
+def test_generation_fault_retains_acceleration_route() -> None:
+    class ModelMustNotRun:
+        def __call__(self, _inputs):
+            raise AssertionError("unrepresentable source must fail before inference")
+
+    vocabulary = json.loads(
+        (ROOT / "runtime/moecot_language_seed_v1/exact_language_vocab.json").read_text()
+    )
+    source_vocab = vocabulary["source_vocab"]
+    target_vocab = vocabulary["target_vocab"]
+    base = json.loads(
+        (ROOT / "configs/standard_causal_transformer_survival.json").read_text()
+    )
+    _text, receipt = generate_model_text(
+        ModelMustNotRun(),
+        "hello",
+        source_vocab,
+        target_vocab,
+        base,
+        max_tokens=8,
+        max_source_tokens=0,
+        beam_width=3,
+        branching_factor=3,
+        length_penalty=1.0,
+        mx=None,
+    )
+
+    assert receipt["state"] == "FAULT"
+    assert receipt["beam_advance"] == "mlx_batched_per_token_v1"
+    assert receipt["logit_filter"] == "mlx_allowed_ids_device_topk_v1"
+    assert receipt["preprune_beam_expansions"] is True
 
 
 def test_kerc_code_decoder_keeps_byte_fallback_inside_one_code_space() -> None:

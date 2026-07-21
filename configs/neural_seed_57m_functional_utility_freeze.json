@@ -13,7 +13,7 @@
     "rust": 32
   },
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1",
-  "compiler_sha256": "4530f603901d21bcebd2e17e3da88ea087228da89cf3c4e667118ee653d39f0f",
+  "compiler_sha256": "78831afdf223603749d91673566b490dd371eef80e495e9f53ae7f7def1657cd",
   "config": "configs/neural_seed_functional_utility.json",
   "config_sha256": "f7d65b888e555c2504b35116fce74f84619feb2179600fb8e780427548c89b3f",
   "consumed_case_count": 0,
@@ -22,7 +22,7 @@
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-20T17:03:48.102664Z",
+  "frozen_utc": "2026-07-21T06:23:10.331431Z",
   "generation_wrapper_sha256": "76bf5714f999e4e68c96f27b7179a0368a4bb5ee273cd46d29f89d5a78ad08d6",
   "immutable": true,
   "local_english_rater_config_sha256": "48ce47f0351d49660afacc6bddb02b6c196a5590a9982b1177c10eb0e22fecf6",
@@ -30,14 +30,21 @@
   "policy": "project_theseus_private_functional_utility_freeze_v2",
   "public_training_rows_written": 0,
   "source_disjoint": true,
-  "supersede_reason": "Bind the unconsumed identical 160-case surface to the exact transactional step-1000 implementation migration receipt; no model math, data, objective, case, verifier, hidden payload, candidate, judgment, or result changed.",
-  "supersedes_freeze_sha256": "05cd06e252cb661f44732fdc86054a1ed252b6e8151f6a00c43e5042c2cd7fcd",
+  "supersede_reason": "Bind the still-unconsumed identical 160-case surface to the exact prompt-only decode acceleration and checkpoint-observability implementation. Candidate visibility, model math, training data, objective, schedule, cases, verifier, judgment, and consumption contracts are unchanged; reference-versus-optimized generation passed 8/8 exact output-and-receipt parity.",
+  "supersedes_freeze_sha256": "ae0e6b3e043b8b7fedab2741e4c8db2e082ba93c7341dbb0bc194ba19d434759",
   "templates_renderers_routers_tools_credit": 0,
-  "toolchain_identity_sha256": "5271eca43ea4bcd331821e14bf25f29474c456889e0b0336e94de80c17f302ce",
+  "toolchain_identity_sha256": "ca3d37c3f7db18132b6f6b2ae8e73553887c614f5970124f6e12fa933f9ef096",
   "training_base_config_sha256": "22e334af476b0243b8017f7930130662dfde81febaa4c5a4bfe7781b5e0dbdb2",
   "training_config": "configs/moecot_language_arm_training.json",
-  "training_config_sha256": "1c533828c3722eb6fbb8d4dc29e3491c9938e2d79dbabe5451c778765b147ec5",
-  "training_generator_sha256": "8de9aac5bd4085ff10a71eef38d5c9a0bd47f0cb0bdc5ba2b2ac97a2ccbe7439",
+  "training_config_identity": {
+    "excluded_fields": [
+      "plan_identity.legacy_migrations"
+    ],
+    "policy": "project_theseus_functional_training_config_semantic_identity_v1",
+    "reason": "Checkpoint lineage migrations do not change model, data, objective, schedule, generator, or evaluation behavior."
+  },
+  "training_config_sha256": "19c212142e3f5fb9a2ad5b5d07e085ce35921b1280237e91f3e457a66673e665",
+  "training_generator_sha256": "dfc86a1088a7b1bb7fa60047321a23697a5f6249c4c0a4a046c8075d38c6bd04",
   "training_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
   "training_state_at_freeze": {
     "candidate_id": "moecot_mlx_57m_active_preregistered_v1",

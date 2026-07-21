@@ -85,6 +85,32 @@
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "commit:b3e22aef checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
         "reason": "Bind every imported training implementation to the plan and make resumed heartbeat counters cumulative without changing model, optimizer, data, objective, schedule, or evaluation behavior."
+      },
+      {
+        "migration_id": "shared_trunk_step2500_compiled_microbatch_acceleration_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "a784e3fc50f3ae16fa8624b173e3b49e915a30c239ac5287677580197b40068b",
+        "legacy_checkpoint_sha256": "6317d422d57f77eff5e8bf502d8463c10b113f43604ac26510c2b9d4f1dd95f8",
+        "legacy_optimizer_state_sha256": "999ad7e948a389f48c1b0d268da6e79ffb208d4bcc54cd5ab5ec476d148cc63b",
+        "legacy_optimizer_steps": 2500,
+        "legacy_optimizer_positions": 19161119,
+        "required_current_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
+        "reason": "Continue the exact step-2500 model and AdamW state through the MLX compiled, shape-bucketed microbatch execution route. The route preserves batch-16 token-mass weighting, clips once, updates once, leaves source-conditioned auxiliary phases eager, and passed one-step parameter-update parity without changing model, data, objective, schedule, or evaluation behavior."
+      },
+      {
+        "migration_id": "shared_trunk_step3000_decode_and_checkpoint_observability_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "e73a0e0fb8924955ca6bf9bbdaceb9b87150dd86820c1caa75b4cb958b8e3e19",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/moecot_language_arm_training_acceleration_500step_qualification.json reports/moecot_57m_shared_trunk_learning_curve_step3000.json tests/test_moecot_language_arm_training.py::test_batched_text_beam_advance_matches_serial_reference",
+        "reason": "Continue the exact step-3000 model and AdamW state after adding prompt-only beam batching, device-side admissible-logit selection, exact pre-forward beam pruning, private-development progress evaluation, checkpoint timing receipts, and an explicit eager/compiled qualification switch whose default preserves the prior automatic route. These changes affect inference execution and observability only; model, optimizer, data, objective, schedule, and saved tensors are unchanged."
       }
     ]
   },

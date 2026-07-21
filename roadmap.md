@@ -48,7 +48,7 @@ The current falsifiable question is:
 | Gate | State | Exit condition |
 |---|---|---|
 | `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | shared trunk checkpoint/resume proved | The exact 57.340M-active campaign reached transactional step 1,000 and 7,663,202 cumulative optimizer positions, then loaded model and optimizer state under the content-addressed implementation closure and committed step 1,001. The resumed run proved cumulative v2 telemetry at step 1,025; continue the same weights, then train five arms and two matched dense controls. |
+| `T1` Frozen neural-seed campaign | shared trunk checkpoint/resume and acceleration qualified | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Same-state training is at least 2.19x faster and direct decode is 8.45x-9.69x faster with exact parity; continue the same weights, then train five arms and two matched dense controls through the evidence-efficient rung ladder. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -72,16 +72,23 @@ The first practical architecture is frozen:
   optimizer target 1,146,808,520 positions over 2.715 planned passes.
 - Evaluation: one unconsumed, source-disjoint 160-case functional surface with 32 cases
   each for English, Python, JS/TS, HTML/CSS, and Rust.
-- Runtime: eager float32, batch 16, native MLX grouped-query attention. MLX compilation
-  and batch 24 regressed on this M1 and are not production routes.
-- Current run: shared trunk checkpoint 1,001, 7,671,020 optimizer positions. Step 1,000
-  was transactionally committed with exact model/optimizer hashes; an exact
-  load/update/save proof produced step 1,001, and the resumed run reached step 1,025 with
-  7,852,642 cumulative positions. This is training health, not capability.
+- Runtime: native MLX grouped-query attention and compiled width-bucketed microbatches of
+  four, accumulated into one token-mass-weighted batch-16 clip/update. A same-state
+  16-update qualification measured 1,397.8 eager versus 3,063.2 compiled positions/second
+  with identical mean and final loss. The real 500-update continuation sustained 2,914.2
+  positions/second. Full-batch and shape-polymorphic/source-conditioned compilation remain
+  disabled after crossing this M1's efficient memory regime or faulting in native MLX.
+- Current run: shared trunk checkpoint 3,000, 22,999,779 optimizer positions, exact model
+  SHA `3a9b04ad...05a7`, and optimizer SHA `62e1b52b...5f96`. Private-development loss
+  improved 0.57% from step 2,500 to 3,000; English regressed 0.43% while the four code arms
+  improved. Direct beam decoding is 8.45x-9.69x faster with 8/8 exact output-and-receipt parity,
+  but seven of eight qualification outputs still fail closed on serialization.
 
-The sustained M1 rate projects roughly 16-17 days for the shared trunk. Preserve the
-resumable step-1,001 lineage while separately qualifying materially faster numerics or
-hardware. Never mutate weights in flight or tune from the frozen heldout.
+At the measured canary rate, the remaining shared-trunk raw-position budget is about four
+days of ideal continuous compute rather than more than eight; the complete 4.05B-position
+campaign is still about 14.5 ideal compute-days on this M1. Preserve the resumable
+step-3,000 lineage while qualifying faster numerics and evidence-efficient stopping.
+Never mutate weights in flight or tune from the frozen confirmation heldout.
 
 ## Decision Rule
 
@@ -233,12 +240,93 @@ outcome reconstruction, verifier replay, and heldout causal lift before training
 
 ### Phase 8: Resource, Cost, And Mac Acceleration
 
-State: `wired`, with native GQA now qualified. Scheduler records CPU/GPU/MLX/CUDA,
-memory, thermals, battery, disk, queue, latency, and lifecycle cost.
+State: `active`. Native GQA, compiled microbatch training, prompt-only batched beam
+decoding, exact checkpoint-format comparison, and content-bound assistant refresh reuse
+are qualified. Same-state training improved 2.19x; the 500-update route sustained 2,914.2
+positions/second; uncached decode improved 8.45x-9.69x with 8/8 exact parity; unchanged governed
+assistant refresh improved 325x-550x under exact content identity. Scheduler records
+CPU/GPU/MLX/CUDA, memory, thermals, battery, disk, queue, latency, and lifecycle cost.
 
-Next: preserve the active float32 run through checkpoint/resume. Separately qualify
-mixed precision or faster hardware with finite-loss, gradient, update, reload/resume,
-divergence, memory, throughput, and equivalence evidence before changing production.
+Next: execute the acceleration program below. Preserve optimizer semantics and the frozen
+data/order/schedule unless a separately preregistered experiment changes them. Mixed
+precision, quantization, compilation, caching, and faster hardware require finite-loss,
+gradient, update, reload/resume, divergence, memory, throughput, and heldout-equivalence
+evidence before adoption.
+
+#### Capability-Critical Acceleration Program
+
+The primary optimization metric is **time to trustworthy useful evidence**, followed by
+interactive p50/p95 latency and accepted verified output per second. Raw tokens/second is
+diagnostic. The 100x target is a stretch target for end-to-end time-to-decision through a
+portfolio of kernel speed, work avoidance, reuse, and parallelism; it is not a claim that
+software can create 100x more M1 arithmetic throughput.
+
+1. **Measurement closure.** Establish reproducible cold/warm baselines for stage loading,
+   training step, checkpoint save/load, private-development loss, direct generation,
+   verification, VCM compilation/query, routing, and local assistant completion. Record
+   useful positions or accepted outputs, p50/p95, peak unified memory, disk I/O, thermal
+   state, and energy when observable. Profile only canonical routes.
+   Current evidence covers training, checkpoint load/format, private-development loss,
+   direct generation, and unchanged joined VCM/tool/planner/verifier refresh. Checkpoint
+   publication, task-specific assistant completion, resident serving, and peak-memory/
+   energy evidence remain open.
+2. **Sustained MLX training qualification.** Run the compiled microbatch route for at
+   least 500 real-data optimizer updates across a checkpoint boundary and exact resume.
+   Require the same batch-16 token mass, one clip/update per logical batch, matching data
+   order, finite gradients, bounded parameter delta, non-regressed private-development
+   loss, and at least 2x sustained useful positions/second over the eager baseline.
+   Autotune only safe microbatch and sequence-width buckets for each Mac memory tier.
+   Qualified on M1: 2.19x same-state paired canary, 2,914.2 positions/second over 500 real
+   updates, aggregate dev loss improved 0.57%, with an explicit English weak-tail regression.
+3. **Precision and optimizer memory.** Compare float32, bfloat16, and mixed-precision
+   master-weight policies on the same checkpoint/data. The first short bfloat16 canary
+   produced only about 1.09x throughput and changed loss, so it is not adopted. Test longer
+   numerical drift, optimizer-state memory, reload, and dev-loss parity before deciding.
+4. **Evidence-efficient rung control.** Make the declared pilot/review contract executable.
+   Emit immutable learning-curve checkpoints and private-development measurements at
+   short logarithmic intervals, then evaluate direct model-only behavior at preregistered
+   review points. Use successive halving across MoECOT and dense controls so clearly
+   dominated candidates stop consuming compute. Never inspect or tune from confirmation
+   or public surfaces. A stopped run remains scoped evidence, not broad falsification.
+5. **Checkpoint and storage path.** The current 209 MB model plus 418 MB optimizer state is
+   measured. Safetensors preserved the exact 197-tensor manifest and loaded 3.74x faster in
+   the latest alternating three-load comparison; size and save time did not materially
+   improve. Migrate only through registered lineage.
+   Next qualify publication cadence and peak memory; do not background-copy a 57M model on
+   a 16 GB unified-memory host without immutable-snapshot and memory evidence. Retention
+   keeps the canonical/latest generation plus explicit pins. Recovery integrity outranks
+   write speed, and free disk must remain high enough to prevent invisible swap cost.
+6. **Canonical inference hot path.** Replace per-case/per-beam Python stepping in the
+   MoECOT direct generator with resident model loading, batched prompt prefill, batched
+   beam advance or greedy mode, incremental KV cache, prefix-cache reuse, and continuous
+   batching. Remove host conversions and full-vocabulary Python sorts from token loops.
+   Evaluate quantized serving and MTP/speculation only under identical visible context,
+   output contract, and functional quality. Report time to first token, decode rate,
+   end-to-end p50/p95, memory, and accepted verified outputs/second.
+   Batched beam advance, device-side admissible ranking, and exact pre-forward pruning are
+   qualified at 8.45x-9.69x aggregate uncached speed and 8/8 parity. Resident serving, batched
+   prefill, prefix reuse, continuous batching, and bounded KV-cache growth remain open.
+7. **Context, routing, and tools.** Profile the joined assistant route rather than isolated
+   fixtures. Make VCM indexes persistent and incremental, cache content-bound compiled
+   packets and denial decisions, prefetch only from observable plans, avoid repeated JSON
+   scans, and batch independent verifier/tool calls. Cache hits must bind model, tokenizer,
+   policy, capability, snapshot, and source identities; stale or unauthorized hits fail
+   closed. Qualified: the five-step VCM governor, task-context bridge, deterministic-tool
+   registry, plan compiler, and private-verifier refresh measured 325x-550x faster across
+   repeated cold/warm comparisons. Reuse binds exact command/input/output hashes and a
+   300-second freshness window; mutation and stale controls force a rerun. Task-specific
+   tool execution and model generation remain uncached and must be measured separately.
+8. **Native and distributed escalation.** Move only measured residual Python hot loops to
+   Rust/Metal/MLX kernels. When another node is available, parallelize independent arms,
+   controls, evaluation shards, and verification, not tightly synchronized dense steps
+   over a high-latency link. Record transfer and merge cost in the speed denominator.
+
+Milestones: at least 2x sustained same-semantics M1 training throughput; at least 10x
+shorter first architecture-decision wall time; at least 5x repeated-prompt end-to-end
+latency or 2x uncached decode throughput at non-regressed quality; and a stretch 100x
+time-to-feedback improvement on reuse-heavy workloads. Reject any optimization that wins
+only by skipping required work, reducing candidate/evaluation budgets without disclosure,
+changing the learning objective, weakening verification, or losing replayability.
 
 ### Phase 9: Hive Distributed Operation
 
