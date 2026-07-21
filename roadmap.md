@@ -48,7 +48,7 @@ The current falsifiable question is:
 | Gate | State | Exit condition |
 |---|---|---|
 | `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | shared trunk checkpoint/resume proved | The exact 57.340M-active campaign reached transactional step 500 at loss 2.4848, then loaded model and optimizer state and committed step 501 with an evidence-bound semantic plan-identity migration. Resume the same weights after refreeze, then train five arms and two matched dense controls. |
+| `T1` Frozen neural-seed campaign | shared trunk checkpoint/resume proved | The exact 57.340M-active campaign reached transactional step 1,000 and 7,663,202 cumulative optimizer positions, then loaded model and optimizer state under the content-addressed implementation closure and committed step 1,001. The resumed run proved cumulative v2 telemetry at step 1,025; continue the same weights, then train five arms and two matched dense controls. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -74,12 +74,13 @@ The first practical architecture is frozen:
   each for English, Python, JS/TS, HTML/CSS, and Rust.
 - Runtime: eager float32, batch 16, native MLX grouped-query attention. MLX compilation
   and batch 24 regressed on this M1 and are not production routes.
-- Current run: shared trunk checkpoint 501, 3,845,232 optimizer positions. Step 500
-  was transactionally committed at loss 2.4848; an exact load/update/save proof produced
-  step 501 and matching model/optimizer hashes. This is training health, not capability.
+- Current run: shared trunk checkpoint 1,001, 7,671,020 optimizer positions. Step 1,000
+  was transactionally committed with exact model/optimizer hashes; an exact
+  load/update/save proof produced step 1,001, and the resumed run reached step 1,025 with
+  7,852,642 cumulative positions. This is training health, not capability.
 
 The sustained M1 rate projects roughly 16-17 days for the shared trunk. Preserve the
-resumable step-501 lineage while separately qualifying materially faster numerics or
+resumable step-1,001 lineage while separately qualifying materially faster numerics or
 hardware. Never mutate weights in flight or tune from the frozen heldout.
 
 ## Decision Rule

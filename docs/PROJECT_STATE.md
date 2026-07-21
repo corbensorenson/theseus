@@ -35,10 +35,14 @@ share toward zero. Public benchmarks are calibration only.
   trunk canary from 786 to 1,108 target positions/second while loss fell from 10.424 to
   6.592. MLX compilation and batch 24 were rejected for this host after measured
   regressions; eager float32 batch 16 remains the qualified route. The relaunched full
-  campaign reached transactional step 500 at loss 2.4848 and 3,837,367 positions. Its
+  campaign reached transactional step 1,000 with 7,663,202 cumulative optimizer
+  positions. Its
   first sustained interval measured 741 positions/second overall (about 792 over steps
   26-50), so the short canary is not used as the sustained-runtime estimate. Model and
-  optimizer state then loaded exactly and committed step 501 with matching hashes.
+  optimizer state loaded exactly under a content-addressed 11-file implementation
+  closure and committed step 1,001 with matching hashes. The resumed run produced a v2
+  heartbeat at step 1,025 with 7,852,642 cumulative positions and loss 2.2600; phase-local
+  and cumulative telemetry are now reported separately.
 - **Capability:** still unmeasured at the 57M rung. The historical 10.8M rung remains
   falsified for practical utility: MoECOT, dense-active, and dense-total each scored
   0/160 on the frozen functional surface. That result cannot be relabeled as 57M evidence.
@@ -55,7 +59,7 @@ share toward zero. Public benchmarks are calibration only.
 - **Registry:** GREEN with no routing blockers, missing identities, or governance
   violations. The canonical project state is the registry plus the frozen package, not
   generated report volume.
-- **Repository hygiene:** the forward roadmap is now a 457-line execution map backed by
+- **Repository hygiene:** the forward roadmap is now a 464-line execution map backed by
   the complete machine-readable matrix, down from 3,756 lines without deleting an open
   obligation. Reference-aware retention replaces old, unreferenced registry snapshots
   with verified archive pointers. Checkpoint volume remains above its warning target but
@@ -67,8 +71,9 @@ share toward zero. Public benchmarks are calibration only.
 
 1. Preserve the independently replayed 70-artifact architecture package unchanged.
 2. Preserve the shared-trunk MLX lineage under sleep prevention. Transactional checkpoint
-   500 and exact load/update/save step 501 are proven. Resume from step 501 after the
-   source package is independently replayed; this remains training health, not capability.
+   1,000, exact load/update/save step 1,001, and cumulative step-1,025 telemetry are
+   proven under the source-complete plan identity. Continue this lineage; it remains
+   training health, not capability.
 3. Train the five language arms from that exact trunk and both preregistered dense controls.
 4. Evaluate all candidates once on the frozen 160-case functional contract without tuning
    from heldout outcomes.
@@ -112,8 +117,9 @@ python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-rea
 ## Current Wall
 
 There is no remaining architecture rationale for postponing the campaign. The current
-wall is empirical and computational: the native-GQA run has a verified resumable step-501
-lineage with finite declining loss; its first sustained interval measured about 741 target
+wall is empirical and computational: the native-GQA run has a verified resumable
+step-1,001 lineage with finite declining loss and cumulative telemetry; its first
+sustained interval measured about 741 target
 positions/second overall. The
 frozen 1.097-billion-position shared trunk therefore projects to roughly 16-17 days on
 this M1 if the later rate holds. Preserve the resumed lineage while qualifying a
