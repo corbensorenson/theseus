@@ -218,7 +218,7 @@ def qualify(
         )
         if inference["exact_parity_case_count"] != inference["case_count"]:
             gaps.append("optimized_decode_exact_parity_failed")
-        if float(inference.get("aggregate_speedup") or 0.0) < 2.0:
+        if float(inference.get("uncached_aggregate_speedup") or 0.0) < 2.0:
             gaps.append("optimized_decode_speedup_below_2x")
         resident = resident_runtime.qualify_resident_runtime(
             config_path=config_path,
@@ -292,7 +292,7 @@ def qualify(
             "batched_beam_device_filter_preprune": (
                 "QUALIFIED"
                 if inference.get("exact_parity_case_count") == inference.get("case_count")
-                and float(inference.get("aggregate_speedup") or 0.0) >= 2.0
+                and float(inference.get("uncached_aggregate_speedup") or 0.0) >= 2.0
                 else "NOT_QUALIFIED"
             ),
             "kerc_batched_beam_device_filter_preprune": (
@@ -1287,7 +1287,12 @@ def run_inference_qualification(
         "state": "GREEN" if all(row["exact_parity"] for row in case_reports) else "RED",
         "case_count": len(case_reports),
         "exact_parity_case_count": sum(row["exact_parity"] for row in case_reports),
-        "aggregate_speedup": round(sum(reference) / max(1e-12, sum(optimized)), 6),
+        "uncached_aggregate_speedup": round(
+            sum(reference) / max(1e-12, sum(optimized)), 6
+        ),
+        "measurement_scope": (
+            "novel-request uncached decode; completion and prompt-prefix caches disabled"
+        ),
         "reference_latency_seconds": distribution(reference),
         "optimized_latency_seconds": distribution(optimized),
         "reference_route": reference_route(),
@@ -1297,6 +1302,7 @@ def run_inference_qualification(
         "warmup": "optimized_route_eight_token_compile_warmup",
         "cases": case_reports,
         "minimum_uncached_decode_speedup": 2.0,
+        "minimum_uncached_decode_speedup_role": "acceptance_threshold_not_measurement",
         "quality_preservation": "exact output and normalized generation receipt parity",
         "mlx_memory": mlx_memory_receipt(mx),
         "resident_process_scope": (
@@ -1504,11 +1510,13 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"- Mixed-precision median speedup: `{float(precision.get('median_speedup') or 0.0):.3f}x`",
             f"- Mixed-precision pooled speedup: `{float(precision.get('pooled_speedup') or 0.0):.3f}x`",
             f"- Mixed-precision adopted: `{precision.get('adopt')}`",
+            "- Mixed-precision timing scope: `rejected bf16-compute/fp32-master candidate; not resident-runtime overhead`",
             f"- Private-dev loss delta: `{learning.get('absolute_loss_delta')}`",
             f"- Weak-tail regressions: `{', '.join(learning.get('regressed_arms') or []) or 'none'}`",
             f"- Decode cases: `{inference.get('case_count', 0)}`",
             f"- Exact parity cases: `{inference.get('exact_parity_case_count', 0)}`",
-            f"- Aggregate decode speedup: `{float(inference.get('aggregate_speedup') or 0.0):.3f}x`",
+            f"- Uncached novel-request aggregate decode speedup: `{float(inference.get('uncached_aggregate_speedup') or 0.0):.3f}x`",
+            f"- Uncached decode acceptance threshold: `{float(inference.get('minimum_uncached_decode_speedup') or 0.0):.3f}x`",
             f"- Checkpoint tensor parity: `{checkpoint.get('exact_tensor_parity')}`",
             f"- Checkpoint format recommendation: `{checkpoint.get('adoption_recommendation')}`",
             f"- Warm governed assistant refresh speedup: `{float(assistant_refresh.get('speedup') or 0.0):.3f}x`",
@@ -1519,7 +1527,7 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"- First architecture-review budget opportunity: `{float(decision.get('first_review_budget_speedup_opportunity') or 0.0):.3f}x`",
             f"- First-decision speedup empirically proven: `{decision.get('target_speedup_empirically_proven')}`",
             "",
-            "This qualification compares prompt-only reference and optimized routes in one process. It does not claim model capability or public transfer.",
+            "The decode comparison disables completion and prompt-prefix caches on both routes. Resident cache speedups are reported separately and do not contribute to uncached decode speedup. This qualification does not claim model capability or public transfer.",
             "",
             "## Hard Gaps",
             "",
@@ -1557,7 +1565,12 @@ def report_summary(report: dict[str, Any]) -> dict[str, Any]:
         "decode_exact_parity_case_count": report["inference"].get(
             "exact_parity_case_count"
         ),
-        "decode_aggregate_speedup": report["inference"].get("aggregate_speedup"),
+        "uncached_decode_aggregate_speedup": report["inference"].get(
+            "uncached_aggregate_speedup"
+        ),
+        "uncached_decode_acceptance_threshold": report["inference"].get(
+            "minimum_uncached_decode_speedup"
+        ),
         "checkpoint_format_recommendation": report["checkpoint_storage"].get(
             "adoption_recommendation"
         ),

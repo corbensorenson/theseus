@@ -219,7 +219,10 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
             "precision_autotune": {},
         },
         "private_dev_learning": {},
-        "inference": {},
+        "inference": {
+            "uncached_aggregate_speedup": 9.5,
+            "minimum_uncached_decode_speedup": 2.0,
+        },
         "checkpoint_storage": {},
         "assistant_context_refresh": {},
         "resident_runtime": {
@@ -238,6 +241,8 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
     assert observed["resident_repeated_prompt_speedup"] == 20.0
     assert observed["resident_prefix_prefill_speedup"] == 8.0
     assert observed["resident_exact_output_and_token_parity"] is True
+    assert observed["uncached_decode_aggregate_speedup"] == 9.5
+    assert observed["uncached_decode_acceptance_threshold"] == 2.0
     assert observed["remaining_gaps"] == [
         "production_serving_capability_qualification_pending"
     ]

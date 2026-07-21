@@ -307,6 +307,10 @@ software can create 100x more M1 arithmetic throughput.
    sizes five and seven measured `1.64x` and `1.31x`. Full-model trials also rejected
    fused MLX RoPE (`1.24x`), parameter-preserving fused QKV/SwiGLU projections (`1.57x`),
    a reusable RoPE basis (`1.64x`), and a monolithic accumulation/update graph (`1.53x`).
+   A narrower two-microbatch synchronization group also entered severe unified-memory
+   pressure during its exact-checkpoint paired preflight and was terminated before a
+   complete receipt; classify it as an engineering rejection with scientifically
+   inconclusive semantics evidence, remove the code, and do not retry it unchanged.
    All retained bounded update integrity. Stop local parameter fishing: the next training
    speed work needs a different measured backend/graph bottleneck or better hardware/parallelism.
 4. **Evidence-efficient rung control.** Make the declared pilot/review contract executable.
@@ -333,7 +337,9 @@ software can create 100x more M1 arithmetic throughput.
    output contract, and functional quality. Report time to first token, decode rate,
    end-to-end p50/p95, memory, and accepted verified outputs/second.
    Batched beam advance, device-side admissible ranking, and exact pre-forward pruning are
-   qualified at 9.51x aggregate uncached speed and 8/8 parity. The deferred KERC decoder now
+   qualified at 9.51x aggregate uncached novel-request speed and 8/8 parity. Completion and
+   prompt-prefix caches are disabled in that comparison and reported separately. The
+   deferred KERC decoder now
    uses the same machinery and has serial/optimized token-path parity; a full KERC pipeline
    throughput claim remains pending. A registry-owned resident runtime now keeps one exact
    checkpoint loaded, reuses bounded content-bound prompt KV state, and caches deterministic

@@ -310,11 +310,11 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "06c7c0bd7982359fb5e42015aef3526ac7df855ffa75084905cef7ad6219bbe7"
+          "sha256": "ddf36f9acff345f885a9db401bf9f03da3bfd2cd6c6f0c50b644ce2d06c58565"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
-          "sha256": "764c09a0415edef0f90c4919352728967213880947ffcbee2374bee58f681cd5"
+          "sha256": "7f1ebb79fb77b5363a71324b2c4077d399eff24267d29fecaff7d5e94e33c86f"
         },
         "openai_compat_server": {
           "path": "scripts/openai_compat_server.py",

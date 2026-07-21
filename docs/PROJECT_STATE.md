@@ -51,11 +51,16 @@ share toward zero. Public benchmarks are calibration only.
   fused QKV/SwiGLU projections (`1.57x`), a reusable 512-position RoPE basis
   (`1.64x`), and one monolithic accumulation/update graph (`1.53x`). Each retained
   bounded update integrity but lost end-to-end throughput, so the original
-  implementations remain canonical.
+  implementations remain canonical. A two-microbatch synchronization group then entered
+  severe unified-memory pressure during a 12-step exact-checkpoint paired preflight and was
+  terminated before a complete result. Its semantics result is inconclusive, but the exact
+  implementation is engineering-rejected and absent from the canonical path.
 - **Inference mechanics:** GREEN for the prompt-only direct decoder acceleration. Batched
   beam advance, device-side admissible-logit ranking, and exact pre-forward pruning
   preserved output and normalized receipt identity on 8/8 arm-covered private prompts.
-  The latest canonical run reduced aggregate uncached latency by 9.51x. Seven of eight
+  The latest canonical run reduced aggregate uncached novel-request latency by 9.51x;
+  completion and prompt-prefix caches were disabled on both measured routes. The `2x`
+  value in the report is the acceptance threshold, not an observed median. Seven of eight
   current outputs still failed closed on byte serialization, so this is a mechanics win,
   not a capability claim. The deferred KERC decoder now shares the optimized beam path
   and passes serial/optimized token-path parity; full KERC pipeline throughput is not claimed.
@@ -87,7 +92,8 @@ share toward zero. Public benchmarks are calibration only.
   hot path caused by long source-conditioned computation plus learned residual, verifier, and
   decision objectives, but KERC is deferred from the first executable campaign and is not the
   practical training blocker. Isolated kernel wins were tested at full-model scale and did not
-  predict end-to-end training wins.
+  predict end-to-end training wins. The reported `0.955x`/`0.957x` regression belongs to the
+  rejected bf16-compute/fp32-master candidate; it is not resident-runtime or cache overhead.
 - **Learning signal:** the source-disjoint private-development audit now compares step
   2,500 with step 3,000 over 62,743 target positions. Aggregate teacher-forced loss fell
   from 4.198748 to 4.174738 (0.57%). Python, JS/TS, HTML/CSS, and Rust improved; English
