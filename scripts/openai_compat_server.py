@@ -131,6 +131,20 @@ def serve_endpoint(policy: dict[str, Any], args: argparse.Namespace) -> int:
     port = int(cfg.get("port") or 8789)
     Handler.config = cfg
     Handler.policy = policy
+    try:
+        Handler.resident_runtime = initialize_resident_runtime(cfg)
+    except (ValueError, RuntimeError, PermissionError) as exc:
+        report = base_status(
+            policy,
+            cfg,
+            live=False,
+            ok=False,
+            message=f"resident_neural_seed_denied:{exc}",
+            license_check=license_check,
+        )
+        write_json(status_path(policy), report)
+        print(json.dumps(report, indent=2))
+        return 2
     server = ThreadingHTTPServer((host, port), Handler)
     report = base_status(policy, cfg, live=True, ok=True, message="serving", license_check=license_check, pid=os.getpid())
     write_json(status_path(policy), report)
@@ -152,6 +166,7 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "TheseusOpenAICompat/0.1"
     config: dict[str, Any] = {}
     policy: dict[str, Any] = {}
+    resident_runtime: Any | None = None
 
     def do_OPTIONS(self) -> None:  # noqa: N802 - stdlib handler naming.
         self.send_response(HTTPStatus.NO_CONTENT)
@@ -197,7 +212,13 @@ class Handler(BaseHTTPRequestHandler):
         if not prompt:
             return self.send_json({"error": {"message": "messages_required", "type": "invalid_request_error"}}, status=400)
         model = str(payload.get("model") or self.config.get("model") or "theseus-live")
-        result = local_answer(prompt, model, self.config, self.policy)
+        result = local_answer(
+            prompt,
+            model,
+            self.config,
+            self.policy,
+            resident_runtime=self.resident_runtime,
+        )
         if payload.get("stream"):
             return self.send_chat_stream(model, result)
         return self.send_json(chat_completion_response(model, result, payload))
@@ -210,7 +231,13 @@ class Handler(BaseHTTPRequestHandler):
         if not prompt:
             return self.send_json({"error": {"message": "prompt_required", "type": "invalid_request_error"}}, status=400)
         model = str(payload.get("model") or self.config.get("model") or "theseus-live")
-        result = local_answer(prompt, model, self.config, self.policy)
+        result = local_answer(
+            prompt,
+            model,
+            self.config,
+            self.policy,
+            resident_runtime=self.resident_runtime,
+        )
         return self.send_json(text_completion_response(model, result, payload))
 
     def send_chat_stream(self, model: str, result: dict[str, Any]) -> None:
@@ -277,7 +304,49 @@ class Handler(BaseHTTPRequestHandler):
         return
 
 
-def local_answer(prompt: str, model: str, cfg: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
+def local_answer(
+    prompt: str,
+    model: str,
+    cfg: dict[str, Any],
+    policy: dict[str, Any],
+    *,
+    resident_runtime: Any | None = None,
+) -> dict[str, Any]:
+    resident = cfg.get("resident_neural_seed") or {}
+    if resident.get("enabled") is True and model == str(
+        resident.get("model_id") or "theseus-neural-seed"
+    ):
+        if resident_runtime is None:
+            return {
+                "ok": False,
+                "content": "",
+                "checkpoint_id": "",
+                "mode": "resident_neural_seed_unavailable",
+                "evidence": {"fault": "resident_runtime_not_initialized"},
+                "external_inference_calls": 0,
+                "teacher_used": False,
+            }
+        generated = resident_runtime.generate(
+            prompt,
+            max_tokens=int(resident.get("max_tokens") or 128),
+            beam_width=int(resident.get("beam_width") or 2),
+            branching_factor=int(resident.get("branching_factor") or 2),
+            length_penalty=float(resident.get("length_penalty") or 0.6),
+        )
+        generation = generated.get("generation") or {}
+        runtime_receipt = generated.get("runtime_receipt") or {}
+        return {
+            "ok": generation.get("state") == "GREEN",
+            "content": str(generated.get("text") or ""),
+            "checkpoint_id": resident_runtime.status().get("checkpoint_sha256"),
+            "mode": "resident_neural_seed",
+            "evidence": {
+                "generation": generation,
+                "runtime_receipt": runtime_receipt,
+            },
+            "external_inference_calls": 0,
+            "teacher_used": False,
+        }
     checkpoint_id = checkpoint_for_model(model, cfg)
     out = ROOT / str(get_path(policy, ["paths", "last_chat"], "reports/openai_compat_last_chat.json"))
     command = [
@@ -421,6 +490,25 @@ def models_response(cfg: dict[str, Any]) -> dict[str, Any]:
         "object": "list",
         "data": [{"id": model_id, "object": "model", "created": 0, "owned_by": "project-theseus"} for model_id in model_ids],
     }
+
+
+def initialize_resident_runtime(cfg: dict[str, Any]) -> Any | None:
+    resident = cfg.get("resident_neural_seed") or {}
+    if resident.get("enabled") is not True:
+        return None
+    from neural_seed_resident_runtime import NeuralSeedResidentRuntime
+
+    return NeuralSeedResidentRuntime(
+        target_id=str(resident.get("target_id") or "shared_trunk"),
+        mode="serving",
+        prefix_cache_entries=int(resident.get("prefix_cache_entries") or 32),
+        completion_cache_entries=int(
+            resident.get("completion_cache_entries") or 64
+        ),
+        identity_rehash_interval_seconds=float(
+            resident.get("identity_rehash_interval_seconds") or 30.0
+        ),
+    )
 
 
 def prompt_from_messages(messages: Any) -> str:

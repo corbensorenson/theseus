@@ -29,6 +29,7 @@ if str(SCRIPTS) not in sys.path:
 
 import moecot_language_arm_training as training  # noqa: E402
 import neural_seed_campaign_controller as campaign_controller  # noqa: E402
+import neural_seed_resident_runtime as resident_runtime  # noqa: E402
 
 
 DEFAULT_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
@@ -46,6 +47,7 @@ ACCELERATION_KEYS = {
     "beam_advance",
     "logit_filter",
     "preprune_beam_expansions",
+    "prompt_prefill_seconds",
 }
 MAX_FINAL_LOSS_ABSOLUTE_DELTA = 2e-6
 MAX_PARAMETER_ABSOLUTE_DELTA = 5e-6
@@ -170,6 +172,7 @@ def qualify(
     load = {"state": "NOT_EXECUTED"}
     checkpoint_storage = {"state": "NOT_EXECUTED"}
     assistant_refresh = {"state": "NOT_EXECUTED"}
+    resident = {"trigger_state": "NOT_EXECUTED"}
     if execute and not gaps:
         training_pair = run_training_pair_qualification(
             config=config,
@@ -217,6 +220,17 @@ def qualify(
             gaps.append("optimized_decode_exact_parity_failed")
         if float(inference.get("aggregate_speedup") or 0.0) < 2.0:
             gaps.append("optimized_decode_speedup_below_2x")
+        resident = resident_runtime.qualify_resident_runtime(
+            config_path=config_path,
+            packet_path=packet_path,
+            max_tokens=max(2, min(8, max_tokens or 8)),
+        )
+        if resident.get("trigger_state") != "GREEN":
+            gaps.append("resident_runtime_qualification_failed")
+        if resident.get("exact_output_and_token_parity") is not True:
+            gaps.append("resident_runtime_output_or_token_parity_failed")
+        if float(resident.get("repeated_prompt_speedup") or 0.0) < 5.0:
+            gaps.append("resident_repeated_prompt_speedup_below_5x")
 
     state = "RED" if gaps else "GREEN" if execute else "READY"
     return {
@@ -259,6 +273,7 @@ def qualify(
         "assistant_context_refresh": assistant_refresh,
         "checkpoint_load": load,
         "inference": inference,
+        "resident_runtime": resident,
         "adoption": {
             "mlx_compiled_fixed_width_microbatch": (
                 "QUALIFIED"
@@ -294,6 +309,13 @@ def qualify(
                 and float(assistant_refresh.get("speedup") or 0.0) >= 5.0
                 else "NOT_QUALIFIED"
             ),
+            "resident_model_prefix_and_completion_cache": (
+                "QUALIFIED_EVALUATION_RUNTIME_SERVING_PENDING_CAPABILITY"
+                if resident.get("trigger_state") == "GREEN"
+                and resident.get("exact_output_and_token_parity") is True
+                and float(resident.get("repeated_prompt_speedup") or 0.0) >= 5.0
+                else "NOT_QUALIFIED"
+            ),
             "evidence_efficient_successive_halving": (
                 "EMPIRICALLY_QUALIFIED"
                 if decision_control.get("target_speedup_empirically_proven") is True
@@ -319,7 +341,13 @@ def qualify(
                 if decision_control.get("target_speedup_empirically_proven") is True
                 else ["first_architecture_decision_10x_empirical_proof_pending"]
             ),
-            "resident_serving_and_prefix_reuse_pending",
+            *(
+                []
+                if resident.get("trigger_state") == "GREEN"
+                else ["resident_model_and_prefix_reuse_qualification_pending"]
+            ),
+            "production_serving_capability_qualification_pending",
+            "continuous_multi_request_batching_pending",
             "system_energy_measurement_unavailable",
         ],
         "wall_seconds": round(time.perf_counter() - started, 6),
@@ -1458,6 +1486,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     learning = report["private_dev_learning"]
     checkpoint = report["checkpoint_storage"]
     assistant_refresh = report["assistant_context_refresh"]
+    resident = report.get("resident_runtime") or {}
     decision = report["architecture_decision_control"]
     training_pair = training.get("paired_canary") or {}
     precision = training.get("precision_autotune") or {}
@@ -1483,6 +1512,10 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"- Checkpoint tensor parity: `{checkpoint.get('exact_tensor_parity')}`",
             f"- Checkpoint format recommendation: `{checkpoint.get('adoption_recommendation')}`",
             f"- Warm governed assistant refresh speedup: `{float(assistant_refresh.get('speedup') or 0.0):.3f}x`",
+            f"- Resident repeated-prompt speedup: `{float(resident.get('repeated_prompt_speedup') or 0.0):.3f}x`",
+            f"- Resident prefix-prefill speedup: `{float(resident.get('prefix_prefill_speedup') or 0.0):.3f}x`",
+            f"- Resident output/token parity: `{resident.get('exact_output_and_token_parity')}`",
+            f"- Resident production serving allowed: `{((resident.get('boundaries') or {}).get('runtime_serving_allowed'))}`",
             f"- First architecture-review budget opportunity: `{float(decision.get('first_review_budget_speedup_opportunity') or 0.0):.3f}x`",
             f"- First-decision speedup empirically proven: `{decision.get('target_speedup_empirically_proven')}`",
             "",
@@ -1529,6 +1562,15 @@ def report_summary(report: dict[str, Any]) -> dict[str, Any]:
             "adoption_recommendation"
         ),
         "assistant_refresh_speedup": report["assistant_context_refresh"].get("speedup"),
+        "resident_repeated_prompt_speedup": (report.get("resident_runtime") or {}).get(
+            "repeated_prompt_speedup"
+        ),
+        "resident_prefix_prefill_speedup": (report.get("resident_runtime") or {}).get(
+            "prefix_prefill_speedup"
+        ),
+        "resident_exact_output_and_token_parity": (
+            report.get("resident_runtime") or {}
+        ).get("exact_output_and_token_parity"),
         "first_review_budget_speedup_opportunity": report[
             "architecture_decision_control"
         ].get("first_review_budget_speedup_opportunity"),

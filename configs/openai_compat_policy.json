@@ -18,7 +18,19 @@
     "accept_any_model": true,
     "require_token": false,
     "api_token": "",
-    "cors": true
+    "cors": true,
+    "resident_neural_seed": {
+      "enabled": false,
+      "model_id": "theseus-neural-seed",
+      "target_id": "shared_trunk",
+      "max_tokens": 128,
+      "beam_width": 2,
+      "branching_factor": 2,
+      "length_penalty": 0.6,
+      "prefix_cache_entries": 32,
+      "completion_cache_entries": 64,
+      "identity_rehash_interval_seconds": 30
+    }
   },
   "security": {
     "loopback_only_by_default": true,

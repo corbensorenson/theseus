@@ -360,6 +360,9 @@ import vcm_semantic_memory
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "moecot_language_arm_training.json"
+DEFAULT_CHECKPOINT_FORMAT_MIGRATION_REPORT = (
+    ROOT / "reports" / "shared_trunk_checkpoint_format_migration.json"
+)
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
 
 
@@ -553,7 +556,29 @@ def main() -> int:
         default="",
         help="Optional earlier checkpoint for a matched learning-curve comparison.",
     )
+    parser.add_argument(
+        "--migrate-shared-trunk-checkpoint-format",
+        action="store_true",
+        help=(
+            "Atomically migrate the registered shared-trunk model from its qualified "
+            "legacy container to the configured checkpoint format without training."
+        ),
+    )
     args = parser.parse_args()
+    if args.migrate_shared_trunk_checkpoint_format and (
+        args.execute
+        or args.evaluate_progress
+        or args.resume
+        or args.target
+        or args.max_steps
+        or args.scratch_checkpoint_root
+        or args.baseline_checkpoint
+        or args.phase != "all"
+    ):
+        parser.error(
+            "--migrate-shared-trunk-checkpoint-format cannot be combined with "
+            "training, evaluation, target, phase, or scratch options"
+        )
     if args.evaluate_progress and args.execute:
         parser.error("--evaluate-progress and --execute are mutually exclusive")
     if args.resume and not args.execute:
@@ -586,6 +611,14 @@ def main() -> int:
             "targets are not executable in the current campaign: "
             + ",".join(unavailable_targets)
         )
+    if args.migrate_shared_trunk_checkpoint_format:
+        report = migrate_shared_trunk_checkpoint_format(config, plan)
+        write_json(
+            resolve(args.out) if args.out else DEFAULT_CHECKPOINT_FORMAT_MIGRATION_REPORT,
+            report,
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
     report = plan
     if args.evaluate_progress:
         report = evaluate_training_progress(
@@ -1574,11 +1607,7 @@ def target_contracts(
             owned_parameter_count = parameter_count_value
         directory = root / target
         checkpoint_name = (
-            "expert_delta.safetensors"
-            if target in ARM_IDS
-            else "weights.safetensors"
-            if target == KERC_ENGLISH_ID
-            else "weights.npz"
+            "expert_delta.safetensors" if target in ARM_IDS else "weights.safetensors"
         )
         unique_target_positions = int(view.get("target_positions") or 0)
         exposure = target_optimizer_exposure(
@@ -1630,7 +1659,7 @@ def target_contracts(
                 CURRENT_SCHEMA_VERSION if target == KERC_ENGLISH_ID else 0
             ),
             "shared_trunk_checkpoint": (
-                relative(root / SHARED_TRUNK_ID / "weights.npz")
+                relative(root / SHARED_TRUNK_ID / "weights.safetensors")
                 if target in ARM_IDS
                 else ""
             ),
@@ -3925,6 +3954,7 @@ def generate_model_text(
     batched_beam_advance: bool = True,
     device_logit_filter: bool = True,
     preprune_beam_expansions: bool = True,
+    prompt_prefix_cache: Any | None = None,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Generate from prompt only; the grammar constrains byte serialization, not meaning."""
@@ -3985,8 +4015,35 @@ def generate_model_text(
     prompt_ids.extend(int(value) for value in source_ids)
     prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
     prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
-    logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
-    mx.eval(logits, *cache_arrays(cache))
+    prefix_key = hashlib.sha256(
+        np.asarray(prompt_ids, dtype=np.int32).tobytes()
+    ).hexdigest()
+    prefill_started = time.perf_counter()
+    cached_prefix = (
+        prompt_prefix_cache.get(prefix_key)
+        if prompt_prefix_cache is not None
+        else None
+    )
+    if cached_prefix is None:
+        logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
+        mx.eval(logits, *cache_arrays(cache))
+        if prompt_prefix_cache is not None:
+            prompt_prefix_cache.put(prefix_key, (logits, cache))
+        prefix_cache_state = "MISS" if prompt_prefix_cache is not None else "DISABLED"
+    else:
+        logits, cache = cached_prefix
+        mx.eval(logits, *cache_arrays(cache))
+        prefix_cache_state = "HIT"
+    acceleration.update(
+        {
+            "prompt_prefix_cache_state": prefix_cache_state,
+            "prompt_prefix_sha256": prefix_key,
+            "prompt_prefix_token_count": len(prompt_ids),
+            "prompt_prefill_seconds": round(
+                time.perf_counter() - prefill_started, 6
+            ),
+        }
+    )
     inverse = {int(value): str(token) for token, value in target_vocab.items()}
     serialization_states = serialization_allowed_local_ids(inverse)
     beams = [
@@ -5125,6 +5182,185 @@ def range_view(array: np.ndarray, ranges: list[dict[str, int]]) -> np.ndarray:
     return np.concatenate([array[start:stop] for start, stop in normalized], axis=0)
 
 
+def tensor_mapping_manifest(mapping: dict[str, Any]) -> dict[str, Any]:
+    """Content-bind tensor names, shapes, dtypes, and bytes across file formats."""
+
+    digest = hashlib.sha256()
+    total_elements = 0
+    total_bytes = 0
+    for name in sorted(mapping):
+        array = np.asarray(mapping[name])
+        descriptor = json.dumps(
+            {"name": name, "shape": list(array.shape), "dtype": str(array.dtype)},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        digest.update(len(descriptor).to_bytes(8, "big"))
+        digest.update(descriptor)
+        contiguous = np.ascontiguousarray(array)
+        digest.update(memoryview(contiguous).cast("B"))
+        total_elements += int(array.size)
+        total_bytes += int(array.nbytes)
+    return {
+        "sha256": digest.hexdigest(),
+        "tensor_count": len(mapping),
+        "element_count": total_elements,
+        "payload_bytes": total_bytes,
+    }
+
+
+def migrate_shared_trunk_checkpoint_format(
+    config: dict[str, Any], plan: dict[str, Any]
+) -> dict[str, Any]:
+    """Advance the shared-trunk receipt only after exact cross-format replay."""
+
+    import mlx.core as mx
+
+    contract = config.get("checkpoint_format_migration") or {}
+    if contract.get("policy") != "project_theseus_checkpoint_format_migration_v1":
+        raise ValueError("checkpoint format migration contract is missing")
+    target = (plan.get("targets") or {}).get(SHARED_TRUNK_ID)
+    if not isinstance(target, dict):
+        raise ValueError("shared-trunk target is missing from the training plan")
+    receipt_path = resolve(str(target["receipt"]))
+    if not receipt_path.is_file():
+        raise ValueError("shared-trunk receipt is missing")
+    receipt = read_json(receipt_path)
+    source_checkpoint = resolve(str(receipt.get("checkpoint") or ""))
+    target_checkpoint = resolve(str(target["checkpoint"]))
+    optimizer = resolve(str(receipt.get("optimizer_state") or target["optimizer_state"]))
+    if target_checkpoint.suffix != str(contract.get("target_suffix") or ""):
+        raise ValueError("configured shared-trunk checkpoint does not use the target format")
+
+    if source_checkpoint.resolve() == target_checkpoint.resolve():
+        validate_resume(receipt, plan, target, target_checkpoint, optimizer)
+        migration = receipt.get("checkpoint_format_migration") or {}
+        if (
+            migration.get("policy") != contract["policy"]
+            or migration.get("exact_tensor_parity") is not True
+        ):
+            raise ValueError("registered target-format receipt lacks exact migration evidence")
+        legacy = resolve(str(migration.get("source_checkpoint") or ""))
+        legacy_removed = not legacy.exists() if legacy != target_checkpoint else True
+        return {
+            "policy": contract["policy"],
+            "trigger_state": "GREEN",
+            "migration_state": "ALREADY_COMMITTED",
+            "target_id": SHARED_TRUNK_ID,
+            "checkpoint": relative(target_checkpoint),
+            "checkpoint_sha256": sha256_file(target_checkpoint),
+            "optimizer_state": relative(optimizer),
+            "optimizer_state_sha256": sha256_file(optimizer),
+            "tensor_manifest": migration.get("tensor_manifest"),
+            "legacy_source_removed": legacy_removed,
+            "training_positions_added": 0,
+            "capability_claim": "NONE",
+            "hard_gaps": [] if legacy_removed else ["legacy_source_cleanup_pending"],
+        }
+
+    if source_checkpoint.suffix != str(contract.get("source_suffix") or ""):
+        raise ValueError("registered shared-trunk checkpoint is not the qualified source format")
+    if not source_checkpoint.is_file() or not optimizer.is_file():
+        raise ValueError("registered shared-trunk model or optimizer is missing")
+    plan_migration = validate_resume(
+        receipt, plan, target, source_checkpoint, optimizer
+    )
+
+    qualification_path = resolve(str(contract.get("qualification_report") or ""))
+    if not qualification_path.is_file():
+        raise ValueError("checkpoint format qualification report is missing")
+    qualification = read_json(qualification_path)
+    storage = qualification.get("checkpoint_storage") or {}
+    if (
+        storage.get("policy") != "project_theseus_checkpoint_format_qualification_v1"
+        or storage.get("state") != "GREEN"
+        or storage.get("exact_tensor_parity") is not True
+        or storage.get("adoption_recommendation") != "QUALIFIED_FOR_CONTROLLED_MIGRATION"
+        or storage.get("source_checkpoint") != relative(source_checkpoint)
+        or float(storage.get("safetensors_load_speedup") or 0.0)
+        < float(contract.get("minimum_qualified_load_speedup") or 0.0)
+    ):
+        raise ValueError("checkpoint format qualification does not authorize migration")
+
+    source_sha256 = sha256_file(source_checkpoint)
+    source_bytes = source_checkpoint.stat().st_size
+    source = mx.load(str(source_checkpoint))
+    mx.eval(*source.values())
+    source_manifest = tensor_mapping_manifest(source)
+    if source_manifest != storage.get("source_tensor_manifest"):
+        raise ValueError("live source tensor manifest does not match qualification evidence")
+
+    target_checkpoint.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target_checkpoint.with_name(
+        target_checkpoint.stem + ".partial" + target_checkpoint.suffix
+    )
+    temporary.unlink(missing_ok=True)
+    started = time.perf_counter()
+    mx.save_safetensors(
+        str(temporary),
+        source,
+        metadata={"policy": "project_theseus_model_checkpoint_v1"},
+    )
+    converted = mx.load(str(temporary))
+    mx.eval(*converted.values())
+    converted_manifest = tensor_mapping_manifest(converted)
+    if converted_manifest != source_manifest:
+        temporary.unlink(missing_ok=True)
+        raise ValueError("converted checkpoint failed exact tensor replay")
+    os.replace(temporary, target_checkpoint)
+    target_sha256 = sha256_file(target_checkpoint)
+    target_bytes = target_checkpoint.stat().st_size
+    migration = {
+        "policy": contract["policy"],
+        "created_utc": now(),
+        "source_checkpoint": relative(source_checkpoint),
+        "source_checkpoint_sha256": source_sha256,
+        "source_checkpoint_bytes": source_bytes,
+        "source_format": source_checkpoint.suffix.lstrip("."),
+        "target_checkpoint": relative(target_checkpoint),
+        "target_checkpoint_sha256": target_sha256,
+        "target_checkpoint_bytes": target_bytes,
+        "target_format": target_checkpoint.suffix.lstrip("."),
+        "tensor_manifest": source_manifest,
+        "exact_tensor_parity": True,
+        "optimizer_state_unchanged": True,
+        "optimizer_state_sha256": sha256_file(optimizer),
+        "optimizer_steps": int(receipt.get("optimizer_steps") or 0),
+        "optimizer_positions": int(receipt.get("optimizer_positions") or 0),
+        "training_positions_added": 0,
+        "qualification_report": relative(qualification_path),
+        "qualification_report_sha256": sha256_file(qualification_path),
+        "qualified_load_speedup": float(storage["safetensors_load_speedup"]),
+        "publication_seconds": round(time.perf_counter() - started, 6),
+        "atomic_checkpoint_replacement": True,
+        "atomic_receipt_replacement": True,
+        "capability_claim": "NONE",
+    }
+    migrated_receipt = copy.deepcopy(receipt)
+    migrated_receipt.update(
+        {
+            "checkpoint": relative(target_checkpoint),
+            "checkpoint_sha256": target_sha256,
+            "plan_sha256": plan["plan_sha256"],
+            "resume_plan_identity_migration": plan_migration,
+            "checkpoint_format_migration": migration,
+        }
+    )
+    write_json_atomic(receipt_path, migrated_receipt)
+    validate_resume(migrated_receipt, plan, target, target_checkpoint, optimizer)
+    source_checkpoint.unlink()
+    return {
+        "policy": contract["policy"],
+        "trigger_state": "GREEN",
+        "migration_state": "COMMITTED",
+        "target_id": SHARED_TRUNK_ID,
+        **migration,
+        "legacy_source_removed": not source_checkpoint.exists(),
+        "storage_bytes_reclaimed": max(0, source_bytes - target_bytes),
+        "hard_gaps": [],
+    }
+
+
 def publish_model(
     model: Any,
     checkpoint: Path,
@@ -5480,6 +5716,16 @@ def validate_config(config: dict[str, Any]) -> None:
         "--require-pre-training-ready",
     ]:
         raise ValueError("architecture readiness gate command mismatch")
+    format_migration = config.get("checkpoint_format_migration") or {}
+    if (
+        format_migration.get("policy")
+        != "project_theseus_checkpoint_format_migration_v1"
+        or format_migration.get("source_suffix") != ".npz"
+        or format_migration.get("target_suffix") != ".safetensors"
+        or float(format_migration.get("minimum_qualified_load_speedup") or 0.0) < 1.2
+        or not str(format_migration.get("qualification_report") or "")
+    ):
+        raise ValueError("checkpoint format migration contract is invalid")
     identity = config.get("plan_identity") or {}
     if identity.get("policy") == "project_theseus_semantic_training_plan_identity_v3":
         closure = training_implementation_closure(config)

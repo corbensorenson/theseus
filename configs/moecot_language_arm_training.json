@@ -11,6 +11,14 @@
   "stage_dir": "runtime/standard_causal_transformer_scale_v2",
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1",
   "report": "reports/moecot_language_arm_training.json",
+  "checkpoint_format_migration": {
+    "policy": "project_theseus_checkpoint_format_migration_v1",
+    "source_suffix": ".npz",
+    "target_suffix": ".safetensors",
+    "qualification_report": "reports/resource_acceleration_qualification.json",
+    "minimum_qualified_load_speedup": 1.2,
+    "report": "reports/shared_trunk_checkpoint_format_migration.json"
+  },
   "seed": 20260712,
   "generation_architecture": {
     "contract": "configs/generation_architecture_contracts.json",
@@ -137,6 +145,32 @@
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "tests/test_moecot_language_arm_training.py::test_scratch_target_contract_redirects_all_mutable_paths tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch full-parameter paired acceleration replays from the immutable step-3000 checkpoint",
         "reason": "Continue the exact step-3000 model and AdamW state after adding host/device phase timing and a bounded scratch-canary route that redirects every mutable path outside registered lineage. Rejected acceleration candidates were removed from the canonical implementation; model math, data, objective, schedule, saved tensors, optimizer behavior, and evaluation contracts remain unchanged."
+      },
+      {
+        "migration_id": "shared_trunk_step3000_atomic_safetensors_migration_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/resource_acceleration_qualification.json tests/test_moecot_language_arm_training.py::test_checkpoint_format_migration_is_exact_atomic_and_idempotent",
+        "reason": "Continue the exact step-3000 model and AdamW state while replacing only the model checkpoint container after independent 197-tensor parity and alternating-load qualification. The migration adds zero optimizer steps or positions, leaves model tensors and optimizer bytes unchanged, advances the receipt atomically, and removes the legacy container only after exact replay and resume validation."
+      },
+      {
+        "migration_id": "shared_trunk_step3000_resident_prompt_cache_contract_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "9957d6c18e73eb4055b3fa6f51a63c1349c68e360dc0abcc2e54fbf0b1ba4cf7",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "tests/test_moecot_language_arm_training.py::test_batched_text_beam_advance_matches_serial_reference tests/test_neural_seed_resident_runtime.py",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state after adding an optional prompt-only, model-local KV prefill cache to the canonical decoder. The cache is disabled unless explicitly supplied, sees no target or verifier fields, preserves exact generated-token identity, and changes no training model, optimizer, data, objective, schedule, or saved tensor."
       }
     ]
   },

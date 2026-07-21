@@ -14,6 +14,7 @@ from resource_acceleration_qualification import (  # noqa: E402
     compare_parameter_snapshots,
     distribution,
     process_resource_delta,
+    report_summary,
     select_qualification_rows,
     semantic_receipt,
     tensor_mapping_manifest,
@@ -48,6 +49,7 @@ def test_semantic_receipt_ignores_only_acceleration_route_fields() -> None:
         "beam_advance": "serial",
         "logit_filter": "host",
         "preprune_beam_expansions": False,
+        "prompt_prefill_seconds": 0.25,
         "decode_receipt": {"state": "INVALID", "token_index": 8},
     }
     optimized = {
@@ -55,6 +57,7 @@ def test_semantic_receipt_ignores_only_acceleration_route_fields() -> None:
         "beam_advance": "batched",
         "logit_filter": "device",
         "preprune_beam_expansions": True,
+        "prompt_prefill_seconds": 0.01,
     }
 
     assert semantic_receipt(reference) == semantic_receipt(optimized)
@@ -202,3 +205,39 @@ def test_full_parameter_comparison_rejects_shape_mismatch() -> None:
         "names_match": True,
         "shapes_match": False,
     }
+
+
+def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
+    report = {
+        "policy": "qualification",
+        "created_utc": "2026-07-21T00:00:00Z",
+        "trigger_state": "GREEN",
+        "mode": "executed",
+        "training": {
+            "warmup_excluded_positions_per_second": 10.0,
+            "paired_canary": {},
+            "precision_autotune": {},
+        },
+        "private_dev_learning": {},
+        "inference": {},
+        "checkpoint_storage": {},
+        "assistant_context_refresh": {},
+        "resident_runtime": {
+            "repeated_prompt_speedup": 20.0,
+            "prefix_prefill_speedup": 8.0,
+            "exact_output_and_token_parity": True,
+            "boundaries": {"runtime_serving_allowed": False},
+        },
+        "architecture_decision_control": {},
+        "hard_gaps": [],
+        "remaining_gaps": ["production_serving_capability_qualification_pending"],
+    }
+
+    observed = report_summary(report)
+
+    assert observed["resident_repeated_prompt_speedup"] == 20.0
+    assert observed["resident_prefix_prefill_speedup"] == 8.0
+    assert observed["resident_exact_output_and_token_parity"] is True
+    assert observed["remaining_gaps"] == [
+        "production_serving_capability_qualification_pending"
+    ]

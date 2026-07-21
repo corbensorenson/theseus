@@ -17,6 +17,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
+import moecot_language_arm_training as training_module  # noqa: E402
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     KERC_UNIT_CANDIDATE_FEATURE_DIM,
@@ -43,6 +44,7 @@ from moecot_language_arm_training import (  # noqa: E402
     matched_decoder_only_config,
     materialize_kerc_unit_allocator_row,
     materialize_target_supervision,
+    migrate_shared_trunk_checkpoint_format,
     model_accounting,
     pack_kerc_unit_allocator_batch,
     plan_sha256,
@@ -53,6 +55,7 @@ from moecot_language_arm_training import (  # noqa: E402
     target_contracts,
     target_optimizer_exposure,
     target_copy_identity_ranges,
+    tensor_mapping_manifest,
     training_implementation_closure,
     train_target,
     accepted_plan_identity_migration,
@@ -76,6 +79,7 @@ from neural_seed_50m_scale_preregistration import (  # noqa: E402
 from moecot_source_conditioned_pretraining import (  # noqa: E402
     build_kerc_code_vocabulary,
 )
+from neural_seed_resident_runtime import BoundedPromptPrefixCache  # noqa: E402
 
 
 def test_scratch_target_contract_preserves_registered_lineage_as_metadata(
@@ -276,6 +280,13 @@ def tiny_config(tmp_path: Path) -> dict:
             "base_mode": "autoregressive",
             "checkpoint_shaping_auxiliary": "mtp",
             "initial_loss_scale": 0.0,
+        },
+        "checkpoint_format_migration": {
+            "policy": "project_theseus_checkpoint_format_migration_v1",
+            "source_suffix": ".npz",
+            "target_suffix": ".safetensors",
+            "qualification_report": "reports/resource_acceleration_qualification.json",
+            "minimum_qualified_load_speedup": 1.2,
         },
         "checkpoint_root": str(tmp_path / "checkpoints"),
         "topology": {
@@ -1498,6 +1509,20 @@ def test_batched_text_beam_advance_matches_serial_reference() -> None:
     assert batched_receipt["logit_filter"] == "mlx_allowed_ids_device_topk_v1"
     assert reference_receipt["logit_filter"] == "numpy_target_vocab_reference_v1"
 
+    prefix_cache = BoundedPromptPrefixCache(maximum_entries=2)
+    first_text, first_receipt = generate_model_text(
+        **common, prompt_prefix_cache=prefix_cache
+    )
+    second_text, second_receipt = generate_model_text(
+        **common, prompt_prefix_cache=prefix_cache
+    )
+    assert first_text == second_text == batched_text
+    assert first_receipt["prompt_prefix_cache_state"] == "MISS"
+    assert second_receipt["prompt_prefix_cache_state"] == "HIT"
+    assert first_receipt["prompt_prefix_sha256"] == second_receipt[
+        "prompt_prefix_sha256"
+    ]
+
 
 def test_batched_kerc_beam_advance_matches_serial_reference() -> None:
     import mlx.core as mx
@@ -1881,6 +1906,106 @@ def test_resume_accepts_only_exact_semantic_plan_identity_migration(tmp_path: Pa
     plan["plan_sha256"] = "different-plan"
     with pytest.raises(ValueError, match="plan_identity_mismatch"):
         validate_resume(receipt, plan, target, checkpoint, optimizer)
+
+
+def test_checkpoint_format_migration_is_exact_atomic_and_idempotent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    mx = pytest.importorskip("mlx.core")
+    monkeypatch.setattr(training_module, "ROOT", tmp_path)
+    directory = tmp_path / "checkpoints" / "shared_trunk"
+    directory.mkdir(parents=True)
+    source = directory / "weights.npz"
+    target_checkpoint = directory / "weights.safetensors"
+    optimizer = directory / "optimizer.safetensors"
+    receipt_path = directory / "training_receipt.json"
+    tensors = {
+        "layers.0.weight": mx.array(np.arange(12, dtype=np.float32).reshape(3, 4)),
+        "layers.0.bias": mx.array(np.asarray([1.5, -2.0, 4.25], dtype=np.float32)),
+    }
+    mx.savez(str(source), **tensors)
+    optimizer.write_bytes(b"exact-optimizer-state")
+    source_loaded = mx.load(str(source))
+    mx.eval(*source_loaded.values())
+    manifest = tensor_mapping_manifest(source_loaded)
+    qualification = tmp_path / "reports" / "qualification.json"
+    qualification.parent.mkdir(parents=True)
+    qualification.write_text(
+        json.dumps(
+            {
+                "checkpoint_storage": {
+                    "policy": "project_theseus_checkpoint_format_qualification_v1",
+                    "state": "GREEN",
+                    "exact_tensor_parity": True,
+                    "adoption_recommendation": "QUALIFIED_FOR_CONTROLLED_MIGRATION",
+                    "source_checkpoint": "checkpoints/shared_trunk/weights.npz",
+                    "source_tensor_manifest": manifest,
+                    "safetensors_load_speedup": 2.0,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    row_ranges = [{"start": 0, "stop": 2}]
+    receipt = {
+        "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
+        "target_id": "shared_trunk",
+        "plan_sha256": "plan-a",
+        "stage_signature": "stage-a",
+        "row_ranges": row_ranges,
+        "vocab_size": 16,
+        "checkpoint": "checkpoints/shared_trunk/weights.npz",
+        "checkpoint_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "optimizer_state": "checkpoints/shared_trunk/optimizer.safetensors",
+        "optimizer_state_sha256": hashlib.sha256(optimizer.read_bytes()).hexdigest(),
+        "optimizer_steps": 11,
+        "optimizer_positions": 111,
+    }
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    target = {
+        "target_id": "shared_trunk",
+        "role": "shared_trunk",
+        "row_ranges": row_ranges,
+        "vocab_size": 16,
+        "checkpoint": "checkpoints/shared_trunk/weights.safetensors",
+        "optimizer_state": "checkpoints/shared_trunk/optimizer.safetensors",
+        "receipt": "checkpoints/shared_trunk/training_receipt.json",
+    }
+    plan = {
+        "plan_sha256": "plan-a",
+        "stage": {"stage_signature": "stage-a"},
+        "targets": {"shared_trunk": target},
+    }
+    config = {
+        "checkpoint_format_migration": {
+            "policy": "project_theseus_checkpoint_format_migration_v1",
+            "source_suffix": ".npz",
+            "target_suffix": ".safetensors",
+            "qualification_report": "reports/qualification.json",
+            "minimum_qualified_load_speedup": 1.2,
+        }
+    }
+
+    migrated = migrate_shared_trunk_checkpoint_format(config, plan)
+
+    assert migrated["trigger_state"] == "GREEN"
+    assert migrated["migration_state"] == "COMMITTED"
+    assert migrated["training_positions_added"] == 0
+    assert migrated["exact_tensor_parity"] is True
+    assert not source.exists()
+    assert target_checkpoint.is_file()
+    assert optimizer.read_bytes() == b"exact-optimizer-state"
+    migrated_receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert migrated_receipt["checkpoint"] == "checkpoints/shared_trunk/weights.safetensors"
+    assert migrated_receipt["optimizer_steps"] == 11
+    assert migrated_receipt["optimizer_positions"] == 111
+    loaded = mx.load(str(target_checkpoint))
+    mx.eval(*loaded.values())
+    assert tensor_mapping_manifest(loaded) == manifest
+
+    replay = migrate_shared_trunk_checkpoint_format(config, plan)
+    assert replay["migration_state"] == "ALREADY_COMMITTED"
+    assert replay["hard_gaps"] == []
 
 
 def test_semantic_plan_identity_excludes_volatile_preregistration_report_hash() -> None:
