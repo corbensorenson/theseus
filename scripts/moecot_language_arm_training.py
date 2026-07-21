@@ -3571,9 +3571,18 @@ def generate_kerc_code_text(
     length_penalty: float,
     trusted_source_prefix_token: str,
     structured_source: bool,
+    batched_beam_advance: bool = True,
+    device_logit_filter: bool = True,
+    preprune_beam_expansions: bool = True,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Decode one grammar-serialized KERC code object in disjoint V_K/V_P."""
+
+    acceleration = generation_acceleration_receipt(
+        batched_beam_advance=batched_beam_advance,
+        device_logit_filter=device_logit_filter,
+        preprune_beam_expansions=preprune_beam_expansions,
+    )
 
     if structured_source:
         source_ids, source_receipt = encode_kerc_global_target(
@@ -3587,9 +3596,12 @@ def generate_kerc_code_text(
             kerc_surface_tokens(prompt), source_vocab, stream="source"
         )
     if int(source_receipt.get("unknown_token_count") or 0):
-        return "", generation_fault("source_unrepresentable")
+        return "", {**generation_fault("source_unrepresentable"), **acceleration}
     if trusted_source_prefix_token not in source_vocab:
-        return "", generation_fault("trusted_source_prefix_unrepresentable")
+        return "", {
+            **generation_fault("trusted_source_prefix_unrepresentable"),
+            **acceleration,
+        }
     source_offset = source_token_offset(base, source_vocab)
     source_ids = [
         source_offset + int(source_vocab[trusted_source_prefix_token]),
@@ -3600,7 +3612,7 @@ def generate_kerc_code_text(
         ),
     ]
     if len(source_ids) > max_source_tokens:
-        return "", generation_fault("source_requires_truncation")
+        return "", {**generation_fault("source_requires_truncation"), **acceleration}
     target_offset = target_token_offset(base, source_vocab)
     end_id = target_offset + int(target_vocab["<eos>"])
     prompt_ids = [GLOBAL_BOS_ID]
@@ -3608,14 +3620,22 @@ def generate_kerc_code_text(
     prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
     prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
     logits, cache = model(mx.array([prompt_ids], dtype=mx.int32))
-    mx.eval(logits)
+    mx.eval(logits, *cache_arrays(cache))
     token_rows = kerc_global_token_rows(
         code_vocabulary,
         kernel_offset=kernel_offset,
         pointer_offset=pointer_offset,
         pointer_end=pointer_end,
     )
-    beams = [{"ids": [], "tokens": [], "score": 0.0, "logits": logits, "cache": cache}]
+    beams = [
+        {
+            "ids": [],
+            "tokens": [],
+            "score": 0.0,
+            "logits": logits[0, -1],
+            "cache": cache,
+        }
+    ]
     complete: list[dict[str, Any]] = []
     for _ in range(max_tokens):
         expansions: list[dict[str, Any]] = []
@@ -3625,19 +3645,15 @@ def generate_kerc_code_text(
             )
             if not allowed:
                 continue
-            values = np.asarray(beam["logits"][0, -1]).astype(np.float64)
-            allowed_values = np.asarray(
-                [values[token_id] for token_id in allowed], dtype=np.float64
+            ranked = rank_global_allowed_logits(
+                beam["logits"],
+                allowed,
+                branching_factor=branching_factor,
+                device_filter=device_logit_filter,
+                mx=mx,
             )
-            maximum = float(allowed_values.max())
-            normalizer = maximum + float(
-                np.log(np.exp(allowed_values - maximum).sum())
-            )
-            ranked = sorted(
-                allowed, key=lambda token_id: float(values[token_id]), reverse=True
-            )[: max(1, branching_factor)]
-            for token_id in ranked:
-                score = float(beam["score"]) + float(values[token_id]) - normalizer
+            for token_id, log_probability in ranked:
+                score = float(beam["score"]) + log_probability
                 if token_id == end_id:
                     complete.append(
                         {
@@ -3648,19 +3664,25 @@ def generate_kerc_code_text(
                     )
                     continue
                 row = token_rows[token_id]
-                next_logits, next_cache = model(
-                    mx.array([[token_id]], dtype=mx.int32), beam["cache"]
-                )
-                mx.eval(next_logits)
                 expansions.append(
                     {
-                        "ids": [*beam["ids"], token_id],
-                        "tokens": [*beam["tokens"], row],
-                        "score": score,
-                        "logits": next_logits,
-                        "cache": next_cache,
+                        "beam": beam,
+                        "global_id": token_id,
+                        "token": row,
+                        "log_probability": log_probability,
                     }
                 )
+        if preprune_beam_expansions:
+            expansions = prune_text_expansion_specs(
+                expansions,
+                limit=beam_width,
+                length_penalty=length_penalty,
+            )
+        expansions = (
+            advance_beams_batched(model, expansions, target_offset=0, mx=mx)
+            if batched_beam_advance
+            else advance_beams_serial(model, expansions, target_offset=0, mx=mx)
+        )
         beams = sorted(
             expansions, key=lambda row: beam_score(row, length_penalty), reverse=True
         )[: max(1, beam_width)]
@@ -3681,7 +3703,10 @@ def generate_kerc_code_text(
         selected = max(beams, key=lambda row: beam_score(row, length_penalty))
         stop_reason = "max_tokens"
     else:
-        return "", generation_fault("no_serialization_valid_sequence")
+        return "", {
+            **generation_fault("no_serialization_valid_sequence"),
+            **acceleration,
+        }
     decoded, decode_receipt = decode_kerc_global_target(
         list(selected["ids"]),
         code_vocabulary=code_vocabulary,
@@ -3691,11 +3716,13 @@ def generate_kerc_code_text(
     if decode_receipt.get("state") != "READY":
         return "", {
             **generation_fault("kerc_code_decode_fault"),
+            **acceleration,
             "decode_receipt": decode_receipt,
         }
     return decoded, {
         "state": "GREEN",
         "decoder": "beam_kerc_dual_code_serialization_v1",
+        **acceleration,
         "beam_width": int(beam_width),
         "branching_factor": int(branching_factor),
         "stop_reason": stop_reason,
@@ -3708,6 +3735,49 @@ def generate_kerc_code_text(
         "trusted_source_prefix_tokens": [trusted_source_prefix_token],
         "fallback_return_count": 0,
     }
+
+
+def rank_global_allowed_logits(
+    logits: Any,
+    allowed_ids: list[int],
+    *,
+    branching_factor: int,
+    device_filter: bool,
+    mx: Any,
+) -> list[tuple[int, float]]:
+    """Rank sparse global token ids without copying the full vocabulary to host."""
+
+    if not allowed_ids:
+        return []
+    limit = min(len(allowed_ids), max(1, int(branching_factor)))
+    if not device_filter:
+        values = np.asarray(logits).astype(np.float64)
+        allowed_values = np.asarray(
+            [values[token_id] for token_id in allowed_ids], dtype=np.float64
+        )
+        maximum = float(allowed_values.max())
+        normalizer = maximum + float(np.log(np.exp(allowed_values - maximum).sum()))
+        ranked = sorted(
+            allowed_ids,
+            key=lambda token_id: float(values[token_id]),
+            reverse=True,
+        )[:limit]
+        return [
+            (token_id, float(values[token_id]) - normalizer) for token_id in ranked
+        ]
+    device_ids = mx.array(allowed_ids, dtype=mx.int32)
+    allowed_logits = mx.take(logits, device_ids, axis=0)
+    log_normalizer = mx.logsumexp(allowed_logits, axis=0)
+    selected_positions = mx.argsort(allowed_logits, axis=0)[-limit:]
+    selected_logits = mx.take(allowed_logits, selected_positions, axis=0)
+    mx.eval(selected_positions, selected_logits, log_normalizer)
+    positions = np.asarray(selected_positions, dtype=np.int64)[::-1]
+    values = np.asarray(selected_logits, dtype=np.float64)[::-1]
+    normalizer = float(log_normalizer.item())
+    return [
+        (int(allowed_ids[int(position)]), float(value) - normalizer)
+        for position, value in zip(positions, values)
+    ]
 
 
 def kerc_global_token_rows(
@@ -4071,7 +4141,12 @@ def prune_text_expansion_specs(
     unique: dict[tuple[str, ...], tuple[dict[str, Any], float]] = {}
     for spec in specs:
         beam = spec["beam"]
-        tokens = (*beam["tokens"], str(spec["token"]))
+        tokens = tuple(
+            json.dumps(token, sort_keys=True, separators=(",", ":"))
+            if isinstance(token, (dict, list))
+            else str(token)
+            for token in (*beam["tokens"], spec["token"])
+        )
         score = float(beam["score"]) + float(spec["log_probability"])
         rank = score / (max(1, len(tokens)) ** max(0.0, float(length_penalty)))
         prior = unique.get(tokens)

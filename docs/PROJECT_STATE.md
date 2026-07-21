@@ -20,7 +20,7 @@ share toward zero. Public benchmarks are calibration only.
   total parameters. The MoECOT path has 57,340,426 active and 67,357,711 total parameters.
 - **Training authority:** GREEN. The exact corpus stage, tokenizer/index ABI, model shape,
   checkpoint namespace, optimizer exposure, controls, functional evaluation identity,
-  registry, and MLX mechanics canaries agree. KERC and OneCell have machine-checked zero
+  registry, and MLX semantic-mechanics canaries agree. KERC and OneCell have machine-checked zero
   first-campaign exposure and cannot silently activate.
 - **Data:** 422,334,331 unique model-visible positions, or 7.365 per active parameter.
   The optimizer target is 1,146,808,520 positions over 2.715 planned passes, below the
@@ -30,27 +30,33 @@ share toward zero. Public benchmarks are calibration only.
 - **MLX mechanics:** GREEN for the MoECOT active arm and both dense controls. Native MLX
   grouped-query attention is equivalent to explicit KV tiling. The durable shared-trunk
   lineage is now step 3,000 and 22,999,779 optimizer positions, with model SHA
-  `3a9b04ad...05a7` and AdamW SHA `62e1b52b...5f96`. A same-state 16-update qualification
-  measured 1,397.8 eager versus 3,063.2 compiled positions/second, a 2.19x gain, with
-  identical mean and final loss. The real 500-update continuation sustained 2,914.2
-  positions/second across the checkpoint boundary. Full-batch compilation and
-  shape-polymorphic/source-conditioned compilation remain disabled on this 16 GB M1
-  because they crossed the efficient memory regime or faulted in native MLX.
+  `3a9b04ad...05a7` and AdamW SHA `62e1b52b...5f96`. The latest same-state three-pair,
+  24-update qualification measured 1,949-2,425 eager versus 3,567-3,584 compiled
+  positions/second, with identical final loss in every pair. The pooled gain is 1.66x,
+  below the 2x target, while peak MLX memory fell from about 8.10 GB to 3.40 GB. The real
+  500-update continuation sustained 2,914.2 positions/second across the checkpoint
+  boundary. Full-batch compilation was slower and reached 8.57 GB; microbatch eight was
+  not materially faster or robustly above 2x. A bf16-compute/fp32-master route was finite
+  and kept authoritative weights plus AdamW state in fp32, but measured only 0.984x pooled
+  fp32 speed and raised peak MLX memory from 3.40 GB to 3.66 GB. These alternatives remain
+  unadopted on this M1.
 - **Inference mechanics:** GREEN for the prompt-only direct decoder acceleration. Batched
   beam advance, device-side admissible-logit ranking, and exact pre-forward pruning
   preserved output and normalized receipt identity on 8/8 arm-covered private prompts.
-  The latest canonical run reduced aggregate uncached latency from 223.71 to 23.10 seconds,
-  a 9.69x speedup; the slower repeated qualification still measured 8.45x. Seven of eight
+  The latest canonical run reduced aggregate uncached latency by 9.49x. Seven of eight
   current outputs still failed closed on byte serialization, so this is a mechanics win,
-  not a capability claim.
+  not a capability claim. The deferred KERC decoder now shares the optimized beam path
+  and passes serial/optimized token-path parity; full KERC pipeline throughput is not claimed.
+  A shared-cache indexed-gather variant was exact but only 1.004x pooled. Bounded
+  sequence-axis preallocation was only 1.009x on a 512-token stress run. Both were removed;
+  cross-process residency and content-bound prefix reuse remain open.
 - **Checkpoint and joined-runtime mechanics:** exact tensor-level qualification over all
   197 shared-trunk tensors found safetensors and the current NPZ checkpoint identical.
-  Safetensors materialized 3.74x faster in the latest alternating three-load comparison
+  Safetensors materialized 4.58x faster in the latest alternating three-load comparison
   while size and save time were effectively unchanged, so it is qualified for a controlled future
   migration rather than silently replacing the durable step-3,000 artifact. The assistant's
   unchanged governed refresh path now reuses command-, input-, output-, and TTL-bound
-  receipts: repeated cold/warm comparisons measured 325x-550x, with the latest canonical
-  run at 3.69 seconds versus 9.7 milliseconds (about 380x). Missing, changed, expired, or
+  receipts: the latest canonical comparison measured about 578x. Missing, changed, expired, or
   failed evidence still reruns fail-closed.
 - **Learning signal:** the source-disjoint private-development audit now compares step
   2,500 with step 3,000 over 62,743 target positions. Aggregate teacher-forced loss fell
@@ -84,9 +90,10 @@ share toward zero. Public benchmarks are calibration only.
 
 1. Preserve the independently replayed 70-artifact architecture package unchanged.
 2. Preserve the exact step-3,000 shared-trunk lineage. The compiled microbatch and direct
-   decode accelerations are qualified; migrate model snapshots to safetensors only through
-   the registered lineage path, and continue measuring publication and residual KV-cache
-   cost without changing model math or objective.
+   decode routes preserve exact reference behavior; direct decode clears its speed gate,
+   while compiled training still needs a robust 2x result. Migrate model snapshots to
+   safetensors only through the registered lineage path, and continue measuring publication
+   and residual KV-cache cost without changing model math or objective.
 3. Make the declared pilot/review ladder executable, then train the five language arms
    and both preregistered dense controls through matched successive-halving reviews.
 4. Evaluate all candidates once on the frozen 160-case functional contract without tuning
@@ -133,7 +140,7 @@ python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-rea
 
 There is no remaining architecture rationale for postponing empirical learning. Training
 is at least 2.19x faster under matched same-state canaries, direct decode is 8.45x-9.69x
-faster with 8/8 exact parity, and unchanged governed assistant refresh is 325x-550x faster,
+faster with 8/8 exact parity, and unchanged governed assistant refresh is 578x faster,
 but direct
 functional utility is still unmeasured and current step-3,000 generation usually fails
 closed on byte serialization. The current wall is therefore semantic/serialization

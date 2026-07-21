@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import math
 import subprocess
 import sqlite3
 import sys
@@ -1806,6 +1807,143 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
         eager_report["final_loss"], abs=2e-6
     )
     assert maximum_delta < 5e-6
+
+
+def test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(57)
+    master_model = build_model(config, mx=mx, nn=nn)
+    mx.eval(master_model.parameters())
+    compute_model = build_model(config, mx=mx, nn=nn)
+    compute_model.load_weights(list(mlx_utils.tree_flatten(master_model.parameters())))
+    compute_model.set_dtype(mx.bfloat16)
+    mx.eval(compute_model.parameters())
+    rng = np.random.default_rng(29)
+    inputs = rng.integers(3, 64, size=(4, 16), dtype=np.int32)
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.ones_like(inputs, dtype=np.float32)
+    checkpoint = tmp_path / "master.npz"
+
+    report = survival.train_phase(
+        compute_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(compute_model, causal_loss),
+        inputs,
+        labels,
+        mask,
+        progress_mask=mask,
+        ordered_plan_loss_weight=1.0,
+        sample_weights=None,
+        plan_labels=None,
+        plan_label_mode="none",
+        plan_auxiliary_weight=0.0,
+        plan_shuffle_seed=0,
+        plan_loss_mode="binary_multilabel",
+        plan_slot_count=0,
+        plan_factor_group_sizes=(),
+        phase_name="mixed-precision-master",
+        target_positions=int(mask.sum()),
+        batch_size=4,
+        gradient_clip=1.0,
+        seed=31,
+        max_steps=1,
+        checkpoint=checkpoint,
+        checkpoint_every=1,
+        heartbeat=tmp_path / "heartbeat.json",
+        global_step_offset=0,
+        mx=mx,
+        optim=optim,
+        source_conditioning=False,
+        training_step_mode="compiled",
+        compiled_microbatch_size=2,
+        master_model=master_model,
+        compute_dtype_name="bfloat16",
+    )
+    compute_dtypes = {
+        str(value.dtype)
+        for _name, value in mlx_utils.tree_flatten(compute_model.trainable_parameters())
+    }
+    master_dtypes = {
+        str(value.dtype)
+        for _name, value in mlx_utils.tree_flatten(master_model.trainable_parameters())
+    }
+    checkpoint_dtypes = {str(value.dtype) for value in mx.load(str(checkpoint)).values()}
+
+    assert report["compute_dtype"] == "bfloat16"
+    assert report["authoritative_weight_dtype"] == "float32_master"
+    assert math.isfinite(float(report["final_loss"]))
+    assert compute_dtypes == {"mlx.core.bfloat16"}
+    assert master_dtypes == {"mlx.core.float32"}
+    assert checkpoint_dtypes == {"mlx.core.float32"}
+
+
+def test_compiled_training_rejects_invalid_microbatch_size(tmp_path: Path) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=32,
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    inputs = np.asarray([[1, 2, 3]], dtype=np.int32)
+    labels = np.asarray([[2, 3, 4]], dtype=np.int32)
+    mask = np.ones_like(inputs, dtype=np.float32)
+    with pytest.raises(ValueError, match="microbatch size must be positive"):
+        survival.train_phase(
+            model,
+            optim.AdamW(learning_rate=1e-3),
+            nn.value_and_grad(model, causal_loss),
+            inputs,
+            labels,
+            mask,
+            progress_mask=mask,
+            ordered_plan_loss_weight=1.0,
+            sample_weights=None,
+            plan_labels=None,
+            plan_label_mode="none",
+            plan_auxiliary_weight=0.0,
+            plan_shuffle_seed=0,
+            plan_loss_mode="binary_multilabel",
+            plan_slot_count=0,
+            plan_factor_group_sizes=(),
+            phase_name="invalid-microbatch",
+            target_positions=3,
+            batch_size=1,
+            gradient_clip=1.0,
+            seed=1,
+            max_steps=1,
+            checkpoint=tmp_path / "unused.npz",
+            checkpoint_every=99,
+            heartbeat=tmp_path / "heartbeat.json",
+            global_step_offset=0,
+            mx=mx,
+            optim=optim,
+            source_conditioning=False,
+            compiled_microbatch_size=0,
+        )
 
 
 def test_zero_initialized_expert_adapter_preserves_trunk_and_freezes_exactly() -> None:

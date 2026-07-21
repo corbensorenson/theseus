@@ -33,6 +33,7 @@ from moecot_language_arm_training import (  # noqa: E402
     cleanup_progress_generation,
     ensure_shared_trunk_migration,
     evaluation_freeze_semantic_sha256,
+    generate_kerc_code_text,
     generate_kerc_pipeline_text,
     generate_model_text,
     inspect_checkpoint_inventory,
@@ -1470,6 +1471,95 @@ def test_batched_text_beam_advance_matches_serial_reference() -> None:
     )
     assert batched_receipt["logit_filter"] == "mlx_allowed_ids_device_topk_v1"
     assert reference_receipt["logit_filter"] == "numpy_target_vocab_reference_v1"
+
+
+def test_batched_kerc_beam_advance_matches_serial_reference() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    source_vocab = {
+        "<pad>": 0,
+        "<unk>": 1,
+        "<KERC_TASK_SURFACE_TO_KERNEL>": 2,
+        "hello": 3,
+    }
+    target_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3}
+    base = json.loads(
+        (ROOT / "configs/standard_causal_transformer_survival.json").read_text()
+    )
+    code_vocabulary = {
+        "kernel_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            TARGET_BYTE_BEGIN: 2,
+            "<byte:41>": 3,
+            TARGET_BYTE_END: 4,
+            "PROGRAM": 5,
+        },
+        "pointer_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            TARGET_BYTE_BEGIN: 2,
+            "<byte:42>": 3,
+            TARGET_BYTE_END: 4,
+            "@E1": 5,
+        },
+    }
+    kernel_offset = 3 + len(source_vocab) + len(target_vocab)
+    pointer_offset = kernel_offset + len(code_vocabulary["kernel_vocab"])
+    pointer_end = pointer_offset + len(code_vocabulary["pointer_vocab"])
+    mx.random.seed(67)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=pointer_end,
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    mx.eval(model.parameters())
+    common = {
+        "model": model,
+        "prompt": "hello",
+        "source_vocab": source_vocab,
+        "target_vocab": target_vocab,
+        "base": base,
+        "code_vocabulary": code_vocabulary,
+        "kernel_offset": kernel_offset,
+        "pointer_offset": pointer_offset,
+        "pointer_end": pointer_end,
+        "max_tokens": 8,
+        "max_source_tokens": 16,
+        "beam_width": 3,
+        "branching_factor": 3,
+        "length_penalty": 1.0,
+        "trusted_source_prefix_token": "<KERC_TASK_SURFACE_TO_KERNEL>",
+        "structured_source": False,
+        "mx": mx,
+    }
+
+    reference_text, reference_receipt = generate_kerc_code_text(
+        **common,
+        batched_beam_advance=False,
+        device_logit_filter=False,
+        preprune_beam_expansions=False,
+    )
+    optimized_text, optimized_receipt = generate_kerc_code_text(**common)
+
+    assert optimized_text == reference_text
+    assert optimized_receipt.get("reason") == reference_receipt.get("reason")
+    assert optimized_receipt.get("generated_token_sha256") == reference_receipt.get(
+        "generated_token_sha256"
+    )
+    assert optimized_receipt["beam_advance"] == "mlx_batched_per_token_v1"
+    assert optimized_receipt["logit_filter"] == "mlx_allowed_ids_device_topk_v1"
+    assert reference_receipt["beam_advance"] == (
+        "mlx_serial_per_expansion_reference_v1"
+    )
 
 
 def test_generation_fault_retains_acceleration_route() -> None:

@@ -3392,6 +3392,9 @@ def train_phase(
     checkpoint_callback: Any = None,
     source_conditioning: bool = True,
     training_step_mode: str = "auto",
+    compiled_microbatch_size: int = 4,
+    master_model: Any | None = None,
+    compute_dtype_name: str = "float32",
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
@@ -3660,9 +3663,16 @@ def train_phase(
     model.train()
     if training_step_mode not in {"auto", "compiled", "eager"}:
         raise ValueError(f"unsupported training step mode: {training_step_mode}")
+    if compiled_microbatch_size < 1:
+        raise ValueError("compiled microbatch size must be positive")
+    if compute_dtype_name not in {"float32", "bfloat16"}:
+        raise ValueError(f"unsupported compute dtype: {compute_dtype_name}")
+    if master_model is not None and compute_dtype_name != "bfloat16":
+        raise ValueError("fp32 master weights require bfloat16 compute weights")
+    if master_model is not None and training_step_mode == "eager":
+        raise ValueError("fp32 master weights require compiled training")
     compiled_step = None
     compile_width_quantum = 64
-    compiled_microbatch_size = 4
     compile_eligible = training_step_mode != "eager" and source_conditioning is False and all(
         value is None
         for value in (
@@ -3673,13 +3683,18 @@ def train_phase(
             kerc_unit_allocator_rows,
         )
     )
+    if master_model is not None and not compile_eligible:
+        raise ValueError("fp32 master weights require the compiled token-only route")
     if training_step_mode == "compiled" and not compile_eligible:
         raise ValueError("forced compiled training is incompatible with active auxiliary inputs")
     if compile_eligible:
+        optimizer_model = master_model if master_model is not None else model
         if not optimizer.state:
-            optimizer.init(model.trainable_parameters())
+            optimizer.init(optimizer_model.trainable_parameters())
             mx.eval(optimizer.state)
         compiled_state = [model.state, optimizer.state]
+        if master_model is not None:
+            compiled_state.insert(1, master_model.state)
         tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
         tree_flatten = __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten
 
@@ -3707,6 +3722,8 @@ def train_phase(
             )
             loss = loss * weight
             grads = tree_map(lambda value: value * weight, grads)
+            if master_model is not None:
+                grads = tree_map(lambda value: value.astype(mx.float32), grads)
             if prior_grads is not None:
                 grads = tree_map(
                     lambda value, prior: value + prior,
@@ -3716,7 +3733,14 @@ def train_phase(
             grad_norm = mx.array(0.0, dtype=mx.float32)
             if apply_update:
                 grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
-                optimizer.update(model, grads)
+                optimizer.update(optimizer_model, grads)
+                if master_model is not None:
+                    model.update(
+                        tree_map(
+                            lambda value: value.astype(mx.bfloat16),
+                            master_model.trainable_parameters(),
+                        )
+                    )
                 grads = None
             return loss, grad_norm, grads
 
@@ -3940,7 +3964,10 @@ def train_phase(
                 )
                 grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
                 optimizer.update(model, grads)
-            mx.eval(model.parameters(), optimizer.state, loss, grad_norm)
+            evaluated_parameters = (
+                master_model.parameters() if master_model is not None else model.parameters()
+            )
+            mx.eval(model.parameters(), evaluated_parameters, optimizer.state, loss, grad_norm)
             optimizer_step_seconds.append(time.perf_counter() - step_started)
             optimizer_step_positions.append(int(progress_mask[indices].sum()))
             loss_value = float(loss.item())
@@ -3980,7 +4007,8 @@ def train_phase(
                     "elapsed_seconds": round(time.perf_counter() - started, 3),
                 }
                 if checkpoint_callback is None:
-                    model.save_weights(str(checkpoint))
+                    checkpoint_model = master_model if master_model is not None else model
+                    checkpoint_model.save_weights(str(checkpoint))
                 else:
                     checkpoint_callback(progress)
         epoch += 1
@@ -4058,6 +4086,8 @@ def train_phase(
             else None
         ),
         "warmup_step_index_zero_based": warmup_step_index,
+        "warmup_excluded_positions": warmup_excluded_positions,
+        "warmup_excluded_seconds": round(warmup_excluded_seconds, 6),
         "warmup_excluded_tokens_per_second": (
             round(
                 warmup_excluded_positions
@@ -4084,6 +4114,10 @@ def train_phase(
             else "mlx_eager_auxiliary_objective_v1"
         ),
         "training_step_mode_requested": training_step_mode,
+        "compute_dtype": compute_dtype_name,
+        "authoritative_weight_dtype": (
+            "float32_master" if master_model is not None else compute_dtype_name
+        ),
         "compile_width_quantum": (
             compile_width_quantum if compiled_step is not None else 0
         ),
@@ -5387,10 +5421,13 @@ def batched_beam_advance(
 
     if not expansion_specs:
         return []
-    tokens = mx.array(
-        [[target_offset + int(spec["local_id"])] for spec in expansion_specs],
-        dtype=mx.int32,
-    )
+    global_ids = [
+        int(spec["global_id"])
+        if "global_id" in spec
+        else target_offset + int(spec["local_id"])
+        for spec in expansion_specs
+    ]
+    tokens = mx.array([[token_id] for token_id in global_ids], dtype=mx.int32)
     layer_count = len(expansion_specs[0]["beam"]["cache"])
     batched_cache = []
     for layer_index in range(layer_count):
@@ -5412,7 +5449,7 @@ def batched_beam_advance(
     logits, next_cache = model(tokens, batched_cache)
     mx.eval(logits, *cache_arrays(next_cache))
     rows = []
-    for index, spec in enumerate(expansion_specs):
+    for index, (spec, global_id) in enumerate(zip(expansion_specs, global_ids)):
         branch_cache = [
             tuple(value[index : index + 1] for value in layer_cache)
             for layer_cache in next_cache
@@ -5420,12 +5457,14 @@ def batched_beam_advance(
         beam = spec["beam"]
         rows.append(
             next_row := {
-                "tokens": [*beam["tokens"], str(spec["token"])],
+                "tokens": [*beam["tokens"], spec["token"]],
                 "score": float(beam["score"]) + float(spec["log_probability"]),
                 "cache": branch_cache,
                 "logits": logits[index, -1],
             }
         )
+        if "ids" in beam or "global_id" in spec:
+            next_row["ids"] = [*beam.get("ids", []), global_id]
         for key in ("plan_score", "plan_token_count"):
             if key in beam:
                 next_row[key] = beam[key]
@@ -5442,19 +5481,26 @@ def serial_beam_advance(
     rows = []
     for spec in expansion_specs:
         beam = spec["beam"]
+        global_id = (
+            int(spec["global_id"])
+            if "global_id" in spec
+            else target_offset + int(spec["local_id"])
+        )
         next_logits, next_cache = model(
-            mx.array([[target_offset + int(spec["local_id"])]], dtype=mx.int32),
+            mx.array([[global_id]], dtype=mx.int32),
             beam["cache"],
         )
         mx.eval(next_logits, *cache_arrays(next_cache))
         rows.append(
             next_row := {
-                "tokens": [*beam["tokens"], str(spec["token"])],
+                "tokens": [*beam["tokens"], spec["token"]],
                 "score": float(beam["score"]) + float(spec["log_probability"]),
                 "cache": next_cache,
                 "logits": next_logits[0, -1],
             }
         )
+        if "ids" in beam or "global_id" in spec:
+            next_row["ids"] = [*beam.get("ids", []), global_id]
         for key in ("plan_score", "plan_token_count"):
             if key in beam:
                 next_row[key] = beam[key]

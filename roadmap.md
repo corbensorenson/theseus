@@ -48,7 +48,7 @@ The current falsifiable question is:
 | Gate | State | Exit condition |
 |---|---|---|
 | `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | shared trunk checkpoint/resume and acceleration qualified | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Same-state training is at least 2.19x faster and direct decode is 8.45x-9.69x faster with exact parity; continue the same weights, then train five arms and two matched dense controls through the evidence-efficient rung ladder. |
+| `T1` Frozen neural-seed campaign | checkpoint/resume qualified; sustained speed target open | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Compiled training preserves exact paired loss and cuts peak MLX memory about 58%, but the latest repeated pooled speedup is 1.66x against a 2x gate. Direct decode is 9.49x faster with exact parity. Improve the hot path, then continue the same weights through the evidence-efficient rung ladder. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -74,14 +74,19 @@ The first practical architecture is frozen:
   each for English, Python, JS/TS, HTML/CSS, and Rust.
 - Runtime: native MLX grouped-query attention and compiled width-bucketed microbatches of
   four, accumulated into one token-mass-weighted batch-16 clip/update. A same-state
-  16-update qualification measured 1,397.8 eager versus 3,063.2 compiled positions/second
-  with identical mean and final loss. The real 500-update continuation sustained 2,914.2
-  positions/second. Full-batch and shape-polymorphic/source-conditioned compilation remain
-  disabled after crossing this M1's efficient memory regime or faulting in native MLX.
+  three-pair, 24-update qualification measured 1,949-2,425 eager versus 3,567-3,584 compiled
+  positions/second with identical final loss in every pair. The latest pooled speedup is
+  1.66x, below the 2x gate, while peak MLX memory fell from about 8.10 GB to 3.40 GB. The
+  real 500-update continuation sustained 2,914.2 positions/second. Full-batch compilation
+  was slower and reached 8.57 GB; microbatch eight reached about 3,510 positions/second at
+  5.00 GB but did not clear the repeated speed gate. A real-checkpoint bf16-compute/fp32-master
+  pair was numerically clean with at most 0.0017% relative final-loss drift, but reached only
+  0.984x pooled fp32 speed and increased peak MLX memory from 3.40 GB to 3.66 GB. None of
+  these alternatives is adopted on this M1.
 - Current run: shared trunk checkpoint 3,000, 22,999,779 optimizer positions, exact model
   SHA `3a9b04ad...05a7`, and optimizer SHA `62e1b52b...5f96`. Private-development loss
   improved 0.57% from step 2,500 to 3,000; English regressed 0.43% while the four code arms
-  improved. Direct beam decoding is 8.45x-9.69x faster with 8/8 exact output-and-receipt parity,
+  improved. Direct beam decoding is 9.49x faster with 8/8 exact output-and-receipt parity,
   but seven of eight qualification outputs still fail closed on serialization.
 
 At the measured canary rate, the remaining shared-trunk raw-position budget is about four
@@ -240,11 +245,13 @@ outcome reconstruction, verifier replay, and heldout causal lift before training
 
 ### Phase 8: Resource, Cost, And Mac Acceleration
 
-State: `active`. Native GQA, compiled microbatch training, prompt-only batched beam
+State: `active`. Native GQA, semantics-qualified compiled microbatch training, prompt-only batched beam
 decoding, exact checkpoint-format comparison, and content-bound assistant refresh reuse
-are qualified. Same-state training improved 2.19x; the 500-update route sustained 2,914.2
-positions/second; uncached decode improved 8.45x-9.69x with 8/8 exact parity; unchanged governed
-assistant refresh improved 325x-550x under exact content identity. Scheduler records
+are qualified. The latest repeated compiled/eager pair is 1.66x pooled, so the 2x training
+target remains open even though compiled execution is stable and uses about 58% less peak
+MLX memory. The 500-update route sustained 2,914.2 positions/second; uncached decode improved
+9.49x with 8/8 exact parity; unchanged governed assistant refresh improved 578x under exact
+content identity. Scheduler records
 CPU/GPU/MLX/CUDA, memory, thermals, battery, disk, queue, latency, and lifecycle cost.
 
 Next: execute the acceleration program below. Preserve optimizer semantics and the frozen
@@ -276,12 +283,18 @@ software can create 100x more M1 arithmetic throughput.
    order, finite gradients, bounded parameter delta, non-regressed private-development
    loss, and at least 2x sustained useful positions/second over the eager baseline.
    Autotune only safe microbatch and sequence-width buckets for each Mac memory tier.
-   Qualified on M1: 2.19x same-state paired canary, 2,914.2 positions/second over 500 real
-   updates, aggregate dev loss improved 0.57%, with an explicit English weak-tail regression.
+   Semantics-qualified on M1: exact loss parity in every repeated pair, 3,567-3,584 compiled
+   positions/second in the latest canary, about 58% lower peak MLX memory, and 2,914.2
+   positions/second over 500 real updates. The latest repeated pooled gain is 1.66x, so the
+   2x performance gate is not yet cleared. Aggregate dev loss improved 0.57%, with an
+   explicit English weak-tail regression.
 3. **Precision and optimizer memory.** Compare float32, bfloat16, and mixed-precision
-   master-weight policies on the same checkpoint/data. The first short bfloat16 canary
-   produced only about 1.09x throughput and changed loss, so it is not adopted. Test longer
-   numerical drift, optimizer-state memory, reload, and dev-loss parity before deciding.
+   master-weight policies on the same checkpoint/data. The initial pure-bfloat16 canary
+   produced only about 1.09x throughput and changed loss. The stricter compiled
+   bf16-compute/fp32-master route preserved finite fp32 authority and bounded loss drift,
+   but measured 0.984x median/0.984x pooled speed and 3.66 GB peak MLX memory against
+   3.40 GB for fp32. Reject both on this M1. Reopen precision only on a different Apple
+   GPU generation or after a backend change, using the same qualification contract.
 4. **Evidence-efficient rung control.** Make the declared pilot/review contract executable.
    Emit immutable learning-curve checkpoints and private-development measurements at
    short logarithmic intervals, then evaluate direct model-only behavior at preregistered
@@ -289,7 +302,7 @@ software can create 100x more M1 arithmetic throughput.
    dominated candidates stop consuming compute. Never inspect or tune from confirmation
    or public surfaces. A stopped run remains scoped evidence, not broad falsification.
 5. **Checkpoint and storage path.** The current 209 MB model plus 418 MB optimizer state is
-   measured. Safetensors preserved the exact 197-tensor manifest and loaded 3.74x faster in
+   measured. Safetensors preserved the exact 197-tensor manifest and loaded 4.58x faster in
    the latest alternating three-load comparison; size and save time did not materially
    improve. Migrate only through registered lineage.
    Next qualify publication cadence and peak memory; do not background-copy a 57M model on
@@ -304,7 +317,12 @@ software can create 100x more M1 arithmetic throughput.
    output contract, and functional quality. Report time to first token, decode rate,
    end-to-end p50/p95, memory, and accepted verified outputs/second.
    Batched beam advance, device-side admissible ranking, and exact pre-forward pruning are
-   qualified at 8.45x-9.69x aggregate uncached speed and 8/8 parity. Resident serving, batched
+   qualified at 9.49x aggregate uncached speed and 8/8 parity. The deferred KERC decoder now
+   uses the same machinery and has serial/optimized token-path parity; a full KERC pipeline
+   throughput claim remains pending. An indexed shared-cache gather preserved exact output
+   but measured only 1.004x pooled against the simpler per-branch assembly and was removed.
+   Bounded sequence-axis preallocation reached only 1.009x on a 512-token stress run and was
+   also removed. Resident serving, batched
    prefill, prefix reuse, continuous batching, and bounded KV-cache growth remain open.
 7. **Context, routing, and tools.** Profile the joined assistant route rather than isolated
    fixtures. Make VCM indexes persistent and incremental, cache content-bound compiled
@@ -312,8 +330,8 @@ software can create 100x more M1 arithmetic throughput.
    scans, and batch independent verifier/tool calls. Cache hits must bind model, tokenizer,
    policy, capability, snapshot, and source identities; stale or unauthorized hits fail
    closed. Qualified: the five-step VCM governor, task-context bridge, deterministic-tool
-   registry, plan compiler, and private-verifier refresh measured 325x-550x faster across
-   repeated cold/warm comparisons. Reuse binds exact command/input/output hashes and a
+   registry, plan compiler, and private-verifier refresh measured 578x faster in the latest
+   cold/warm comparison. Reuse binds exact command/input/output hashes and a
    300-second freshness window; mutation and stale controls force a rerun. Task-specific
    tool execution and model generation remain uncached and must be measured separately.
 8. **Native and distributed escalation.** Move only measured residual Python hot loops to
