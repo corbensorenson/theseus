@@ -11,6 +11,7 @@ if str(SCRIPTS) not in sys.path:
 
 from resource_acceleration_qualification import (  # noqa: E402
     aggregate_training_routes,
+    compare_parameter_snapshots,
     distribution,
     process_resource_delta,
     select_qualification_rows,
@@ -161,3 +162,43 @@ def test_training_route_aggregation_uses_pooled_work_and_preserves_runs() -> Non
     assert observed["pooled_positions_per_second"] == 20.0
     assert observed["peak_mlx_bytes_maximum"] == 120
     assert observed["runs"] == rows
+
+
+def test_full_parameter_comparison_enforces_absolute_and_relative_bounds() -> None:
+    import numpy as np
+
+    reference = {
+        "a": np.array([1.0, 2.0], dtype=np.float32),
+        "b": np.array([[3.0]], dtype=np.float32),
+    }
+    close = {
+        "a": np.array([1.0 + 1e-7, 2.0], dtype=np.float32),
+        "b": np.array([[3.0]], dtype=np.float32),
+    }
+    far = {
+        "a": np.array([1.0 + 1e-4, 2.0], dtype=np.float32),
+        "b": np.array([[3.0]], dtype=np.float32),
+    }
+
+    accepted = compare_parameter_snapshots(reference, close)
+    rejected = compare_parameter_snapshots(reference, far)
+
+    assert accepted["within_tolerance"] is True
+    assert accepted["element_count"] == 3
+    assert rejected["within_tolerance"] is False
+    assert rejected["maximum_absolute_delta"] > 5e-6
+
+
+def test_full_parameter_comparison_rejects_shape_mismatch() -> None:
+    import numpy as np
+
+    observed = compare_parameter_snapshots(
+        {"a": np.zeros((2,), dtype=np.float32)},
+        {"a": np.zeros((1, 2), dtype=np.float32)},
+    )
+
+    assert observed == {
+        "within_tolerance": False,
+        "names_match": True,
+        "shapes_match": False,
+    }

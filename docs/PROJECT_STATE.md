@@ -30,20 +30,22 @@ share toward zero. Public benchmarks are calibration only.
 - **MLX mechanics:** GREEN for the MoECOT active arm and both dense controls. Native MLX
   grouped-query attention is equivalent to explicit KV tiling. The durable shared-trunk
   lineage is now step 3,000 and 22,999,779 optimizer positions, with model SHA
-  `3a9b04ad...05a7` and AdamW SHA `62e1b52b...5f96`. The latest same-state three-pair,
-  24-update qualification measured 1,949-2,425 eager versus 3,567-3,584 compiled
-  positions/second, with identical final loss in every pair. The pooled gain is 1.66x,
-  below the 2x target, while peak MLX memory fell from about 8.10 GB to 3.40 GB. The real
-  500-update continuation sustained 2,914.2 positions/second across the checkpoint
-  boundary. Full-batch compilation was slower and reached 8.57 GB; microbatch eight was
-  not materially faster or robustly above 2x. A bf16-compute/fp32-master route was finite
-  and kept authoritative weights plus AdamW state in fp32, but measured only 0.984x pooled
-  fp32 speed and raised peak MLX memory from 3.40 GB to 3.66 GB. These alternatives remain
+  `3a9b04ad...05a7` and AdamW SHA `62e1b52b...5f96`. The adopted microbatch-four route's
+  prior same-state three-pair qualification measured 1.66x pooled over eager while reducing
+  peak MLX memory from about 8.10 GB to 3.40 GB. The real 500-update continuation sustained
+  2,914.2 positions/second across the checkpoint boundary. A stricter microbatch-eight
+  rerun compared all 54,836,746 final parameters after each 24-update route: maximum
+  absolute drift was at most `2.38e-7`, relative L2 drift was about `8e-8`, and loss stayed
+  within `2e-6`, but speed varied from 1.36x to 1.97x and measured only 1.52x median/1.62x
+  pooled with 5.00 GB peak MLX memory. It is semantics-qualified but performance-rejected.
+  Full-batch compilation was slower and reached 8.57 GB. The latest
+  bf16-compute/fp32-master rerun remained finite with fp32 authority but measured 0.976x
+  median/0.978x pooled and raised peak MLX memory from 5.00 GB to 5.21 GB. It remains
   unadopted on this M1.
 - **Inference mechanics:** GREEN for the prompt-only direct decoder acceleration. Batched
   beam advance, device-side admissible-logit ranking, and exact pre-forward pruning
   preserved output and normalized receipt identity on 8/8 arm-covered private prompts.
-  The latest canonical run reduced aggregate uncached latency by 9.49x. Seven of eight
+  The latest canonical run reduced aggregate uncached latency by 9.44x. Seven of eight
   current outputs still failed closed on byte serialization, so this is a mechanics win,
   not a capability claim. The deferred KERC decoder now shares the optimized beam path
   and passes serial/optimized token-path parity; full KERC pipeline throughput is not claimed.
@@ -56,8 +58,15 @@ share toward zero. Public benchmarks are calibration only.
   while size and save time were effectively unchanged, so it is qualified for a controlled future
   migration rather than silently replacing the durable step-3,000 artifact. The assistant's
   unchanged governed refresh path now reuses command-, input-, output-, and TTL-bound
-  receipts: the latest canonical comparison measured about 578x. Missing, changed, expired, or
+  receipts: the latest canonical comparison measured about 469x. Missing, changed, expired, or
   failed evidence still reruns fail-closed.
+- **External speed-audit disposition:** the suggested beam batching, device-side admissible
+  ranking, compiled train step, bf16 trial, and bounded KV preallocation were already present
+  or already measured above. The alleged wide-sequence batch-1 collapse does not affect the
+  measured shared trunk (fixed width 512) or current KERC canary (maximum active width 2,580,
+  below the 8K batch-two boundary). KERC's roughly 23 positions/second remains a real separate
+  hot path caused by long source-conditioned computation plus learned residual, verifier, and
+  decision objectives; it needs direct profiling and compilation rather than a bucket change.
 - **Learning signal:** the source-disjoint private-development audit now compares step
   2,500 with step 3,000 over 62,743 target positions. Aggregate teacher-forced loss fell
   from 4.198748 to 4.174738 (0.57%). Python, JS/TS, HTML/CSS, and Rust improved; English
@@ -81,8 +90,12 @@ share toward zero. Public benchmarks are calibration only.
 - **Repository hygiene:** the forward roadmap is now a compact execution map backed by
   the complete machine-readable matrix, down from 3,756 lines without deleting an open
   obligation. Reference-aware retention replaces old, unreferenced registry snapshots
-  with verified archive pointers. Checkpoint volume remains above its warning target but
-  below its hard ceiling. The superseded strict-generator/code-LM route is being decoupled,
+  with verified archive pointers. The cumulative retention gate independently decodes and
+  rehashes 2,114/2,114 archived payloads. Its canonical report was compacted from 28.5 MB
+  to 22.6 KB by committing all outcomes under one digest plus bounded samples and aggregate
+  VIEA records; the hot-report budget is GREEN at about 1.01 GB. Checkpoint volume remains
+  above its warning target at about 9.70 GB but below its hard ceiling. The superseded
+  strict-generator/code-LM route is being decoupled,
   but cannot be honestly retired until its registered successor passes the same functional
   contract or an explicit evidence-preserving demotion is recorded.
 

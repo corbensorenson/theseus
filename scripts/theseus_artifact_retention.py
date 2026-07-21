@@ -65,6 +65,12 @@ RETAIN_LIVE_NAMES = {
     "context_packets.jsonl",
     "hive_artifact_sync_ledger.jsonl",
     "world_adapter_job_control_ledger.jsonl",
+    "theseus_artifact_budget_gate_current.json",
+    "theseus_artifact_retention_current.json",
+}
+RENEWABLE_LIVE_REPORT_NAMES = {
+    "theseus_artifact_budget_gate_current.json",
+    "theseus_artifact_retention_current.json",
 }
 ARCHIVEABLE_REPORT_DIRS = {
     "post_v4_generalization_autopilot_v1_archive",
@@ -145,6 +151,9 @@ def main() -> int:
     manifest_path = resolve(args.manifest_out)
     existing_manifest = read_json(manifest_path, {})
     previous_entries = existing_manifest.get("entries") if isinstance(existing_manifest.get("entries"), list) else []
+    previous_entries, live_regeneration_records = reconcile_renewable_live_entries(
+        previous_entries
+    )
     pointer_repairs = repair_manifest_pointers(existing_manifest, execute=bool(args.execute)) if args.repair_manifest_pointers else {
         "state": "NOT_REQUESTED",
         "eligible_count": 0,
@@ -258,7 +267,16 @@ def main() -> int:
         if row.get("status") in {"archived", "already_archived", "dry_run"}:
             entries_by_original[str(row.get("original_path") or row.get("path"))] = manifest_entry(row)
     entries = sorted(entries_by_original.values(), key=lambda row: str(row.get("original_path") or ""))
-    archived_entries = [row for row in entries if str(row.get("status") or "") in {"archived", "already_archived"}]
+    archived_entries = [
+        row
+        for row in entries
+        if str(row.get("status") or "")
+        in {
+            "archived",
+            "already_archived",
+            "archived_superseded_by_live_regeneration",
+        }
+    ]
     checkpoint_archived_entries = [
         row
         for row in archived_entries
@@ -298,9 +316,11 @@ def main() -> int:
         "compressed_artifact_record_count": len(compressed_artifact_records),
         "compression_receipt_count": len(compression_receipts),
         "defeater_record_count": len(defeater_records),
+        "live_regeneration_record_count": len(live_regeneration_records),
         "checkpoint_reference_state": checkpoint_reference_index.get("state", "NOT_REQUESTED"),
         "checkpoint_deduplication_state": checkpoint_deduplication.get("state", "NOT_REQUESTED"),
         "pointer_repair_state": pointer_repairs.get("state", "NOT_REQUESTED"),
+        "live_regeneration_records": live_regeneration_records,
         "hot_report_reference_state": hot_report_reference_index.get("state", "NOT_REQUESTED"),
         "cumulative_archived_entry_count": len(archived_entries),
         "cumulative_archived_source_bytes": sum(int(row.get("bytes") or 0) for row in archived_entries),
@@ -341,6 +361,7 @@ def main() -> int:
             "compressed_artifact_record_count": len(compressed_artifact_records),
             "compression_receipt_count": len(compression_receipts),
             "defeater_record_count": len(defeater_records),
+            "live_regeneration_record_count": len(live_regeneration_records),
             "protected_checkpoint_file_count": int(checkpoint_reference_index.get("protected_checkpoint_file_count") or 0),
             "protected_checkpoint_bytes": int(checkpoint_reference_index.get("protected_checkpoint_bytes") or 0),
             "checkpoint_deduplicate_file_count": int(checkpoint_deduplication.get("deduplicated_file_count") or 0),
@@ -361,6 +382,7 @@ def main() -> int:
         "compressed_artifact_records": compressed_artifact_records,
         "compression_receipts": compression_receipts,
         "defeater_records": defeater_records,
+        "live_regeneration_records": live_regeneration_records,
         "checkpoint_reference_index": checkpoint_reference_index,
         "checkpoint_deduplication": checkpoint_deduplication,
         "pointer_repairs": pointer_repairs,
@@ -663,6 +685,60 @@ def repair_manifest_pointers(manifest: dict[str, Any], *, execute: bool) -> dict
         "external_inference_calls": 0,
         "fallback_return_count": 0,
     }
+
+
+def reconcile_renewable_live_entries(
+    entries: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Retain an archived generation after a canonical report is regenerated."""
+
+    reconciled: list[dict[str, Any]] = []
+    records: list[dict[str, Any]] = []
+    for source in entries:
+        row = dict(source)
+        original = resolve(str(row.get("original_path") or ""))
+        if (
+            str(row.get("status") or "") not in {"archived", "already_archived"}
+            or original.name not in RENEWABLE_LIVE_REPORT_NAMES
+            or not original.is_file()
+            or is_pointer(original)
+        ):
+            reconciled.append(row)
+            continue
+        archive = resolve(str(row.get("archive_path") or ""))
+        expected_hash = str(row.get("sha256") or "")
+        replay = verify_archive_payload(
+            archive,
+            expected_hash,
+            compressed=archive.suffix.lower() == ".gz",
+        )
+        current_hash = sha256_file(original)
+        if not replay.get("verified") or current_hash == expected_hash:
+            reconciled.append(row)
+            continue
+        row.update(
+            {
+                "status": "archived_superseded_by_live_regeneration",
+                "superseded_utc": now(),
+                "live_generation_sha256": current_hash,
+                "live_generation_bytes": original.stat().st_size,
+                "supersession_policy": "renewable_canonical_report_generation_v1",
+            }
+        )
+        records.append(
+            {
+                "record_type": "artifact_retention_live_regeneration",
+                "original_path": rel(original),
+                "archive_path": rel(archive),
+                "archived_generation_sha256": expected_hash,
+                "live_generation_sha256": current_hash,
+                "status": row["status"],
+                "archive_hash_verified": True,
+                "pointer_overwrite_forbidden": True,
+            }
+        )
+        reconciled.append(row)
+    return reconciled, records
 
 
 def write_pointer(path: Path, target: Path, candidate: dict[str, Any]) -> None:

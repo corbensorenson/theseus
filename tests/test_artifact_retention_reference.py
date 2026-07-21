@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import gzip
 import os
 import sys
 import time
@@ -15,6 +16,7 @@ if str(SCRIPTS) not in sys.path:
 
 import artifact_retention_reference as reference
 import theseus_artifact_retention as retention
+import theseus_artifact_retention_replay_gate as replay_gate
 
 
 def write_json(path: Path, payload: dict) -> None:
@@ -177,6 +179,135 @@ def test_manifest_pointer_repair_requires_hash_and_never_overwrites_live_payload
     assert conflict["state"] == "RED"
     assert conflict["live_path_conflict_count"] == 1
     assert live.read_text(encoding="utf-8") == '{"real":"payload"}\n'
+
+
+def test_renewable_live_report_supersedes_pointer_without_losing_archive_replay(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(retention, "ROOT", tmp_path)
+    monkeypatch.setattr(replay_gate, "ROOT", tmp_path)
+    encoded = (json.dumps({"generation": 1}, sort_keys=True) + "\n").encode(
+        "utf-8"
+    )
+    archive = tmp_path / "archive" / "report.json.gz"
+    archive.parent.mkdir(parents=True)
+    with gzip.open(archive, "wb") as handle:
+        handle.write(encoded)
+    live = tmp_path / "reports" / "theseus_artifact_budget_gate_current.json"
+    write_json(live, {"generation": 2})
+    entries = [
+        {
+            "original_path": "reports/theseus_artifact_budget_gate_current.json",
+            "pointer_path": "reports/theseus_artifact_budget_gate_current.json",
+            "archive_path": "archive/report.json.gz",
+            "status": "archived",
+            "bytes": len(encoded),
+            "sha256": hashlib.sha256(encoded).hexdigest(),
+        }
+    ]
+
+    reconciled, records = retention.reconcile_renewable_live_entries(entries)
+
+    assert reconciled[0]["status"] == "archived_superseded_by_live_regeneration"
+    assert records[0]["archive_hash_verified"] is True
+    check = replay_gate.verify_action(
+        reconciled[0],
+        {"entries": reconciled},
+        tmp_path / "manifest.json",
+        manifest_entry_mode=True,
+    )
+    assert check["passed"] is True
+    assert check["live_regeneration_verified"] is True
+
+
+def test_nonrenewable_live_report_is_not_silently_superseded(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(retention, "ROOT", tmp_path)
+    archive = tmp_path / "archive" / "report.json"
+    write_json(archive, {"generation": 1})
+    live = tmp_path / "reports" / "unregistered_current.json"
+    write_json(live, {"generation": 2})
+    entries = [
+        {
+            "original_path": "reports/unregistered_current.json",
+            "pointer_path": "reports/unregistered_current.json",
+            "archive_path": "archive/report.json",
+            "status": "archived",
+            "bytes": archive.stat().st_size,
+            "sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+        }
+    ]
+
+    reconciled, records = retention.reconcile_renewable_live_entries(entries)
+
+    assert reconciled == entries
+    assert records == []
+
+
+def test_replay_records_are_digest_bound_and_constant_cardinality(tmp_path: Path) -> None:
+    checks = [
+        {
+            "check_id": f"check-{index}",
+            "passed": True,
+            "original_path": f"reports/source-{index}.json",
+            "pointer_path": f"reports/source-{index}.json",
+            "archive_path": f"archive/source-{index}.json.gz",
+            "expected_sha256": f"expected-{index}",
+            "decoded_sha256": f"expected-{index}",
+        }
+        for index in range(100)
+    ]
+
+    digest = replay_gate.digest_rows(checks)
+    records = replay_gate.build_records(
+        checks,
+        tmp_path / "reports" / "retention-manifest.json",
+        checks_sha256=digest,
+    )
+
+    assert replay_gate.digest_rows(checks) == digest
+    assert replay_gate.digest_rows([*checks[:-1], {**checks[-1], "passed": False}]) != digest
+    assert set(records) == {
+        "compressed_artifact_records",
+        "compression_receipts",
+        "proof_contract_receipt_records",
+        "claim_records",
+        "artifact_graph_records",
+        "evidence_transition_records",
+        "defeater_records",
+    }
+    assert all(len(rows) == 1 for rows in records.values())
+    for rows in records.values():
+        assert rows[0]["replay_checks_sha256"] == digest
+        assert rows[0]["eligible_action_count"] == 100
+        assert rows[0]["passed_replay_count"] == 100
+        assert rows[0]["failed_replay_count"] == 0
+
+
+def test_replay_records_fail_closed_when_any_check_fails(tmp_path: Path) -> None:
+    checks = [
+        {
+            "check_id": "check-failed",
+            "passed": False,
+            "original_path": "reports/source.json",
+            "pointer_path": "reports/source.json",
+            "archive_path": "archive/source.json.gz",
+            "expected_sha256": "expected",
+            "decoded_sha256": "actual",
+        }
+    ]
+
+    records = replay_gate.build_records(
+        checks,
+        tmp_path / "reports" / "retention-manifest.json",
+    )
+
+    assert records["claim_records"][0]["support_state"] == "UNSUPPORTED"
+    assert records["compression_receipts"][0]["receipt_state"] == "failed"
+    assert records["defeater_records"][0]["current_trigger_state"] == "RED"
 
 
 def test_hot_report_compaction_protects_current_citations_and_ledgers(

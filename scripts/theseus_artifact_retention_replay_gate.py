@@ -57,7 +57,12 @@ def main() -> int:
     manifest_rows = [
         row
         for row in list_dicts(manifest.get("entries"))
-        if str(row.get("status") or "") in {"archived", "already_archived"}
+        if str(row.get("status") or "")
+        in {
+            "archived",
+            "already_archived",
+            "archived_superseded_by_live_regeneration",
+        }
     ]
     source_rows = manifest_rows or [
         row
@@ -82,10 +87,14 @@ def main() -> int:
         hard_gaps.append(gap("no_executed_retention_actions", {"retention_report": rel(retention_path), "retention_manifest": rel(manifest_path)}))
     for check in checks:
         if not check.get("passed"):
-            hard_gaps.append(gap("archive_pointer_replay_failed", check))
+            hard_gaps.append(
+                gap("archive_pointer_replay_failed", compact_replay_check(check))
+            )
 
     trigger_state = "GREEN" if not hard_gaps else "RED"
-    records = build_records(checks, source_path)
+    checks_sha256 = digest_rows(checks)
+    failed_checks = [row for row in checks if not row.get("passed")]
+    records = build_records(checks, source_path, checks_sha256=checks_sha256)
     payload = {
         "policy": "project_theseus_artifact_retention_replay_gate_v1",
         "created_utc": now(),
@@ -100,11 +109,17 @@ def main() -> int:
             "pointer_verified_count": sum(1 for row in checks if row.get("pointer_verified")),
             "defeater_verified_count": sum(1 for row in checks if row.get("defeater_verified")),
             "json_parse_verified_count": sum(1 for row in checks if row.get("json_parse_verified")),
+            "replay_checks_sha256": checks_sha256,
+            "replay_check_sample_count": min(8, len(checks)),
+            "failed_replay_check_detail_count": min(32, len(failed_checks)),
+            "failed_replay_check_id_count": len(failed_checks),
             "hard_gap_count": len(hard_gaps),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "hard_gaps": hard_gaps,
-        "replay_checks": checks,
+        "replay_check_samples": [compact_replay_check(row) for row in checks[:8]],
+        "failed_replay_check_ids": [str(row.get("check_id") or "") for row in failed_checks],
+        "failed_replay_checks": [compact_replay_check(row) for row in failed_checks[:32]],
         **records,
         **NO_CHEAT,
         "non_claims": [
@@ -134,6 +149,10 @@ def verify_action(
     pointer_path = resolve(str(row.get("pointer_path") or row.get("original_path") or row.get("path") or ""))
     archive = resolve(str(row.get("archive_path") or ""))
     expected_hash = str(row.get("sha256") or "")
+    superseded_live_generation = (
+        str(row.get("status") or "")
+        == "archived_superseded_by_live_regeneration"
+    )
     pointer = read_json(pointer_path)
     pointer_verified = pointer.get("policy") == theseus_archive_resolver.ARCHIVE_POINTER_POLICY
     resolver_target = theseus_archive_resolver.resolve_archived_path(pointer_path)
@@ -141,11 +160,32 @@ def verify_action(
     hash_verified = bool(expected_hash and decoded_hash == expected_hash)
     archive_exists = archive.exists()
     resolver_verified = archive_exists and resolver_target.resolve() == archive.resolve()
+    live_generation_hash = (
+        sha256_file(pointer_path)
+        if superseded_live_generation and pointer_path.is_file() and not pointer_verified
+        else ""
+    )
+    live_regeneration_verified = bool(
+        superseded_live_generation
+        and archive_exists
+        and not pointer_verified
+        and live_generation_hash
+        == str(row.get("live_generation_sha256") or "")
+        and live_generation_hash != expected_hash
+        and str(row.get("supersession_policy") or "")
+        == "renewable_canonical_report_generation_v1"
+    )
     json_parse_verified = False
     json_parse_error = ""
     if str(row.get("original_path") or "").endswith(".json"):
         try:
-            loaded = theseus_archive_resolver.read_json_follow_pointer(pointer_path, default=None)
+            loaded = (
+                read_archive_json(archive)
+                if superseded_live_generation
+                else theseus_archive_resolver.read_json_follow_pointer(
+                    pointer_path, default=None
+                )
+            )
             json_parse_verified = isinstance(loaded, (dict, list))
         except Exception as exc:  # pragma: no cover - defensive report detail
             json_parse_error = repr(exc)
@@ -153,12 +193,19 @@ def verify_action(
         json_parse_verified = True
     if manifest_entry_mode:
         defeater_verified = bool(
-            pointer_verified
-            and str(pointer.get("original_path") or "") == str(row.get("original_path") or row.get("path") or "")
-            and str(pointer.get("archive_path") or "") == str(row.get("archive_path") or "")
-            and str(pointer.get("original_sha256") or "") == expected_hash
+            live_regeneration_verified
+            or (
+                pointer_verified
+                and str(pointer.get("original_path") or "")
+                == str(row.get("original_path") or row.get("path") or "")
+                and str(pointer.get("archive_path") or "")
+                == str(row.get("archive_path") or "")
+                and str(pointer.get("original_sha256") or "") == expected_hash
+            )
         )
-        compression_record_verified = bool(hash_verified and resolver_verified)
+        compression_record_verified = bool(
+            hash_verified and (resolver_verified or live_regeneration_verified)
+        )
     else:
         defeater_verified = has_matching_defeater(row, retention)
         compression_record_verified = has_matching_record(
@@ -169,8 +216,8 @@ def verify_action(
     passed = all(
         [
             archive_exists,
-            pointer_verified,
-            resolver_verified,
+            pointer_verified or live_regeneration_verified,
+            resolver_verified or live_regeneration_verified,
             hash_verified,
             json_parse_verified,
             defeater_verified,
@@ -189,6 +236,9 @@ def verify_action(
         "archive_exists": archive_exists,
         "pointer_verified": pointer_verified,
         "resolver_verified": resolver_verified,
+        "superseded_live_generation": superseded_live_generation,
+        "live_generation_sha256": live_generation_hash,
+        "live_regeneration_verified": live_regeneration_verified,
         "hash_verified": hash_verified,
         "json_parse_verified": json_parse_verified,
         "json_parse_error": json_parse_error,
@@ -237,166 +287,204 @@ def has_matching_record(row: dict[str, Any], records: list[dict[str, Any]], *, e
     return False
 
 
-def build_records(checks: list[dict[str, Any]], retention_path: Path) -> dict[str, list[dict[str, Any]]]:
-    compressed_artifact_records = []
-    compression_receipts = []
-    proof_contract_receipt_records = []
-    claim_records = []
-    artifact_graph_records = []
-    evidence_transition_records = []
-    defeater_records = []
-    for check in checks:
-        rid = check["check_id"]
-        support_state = "SUPPORTED" if check.get("passed") else "UNSUPPORTED"
-        evidence_ref = "reports/theseus_artifact_retention_replay_gate.json"
-        compressed_artifact_records.append(
+def build_records(
+    checks: list[dict[str, Any]],
+    retention_path: Path,
+    *,
+    checks_sha256: str | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Emit one digest-bound record per contract type, not seven copies per check."""
+    evidence_ref = "reports/theseus_artifact_retention_replay_gate.json"
+    passed_count = sum(1 for row in checks if row.get("passed"))
+    failed_count = len(checks) - passed_count
+    support_state = "SUPPORTED" if checks and failed_count == 0 else "UNSUPPORTED"
+    trigger_state = "GREEN" if support_state == "SUPPORTED" else "RED"
+    digest = checks_sha256 or digest_rows(checks)
+    aggregate_id = stable_id(
+        "artifact_retention_replay_aggregate", len(checks), passed_count, digest
+    )
+    source_ref = rel(retention_path)
+    replay_contract = (
+        "Every cumulative manifest entry was independently decoded, hashed, "
+        "and checked against its retained content hash; individual outcomes "
+        "are committed by replay_checks_sha256."
+    )
+    common = {
+        "replay_checks_sha256": digest,
+        "eligible_action_count": len(checks),
+        "passed_replay_count": passed_count,
+        "failed_replay_count": failed_count,
+        "support_state_effect": support_state,
+        "evidence_refs": [evidence_ref, source_ref],
+        **NO_CHEAT,
+    }
+    return {
+        "compressed_artifact_records": [
             {
                 "record_type": "compressed_artifact_record",
-                "record_id": f"compressed-artifact-replay-{rid}",
-                "artifact_id": f"retained-artifact-{rid}",
-                "source_artifact": check["original_path"],
+                "record_id": f"compressed-artifact-replay-{aggregate_id}",
+                "artifact_id": f"retained-artifact-set-{aggregate_id}",
+                "source_artifact": source_ref,
                 "task_family": "artifact_retention_replay",
-                "access_pattern": "archive_pointer_exact_replay",
-                "admission_state": "archive_replay_supported" if check.get("passed") else "archive_replay_failed",
-                "compression_method": "gzip" if check["archive_path"].endswith(".gz") else "move_or_pointer",
-                "reconstruction_contract": "pointer_path resolves to archive_path and decoded payload sha256 equals expected_sha256",
+                "access_pattern": "cumulative_manifest_exact_replay",
+                "admission_state": "archive_replay_supported" if failed_count == 0 else "archive_replay_failed",
+                "compression_method": "mixed_manifest_archives",
+                "reconstruction_contract": replay_contract,
                 "declared_use_envelope": ["evidence replay", "operator audit citation", "storage retention"],
                 "ratio_claim_state": "observed_not_benchmarked",
-                "codec_parameters": [f"expected_sha256={check['expected_sha256']}", f"decoded_sha256={check['decoded_sha256']}"],
-                "metadata_costs": [f"payload_bytes={check['payload_bytes']}", f"archived_bytes={check['archived_bytes']}"],
-                "residual_coding": ["pointer json remains at original path", "archive payload remains authoritative for exact replay"],
-                "probe_plan": ["follow pointer", "decode archive", "rehash payload", "parse json when applicable"],
-                "fallback_artifact": check["archive_path"],
-                "fallback_trigger": "Use archived payload whenever the original path is an archive pointer.",
-                "decode_determinism": "exact gzip decode plus sha256 replay",
-                "exact_replay_status": "exact_hash_match" if check.get("hash_verified") else "hash_mismatch",
+                "codec_parameters": [f"replay_checks_sha256={digest}"],
+                "metadata_costs": [f"eligible_action_count={len(checks)}"],
+                "residual_coding": ["manifest paths retain per-artifact archive metadata"],
+                "probe_plan": ["decode every archive", "rehash every payload", "parse JSON when applicable"],
+                "fallback_artifact": source_ref,
+                "fallback_trigger": "Use the cumulative manifest to inspect a sampled or failed entry.",
+                "decode_determinism": "exact archive decode plus sha256 replay",
+                "exact_replay_status": "exact_hash_match" if failed_count == 0 else "replay_failure_present",
                 "consumer_policy": "May support evidence retention only after this replay gate is GREEN.",
-                "utility_tests": ["archive pointer resolver", "sha256 replay", "json parse when applicable"],
-                "support_state_effect": support_state,
-                "evidence_refs": [evidence_ref, rel(retention_path)],
-                **NO_CHEAT,
+                "utility_tests": ["archive resolver", "sha256 replay", "JSON parse"],
+                **common,
                 "non_claims": ["not learned-generation evidence", "not a compression benchmark", "not model capability evidence"],
             }
-        )
-        compression_receipts.append(
+        ],
+        "compression_receipts": [
             {
                 "record_type": "compression_receipt",
-                "record_id": f"compression-replay-receipt-{rid}",
-                "artifact_id": f"retention-replay-receipt-{rid}",
-                "receipt_state": "verified" if check.get("passed") else "failed",
-                "reconstruction_contract": "archive pointer must replay to the original content hash",
-                "public_law_family": "gzip" if check["archive_path"].endswith(".gz") else "move_or_pointer",
-                "seed": check["expected_sha256"],
+                "record_id": f"compression-replay-receipt-{aggregate_id}",
+                "artifact_id": f"retention-replay-receipt-{aggregate_id}",
+                "receipt_state": "verified" if failed_count == 0 else "failed",
+                "reconstruction_contract": replay_contract,
+                "public_law_family": "mixed_manifest_archives",
+                "seed": digest,
                 "search_bound": "deterministic archive replay; no learned search credited",
-                "generated_regions": [check["archive_path"]],
-                "verification_result": "exact_replay_passed" if check.get("passed") else "exact_replay_failed",
-                "repair_residual": "" if check.get("passed") else "inspect pointer/archive/hash mismatch before relying on retained artifact",
+                "generated_regions": [source_ref],
+                "verification_result": "exact_replay_passed" if failed_count == 0 else "exact_replay_failed",
+                "repair_residual": "" if failed_count == 0 else "inspect failed_replay_checks before relying on retained artifacts",
                 "fallback_threshold": "fail closed for claim support unless replay gate is GREEN",
-                "interface_costs": ["pointer read", "archive decode", "sha256 replay", "json parse when applicable"],
-                "consumer_policy": "Storage/evidence consumers may follow the pointer only when this receipt is verified.",
+                "interface_costs": ["manifest read", "archive decode", "sha256 replay", "JSON parse"],
+                "consumer_policy": "Storage consumers may follow retained archives only when this receipt is verified.",
                 "use_permissions": ["artifact retention audit", "operator governance export"],
                 "proxy_rate_status": "not_a_rate_claim",
-                "final_serialization_status": "verified_exact_payload" if check.get("passed") else "not_verified",
-                "rate_accounting": {
-                    "payload_bytes": check["payload_bytes"],
-                    "archived_bytes": check["archived_bytes"],
-                    "ratio_claimed": False,
-                },
-                "support_state_effect": support_state,
-                "evidence_refs": [evidence_ref, rel(retention_path)],
-                **NO_CHEAT,
+                "final_serialization_status": "verified_exact_payload_set" if failed_count == 0 else "not_verified",
+                "rate_accounting": {"artifact_count": len(checks), "ratio_claimed": False},
+                **common,
                 "non_claims": ["not learned-generation evidence", "not public benchmark evidence"],
             }
-        )
-        proof_contract_receipt_records.append(
+        ],
+        "proof_contract_receipt_records": [
             {
                 "record_type": "proof_contract_receipt_record",
-                "record_id": f"proof-contract-retention-replay-{rid}",
-                "receipt_id": f"retention-replay-proof-{rid}",
+                "record_id": f"proof-contract-retention-replay-{aggregate_id}",
+                "receipt_id": f"retention-replay-proof-{aggregate_id}",
                 "contract_id": "artifact_retention_archive_pointer_reconstruction_v1",
-                "artifact_ref": check["original_path"],
+                "artifact_ref": source_ref,
                 "verifier_state": support_state,
-                "verification_result": "passed" if check.get("passed") else "failed",
+                "verification_result": "passed" if failed_count == 0 else "failed",
                 "evidence_ref": evidence_ref,
                 "blocked_uses": ["learned_generation_claim", "model_quality_claim", "public_benchmark_training"],
-                **NO_CHEAT,
+                **common,
                 "non_claims": ["proof covers storage replay only"],
             }
-        )
-        claim_records.append(
+        ],
+        "claim_records": [
             {
                 "record_type": "claim_record",
-                "claim_id": f"claim-retention-replay-{rid}",
-                "claim": "Archived artifact pointer reconstructs the retained payload by exact hash replay.",
+                "claim_id": f"claim-retention-replay-{aggregate_id}",
+                "claim": "All admitted cumulative-manifest artifacts reconstruct by exact hash replay.",
                 "support_state": support_state,
-                "evidence_refs": [evidence_ref, rel(retention_path), check["archive_path"]],
-                "defeaters": [] if check.get("passed") else ["archive_pointer_replay_failed"],
-                **NO_CHEAT,
+                "defeaters": [] if failed_count == 0 else ["archive_pointer_replay_failed"],
+                **common,
                 "non_claims": ["not a capability claim", "not a learned generation claim"],
             }
-        )
-        artifact_graph_records.append(
+        ],
+        "artifact_graph_records": [
             {
                 "record_type": "artifact_graph_record",
-                "artifact_id": f"artifact-graph-retention-replay-{rid}",
-                "artifact_type": "retained_artifact_replay",
+                "artifact_id": f"artifact-graph-retention-replay-{aggregate_id}",
+                "artifact_type": "retained_artifact_set_replay",
                 "parent_job": "artifact_retention_replay_gate",
-                "source_refs": [rel(retention_path), check["original_path"], check["archive_path"]],
-                "claim_refs": [f"claim-retention-replay-{rid}"],
-                "test_refs": [f"proof-contract-retention-replay-{rid}"],
-                "audit_events": ["archive_pointer_followed", "archive_payload_decoded", "sha256_recomputed"],
-                "replay_metadata": check,
-                "replay_grade": "exact_hash_replay" if check.get("passed") else "failed_replay",
-                "provenance_status": "retained_generated_artifact",
+                "source_refs": [source_ref],
+                "claim_refs": [f"claim-retention-replay-{aggregate_id}"],
+                "test_refs": [f"proof-contract-retention-replay-{aggregate_id}"],
+                "audit_events": ["all_archives_decoded", "all_sha256_recomputed", "outcomes_digest_committed"],
+                "replay_metadata": {"replay_checks_sha256": digest, "artifact_count": len(checks)},
+                "replay_grade": "exact_hash_replay" if failed_count == 0 else "failed_replay",
+                "provenance_status": "retained_generated_artifact_set",
                 "evidence_gate": {"state": support_state, **NO_CHEAT},
-                "residuals": [] if check.get("passed") else ["pointer/archive/hash replay mismatch"],
-                **NO_CHEAT,
+                "residuals": [] if failed_count == 0 else ["one or more archive replay mismatches"],
+                **common,
                 "non_claims": ["not learned-generation evidence", "not model capability evidence"],
             }
-        )
-        evidence_transition_records.append(
+        ],
+        "evidence_transition_records": [
             {
                 "record_type": "evidence_transition_record",
-                "record_id": f"evidence-transition-retention-replay-{rid}",
-                "artifact_ref": check["original_path"],
+                "record_id": f"evidence-transition-retention-replay-{aggregate_id}",
+                "artifact_ref": source_ref,
                 "previous_support_state": "ARCHIVED_POINTER_UNVERIFIED",
                 "current_support_state": support_state,
-                "transition_reason": "archive_pointer_exact_replay_gate",
+                "transition_reason": "cumulative_archive_pointer_exact_replay_gate",
                 "evidence_ref": evidence_ref,
-                **NO_CHEAT,
+                **common,
                 "non_claims": ["storage evidence transition only"],
             }
-        )
-        defeater_records.append(
+        ],
+        "defeater_records": [
             {
                 "record_type": "defeater_record",
-                "record_id": f"defeater-retention-replay-{rid}",
+                "record_id": f"defeater-retention-replay-{aggregate_id}",
                 "defeater_type": "archive_pointer_unverified_until_exact_replay",
-                "defeated_run_id": "artifact_retention_pointer_write",
-                "defeating_run_id": f"retention_replay_gate:{rid}",
-                "previous_content_hash": check["expected_sha256"],
-                "current_content_hash": check["decoded_sha256"],
+                "defeated_run_id": "artifact_retention_pointer_write_set",
+                "defeating_run_id": f"retention_replay_gate:{aggregate_id}",
+                "previous_content_hash": digest,
+                "current_content_hash": digest,
                 "previous_support_state": "ARCHIVED_POINTER_UNVERIFIED",
                 "current_support_state": support_state,
                 "previous_trigger_state": "YELLOW",
-                "current_trigger_state": "GREEN" if check.get("passed") else "RED",
-                "original_path": check["original_path"],
-                "archive_path": check["archive_path"],
-                "pointer_path": check["pointer_path"],
+                "current_trigger_state": trigger_state,
+                "original_path": source_ref,
+                "archive_path": source_ref,
+                "pointer_path": source_ref,
                 "support_state": support_state,
                 "evidence_ref": evidence_ref,
-                **NO_CHEAT,
-                "non_claim": "Defeater is resolved only for archive replay; it does not make a model capability claim.",
+                **common,
+                "non_claim": "Defeater is resolved only for exact archive replay; it is not a model capability claim.",
             }
-        )
+        ],
+    }
+
+
+def digest_rows(rows: list[dict[str, Any]]) -> str:
+    encoded = json.dumps(
+        rows,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def compact_replay_check(row: dict[str, Any]) -> dict[str, Any]:
     return {
-        "compressed_artifact_records": compressed_artifact_records,
-        "compression_receipts": compression_receipts,
-        "proof_contract_receipt_records": proof_contract_receipt_records,
-        "claim_records": claim_records,
-        "artifact_graph_records": artifact_graph_records,
-        "evidence_transition_records": evidence_transition_records,
-        "defeater_records": defeater_records,
+        key: row.get(key)
+        for key in (
+            "check_id",
+            "status",
+            "passed",
+            "original_path",
+            "pointer_path",
+            "archive_path",
+            "expected_sha256",
+            "decoded_sha256",
+            "archive_exists",
+            "pointer_verified",
+            "resolver_verified",
+            "live_regeneration_verified",
+            "hash_verified",
+            "json_parse_verified",
+            "json_parse_error",
+            "defeater_verified",
+            "compression_record_verified",
+        )
     }
 
 
@@ -409,6 +497,20 @@ def sha256_payload(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def read_archive_json(path: Path) -> Any:
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", encoding="utf-8") as handle:
+        return json.load(handle)
 
 
 def render_markdown(payload: dict[str, Any]) -> str:
@@ -426,7 +528,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "## Checks",
         "",
     ]
-    for row in payload.get("replay_checks", [])[:40]:
+    for row in payload.get("failed_replay_checks", []):
+        lines.append(f"- failed `{row.get('original_path')}` -> `{row.get('archive_path')}`")
+    for row in payload.get("replay_check_samples", [])[:8]:
         lines.append(f"- `{row.get('passed')}` `{row.get('original_path')}` -> `{row.get('archive_path')}`")
     return "\n".join(lines) + "\n"
 
@@ -437,7 +541,7 @@ def gate_view(payload: dict[str, Any]) -> dict[str, Any]:
         "trigger_state": payload.get("trigger_state"),
         "summary": payload.get("summary", {}),
         "hard_gaps": payload.get("hard_gaps", [])[:10],
-        "failed_replay_checks": [row for row in payload.get("replay_checks", []) if not row.get("passed")][:10],
+        "failed_replay_checks": payload.get("failed_replay_checks", [])[:10],
     }
 
 

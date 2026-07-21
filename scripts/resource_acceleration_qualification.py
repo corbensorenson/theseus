@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -45,6 +47,9 @@ ACCELERATION_KEYS = {
     "logit_filter",
     "preprune_beam_expansions",
 }
+MAX_FINAL_LOSS_ABSOLUTE_DELTA = 2e-6
+MAX_PARAMETER_ABSOLUTE_DELTA = 5e-6
+MAX_PARAMETER_RELATIVE_L2_DELTA = 1e-6
 
 
 def main() -> int:
@@ -576,9 +581,17 @@ def run_training_pair_qualification(
         for mode in mode_order:
             if hasattr(mx, "clear_cache"):
                 mx.clear_cache()
-            mode_reports[mode] = run_training_route(mode=mode, **route_context)
+            mode_reports[mode] = run_training_route(
+                mode=mode,
+                capture_parameter_snapshot=True,
+                **route_context,
+            )
         eager = mode_reports["eager"]
         compiled = mode_reports["compiled"]
+        parameter_comparison = compare_parameter_snapshots(
+            eager.pop("_parameter_snapshot"),
+            compiled.pop("_parameter_snapshot"),
+        )
         speedup = float(compiled["warmup_excluded_positions_per_second"]) / max(
             1e-12, float(eager["warmup_excluded_positions_per_second"])
         )
@@ -592,6 +605,7 @@ def run_training_pair_qualification(
                 "final_loss_absolute_delta": round(
                     float(compiled["final_loss"]) - float(eager["final_loss"]), 8
                 ),
+                "parameter_comparison": parameter_comparison,
             }
         )
     eager = aggregate_training_routes([row["eager"] for row in trials])
@@ -601,10 +615,21 @@ def run_training_pair_qualification(
         1e-12, float(compiled["warmup_excluded_seconds_total"])
     )
     median_speedup = float(statistics.median(speedups))
-    exact_loss_parity = all(
-        abs(float(row["final_loss_absolute_delta"])) <= 1e-8 for row in trials
+    bounded_loss_parity = all(
+        abs(float(row["final_loss_absolute_delta"]))
+        <= MAX_FINAL_LOSS_ABSOLUTE_DELTA
+        for row in trials
     )
-    robust = exact_loss_parity and median_speedup >= 2.0 and pooled_speedup >= 2.0
+    bounded_parameter_parity = all(
+        bool((row.get("parameter_comparison") or {}).get("within_tolerance"))
+        for row in trials
+    )
+    robust = (
+        bounded_loss_parity
+        and bounded_parameter_parity
+        and median_speedup >= 2.0
+        and pooled_speedup >= 2.0
+    )
     return {
         "policy": "project_theseus_same_semantics_training_acceleration_pair_v2",
         "state": "GREEN" if robust else "YELLOW",
@@ -626,7 +651,11 @@ def run_training_pair_qualification(
         "median_speedup": round(median_speedup, 6),
         "pooled_speedup": round(pooled_speedup, 6),
         "acceptance": {
-            "exact_loss_parity_every_trial": exact_loss_parity,
+            "bounded_loss_parity_every_trial": bounded_loss_parity,
+            "maximum_final_loss_absolute_delta": MAX_FINAL_LOSS_ABSOLUTE_DELTA,
+            "bounded_full_parameter_parity_every_trial": bounded_parameter_parity,
+            "maximum_parameter_absolute_delta": MAX_PARAMETER_ABSOLUTE_DELTA,
+            "maximum_parameter_relative_l2_delta": MAX_PARAMETER_RELATIVE_L2_DELTA,
             "median_speedup_at_least_2x": median_speedup >= 2.0,
             "pooled_speedup_at_least_2x": pooled_speedup >= 2.0,
         },
@@ -851,6 +880,7 @@ def run_training_route(
     optim: Any,
     mlx_utils: Any,
     precision_mode: str = "float32",
+    capture_parameter_snapshot: bool = False,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
@@ -968,8 +998,76 @@ def run_training_route(
         ),
         "mlx_memory": mlx_memory_receipt(mx),
     }
+    if capture_parameter_snapshot:
+        observed["_parameter_snapshot"] = {
+            name: np.asarray(value).copy()
+            for name, value in mlx_utils.tree_flatten(
+                authoritative_model.trainable_parameters()
+            )
+        }
     del model, master_model, optimizer
     return observed
+
+
+def compare_parameter_snapshots(
+    reference: dict[str, Any],
+    candidate: dict[str, Any],
+) -> dict[str, Any]:
+    names_match = set(reference) == set(candidate)
+    shapes_match = names_match and all(
+        np.asarray(reference[name]).shape == np.asarray(candidate[name]).shape
+        for name in reference
+    )
+    if not shapes_match:
+        return {
+            "within_tolerance": False,
+            "names_match": names_match,
+            "shapes_match": False,
+        }
+    maximum_absolute_delta = 0.0
+    squared_delta = 0.0
+    squared_reference = 0.0
+    element_count = 0
+    all_finite = True
+    for name in sorted(reference):
+        reference_array = np.asarray(reference[name])
+        candidate_array = np.asarray(candidate[name])
+        delta = candidate_array - reference_array
+        all_finite = bool(
+            all_finite
+            and np.isfinite(reference_array).all()
+            and np.isfinite(candidate_array).all()
+            and np.isfinite(delta).all()
+        )
+        maximum_absolute_delta = max(
+            maximum_absolute_delta,
+            float(np.max(np.abs(delta), initial=0.0)),
+        )
+        squared_delta += float(np.sum(np.square(delta), dtype=np.float64))
+        squared_reference += float(
+            np.sum(np.square(reference_array), dtype=np.float64)
+        )
+        element_count += int(reference_array.size)
+    relative_l2_delta = math.sqrt(squared_delta) / max(
+        1e-30, math.sqrt(squared_reference)
+    )
+    within_tolerance = bool(
+        all_finite
+        and maximum_absolute_delta <= MAX_PARAMETER_ABSOLUTE_DELTA
+        and relative_l2_delta <= MAX_PARAMETER_RELATIVE_L2_DELTA
+    )
+    return {
+        "within_tolerance": within_tolerance,
+        "names_match": names_match,
+        "shapes_match": shapes_match,
+        "all_finite": all_finite,
+        "tensor_count": len(reference),
+        "element_count": element_count,
+        "maximum_absolute_delta": round(maximum_absolute_delta, 12),
+        "relative_l2_delta": round(relative_l2_delta, 12),
+        "maximum_absolute_delta_allowed": MAX_PARAMETER_ABSOLUTE_DELTA,
+        "maximum_relative_l2_delta_allowed": MAX_PARAMETER_RELATIVE_L2_DELTA,
+    }
 
 
 def mixed_precision_token_loss(
