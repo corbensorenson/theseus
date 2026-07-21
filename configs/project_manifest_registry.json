@@ -290,39 +290,39 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "377aef3df10b7a84dac221f569d99783d6d8b58a14701aaa22276d49142d4c2b"
+          "sha256": "75018b92e5c524fd750caf0be05fff01a9d4bd2cd893a95a09f8ee62e871a965"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "c1206c91f4e15dc0d783e9c3caf72936c1a70906818890d82c9dae626cfa29fa"
+          "sha256": "f432c3721d39bb57d813cbf74ececed0e1e346d9e84adeeef430e2749c835dcb"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "c96b72207401336557a5c4619582015518fd69eb500ebf1577acddcdf8ef43cf"
+          "sha256": "cf3266cfd82d4e3104cfb7ca99bfe21ff45553aee5abdebb412c14360ad947f2"
         },
         "neural_seed_resident_runtime": {
           "path": "scripts/neural_seed_resident_runtime.py",
-          "sha256": "5d961c247c94381c730ed03bbe46d5497cdeca7a2098084b92c6b846c3ca0d96"
+          "sha256": "b2fb0ee2b050c5113ef0f82b33b2578dd85adecabff38d67ad985cca8a43aadc"
         },
         "neural_seed_resident_runtime_tests": {
           "path": "tests/test_neural_seed_resident_runtime.py",
-          "sha256": "ae34844b24d8f534876afd4e520a8bdf204205c40d6dc31eb6824ac536e2f440"
+          "sha256": "83cf58509dd527c5fd52e46e7e9f5a33116215bb3614f1f8d11be8fc87557d92"
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "ddf36f9acff345f885a9db401bf9f03da3bfd2cd6c6f0c50b644ce2d06c58565"
+          "sha256": "b43ccc44716e47d66f842b5a01ee82f2798aaa7244e9b2da1ca7f9bd0f41c228"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
-          "sha256": "7f1ebb79fb77b5363a71324b2c4077d399eff24267d29fecaff7d5e94e33c86f"
+          "sha256": "70e7f5aed8117c648193d5392d31d1190161b540d5426a9adb3d82e8f6743c93"
         },
         "openai_compat_server": {
           "path": "scripts/openai_compat_server.py",
-          "sha256": "ed99dd8dd4fdcd00ccbb0181cf257b8ce3a23a06c4955b167212dcbdd62c9d64"
+          "sha256": "b640547152fd4799150c9d36984ea0fa6904ffcb62c07894c6d9f777d9e9d264"
         },
         "openai_compat_policy": {
           "path": "configs/openai_compat_policy.json",
-          "sha256": "ba95f662f6d15d4ff6f033b9ad81d7e143a947317d076b880f9b533c61e80228"
+          "sha256": "f3a357825fe2c1ea9d8fd2752a296804614184f51d2b928c2cf4ef71badea606"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",

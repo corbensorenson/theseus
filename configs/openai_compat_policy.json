@@ -29,7 +29,9 @@
       "length_penalty": 0.6,
       "prefix_cache_entries": 32,
       "completion_cache_entries": 64,
-      "identity_rehash_interval_seconds": 30
+      "identity_rehash_interval_seconds": 30,
+      "continuous_batch_window_ms": 2.0,
+      "maximum_request_batch_size": 8
     }
   },
   "security": {

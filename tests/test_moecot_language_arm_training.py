@@ -37,6 +37,7 @@ from moecot_language_arm_training import (  # noqa: E402
     generate_kerc_code_text,
     generate_kerc_pipeline_text,
     generate_model_text,
+    generate_model_text_batch,
     inspect_checkpoint_inventory,
     kerc_global_token_rows,
     kerc_serialization_valid_ids,
@@ -1522,6 +1523,82 @@ def test_batched_text_beam_advance_matches_serial_reference() -> None:
     assert first_receipt["prompt_prefix_sha256"] == second_receipt[
         "prompt_prefix_sha256"
     ]
+
+
+def test_cross_request_generation_batches_shape_compatible_prompts_exactly() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    vocabulary = json.loads(
+        (ROOT / "runtime/moecot_language_seed_v1/exact_language_vocab.json").read_text()
+    )
+    source_vocab = vocabulary["source_vocab"]
+    target_vocab = vocabulary["target_vocab"]
+    base = json.loads(
+        (ROOT / "configs/standard_causal_transformer_survival.json").read_text()
+    )
+    mx.random.seed(67)
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=3 + len(source_vocab) + len(target_vocab),
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    mx.eval(model.parameters())
+    common = {
+        "model": model,
+        "source_vocab": source_vocab,
+        "target_vocab": target_vocab,
+        "base": base,
+        "max_tokens": 8,
+        "max_source_tokens": 16,
+        "beam_width": 3,
+        "branching_factor": 3,
+        "length_penalty": 1.0,
+        "mx": mx,
+    }
+    prompts = ["hello", "world"]
+    serial = [generate_model_text(prompt=prompt, **common) for prompt in prompts]
+    batched = generate_model_text_batch(prompts=prompts, **common)
+
+    assert len(batched) == len(serial)
+    for (serial_text, serial_receipt), (batch_text, batch_receipt) in zip(
+        serial, batched
+    ):
+        assert batch_text == serial_text
+        assert batch_receipt.get("state") == serial_receipt.get("state")
+        assert batch_receipt.get("reason") == serial_receipt.get("reason")
+        assert batch_receipt.get("generated_token_sha256") == serial_receipt.get(
+            "generated_token_sha256"
+        )
+        assert batch_receipt["cross_request_batch_state"] == "BATCHED"
+        assert batch_receipt["cross_request_prefill_bucket_size"] == 2
+        assert batch_receipt["cross_request_maximum_forward_request_count"] == 2
+        assert batch_receipt["fallback_return_count"] == 0
+
+    mixed_prompts = ["hi", "a longer prompt"]
+    mixed_serial = [
+        generate_model_text(prompt=prompt, **common) for prompt in mixed_prompts
+    ]
+    mixed_batch = generate_model_text_batch(prompts=mixed_prompts, **common)
+    for (serial_text, serial_receipt), (batch_text, batch_receipt) in zip(
+        mixed_serial, mixed_batch
+    ):
+        assert batch_text == serial_text
+        assert batch_receipt.get("state") == serial_receipt.get("state")
+        assert batch_receipt.get("reason") == serial_receipt.get("reason")
+        assert batch_receipt.get("generated_token_sha256") == serial_receipt.get(
+            "generated_token_sha256"
+        )
+        assert batch_receipt["cross_request_batch_state"] == "NO_COMPATIBLE_PEER"
+        assert batch_receipt["cross_request_prefill_bucket_size"] == 1
+        assert batch_receipt["cross_request_maximum_forward_request_count"] == 1
 
 
 def test_batched_kerc_beam_advance_matches_serial_reference() -> None:

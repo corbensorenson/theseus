@@ -229,6 +229,11 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
             "repeated_prompt_speedup": 20.0,
             "prefix_prefill_speedup": 8.0,
             "exact_output_and_token_parity": True,
+            "continuous_batching": {
+                "state": "QUALIFIED",
+                "direct_batch_speedup": 2.2,
+                "exact_output_state_reason_and_token_parity": True,
+            },
             "boundaries": {"runtime_serving_allowed": False},
         },
         "architecture_decision_control": {},
@@ -241,6 +246,8 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
     assert observed["resident_repeated_prompt_speedup"] == 20.0
     assert observed["resident_prefix_prefill_speedup"] == 8.0
     assert observed["resident_exact_output_and_token_parity"] is True
+    assert observed["continuous_batch_uncached_speedup"] == 2.2
+    assert observed["continuous_batch_exact_parity"] is True
     assert observed["uncached_decode_aggregate_speedup"] == 9.5
     assert observed["uncached_decode_acceptance_threshold"] == 2.0
     assert observed["remaining_gaps"] == [

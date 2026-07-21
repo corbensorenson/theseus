@@ -3935,6 +3935,75 @@ def kerc_serialization_valid_ids(
     return allowed
 
 
+def prepare_model_text_prompt(
+    prompt: str,
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    base: dict[str, Any],
+    *,
+    max_source_tokens: int,
+    trusted_source_prefix_tokens: tuple[str, ...] = (),
+    structured_source_code_vocabulary: dict[str, Any] | None = None,
+    structured_source_kernel_offset: int = 0,
+    structured_source_pointer_offset: int = 0,
+) -> dict[str, Any]:
+    """Compile visible prompt text into one target-generation prefix."""
+
+    structured_source = bool(structured_source_code_vocabulary)
+    if structured_source:
+        source_ids, source_receipt = encode_kerc_global_target(
+            prompt,
+            code_vocabulary=structured_source_code_vocabulary or {},
+            kernel_offset=structured_source_kernel_offset,
+            pointer_offset=structured_source_pointer_offset,
+        )
+    else:
+        prompt_tokens = (
+            kerc_surface_tokens(prompt)
+            if any(
+                str(token).startswith("<KERC_TASK_")
+                for token in trusted_source_prefix_tokens
+            )
+            else exact_text_tokens(prompt)
+        )
+        source_ids, source_receipt = encode_tokens(
+            prompt_tokens, source_vocab, stream="source"
+        )
+    if int(source_receipt.get("unknown_token_count") or 0):
+        return {"fault": "source_unrepresentable"}
+    if any(token not in source_vocab for token in trusted_source_prefix_tokens):
+        return {"fault": "trusted_source_prefix_unrepresentable"}
+    if len(trusted_source_prefix_tokens) > 1:
+        return {"fault": "trusted_source_prefix_ambiguous"}
+    source_offset = source_token_offset(base, source_vocab)
+    source_ids = [
+        *(
+            source_offset + int(source_vocab[token])
+            for token in trusted_source_prefix_tokens
+        ),
+        *(
+            source_ids
+            if structured_source
+            else [source_offset + int(value) for value in source_ids]
+        ),
+    ]
+    if len(source_ids) > max_source_tokens:
+        return {"fault": "source_requires_truncation"}
+    target_offset = target_token_offset(base, source_vocab)
+    prompt_ids = [GLOBAL_BOS_ID]
+    prompt_ids.extend(int(value) for value in source_ids)
+    prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
+    prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
+    prefix_key = hashlib.sha256(
+        np.asarray(prompt_ids, dtype=np.int32).tobytes()
+    ).hexdigest()
+    return {
+        "prompt_ids": prompt_ids,
+        "prefix_key": prefix_key,
+        "target_offset": target_offset,
+    }
+
+
 def generate_model_text(
     model: Any,
     prompt: str,
@@ -3964,60 +4033,25 @@ def generate_model_text(
         device_logit_filter=device_logit_filter,
         preprune_beam_expansions=preprune_beam_expansions,
     )
-    structured_source = bool(structured_source_code_vocabulary)
-    if structured_source:
-        source_ids, source_receipt = encode_kerc_global_target(
-            prompt,
-            code_vocabulary=structured_source_code_vocabulary or {},
-            kernel_offset=structured_source_kernel_offset,
-            pointer_offset=structured_source_pointer_offset,
-        )
-    else:
-        prompt_tokens = (
-            kerc_surface_tokens(prompt)
-            if any(
-                str(token).startswith("<KERC_TASK_")
-                for token in trusted_source_prefix_tokens
-            )
-            else exact_text_tokens(prompt)
-        )
-        source_ids, source_receipt = encode_tokens(
-            prompt_tokens, source_vocab, stream="source"
-        )
-    if int(source_receipt.get("unknown_token_count") or 0):
-        return "", {**generation_fault("source_unrepresentable"), **acceleration}
-    if any(token not in source_vocab for token in trusted_source_prefix_tokens):
+    prepared = prepare_model_text_prompt(
+        prompt,
+        source_vocab,
+        target_vocab,
+        base,
+        max_source_tokens=max_source_tokens,
+        trusted_source_prefix_tokens=trusted_source_prefix_tokens,
+        structured_source_code_vocabulary=structured_source_code_vocabulary,
+        structured_source_kernel_offset=structured_source_kernel_offset,
+        structured_source_pointer_offset=structured_source_pointer_offset,
+    )
+    if prepared.get("fault"):
         return "", {
-            **generation_fault("trusted_source_prefix_unrepresentable"),
+            **generation_fault(str(prepared["fault"])),
             **acceleration,
         }
-    if len(trusted_source_prefix_tokens) > 1:
-        return "", {
-            **generation_fault("trusted_source_prefix_ambiguous"),
-            **acceleration,
-        }
-    source_offset = source_token_offset(base, source_vocab)
-    source_ids = [
-        *(
-            source_offset + int(source_vocab[token])
-            for token in trusted_source_prefix_tokens
-        ),
-        *(
-            source_ids
-            if structured_source
-            else [source_offset + int(value) for value in source_ids]
-        ),
-    ]
-    if len(source_ids) > max_source_tokens:
-        return "", {**generation_fault("source_requires_truncation"), **acceleration}
-    target_offset = target_token_offset(base, source_vocab)
-    prompt_ids = [GLOBAL_BOS_ID]
-    prompt_ids.extend(int(value) for value in source_ids)
-    prompt_ids.append(SOURCE_TARGET_SEPARATOR_ID)
-    prompt_ids.append(target_offset + int(target_vocab["<bos>"]))
-    prefix_key = hashlib.sha256(
-        np.asarray(prompt_ids, dtype=np.int32).tobytes()
-    ).hexdigest()
+    prompt_ids = list(prepared["prompt_ids"])
+    prefix_key = str(prepared["prefix_key"])
+    target_offset = int(prepared["target_offset"])
     prefill_started = time.perf_counter()
     cached_prefix = (
         prompt_prefix_cache.get(prefix_key)
@@ -4118,6 +4152,29 @@ def generate_model_text(
             >= beam_score(beams[0], length_penalty)
         ):
             break
+    return finalize_model_text_generation(
+        beams=beams,
+        complete=complete,
+        length_penalty=length_penalty,
+        beam_width=beam_width,
+        branching_factor=branching_factor,
+        acceleration=acceleration,
+        trusted_source_prefix_tokens=trusted_source_prefix_tokens,
+    )
+
+
+def finalize_model_text_generation(
+    *,
+    beams: list[dict[str, Any]],
+    complete: list[dict[str, Any]],
+    length_penalty: float,
+    beam_width: int,
+    branching_factor: int,
+    acceleration: dict[str, Any],
+    trusted_source_prefix_tokens: tuple[str, ...],
+) -> tuple[str, dict[str, Any]]:
+    """Finalize one exact-text beam search without changing its ranking contract."""
+
     if complete:
         selected = max(complete, key=lambda row: beam_score(row, length_penalty))
         generated_tokens = list(selected["tokens"])
@@ -4155,6 +4212,295 @@ def generate_model_text(
         "trusted_source_prefix_tokens": list(trusted_source_prefix_tokens),
         "fallback_return_count": 0,
     }
+
+
+def generate_model_text_batch(
+    model: Any,
+    prompts: list[str],
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    base: dict[str, Any],
+    *,
+    max_tokens: int,
+    max_source_tokens: int,
+    beam_width: int,
+    branching_factor: int,
+    length_penalty: float,
+    trusted_source_prefix_tokens: tuple[str, ...] = (),
+    batched_beam_advance: bool = True,
+    device_logit_filter: bool = True,
+    preprune_beam_expansions: bool = True,
+    prompt_prefix_cache: Any | None = None,
+    mx: Any,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Generate independent requests with shape-safe cross-request MLX batching."""
+
+    if not prompts:
+        return []
+    batch_started = time.perf_counter()
+    inverse = {int(value): str(token) for token, value in target_vocab.items()}
+    serialization_states = serialization_allowed_local_ids(inverse)
+    shared_target_offset = target_token_offset(base, source_vocab)
+    records: list[dict[str, Any]] = []
+    results: list[tuple[str, dict[str, Any]] | None] = [None] * len(prompts)
+    prefill_buckets: dict[int, list[dict[str, Any]]] = {}
+    shared_forward_count = 0
+    shared_request_indices: set[int] = set()
+    model_forward_count = 0
+    maximum_forward_request_count = 1
+    first_decode_forward_seconds: float | None = None
+
+    for request_index, prompt in enumerate(prompts):
+        acceleration = generation_acceleration_receipt(
+            batched_beam_advance=batched_beam_advance,
+            device_logit_filter=device_logit_filter,
+            preprune_beam_expansions=preprune_beam_expansions,
+        )
+        prepared = prepare_model_text_prompt(
+            prompt,
+            source_vocab,
+            target_vocab,
+            base,
+            max_source_tokens=max_source_tokens,
+            trusted_source_prefix_tokens=trusted_source_prefix_tokens,
+        )
+        if prepared.get("fault"):
+            results[request_index] = (
+                "",
+                {
+                    **generation_fault(str(prepared["fault"])),
+                    **acceleration,
+                    "cross_request_batching": "prompt_length_bucketed_v1",
+                    "cross_request_batch_state": "REJECTED_BEFORE_PREFILL",
+                    "cross_request_batch_size": len(prompts),
+                },
+            )
+            continue
+        record = {
+            "request_index": request_index,
+            "prompt_ids": list(prepared["prompt_ids"]),
+            "prefix_key": str(prepared["prefix_key"]),
+            "target_offset": int(prepared["target_offset"]),
+            "acceleration": acceleration,
+            "beams": [],
+            "complete": [],
+            "active": True,
+            "prefill_bucket_size": 1,
+        }
+        cached_prefix = (
+            prompt_prefix_cache.get(record["prefix_key"])
+            if prompt_prefix_cache is not None
+            else None
+        )
+        if cached_prefix is not None:
+            logits, cache = cached_prefix
+            mx.eval(logits, *cache_arrays(cache))
+            record["logits"] = logits
+            record["cache"] = cache
+            record["prefix_cache_state"] = "HIT"
+            records.append(record)
+        else:
+            record["prefix_cache_state"] = (
+                "MISS" if prompt_prefix_cache is not None else "DISABLED"
+            )
+            prefill_buckets.setdefault(len(record["prompt_ids"]), []).append(record)
+            records.append(record)
+
+    for bucket in prefill_buckets.values():
+        prefill_started = time.perf_counter()
+        batch_ids = mx.array(
+            [record["prompt_ids"] for record in bucket], dtype=mx.int32
+        )
+        logits, cache = model(batch_ids)
+        mx.eval(logits, *cache_arrays(cache))
+        elapsed = time.perf_counter() - prefill_started
+        model_forward_count += 1
+        maximum_forward_request_count = max(maximum_forward_request_count, len(bucket))
+        if len(bucket) > 1:
+            shared_forward_count += 1
+            shared_request_indices.update(
+                int(record["request_index"]) for record in bucket
+            )
+        for index, record in enumerate(bucket):
+            request_logits = logits[index : index + 1]
+            request_cache = [
+                tuple(value[index : index + 1] for value in layer_cache)
+                for layer_cache in cache
+            ]
+            record["logits"] = request_logits
+            record["cache"] = request_cache
+            record["prefill_seconds"] = elapsed
+            record["prefill_bucket_size"] = len(bucket)
+            if prompt_prefix_cache is not None:
+                prompt_prefix_cache.put(
+                    record["prefix_key"], (request_logits, request_cache)
+                )
+
+    for record in records:
+        logits = record["logits"]
+        cache = record["cache"]
+        record["beams"] = [
+            {
+                "tokens": [],
+                "score": 0.0,
+                "logits": logits[0, -1],
+                "cache": cache,
+            }
+        ]
+        record["acceleration"].update(
+            {
+                "prompt_prefix_cache_state": record["prefix_cache_state"],
+                "prompt_prefix_sha256": record["prefix_key"],
+                "prompt_prefix_token_count": len(record["prompt_ids"]),
+                "prompt_prefill_seconds": round(
+                    float(record.get("prefill_seconds") or 0.0), 6
+                ),
+            }
+        )
+
+    for _decode_step in range(max_tokens):
+        forward_buckets: dict[int, list[dict[str, Any]]] = {}
+        active_records = [record for record in records if record["active"]]
+        if not active_records:
+            break
+        for record in active_records:
+            expansion_specs: list[dict[str, Any]] = []
+            for beam in record["beams"]:
+                allowed = serialization_states[
+                    bool(active_target_span(beam["tokens"])["active"])
+                ]
+                if not allowed:
+                    continue
+                ranked = rank_allowed_logits(
+                    beam["logits"],
+                    allowed,
+                    id_offset=record["target_offset"],
+                    branching_factor=branching_factor,
+                    device_filter=device_logit_filter,
+                    mx=mx,
+                )
+                for local_id, log_probability in ranked:
+                    token = inverse[local_id]
+                    score = float(beam["score"]) + log_probability
+                    if token == "<eos>":
+                        record["complete"].append(
+                            {"tokens": list(beam["tokens"]), "score": score}
+                        )
+                        continue
+                    expansion_specs.append(
+                        {
+                            "beam": beam,
+                            "local_id": local_id,
+                            "token": token,
+                            "log_probability": log_probability,
+                            "request_index": record["request_index"],
+                        }
+                    )
+            if preprune_beam_expansions:
+                expansion_specs = prune_text_expansion_specs(
+                    expansion_specs,
+                    limit=beam_width,
+                    length_penalty=length_penalty,
+                )
+            record["pending_expansion_count"] = len(expansion_specs)
+            if expansion_specs:
+                forward_buckets.setdefault(
+                    len(record["prompt_ids"]), []
+                ).extend(expansion_specs)
+            else:
+                record["beams"] = []
+
+        advanced_by_request: dict[int, list[dict[str, Any]]] = {
+            int(record["request_index"]): [] for record in active_records
+        }
+        for expansion_specs in forward_buckets.values():
+            request_count = len(
+                {int(spec["request_index"]) for spec in expansion_specs}
+            )
+            maximum_forward_request_count = max(
+                maximum_forward_request_count, request_count
+            )
+            if request_count > 1:
+                shared_forward_count += 1
+                shared_request_indices.update(
+                    int(spec["request_index"]) for spec in expansion_specs
+                )
+            model_forward_count += 1
+            advanced = (
+                advance_beams_batched(
+                    model,
+                    expansion_specs,
+                    target_offset=shared_target_offset,
+                    mx=mx,
+                )
+                if batched_beam_advance
+                else advance_beams_serial(
+                    model,
+                    expansion_specs,
+                    target_offset=shared_target_offset,
+                    mx=mx,
+                )
+            )
+            if first_decode_forward_seconds is None:
+                first_decode_forward_seconds = time.perf_counter() - batch_started
+            for spec, row in zip(expansion_specs, advanced):
+                advanced_by_request[int(spec["request_index"])].append(row)
+
+        for record in active_records:
+            request_index = int(record["request_index"])
+            record["beams"] = sorted(
+                advanced_by_request[request_index],
+                key=lambda row: beam_score(row, length_penalty),
+                reverse=True,
+            )[: max(1, beam_width)]
+            record["complete"] = sorted(
+                record["complete"],
+                key=lambda row: beam_score(row, length_penalty),
+                reverse=True,
+            )[: max(1, beam_width)]
+            if not record["beams"] or (
+                record["complete"]
+                and len(record["complete"]) >= beam_width
+                and beam_score(record["complete"][0], length_penalty)
+                >= beam_score(record["beams"][0], length_penalty)
+            ):
+                record["active"] = False
+
+    batch_seconds = time.perf_counter() - batch_started
+    for record in records:
+        request_index = int(record["request_index"])
+        acceleration = {
+            **record["acceleration"],
+            "cross_request_batching": "prompt_length_bucketed_v1",
+            "cross_request_batch_state": (
+                "BATCHED"
+                if request_index in shared_request_indices
+                else "NO_COMPATIBLE_PEER"
+            ),
+            "cross_request_batch_size": len(prompts),
+            "cross_request_prefill_bucket_size": record["prefill_bucket_size"],
+            "cross_request_shared_forward_count": shared_forward_count,
+            "cross_request_model_forward_count": model_forward_count,
+            "cross_request_maximum_forward_request_count": maximum_forward_request_count,
+            "cross_request_batch_seconds": round(batch_seconds, 6),
+            "cross_request_first_decode_forward_seconds": (
+                round(first_decode_forward_seconds, 6)
+                if first_decode_forward_seconds is not None
+                else None
+            ),
+        }
+        results[request_index] = finalize_model_text_generation(
+            beams=record["beams"],
+            complete=record["complete"],
+            length_penalty=length_penalty,
+            beam_width=beam_width,
+            branching_factor=branching_factor,
+            acceleration=acceleration,
+            trusted_source_prefix_tokens=trusted_source_prefix_tokens,
+        )
+    if any(result is None for result in results):
+        raise RuntimeError("cross-request generation lost a request result")
+    return [result for result in results if result is not None]
 
 
 def generation_acceleration_receipt(

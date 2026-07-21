@@ -171,6 +171,19 @@
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "tests/test_moecot_language_arm_training.py::test_batched_text_beam_advance_matches_serial_reference tests/test_neural_seed_resident_runtime.py",
         "reason": "Continue the exact step-3000 safetensors model and AdamW state after adding an optional prompt-only, model-local KV prefill cache to the canonical decoder. The cache is disabled unless explicitly supplied, sees no target or verifier fields, preserves exact generated-token identity, and changes no training model, optimizer, data, objective, schedule, or saved tensor."
+      },
+      {
+        "migration_id": "shared_trunk_step3000_cross_request_continuous_batching_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "9d4c5286b66f8e4942ed23f9878e6b6b40158e874651df6fb42b979bdfa81fe3",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "tests/test_moecot_language_arm_training.py::test_cross_request_generation_batches_shape_compatible_prompts_exactly tests/test_neural_seed_resident_runtime.py reports/neural_seed_resident_runtime_qualification.json",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state after adding optional prompt-length-bucketed cross-request prefill and beam advance plus a bounded resident request coalescer. The route sees prompt-only inputs, remains disabled in training, changes no model tensor, optimizer byte, data row, objective, schedule, or saved state, and requires exact serial/batched token parity before adoption."
       }
     ]
   },

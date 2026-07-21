@@ -277,8 +277,9 @@ software can create 100x more M1 arithmetic throughput.
    Current evidence covers training, checkpoint load/format, private-development loss,
    direct generation, unchanged joined VCM/tool/planner/verifier refresh, and one
    registry-owned resident-model/prefix/completion qualification. Checkpoint publication,
-   task-specific useful assistant completion, multi-request scheduling, and peak-memory/
-   energy evidence remain open.
+   task-specific useful assistant completion and energy evidence remain open. A registered
+   four-request qualification now covers cross-request scheduling and peak MLX memory for
+   that bounded resident workload.
 2. **Sustained MLX training qualification.** Run the compiled microbatch route for at
    least 500 real-data optimizer updates across a checkpoint boundary and exact resume.
    Require the same batch-16 token mass, one clip/update per logical batch, matching data
@@ -347,11 +348,18 @@ software can create 100x more M1 arithmetic throughput.
    1,895.40x prefill reuse plus 5,482.24x repeated completion reuse. The existing local
    OpenAI-compatible service can host this runtime, but initialization fails closed while
    the checkpoint remains `NOT_EVALUATED`; this is acceleration evidence, not utility.
+   Prompt-length-bucketed prefill/beam advance and a bounded millisecond request coalescer
+   are qualified on the exact registered 57M checkpoint: four distinct private prompts
+   preserved exact text, state, reason, and generated-token identity while direct batching
+   improved pooled uncached novel-request throughput 2.26x across three alternating pairs
+   (2.30x median, 2.18x minimum), and the concurrent scheduler improved it 2.33x.
+   Four-request peak MLX memory increased from about 293 MB to 458 MB. Cache
+   speedups are excluded from these figures, and production serving remains disabled.
    An indexed shared-cache gather preserved exact output
    but measured only 1.004x pooled against the simpler per-branch assembly and was removed.
    Bounded sequence-axis preallocation reached only 1.009x on a 512-token stress run and was
-   also removed. Production serving qualification, cross-request batched prefill,
-   continuous batching, and bounded KV-cache growth under sustained load remain open.
+   also removed. Production serving qualification and bounded KV-cache growth under
+   sustained load remain open.
    A separate external speed-audit hypothesis that wide rows were silently forced to batch
    one was checked against executed receipts: the trunk is width 512 and cited KERC evidence
    peaked at width 4,242, so neither crossed the 8K batch-two boundary. Do not change that

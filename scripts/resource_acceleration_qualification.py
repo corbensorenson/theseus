@@ -316,6 +316,16 @@ def qualify(
                 and float(resident.get("repeated_prompt_speedup") or 0.0) >= 5.0
                 else "NOT_QUALIFIED"
             ),
+            "continuous_multi_request_batching": (
+                "QUALIFIED_EVALUATION_RUNTIME_SERVING_PENDING_CAPABILITY"
+                if ((resident.get("continuous_batching") or {}).get("state"))
+                == "QUALIFIED"
+                and (resident.get("continuous_batching") or {}).get(
+                    "exact_output_state_reason_and_token_parity"
+                )
+                is True
+                else "NOT_QUALIFIED"
+            ),
             "evidence_efficient_successive_halving": (
                 "EMPIRICALLY_QUALIFIED"
                 if decision_control.get("target_speedup_empirically_proven") is True
@@ -347,7 +357,12 @@ def qualify(
                 else ["resident_model_and_prefix_reuse_qualification_pending"]
             ),
             "production_serving_capability_qualification_pending",
-            "continuous_multi_request_batching_pending",
+            *(
+                []
+                if ((resident.get("continuous_batching") or {}).get("state"))
+                == "QUALIFIED"
+                else ["continuous_multi_request_batching_pending"]
+            ),
             "system_energy_measurement_unavailable",
         ],
         "wall_seconds": round(time.perf_counter() - started, 6),
@@ -1584,6 +1599,12 @@ def report_summary(report: dict[str, Any]) -> dict[str, Any]:
         "resident_exact_output_and_token_parity": (
             report.get("resident_runtime") or {}
         ).get("exact_output_and_token_parity"),
+        "continuous_batch_uncached_speedup": (
+            (report.get("resident_runtime") or {}).get("continuous_batching") or {}
+        ).get("direct_batch_speedup"),
+        "continuous_batch_exact_parity": (
+            (report.get("resident_runtime") or {}).get("continuous_batching") or {}
+        ).get("exact_output_state_reason_and_token_parity"),
         "first_review_budget_speedup_opportunity": report[
             "architecture_decision_control"
         ].get("first_review_budget_speedup_opportunity"),

@@ -72,6 +72,13 @@ share toward zero. Public benchmarks are calibration only.
   identity, measured 1,895.40x prompt-prefill reuse and 5,482.24x repeated completion reuse,
   and failed closed when production serving was requested. Production remains disabled
   until a direct model-only capability result grants runtime authority.
+  The same registered checkpoint now qualifies prompt-length-bucketed cross-request
+  prefill/beam advance plus bounded request coalescing. Four distinct private prompts
+  retained exact text/state/reason/token identity across three alternating serial/batch
+  pairs; direct uncached batching measured 2.26x pooled (2.30x median, 2.18x minimum) and
+  concurrent coalescing measured 2.33x. Peak MLX memory for the four-request comparison
+  rose from about 293 MB serial to 458 MB batched. These are novel-request
+  throughput figures; completion and prefix-cache gains remain separate reuse evidence.
 - **Checkpoint and joined-runtime mechanics:** exact tensor-level qualification over all
   197 shared-trunk tensors found safetensors and the prior NPZ checkpoint identical.
   The registered migration is now committed: the canonical checkpoint is
@@ -94,6 +101,10 @@ share toward zero. Public benchmarks are calibration only.
   practical training blocker. Isolated kernel wins were tested at full-model scale and did not
   predict end-to-end training wins. The reported `0.955x`/`0.957x` regression belongs to the
   rejected bf16-compute/fp32-master candidate; it is not resident-runtime or cache overhead.
+  Cross-request continuous batching was the remaining canonical decode gap and is now
+  mechanics-qualified. The audit's `for beam in beams` and `np.asarray(logits)` citations
+  refer to retained serial/device-filter-off parity branches, not the default accelerated
+  route.
 - **Learning signal:** the source-disjoint private-development audit now compares step
   2,500 with step 3,000 over 62,743 target positions. Aggregate teacher-forced loss fell
   from 4.198748 to 4.174738 (0.57%). Python, JS/TS, HTML/CSS, and Rust improved; English
@@ -139,9 +150,10 @@ share toward zero. Public benchmarks are calibration only.
 2. Preserve the exact step-3,000 shared-trunk lineage. The compiled microbatch and direct
    decode routes preserve exact reference behavior; direct decode clears its speed gate,
    while compiled training still needs a robust 2x result. Safetensors migration and
-   resident prompt/completion reuse are now qualified and registered. Continue measuring
-   publication cost, uncached decode, and multi-request scheduling without changing model
-   math or objective; do not enable production model serving before direct utility is positive.
+   resident prompt/completion reuse and bounded continuous batching are now qualified and
+   registered. Continue measuring publication cost and sustained uncached decode without
+   changing model math or objective; do not enable production model serving before direct
+   utility is positive.
 3. Make the declared pilot/review ladder executable, then train the five language arms
    and both preregistered dense controls through matched successive-halving reviews.
 4. Evaluate all candidates once on the frozen 160-case functional contract without tuning

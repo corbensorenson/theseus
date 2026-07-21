@@ -156,6 +156,10 @@ def serve_endpoint(policy: dict[str, Any], args: argparse.Namespace) -> int:
         return 0
     finally:
         server.server_close()
+        if Handler.resident_runtime is not None and hasattr(
+            Handler.resident_runtime, "close"
+        ):
+            Handler.resident_runtime.close()
         stopped = base_status(policy, cfg, live=False, ok=True, message="stopped", license_check=license_check, pid=0)
         write_json(status_path(policy), stopped)
         append_jsonl(events_path(policy), event("serve_stop", {"pid": os.getpid()}))
@@ -507,6 +511,12 @@ def initialize_resident_runtime(cfg: dict[str, Any]) -> Any | None:
         ),
         identity_rehash_interval_seconds=float(
             resident.get("identity_rehash_interval_seconds") or 30.0
+        ),
+        continuous_batch_window_ms=float(
+            resident.get("continuous_batch_window_ms") or 0.0
+        ),
+        maximum_request_batch_size=int(
+            resident.get("maximum_request_batch_size") or 8
         ),
     )
 
