@@ -3654,6 +3654,8 @@ def train_phase(
     losses: list[float] = []
     optimizer_step_seconds: list[float] = []
     optimizer_step_positions: list[int] = []
+    host_batch_preparation_seconds: list[float] = []
+    unit_allocator_pack_seconds: list[float] = []
     batch_sequence_widths: list[int] = []
     execution_batch_sequence_widths: list[int] = []
     static_sequence_width = int(inputs.shape[1])
@@ -3771,6 +3773,7 @@ def train_phase(
         for indices in batches:
             if consumed >= target_positions or steps >= max_steps:
                 break
+            batch_prepare_started = time.perf_counter()
             if coverage_labels is not None:
                 for index in indices:
                     for label in coverage_labels[index]:
@@ -3855,12 +3858,16 @@ def train_phase(
                 if kerc_decision_loss_mask is not None
                 else None
             )
+            unit_pack_started = time.perf_counter()
             packed_units = (
                 kerc_unit_batch_packer(
                     [kerc_unit_allocator_rows[index] for index in indices]
                 )
                 if kerc_unit_allocator_rows is not None
                 else None
+            )
+            unit_allocator_pack_seconds.append(
+                time.perf_counter() - unit_pack_started
             )
             batch_unit_arrays = (
                 {
@@ -3884,6 +3891,9 @@ def train_phase(
                 }
                 if packed_units is not None
                 else None
+            )
+            host_batch_preparation_seconds.append(
+                time.perf_counter() - batch_prepare_started
             )
             step_started = time.perf_counter()
             if compiled_step is not None:
@@ -4075,6 +4085,19 @@ def train_phase(
         "optimizer_step_seconds_prefix": [
             round(value, 6) for value in optimizer_step_seconds[:8]
         ],
+        "host_batch_preparation_seconds_total": round(
+            sum(host_batch_preparation_seconds), 6
+        ),
+        "host_batch_preparation_seconds_prefix": [
+            round(value, 6) for value in host_batch_preparation_seconds[:8]
+        ],
+        "unit_allocator_pack_seconds_total": round(
+            sum(unit_allocator_pack_seconds), 6
+        ),
+        "unit_allocator_pack_seconds_prefix": [
+            round(value, 6) for value in unit_allocator_pack_seconds[:8]
+        ],
+        "device_step_seconds_total": round(sum(optimizer_step_seconds), 6),
         "maximum_optimizer_step_seconds": (
             round(max(optimizer_step_seconds), 6)
             if optimizer_step_seconds

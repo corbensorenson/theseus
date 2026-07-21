@@ -41,11 +41,21 @@ share toward zero. Public benchmarks are calibration only.
   Full-batch compilation was slower and reached 8.57 GB. The latest
   bf16-compute/fp32-master rerun remained finite with fp32 authority but measured 0.976x
   median/0.978x pooled and raised peak MLX memory from 5.00 GB to 5.21 GB. It remains
-  unadopted on this M1.
+  unadopted on this M1. Deferring all four compiled microbatch synchronizations to the final
+  update also preserved all 54,836,746 parameters and exact reported loss, but regressed to
+  1.12x median/1.16x pooled and raised compiled peak memory to 7.86 GB. Keep per-microbatch
+  synchronization; graph deferral is rejected for this backend/model.
+  A bounded size sweep found microbatch six best (`1.86x` median, `1.85x` pooled),
+  while sizes five and seven measured `1.64x` and `1.31x`; none cleared `2x`.
+  Full-model trials also rejected fused MLX RoPE (`1.24x`), parameter-preserving
+  fused QKV/SwiGLU projections (`1.57x`), a reusable 512-position RoPE basis
+  (`1.64x`), and one monolithic accumulation/update graph (`1.53x`). Each retained
+  bounded update integrity but lost end-to-end throughput, so the original
+  implementations remain canonical.
 - **Inference mechanics:** GREEN for the prompt-only direct decoder acceleration. Batched
   beam advance, device-side admissible-logit ranking, and exact pre-forward pruning
   preserved output and normalized receipt identity on 8/8 arm-covered private prompts.
-  The latest canonical run reduced aggregate uncached latency by 9.44x. Seven of eight
+  The latest canonical run reduced aggregate uncached latency by 9.55x. Seven of eight
   current outputs still failed closed on byte serialization, so this is a mechanics win,
   not a capability claim. The deferred KERC decoder now shares the optimized beam path
   and passes serial/optimized token-path parity; full KERC pipeline throughput is not claimed.
@@ -58,7 +68,7 @@ share toward zero. Public benchmarks are calibration only.
   while size and save time were effectively unchanged, so it is qualified for a controlled future
   migration rather than silently replacing the durable step-3,000 artifact. The assistant's
   unchanged governed refresh path now reuses command-, input-, output-, and TTL-bound
-  receipts: the latest canonical comparison measured about 469x. Missing, changed, expired, or
+  receipts: the latest canonical comparison measured about 335x. Missing, changed, expired, or
   failed evidence still reruns fail-closed.
 - **External speed-audit disposition:** the suggested beam batching, device-side admissible
   ranking, compiled train step, bf16 trial, and bounded KV preallocation were already present
@@ -66,7 +76,9 @@ share toward zero. Public benchmarks are calibration only.
   measured shared trunk (fixed width 512) or current KERC canary (maximum active width 2,580,
   below the 8K batch-two boundary). KERC's roughly 23 positions/second remains a real separate
   hot path caused by long source-conditioned computation plus learned residual, verifier, and
-  decision objectives; it needs direct profiling and compilation rather than a bucket change.
+  decision objectives, but KERC is deferred from the first executable campaign and is not the
+  practical training blocker. Isolated kernel wins were tested at full-model scale and did not
+  predict end-to-end training wins.
 - **Learning signal:** the source-disjoint private-development audit now compares step
   2,500 with step 3,000 over 62,743 target positions. Aggregate teacher-forced loss fell
   from 4.198748 to 4.174738 (0.57%). Python, JS/TS, HTML/CSS, and Rust improved; English

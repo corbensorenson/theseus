@@ -536,6 +536,14 @@ def main() -> int:
     )
     parser.add_argument("--resume", action="store_true")
     parser.add_argument(
+        "--scratch-checkpoint-root",
+        default="",
+        help=(
+            "Write a bounded non-resumable canary outside the registered checkpoint "
+            "lineage. Requires --execute and 1..8 --max-steps."
+        ),
+    )
+    parser.add_argument(
         "--evaluate-progress",
         action="store_true",
         help="Measure source-disjoint private-development loss for an incomplete checkpoint.",
@@ -554,6 +562,12 @@ def main() -> int:
         parser.error("execution or progress evaluation requires at least one explicit --target")
     if args.max_steps < 0:
         parser.error("--max-steps cannot be negative")
+    if args.scratch_checkpoint_root and (
+        not args.execute or args.resume or not 1 <= args.max_steps <= 8
+    ):
+        parser.error(
+            "--scratch-checkpoint-root requires non-resumable --execute with 1..8 --max-steps"
+        )
 
     config_path = resolve(args.config)
     config = bind_scale_preregistration(read_json(config_path))
@@ -562,6 +576,16 @@ def main() -> int:
         write_json(resolve(args.out or config["report"]), plan)
         print(json.dumps(plan, indent=2, sort_keys=True))
         return 2
+    unavailable_targets = [
+        target_id
+        for target_id in list(dict.fromkeys(args.target or []))
+        if target_id not in (plan.get("targets") or {})
+    ]
+    if unavailable_targets:
+        parser.error(
+            "targets are not executable in the current campaign: "
+            + ",".join(unavailable_targets)
+        )
     report = plan
     if args.evaluate_progress:
         report = evaluate_training_progress(
@@ -590,6 +614,11 @@ def main() -> int:
             max_steps=args.max_steps,
             resume=args.resume,
             training_phase=args.phase,
+            scratch_checkpoint_root=(
+                resolve(args.scratch_checkpoint_root)
+                if args.scratch_checkpoint_root
+                else None
+            ),
         )
     write_json(resolve(args.out or config["report"]), report)
     print(json.dumps(report, indent=2, sort_keys=True))
@@ -2074,6 +2103,7 @@ def execute_targets(
     max_steps: int,
     resume: bool,
     training_phase: str = "all",
+    scratch_checkpoint_root: Path | None = None,
 ) -> dict[str, Any]:
     import mlx.core as mx
     import mlx.nn as nn
@@ -2152,7 +2182,13 @@ def execute_targets(
     }
     results = []
     for target_id in targets:
-        target = plan["targets"][target_id]
+        target = (
+            scratch_target_contract(
+                plan["targets"][target_id], scratch_checkpoint_root
+            )
+            if scratch_checkpoint_root is not None
+            else plan["targets"][target_id]
+        )
         result = train_target(
             config,
             plan,
@@ -2195,12 +2231,43 @@ def execute_targets(
         "trigger_state": "RED" if gaps else "GREEN",
         "mode": "training_execution",
         "executed_targets": targets,
+        "scratch_execution": {
+            "enabled": scratch_checkpoint_root is not None,
+            "checkpoint_root": (
+                relative(scratch_checkpoint_root)
+                if scratch_checkpoint_root is not None
+                else ""
+            ),
+            "registered_lineage_mutated": False,
+            "resumable": False if scratch_checkpoint_root is not None else resume,
+        },
         "results": results,
         "hard_gaps": gaps,
         "all_requested_targets_complete": bool(results)
         and all(row.get("complete") for row in results),
         **no_cheat(config),
     }
+
+
+def scratch_target_contract(target: dict[str, Any], root: Path) -> dict[str, Any]:
+    """Redirect one bounded canary without changing the registered plan identity."""
+
+    scratch = copy.deepcopy(target)
+    directory = root / str(target["target_id"])
+    checkpoint_suffix = Path(str(target["checkpoint"])).suffix or ".npz"
+    checkpoint_name = "weights" + checkpoint_suffix
+    scratch.update(
+        {
+            "checkpoint": str(directory / checkpoint_name),
+            "optimizer_state": str(directory / "optimizer.safetensors"),
+            "receipt": str(directory / "training_receipt.json"),
+            "scratch_canary": True,
+            "registered_checkpoint": str(target["checkpoint"]),
+            "registered_optimizer_state": str(target["optimizer_state"]),
+            "registered_receipt": str(target["receipt"]),
+        }
+    )
+    return scratch
 
 
 def evaluate_training_progress(

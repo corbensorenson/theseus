@@ -48,6 +48,7 @@ from moecot_language_arm_training import (  # noqa: E402
     plan_sha256,
     range_view,
     serialization_valid_local_ids,
+    scratch_target_contract,
     should_evaluate_target,
     target_contracts,
     target_optimizer_exposure,
@@ -75,6 +76,31 @@ from neural_seed_50m_scale_preregistration import (  # noqa: E402
 from moecot_source_conditioned_pretraining import (  # noqa: E402
     build_kerc_code_vocabulary,
 )
+
+
+def test_scratch_target_contract_preserves_registered_lineage_as_metadata(
+    tmp_path: Path,
+) -> None:
+    target = {
+        "target_id": "english_kerc",
+        "checkpoint": "checkpoints/canonical/weights.safetensors",
+        "optimizer_state": "checkpoints/canonical/optimizer.safetensors",
+        "receipt": "checkpoints/canonical/training_receipt.json",
+        "model": {"d_model": 64},
+    }
+
+    scratch = scratch_target_contract(target, tmp_path / "scratch")
+
+    assert scratch["checkpoint"] == str(
+        tmp_path / "scratch" / "english_kerc" / "weights.safetensors"
+    )
+    assert scratch["optimizer_state"].endswith("english_kerc/optimizer.safetensors")
+    assert scratch["receipt"].endswith("english_kerc/training_receipt.json")
+    assert scratch["registered_checkpoint"] == target["checkpoint"]
+    assert scratch["registered_optimizer_state"] == target["optimizer_state"]
+    assert scratch["registered_receipt"] == target["receipt"]
+    assert scratch["scratch_canary"] is True
+    assert target["checkpoint"] == "checkpoints/canonical/weights.safetensors"
 
 
 def arm_views() -> dict:

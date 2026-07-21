@@ -124,6 +124,19 @@
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch tests/test_standard_causal_transformer_survival.py::test_compiled_training_rejects_invalid_microbatch_size tests/test_standard_causal_transformer_survival.py::test_fp32_master_mixed_precision_saves_authoritative_fp32_checkpoint tests/test_resource_acceleration_qualification.py::test_training_route_aggregation_uses_pooled_work_and_preserves_runs tests/test_resource_acceleration_qualification.py::test_precision_pair_rejects_bfloat16_when_speed_does_not_improve tests/test_moecot_language_arm_training.py::test_batched_kerc_beam_advance_matches_serial_reference",
         "reason": "Continue the exact step-3000 model and AdamW state after parameterizing the already-qualified compiled microbatch, adding repeated alternating acceleration instrumentation, routing deferred KERC generation through the same parity-tested batched beam machinery as direct text generation, and adding an optional qualification-only bfloat16-compute/fp32-master route. The default training route remains fp32 with microbatch four; model math, saved tensors, optimizer, data, objective, schedule, and evaluation contracts are unchanged."
+      },
+      {
+        "migration_id": "shared_trunk_step3000_acceleration_profiling_and_scratch_canary_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "8b10afa6ee1da40fd14783cb989c0366b470b580c1e7605266afb7fa513df05b",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "tests/test_moecot_language_arm_training.py::test_scratch_target_contract_redirects_all_mutable_paths tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch full-parameter paired acceleration replays from the immutable step-3000 checkpoint",
+        "reason": "Continue the exact step-3000 model and AdamW state after adding host/device phase timing and a bounded scratch-canary route that redirects every mutable path outside registered lineage. Rejected acceleration candidates were removed from the canonical implementation; model math, data, objective, schedule, saved tensors, optimizer behavior, and evaluation contracts remain unchanged."
       }
     ]
   },

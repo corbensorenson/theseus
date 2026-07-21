@@ -48,7 +48,7 @@ The current falsifiable question is:
 | Gate | State | Exit condition |
 |---|---|---|
 | `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | checkpoint/resume qualified; sustained speed target open | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%, but the adopted route's repeated pooled speedup is 1.66x against a 2x gate. Direct decode is 9.44x faster with exact parity. Improve the hot path, then continue the same weights through the evidence-efficient rung ladder. |
+| `T1` Frozen neural-seed campaign | checkpoint/resume qualified; sustained speed target open | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%, but the adopted route's repeated pooled speedup is 1.66x against a 2x gate. Direct decode is 9.55x faster with exact parity. Improve the hot path, then continue the same weights through the evidence-efficient rung ladder. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -298,6 +298,16 @@ software can create 100x more M1 arithmetic throughput.
    its latest microbatch-eight rerun measured 0.976x median/0.978x pooled speed and 5.21 GB
    peak MLX memory against 5.00 GB for fp32. Reject both on this M1. Reopen precision only on a different Apple
    GPU generation or after a backend change, using the same qualification contract.
+   A separate deferred-sync trial chained all four compiled microbatches before one device
+   synchronization. It preserved bounded full-parameter parity and exact reported loss but
+   regressed to 1.12x median/1.16x pooled and raised compiled peak memory to 7.86 GB. Reject
+   graph deferral and retain per-microbatch synchronization.
+   A bounded size sweep found microbatch six best at `1.86x` median/`1.85x` pooled;
+   sizes five and seven measured `1.64x` and `1.31x`. Full-model trials also rejected
+   fused MLX RoPE (`1.24x`), parameter-preserving fused QKV/SwiGLU projections (`1.57x`),
+   a reusable RoPE basis (`1.64x`), and a monolithic accumulation/update graph (`1.53x`).
+   All retained bounded update integrity. Stop local parameter fishing: the next training
+   speed work needs a different measured backend/graph bottleneck or better hardware/parallelism.
 4. **Evidence-efficient rung control.** Make the declared pilot/review contract executable.
    Emit immutable learning-curve checkpoints and private-development measurements at
    short logarithmic intervals, then evaluate direct model-only behavior at preregistered
@@ -320,7 +330,7 @@ software can create 100x more M1 arithmetic throughput.
    output contract, and functional quality. Report time to first token, decode rate,
    end-to-end p50/p95, memory, and accepted verified outputs/second.
    Batched beam advance, device-side admissible ranking, and exact pre-forward pruning are
-   qualified at 9.44x aggregate uncached speed and 8/8 parity. The deferred KERC decoder now
+   qualified at 9.55x aggregate uncached speed and 8/8 parity. The deferred KERC decoder now
    uses the same machinery and has serial/optimized token-path parity; a full KERC pipeline
    throughput claim remains pending. An indexed shared-cache gather preserved exact output
    but measured only 1.004x pooled against the simpler per-branch assembly and was removed.
@@ -330,8 +340,9 @@ software can create 100x more M1 arithmetic throughput.
    A separate external speed-audit hypothesis that wide rows were silently forced to batch
    one was checked against executed receipts: the trunk is width 512 and the KERC canary
    peaked at width 2,580, so neither crossed the 8K batch-two boundary. Do not change that
-   safety bucket as a proxy fix. Profile and compile the actual KERC auxiliary-objective path,
-   currently about 23 positions/second, before changing sequence policy.
+   safety bucket as a proxy fix. KERC is deferred from the first executable campaign, so
+   profile its auxiliary-objective path only when it re-enters a declared campaign and keep
+   any result scoped to that architecture.
 7. **Context, routing, and tools.** Profile the joined assistant route rather than isolated
    fixtures. Make VCM indexes persistent and incremental, cache content-bound compiled
    packets and denial decisions, prefetch only from observable plans, avoid repeated JSON
