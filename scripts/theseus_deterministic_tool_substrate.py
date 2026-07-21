@@ -62,12 +62,65 @@ def main() -> int:
     parser.add_argument("--vcm-context-governor", default=rel(DEFAULT_VCM_CONTEXT_GOVERNOR))
     parser.add_argument("--run-smoke", action="store_true", help="Run private deterministic tool smoke cases.")
     parser.add_argument("--run-ablation", action="store_true", help="Write tool-on/tool-off private ablation metrics.")
+    parser.add_argument(
+        "--registry-only",
+        action="store_true",
+        help=(
+            "Refresh live tool availability without rerunning qualification cases. "
+            "Fails closed unless the current tool-card set matches an existing full qualification."
+        ),
+    )
     args = parser.parse_args()
+    if args.registry_only and (args.run_smoke or args.run_ablation):
+        parser.error("--registry-only cannot be combined with qualification flags")
 
     started = time.perf_counter()
     config = read_json(resolve(args.config), {})
     vcm_receipt = vcm_context_governor_receipt(resolve(args.vcm_context_governor))
     tool_cards = build_tool_cards(config)
+    if args.registry_only:
+        qualification = deterministic_tool_qualification_receipt(
+            resolve(args.out), tool_cards
+        )
+        gates = build_registry_refresh_gates(
+            config, tool_cards, vcm_receipt, qualification
+        )
+        hard_failures = [
+            gate for gate in gates if gate["severity"] == "hard" and not gate["passed"]
+        ]
+        warning_failures = [
+            gate
+            for gate in gates
+            if gate["severity"] == "warning" and not gate["passed"]
+        ]
+        trigger_state = "GREEN" if not hard_failures else "RED"
+        if trigger_state == "GREEN" and warning_failures:
+            trigger_state = "YELLOW"
+        registry_payload = build_registry_payload(
+            tool_cards,
+            trigger_state=trigger_state,
+            refresh_mode="qualification_bound_runtime_refresh",
+            qualification=qualification,
+            gates=gates,
+        )
+        write_json(resolve(args.registry_out), registry_payload)
+        summary = {
+            "tool_card_count": len(tool_cards),
+            "available_tool_count": sum(
+                bool(card.get("dependency_status", {}).get("available"))
+                for card in tool_cards.values()
+            ),
+            "qualification_ready": bool(qualification.get("ready")),
+            "qualification_report_sha256": qualification.get("report_sha256", ""),
+            "vcm_context_governor_ready": bool(vcm_receipt.get("ready")),
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+            "qualification_cases_executed": 0,
+            "public_training_rows_written": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+        }
+        print(json.dumps({"trigger_state": trigger_state, "summary": summary}, indent=2))
+        return 0 if trigger_state != "RED" else 2
     cases = [case for case in config.get("private_smoke_cases", []) if isinstance(case, dict)]
 
     trace_rows: list[dict[str, Any]] = []
@@ -94,16 +147,12 @@ def main() -> int:
     if trigger_state == "GREEN" and warning_failures:
         trigger_state = "YELLOW"
 
-    registry_payload = {
-        "policy": "project_theseus_deterministic_tool_registry_v1",
-        "created_utc": now(),
-        "trigger_state": trigger_state,
-        "tools": list(tool_cards.values()),
-        "strict_no_fallback_returns": True,
-        "public_training_rows_written": 0,
-        "external_inference_calls": 0,
-        "fallback_return_count": 0,
-    }
+    registry_payload = build_registry_payload(
+        tool_cards,
+        trigger_state=trigger_state,
+        refresh_mode="full_private_qualification",
+        gates=gates,
+    )
     report = {
         "policy": "project_theseus_deterministic_tool_substrate_v1",
         "created_utc": now(),
@@ -141,16 +190,190 @@ def main() -> int:
         "fallback_return_count": 0,
     }
 
-    write_json(resolve(args.registry_out), registry_payload)
     write_json(resolve(args.ablation_out), ablation)
     write_json(resolve(args.loop_candidates_out), loop_candidates)
     write_json(resolve(args.artifact_graph_out), artifact_graph)
     write_json(resolve(args.out), report)
+    registry_payload["qualification_receipt"] = deterministic_tool_qualification_receipt(
+        resolve(args.out), tool_cards
+    )
+    write_json(resolve(args.registry_out), registry_payload)
     write_jsonl(resolve(args.trace_out), trace_rows)
     write_jsonl(resolve(args.dogfood_out), dogfood_events)
     write_text(resolve(args.markdown_out), render_markdown(report))
     print(json.dumps({"trigger_state": trigger_state, "summary": report["summary"]}, indent=2))
     return 0 if trigger_state != "RED" else 2
+
+
+def build_registry_payload(
+    tool_cards: dict[str, dict[str, Any]],
+    *,
+    trigger_state: str,
+    refresh_mode: str,
+    gates: list[dict[str, Any]],
+    qualification: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return {
+        "policy": "project_theseus_deterministic_tool_registry_v1",
+        "created_utc": now(),
+        "trigger_state": trigger_state,
+        "refresh_mode": refresh_mode,
+        "tool_card_set_sha256": deterministic_tool_card_set_sha256(tool_cards),
+        "tools": list(tool_cards.values()),
+        "qualification_receipt": qualification or {},
+        "gates": gates,
+        "strict_no_fallback_returns": True,
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+
+
+def deterministic_tool_card_set_sha256(
+    tool_cards: dict[str, dict[str, Any]],
+) -> str:
+    return stable_hash(
+        {
+            tool_id: str(card.get("replay_checksum") or "")
+            for tool_id, card in sorted(tool_cards.items())
+        }
+    )
+
+
+def deterministic_tool_qualification_receipt(
+    report_path: Path,
+    tool_cards: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    report = read_json(report_path, {})
+    artifacts = (
+        report.get("artifact_graph", {}).get("artifacts", [])
+        if isinstance(report.get("artifact_graph"), dict)
+        else []
+    )
+    qualified_card_hashes = sorted(
+        str(row.get("content_hash") or "")
+        for row in artifacts
+        if isinstance(row, dict) and row.get("type") == "Tool"
+    )
+    current_card_hashes = sorted(
+        str(card.get("replay_checksum") or "") for card in tool_cards.values()
+    )
+    boundaries_clean = all(
+        int(report.get(field) or 0) == 0
+        for field in (
+            "public_training_rows_written",
+            "external_inference_calls",
+            "fallback_return_count",
+        )
+    )
+    report_exists = report_path.is_file()
+    report_sha256 = (
+        hashlib.sha256(report_path.read_bytes()).hexdigest() if report_exists else ""
+    )
+    trigger_state = str(report.get("trigger_state") or "MISSING")
+    tool_card_identity_matches = bool(current_card_hashes) and (
+        current_card_hashes == qualified_card_hashes
+    )
+    ready = bool(
+        report_exists
+        and report.get("passed") is True
+        and trigger_state in {"GREEN", "YELLOW"}
+        and tool_card_identity_matches
+        and boundaries_clean
+    )
+    return {
+        "policy": "project_theseus_deterministic_tool_qualification_receipt_v1",
+        "ready": ready,
+        "report": rel(report_path),
+        "report_sha256": report_sha256,
+        "report_trigger_state": trigger_state,
+        "report_created_utc": str(report.get("created_utc") or ""),
+        "qualified_case_count": len(
+            report.get("tool_results", [])
+            if isinstance(report.get("tool_results"), list)
+            else []
+        ),
+        "tool_card_identity_matches": tool_card_identity_matches,
+        "qualified_tool_card_count": len(qualified_card_hashes),
+        "current_tool_card_count": len(current_card_hashes),
+        "boundaries_clean": boundaries_clean,
+    }
+
+
+def build_registry_refresh_gates(
+    config: dict[str, Any],
+    tool_cards: dict[str, dict[str, Any]],
+    vcm_receipt: dict[str, Any],
+    qualification: dict[str, Any],
+) -> list[dict[str, Any]]:
+    required = {
+        "math.sympy_exact",
+        "math.numeric_interval",
+        "math.linear_algebra",
+        "math.numeric_verify",
+        "math.mpmath_verify",
+        "logic.lean_check",
+        "logic.z3_smt",
+        "rewrite.egraph_minimal",
+        "rewrite.equality_saturation",
+        "search.local_bm25",
+        "search.local_hybrid",
+        "search.vcm_hybrid",
+        "tool.trace_replay",
+    }
+    hard_tool_ids = required - {"logic.lean_check", "logic.z3_smt"}
+    return [
+        gate("config_loaded", bool(config.get("policy")), config.get("policy"), "hard"),
+        gate(
+            "all_required_tool_cards_registered",
+            required.issubset(set(tool_cards)),
+            sorted(required - set(tool_cards)),
+            "hard",
+        ),
+        gate(
+            "current_tool_cards_match_full_qualification",
+            bool(qualification.get("ready")),
+            qualification,
+            "hard",
+        ),
+        gate(
+            "core_local_dependencies_available",
+            all(
+                tool_cards.get(tool_id, {})
+                .get("dependency_status", {})
+                .get("available")
+                for tool_id in hard_tool_ids
+            ),
+            {
+                tool_id: tool_cards.get(tool_id, {}).get("dependency_status")
+                for tool_id in sorted(hard_tool_ids)
+            },
+            "hard",
+        ),
+        gate(
+            "vcm_context_governor_ready_for_tool_registry",
+            bool(vcm_receipt.get("ready")),
+            vcm_receipt,
+            "hard",
+        ),
+        gate(
+            "lean_dependency_live",
+            bool(
+                tool_cards.get("logic.lean_check", {})
+                .get("dependency_status", {})
+                .get("available")
+            ),
+            tool_cards.get("logic.lean_check", {}).get("dependency_status"),
+            "warning",
+        ),
+        gate(
+            "z3_dependency_live_or_cleanly_staged",
+            True,
+            tool_cards.get("logic.z3_smt", {}).get("dependency_status"),
+            "warning",
+        ),
+        gate("runtime_refresh_executes_no_qualification_cases", True, 0, "hard"),
+    ]
 
 
 def build_tool_cards(config: dict[str, Any]) -> dict[str, dict[str, Any]]:

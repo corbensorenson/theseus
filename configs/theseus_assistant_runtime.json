@@ -96,7 +96,8 @@
       "id": "deterministic_tool_registry",
       "command": [
         "python3",
-        "scripts/theseus_deterministic_tool_substrate.py"
+        "scripts/theseus_deterministic_tool_substrate.py",
+        "--registry-only"
       ],
       "timeout_seconds": 120,
       "cache": {
@@ -106,14 +107,11 @@
           "scripts/theseus_deterministic_tool_substrate.py",
           "scripts/vcm_consumer_abi.py",
           "configs/deterministic_tool_substrate.json",
-          "reports/vcm_context_governor.json"
+          "reports/vcm_context_governor.json",
+          "reports/deterministic_tool_substrate.json"
         ],
         "outputs": [
-          "reports/deterministic_tool_substrate.json",
-          "reports/deterministic_tool_registry.json",
-          "reports/deterministic_tool_trace.jsonl",
-          "reports/deterministic_tool_ablation.json",
-          "reports/deterministic_tool_artifact_graph.json"
+          "reports/deterministic_tool_registry.json"
         ]
       }
     },

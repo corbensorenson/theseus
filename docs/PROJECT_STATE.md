@@ -31,12 +31,12 @@ share toward zero. Public benchmarks are calibration only.
   grouped-query attention is equivalent to explicit KV tiling. The durable shared-trunk
   lineage is now step 3,000 and 22,999,779 optimizer positions, with safetensors model SHA
   `606640cd...5c0e` and AdamW SHA `62e1b52b...5f96`. The adopted microbatch-four route's
-  latest same-state three-pair qualification measured 1.88x median/1.91x pooled over eager
+  latest same-state three-pair qualification measured 1.89x median/1.88x pooled over eager
   while reducing peak MLX memory from about 8.10 GB to 3.40 GB. All 54,836,746 parameters
-  stayed within `2.39e-7` maximum absolute and `8.23e-8` relative-L2 drift. The corrected
+  stayed within `2.39e-7` maximum absolute and `8.24e-8` relative-L2 drift. The corrected
   timing contract always excludes the first compile/warmup step rather than whichever step
-  happened to be slowest. Existing synchronization points attribute 125.48 seconds (74.5%)
-  to the three accumulation microbatches and 42.94 seconds (25.5%) to the final
+  happened to be slowest. Existing synchronization points attribute 125.52 seconds (74.5%)
+  to the three accumulation microbatches and 42.92 seconds (25.5%) to the final
   forward/backward plus AdamW update, so model compute is the current owner rather than host
   preparation or optimizer-only work. The real 500-update continuation sustained 2,914.2
   positions/second across the checkpoint boundary. A stricter microbatch-eight
@@ -101,8 +101,13 @@ share toward zero. Public benchmarks are calibration only.
   Safetensors materialized 4.76x faster in the latest alternating three-load comparison; size
   and save time were effectively unchanged. The assistant's
   unchanged governed refresh path now reuses command-, input-, output-, and TTL-bound
-  receipts: the latest canonical comparison measured about 372x. Missing, changed, expired, or
-  failed evidence still reruns fail-closed.
+  receipts. Runtime refresh no longer reruns the full 15-case deterministic-tool
+  qualification: it refreshes the live registry only after binding the exact current tool-card
+  set to a clean full qualification receipt. The current canonical run reduced the cold joined
+  route from the prior 4.52 seconds to 1.456 seconds (3.11x), while unchanged warm reuse took
+  0.0093 seconds (156.7x over the new cold route). Missing, changed, expired, unqualified,
+  or boundary-dirty evidence still reruns or fails closed; no qualification case, verifier,
+  or governance check is credited as skipped work.
 - **External speed-audit disposition:** the suggested beam batching, device-side admissible
   ranking, compiled train step, bf16 trial, and bounded KV preallocation were already present
   or already measured above. The alleged wide-sequence batch-1 collapse does not affect the
@@ -212,11 +217,11 @@ python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-rea
 ## Current Wall
 
 There is no remaining architecture rationale for postponing empirical learning. Training
-is 1.86x faster under the latest pooled matched same-state canary, direct decode is 9.51x
-faster with 8/8 exact parity, and unchanged governed assistant refresh is 372x faster,
-but direct
-functional utility is still unmeasured and current step-3,000 generation usually fails
-closed on byte serialization. The current wall is therefore semantic/serialization
+is 1.88x faster under the latest pooled matched same-state canary, direct decode is 8.90x
+faster with 8/8 exact parity, and the governed joined assistant refresh is 3.11x faster cold
+plus 156.7x faster on exact unchanged warm reuse, but direct functional utility is still
+unmeasured and current step-3,000 generation usually fails closed on byte serialization.
+The current wall is therefore semantic/serialization
 learning quality plus time to the first defensible architecture decision. Make the
 pilot/review ladder executable, preserve weak-arm evidence, and finish resident/KV/runtime
 measurement while continuing the exact lineage. The 100x aspiration applies to

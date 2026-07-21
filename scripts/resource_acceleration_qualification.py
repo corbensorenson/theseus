@@ -410,6 +410,24 @@ def run_assistant_refresh_qualification(config_path: Path) -> dict[str, Any]:
         "speedup": round(speedup, 6),
         "cold_command_runtime_ms": sum(int(row.get("runtime_ms") or 0) for row in cold),
         "warm_cache_lookup_ms": sum(int(row.get("runtime_ms") or 0) for row in warm),
+        "cold_commands": [
+            {
+                "id": row.get("id"),
+                "runtime_ms": int(row.get("runtime_ms") or 0),
+                "cache_state": row.get("cache_state"),
+                "returncode": row.get("returncode"),
+            }
+            for row in cold
+        ],
+        "warm_commands": [
+            {
+                "id": row.get("id"),
+                "runtime_ms": int(row.get("runtime_ms") or 0),
+                "cache_state": row.get("cache_state"),
+                "returncode": row.get("returncode"),
+            }
+            for row in warm
+        ],
         "cold_miss_count": sum(row.get("cache_state") == "MISS" for row in cold),
         "warm_hit_count": sum(row.get("cache_state") == "HIT" for row in warm),
         "exact_refresh_identity_parity": exact,
@@ -428,6 +446,7 @@ def run_assistant_refresh_qualification(config_path: Path) -> dict[str, Any]:
             "prior_success",
         ],
         "governance_or_verification_skipped": False,
+        "deterministic_tool_refresh_mode": "qualification_bound_runtime_refresh",
         "claim_scope": (
             "Repeated unchanged assistant context refresh only; generation and task-specific "
             "tool execution remain outside this cache."

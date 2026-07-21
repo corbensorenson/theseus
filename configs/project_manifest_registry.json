@@ -290,7 +290,7 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "aa4fbcad562d968e189e5262dae9ef61e8fbbbc80ad78b685938c89cdeacea82"
+          "sha256": "b67fd5130b4b9fdc62528a644344300d3c95189eafac18cc44faec936e40cd64"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
@@ -310,7 +310,7 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "5f04064aedf6d4211c6328b2acea5e10b4daf86c2ac1e2d6cb1d133dc053c6ec"
+          "sha256": "64faeb5ee4f84c30506b9798fd5969c6980105b31d14eb75b387440e5309a96f"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
@@ -6148,6 +6148,7 @@
       "dependencies": [
         "configs/project_manifest_registry.json",
         "scripts/theseus_deterministic_tool_substrate.py",
+        "tests/test_theseus_deterministic_tool_substrate.py",
         "scripts/verifier_guided_search.py",
         "scripts/strict_generator_semantic_ir_repair_apply.py",
         "tests/test_verifier_guided_search.py",
@@ -8094,6 +8095,7 @@
       "status": "live",
       "patterns": [
         "scripts/theseus_deterministic_tool_substrate.py",
+        "tests/test_theseus_deterministic_tool_substrate.py",
         "scripts/verifier_guided_search.py",
         "scripts/strict_generator_semantic_ir_repair_apply.py",
         "tests/test_verifier_guided_search.py",
