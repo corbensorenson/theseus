@@ -290,7 +290,7 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "4da466362856f7735cd026e6274a51209d5443f10d76d76fbea1368f8b811b92"
+          "sha256": "1c533828c3722eb6fbb8d4dc29e3491c9938e2d79dbabe5451c778765b147ec5"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
