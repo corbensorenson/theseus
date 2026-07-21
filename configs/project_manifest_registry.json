@@ -290,7 +290,7 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "75018b92e5c524fd750caf0be05fff01a9d4bd2cd893a95a09f8ee62e871a965"
+          "sha256": "aa4fbcad562d968e189e5262dae9ef61e8fbbbc80ad78b685938c89cdeacea82"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
@@ -310,7 +310,7 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "b43ccc44716e47d66f842b5a01ee82f2798aaa7244e9b2da1ca7f9bd0f41c228"
+          "sha256": "5f04064aedf6d4211c6328b2acea5e10b4daf86c2ac1e2d6cb1d133dc053c6ec"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
@@ -334,7 +334,11 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "2bb59dccdbaf8cc7d721f9e20437c48b36d2823ae2733c6782e39624b82a5d8c"
+          "sha256": "e597ea9f886ec5b9d21a2bb3896096f11c68e8556f472a231fdda2f256748e8e"
+        },
+        "canonical_training_objectives": {
+          "path": "scripts/standard_causal_transformer_objectives.py",
+          "sha256": "cbe54d097b0f8900452c203c1fbdbe4d0e92b7255f8ab096080200f457433412"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -534,7 +538,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "01781b670a31a9d8b3f9a848cc7842e3e6fe9b455041677c1be62598f58f4dbb"
+          "sha256": "cdf65f4a3b852b95492338bdcebc0bad207ac115fbb701ae5ab291b526a084b4"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -954,6 +958,7 @@
             "data/training_sources/training_data_admission_v1.json",
             "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_objectives.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
@@ -974,6 +979,7 @@
           "freshness_mode": "source_bound",
           "source_paths": [
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_objectives.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
@@ -994,6 +1000,7 @@
           "source_paths": [
             "configs/standard_causal_transformer_survival.json",
             "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_objectives.py",
             "scripts/standard_causal_transformer_model.py",
             "scripts/standard_causal_transformer_preference.py",
             "scripts/neural_seed_open_vocab.py",
@@ -5261,6 +5268,7 @@
         "configs/generation_mode_registry.json",
         "configs/generation_architecture_contracts.json",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_objectives.py",
         "scripts/standard_causal_transformer_corpus.py",
         "scripts/theseus_artifact_admission.py",
         "configs/artifact_admission_policy.json",
@@ -5587,6 +5595,7 @@
         "scripts/standard_causal_transformer_corpus.py",
         "scripts/standard_causal_transformer_model.py",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_objectives.py",
         "tests/test_moecot_language_arm_training.py",
         "tests/test_neural_seed_resident_runtime.py",
         "tests/test_standard_causal_transformer_survival.py",
@@ -6990,6 +6999,7 @@
         "tests/test_assistant_reflexive_dispatch.py",
         "scripts/moecot_language_arm_training.py",
         "scripts/standard_causal_transformer_survival.py",
+        "scripts/standard_causal_transformer_objectives.py",
         "scripts/strict_generator_mlx_decode_guards.py",
         "scripts/strict_generator_mlx_decode_plans.py",
         "scripts/neural_seed_full_state_pretraining.py",
@@ -7061,7 +7071,8 @@
             "configs/theseus_assistant_runtime.json",
             "scripts/theseus_assistant_runtime.py",
             "scripts/moecot_language_arm_training.py",
-            "scripts/standard_causal_transformer_survival.py"
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_objectives.py"
           ],
           "writes": [
             "reports/resource_aware_execution_policy.json",
@@ -7099,7 +7110,8 @@
             "configs/theseus_assistant_runtime.json",
             "scripts/theseus_assistant_runtime.py",
             "scripts/moecot_language_arm_training.py",
-            "scripts/standard_causal_transformer_survival.py"
+            "scripts/standard_causal_transformer_survival.py",
+            "scripts/standard_causal_transformer_objectives.py"
           ]
         },
         "observability_binding": {

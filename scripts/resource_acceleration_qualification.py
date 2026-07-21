@@ -1029,6 +1029,16 @@ def run_training_route(
         "mean_loss": phase["mean_loss"],
         "final_loss": phase["final_loss"],
         "optimizer_step_seconds_prefix": phase["optimizer_step_seconds_prefix"],
+        "compiled_accumulation_seconds_total": phase[
+            "compiled_accumulation_seconds_total"
+        ],
+        "compiled_update_seconds_total": phase["compiled_update_seconds_total"],
+        "compiled_accumulation_seconds_prefix": phase[
+            "compiled_accumulation_seconds_prefix"
+        ],
+        "compiled_update_seconds_prefix": phase[
+            "compiled_update_seconds_prefix"
+        ],
         "precision_mode": precision_mode,
         "compute_parameters": tree_numeric_receipt(
             model.trainable_parameters(), mx=mx, mlx_utils=mlx_utils
@@ -1163,6 +1173,20 @@ def aggregate_training_routes(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "warmup_excluded_positions_total": positions,
         "warmup_excluded_seconds_total": round(seconds, 6),
         "pooled_positions_per_second": round(positions / max(1e-12, seconds), 3),
+        "compiled_accumulation_seconds_total": round(
+            sum(
+                float(row.get("compiled_accumulation_seconds_total") or 0.0)
+                for row in rows
+            ),
+            6,
+        ),
+        "compiled_update_seconds_total": round(
+            sum(
+                float(row.get("compiled_update_seconds_total") or 0.0)
+                for row in rows
+            ),
+            6,
+        ),
         "positions_per_second_distribution": distribution(
             [float(row["warmup_excluded_positions_per_second"]) for row in rows]
         ),

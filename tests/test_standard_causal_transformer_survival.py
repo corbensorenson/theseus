@@ -1803,6 +1803,13 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
     )
     assert compiled_report["training_step_mode_requested"] == "auto"
     assert eager_report["training_step_mode_requested"] == "eager"
+    assert compiled_report["warmup_step_index_zero_based"] == 0
+    assert len(compiled_report["compiled_accumulation_seconds_prefix"]) == 1
+    assert len(compiled_report["compiled_update_seconds_prefix"]) == 1
+    assert compiled_report["compiled_accumulation_seconds_total"] >= 0.0
+    assert compiled_report["compiled_update_seconds_total"] >= 0.0
+    assert eager_report["compiled_accumulation_seconds_total"] == 0.0
+    assert eager_report["compiled_update_seconds_total"] == 0.0
     assert compiled_report["final_loss"] == pytest.approx(
         eager_report["final_loss"], abs=2e-6
     )

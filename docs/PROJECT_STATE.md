@@ -31,16 +31,22 @@ share toward zero. Public benchmarks are calibration only.
   grouped-query attention is equivalent to explicit KV tiling. The durable shared-trunk
   lineage is now step 3,000 and 22,999,779 optimizer positions, with safetensors model SHA
   `606640cd...5c0e` and AdamW SHA `62e1b52b...5f96`. The adopted microbatch-four route's
-  latest same-state three-pair qualification measured 1.86x pooled over eager while reducing
-  peak MLX memory from about 8.10 GB to 3.40 GB. The real 500-update continuation sustained
-  2,914.2 positions/second across the checkpoint boundary. A stricter microbatch-eight
+  latest same-state three-pair qualification measured 1.88x median/1.91x pooled over eager
+  while reducing peak MLX memory from about 8.10 GB to 3.40 GB. All 54,836,746 parameters
+  stayed within `2.39e-7` maximum absolute and `8.23e-8` relative-L2 drift. The corrected
+  timing contract always excludes the first compile/warmup step rather than whichever step
+  happened to be slowest. Existing synchronization points attribute 125.48 seconds (74.5%)
+  to the three accumulation microbatches and 42.94 seconds (25.5%) to the final
+  forward/backward plus AdamW update, so model compute is the current owner rather than host
+  preparation or optimizer-only work. The real 500-update continuation sustained 2,914.2
+  positions/second across the checkpoint boundary. A stricter microbatch-eight
   rerun compared all 54,836,746 final parameters after each 24-update route: maximum
   absolute drift was at most `2.38e-7`, relative L2 drift was about `8e-8`, and loss stayed
   within `2e-6`, but speed varied from 1.36x to 1.97x and measured only 1.52x median/1.62x
   pooled with 5.00 GB peak MLX memory. It is semantics-qualified but performance-rejected.
   Full-batch compilation was slower and reached 8.57 GB. The latest
-  bf16-compute/fp32-master rerun remained finite with fp32 authority but measured 0.955x
-  median/0.957x pooled and did not clear its peak-memory gate. It remains
+  bf16-compute/fp32-master rerun remained finite with fp32 authority but measured 0.993x
+  median/pooled and did not clear its peak-memory gate. It remains
   unadopted on this M1. Deferring all four compiled microbatch synchronizations to the final
   update also preserved all 54,836,746 parameters and exact reported loss, but regressed to
   1.12x median/1.16x pooled and raised compiled peak memory to 7.86 GB. Keep per-microbatch
@@ -55,10 +61,16 @@ share toward zero. Public benchmarks are calibration only.
   severe unified-memory pressure during a 12-step exact-checkpoint paired preflight and was
   terminated before a complete result. Its semantics result is inconclusive, but the exact
   implementation is engineering-rejected and absent from the canonical path.
+  Fresh bounded owner preflights also rejected separate gradient/update state capture
+  (`2,408` positions/second), dormant zero-gradient parameter pruning (`3,128`), and
+  fp16-compute/fp32-master (`2,917` versus `2,954` fp32 positions/second with higher peak
+  memory). Per-microbatch sequence cropping has no available work because every sampled
+  canonical pretraining window and microbatch is already 512 tokens. These are scoped M1,
+  MLX 0.29.3 engineering results, not broad falsifications of the techniques.
 - **Inference mechanics:** GREEN for the prompt-only direct decoder acceleration. Batched
   beam advance, device-side admissible-logit ranking, and exact pre-forward pruning
   preserved output and normalized receipt identity on 8/8 arm-covered private prompts.
-  The latest canonical run reduced aggregate uncached novel-request latency by 9.51x;
+  The latest canonical run reduced aggregate uncached novel-request latency by 8.68x;
   completion and prompt-prefix caches were disabled on both measured routes. The `2x`
   value in the report is the acceptance threshold, not an observed median. Seven of eight
   current outputs still failed closed on byte serialization, so this is a mechanics win,
@@ -75,8 +87,9 @@ share toward zero. Public benchmarks are calibration only.
   The same registered checkpoint now qualifies prompt-length-bucketed cross-request
   prefill/beam advance plus bounded request coalescing. Four distinct private prompts
   retained exact text/state/reason/token identity across three alternating serial/batch
-  pairs; direct uncached batching measured 2.26x pooled (2.30x median, 2.18x minimum) and
-  concurrent coalescing measured 2.33x. Peak MLX memory for the four-request comparison
+  pairs; the latest direct uncached batching rerun measured 2.28x pooled, while the prior
+  three-pair receipt measured 2.30x median/2.18x minimum and concurrent coalescing measured
+  2.33x. Peak MLX memory for the four-request comparison
   rose from about 293 MB serial to 458 MB batched. These are novel-request
   throughput figures; completion and prefix-cache gains remain separate reuse evidence.
 - **Checkpoint and joined-runtime mechanics:** exact tensor-level qualification over all
