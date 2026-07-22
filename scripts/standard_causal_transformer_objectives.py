@@ -241,6 +241,7 @@ def causal_loss(
     kerc_unit_hard_block_mask: Any | None = None,
     kerc_unit_class_weights: Any | None = None,
     source_conditioning: bool | None = None,
+    prune_inactive_auxiliary_outputs: bool = True,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -253,7 +254,15 @@ def causal_loss(
     ) or (kerc_verifier_labels is not None and kerc_verifier_weight > 0.0) or (
         kerc_decision_labels is not None and kerc_decision_weight > 0.0
     )
-    if needs_plan or copy_weight > 0.0 or mtp_weight > 0.0 or needs_kerc:
+    copy_loss_active = copy_weight > 0.0 and source_conditioning is not False
+    auxiliary_outputs_required = (
+        needs_plan or copy_loss_active or mtp_weight > 0.0 or needs_kerc
+    )
+    if not prune_inactive_auxiliary_outputs:
+        auxiliary_outputs_required = (
+            needs_plan or copy_weight > 0.0 or mtp_weight > 0.0 or needs_kerc
+        )
+    if auxiliary_outputs_required:
         logits, _cache, training_aux = model(
             inputs,
             source_conditioning=source_conditioning,
@@ -282,7 +291,7 @@ def causal_loss(
     token_loss = nn.losses.cross_entropy(logits, labels)
     denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
     body_loss = mx.sum(token_loss * mask) / denominator
-    if copy_aux is not None and copy_weight > 0.0:
+    if copy_aux is not None and copy_loss_active:
         body_loss = body_loss + copy_weight * pointer_generator_auxiliary_loss(
             copy_aux, labels, mask, mx
         )

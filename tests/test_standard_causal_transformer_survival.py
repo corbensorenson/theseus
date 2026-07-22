@@ -770,6 +770,124 @@ def test_decoder_is_causal_and_cached_decode_matches_full_decode() -> None:
     assert bool(mx.allclose(cached[:, -1], full[:, -1], atol=1e-4))
 
 
+def test_fast_rope_kernel_is_bounded_and_manual_remains_default() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(17)
+    reference = build_model(config, mx=mx, nn=nn)
+    mx.eval(reference.parameters())
+    candidate = build_model(config, mx=mx, nn=nn, rope_kernel="mlx_fast")
+    candidate.load_weights(list(mlx_utils.tree_flatten(reference.parameters())))
+    tokens = mx.array([[1, 2, 3, 4, 5, 6]], dtype=mx.int32)
+    reference_logits, _ = reference(tokens)
+    candidate_logits, _ = candidate(tokens)
+    mx.eval(reference_logits, candidate_logits)
+
+    assert bool(mx.allclose(reference_logits, candidate_logits, atol=1e-3))
+
+    source_config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=2,
+    )
+    mx.random.seed(19)
+    source_reference = build_model(source_config, mx=mx, nn=nn)
+    mx.eval(source_reference.parameters())
+    source_candidate = build_model(
+        source_config, mx=mx, nn=nn, rope_kernel="mlx_fast"
+    )
+    source_candidate.load_weights(
+        list(mlx_utils.tree_flatten(source_reference.parameters()))
+    )
+    source_tokens = mx.array([[1, 10, 11, 2, 20, 21]], dtype=mx.int32)
+    source_reference_logits, _ = source_reference(
+        source_tokens, source_conditioning=True
+    )
+    source_candidate_logits, _ = source_candidate(
+        source_tokens, source_conditioning=True
+    )
+    mx.eval(source_reference_logits, source_candidate_logits)
+    assert bool(
+        mx.allclose(source_reference_logits, source_candidate_logits, atol=1e-3)
+    )
+
+    with pytest.raises(ValueError, match="RoPE kernel"):
+        build_model(config, mx=mx, nn=nn, rope_kernel="unknown")
+
+
+def test_causal_loss_prunes_only_provably_inactive_auxiliary_outputs() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+
+    class RecordingModel:
+        copy_auxiliary_loss_weight = 0.25
+        mtp_loss_scale = 0.0
+
+        def __init__(self) -> None:
+            self.training_aux_requests: list[bool] = []
+
+        def __call__(
+            self,
+            inputs,
+            *,
+            source_conditioning=None,
+            return_training_aux=False,
+            **_kwargs,
+        ):
+            self.training_aux_requests.append(bool(return_training_aux))
+            logits = mx.zeros((*inputs.shape, 8), dtype=mx.float32)
+            if return_training_aux:
+                return logits, [], {
+                    "plan_logits": None,
+                    "copy_aux": None,
+                    "mtp_logits": [],
+                    "kerc": None,
+                }
+            return logits, []
+
+    model = RecordingModel()
+    inputs = mx.array([[1, 2]], dtype=mx.int32)
+    labels = mx.array([[2, 3]], dtype=mx.int32)
+    mask = mx.ones((1, 2), dtype=mx.float32)
+
+    causal_loss(
+        model,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        source_conditioning=False,
+    )
+    causal_loss(
+        model,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        source_conditioning=False,
+        prune_inactive_auxiliary_outputs=False,
+    )
+
+    assert model.training_aux_requests == [False, True]
+
+
 def test_attention_policy_configuration_fails_closed() -> None:
     common = {
         "vocab_size": 64,

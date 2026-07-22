@@ -290,11 +290,11 @@
         },
         "moecot_training_config": {
           "path": "configs/moecot_language_arm_training.json",
-          "sha256": "b67fd5130b4b9fdc62528a644344300d3c95189eafac18cc44faec936e40cd64"
+          "sha256": "f40272aa305e611bdcb4476147d5a80b8cbd5d1f5238cb32cc90434b843b92ae"
         },
         "moecot_training_implementation": {
           "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "f432c3721d39bb57d813cbf74ececed0e1e346d9e84adeeef430e2749c835dcb"
+          "sha256": "4db86ae20bdc4c1d242c0c45e177299953f4dc8ba65559792aadc5d221ba9ae4"
         },
         "moecot_training_tests": {
           "path": "tests/test_moecot_language_arm_training.py",
@@ -310,7 +310,7 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "64faeb5ee4f84c30506b9798fd5969c6980105b31d14eb75b387440e5309a96f"
+          "sha256": "83af4982988eff10b24b062a0c5419a2a5295046acf457846406c02c15b18c6b"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
@@ -338,7 +338,7 @@
         },
         "canonical_training_objectives": {
           "path": "scripts/standard_causal_transformer_objectives.py",
-          "sha256": "cbe54d097b0f8900452c203c1fbdbe4d0e92b7255f8ab096080200f457433412"
+          "sha256": "727c55db352d29cb294fd3b08721818ab1d7766eb149b08972189e3ee82f6080"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -538,7 +538,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "cdf65f4a3b852b95492338bdcebc0bad207ac115fbb701ae5ab291b526a084b4"
+          "sha256": "e0df724d57f77154503f05fc6204364ef1a845d8eb6e0e129ae460e0134b0660"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -566,7 +566,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "4f5ce199e11ba834d6654531756355bf30c25c3ff7c9fabc2c6b8f20cccf7ea4"
+          "sha256": "5e52cd661d5e5e849e3ad5243a96964312dde99501b56cbfc2bb12e77f4c61f2"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",

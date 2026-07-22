@@ -281,10 +281,13 @@ def build_model(
     nn: Any,
     state_role_lookup: Any | None = None,
     source_to_target_lookup: Any | None = None,
+    rope_kernel: str = "manual_reference",
 ) -> Any:
     """Build a pre-norm RoPE/GQA/SwiGLU causal LM with tied embeddings."""
 
     config.validate()
+    if rope_kernel not in {"manual_reference", "mlx_fast"}:
+        raise ValueError(f"unsupported RoPE kernel: {rope_kernel}")
     head_dim = config.d_model // config.num_heads
     half_head_dim = head_dim // 2
     rope_inverse_frequency = mx.array(
@@ -338,6 +341,15 @@ def build_model(
             state_role_interaction = mx.array(rows, dtype=mx.float32)
 
     def apply_rope(value: Any, *, offset: int) -> Any:
+        if rope_kernel == "mlx_fast":
+            return mx.fast.rope(
+                value,
+                head_dim,
+                traditional=False,
+                base=float(config.rope_base),
+                scale=1.0,
+                offset=offset,
+            )
         length = int(value.shape[2])
         positions = mx.arange(offset, offset + length, dtype=mx.float32)
         angles = positions[:, None] * rope_inverse_frequency[None, :]

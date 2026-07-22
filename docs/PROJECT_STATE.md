@@ -31,7 +31,7 @@ share toward zero. Public benchmarks are calibration only.
   grouped-query attention is equivalent to explicit KV tiling. The durable shared-trunk
   lineage is now step 3,000 and 22,999,779 optimizer positions, with safetensors model SHA
   `606640cd...5c0e` and AdamW SHA `62e1b52b...5f96`. The adopted microbatch-four route's
-  latest same-state three-pair qualification measured 1.89x median/1.88x pooled over eager
+  stable same-state three-pair qualification measured 1.89x median/1.88x pooled over eager
   while reducing peak MLX memory from about 8.10 GB to 3.40 GB. All 54,836,746 parameters
   stayed within `2.39e-7` maximum absolute and `8.24e-8` relative-L2 drift. The corrected
   timing contract always excludes the first compile/warmup step rather than whichever step
@@ -53,7 +53,13 @@ share toward zero. Public benchmarks are calibration only.
   synchronization; graph deferral is rejected for this backend/model.
   A bounded size sweep found microbatch six best (`1.86x` median, `1.85x` pooled),
   while sizes five and seven measured `1.64x` and `1.31x`; none cleared `2x`.
-  Full-model trials also rejected fused MLX RoPE (`1.24x`), parameter-preserving
+  An earlier whole-path fused MLX RoPE trial (`1.24x`) was rejected. A narrower
+  training-only `mx.fast.rope` qualification subsequently won all three direct
+  manual-versus-fast compiled pairs by 2.3-2.8%, preserved all 54,836,746 parameters
+  within `2.38e-7`, reduced peak memory slightly, and preserved 8/8 exact outputs plus
+  normalized receipts when both resulting checkpoints were served through the unchanged
+  manual reference kernel. Fast RoPE is therefore training-only; using it for serving
+  changed 7/8 token paths and remains forbidden. Parameter-preserving
   fused QKV/SwiGLU projections (`1.57x`), a reusable 512-position RoPE basis
   (`1.64x`), and one monolithic accumulation/update graph (`1.53x`). Each retained
   bounded update integrity but lost end-to-end throughput, so the original
@@ -67,10 +73,19 @@ share toward zero. Public benchmarks are calibration only.
   memory). Per-microbatch sequence cropping has no available work because every sampled
   canonical pretraining window and microbatch is already 512 tokens. These are scoped M1,
   MLX 0.29.3 engineering results, not broad falsifications of the techniques.
+  The latest 14-minute all-in-one qualifier exposed substantial environment/order drift:
+  compiled trials measured 3,093, 3,220, then 2,340 positions/second while eager trials
+  measured 1,439, 2,223, then 2,374. Its 1.45x median/1.48x pooled ratio is retained but is
+  not stable enough to supersede the earlier repeated result or clear the 2x gate. Peak
+  memory remained 3.39 GB compiled versus 8.10 GB eager and all parameter comparisons
+  passed. The same hot run measured bf16-compute/fp32-master at 1.128x median/1.130x pooled
+  with lower peak MLX memory, still below the preregistered 1.15x adoption floor and
+  inconsistent with the prior 0.984x rerun. Mixed precision remains unadopted pending a
+  thermally/order-stabilized sustained result.
 - **Inference mechanics:** GREEN for the prompt-only direct decoder acceleration. Batched
   beam advance, device-side admissible-logit ranking, and exact pre-forward pruning
   preserved output and normalized receipt identity on 8/8 arm-covered private prompts.
-  The latest canonical run reduced aggregate uncached novel-request latency by 8.68x;
+  The latest canonical run reduced aggregate uncached novel-request latency by 8.78x;
   completion and prompt-prefix caches were disabled on both measured routes. The `2x`
   value in the report is the acceptance threshold, not an observed median. Seven of eight
   current outputs still failed closed on byte serialization, so this is a mechanics win,
@@ -87,7 +102,7 @@ share toward zero. Public benchmarks are calibration only.
   The same registered checkpoint now qualifies prompt-length-bucketed cross-request
   prefill/beam advance plus bounded request coalescing. Four distinct private prompts
   retained exact text/state/reason/token identity across three alternating serial/batch
-  pairs; the latest direct uncached batching rerun measured 2.28x pooled, while the prior
+  pairs; the latest direct uncached batching rerun measured 2.23x pooled, while the prior
   three-pair receipt measured 2.30x median/2.18x minimum and concurrent coalescing measured
   2.33x. Peak MLX memory for the four-request comparison
   rose from about 293 MB serial to 458 MB batched. These are novel-request
@@ -104,8 +119,8 @@ share toward zero. Public benchmarks are calibration only.
   receipts. Runtime refresh no longer reruns the full 15-case deterministic-tool
   qualification: it refreshes the live registry only after binding the exact current tool-card
   set to a clean full qualification receipt. The current canonical run reduced the cold joined
-  route from the prior 4.52 seconds to 1.456 seconds (3.11x), while unchanged warm reuse took
-  0.0093 seconds (156.7x over the new cold route). Missing, changed, expired, unqualified,
+  route from the prior 4.52 seconds to about 1.46 seconds (3.11x), while the latest unchanged
+  warm reuse measured about 146.7x over the cold route. Missing, changed, expired, unqualified,
   or boundary-dirty evidence still reruns or fails closed; no qualification case, verifier,
   or governance check is credited as skipped work.
 - **External speed-audit disposition:** the suggested beam batching, device-side admissible
@@ -119,6 +134,8 @@ share toward zero. Public benchmarks are calibration only.
   practical training blocker. Isolated kernel wins were tested at full-model scale and did not
   predict end-to-end training wins. The reported `0.955x`/`0.957x` regression belongs to the
   rejected bf16-compute/fp32-master candidate; it is not resident-runtime or cache overhead.
+  A new hot-run bf16 result improved to about 1.13x but still missed its adoption floor and
+  does not erase the contradictory earlier measurement.
   Cross-request continuous batching was the remaining canonical decode gap and is now
   mechanics-qualified. The audit's `for beam in beams` and `np.asarray(logits)` citations
   refer to retained serial/device-filter-off parity branches, not the default accelerated
@@ -133,8 +150,11 @@ share toward zero. Public benchmarks are calibration only.
 - **Evaluation:** a new source-disjoint, exact-once 160-case private functional contract
   is frozen with 32 cases each for English, Python, JS/TS, HTML/CSS, and Rust. It has zero
   overlap with the v8 packet and zero public payloads, hidden verifier access, fallback
-  credit, or authored-template/tool/router credit. Capability remains `NOT_EVALUATED`
-  until trained checkpoints are scored.
+  credit, or authored-template/tool/router credit. Before any case was consumed, its
+  immutable identity was explicitly superseded to bind the training-only acceleration
+  plan while preserving the candidate packet, serving kernel, verifier, checkpoint tensors,
+  and zero consumption. The 70-artifact architecture package now replays 10/10 commands.
+  Capability remains `NOT_EVALUATED` until trained checkpoints are scored.
 - **KERC:** K0-K3 are banked as high-quality bounded discovery evidence. K4-K8 remain
   incomplete, so the full candidate is `INCONCLUSIVE_IMPLEMENTATION` and deferred to a
   successor campaign. This is not a scientific failure. Its source snapshot and live

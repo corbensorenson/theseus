@@ -48,7 +48,7 @@ The current falsifiable question is:
 | Gate | State | Exit condition |
 |---|---|---|
 | `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | checkpoint/resume qualified; sustained speed target open | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%, but the latest repeated pooled speedup is 1.86x against a 2x gate. Direct decode is 9.51x faster with exact parity. Improve measured optimizer/state traffic or full-model kernel cost, then continue the same weights through the evidence-efficient rung ladder. |
+| `T1` Frozen neural-seed campaign | checkpoint/resume qualified; sustained speed target open | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%. The stable repeated qualification was 1.88x pooled; a later 14-minute combined run was only 1.48x pooled with severe route-order drift, so the 2x gate remains open. Direct uncached decode is about 8.8x faster with exact parity. Stabilize sustained measurement and make the first matched architecture review executable, then continue the same weights through the evidence-efficient rung ladder. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -75,19 +75,22 @@ The first practical architecture is frozen:
 - Runtime: native MLX grouped-query attention and compiled width-bucketed microbatches of
   four, accumulated into one token-mass-weighted batch-16 clip/update. The latest same-state
   three-pair, 24-update qualification preserved bounded full-parameter equivalence. Its
-  adopted pooled speedup is
-  1.86x, below the 2x gate, while peak MLX memory fell from about 8.10 GB to 3.40 GB. The
+  stable repeated pooled speedup is
+  1.88x, below the 2x gate, while peak MLX memory fell from about 8.10 GB to 3.40 GB. A
+  later hot all-in-one qualifier measured 1.48x pooled with large route-order drift and is
+  retained as unstable evidence rather than silently averaged into a stronger claim. The
   real 500-update continuation sustained 2,914.2 positions/second. Full-batch compilation
   was slower and reached 8.57 GB. A stricter microbatch-eight rerun checked all 54,836,746
   parameters after every paired route; drift remained below `2.38e-7` absolute/about `8e-8`
   relative L2, but speed was only 1.52x median/1.62x pooled and peak memory was 5.00 GB.
   A real-checkpoint bf16-compute/fp32-master rerun was numerically bounded but reached only
-  0.955x median/0.957x pooled speed and did not clear its peak-memory gate. Neither alternative
-  is adopted on this M1.
+  0.955x median/0.957x pooled speed. A later hot-run pair improved to 1.128x median/1.130x
+  pooled with lower memory, but still missed the frozen 1.15x adoption floor and contradicted
+  the earlier direction. Mixed precision remains unadopted on this M1.
 - Current run: shared trunk checkpoint 3,000, 22,999,779 optimizer positions, exact
   safetensors model SHA `606640cd...5c0e`, and optimizer SHA `62e1b52b...5f96`. Private-development loss
   improved 0.57% from step 2,500 to 3,000; English regressed 0.43% while the four code arms
-  improved. Direct beam decoding is 9.51x faster with 8/8 exact output-and-receipt parity,
+  improved. Direct beam decoding is about 8.8x faster with 8/8 exact output-and-receipt parity,
   but seven of eight qualification outputs still fail closed on serialization.
 
 At the measured canary rate, the remaining shared-trunk raw-position budget is about four
@@ -248,10 +251,11 @@ outcome reconstruction, verifier replay, and heldout causal lift before training
 
 State: `active`. Native GQA, semantics-qualified compiled microbatch training, prompt-only batched beam
 decoding, exact checkpoint-format comparison, and content-bound assistant refresh reuse
-are qualified. The latest repeated compiled/eager pair is 1.86x pooled, so the 2x training
+are qualified. The stable repeated compiled/eager pair is 1.88x pooled; the latest long
+combined run was 1.48x pooled with large route-order drift, so the 2x training
 target remains open even though compiled execution is stable and uses about 58% less peak
 MLX memory. The 500-update route sustained 2,914.2 positions/second; uncached decode improved
-9.51x with 8/8 exact parity; unchanged governed assistant refresh improved 372x under exact
+about 8.8x with 8/8 exact parity; unchanged governed assistant refresh remains over 100x under exact
 content identity. Scheduler records
 CPU/GPU/MLX/CUDA, memory, thermals, battery, disk, queue, latency, and lifecycle cost.
 
@@ -286,7 +290,7 @@ software can create 100x more M1 arithmetic throughput.
    order, finite gradients, bounded parameter delta, non-regressed private-development
    loss, and at least 2x sustained useful positions/second over the eager baseline.
    Autotune only safe microbatch and sequence-width buckets for each Mac memory tier.
-   Semantics-qualified on M1: the adopted microbatch-four route measured 1.86x pooled over
+   Semantics-qualified on M1: the adopted microbatch-four route measured 1.88x pooled over
    eager with about 58% lower peak MLX memory, and sustained 2,914.2 positions/second over
    500 real updates. Microbatch eight was then checked over all 54,836,746 final parameters
    across three alternating 24-update pairs; maximum drift was `2.38e-7` absolute/about
@@ -297,16 +301,21 @@ software can create 100x more M1 arithmetic throughput.
    master-weight policies on the same checkpoint/data. The initial pure-bfloat16 canary
    produced only about 1.09x throughput and changed loss. The stricter compiled
    bf16-compute/fp32-master route preserved finite fp32 authority and bounded loss drift;
-   its latest canonical rerun measured 0.955x median/0.957x pooled speed and did not clear
-   its peak-memory gate. Reject both on this M1. Reopen precision only on a different Apple
-   GPU generation or after a backend change, using the same qualification contract.
+   one canonical rerun measured 0.955x median/0.957x pooled speed. A later hot-run pair
+   reached 1.128x median/1.130x pooled and lower memory, but still missed the preregistered
+   1.15x floor and contradicted the earlier direction. Keep it unadopted on this M1 until a
+   thermally and route-order-stabilized sustained qualification resolves the variance.
    A separate deferred-sync trial chained all four compiled microbatches before one device
    synchronization. It preserved bounded full-parameter parity and exact reported loss but
    regressed to 1.12x median/1.16x pooled and raised compiled peak memory to 7.86 GB. Reject
    graph deferral and retain per-microbatch synchronization.
    A bounded size sweep found microbatch six best at `1.86x` median/`1.85x` pooled;
-   sizes five and seven measured `1.64x` and `1.31x`. Full-model trials also rejected
-   fused MLX RoPE (`1.24x`), parameter-preserving fused QKV/SwiGLU projections (`1.57x`),
+   sizes five and seven measured `1.64x` and `1.31x`. An earlier whole-path fused MLX RoPE
+   trial (`1.24x`) was rejected; a narrower training-only `mx.fast.rope` route later won
+   three direct compiled pairs by about 2.5%, preserved bounded update parity, and preserved
+   8/8 exact manual-kernel serving outputs. Serving remains on the manual reference kernel
+   because fast-kernel serving changed token paths. Full-model trials also rejected
+   parameter-preserving fused QKV/SwiGLU projections (`1.57x`),
    a reusable RoPE basis (`1.64x`), and a monolithic accumulation/update graph (`1.53x`).
    A narrower two-microbatch synchronization group also entered severe unified-memory
    pressure during its exact-checkpoint paired preflight and was terminated before a
@@ -338,7 +347,7 @@ software can create 100x more M1 arithmetic throughput.
    output contract, and functional quality. Report time to first token, decode rate,
    end-to-end p50/p95, memory, and accepted verified outputs/second.
    Batched beam advance, device-side admissible ranking, and exact pre-forward pruning are
-   qualified at 9.51x aggregate uncached novel-request speed and 8/8 parity. Completion and
+   qualified at about 8.8x aggregate uncached novel-request speed and 8/8 parity. Completion and
    prompt-prefix caches are disabled in that comparison and reported separately. The
    deferred KERC decoder now
    uses the same machinery and has serial/optimized token-path parity; a full KERC pipeline
@@ -351,7 +360,7 @@ software can create 100x more M1 arithmetic throughput.
    Prompt-length-bucketed prefill/beam advance and a bounded millisecond request coalescer
    are qualified on the exact registered 57M checkpoint: four distinct private prompts
    preserved exact text, state, reason, and generated-token identity while direct batching
-   improved pooled uncached novel-request throughput 2.26x across three alternating pairs
+   improved pooled uncached novel-request throughput about 2.2x across alternating pairs
    (2.30x median, 2.18x minimum), and the concurrent scheduler improved it 2.33x.
    Four-request peak MLX memory increased from about 293 MB to 458 MB. Cache
    speedups are excluded from these figures, and production serving remains disabled.
@@ -372,7 +381,7 @@ software can create 100x more M1 arithmetic throughput.
    scans, and batch independent verifier/tool calls. Cache hits must bind model, tokenizer,
    policy, capability, snapshot, and source identities; stale or unauthorized hits fail
    closed. Qualified: the five-step VCM governor, task-context bridge, deterministic-tool
-   registry, plan compiler, and private-verifier refresh measured 372x faster in the latest
+   registry, plan compiler, and private-verifier refresh remains more than 100x faster in the latest
    cold/warm comparison. Reuse binds exact command/input/output hashes and a
    300-second freshness window; mutation and stale controls force a rerun. Task-specific
    tool execution and model generation remain uncached and must be measured separately.

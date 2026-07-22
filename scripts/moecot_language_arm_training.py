@@ -4791,6 +4791,10 @@ def train_target(
         nn=nn,
         state_role_lookup=None,
         source_to_target_lookup=copy_lookup,
+        rope_kernel=str(
+            config["training"].get("training_rope_kernel")
+            or "manual_reference"
+        ),
     )
     expert_mode = target.get("role") == "language_expert"
     expert_scope = ""

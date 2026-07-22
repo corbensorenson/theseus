@@ -643,9 +643,21 @@ def run_training_pair_qualification(
         for mode in mode_order:
             if hasattr(mx, "clear_cache"):
                 mx.clear_cache()
+            kernel_options = (
+                {
+                    "rope_kernel": "manual_reference",
+                    "prune_inactive_auxiliary_outputs": False,
+                }
+                if mode == "eager"
+                else {
+                    "rope_kernel": "mlx_fast",
+                    "prune_inactive_auxiliary_outputs": True,
+                }
+            )
             mode_reports[mode] = run_training_route(
                 mode=mode,
                 capture_parameter_snapshot=True,
+                **kernel_options,
                 **route_context,
             )
         eager = mode_reports["eager"]
@@ -702,6 +714,10 @@ def run_training_pair_qualification(
         "same_batch_size": True,
         "same_loss_mass_weighting": True,
         "same_gradient_clip_and_update_count": True,
+        "reference_rope_kernel": "manual_reference",
+        "optimized_training_rope_kernel": "mlx_fast",
+        "inference_rope_kernel_unchanged": "manual_reference",
+        "inactive_auxiliary_pruning_requires_zero_effective_weight": True,
         "steps_per_route_per_repetition": steps,
         "repetitions": repetitions,
         "route_order_control": "alternating eager-first and compiled-first",
@@ -943,6 +959,8 @@ def run_training_route(
     mlx_utils: Any,
     precision_mode: str = "float32",
     capture_parameter_snapshot: bool = False,
+    rope_kernel: str = "mlx_fast",
+    prune_inactive_auxiliary_outputs: bool = True,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
@@ -959,6 +977,7 @@ def run_training_route(
         nn=nn,
         state_role_lookup=None,
         source_to_target_lookup=copy_lookup,
+        rope_kernel=rope_kernel,
     )
     master_model = None
     if precision_mode == "bfloat16_fp32_master":
@@ -968,6 +987,7 @@ def run_training_route(
             nn=nn,
             state_role_lookup=None,
             source_to_target_lookup=copy_lookup,
+            rope_kernel=rope_kernel,
         )
     schedule = training.build_schedule(optim, mx, training_cfg, total_schedule_steps)
     optimizer = optim.AdamW(
@@ -984,11 +1004,17 @@ def run_training_route(
         master_model.parameters() if master_model is not None else model.parameters(),
         optimizer.state,
     )
-    loss_function = (
-        mixed_precision_token_loss
-        if master_model is not None
-        else training.causal_loss
-    )
+    if master_model is not None:
+        loss_function = mixed_precision_token_loss
+    elif prune_inactive_auxiliary_outputs:
+        def loss_function(*loss_args: Any, **loss_kwargs: Any) -> Any:
+            return training.causal_loss(
+                *loss_args,
+                **loss_kwargs,
+                prune_inactive_auxiliary_outputs=True,
+            )
+    else:
+        loss_function = training.causal_loss
     phase = training.train_phase(
         model,
         optimizer,
@@ -1059,6 +1085,8 @@ def run_training_route(
             "compiled_update_seconds_prefix"
         ],
         "precision_mode": precision_mode,
+        "rope_kernel": rope_kernel,
+        "prune_inactive_auxiliary_outputs": prune_inactive_auxiliary_outputs,
         "compute_parameters": tree_numeric_receipt(
             model.trainable_parameters(), mx=mx, mlx_utils=mlx_utils
         ),

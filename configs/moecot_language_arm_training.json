@@ -211,6 +211,19 @@
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "commit:03a2bc23 tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch scripts/standard_causal_transformer_objectives.py",
         "reason": "Continue the exact step-3000 safetensors model and AdamW state after normalizing the final newline of the mechanically extracted objective module. The extracted objective AST is identical to the prior in-file objective block; model math, tensor values, optimizer bytes, data, objective, schedule, and evaluation behavior are unchanged."
+      },
+      {
+        "migration_id": "shared_trunk_step3000_training_only_fast_rope_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "79f850a553d71fdd2d35a35743d98bb8b750dcf94ff6a028a871dc902e6bca7f",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/mlx_fast_rope_training_qualification.json reports/mlx_fast_rope_training_manual_inference_parity.json tests/test_standard_causal_transformer_survival.py::test_fast_rope_kernel_is_bounded_and_manual_remains_default tests/test_standard_causal_transformer_survival.py::test_causal_loss_prunes_only_provably_inactive_auxiliary_outputs",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state through the qualified training-only MLX fused RoPE kernel and removal of auxiliary outputs whose effective loss weight is provably zero. Repeated paired updates preserved all 197 tensors within 2.38419e-7 maximum absolute drift, reduced peak MLX memory, and exact manual-kernel serving replay preserved all eight held-out outputs and normalized receipts. Inference remains on the manual reference RoPE kernel; model topology, saved tensors, optimizer bytes, data order, objective weights, schedule, and evaluation contracts are unchanged."
       }
     ]
   },
@@ -305,7 +318,10 @@
     "maximum_kernel_english_optimizer_repetitions": 2,
     "kernel_english_optimizer_repetitions": 0,
     "termination_loss_weight": 4.0,
-    "byte_boundary_loss_weight": 2.0
+    "byte_boundary_loss_weight": 2.0,
+    "training_rope_kernel": "mlx_fast",
+    "inference_rope_kernel": "manual_reference",
+    "prune_inactive_auxiliary_outputs": true
   },
   "evaluation": {
     "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
