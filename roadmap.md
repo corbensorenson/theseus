@@ -48,7 +48,7 @@ The current falsifiable question is:
 | Gate | State | Exit condition |
 |---|---|---|
 | `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | checkpoint/resume qualified; sustained speed target open | The exact 57.340M-active campaign has a durable step-3,000 checkpoint at 22,999,779 optimizer positions. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%. The stable repeated qualification was 1.88x pooled; a later 14-minute combined run was only 1.48x pooled with severe route-order drift, so the 2x gate remains open. Direct uncached decode is about 8.8x faster with exact parity. Stabilize sustained measurement and make the first matched architecture review executable, then continue the same weights through the evidence-efficient rung ladder. |
+| `T1` Frozen neural-seed campaign | review producer executable; matched run open | The exact 57.340M-active campaign has a durable production step-3,000 checkpoint at 22,999,779 optimizer positions. The separate frozen review producer now owns an isolated 100M-position matched rung, dependency-aware training, direct model-only generation, independent code verification, blind local English scoring, and controller-compatible receipts. One-step plus exact-resume smokes passed without changing the production checkpoint. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%; stable repeated qualification was 1.88x pooled while a noisier combined run was 1.48x, so the 2x sustained gate remains open. Execute the full matched review; do not promote the 20x contractual opportunity as empirical speed or capability before receipts exist. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -329,6 +329,19 @@ software can create 100x more M1 arithmetic throughput.
    review points. Use successive halving across MoECOT and dense controls so clearly
    dominated candidates stop consuming compute. Never inspect or tune from confirmation
    or public surfaces. A stopped run remains scoped evidence, not broad falsification.
+   The canonical producer is now `scripts/neural_seed_architecture_review.py`, bound by
+   `configs/neural_seed_architecture_review.json` and its immutable freeze. It assigns the
+   100M MoECOT opportunity as 60M shared-trunk plus 8M per independently owned arm and gives
+   each dense control 100M positions. Those totals explicitly include pretraining,
+   source-conditioned, and supervision optimizer positions rather than hiding the latter
+   phases outside the matched budget; raw positions, owned-parameter-token product, wall
+   time, weak tails, and verified-output throughput remain separate views. Its isolated
+   checkpoint lineage passed fresh and resumed one-step execution while the production
+   step-3,000 digest remained unchanged. One all-zero pilot now continues rather than
+   retiring the rung; two consecutive all-zero reviews may stop only the exact
+   scale/data/objective regime. A single review may halt a candidate only under the frozen,
+   stringent aggregate and every-arm confidence separation, and never claims broad
+   architecture falsification. Full 100M training/evaluation remains open.
 5. **Checkpoint and storage path.** The current 209 MB model plus 418 MB optimizer state is
    measured. Safetensors preserved the exact 197-tensor manifest and loaded 4.76x faster in
    the alternating three-load comparison; size and save time did not materially improve.

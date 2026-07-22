@@ -1,0 +1,145 @@
+{
+  "policy": "project_theseus_neural_seed_architecture_review_v1",
+  "review_id": "neural_seed_57m_private_dev_rung_v2",
+  "supersedes_freeze_sha256": "fa18639bc9f1d1a99ab1fce9127cd46cb43c8a69cc61b6597564f49562c6a782",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "scale_config": "configs/neural_seed_50m_scale_preregistration.json",
+  "functional_config": "configs/neural_seed_functional_utility.json",
+  "local_rater_config": "configs/neural_seed_local_english_raters.json",
+  "checkpoint_root": "checkpoints/neural_seed_57m_architecture_review_v2",
+  "review_directory": "reports/neural_seed_57m_architecture_reviews",
+  "candidate_directory": "runtime/neural_seed_57m_architecture_review_candidates",
+  "freeze": "configs/neural_seed_architecture_review_freeze.json",
+  "development_surface": {
+    "split": "private_dev",
+    "seed": 20260721,
+    "variants_per_family": 4,
+    "expected_cases_per_arm": 32,
+    "reusable_across_declared_learning_curve_rungs": true,
+    "training_eligible": false,
+    "confirmation_surface": false,
+    "public_surface": false
+  },
+  "candidate_budgets": {
+    "100000000": {
+      "moecot_system": {
+        "shared_trunk": 60000000,
+        "english": 8000000,
+        "python": 8000000,
+        "javascript_typescript": 8000000,
+        "html_css": 8000000,
+        "rust": 8000000
+      },
+      "dense_active_parameter": {
+        "dense_active_parameter": 100000000
+      },
+      "dense_total_parameter": {
+        "dense_total_parameter": 100000000
+      }
+    }
+  },
+  "component_phase_budgets": {
+    "100000000": {
+      "shared_trunk": {
+        "pretraining": 48285463,
+        "source_conditioned_pretraining": 2726861,
+        "supervision": 8987676,
+        "total": 60000000
+      },
+      "english": {
+        "pretraining": 6231440,
+        "source_conditioned_pretraining": 0,
+        "supervision": 1768560,
+        "total": 8000000
+      },
+      "python": {
+        "pretraining": 4790387,
+        "source_conditioned_pretraining": 689217,
+        "supervision": 2520396,
+        "total": 8000000
+      },
+      "javascript_typescript": {
+        "pretraining": 4949320,
+        "source_conditioned_pretraining": 661032,
+        "supervision": 2389648,
+        "total": 8000000
+      },
+      "html_css": {
+        "pretraining": 5491447,
+        "source_conditioned_pretraining": 662985,
+        "supervision": 1845568,
+        "total": 8000000
+      },
+      "rust": {
+        "pretraining": 6822869,
+        "source_conditioned_pretraining": 713627,
+        "supervision": 463504,
+        "total": 8000000
+      },
+      "dense_active_parameter": {
+        "pretraining": 88285463,
+        "source_conditioned_pretraining": 2726861,
+        "supervision": 8987676,
+        "total": 100000000
+      },
+      "dense_total_parameter": {
+        "pretraining": 88285463,
+        "source_conditioned_pretraining": 2726861,
+        "supervision": 8987676,
+        "total": 100000000
+      }
+    }
+  },
+  "allocation_rationale": {
+    "moecot_shared_fraction": 0.6,
+    "moecot_expert_fraction": 0.4,
+    "expert_allocation": "equal_by_arm_for_weak_tail_comparability",
+    "comparison_views": [
+      "equal_total_optimizer_positions",
+      "estimated_owned_parameter_token_product",
+      "measured_wall_seconds",
+      "peak_memory_when_available"
+    ],
+    "all_training_phases_count_toward_budget": true,
+    "claim_boundary": "An early rung is an engineering allocation decision, not broad architecture falsification."
+  },
+  "execution": {
+    "dependency_order": [
+      "shared_trunk",
+      "english",
+      "python",
+      "javascript_typescript",
+      "html_css",
+      "rust",
+      "dense_active_parameter",
+      "dense_total_parameter"
+    ],
+    "checkpoint_every_steps": 500,
+    "one_candidate_per_device": true,
+    "parallelize_on_single_unified_memory_device": false
+  },
+  "evaluation": {
+    "generator_visible_fields": [
+      "case_id",
+      "arm_id",
+      "prompt"
+    ],
+    "candidate_budget_per_case": 1,
+    "direct_model_only": true,
+    "postprocessing_allowed": false,
+    "code_verifiers": "scripts/neural_seed_functional_verifiers.py",
+    "english_raters": "scripts/neural_seed_local_english_raters.py",
+    "report_every_arm": true,
+    "accepted_verified_outputs_per_second": true
+  },
+  "boundaries": {
+    "public_training_rows_written": 0,
+    "external_inference_calls": 0,
+    "confirmation_surface_consumed": false,
+    "public_surface_consumed": false,
+    "fallback_return_count": 0,
+    "templates_renderers_routers_tools_credit": 0,
+    "candidate_outputs_training_eligible": false,
+    "early_review_is_architecture_falsification": false
+  }
+}

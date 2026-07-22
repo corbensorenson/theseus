@@ -22,6 +22,8 @@ DEFAULT_SCALE_CONFIG = ROOT / "configs/neural_seed_50m_scale_preregistration.jso
 DEFAULT_TRAINING_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
 DEFAULT_REVIEW_DIR = ROOT / "reports/neural_seed_57m_architecture_reviews"
 DEFAULT_OUT = ROOT / "reports/neural_seed_campaign_controller.json"
+DEFAULT_REVIEW_PRODUCER = ROOT / "scripts/neural_seed_architecture_review.py"
+DEFAULT_REVIEW_CONFIG = ROOT / "configs/neural_seed_architecture_review.json"
 SYSTEM_IDS = ("moecot_system", "dense_active_parameter", "dense_total_parameter")
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
 REVIEW_POLICY = "project_theseus_architecture_review_receipt_v1"
@@ -63,6 +65,8 @@ def build_campaign_status(
         maximum,
     ]
     review_points = sorted(set(value for value in review_points if value > 0))
+    producer = review_producer_contract(review_points)
+    hard_gaps.extend(producer["hard_gaps"])
     receipt_rows, receipt_faults = load_review_receipts(review_dir)
     hard_gaps.extend(receipt_faults)
     decisions = []
@@ -123,7 +127,8 @@ def build_campaign_status(
         "active_candidate_ids": active,
         "review_receipt_count": len(receipt_rows),
         "reviews": decisions,
-        "next_action": next_action(decisions, active, first),
+        "review_producer": producer,
+        "next_action": next_action(decisions, active, first, producer=producer),
         "hard_gaps": sorted(set(hard_gaps)),
         "boundaries": {
             "development_surface_only": True,
@@ -297,19 +302,28 @@ def decide_review(
         }
     candidates = [candidate_summary(indexed[item]) for item in active_candidates]
     all_zero = all(int(row["passed_count"]) == 0 for row in candidates)
-    if all_zero:
+    if all_zero and prior_complete_reviews == 0:
+        decision = "CONTINUE_MATCHED_NO_BEHAVIOR"
+        halted = []
+        rationale = (
+            "one all-zero pilot is insufficient to retire the exact scale rung; "
+            "continue to the second frozen review without an architecture verdict"
+        )
+    elif all_zero:
         decision = "STOP_SCALE_RUNG"
         halted = list(active_candidates)
-        rationale = "all matched candidates produced zero direct model-only passes"
+        rationale = (
+            "two consecutive matched reviews produced zero direct model-only passes; "
+            "stop only this exact scale/data/objective rung"
+        )
     else:
         halted = []
-        if prior_complete_reviews >= 1:
-            best = max(candidates, key=lambda row: (row["pass_rate"], row["candidate_id"]))
-            for candidate in candidates:
-                if candidate["candidate_id"] == best["candidate_id"]:
-                    continue
-                if clearly_dominated(candidate, best):
-                    halted.append(candidate["candidate_id"])
+        best = max(candidates, key=lambda row: (row["pass_rate"], row["candidate_id"]))
+        for candidate in candidates:
+            if candidate["candidate_id"] == best["candidate_id"]:
+                continue
+            if clearly_dominated(candidate, best):
+                halted.append(candidate["candidate_id"])
         decision = "HALT_DOMINATED" if halted else (
             "FINAL_REVIEW_COMPLETE" if review_position >= maximum_optimizer_positions else "CONTINUE_MATCHED"
         )
@@ -406,9 +420,22 @@ def wilson_interval(successes: int, total: int, z: float = 1.959963984540054) ->
     return max(0.0, center - radius), min(1.0, center + radius)
 
 
-def next_action(decisions: list[dict[str, Any]], active: list[str], pilot: int) -> dict[str, Any]:
+def next_action(
+    decisions: list[dict[str, Any]],
+    active: list[str],
+    pilot: int,
+    *,
+    producer: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    producer = producer or {}
+    producer_command = list(producer.get("status_command") or [])
     if not decisions:
-        return {"kind": "materialize_review", "review_optimizer_positions": pilot, "candidate_ids": active}
+        return {
+            "kind": "materialize_review",
+            "review_optimizer_positions": pilot,
+            "candidate_ids": active,
+            "producer_status_command": producer_command,
+        }
     current = decisions[-1]
     if current.get("state") == "WAITING":
         return {
@@ -422,6 +449,9 @@ def next_action(decisions: list[dict[str, Any]], active: list[str], pilot: int) 
                 "per-arm functional verification",
                 "exact checkpoint/evaluator/case/verifier identities",
             ],
+            "producer_status_command": producer_command,
+            "producer_execute_command": list(producer.get("execute_command") or []),
+            "producer_evaluate_command": list(producer.get("evaluate_command") or []),
         }
     if current.get("state") == "INVALID":
         return {
@@ -433,6 +463,33 @@ def next_action(decisions: list[dict[str, Any]], active: list[str], pilot: int) 
     if current.get("decision") == "STOP_SCALE_RUNG":
         return {"kind": "stop_exact_scale_rung", "candidate_ids": current["halted_candidate_ids"]}
     return {"kind": "continue_next_review", "candidate_ids": active}
+
+
+def review_producer_contract(review_points: list[int]) -> dict[str, Any]:
+    gaps = []
+    config = read_json(DEFAULT_REVIEW_CONFIG) if DEFAULT_REVIEW_CONFIG.is_file() else {}
+    if not DEFAULT_REVIEW_PRODUCER.is_file():
+        gaps.append("architecture_review_producer_missing")
+    if config.get("policy") != "project_theseus_neural_seed_architecture_review_v1":
+        gaps.append("architecture_review_producer_config_invalid")
+    declared = {
+        int(key) for key in (config.get("candidate_budgets") or {}) if str(key).isdigit()
+    }
+    first = review_points[0] if review_points else 0
+    if first and first not in declared:
+        gaps.append("first_review_budget_not_executable")
+    command = ["python3", relative(DEFAULT_REVIEW_PRODUCER)]
+    return {
+        "policy": "project_theseus_architecture_review_producer_binding_v1",
+        "state": "GREEN" if not gaps else "RED",
+        "implementation": artifact(DEFAULT_REVIEW_PRODUCER) if DEFAULT_REVIEW_PRODUCER.is_file() else {},
+        "config": artifact(DEFAULT_REVIEW_CONFIG) if DEFAULT_REVIEW_CONFIG.is_file() else {},
+        "declared_review_optimizer_positions": sorted(declared),
+        "status_command": command,
+        "execute_command": [*command, "--execute-training"],
+        "evaluate_command": [*command, "--evaluate"],
+        "hard_gaps": gaps,
+    }
 
 
 def summary(report: dict[str, Any]) -> dict[str, Any]:

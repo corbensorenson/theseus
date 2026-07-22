@@ -71,7 +71,7 @@ def test_current_contract_has_twenty_x_first_review_opportunity(tmp_path: Path) 
     assert report["reviews"][0]["decision"] == "WAIT_FOR_MATCHED_RECEIPTS"
 
 
-def test_zero_behavior_pilot_stops_only_exact_scale_rung() -> None:
+def test_one_zero_behavior_pilot_does_not_retire_scale_rung() -> None:
     rows = [review(candidate, passed=0, arm_passed=0) for candidate in SYSTEM_IDS]
     result = decide_review(
         review_position=100_000_000,
@@ -80,16 +80,33 @@ def test_zero_behavior_pilot_stops_only_exact_scale_rung() -> None:
         rows=rows,
         prior_complete_reviews=0,
     )
+    assert result["decision"] == "CONTINUE_MATCHED_NO_BEHAVIOR"
+    assert result["architecture_falsification_claimed"] is False
+    assert result["halted_candidate_ids"] == []
+
+
+def test_two_zero_behavior_reviews_stop_only_exact_scale_rung() -> None:
+    rows = [
+        review(candidate, passed=0, arm_passed=0, position=250_000_000)
+        for candidate in SYSTEM_IDS
+    ]
+    result = decide_review(
+        review_position=250_000_000,
+        maximum_optimizer_positions=2_000_000_000,
+        active_candidates=list(SYSTEM_IDS),
+        rows=rows,
+        prior_complete_reviews=1,
+    )
     assert result["decision"] == "STOP_SCALE_RUNG"
     assert result["architecture_falsification_claimed"] is False
     assert result["halted_candidate_ids"] == list(SYSTEM_IDS)
 
 
-def test_single_review_never_prunes_nonzero_candidate() -> None:
+def test_single_review_does_not_prune_without_clear_weak_tail_dominance() -> None:
     rows = [
         review("moecot_system", passed=300, arm_passed=60),
-        review("dense_active_parameter", passed=25, arm_passed=5),
-        review("dense_total_parameter", passed=20, arm_passed=4),
+        review("dense_active_parameter", passed=250, arm_passed=50),
+        review("dense_total_parameter", passed=245, arm_passed=49),
     ]
     result = decide_review(
         review_position=100_000_000,
@@ -100,6 +117,27 @@ def test_single_review_never_prunes_nonzero_candidate() -> None:
     )
     assert result["decision"] == "CONTINUE_MATCHED"
     assert result["halted_candidate_ids"] == []
+
+
+def test_single_review_can_make_scoped_engineering_halt_on_clear_dominance() -> None:
+    rows = [
+        review("moecot_system", passed=490, arm_passed=98),
+        review("dense_active_parameter", passed=5, arm_passed=1),
+        review("dense_total_parameter", passed=0, arm_passed=0),
+    ]
+    result = decide_review(
+        review_position=100_000_000,
+        maximum_optimizer_positions=2_000_000_000,
+        active_candidates=list(SYSTEM_IDS),
+        rows=rows,
+        prior_complete_reviews=0,
+    )
+    assert result["decision"] == "HALT_DOMINATED"
+    assert result["architecture_falsification_claimed"] is False
+    assert result["halted_candidate_ids"] == [
+        "dense_active_parameter",
+        "dense_total_parameter",
+    ]
 
 
 def test_repeated_review_can_halt_clearly_dominated_candidates() -> None:

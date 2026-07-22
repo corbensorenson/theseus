@@ -224,6 +224,10 @@ share toward zero. Public benchmarks are calibration only.
 - `configs/evaluation_history/neural_seed_v8_candidate_packet.json`
 - `reports/pretraining_architecture_freeze_package.json`
 - `reports/resource_acceleration_qualification.json`
+- `configs/neural_seed_architecture_review.json`
+- `configs/neural_seed_architecture_review_freeze.json`
+- `reports/neural_seed_architecture_review_status.json`
+- `reports/neural_seed_campaign_controller.json`
 - `reports/theseus_artifact_budget_gate_current.json`
 
 ## Canonical Checks
@@ -241,9 +245,16 @@ is 1.88x faster under the latest pooled matched same-state canary, direct decode
 faster with 8/8 exact parity, and the governed joined assistant refresh is 3.11x faster cold
 plus 156.7x faster on exact unchanged warm reuse, but direct functional utility is still
 unmeasured and current step-3,000 generation usually fails closed on byte serialization.
-The current wall is therefore semantic/serialization
-learning quality plus time to the first defensible architecture decision. Make the
-pilot/review ladder executable, preserve weak-arm evidence, and finish resident/KV/runtime
-measurement while continuing the exact lineage. The 100x aspiration applies to
+The current wall is therefore semantic/serialization learning quality plus execution of
+the first defensible matched architecture review. The prior controller could validate
+review receipts but could not produce them. That gap is now closed by one frozen,
+registry-owned runner with isolated checkpoints, a 100M-position matched allocation that
+counts pretraining, source-conditioned, and supervision phases inside the same budget,
+direct model-only generation, independent functional verification, blind local English
+scoring, weak-arm reporting, and exact controller receipt identities. Fresh and resumed
+one-step training smokes passed and left the production step-3,000 checkpoint unchanged;
+the full matched run has not yet executed, so the 20x first-review opportunity remains a
+contractual upper bound rather than empirical speed or capability evidence. Execute that
+review next and preserve the confirmation/public surfaces. The 100x aspiration applies to
 end-to-end time-to-feedback through kernels, early stopping, caching, reuse, and
 independent parallelism, not an unsupported raw-compute claim.
