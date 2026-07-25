@@ -1412,6 +1412,42 @@ def selected_training_rows(
         "replay_seed": replay_seed,
         "epochs_touched": epoch,
         "objective_sampling": objective_sampling_receipt,
+        "semantic_target_position_counts_by_kind": dict(
+            (stage.receipt or {}).get(
+                "kerc_compiler_semantic_pointer_position_counts_by_kind"
+            )
+            or {}
+        ),
+        "semantic_target_position_count": int(
+            (stage.receipt or {}).get(
+                "kerc_compiler_semantic_pointer_position_count"
+            )
+            or 0
+        ),
+        "semantic_target_preweight_loss_mass_by_kind": dict(
+            (stage.receipt or {}).get(
+                "kerc_compiler_semantic_pointer_preweight_loss_mass_by_kind"
+            )
+            or {}
+        ),
+        "semantic_target_postweight_loss_mass_by_kind": dict(
+            (stage.receipt or {}).get(
+                "kerc_compiler_semantic_pointer_postweight_loss_mass_by_kind"
+            )
+            or {}
+        ),
+        "semantic_target_loss_weights_by_kind": dict(
+            (stage.receipt or {}).get(
+                "kerc_compiler_semantic_pointer_loss_weights_by_kind"
+            )
+            or {}
+        ),
+        "semantic_target_preweight_loss_histogram_by_kind": dict(
+            (stage.receipt or {}).get(
+                "kerc_compiler_semantic_pointer_preweight_loss_histogram_by_kind"
+            )
+            or {}
+        ),
         "resource_stress": resource_stress_receipt,
         "execution_prefix_indices_sha256": expected_prefix_sha256,
         "sampling_prefix": sampling_prefix,

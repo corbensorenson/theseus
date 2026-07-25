@@ -499,6 +499,7 @@ from kerc_concept_registry import ConceptRegistry
 from kernel_english_protocol import (
     ANSWER_DISPOSITION_ORDER,
     KERC_HIERARCHICAL_COMPILER_POLICY,
+    KERC_COMPILER_SEMANTIC_TARGET_KINDS,
     KERC_VERIFIER_DIMENSIONS,
     KERNEL_VERSION,
     LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY,
@@ -510,7 +511,7 @@ from kernel_english_protocol import (
     compact_learned_compiler_transport_text,
     execute_learned_pipeline,
     learned_compiler_transport_required_continuation_token_indices,
-    learned_compiler_transport_semantic_pointer_token_indices,
+    learned_compiler_transport_semantic_pointer_token_indices_by_kind,
     parse_learned_answer_output,
     parse_learned_compiler_output,
     validate_training_disposition,
@@ -4626,7 +4627,12 @@ def materialize_target_supervision(
     mask_starts: list[int] = []
     generator_loss_enabled: list[bool] = []
     compiler_schema_continuation_indices: list[tuple[int, ...]] = []
-    compiler_semantic_pointer_indices: list[tuple[int, ...]] = []
+    compiler_semantic_pointer_indices_by_kind: list[
+        dict[str, tuple[int, ...]]
+    ] = []
+    compiler_semantic_pointer_position_counts_by_kind = {
+        kind: 0 for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
     sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
     kerc_residual_loss_enabled: list[bool] = []
@@ -4774,7 +4780,9 @@ def materialize_target_supervision(
                     else answer
                 )
                 compiler_continuation_indices: tuple[int, ...] = ()
-                compiler_semantic_indices: tuple[int, ...] = ()
+                semantic_indices_by_kind: dict[str, tuple[int, ...]] = {
+                    kind: () for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+                }
                 if kernel_objective:
                     if objective == "surface_to_kernel_program_v1":
                         (
@@ -4803,19 +4811,24 @@ def materialize_target_supervision(
                                 logical_token_ranges[logical_index][1],
                             )
                         )
-                        logical_semantic_pointer_indices = (
-                            learned_compiler_transport_semantic_pointer_token_indices(
+                        logical_semantic_pointer_indices_by_kind = (
+                            learned_compiler_transport_semantic_pointer_token_indices_by_kind(
                                 code_tokens
                             )
                         )
-                        compiler_semantic_indices = tuple(
-                            encoded_index
-                            for logical_index in logical_semantic_pointer_indices
-                            for encoded_index in range(
-                                logical_token_ranges[logical_index][0],
-                                logical_token_ranges[logical_index][1],
+                        semantic_indices_by_kind = {
+                            kind: tuple(
+                                encoded_index
+                                for logical_index in (
+                                    logical_semantic_pointer_indices_by_kind[kind]
+                                )
+                                for encoded_index in range(
+                                    logical_token_ranges[logical_index][0],
+                                    logical_token_ranges[logical_index][1],
+                                )
                             )
-                        )
+                            for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+                        }
                     else:
                         target_ids, target_receipt = encode_kerc_global_target(
                             encoded_answer,
@@ -4883,10 +4896,10 @@ def materialize_target_supervision(
                     if kerc_mode and objective == "surface_to_kernel_program_v1"
                     else ()
                 )
-                compiler_semantic_pointer_indices.append(
-                    compiler_semantic_indices
+                compiler_semantic_pointer_indices_by_kind.append(
+                    semantic_indices_by_kind
                     if kerc_mode and objective == "surface_to_kernel_program_v1"
-                    else ()
+                    else {}
                 )
                 sampling_weight = float(row.get("optimizer_sampling_weight", 1.0))
                 if not 0.0 < sampling_weight <= 1.0:
@@ -4984,7 +4997,7 @@ def materialize_target_supervision(
                     mask_starts.append(negative_start - 1)
                     generator_loss_enabled.append(False)
                     compiler_schema_continuation_indices.append(())
-                    compiler_semantic_pointer_indices.append(())
+                    compiler_semantic_pointer_indices_by_kind.append({})
                     sampling_weights.append(sampling_weight)
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_residual_loss_enabled.append(False)
@@ -5148,7 +5161,7 @@ def materialize_target_supervision(
                         mask_starts.append(counter_start - 1)
                         generator_loss_enabled.append(False)
                         compiler_schema_continuation_indices.append(())
-                        compiler_semantic_pointer_indices.append(())
+                        compiler_semantic_pointer_indices_by_kind.append({})
                         sampling_weights.append(sampling_weight)
                         kerc_residual_rows.append([int(value) for value in residual])
                         kerc_residual_loss_enabled.append(False)
@@ -5239,6 +5252,26 @@ def materialize_target_supervision(
     compiler_semantic_pointer_loss_weight = float(
         config["training"].get("kerc_compiler_semantic_pointer_loss_weight", 1.0)
     )
+    configured_semantic_weights = config["training"].get(
+        "kerc_compiler_semantic_pointer_loss_weights_by_kind"
+    )
+    compiler_semantic_pointer_loss_weights_by_kind = {
+        kind: float(
+            (configured_semantic_weights or {}).get(
+                kind, compiler_semantic_pointer_loss_weight
+            )
+        )
+        for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
+    compiler_semantic_pointer_preweight_loss_mass_by_kind = {
+        kind: 0.0 for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
+    compiler_semantic_pointer_postweight_loss_mass_by_kind = {
+        kind: 0.0 for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
+    compiler_semantic_pointer_preweight_loss_histogram_by_kind = {
+        kind: Counter() for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
     compiler_schema_continuation_position_count = 0
     compiler_semantic_pointer_position_count = 0
     for (
@@ -5246,13 +5279,13 @@ def materialize_target_supervision(
         mask_start,
         generator_enabled,
         continuation_indices,
-        semantic_pointer_indices,
+        semantic_pointer_indices_by_kind,
     ) in zip(
         sequences,
         mask_starts,
         generator_loss_enabled,
         compiler_schema_continuation_indices,
-        compiler_semantic_pointer_indices,
+        compiler_semantic_pointer_indices_by_kind,
         strict=True,
     ):
         row_inputs = np.asarray(sequence[:-1], dtype=np.int32)
@@ -5288,22 +5321,36 @@ def materialize_target_supervision(
                 compiler_schema_continuation_loss_weight,
             )
             compiler_schema_continuation_position_count += 1
-        for semantic_pointer_index in semantic_pointer_indices:
-            loss_index = mask_start + int(semantic_pointer_index)
-            if (
-                not generator_enabled
-                or loss_index < 0
-                or loss_index >= len(row_loss)
-                or not row_mask[loss_index]
+        for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS:
+            kind_weight = compiler_semantic_pointer_loss_weights_by_kind[kind]
+            for semantic_pointer_index in (
+                semantic_pointer_indices_by_kind.get(kind) or ()
             ):
-                raise ValueError(
-                    "KERC compiler semantic-pointer loss position is invalid"
+                loss_index = mask_start + int(semantic_pointer_index)
+                if (
+                    not generator_enabled
+                    or loss_index < 0
+                    or loss_index >= len(row_loss)
+                    or not row_mask[loss_index]
+                ):
+                    raise ValueError(
+                        "KERC compiler semantic-pointer loss position is invalid"
+                    )
+                compiler_semantic_pointer_preweight_loss_mass_by_kind[
+                    kind
+                ] += float(row_loss[loss_index])
+                compiler_semantic_pointer_preweight_loss_histogram_by_kind[
+                    kind
+                ][str(float(row_loss[loss_index]))] += 1
+                row_loss[loss_index] = max(
+                    float(row_loss[loss_index]),
+                    kind_weight,
                 )
-            row_loss[loss_index] = max(
-                float(row_loss[loss_index]),
-                compiler_semantic_pointer_loss_weight,
-            )
-            compiler_semantic_pointer_position_count += 1
+                compiler_semantic_pointer_postweight_loss_mass_by_kind[
+                    kind
+                ] += float(row_loss[loss_index])
+                compiler_semantic_pointer_position_counts_by_kind[kind] += 1
+                compiler_semantic_pointer_position_count += 1
         input_rows.append(row_inputs)
         label_rows.append(row_labels)
         mask_rows.append(row_mask)
@@ -5353,9 +5400,34 @@ def materialize_target_supervision(
         "kerc_compiler_semantic_pointer_loss_weight": (
             compiler_semantic_pointer_loss_weight
         ),
+        "kerc_compiler_semantic_pointer_loss_weights_by_kind": dict(
+            compiler_semantic_pointer_loss_weights_by_kind
+        ),
         "kerc_compiler_semantic_pointer_position_count": (
             compiler_semantic_pointer_position_count
         ),
+        "kerc_compiler_semantic_pointer_position_counts_by_kind": dict(
+            compiler_semantic_pointer_position_counts_by_kind
+        ),
+        "kerc_compiler_semantic_pointer_kind_policy": (
+            "project_theseus_kerc_compiler_semantic_target_kinds_v1"
+        ),
+        "kerc_compiler_semantic_pointer_preweight_loss_mass_by_kind": dict(
+            compiler_semantic_pointer_preweight_loss_mass_by_kind
+        ),
+        "kerc_compiler_semantic_pointer_postweight_loss_mass_by_kind": dict(
+            compiler_semantic_pointer_postweight_loss_mass_by_kind
+        ),
+        "kerc_compiler_semantic_pointer_preweight_loss_histogram_by_kind": {
+            kind: dict(
+                sorted(
+                    compiler_semantic_pointer_preweight_loss_histogram_by_kind[
+                        kind
+                    ].items()
+                )
+            )
+            for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+        },
         "kerc_compiler_semantic_pointer_position_mapping": (
             "existing_target_atom_to_exact_encoded_half_open_range_v1"
         ),
@@ -11448,6 +11520,21 @@ def validate_config(config: dict[str, Any]) -> None:
     ) <= 8.0:
         raise ValueError(
             "KERC compiler semantic-pointer loss weight must remain bounded"
+        )
+    semantic_weights_by_kind = training.get(
+        "kerc_compiler_semantic_pointer_loss_weights_by_kind"
+    )
+    if semantic_weights_by_kind is not None and (
+        not isinstance(semantic_weights_by_kind, dict)
+        or set(semantic_weights_by_kind)
+        != set(KERC_COMPILER_SEMANTIC_TARGET_KINDS)
+        or any(
+            not 1.0 <= float(semantic_weights_by_kind[kind]) <= 8.0
+            for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+        )
+    ):
+        raise ValueError(
+            "KERC compiler semantic-pointer kind weights must be exact and bounded"
         )
 
 

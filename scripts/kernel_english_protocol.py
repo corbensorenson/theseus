@@ -2328,10 +2328,18 @@ def learned_compiler_transport_required_continuation_token_indices(
     return token_indices
 
 
-def learned_compiler_transport_semantic_pointer_token_indices(
+KERC_COMPILER_SEMANTIC_TARGET_KINDS = (
+    "program_alignment_span",
+    "protected_character_bound",
+    "residual_unit_id",
+    "residual_fidelity",
+)
+
+
+def learned_compiler_transport_semantic_pointer_token_indices_by_kind(
     tokens: list[str],
-) -> list[int]:
-    """Locate path-qualified target atoms that carry spans or residual fidelity.
+) -> dict[str, list[int]]:
+    """Locate path-qualified semantic target atoms by causal fault owner.
 
     This classifier adds no value or answer metadata. It parses only the
     existing compact target and selects program-span atoms, protected-object
@@ -2451,7 +2459,9 @@ def learned_compiler_transport_semantic_pointer_token_indices(
             path="compiler_output",
         )
 
-    selected_spans: list[tuple[int, int]] = []
+    selected_spans_by_kind: dict[str, list[tuple[int, int]]] = {
+        kind: [] for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
     for path, value, start, end in scalar_spans:
         program_span = (
             len(path) == 2
@@ -2467,16 +2477,19 @@ def learned_compiler_transport_semantic_pointer_token_indices(
             and isinstance(value, (int, float))
             and not isinstance(value, bool)
         )
+        residual_unit_id = (
+            len(path) >= 2
+            and path[0:2] == (4, 1)
+            and isinstance(value, str)
+            and re.fullmatch(r"ru:[0-9a-f]{24}", value) is not None
+        )
         residual_fidelity = (
             len(path) >= 2
             and path[0:2] == (4, 1)
             and (
                 (
                     isinstance(value, str)
-                    and (
-                        re.fullmatch(r"ru:[0-9a-f]{24}", value)
-                        or value in FIDELITY_MODES
-                    )
+                    and value in FIDELITY_MODES
                 )
                 or (
                     isinstance(value, (int, float))
@@ -2484,24 +2497,55 @@ def learned_compiler_transport_semantic_pointer_token_indices(
                 )
             )
         )
-        if program_span or protected_character_bound or residual_fidelity:
-            selected_spans.append((start, end))
+        if program_span:
+            selected_spans_by_kind["program_alignment_span"].append(
+                (start, end)
+            )
+        elif protected_character_bound:
+            selected_spans_by_kind["protected_character_bound"].append(
+                (start, end)
+            )
+        elif residual_unit_id:
+            selected_spans_by_kind["residual_unit_id"].append((start, end))
+        elif residual_fidelity:
+            selected_spans_by_kind["residual_fidelity"].append((start, end))
 
-    indices: list[int] = []
-    token_cursor = 0
-    for start, end in selected_spans:
-        while (
-            token_cursor < len(token_ranges)
-            and token_ranges[token_cursor][1] <= start
-        ):
-            token_cursor += 1
-        index = token_cursor
-        while index < len(token_ranges) and token_ranges[index][0] < end:
-            if token_ranges[index][1] > start:
-                indices.append(index)
-            index += 1
-    indices = sorted(set(indices))
-    return indices
+    indices_by_kind: dict[str, list[int]] = {}
+    for kind, selected_spans in selected_spans_by_kind.items():
+        indices: list[int] = []
+        token_cursor = 0
+        for start, end in selected_spans:
+            while (
+                token_cursor < len(token_ranges)
+                and token_ranges[token_cursor][1] <= start
+            ):
+                token_cursor += 1
+            index = token_cursor
+            while index < len(token_ranges) and token_ranges[index][0] < end:
+                if token_ranges[index][1] > start:
+                    indices.append(index)
+                index += 1
+        indices_by_kind[kind] = sorted(set(indices))
+    return indices_by_kind
+
+
+def learned_compiler_transport_semantic_pointer_token_indices(
+    tokens: list[str],
+) -> list[int]:
+    """Return the exact union of path-qualified semantic target atoms."""
+
+    indices_by_kind = (
+        learned_compiler_transport_semantic_pointer_token_indices_by_kind(
+            tokens
+        )
+    )
+    return sorted(
+        {
+            index
+            for indices in indices_by_kind.values()
+            for index in indices
+        }
+    )
 
 
 def compact_learned_compiler_transport_text(output: str) -> str:

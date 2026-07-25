@@ -2857,7 +2857,15 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         return json.dumps(
             {
                 "kernel_version": training_module.KERNEL_VERSION,
-                "protected_objects": [],
+                "protected_objects": [
+                    {
+                        "handle": "@E1",
+                        "object_type": "PERSON",
+                        "copy_policy": "EXACT",
+                        "character_start": 7,
+                        "character_end": 19,
+                    }
+                ],
                 "concept_capsules": {},
                 "program": {
                     "policy": training_module.LEARNED_PROGRAM_TRANSPORT_POLICY,
@@ -2865,7 +2873,9 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
                 },
                 "residual": {
                     "mode": "SOURCE_RECONSTRUCTION",
-                    "unit_fidelity": [],
+                    "unit_fidelity": [
+                        ["ru:0123456789abcdef01234567", "exact"]
+                    ],
                     "interaction": [],
                     "segment": [],
                     "tokens": [],
@@ -2882,7 +2892,7 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
             separators=(",", ":"),
         )
 
-    positive_target = compiler_target("KOP:valid")
+    positive_target = compiler_target("PSPANS:[[7,19]]")
     negative_target = compiler_target("KOP:corrupted")
     row = {
         "split": "private_train",
@@ -2967,6 +2977,12 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
                 "byte_boundary_loss_weight": 2.0,
                 "kerc_compiler_schema_continuation_loss_weight": 8.0,
                 "kerc_compiler_semantic_pointer_loss_weight": 4.0,
+                "kerc_compiler_semantic_pointer_loss_weights_by_kind": {
+                    "program_alignment_span": 4.67146849,
+                    "protected_character_bound": 8.0,
+                    "residual_unit_id": 3.2060695,
+                    "residual_fidelity": 8.0,
+                },
             }
         },
         {"tokenization": {"max_sequence_tokens": 128}},
@@ -3005,22 +3021,47 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.receipt[
         "kerc_compiler_schema_continuation_loss_weight"
     ] == 8.0
-    assert stage.receipt[
+    schema_position_count = stage.receipt[
         "kerc_compiler_schema_continuation_position_count"
-    ] == 12
+    ]
+    assert schema_position_count == 16
     assert stage.receipt[
         "kerc_compiler_schema_continuation_semantic_values_added"
     ] == 0
     assert stage.receipt[
         "kerc_compiler_semantic_pointer_loss_weight"
     ] == 4.0
+    semantic_counts = stage.receipt[
+        "kerc_compiler_semantic_pointer_position_counts_by_kind"
+    ]
+    assert all(semantic_counts.values())
     assert stage.receipt[
         "kerc_compiler_semantic_pointer_position_count"
-    ] == 0
+    ] == sum(semantic_counts.values())
+    semantic_weights = stage.receipt[
+        "kerc_compiler_semantic_pointer_loss_weights_by_kind"
+    ]
+    assert semantic_weights == {
+        "program_alignment_span": 4.67146849,
+        "protected_character_bound": 8.0,
+        "residual_unit_id": 3.2060695,
+        "residual_fidelity": 8.0,
+    }
+    for kind in training_module.KERC_COMPILER_SEMANTIC_TARGET_KINDS:
+        assert stage.receipt[
+            "kerc_compiler_semantic_pointer_postweight_loss_mass_by_kind"
+        ][kind] == pytest.approx(
+            semantic_counts[kind] * semantic_weights[kind],
+            rel=1e-6,
+        )
     assert stage.receipt[
         "kerc_compiler_semantic_pointer_values_added"
     ] == 0
-    assert int(np.sum(np.asarray(stage.loss_mask[0]) == 8.0)) == 12
+    assert int(np.sum(np.asarray(stage.loss_mask[0]) == 8.0)) == (
+        schema_position_count
+        + semantic_counts["protected_character_bound"]
+        + semantic_counts["residual_fidelity"]
+    )
     assert all(
         not bool(np.any(np.asarray(stage.loss_mask[index]) == 8.0))
         for index in (1, 2, 3)
@@ -4380,11 +4421,11 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
             candidate_lease=lease,
         )
         migration = next(
-                    row
-                    for row in candidate_plan["plan_identity"]["legacy_migrations"]
-                    if row["migration_id"]
-                    == "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4"
-                )
+            row
+            for row in candidate_plan["plan_identity"]["legacy_migrations"]
+            if row["migration_id"]
+            == "english_kerc_step4657_semantic_target_mass_rebalance_v5"
+        )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]
         )

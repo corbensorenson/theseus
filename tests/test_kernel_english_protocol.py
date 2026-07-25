@@ -564,6 +564,23 @@ def test_compact_compiler_transport_is_exact_smaller_and_fail_closed() -> None:
             [str(token) for token in path_qualified_tokens]
         )
     )
+    path_qualified_by_kind = (
+        kernel.learned_compiler_transport_semantic_pointer_token_indices_by_kind(
+            [str(token) for token in path_qualified_tokens]
+        )
+    )
+    assert tuple(path_qualified_by_kind) == (
+        kernel.KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    )
+    assert path_qualified_indices == {
+        index
+        for indices in path_qualified_by_kind.values()
+        for index in indices
+    }
+    assert path_qualified_by_kind["program_alignment_span"]
+    assert path_qualified_by_kind["protected_character_bound"]
+    assert path_qualified_by_kind["residual_unit_id"]
+    assert path_qualified_by_kind["residual_fidelity"]
     selected_values = {
         str(path_qualified_tokens[index])
         for index in path_qualified_indices

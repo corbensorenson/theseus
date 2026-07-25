@@ -470,6 +470,21 @@
         "reset_data_cursor_seed": 20260722,
         "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_matched_teacher_forced16_retry1_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_retained_step4630_row_greedy1_seed_20260722.json tests/test_moecot_language_arm_training.py::test_progress_generation_cleanup_can_preserve_bounded_segment_history",
         "reason": "Preserve the exact step-4630 model, optimizer, seed, sampler, q32 execution math, and path-qualified semantic objective after the 32-step lineage improved matched teacher-forced accuracy from 4140 to 4194 of 5976 but regressed the exact retained free-generation transport from valid 6/6/3 root-residual-hierarchy cardinalities to invalid 9/5/0. The segmented receipts hash-bind every intermediate generation, but supersession cleanup deleted those named checkpoints and prevented independent localization of the first regression. Retain the bounded 32-generation candidate history within the existing 6144 MiB disk lease; this changes checkpoint custody only and grants no capability or behavior credit."
+      },
+      {
+        "migration_id": "english_kerc_step4657_semantic_target_mass_rebalance_v5",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_optimizer_positions": 457027,
+        "required_current_plan_sha256": "bb1f22f95a8da2dbe9add8dc72b4ff9324e1d69539e87da92d9d08ea43ec9614",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_step27_source_disjoint_behavior16_fresh03_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_semantic_target_mass_components_audit_v3_seed_20260722.json tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed",
+        "reason": "Continue the exact last behavior-valid step-4657 model and projected AdamW state after bounded checkpoint retention localized the first 6/6/3 to 9/3/0 transport regression to update 28 and a new exact-once source-disjoint panel produced sixteen complete, transport-valid candidates but zero accepted outputs: seven alignment-span, three protected-span replay, and six residual-unit fidelity faults. The 24-row objective audit shows that one global 4x semantic bucket allocates 27271 of 40877 encoded positions to residual unit ids but only 1929 to protected bounds and 1831 to fidelity values. Split the unchanged target atoms into exact causal path groups and apply a capped inverse-square-root frequency rebalance that preserves the prior 163508 total postweight semantic loss mass to float32 rounding (163507.996969 observed): alignment 4.67146849x, protected bounds 8x, residual fidelity 8x, residual unit ids 3.2060695x. Reset only the invalidated kernel sampler cursor. No target value, public or private evaluation row, generator-visible field, runtime repair, template, renderer, verifier selection, memory gate, or seed is added; matched admitted-training behavior and the step-4657 transport boundary must improve before another private surface."
       }
     ]
   },
@@ -568,6 +583,12 @@
     "byte_boundary_loss_weight": 2.0,
     "kerc_compiler_schema_continuation_loss_weight": 1.0,
     "kerc_compiler_semantic_pointer_loss_weight": 4.0,
+    "kerc_compiler_semantic_pointer_loss_weights_by_kind": {
+      "program_alignment_span": 4.67146849,
+      "protected_character_bound": 8.0,
+      "residual_unit_id": 3.2060695,
+      "residual_fidelity": 8.0
+    },
     "training_rope_kernel": "mlx_fast",
     "inference_rope_kernel": "manual_reference",
     "prune_inactive_auxiliary_outputs": true
