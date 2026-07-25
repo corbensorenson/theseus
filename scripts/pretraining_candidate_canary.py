@@ -360,10 +360,11 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 ),
                 "continuation_source_optimizer_steps": 4657,
                 "continuation_source_optimizer_positions": 457027,
+                "continuation_learning_rate": 0.00003,
+                "continuation_min_learning_rate": 0.00003,
                 "large_sequence_route": (
-                    "compiler_full_stage_path_qualified_semantic_pointer_fidelity_"
-                    "loss4_schema_continuation_loss1_position32_q32_k32_"
-                    "coverage128_lr10x_v18"
+                    "compiler_full_stage_semantic_target_mass_rebalance_capped_"
+                    "inverse_sqrt_lr_min_position32_q32_k32_coverage128_v19"
                 ),
             }
         elif candidate_id == "rdc_kerc_k5_overfit":

@@ -107,7 +107,9 @@
       "continuation_source_mlx_rng_state_sha256": "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9",
       "continuation_source_optimizer_steps": 4657,
       "continuation_source_optimizer_positions": 457027,
-      "large_sequence_route": "compiler_full_stage_path_qualified_semantic_pointer_fidelity_loss4_schema_continuation_loss1_position32_q32_k32_coverage128_lr10x_v18"
+      "continuation_learning_rate": 0.00003,
+      "continuation_min_learning_rate": 0.00003,
+      "large_sequence_route": "compiler_full_stage_semantic_target_mass_rebalance_capped_inverse_sqrt_lr_min_position32_q32_k32_coverage128_v19"
     },
     "rdc_kerc_k5_overfit": {
       "objective_gradient_decomposition": true,

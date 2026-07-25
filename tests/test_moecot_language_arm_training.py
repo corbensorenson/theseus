@@ -4424,7 +4424,7 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
             row
             for row in candidate_plan["plan_identity"]["legacy_migrations"]
             if row["migration_id"]
-            == "english_kerc_step4657_semantic_target_mass_rebalance_v5"
+            == "english_kerc_step4657_semantic_target_mass_rebalance_lr_min_v6"
         )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]
