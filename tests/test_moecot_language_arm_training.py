@@ -4355,7 +4355,7 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
                     row
                     for row in candidate_plan["plan_identity"]["legacy_migrations"]
                     if row["migration_id"]
-                    == "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_q16_v3"
+                    == "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_v2"
                 )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]

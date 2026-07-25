@@ -85,7 +85,7 @@
     },
     "rdc_kerc_k5_adequacy": {
       "objective_gradient_decomposition": true,
-      "token_loss_position_chunk_size": 16,
+      "token_loss_position_chunk_size": 32,
       "maximum_training_sequence_tokens": 628,
       "maximum_supervised_training_sequence_tokens_by_target": {
         "english_kerc": 628
@@ -93,8 +93,8 @@
       "compact_partition_width_quantum": 0,
       "fresh_process_step_segment": 1,
       "candidate_scratch_resume_policy": "exact_fresh_process_segment_v1",
-      "attention_query_chunk_size": 16,
-      "attention_key_chunk_size": 16,
+      "attention_query_chunk_size": 32,
+      "attention_key_chunk_size": 32,
       "optimizer_state_offload_between_steps": true,
       "optimizer_state_offload_minimum_target_positions": 600,
       "kerc_resource_stress_prefix": false,
@@ -106,7 +106,7 @@
       "continuation_source_mlx_rng_state_sha256": "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9",
       "continuation_source_optimizer_steps": 4630,
       "continuation_source_optimizer_positions": 447027,
-      "large_sequence_route": "compiler_full_stage_path_qualified_semantic_pointer_fidelity_loss4_schema_continuation_loss1_position16_q16_k16_coverage128_lr10x_v19"
+      "large_sequence_route": "compiler_full_stage_path_qualified_semantic_pointer_fidelity_loss4_schema_continuation_loss1_position32_q32_k32_coverage128_lr10x_v18"
     },
     "rdc_kerc_k5_overfit": {
       "objective_gradient_decomposition": true,

@@ -322,7 +322,7 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
         elif candidate_id == "rdc_kerc_k5_adequacy":
             allowed_override = {
                 **required_override,
-                "token_loss_position_chunk_size": 16,
+                "token_loss_position_chunk_size": 32,
                 "maximum_training_sequence_tokens": 628,
                     "maximum_supervised_training_sequence_tokens_by_target": {
                         "english_kerc": 628
@@ -332,8 +332,8 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                     "candidate_scratch_resume_policy": (
                         "exact_fresh_process_segment_v1"
                     ),
-                    "attention_query_chunk_size": 16,
-                "attention_key_chunk_size": 16,
+                    "attention_query_chunk_size": 32,
+                "attention_key_chunk_size": 32,
                 "optimizer_state_offload_between_steps": True,
                 "optimizer_state_offload_minimum_target_positions": 600,
                 "kerc_resource_stress_prefix": False,
@@ -360,8 +360,8 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 "continuation_source_optimizer_positions": 447027,
                 "large_sequence_route": (
                     "compiler_full_stage_path_qualified_semantic_pointer_fidelity_"
-                    "loss4_schema_continuation_loss1_position16_q16_k16_"
-                    "coverage128_lr10x_v19"
+                    "loss4_schema_continuation_loss1_position32_q32_k32_"
+                    "coverage128_lr10x_v18"
                 ),
             }
         elif candidate_id == "rdc_kerc_k5_overfit":
