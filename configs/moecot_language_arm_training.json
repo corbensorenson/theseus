@@ -455,6 +455,21 @@
         "reset_data_cursor_seed": 20260722,
         "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step01_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step02_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step03_seed_20260722.host_resource_safety.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step03_retry1_seed_20260722.host_resource_safety.json tests/test_pretraining_candidate_canary.py::test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate",
         "reason": "Preserve the exact ABI-valid merged step-4630 source, bounded semantic and schema losses, selected rows, seed, sampler, optimizer, and update math after the q32 current-plan lineage completed two transactional steps but the identical 623-token third row twice forced more than 320 MiB of host swapout while retaining the 2048 MiB live reserve. Restart from step 4630 with exact checkpointed query/key attention and token-loss chunks reduced from 32 to 16. This is a prospectively bound execution-memory repair, adds no value or generator-visible field, weakens no reserve or swap ceiling, and receives exact parity plus matched behavior gates before any private surface."
+      },
+      {
+        "migration_id": "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_optimizer_positions": 447027,
+        "required_current_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_matched_teacher_forced16_retry1_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_retained_step4630_row_greedy1_seed_20260722.json tests/test_moecot_language_arm_training.py::test_progress_generation_cleanup_can_preserve_bounded_segment_history",
+        "reason": "Preserve the exact step-4630 model, optimizer, seed, sampler, q32 execution math, and path-qualified semantic objective after the 32-step lineage improved matched teacher-forced accuracy from 4140 to 4194 of 5976 but regressed the exact retained free-generation transport from valid 6/6/3 root-residual-hierarchy cardinalities to invalid 9/5/0. The segmented receipts hash-bind every intermediate generation, but supersession cleanup deleted those named checkpoints and prevented independent localization of the first regression. Retain the bounded 32-generation candidate history within the existing 6144 MiB disk lease; this changes checkpoint custody only and grants no capability or behavior credit."
       }
     ]
   },

@@ -117,6 +117,7 @@ def test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate() -> N
     )
     assert lease["execution_policy"]["kerc_stage_train_stage_embedding"] is True
     assert lease["execution_policy"]["kerc_stage_detach_frozen_trunk"] is False
+    assert lease["execution_policy"]["retain_segment_checkpoint_generations"] is True
     assert candidate["max_wall_seconds"] == 43200
     assert candidate["execution_policy"]["kernel_optimizer_repetitions"] == 4
     assert candidate["execution_policy"].get("target_token_frequency_balance_power", 0.0) == 0.0

@@ -2112,6 +2112,34 @@ def test_progress_generation_paths_and_cleanup_are_step_scoped(tmp_path: Path) -
         checkpoint_generation_paths(checkpoint, optimizer, 0)
 
 
+def test_progress_generation_cleanup_can_preserve_bounded_segment_history(
+    tmp_path: Path,
+) -> None:
+    checkpoint = tmp_path / "weights.safetensors"
+    optimizer = tmp_path / "optimizer.safetensors"
+    old_checkpoint, old_optimizer = checkpoint_generation_paths(
+        checkpoint, optimizer, 1
+    )
+    old_rng = rng_state_path(old_optimizer)
+    for path in (checkpoint, optimizer, old_checkpoint, old_optimizer, old_rng):
+        path.write_bytes(path.name.encode())
+
+    cleanup_progress_generation(
+        {
+            "checkpoint": str(old_checkpoint),
+            "optimizer_state": str(old_optimizer),
+            "mlx_rng_state": str(old_rng),
+        },
+        canonical_checkpoint=checkpoint,
+        canonical_optimizer=optimizer,
+        preserve=True,
+    )
+
+    assert old_checkpoint.exists()
+    assert old_optimizer.exists()
+    assert old_rng.exists()
+
+
 def test_checkpoint_transaction_publishes_exact_mlx_rng_state(tmp_path: Path) -> None:
     import mlx.core as mx
     import mlx.nn as nn
@@ -4355,7 +4383,7 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
                     row
                     for row in candidate_plan["plan_identity"]["legacy_migrations"]
                     if row["migration_id"]
-                    == "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_v2"
+                    == "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4"
                 )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]

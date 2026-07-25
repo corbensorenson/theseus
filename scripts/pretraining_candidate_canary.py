@@ -332,6 +332,7 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                     "candidate_scratch_resume_policy": (
                         "exact_fresh_process_segment_v1"
                     ),
+                    "retain_segment_checkpoint_generations": True,
                     "attention_query_chunk_size": 32,
                 "attention_key_chunk_size": 32,
                 "optimizer_state_offload_between_steps": True,

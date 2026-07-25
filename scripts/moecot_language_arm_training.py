@@ -9605,6 +9605,11 @@ def train_target(
             canonical_optimizer=optimizer_path,
             canonical_rng=rng_state_path(optimizer_path),
             keep={generation_checkpoint, generation_optimizer, generation_rng},
+            preserve=bool(
+                candidate_execution_policy.get(
+                    "retain_segment_checkpoint_generations", False
+                )
+            ),
         )
 
     random.seed(effective_seed + prior_steps)
@@ -10446,6 +10451,11 @@ def train_target(
         canonical_optimizer=optimizer_path,
         canonical_rng=rng_state_path(optimizer_path),
         keep={final_checkpoint, final_optimizer, final_rng},
+        preserve=bool(
+            candidate_execution_policy.get(
+                "retain_segment_checkpoint_generations", False
+            )
+        ),
     )
     return receipt
 
@@ -10816,9 +10826,12 @@ def cleanup_progress_generation(
     canonical_optimizer: Path,
     canonical_rng: Path | None = None,
     keep: set[Path] | None = None,
+    preserve: bool = False,
 ) -> None:
     """Delete only superseded step generations after a newer receipt commits."""
 
+    if preserve:
+        return
     retained = {path.resolve() for path in (keep or set())}
     canonical_rng = canonical_rng or rng_state_path(canonical_optimizer)
     for key, canonical in (
