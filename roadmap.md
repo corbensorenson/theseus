@@ -1519,8 +1519,55 @@ generation service, KERC sidecar, or private evaluator.
    6/6/3 at root/residual/hierarchy; teacher-forced accuracy remains 291/408. Report
    `e2cb95db...6765`, merge `117396de...230c`, checkpoint `777815b7...0d26`, and retained
    probe `9dc891bc...1876` bind this structural-safety result. The focused KERC suite passes
-   78 tests with five skips. Bank this coherent gate before a longer population run; the next
-   behavior decision remains matched movement plus retained transport validity, not training loss.
+   78 tests with five skips. This coherent gate is banked; the next behavior decision remains
+   matched movement plus retained transport validity, not training loss.
+
+   The path-qualified population and its failure boundary are now measured rather than inferred.
+   A q16 execution variant was prospectively tested and rejected: its first step took 304.863
+   seconds versus 69.739 seconds for q32, reduced the comparable inferred peak only marginally,
+   and still crossed the unchanged 320 MiB swap-growth gate on its third row. The exact q32
+   policy was restored. Its 32-step same-seed population replay reaches step 4,662 over 11,900
+   positions, covers all 24/24 generator rows, and preserves all declared coverage labels.
+   Successful segments take 2,747.672 seconds, peak at 4,772.859 MiB inferred memory, retain at
+   least 2,414.047 MiB reclaimable memory, and observe at most 220.062 MiB swap growth. The
+   exact FP32 merge preserves all five learned and 234 frozen tensors. Matched teacher forcing
+   improves from 4,140 to 4,194 of 5,976 tokens with EOS 16/16, but the terminal retained-row
+   free generation regresses from valid 6/6/3 root/residual/hierarchy cardinalities to invalid
+   9/5/0. The 32-step checkpoint is rejected; no fresh surface was consumed for that endpoint.
+
+   That run also exposed a checkpoint-custody defect: ordinary supersession cleanup deleted the
+   intermediate generations named by otherwise hash-bound reports, preventing independent
+   localization. Bounded K5 segments now retain their 32-generation history inside the existing
+   disk lease, with regression tests proving separate immutable generations. The exact replay
+   then localizes the first structural failure to update 28. Step 27/optimizer step 4,657 remains
+   transport-valid at 6/6/3; step 28/4,658 becomes 9/3/0 after the second exposure of stage row
+   14 (`source_index:30320`, 406 target positions, width 623). On the exact frozen 5,976-token
+   panel, step 27 preserves the full aggregate gain at 4,194 correct versus 4,140 for the
+   step-4,630 source, with EOS 16/16. This is a training-row-selected checkpoint, not heldout
+   capability evidence.
+
+   The evaluator now supports a fail-closed multi-row training diagnostic: every selected row
+   must be unique, explicitly provenance-marked as admitted training data, and carry zero public,
+   external-inference, fallback, template, router, or tool credit. On the exact frozen 16-row
+   training panel, step 27 terminates syntactically on 13/16 rows; 12/16 independently validate
+   at exact 6/6/3, one is schema-invalid at 6/6/0, and three reach the token budget. The guarded
+   panel takes 536.624 seconds, retains 4,374.984 MiB minimum reclaimable memory, and grows swap
+   by zero. This population diagnostic authorizes measurement only and grants no learned or
+   capability credit.
+
+   One new exact-once, answer-blind, source-disjoint 16-row surface was therefore consumed for
+   the selected step-27 checkpoint. The result remains 0/16 accepted, but all 16 candidates are
+   complete and no compact-transport/schema failure remains. Independent rejection now assigns
+   seven alignment-span faults, three protected-span replay mismatches, and six residual-unit
+   fidelity faults; no candidate is repaired or rewritten. The run takes 1,620.185 seconds,
+   peaks at 1,258.875 MiB inferred unified memory, retains 3,360.969 MiB minimum reclaimable
+   memory, and grows swap by zero. Report `1e04d3c8...2011`, frozen surface
+   `afcd5ab8...49fe`, row receipt `0f8212a6...bbc3`, and host receipt
+   `91872de7...18e` bind the result. K5 remains `INCONCLUSIVE_EXPERIMENT`. Do not spend another
+   private surface or seed yet. The next owner is a prospectively bound semantic-stability repair
+   that improves alignment spans, protected-span replay, and residual-unit fidelity while
+   preserving the behavior-valid step-27 transport boundary; selection must use admitted training
+   diagnostics only. Separately optimize the measured constrained-decode slow path under K7.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

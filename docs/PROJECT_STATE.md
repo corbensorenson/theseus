@@ -328,8 +328,27 @@ share toward zero. Public benchmarks are calibration only.
   `117396de...230c`, checkpoint `777815b7...0d26`, retained `9dc891bc...1876`).
   The evaluator now preserves population coverage-planning capacity for initial one-step segments
   and supports an explicitly bound retained training-row report without capability credit. The
-  focused KERC suite passes 78 tests with five skips. This coherent gate should be banked before
-  a longer population run.
+  focused KERC suite passes 78 tests with five skips. This coherent gate is banked.
+  The longer path-qualified replay rejects q16 as roughly five times slower on its first measured
+  step while still failing the same third-row swap guard, restores exact q32, and completes all 32
+  updates/11,900 positions over 24/24 generator rows. Matched teacher forcing rises from
+  4,140 to 4,194 of 5,976 with EOS 16/16, but terminal free generation regresses to invalid
+  9/5/0 transport, so the endpoint is rejected. A real custody defect had deleted intermediate
+  checkpoints named by the segmented reports; bounded K5 now retains all 32 generations inside
+  its existing disk lease. Exact replay localizes the transition: step 27/4,657 is valid 6/6/3,
+  while step 28/4,658 becomes 9/3/0 on the second exposure of stage row 14. The selected step-27
+  merge is `e1c76ec1...c691`.
+  A new fail-closed admitted-training-panel mode then evaluates the exact frozen 16 rows with zero
+  capability credit. Step 27 yields 13/16 syntax-valid completions and 12/16 independently valid
+  6/6/3 packets; one is 6/6/0 and three hit the token budget. The one authorized new exact-once
+  source-disjoint surface still scores 0/16, but all 16 candidates are complete and compact
+  transport is no longer the rejection owner. Independent faults are seven alignment-span,
+  three protected-span replay, and six residual-unit fidelity failures; no invalid candidate is
+  repaired (`1e04d3c8...2011`, surface `afcd5ab8...49fe`, rows `0f8212a6...bbc3`,
+  host `91872de7...18e`). K5 remains `INCONCLUSIVE_EXPERIMENT`. The next owner is a
+  training-row-selected semantic-stability repair that preserves the step-27 transport boundary;
+  no new private surface or seed is authorized until matched alignment/replay/fidelity behavior
+  improves. The 101.26-second-per-row fresh decode remains a separate K7 throughput obligation.
   Three process-isolated 128-step KERC/control pairs pass exact common initialization, state custody,
   and zero-swap training, but emit no valid learned-pipeline output. The repaired broad K5 route now
   uses a 4,096-source bounded pool, objective-balanced stratified without-replacement sampling, and

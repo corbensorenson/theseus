@@ -531,7 +531,47 @@ def test_retained_row_probe_cli_is_free_generation_only() -> None:
     source = inspect.getsource(probe.main)
     assert "--retained-row-report" in source
     assert "explicit retained row report requires free generation" in source
-    assert "--matched-row-report and --retained-row-report are mutually exclusive" in source
+    assert "K5 row-selection reports are mutually exclusive" in source
+
+
+def test_training_row_panel_requires_exact_admitted_rows() -> None:
+    row = {
+        "admitted_training_row": True,
+        "row_id": "row-a",
+    }
+    report = {
+        "policy": probe.POLICY,
+        "qualification_state": "TEACHER_FORCED_DIAGNOSTIC_ONLY",
+        "rows": [row, {**row, "row_id": "row-b"}],
+        "public_benchmark_prompts_used": 0,
+        "external_inference_calls": 0,
+        "fallback_template_router_tool_credit": 0,
+    }
+    assert probe.exact_training_row_panel_ids(report) == (
+        "row-a",
+        "row-b",
+    )
+    with pytest.raises(ValueError, match="exact admitted training panel"):
+        probe.exact_training_row_panel_ids(
+            {
+                **report,
+                "rows": [row, {**row, "row_id": "row-a"}],
+            }
+        )
+    with pytest.raises(ValueError, match="exact admitted training panel"):
+        probe.exact_training_row_panel_ids(
+            {
+                **report,
+                "rows": [
+                    row,
+                    {
+                        **row,
+                        "row_id": "row-b",
+                        "admitted_training_row": False,
+                    },
+                ],
+            }
+        )
 
 
 def test_segmented_sampler_replay_contract_is_inactive_for_ordinary_run() -> None:

@@ -883,6 +883,128 @@
         "remaining_acceptance": "source-family-disjoint direct behavior over at least three seeds, complete proposal denominator and recall, independent proposer/qualifier, least-sufficient-order routing plus matched lower-order rescue, role/relation causal interventions, coordinated learned compiler/reasoner/renderer, structured drafting, positive lower confidence bound, and zero assisted-output credit",
         "capability_claim": "NONE"
       },
+      "current_k5_path_qualified_regression_localization": {
+        "state": "INCONCLUSIVE_EXPERIMENT_SEMANTIC_STABILITY_REPAIR_REQUIRED",
+        "candidate_execution_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "execution_policy": {
+          "selected_attention_query_chunk_size": 32,
+          "selected_attention_key_chunk_size": 32,
+          "selected_token_loss_position_chunk_size": 32,
+          "q16_disposition": "REJECTED_SLOWER_AND_SAME_SWAP_GUARD_FAILURE",
+          "minimum_available_during_run_mib": 2048,
+          "maximum_swapout_growth_mib": 320,
+          "arbitrary_fixed_host_memory_floor": false
+        },
+        "terminal_32_step_endpoint": {
+          "state": "REJECTED_RETAINED_TRANSPORT_REGRESSION",
+          "optimizer_steps": 4662,
+          "optimizer_positions": 458927,
+          "continuation_positions": 11900,
+          "sampled_unique_row_count": 24,
+          "generator_row_count": 24,
+          "matched_teacher_forced_correct": 4194,
+          "matched_teacher_forced_total": 5976,
+          "matched_source_correct": 4140,
+          "eos_top1_count": 16,
+          "retained_transport_shape": {
+            "root_length": 9,
+            "residual_length": 5,
+            "hierarchy_length": 0,
+            "valid": false
+          },
+          "maximum_inferred_unified_memory_mib": 4772.859,
+          "minimum_reclaimable_available_mib": 2414.047,
+          "maximum_swapout_growth_mib": 220.062,
+          "fresh_private_surface_consumed": false
+        },
+        "checkpoint_custody_repair": {
+          "state": "GREEN_BOUNDED_GENERATIONS_RETAINED",
+          "retained_generation_limit": 32,
+          "disk_lease_mib": 6144,
+          "source_reports_remain_independently_replayable": true,
+          "capability_credit": "NONE"
+        },
+        "first_behavior_regression": {
+          "last_valid_update": 27,
+          "last_valid_optimizer_step": 4657,
+          "first_invalid_update": 28,
+          "first_invalid_optimizer_step": 4658,
+          "triggering_stage_index": 14,
+          "triggering_source_index": 30320,
+          "triggering_target_positions": 406,
+          "triggering_execution_width": 623,
+          "exposure_ordinal": 2,
+          "last_valid_transport_shape": {
+            "root_length": 6,
+            "residual_length": 6,
+            "hierarchy_length": 3,
+            "valid": true
+          },
+          "first_invalid_transport_shape": {
+            "root_length": 9,
+            "residual_length": 3,
+            "hierarchy_length": 0,
+            "valid": false
+          }
+        },
+        "selected_training_diagnostic_checkpoint": {
+          "training_report_path": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_seed_20260722.json",
+          "training_report_sha256": "09bb9574da4ba411e081be98d56871e39cc7dcebdcc7f7deeafb0dc2f5e59759",
+          "merged_report_path": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_merged_fp32_seed_20260722.json",
+          "merged_report_sha256": "d52ff92917b5dfa7036ce06b7965208d11ca170fdba4aae082f8fb0afb208d3b",
+          "checkpoint_path": "runtime/t0a_canaries/rdc_kerc_k5_adequacy/compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_seed_20260722/english_kerc/weights.step-00004657.merged-fp32.safetensors",
+          "checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+          "matched_teacher_forced_report_path": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_matched_teacher_forced16_frozenrows_seed_20260722.json",
+          "matched_teacher_forced_report_sha256": "105a605ab52f7beed6f0538e978a7fcbb5cefbb08aa07d80093fd5a39369966c",
+          "matched_teacher_forced_correct": 4194,
+          "matched_teacher_forced_total": 5976,
+          "matched_source_correct": 4140,
+          "eos_top1_count": 16,
+          "selection_authority": "admitted_training_rows_only",
+          "capability_claim": "NONE"
+        },
+        "admitted_training_row_population_diagnostic": {
+          "path": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_matched_training_rows16_greedy1_seed_20260722.json",
+          "sha256": "0b360a5fa27e836cbe21504b5348079aca524a857e8185141c48ac4904776728",
+          "row_count": 16,
+          "syntax_valid_count": 13,
+          "transport_valid_count": 12,
+          "transport_schema_invalid_count": 1,
+          "token_budget_count": 3,
+          "exact_match_count": 0,
+          "wall_seconds": 536.624,
+          "minimum_reclaimable_available_mib": 4374.984,
+          "maximum_swapout_growth_mib": 0.0,
+          "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY"
+        },
+        "exact_once_source_disjoint_result": {
+          "state": "INCONCLUSIVE_EXPERIMENT",
+          "report_path": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_step27_source_disjoint_behavior16_fresh03_seed_20260722.json",
+          "report_sha256": "1e04d3c89c8ef34df4bbcd22d4ba02326b6f8ce5e67fc6d491231ddd1de42011",
+          "surface_path": "reports/kerc_private_measurement_surface_rdc-kerc-k5-path-qualified-step4657-seed20260722-private-dev-fresh03-v1.json",
+          "surface_sha256": "afcd5ab8e265f269ba5759c6ba4c097c9f74f98cc49f613284c23f1475e049fe",
+          "row_receipt_path": "runtime/kerc_k5_evaluations/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_step27_source_disjoint_behavior16_fresh03_seed_20260722/evaluation_private_dev_receipt.json",
+          "row_receipt_sha256": "0f8212a65593185de6d8c460b7112eee51e332c7236b408b59765b67da55bbc3",
+          "row_count": 16,
+          "complete_candidate_count": 16,
+          "valid_selected_candidate_count": 0,
+          "alignment_span_invalid_count": 7,
+          "protected_span_replay_mismatch_count": 3,
+          "residual_unit_fidelity_invalid_count": 6,
+          "compact_transport_or_schema_invalid_count": 0,
+          "invalid_candidates_repaired_or_rewritten": false,
+          "wall_seconds": 1620.185,
+          "maximum_inferred_unified_memory_mib": 1258.875,
+          "minimum_reclaimable_available_mib": 3360.969,
+          "maximum_swapout_growth_mib": 0.0,
+          "seed_count": 1,
+          "capability_claim": "PRIVATE_DEVELOPMENT_DIAGNOSTIC"
+        },
+        "next_owner": "prospectively bind a same-seed semantic-stability repair that improves alignment spans, protected-span replay, and residual-unit fidelity on admitted training diagnostics while preserving the step-27 transport boundary; do not consume another private surface or seed until matched behavior improves",
+        "separate_k7_owner": "optimize the measured constrained-decode slow path without changing reference semantics",
+        "architecture_negative_authority": false,
+        "capability_claim": "NONE"
+      },
       "completed_ladder": [
         "guarded_online_attention_output_loss_gradient_parity"
       ],

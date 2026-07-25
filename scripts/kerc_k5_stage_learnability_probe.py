@@ -404,6 +404,33 @@ def subset_supervision_stage_rows(
     return SimpleNamespace(**values)
 
 
+def exact_training_row_panel_ids(report: dict[str, Any]) -> tuple[str, ...]:
+    """Validate an explicit multi-row training diagnostic selection."""
+
+    rows = report.get("rows")
+    if (
+        report.get("policy") != POLICY
+        or report.get("qualification_state")
+        != "TEACHER_FORCED_DIAGNOSTIC_ONLY"
+        or not isinstance(rows, list)
+        or len(rows) < 2
+        or any(
+            not isinstance(row, dict)
+            or row.get("admitted_training_row") is not True
+            or not str(row.get("row_id") or "")
+            for row in rows
+        )
+        or len({str(row["row_id"]) for row in rows}) != len(rows)
+        or int(report.get("public_benchmark_prompts_used") or 0) != 0
+        or int(report.get("external_inference_calls") or 0) != 0
+        or int(report.get("fallback_template_router_tool_credit") or 0) != 0
+    ):
+        raise ValueError(
+            "K5 training-row panel report is not an exact admitted training panel"
+        )
+    return tuple(str(row["row_id"]) for row in rows)
+
+
 def replay_training_stage_row_scope(
     stage: Any, execution_policy: dict[str, Any]
 ) -> tuple[Any, dict[str, int]]:
@@ -1566,6 +1593,8 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     matched_row_report_artifact: dict[str, Any] | None = None
     retained_row_report_path: Path | None = None
     retained_row_report_artifact: dict[str, Any] | None = None
+    training_row_panel_report_path: Path | None = None
+    training_row_panel_report_artifact: dict[str, Any] | None = None
     matched_row_ids: tuple[str, ...] = ()
     if str(getattr(args, "matched_row_report", "") or ""):
         matched_row_report_path = resolve(args.matched_row_report)
@@ -1620,6 +1649,20 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         )
         checkpoint_selection["matched_row_selection_source"] = (
             "explicit_retained_training_row_probe_report"
+        )
+    if str(getattr(args, "training_row_panel_report", "") or ""):
+        training_row_panel_report_path = resolve(args.training_row_panel_report)
+        training_row_panel_report = read_json(training_row_panel_report_path)
+        matched_row_ids = exact_training_row_panel_ids(
+            training_row_panel_report
+        )
+        training_row_panel_report_artifact = (
+            candidate_evaluator.source_artifact(
+                training_row_panel_report_path
+            )
+        )
+        checkpoint_selection["matched_row_selection_source"] = (
+            "explicit_admitted_training_row_panel_report"
         )
     selected_rows, sampling_replay = selected_training_rows(
         report,
@@ -2040,6 +2083,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "training_report": candidate_evaluator.source_artifact(report_path),
         "matched_row_report": matched_row_report_artifact,
         "retained_row_report": retained_row_report_artifact,
+        "training_row_panel_report": training_row_panel_report_artifact,
         "candidate_supervised_sequence_envelope": envelope,
         "row_count": len(rows),
         "objective_count": len({row["objective"] for row in rows}),
@@ -2201,6 +2245,7 @@ def main() -> int:
     parser.add_argument("--diagnostic-checkpoint-sha256", default="")
     parser.add_argument("--matched-row-report", default="")
     parser.add_argument("--retained-row-report", default="")
+    parser.add_argument("--training-row-panel-report", default="")
     parser.add_argument("--rows-per-objective", type=int, default=1)
     parser.add_argument("--beam-width", type=int, default=1)
     parser.add_argument("--branching-factor", type=int, default=1)
@@ -2230,9 +2275,14 @@ def main() -> int:
             "an explicit matched row report is restricted to "
             "--teacher-forced-only evaluation"
         )
-    if args.matched_row_report and args.retained_row_report:
+    if (
+        bool(args.matched_row_report)
+        + bool(args.retained_row_report)
+        + bool(args.training_row_panel_report)
+        > 1
+    ):
         parser.error(
-            "--matched-row-report and --retained-row-report are mutually exclusive"
+            "K5 row-selection reports are mutually exclusive"
         )
     if args.retained_row_report and (
         args.teacher_forced_only or args.rows_per_objective != 1
@@ -2240,6 +2290,13 @@ def main() -> int:
         parser.error(
             "an explicit retained row report requires free generation and "
             "--rows-per-objective 1"
+        )
+    if args.training_row_panel_report and (
+        args.teacher_forced_only or args.rows_per_objective < 2
+    ):
+        parser.error(
+            "an explicit training-row panel requires free generation and "
+            "--rows-per-objective >= 2"
         )
     if not 1 <= args.beam_width <= 16:
         parser.error("--beam-width must be in [1, 16]")
@@ -2348,6 +2405,13 @@ def main() -> int:
         if args.retained_row_report:
             command.extend(
                 ["--retained-row-report", args.retained_row_report]
+            )
+        if args.training_row_panel_report:
+            command.extend(
+                [
+                    "--training-row-panel-report",
+                    args.training_row_panel_report,
+                ]
             )
         if args.gradient_interference:
             command.append("--gradient-interference")
