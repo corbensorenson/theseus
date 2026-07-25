@@ -602,7 +602,7 @@ def exact_coverage_planning_capacity(
     stage_row_count: int,
     segmented_contract: dict[str, Any] | None,
 ) -> int:
-    """Preserve population planning authority for an initial one-step segment."""
+    """Preserve bounded population authority across segmented repeat steps."""
 
     coverage_receipt = authoritative_phase.get("coverage_first_sampling") or {}
     reported = int(coverage_receipt.get("planning_capacity") or 0)
@@ -611,7 +611,8 @@ def exact_coverage_planning_capacity(
         if segmented_contract is not None
         else reported or int(requested_steps)
     )
-    if capacity < int(replay_step_limit) or capacity > int(stage_row_count):
+    required_capacity = min(int(replay_step_limit), int(stage_row_count))
+    if capacity < required_capacity or capacity > int(stage_row_count):
         raise ValueError(
             "K5 coverage planning capacity falls outside the exact staged population"
         )

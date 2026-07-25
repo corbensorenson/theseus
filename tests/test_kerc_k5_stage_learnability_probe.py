@@ -489,6 +489,44 @@ def test_one_step_probe_preserves_population_coverage_planning_capacity() -> Non
         )
 
 
+def test_segmented_repeat_replay_caps_required_coverage_at_population() -> None:
+    assert probe.exact_coverage_planning_capacity(
+        {
+            "optimizer_steps": 1,
+            "coverage_first_sampling": {
+                "capacity": 1,
+                "planning_capacity": 24,
+            },
+        },
+        requested_steps=1,
+        replay_step_limit=32,
+        stage_row_count=24,
+        segmented_contract={
+            "optimizer_steps": 32,
+            "optimizer_positions": 11900,
+            "planning_capacity": 24,
+            "segment_steps": 1,
+        },
+    ) == 24
+    with pytest.raises(ValueError, match="outside the exact staged population"):
+        probe.exact_coverage_planning_capacity(
+            {
+                "coverage_first_sampling": {
+                    "planning_capacity": 23,
+                },
+            },
+            requested_steps=1,
+            replay_step_limit=32,
+            stage_row_count=24,
+            segmented_contract={
+                "optimizer_steps": 32,
+                "optimizer_positions": 11900,
+                "planning_capacity": 23,
+                "segment_steps": 1,
+            },
+        )
+
+
 def test_retained_row_probe_cli_is_free_generation_only() -> None:
     source = inspect.getsource(probe.main)
     assert "--retained-row-report" in source
