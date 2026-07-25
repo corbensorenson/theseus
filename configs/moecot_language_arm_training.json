@@ -440,6 +440,21 @@
         "reset_data_cursor_seed": 20260722,
         "evidence": "reports/rdc_kerc_k5_compiler_semantic_pointer_fidelity_loss_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_semantic_pointer_fidelity_loss_population_step32_matched_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_compiler_semantic_pointer_fidelity_loss_population_step32_transport_shape_greedy1_training_row1_seed_20260722.json tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed",
         "reason": "Reject the first 4x semantic-pointer branch because its matched teacher-forced gain coincides with a retained-row transport regression from the accepted six/six/three root-residual-hierarchy cardinalities to nine/five/zero. The classifier had selected every bare numeric atom, including the root ABI version, hierarchy chunk index, and unrelated numbers. Return again to the exact ABI-valid merged step-4630 source and retain the same bounded weights, optimizer, seed, sampler, and execution policy while selecting only existing program PSPANS atoms, protected-object character bounds, and residual unit-id/fidelity descendants through exact encoded half-open ranges. No semantic value, target-visible generation field, runtime repair, template, renderer, or verifier selection is added; retained-row transport validity is required before population scaling or fresh evaluation."
+      },
+      {
+        "migration_id": "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_q16_v3",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_optimizer_positions": 447027,
+        "required_current_plan_sha256": "56ce6f32c605113e7487414405ac0fb6092215d6c8dcbf637d85b4b0ad5418f1",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step01_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step02_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step03_seed_20260722.host_resource_safety.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step03_retry1_seed_20260722.host_resource_safety.json tests/test_pretraining_candidate_canary.py::test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate",
+        "reason": "Preserve the exact ABI-valid merged step-4630 source, bounded semantic and schema losses, selected rows, seed, sampler, optimizer, and update math after the q32 current-plan lineage completed two transactional steps but the identical 623-token third row twice forced more than 320 MiB of host swapout while retaining the 2048 MiB live reserve. Restart from step 4630 with exact checkpointed query/key attention and token-loss chunks reduced from 32 to 16. This is a prospectively bound execution-memory repair, adds no value or generator-visible field, weakens no reserve or swap ceiling, and receives exact parity plus matched behavior gates before any private surface."
       }
     ]
   },

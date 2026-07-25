@@ -91,11 +91,11 @@ def test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate() -> N
     assert preflight["qualified_maximum_training_sequence_tokens"] == 1005
     assert preflight["current_maximum_training_sequence_tokens"] == 628
     assert preflight["qualified_maximum_token_loss_position_chunk_size"] == 64
-    assert preflight["current_token_loss_position_chunk_size"] == 32
+    assert preflight["current_token_loss_position_chunk_size"] == 16
     assert preflight["qualified_maximum_attention_query_chunk_size"] == 32
-    assert preflight["current_attention_query_chunk_size"] == 32
+    assert preflight["current_attention_query_chunk_size"] == 16
     assert preflight["qualified_maximum_attention_key_chunk_size"] == 32
-    assert preflight["current_attention_key_chunk_size"] == 32
+    assert preflight["current_attention_key_chunk_size"] == 16
     assert preflight["command_marker"] == "rdc_kerc_adequacy"
     contract = canary.load_contract()
     candidate = next(
