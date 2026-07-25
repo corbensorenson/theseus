@@ -22,6 +22,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 ALLOWED_ENV = {"HOME", "PATH", "TMPDIR", "NO_COLOR"}
+RESULT_MARKER = "__THESEUS_RESULT__"
+MAXIMUM_PROTOCOL_LINE_BYTES = 4 * 1024 * 1024
 
 
 def _result(case: dict[str, Any], *, passed: bool, stage: str, started: float, **extra: Any) -> dict[str, Any]:
@@ -99,10 +101,18 @@ def _run_sandboxed(
             timeout=timeout,
             check=False,
         )
+        protocol_lines = [
+            line
+            for line in completed.stdout.splitlines()
+            if line.startswith(RESULT_MARKER)
+            and len(line.encode("utf-8", errors="replace")) <= MAXIMUM_PROTOCOL_LINE_BYTES
+        ]
         return {
             "ok": completed.returncode == 0,
             "returncode": completed.returncode,
             "stdout": completed.stdout[-12000:],
+            "stdout_bytes": len(completed.stdout.encode("utf-8", errors="replace")),
+            "_protocol_lines": protocol_lines,
             "stderr": completed.stderr[-12000:],
             "duration_ms": round((time.monotonic() - started) * 1000, 3),
         }
@@ -306,9 +316,9 @@ def _run_python_probe(
         timeout,
     )
     observed: dict[str, Any] = {}
-    marker = "__THESEUS_RESULT__"
+    marker = RESULT_MARKER
     if run["ok"]:
-        lines = [line for line in run.get("stdout", "").splitlines() if line.startswith(marker)]
+        lines = run.pop("_protocol_lines", [])
         if len(lines) != 1:
             run = {**run, "ok": False, "fault": "candidate_protocol_violation"}
         else:
@@ -454,9 +464,9 @@ def _run_deno_probe(
         timeout,
     )
     observed: dict[str, Any] = {}
-    marker = "__THESEUS_RESULT__"
+    marker = RESULT_MARKER
     if run["ok"]:
-        lines = [line for line in run.get("stdout", "").splitlines() if line.startswith(marker)]
+        lines = run.pop("_protocol_lines", [])
         if len(lines) != 1:
             run = {**run, "ok": False, "fault": "candidate_protocol_violation"}
         else:

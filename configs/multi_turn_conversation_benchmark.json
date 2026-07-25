@@ -11,6 +11,72 @@
   "checkpoint_id": "live",
   "turn_timeout_seconds": 180,
   "case_workers": 8,
+  "kerc_k4_qualification": {
+    "policy": "project_theseus_kerc_k4_interaction_qualification_v1",
+    "state": "FROZEN_BEFORE_CANDIDATE_OUTPUTS",
+    "reuse_rule": "This extends the existing private conversation_multiturn family; it does not create a new benchmark family or authorize training on evaluator metadata.",
+    "selected_case_ids": [
+      "memory_and_constraint_carry",
+      "correction_and_target_update",
+      "emotional_continuity_sleep_handoff",
+      "evidence_grounding_over_vibes",
+      "multi_line_preference_carry"
+    ],
+    "wrong_user_donor_by_case": {
+      "memory_and_constraint_carry": "emotional_continuity_sleep_handoff",
+      "correction_and_target_update": "multi_line_preference_carry",
+      "emotional_continuity_sleep_handoff": "evidence_grounding_over_vibes",
+      "evidence_grounding_over_vibes": "memory_and_constraint_carry",
+      "multi_line_preference_carry": "correction_and_target_update"
+    },
+    "wrong_user_forbidden_terms_by_case": {
+      "memory_and_constraint_carry": ["tired", "sleep"],
+      "correction_and_target_update": ["English first", "warm but honest"],
+      "emotional_continuity_sleep_handoff": ["vibes", "reports"],
+      "evidence_grounding_over_vibes": ["Lantern", "codename"],
+      "multi_line_preference_carry": ["EvalPlus", "MBPP"]
+    },
+    "stale_state_case_ids": ["correction_and_target_update"],
+    "model_seeds": [20260722, 20260723, 20260724],
+    "required_interventions": [
+      "context_present",
+      "context_withheld",
+      "context_shuffled",
+      "wrong_user",
+      "stale_state",
+      "expansion_replay"
+    ],
+    "prompt_packet": "reports/kerc_k4_prompt_packet.json",
+    "candidate_outputs": "reports/kerc_k4_candidate_outputs.jsonl",
+    "evaluation_report": "reports/kerc_k4_interaction_qualification.json",
+    "candidate_visible_fields": ["opaque_id", "model_seed", "prompt"],
+    "candidate_forbidden_fields": [
+      "case_id",
+      "intervention",
+      "expected",
+      "expected_terms",
+      "expected_any",
+      "tests",
+      "answer",
+      "source_task_id"
+    ],
+    "acceptance": {
+      "minimum_seed_count": 3,
+      "minimum_case_count": 5,
+      "minimum_context_present_score": 0.75,
+      "minimum_expansion_replay_score": 0.75,
+      "minimum_effect_confidence_interval_lower": 0.0,
+      "maximum_wrong_user_donor_leakage_rate": 0.0,
+      "maximum_missing_output_count": 0
+    },
+    "boundaries": {
+      "public_training_rows": 0,
+      "external_inference_calls": 0,
+      "fallback_template_router_tool_credit": 0,
+      "evaluator_metadata_visible_to_candidate": false,
+      "fixture_or_template_output_credit": 0
+    }
+  },
   "cases": [
     {
       "id": "memory_and_constraint_carry",

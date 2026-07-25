@@ -1,8 +1,8 @@
 """macOS dependency doctor/bootstrap for Project Theseus Hive installs.
 
 This script is intentionally usable from a USB installer. It avoids assuming
-Homebrew or Rust are present, creates the app-local venv, and installs only the
-small Python dependency set needed for Hive/MLX workers.
+Homebrew or Rust are present, creates the app-local venv, and installs the exact
+content-bound Python dependency profile owned by Project Theseus.
 """
 
 from __future__ import annotations
@@ -22,7 +22,6 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "macos_dependency_bootstrap.json"
-MLX_LM_SOURCE = "git+https://github.com/ml-explore/mlx-lm.git@a790972f0f844d81067ed45c28b524220a10c019"
 
 
 def emit(message: str) -> None:
@@ -115,19 +114,6 @@ def bootstrap(args: argparse.Namespace) -> dict[str, Any]:
     runtime = init_runtime(report, python, args.runtime_root)
     report["runtime_paths"] = runtime
 
-    emit("Checking MLX import.")
-    report["checks"]["mlx"] = python_check(python, "import mlx.core as mx; print('mlx.core ok')")
-    report["checks"]["mlx_lm"] = python_check(
-        python,
-        "import mlx_lm; from mlx_lm.models.cache import KVCache; print('mlx_lm KVCache ok')",
-    )
-    if args.require_mlx and not report["checks"]["mlx"]["ok"]:
-        report["ok"] = False
-        report["next_actions"].append("MLX is required for this install but import mlx.core failed.")
-    if args.require_mlx and not report["checks"]["mlx_lm"]["ok"]:
-        report["ok"] = False
-        report["next_actions"].append("MLX-LM is required for model-native KV/prefix caching but its import failed.")
-
     emit("Running Hive capability probe.")
     report["checks"]["hive_probe"] = run_json([str(python), "scripts/hive_node.py", "probe", "--out", "reports/hive_status.json"], timeout=120)
     if not report["checks"]["hive_probe"].get("ok"):
@@ -160,37 +146,49 @@ def ensure_venv(report: dict[str, Any], venv_path: Path) -> Path:
 
 
 def install_python_deps(report: dict[str, Any], python: Path, args: argparse.Namespace) -> None:
-    emit("Updating pip, wheel, and setuptools.")
-    run_action(report, [str(python), "-m", "pip", "install", "--upgrade", "pip", "wheel", "setuptools"], timeout=600, allow_fail=False)
-    packages = [
-        ("numpy", "numpy", "import numpy; print('numpy ok')"),
-    ]
+    version = python_check(
+        python,
+        "import json, sys; print(json.dumps({'major': sys.version_info.major, 'minor': sys.version_info.minor}))",
+    )
+    try:
+        version_payload = json.loads(str(version.get("stdout") or "{}"))
+    except json.JSONDecodeError:
+        version_payload = {}
+    if not version.get("ok") or (version_payload.get("major"), version_payload.get("minor")) != (3, 12):
+        report["ok"] = False
+        report["checks"]["python_environment"] = {
+            "ok": False,
+            "trigger_state": "RED",
+            "fault": "python_3_12_required",
+            "observed": version_payload,
+        }
+        report["next_actions"].append("Create this environment with Python 3.12, then rerun the bootstrap.")
+        return
     machine = platform.machine().lower()
-    if not args.skip_mlx and machine in {"arm64", "aarch64"}:
-        packages.extend(
-            [
-                ("mlx", "mlx", "import mlx.core as mx; print('mlx ok')"),
-                (
-                    "mlx-lm",
-                    MLX_LM_SOURCE,
-                    "import mlx_lm; from mlx_lm.models.cache import KVCache; print('mlx_lm KVCache ok')",
-                ),
-            ]
-        )
-    elif not args.skip_mlx and platform.system() == "Darwin":
+    profile = "mlx" if not args.skip_mlx and machine in {"arm64", "aarch64"} else "cpu"
+    if not args.skip_mlx and profile == "cpu":
         report["actions"].append({"action": "skip_mlx", "reason": "intel_mac_or_unsupported_macos_architecture", "machine": platform.machine()})
-    for package, install_spec, probe in packages:
-        if python_check(python, probe)["ok"]:
-            emit(f"Python package already present: {package}.")
-            report["actions"].append({"action": "python_package_present", "package": package})
-            continue
-        emit(f"Installing Python package: {package}.")
-        run_action(
-            report,
-            [str(python), "-m", "pip", "install", install_spec],
-            timeout=1800,
-            allow_fail=(package in {"mlx", "mlx-lm"} and not args.require_mlx),
-        )
+    requirements = ROOT / "requirements" / f"theseus-py312-{profile}.txt"
+    emit(f"Installing locked Python profile: {profile}.")
+    install = run_action(
+        report,
+        [str(python), "-m", "pip", "install", "-r", str(requirements)],
+        timeout=1800,
+        allow_fail=False,
+    )
+    report["python_profile"] = profile
+    if not install.get("ok"):
+        report["next_actions"].append(f"Locked Python profile installation failed: {requirements.relative_to(ROOT)}")
+        return
+    emit(f"Verifying locked Python profile: {profile}.")
+    environment = run_json(
+        [str(python), "scripts/python_environment_gate.py", "--profile", profile, "--gate"],
+        timeout=180,
+    )
+    report["checks"]["python_environment"] = environment
+    if not environment.get("ok") or environment.get("trigger_state") != "GREEN":
+        report["ok"] = False
+        report["next_actions"].append("The installed Python profile does not match its content-bound lock.")
 
 
 def init_runtime(report: dict[str, Any], python: Path, runtime_root: str) -> dict[str, Any]:

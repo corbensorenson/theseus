@@ -1,0 +1,15 @@
+[package]
+name = "theseus-corpus"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Exact, deterministic corpus-to-tensor primitives for Project Theseus."
+
+[dependencies]
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+flate2 = "1.0"
+rayon = "1.10"
+zstd = "0.13"

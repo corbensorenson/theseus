@@ -1,0 +1,271 @@
+{
+  "policy": "project_theseus_kerc_k4_measurement_surface_v2",
+  "benchmark_family": "conversation_multiturn",
+  "kerc_k4_qualification": {
+    "policy": "project_theseus_kerc_k4_interaction_qualification_v2",
+    "state": "FROZEN_BEFORE_CANDIDATE_OUTPUTS",
+    "surface_id": "kerc_k4_private_multiturn_fresh_v2_20260723",
+    "surface_role": "fresh_private_qualification",
+    "reuse_rule": "This is a fresh frozen surface inside the existing private conversation_multiturn family. It does not create a benchmark family, authorize training on evaluator content, or permit rerunning the consumed v1 surface.",
+    "source_provenance": {
+      "source_family_id": "private_authored_kerc_k4_multiturn_v2_20260723",
+      "origin": "locally_authored_only_for_frozen_private_evaluation",
+      "admitted_to_training": false,
+      "training_use_forbidden": true
+    },
+    "selected_case_ids": [
+      "latest_project_and_budget",
+      "latest_privacy_and_retention",
+      "latest_evidence_and_release",
+      "latest_tool_and_network_scope",
+      "latest_tone_and_status_detail",
+      "latest_priority_and_failure_action"
+    ],
+    "wrong_user_donor_by_case": {
+      "latest_project_and_budget": "latest_privacy_and_retention",
+      "latest_privacy_and_retention": "latest_evidence_and_release",
+      "latest_evidence_and_release": "latest_tool_and_network_scope",
+      "latest_tool_and_network_scope": "latest_tone_and_status_detail",
+      "latest_tone_and_status_detail": "latest_priority_and_failure_action",
+      "latest_priority_and_failure_action": "latest_project_and_budget"
+    },
+    "wrong_user_forbidden_terms_by_case": {
+      "latest_project_and_budget": [
+        "Cedar",
+        "thirty-one days"
+      ],
+      "latest_privacy_and_retention": [
+        "measured replay",
+        "Amber"
+      ],
+      "latest_evidence_and_release": [
+        "Atlas",
+        "offline only"
+      ],
+      "latest_tool_and_network_scope": [
+        "direct and calm",
+        "residual table"
+      ],
+      "latest_tone_and_status_detail": [
+        "checkpoint integrity",
+        "stop immediately"
+      ],
+      "latest_priority_and_failure_action": [
+        "Birch",
+        "nine hours"
+      ]
+    },
+    "stale_state_case_ids": [
+      "latest_project_and_budget",
+      "latest_privacy_and_retention",
+      "latest_evidence_and_release",
+      "latest_tool_and_network_scope",
+      "latest_tone_and_status_detail",
+      "latest_priority_and_failure_action"
+    ],
+    "model_seeds": [
+      20260722,
+      20260723,
+      20260724
+    ],
+    "required_interventions": [
+      "context_present",
+      "context_withheld",
+      "context_shuffled",
+      "wrong_user",
+      "stale_state",
+      "expansion_replay"
+    ],
+    "prompt_packet_policy": "project_theseus_kerc_k4_prompt_packet_v2",
+    "prompt_packet": "reports/kerc_k4_prompt_packet_v2.json",
+    "candidate_outputs": "reports/kerc_k4_candidate_outputs_v2.jsonl",
+    "candidate_producer_report": "reports/kerc_k4_candidate_producer_v2.json",
+    "candidate_producer_guard_receipt": "reports/kerc_k4_candidate_producer_v2.host_resource_safety.json",
+    "evaluation_report": "reports/kerc_k4_interaction_qualification_v2.json",
+    "consumption_registry": "reports/private_functional_consumption_registry.jsonl",
+    "candidate_visible_fields": [
+      "prompt"
+    ],
+    "packet_row_fields": [
+      "opaque_id",
+      "prompt"
+    ],
+    "controller_visible_fields": [
+      "checkpoint_seed",
+      "opaque_id"
+    ],
+    "candidate_forbidden_fields": [
+      "case_id",
+      "intervention",
+      "expected",
+      "expected_terms",
+      "expected_any",
+      "forbidden_terms",
+      "tests",
+      "answer",
+      "source_task_id",
+      "model_seed"
+    ],
+    "acceptance": {
+      "minimum_seed_count": 3,
+      "minimum_case_count": 6,
+      "minimum_context_present_score": 0.8,
+      "minimum_expansion_replay_score": 0.8,
+      "minimum_effect_confidence_interval_lower": 0.0,
+      "minimum_weak_case_effect": 0.2,
+      "minimum_weak_seed_effect": 0.2,
+      "maximum_wrong_user_donor_leakage_rate": 0.0,
+      "maximum_forbidden_term_output_rate": 0.0,
+      "maximum_missing_output_count": 0
+    },
+    "boundaries": {
+      "public_training_rows": 0,
+      "external_inference_calls": 0,
+      "fallback_template_router_tool_credit": 0,
+      "evaluator_metadata_visible_to_candidate": false,
+      "fixture_or_template_output_credit": 0,
+      "exact_consumed_surface_reruns": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "latest_project_and_budget",
+      "turns": [
+        {
+          "user": "Use project name Aspen and a seven-hour compute budget."
+        },
+        {
+          "user": "Use project name Birch and a nine-hour compute budget."
+        },
+        {
+          "user": "State the active project name and compute budget.",
+          "expected_terms": [
+            "Birch",
+            "nine"
+          ],
+          "forbidden_terms": [
+            "Aspen",
+            "seven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latest_privacy_and_retention",
+      "turns": [
+        {
+          "user": "Keep artifacts for fourteen days and allow encrypted remote backup."
+        },
+        {
+          "user": "Keep artifacts for thirty-one days and store them locally only."
+        },
+        {
+          "user": "What privacy and retention settings are active?",
+          "expected_terms": [
+            "thirty-one",
+            "locally"
+          ],
+          "expected_any": [
+            [
+              "local only",
+              "locally only"
+            ]
+          ],
+          "forbidden_terms": [
+            "fourteen",
+            "remote backup"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latest_evidence_and_release",
+      "turns": [
+        {
+          "user": "The release gate is a smoke pass, and the evidence label is preliminary."
+        },
+        {
+          "user": "The release gate is measured replay, and the evidence label is Amber."
+        },
+        {
+          "user": "Name the current release gate and evidence label.",
+          "expected_terms": [
+            "measured replay",
+            "Amber"
+          ],
+          "forbidden_terms": [
+            "smoke pass",
+            "preliminary"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latest_tool_and_network_scope",
+      "turns": [
+        {
+          "user": "Use tool Orion and permit network lookup for this lane."
+        },
+        {
+          "user": "Use tool Atlas and keep this lane offline only."
+        },
+        {
+          "user": "Which tool and network scope should be used now?",
+          "expected_terms": [
+            "Atlas",
+            "offline"
+          ],
+          "forbidden_terms": [
+            "Orion",
+            "network lookup"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latest_tone_and_status_detail",
+      "turns": [
+        {
+          "user": "Use a playful tone and report only the headline."
+        },
+        {
+          "user": "Use a direct and calm tone and include the residual table."
+        },
+        {
+          "user": "How should the next status update sound, and what detail must it include?",
+          "expected_terms": [
+            "direct",
+            "calm",
+            "residual table"
+          ],
+          "forbidden_terms": [
+            "playful",
+            "headline only"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "latest_priority_and_failure_action",
+      "turns": [
+        {
+          "user": "Prioritize latency, and retry once if the run fails."
+        },
+        {
+          "user": "Prioritize checkpoint integrity, and stop immediately if the run fails."
+        },
+        {
+          "user": "What is the active priority and failure action?",
+          "expected_terms": [
+            "checkpoint integrity",
+            "stop immediately"
+          ],
+          "forbidden_terms": [
+            "latency",
+            "retry"
+          ]
+        }
+      ]
+    }
+  ]
+}

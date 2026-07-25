@@ -16,7 +16,9 @@ import json
 import math
 import os
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -540,13 +542,31 @@ def execute_training(
         current = component_row(component_progress(contract), target_id)
         if current["state"] == "COMPLETE":
             continue
-        report = training.execute_targets(
-            config,
-            plan,
-            targets=[target_id],
-            max_steps=max_steps,
-            resume=current["state"] == "IN_PROGRESS",
-        )
+        invocation_started = time.perf_counter()
+        fault = ""
+        report: dict[str, Any] = {}
+        try:
+            report = training.execute_targets(
+                config,
+                plan,
+                targets=[target_id],
+                max_steps=max_steps,
+                resume=current["state"] == "IN_PROGRESS",
+            )
+        except BaseException as exc:
+            fault = f"{type(exc).__name__}:{exc}"
+            raise
+        finally:
+            refreshed = component_row(component_progress(contract), target_id)
+            append_training_invocation(
+                contract,
+                target_id=target_id,
+                optimizer_positions_before=int(current["optimizer_positions"]),
+                optimizer_positions_after=int(refreshed["optimizer_positions"]),
+                wall_seconds=time.perf_counter() - invocation_started,
+                max_steps=max_steps,
+                fault=fault,
+            )
         reports.append(compact_training_report(report, target_id))
         if report.get("trigger_state") == "RED":
             gaps.extend(f"{target_id}:{gap}" for gap in report.get("hard_gaps") or [])
@@ -597,26 +617,114 @@ def evaluate_all(contract: dict[str, Any]) -> dict[str, Any]:
             "next_action": next_action(progress, review_receipt_inventory(contract)),
             "hard_gaps": [],
         }
+    started = time.perf_counter()
     rows = []
     gaps = []
-    for candidate_id in SYSTEM_IDS:
-        try:
-            rows.append(evaluate_candidate(contract, candidate_id))
-        except BaseException as exc:
-            gaps.append(f"{candidate_id}:{type(exc).__name__}:{exc}")
-            break
+    station_timing: dict[str, Any] = {}
+    try:
+        generation_started = time.perf_counter()
+        prepared = [prepare_candidate_generation(contract, candidate_id) for candidate_id in SYSTEM_IDS]
+        station_timing["candidate_generation_wall_seconds"] = round(
+            time.perf_counter() - generation_started, 6
+        )
+
+        verification = verify_candidate_bundles(contract, prepared)
+        station_timing["code_verification_wall_seconds"] = verification[
+            "wall_seconds"
+        ]
+
+        rater_started = time.perf_counter()
+        candidate_root = resolve(
+            str(contract["config_payload"]["candidate_directory"])
+        ) / str(contract["review_optimizer_positions"])
+        judgment_dir = candidate_root / "english_judgments"
+        packet_specs = [
+            (row["candidate_id"], resolve(str(row["english_packet_path"])))
+            for row in prepared
+        ]
+        rater_receipt = local_raters.execute(
+            contract["local_rater_config"],
+            resolve(contract["local_rater_config_path"]),
+            packet_specs,
+            judgment_dir=judgment_dir,
+        )
+        station_timing["blind_english_scoring_wall_seconds"] = round(
+            time.perf_counter() - rater_started, 6
+        )
+        if rater_receipt.get("trigger_state") != "GREEN":
+            raise ValueError(
+                "local English rater execution failed: "
+                + ",".join(rater_receipt.get("hard_gaps") or [])
+            )
+        shared_evaluation_wall = time.perf_counter() - started
+        finalization_started = time.perf_counter()
+        for prepared_row in prepared:
+            rows.append(
+                finalize_candidate_evaluation(
+                    contract,
+                    prepared_row,
+                    verification,
+                    rater_receipt,
+                    shared_evaluation_wall_seconds=shared_evaluation_wall,
+                )
+            )
+        station_timing["decision_and_receipt_publication_wall_seconds"] = round(
+            time.perf_counter() - finalization_started, 6
+        )
+    except BaseException as exc:
+        gaps.append(f"{type(exc).__name__}:{exc}")
+    station_timing["end_to_end_wall_seconds"] = round(
+        time.perf_counter() - started, 6
+    )
     return {
         "policy": "project_theseus_architecture_review_evaluation_v1",
         "created_utc": now(),
         "trigger_state": "RED" if gaps else "GREEN",
         "review_optimizer_positions": contract["review_optimizer_positions"],
         "candidate_receipts": rows,
+        "station_timing": station_timing,
+        "evaluation_execution": {
+            "candidate_generation": "serial_per_resident_candidate_model_on_one_unified_memory_device",
+            "code_verification": "bounded_parallel_independent_sandboxes",
+            "blind_english_scoring": "one_shared_model_load_pass_across_all_opaque_candidate_packets",
+        },
         "hard_gaps": gaps,
         "boundaries": contract["boundaries"],
     }
 
 
 def evaluate_candidate(contract: dict[str, Any], candidate_id: str) -> dict[str, Any]:
+    """Compatibility entry point for one candidate using the same shared evaluator path."""
+
+    started = time.perf_counter()
+    prepared = prepare_candidate_generation(contract, candidate_id)
+    verification = verify_candidate_bundles(contract, [prepared])
+    candidate_root = resolve(
+        str(contract["config_payload"]["candidate_directory"])
+    ) / str(contract["review_optimizer_positions"])
+    rater_receipt = local_raters.execute(
+        contract["local_rater_config"],
+        resolve(contract["local_rater_config_path"]),
+        [(candidate_id, resolve(str(prepared["english_packet_path"])))],
+        judgment_dir=candidate_root / "english_judgments",
+    )
+    if rater_receipt.get("trigger_state") != "GREEN":
+        raise ValueError(
+            "local English rater execution failed: "
+            + ",".join(rater_receipt.get("hard_gaps") or [])
+        )
+    return finalize_candidate_evaluation(
+        contract,
+        prepared,
+        verification,
+        rater_receipt,
+        shared_evaluation_wall_seconds=time.perf_counter() - started,
+    )
+
+
+def prepare_candidate_generation(
+    contract: dict[str, Any], candidate_id: str
+) -> dict[str, Any]:
     import mlx.core as mx
     import mlx.nn as nn
 
@@ -687,31 +795,118 @@ def evaluate_candidate(contract: dict[str, Any], candidate_id: str) -> dict[str,
     models.clear()
     if hasattr(mx, "clear_cache"):
         mx.clear_cache()
-
-    code_rows = []
-    for case in cases:
-        if case["arm_id"] == "english":
-            continue
-        row = verify_candidate(case, outputs[case["case_id"]], functional)
-        row["generation_duration_ms"] = generation_ms[case["case_id"]]
-        code_rows.append(row)
     english_cases = [row for row in cases if row["arm_id"] == "english"]
     english_packet = build_english_packet(contract, candidate_id, english_cases, outputs)
     candidate_root = resolve(str(contract["config_payload"]["candidate_directory"])) / str(contract["review_optimizer_positions"])
     packet_path = candidate_root / f"{candidate_id}_english_packet.json"
-    judgment_dir = candidate_root / "english_judgments"
     write_json(packet_path, english_packet)
-    rater_receipt = local_raters.execute(
-        contract["local_rater_config"],
-        resolve(contract["local_rater_config_path"]),
-        [(candidate_id, packet_path)],
-        judgment_dir=judgment_dir,
+    return {
+        "candidate_id": candidate_id,
+        "cases": cases,
+        "outputs": outputs,
+        "generation_duration_ms": generation_ms,
+        "checkpoint_load_duration_ms_by_target": load_ms,
+        "generation_wall_seconds": round(time.perf_counter() - started, 6),
+        "english_packet_path": relative(packet_path),
+    }
+
+
+def verify_candidate_bundles(
+    contract: dict[str, Any], prepared: list[dict[str, Any]]
+) -> dict[str, Any]:
+    execution = (
+        (contract["config_payload"].get("evaluation") or {}).get(
+            "verifier_parallelism"
+        )
+        or {}
     )
-    if rater_receipt.get("trigger_state") != "GREEN":
-        raise ValueError("local English rater execution failed: " + ",".join(rater_receipt.get("hard_gaps") or []))
-    judgment_file = next(row for row in rater_receipt["judgment_files"] if row["label"] == candidate_id)
+    maximum_workers = max(1, int(execution.get("maximum_workers") or 4))
+    limits = {
+        "python_isolated_tests_v1": 4,
+        "deno_typescript_tests_v1": 2,
+        "rust_cargo_tests_v1": 1,
+        "html_dom_a11y_render_v1": 1,
+        **{
+            str(key): max(1, int(value))
+            for key, value in (execution.get("per_verifier_maximum") or {}).items()
+        },
+    }
+    semaphores = {
+        kind: threading.BoundedSemaphore(value) for kind, value in limits.items()
+    }
+    tasks = []
+    for bundle in prepared:
+        for case in bundle["cases"]:
+            if case["arm_id"] == "english":
+                continue
+            tasks.append((bundle["candidate_id"], case, bundle["outputs"][case["case_id"]]))
+
+    def run(task: tuple[str, dict[str, Any], str]) -> tuple[str, dict[str, Any]]:
+        candidate_id, case, output = task
+        kind = str(case["verifier"]["kind"])
+        semaphore = semaphores.setdefault(kind, threading.BoundedSemaphore(1))
+        with semaphore:
+            row = verify_candidate(case, output, contract["functional_config"])
+        return candidate_id, row
+
+    started = time.perf_counter()
+    rows: dict[str, dict[str, dict[str, Any]]] = {
+        bundle["candidate_id"]: {} for bundle in prepared
+    }
+    with ThreadPoolExecutor(max_workers=maximum_workers) as pool:
+        futures = {pool.submit(run, task): task for task in tasks}
+        for future in as_completed(futures):
+            candidate_id, row = future.result()
+            rows[candidate_id][str(row["case_id"])] = row
+    ordered = {
+        bundle["candidate_id"]: [
+            rows[bundle["candidate_id"]][case["case_id"]]
+            for case in bundle["cases"]
+            if case["arm_id"] != "english"
+        ]
+        for bundle in prepared
+    }
+    return {
+        "policy": "project_theseus_bounded_parallel_functional_verification_v1",
+        "wall_seconds": round(time.perf_counter() - started, 6),
+        "candidate_count": len(prepared),
+        "case_count": len(tasks),
+        "maximum_workers": maximum_workers,
+        "per_verifier_maximum": limits,
+        "sum_case_duration_ms": round(
+            sum(float(row.get("duration_ms") or 0.0) for values in ordered.values() for row in values),
+            3,
+        ),
+        "rows": ordered,
+    }
+
+
+def finalize_candidate_evaluation(
+    contract: dict[str, Any],
+    prepared: dict[str, Any],
+    verification: dict[str, Any],
+    rater_receipt: dict[str, Any],
+    *,
+    shared_evaluation_wall_seconds: float,
+) -> dict[str, Any]:
+    candidate_id = str(prepared["candidate_id"])
+    plan = contract["review_plan"]
+    cases = prepared["cases"]
+    outputs = prepared["outputs"]
+    generation_ms = prepared["generation_duration_ms"]
+    load_ms = prepared["checkpoint_load_duration_ms_by_target"]
+    code_rows = list((verification.get("rows") or {}).get(candidate_id) or [])
+    for row in code_rows:
+        row["generation_duration_ms"] = generation_ms[row["case_id"]]
+    judgment_file = next(
+        row
+        for row in rater_receipt["judgment_files"]
+        if row["label"] == candidate_id
+    )
     judgments = read_jsonl(resolve(str(judgment_file["path"])))
-    english = score_english_judgments(cases, outputs, judgments, functional)
+    english = score_english_judgments(
+        cases, outputs, judgments, contract["functional_config"]
+    )
     if not english.get("valid"):
         raise ValueError("English judgment contract failed: " + ",".join(english.get("faults") or []))
 
@@ -724,9 +919,10 @@ def evaluate_candidate(contract: dict[str, Any], candidate_id: str) -> dict[str,
         }
     passed = sum(row["passed_count"] for row in by_arm.values())
     total = sum(row["case_count"] for row in by_arm.values())
-    wall = time.perf_counter() - started
+    wall = max(1e-9, float(shared_evaluation_wall_seconds))
     checkpoints = checkpoint_artifacts(plan, candidate_id)
     actual_positions = candidate_optimizer_positions(plan, candidate_id)
+    cost = training_cost_accounting(contract, candidate_id)
     receipt = {
         "policy": RECEIPT_POLICY,
         "created_utc": now(),
@@ -752,11 +948,35 @@ def evaluate_candidate(contract: dict[str, Any], candidate_id: str) -> dict[str,
             "visible_case_ids_sha256": contract["visible_case_ids_sha256"],
             "verifier_budget_sha256": verifier_budget_sha(contract["config_payload"]),
             "optimizer_positions": actual_positions,
+            "cost_accounting": cost,
             "accepted_verified_outputs_per_second": round(passed / max(1e-9, wall), 8),
             "wall_seconds": round(wall, 6),
+            "wall_seconds_scope": "shared_end_to_end_review_evaluation_denominator",
+            "candidate_generation_wall_seconds": prepared["generation_wall_seconds"],
             "checkpoint_load_duration_ms_by_target": load_ms,
             "generation_duration_ms_total": round(sum(generation_ms.values()), 6),
+            "verification_execution": {
+                key: verification[key]
+                for key in (
+                    "policy",
+                    "wall_seconds",
+                    "candidate_count",
+                    "case_count",
+                    "maximum_workers",
+                    "per_verifier_maximum",
+                    "sum_case_duration_ms",
+                )
+            },
+            "blind_rater_execution": {
+                "packet_count": int(rater_receipt.get("packet_count") or 0),
+                "blind_item_count": int(rater_receipt.get("blind_item_count") or 0),
+                "model_load_passes": len(rater_receipt.get("model_receipts") or []),
+                "local_evaluator_inference_calls": int(
+                    rater_receipt.get("local_evaluator_inference_calls") or 0
+                ),
+            },
             "local_evaluator_inference_calls": int(rater_receipt.get("local_evaluator_inference_calls") or 0),
+            "local_evaluator_inference_calls_scope": "shared_review_total_not_additive_across_candidate_receipts",
             "candidate_budget_per_case": 1,
             "candidate_outputs_training_eligible": False,
         },
@@ -789,6 +1009,9 @@ def evaluate_candidate(contract: dict[str, Any], candidate_id: str) -> dict[str,
         "templates_renderers_routers_tools_credit": 0,
         "public_training_rows_written": 0,
     }
+    candidate_root = resolve(
+        str(contract["config_payload"]["candidate_directory"])
+    ) / str(contract["review_optimizer_positions"])
     write_json(candidate_root / f"{candidate_id}_candidates.json", candidate_bundle)
     return {
         "candidate_id": candidate_id,
@@ -871,6 +1094,136 @@ def candidate_optimizer_positions(plan: dict[str, Any], candidate_id: str) -> in
     )
 
 
+def training_cost_accounting(
+    contract: dict[str, Any], candidate_id: str
+) -> dict[str, Any]:
+    plan = contract["review_plan"]
+    targets = (
+        [training.SHARED_TRUNK_ID, *training.ARM_IDS]
+        if candidate_id == "moecot_system"
+        else [candidate_id]
+    )
+    ledger = read_training_invocations(contract)
+    components = []
+    total_positions = 0
+    active_forward_ptp = 0
+    trainable_update_ptp = 0
+    wall_seconds = 0.0
+    for target_id in targets:
+        target = plan["targets"][target_id]
+        receipt = read_json(resolve(str(target["receipt"])))
+        positions = int(receipt.get("optimizer_positions") or 0)
+        parameter_count = int(receipt.get("parameter_count") or target["parameter_count"])
+        trainable_count = int(
+            receipt.get("trainable_parameter_count") or target["owned_parameter_count"]
+        )
+        target_ledger = [row for row in ledger if row.get("target_id") == target_id]
+        component_wall = sum(float(row["wall_seconds"]) for row in target_ledger)
+        components.append(
+            {
+                "target_id": target_id,
+                "optimizer_positions": positions,
+                "active_forward_parameter_count": parameter_count,
+                "trainable_update_parameter_count": trainable_count,
+                "active_forward_parameter_token_product": parameter_count * positions,
+                "trainable_update_parameter_token_product": trainable_count * positions,
+                "measured_training_wall_seconds": round(component_wall, 6),
+                "invocation_count": len(target_ledger),
+            }
+        )
+        total_positions += positions
+        active_forward_ptp += parameter_count * positions
+        trainable_update_ptp += trainable_count * positions
+        wall_seconds += component_wall
+    gaps = validate_training_invocations(contract, targets, ledger)
+    if gaps:
+        raise ValueError("review training cost ledger invalid: " + ",".join(gaps))
+    return {
+        "policy": "project_theseus_architecture_review_training_cost_v1",
+        "components": components,
+        "optimizer_positions": total_positions,
+        "active_forward_parameter_token_product": active_forward_ptp,
+        "trainable_update_parameter_token_product": trainable_update_ptp,
+        "measured_training_wall_seconds": round(wall_seconds, 6),
+        "invocation_count": sum(row["invocation_count"] for row in components),
+        "transfer_and_merge_wall_seconds": 0.0,
+        "energy_joules": None,
+        "energy_measurement_state": "UNAVAILABLE_ON_CURRENT_MACOS_ROUTE",
+        "hard_gaps": [],
+    }
+
+
+def training_ledger_path(contract: dict[str, Any]) -> Path:
+    return (
+        resolve(str(contract["config_payload"]["checkpoint_root"]))
+        / str(contract["review_optimizer_positions"])
+        / "training_invocations.jsonl"
+    )
+
+
+def append_training_invocation(
+    contract: dict[str, Any],
+    *,
+    target_id: str,
+    optimizer_positions_before: int,
+    optimizer_positions_after: int,
+    wall_seconds: float,
+    max_steps: int,
+    fault: str,
+) -> None:
+    path = training_ledger_path(contract)
+    rows = read_jsonl(path) if path.is_file() else []
+    row = {
+        "policy": "project_theseus_architecture_review_training_invocation_v1",
+        "created_utc": now(),
+        "review_plan_sha256": contract["review_plan"]["plan_sha256"],
+        "target_id": target_id,
+        "optimizer_positions_before": optimizer_positions_before,
+        "optimizer_positions_after": optimizer_positions_after,
+        "optimizer_positions_added": max(
+            0, optimizer_positions_after - optimizer_positions_before
+        ),
+        "wall_seconds": round(max(0.0, wall_seconds), 6),
+        "max_steps": max_steps,
+        "fault": fault,
+    }
+    rows.append(row)
+    write_jsonl_atomic(path, rows)
+
+
+def read_training_invocations(contract: dict[str, Any]) -> list[dict[str, Any]]:
+    path = training_ledger_path(contract)
+    return read_jsonl(path) if path.is_file() else []
+
+
+def validate_training_invocations(
+    contract: dict[str, Any], targets: list[str], rows: list[dict[str, Any]]
+) -> list[str]:
+    gaps = []
+    plan_sha = contract["review_plan"]["plan_sha256"]
+    for target_id in targets:
+        target_rows = [row for row in rows if row.get("target_id") == target_id]
+        expected_before = 0
+        for row in target_rows:
+            if row.get("policy") != "project_theseus_architecture_review_training_invocation_v1":
+                gaps.append(f"training_ledger_policy_mismatch:{target_id}")
+            if row.get("review_plan_sha256") != plan_sha:
+                gaps.append(f"training_ledger_plan_mismatch:{target_id}")
+            before = int(row.get("optimizer_positions_before") or 0)
+            after = int(row.get("optimizer_positions_after") or 0)
+            if before != expected_before or after < before:
+                gaps.append(f"training_ledger_interval_invalid:{target_id}")
+            if float(row.get("wall_seconds") or 0.0) <= 0.0:
+                gaps.append(f"training_ledger_wall_invalid:{target_id}")
+            if row.get("fault"):
+                gaps.append(f"training_ledger_fault:{target_id}")
+            expected_before = after
+        receipt = read_json(resolve(str(contract["review_plan"]["targets"][target_id]["receipt"])))
+        if not target_rows or expected_before != int(receipt.get("optimizer_positions") or 0):
+            gaps.append(f"training_ledger_receipt_position_mismatch:{target_id}")
+    return sorted(set(gaps))
+
+
 def evaluator_sha(contract: dict[str, Any]) -> str:
     semantic = contract["semantic_identity"]
     names = ("review_runner", "case_compiler", "verifier", "local_rater_config", "local_rater_runner")
@@ -947,6 +1300,16 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + f".tmp-{os.getpid()}")
     temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(temporary, path)
+
+
+def write_jsonl_atomic(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + f".tmp-{os.getpid()}")
+    temporary.write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+        encoding="utf-8",
+    )
     os.replace(temporary, path)
 
 

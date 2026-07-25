@@ -1,0 +1,27 @@
+# Complete resolved closure for the Python 3.12 CPU profile. Generated from a
+# fresh environment; every line is an exact constraint.
+cffi==2.1.0
+cryptography==41.0.7
+iniconfig==2.3.0
+mpmath==1.3.0
+numpy==1.26.4
+packaging==26.2
+pandas==2.3.3
+pillow==10.4.0
+pluggy==1.6.0
+psutil==6.1.1
+pyarrow==21.0.0
+pycparser==3.0
+pypdf==6.10.0
+pytest==8.3.5
+pytest-asyncio==1.0.0
+python-dateutil==2.9.0.post0
+pytz==2026.2
+PyYAML==6.0.1
+safetensors==0.5.3
+scipy==1.13.1
+six==1.17.0
+sympy==1.14.0
+tzdata==2026.3
+z3-solver==4.16.0.0
+zstandard==0.25.0

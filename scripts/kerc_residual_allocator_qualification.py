@@ -22,6 +22,7 @@ from typing import Any, Iterable
 
 import numpy as np
 
+import host_resource_safety
 from moecot_language_arm_training import (
     KERC_UNIT_CANDIDATE_BASE_FEATURE_DIM,
     build_plan,
@@ -896,6 +897,10 @@ def train_seed(
 
 
 def run(config_path: Path) -> dict[str, Any]:
+    if not host_resource_safety.accelerator_child_authorized():
+        raise host_resource_safety.HostResourceSafetyFault(
+            "ACCELERATOR_WATCHDOG_REQUIRED"
+        )
     config = validate_config(json.loads(config_path.read_text(encoding="utf-8")))
     training_path = resolve(config["training_config"])
     training = json.loads(training_path.read_text(encoding="utf-8"))
@@ -1243,6 +1248,19 @@ def main() -> int:
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     args = parser.parse_args()
+    if not host_resource_safety.accelerator_child_authorized():
+        print(
+            json.dumps(
+                {
+                    "trigger_state": "RED",
+                    "reason": "ACCELERATOR_WATCHDOG_REQUIRED",
+                    "report_written": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2
     report = run(resolve(args.config))
     out = resolve(args.out) if args.out else resolve(
         json.loads(resolve(args.config).read_text(encoding="utf-8"))["report"]

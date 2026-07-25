@@ -14,6 +14,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import kernel_english_protocol as kernel  # noqa: E402
+from moecot_source_conditioned_pretraining import kerc_code_tokens  # noqa: E402
 from kerc_residual_economics import (  # noqa: E402
     build_structural_rate_distortion_allocation,
     residual_unit_allocation_receipt,
@@ -449,6 +450,129 @@ def test_compact_learned_program_and_answer_transports_are_exact_and_fail_closed
     malformed_answer["tokens"][0] = "PANSWER_VERSION:forged"
     with pytest.raises(kernel.KernelProtocolFault):
         kernel.materialize_learned_answer_packet(malformed_answer)
+
+
+def test_compact_compiler_transport_is_exact_smaller_and_fail_closed() -> None:
+    record = kernel.validate_training_record(training_record())
+    compiler_view = next(
+        row
+        for row in kernel.compile_training_views(record)
+        if row["objective"] == "surface_to_kernel_program_v1"
+    )
+    legacy = json.loads(compiler_view["target"])
+    compact = kernel.compact_learned_compiler_transport(legacy)
+    compact_text = kernel.canonical_json(compact)
+
+    assert compact[0] == kernel.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+    assert kernel.materialize_learned_compiler_transport(compact) == legacy
+    assert kernel.decode_learned_compiler_transport(compact_text) == legacy
+    assert len(kerc_code_tokens(compact_text)) < len(
+        kerc_code_tokens(compiler_view["target"])
+    )
+    parsed = kernel.parse_learned_compiler_output(
+        compact_text,
+        protected_objects=record["kernel_packet"]["protected_objects"],
+        concept_capsules={},
+        source_character_length=len(record["source_text"]),
+        source=record["source_text"],
+        hrl_state=record["hrl_state"],
+    )
+    assert parsed["state"] == "READY"
+
+    wrong_version = copy.deepcopy(compact)
+    wrong_version[0] += 1
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_COMPACT_COMPILER_TRANSPORT_INVALID",
+    ):
+        kernel.materialize_learned_compiler_transport(wrong_version)
+    malformed_residual = copy.deepcopy(compact)
+    malformed_residual[4].pop()
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_COMPACT_COMPILER_TRANSPORT_SCHEMA_INVALID",
+    ):
+        kernel.materialize_learned_compiler_transport(malformed_residual)
+    assert kernel.learned_compiler_transport_shape_signature(compact) == {
+        "root_type": "array",
+        "root_length": 6,
+        "version_matches": True,
+        "slot_types": [
+            "number",
+            "array",
+            "object",
+            "array",
+            "array",
+            "array",
+        ],
+        "protected_row_count": len(compact[1]),
+        "protected_row_length_counts": {
+            "5": len(compact[1]),
+        },
+        "residual_length": 6,
+        "hierarchy_length": 3,
+    }
+    wrong_shape = copy.deepcopy(compact)
+    wrong_shape[4].pop()
+    signature = kernel.learned_compiler_transport_shape_signature(wrong_shape)
+    assert signature["residual_length"] == 5
+    assert signature["root_length"] == 6
+    assert signature["version_matches"] is True
+    compact_tokens = kerc_code_tokens(compact_text)
+    continuation_indices = (
+        kernel.learned_compiler_transport_required_continuation_token_indices(
+            [str(token) for token in compact_tokens]
+        )
+    )
+    assert continuation_indices
+    assert all(str(compact_tokens[index]) == "," for index in continuation_indices)
+    # The root ABI contributes exactly five fixed continuation decisions.
+    root_commas = []
+    depth = 0
+    for index, token in enumerate(compact_tokens):
+        if str(token) == "[":
+            depth += 1
+        elif str(token) == "]":
+            depth -= 1
+        elif str(token) == "," and depth == 1:
+            root_commas.append(index)
+    assert root_commas == [
+        index for index in continuation_indices if index in root_commas
+    ]
+    semantic_indices = (
+        kernel.learned_compiler_transport_semantic_pointer_token_indices(
+            [str(token) for token in compact_tokens]
+        )
+    )
+    assert semantic_indices
+    assert any(
+        "PSPANS:" in str(compact_tokens[index])
+        for index in semantic_indices
+    )
+    assert all(
+        str(compact_tokens[index]) != ","
+        for index in semantic_indices
+    )
+    path_qualified = copy.deepcopy(compact)
+    path_qualified[1].append(
+        ["@protected-fixture", "TEXT", "EXACT", 31337, 31338]
+    )
+    path_qualified[5][0] = 424242
+    path_qualified_tokens = kerc_code_tokens(kernel.canonical_json(path_qualified))
+    path_qualified_indices = set(
+        kernel.learned_compiler_transport_semantic_pointer_token_indices(
+            [str(token) for token in path_qualified_tokens]
+        )
+    )
+    selected_values = {
+        str(path_qualified_tokens[index])
+        for index in path_qualified_indices
+    }
+    assert {"31337", "31338"}.issubset(selected_values)
+    assert "424242" not in selected_values
+    assert str(kernel.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION) not in (
+        selected_values
+    )
 
 
 def test_hierarchical_core_partitions_dependencies_and_merges_exact_answer() -> None:

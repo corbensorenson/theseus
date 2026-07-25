@@ -1,0 +1,98 @@
+{
+  "policy": "project_theseus_mtp_matched_adequacy_v1",
+  "candidate_lease_id": "mtp_adequacy",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "stage_metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+  "scratch_root": "runtime/t0a_canaries/mtp_adequacy/matched_v1",
+  "report": "reports/mtp_matched_adequacy.json",
+  "seeds": [20260722, 20260723, 20260724],
+  "scoped_arms": [
+    "english",
+    "python",
+    "javascript_typescript",
+    "html_css",
+    "rust"
+  ],
+  "supervision": {
+    "root": "data/training_data/moecot_language_supervision_v1",
+    "train_split": "private_train",
+    "heldout_split": "private_dev",
+    "train_rows_per_arm": 24,
+    "heldout_rows_per_arm": 8,
+    "maximum_sequence_tokens": 256,
+    "selection_namespace": "t0a_private_mtp_family_disjoint_v1"
+  },
+  "model": {
+    "d_model": 48,
+    "num_layers": 2,
+    "num_heads": 4,
+    "num_kv_heads": 2,
+    "ff_dim": 128,
+    "attention_policy": "prefix_lm",
+    "future_offsets": [2, 3, 4],
+    "hidden_dim": 3,
+    "loss_weights": [1.0, 0.5, 0.25],
+    "maximum_parameter_overhead_ratio": 0.25
+  },
+  "training": {
+    "steps": 24,
+    "batch_size": 5,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.01,
+    "warmup_steps": 4,
+    "ramp_steps": 8,
+    "maximum_mtp_loss_scale": 0.3,
+    "evaluation_interval_steps": 4
+  },
+  "candidates": [
+    {
+      "id": "ar_independent_sham",
+      "head_mode": "independent_mlp",
+      "gradient_route": "future_heads_only_stop_gradient_at_trunk",
+      "schedule": "fixed"
+    },
+    {
+      "id": "mtp_conventional_independent",
+      "head_mode": "independent_mlp",
+      "gradient_route": "future_heads_and_shared_trunk",
+      "schedule": "fixed"
+    },
+    {
+      "id": "mtp_curriculum_independent",
+      "head_mode": "independent_mlp",
+      "gradient_route": "future_heads_and_shared_trunk",
+      "schedule": "curriculum"
+    },
+    {
+      "id": "ar_register_sham",
+      "head_mode": "register_conditioned",
+      "gradient_route": "future_heads_only_stop_gradient_at_trunk",
+      "schedule": "curriculum"
+    },
+    {
+      "id": "mtp_register_curriculum",
+      "head_mode": "register_conditioned",
+      "gradient_route": "future_heads_and_shared_trunk",
+      "schedule": "curriculum"
+    }
+  ],
+  "prospective_decision": {
+    "minimum_relative_heldout_ntp_loss_improvement": 0.01,
+    "maximum_weak_arm_relative_loss_regression": 0.02,
+    "minimum_seed_win_fraction": 0.6666666666666666,
+    "minimum_relative_greedy_token_accuracy_improvement": 0.0,
+    "maximum_wall_time_ratio": 1.25,
+    "functional_verifier_required_for_adoption": true
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0,
+    "confirmation_surface_consumption": 0,
+    "production_checkpoint_mutation": false,
+    "heldout_labels_visible_to_optimizer": false,
+    "architecture_selection_from_auxiliary_loss_alone": false
+  }
+}

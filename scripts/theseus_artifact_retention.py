@@ -118,6 +118,7 @@ def main() -> int:
         help="Minimum unreferenced hot-report age; current references are protected independently.",
     )
     parser.add_argument("--hot-report-target-bytes", type=int, default=0)
+    parser.add_argument("--hot-report-target-files", type=int, default=0)
     parser.add_argument("--no-compress", action="store_true")
     parser.add_argument("--archive-root", default=str(ARCHIVE_ROOT.relative_to(ROOT)))
     parser.add_argument("--manifest-out", default=str(DEFAULT_MANIFEST.relative_to(ROOT)))
@@ -154,6 +155,8 @@ def main() -> int:
     previous_entries, live_regeneration_records = reconcile_renewable_live_entries(
         previous_entries
     )
+    if args.execute:
+        previous_entries = recover_pointer_manifest_entries(previous_entries)
     pointer_repairs = repair_manifest_pointers(existing_manifest, execute=bool(args.execute)) if args.repair_manifest_pointers else {
         "state": "NOT_REQUESTED",
         "eligible_count": 0,
@@ -217,12 +220,17 @@ def main() -> int:
         budget_policy = read_json(resolve(args.budget_policy), {})
         maximum = int(budget_policy.get("max_hot_report_bytes") or 0)
         hot_target = int(args.hot_report_target_bytes) or int(maximum * 0.80)
+        maximum_files = int(budget_policy.get("max_hot_report_files") or 0)
+        hot_file_target = int(args.hot_report_target_files) or int(
+            maximum_files * 0.80
+        )
         candidates.extend(
             artifact_retention_reference.hot_report_archive_candidates(
                 hot_report_reference_index,
                 min_bytes=hot_report_candidate_min_bytes(args.hot_report_min_bytes),
                 min_age_hours=max(0.0, float(args.hot_report_min_age_hours)),
                 target_hot_bytes=max(0, hot_target),
+                target_hot_files=max(0, hot_file_target),
             )
         )
         candidates = sorted(candidates, key=lambda row: (-int(row.get("bytes") or 0), str(row.get("path") or "")))
@@ -262,11 +270,11 @@ def main() -> int:
                 }
             )
 
-    entries_by_original = {str(row.get("original_path")): row for row in previous_entries if isinstance(row, dict)}
-    for row in actions:
-        if row.get("status") in {"archived", "already_archived", "dry_run"}:
-            entries_by_original[str(row.get("original_path") or row.get("path"))] = manifest_entry(row)
-    entries = sorted(entries_by_original.values(), key=lambda row: str(row.get("original_path") or ""))
+    entries = merge_manifest_entries(
+        previous_entries,
+        actions,
+        execute=bool(args.execute),
+    )
     archived_entries = [
         row
         for row in entries
@@ -330,7 +338,7 @@ def main() -> int:
         "public_training_rows_written": 0,
         "fallback_return_count": 0,
     }
-    if args.execute or actions:
+    if args.execute:
         write_json(manifest_path, manifest)
 
     moved_bytes = sum(int(row.get("bytes") or 0) for row in actions if row.get("status") in {"archived", "already_archived"})
@@ -539,11 +547,23 @@ def archive_candidate(
         if is_pointer(pointer_path):
             pointer = read_pointer(pointer_path)
             existing = resolve(str(pointer.get("archive_path") or ""))
+            archived_bytes = int(existing.stat().st_size) if existing.is_file() else 0
+            original_bytes = int(pointer.get("original_bytes") or 0)
             return {
                 **candidate,
                 "status": "already_archived",
                 "archive_path": rel(existing) if existing.exists() else str(pointer.get("archive_path") or ""),
                 "pointer_path": rel(pointer_path),
+                "bytes": original_bytes,
+                "gib": round(original_bytes / (1024**3), 3),
+                "mtime_utc": pointer.get("original_mtime_utc"),
+                "family": pointer.get("archive_family"),
+                "sha256": pointer.get("original_sha256"),
+                "archive_sha256": (
+                    sha256_file(existing) if existing.is_file() else None
+                ),
+                "archived_bytes": archived_bytes,
+                "reclaimed_bytes": max(0, original_bytes - archived_bytes),
             }
         source_sha256 = sha256_file(source)
         if target.exists():
@@ -834,6 +854,107 @@ def manifest_entry(row: dict[str, Any]) -> dict[str, Any]:
         "reason": row.get("reason"),
         "updated_utc": now(),
     }
+
+
+def merge_manifest_entries(
+    previous_entries: list[dict[str, Any]],
+    actions: list[dict[str, Any]],
+    *,
+    execute: bool,
+) -> list[dict[str, Any]]:
+    """Merge only executed archive outcomes into cumulative custody state."""
+
+    entries_by_original = {
+        str(row.get("original_path")): dict(row)
+        for row in previous_entries
+        if (
+            isinstance(row, dict)
+            and str(row.get("original_path") or "")
+            and row.get("status") != "dry_run"
+        )
+    }
+    if execute:
+        for row in actions:
+            if row.get("status") in {"archived", "already_archived"}:
+                key = str(row.get("original_path") or row.get("path") or "")
+                if key:
+                    entries_by_original[key] = manifest_entry(row)
+    return sorted(
+        entries_by_original.values(),
+        key=lambda row: str(row.get("original_path") or ""),
+    )
+
+
+def recover_pointer_manifest_entries(
+    previous_entries: list[dict[str, Any]],
+    *,
+    search_roots: tuple[Path, ...] | None = None,
+) -> list[dict[str, Any]]:
+    """Rebuild missing cumulative custody rows from verified live pointers."""
+
+    entries_by_original = {
+        str(row.get("original_path")): dict(row)
+        for row in previous_entries
+        if (
+            isinstance(row, dict)
+            and str(row.get("original_path") or "")
+            and row.get("status") != "dry_run"
+        )
+    }
+    roots = search_roots or (REPORTS, ROOT / "dist")
+    for root in roots:
+        if not root.exists():
+            continue
+        for pointer_path in root.rglob("*"):
+            pointer = read_pointer(pointer_path)
+            if pointer.get("policy") != ARCHIVE_POINTER_POLICY:
+                continue
+            original_path = str(
+                pointer.get("original_path") or rel(pointer_path)
+            )
+            existing_entry = entries_by_original.get(original_path)
+            if existing_entry and existing_entry.get("status") in {
+                "archived",
+                "already_archived",
+                "archived_superseded_by_live_regeneration",
+            }:
+                continue
+            archive = resolve(str(pointer.get("archive_path") or ""))
+            expected = str(pointer.get("original_sha256") or "")
+            if (
+                not archive.is_file()
+                or not expected
+                or verify_archive_payload(
+                    archive,
+                    expected,
+                    compressed=archive.suffix.lower() == ".gz",
+                ).get("verified")
+                is not True
+            ):
+                continue
+            original_bytes = int(pointer.get("original_bytes") or 0)
+            entries_by_original[original_path] = {
+                "original_path": original_path,
+                "archive_path": rel(archive),
+                "pointer_path": rel(pointer_path),
+                "status": "already_archived",
+                "bytes": original_bytes,
+                "archived_bytes": int(archive.stat().st_size),
+                "reclaimed_bytes": max(
+                    0, original_bytes - int(archive.stat().st_size)
+                ),
+                "sha256": expected,
+                "archive_sha256": sha256_file(archive),
+                "gib": round(original_bytes / (1024**3), 3),
+                "mtime_utc": pointer.get("original_mtime_utc"),
+                "family": pointer.get("archive_family"),
+                "reason": "recovered_verified_archive_pointer",
+                "updated_utc": now(),
+            }
+    return sorted(
+        entries_by_original.values(),
+        key=lambda row: str(row.get("original_path") or ""),
+    )
 
 
 def retention_compression_record(row: dict[str, Any], *, compress: bool) -> dict[str, Any]:
@@ -1284,7 +1405,8 @@ def read_pointer(path: Path) -> dict[str, Any]:
             return {}
         if not path.exists() or path.stat().st_size > MAX_POINTER_BYTES:
             return {}
-        return read_json(path, {})
+        payload = read_json(path, {})
+        return payload if isinstance(payload, dict) else {}
     except Exception:
         return {}
 

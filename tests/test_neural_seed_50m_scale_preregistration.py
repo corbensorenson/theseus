@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import builtins
 import sys
 from pathlib import Path
 
@@ -29,6 +30,35 @@ def test_preregistered_candidate_and_controls_are_mechanically_matched() -> None
     for control in ("dense_active_parameter", "dense_total_parameter"):
         assert abs(observed[control]["delta"]) <= observed[control]["ff_width_parameter_increment"]
     assert observed["router_parameter_count"] == 0
+
+
+def test_preregistration_architecture_contract_never_imports_mlx(monkeypatch) -> None:
+    config = scale.read_json(ROOT / "configs" / "neural_seed_50m_scale_preregistration.json")
+    vocab = scale.read_json(ROOT / "runtime" / "moecot_language_seed_v1" / "exact_language_vocab.json")
+    original_import = builtins.__import__
+
+    def reject_mlx(name: str, *args: object, **kwargs: object) -> object:
+        if name == "mlx" or name.startswith("mlx."):
+            raise AssertionError("preregistration architecture accounting imported MLX")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", reject_mlx)
+    observed = scale.architecture_contract(config, vocab)
+    assert observed["shared_trunk_parameter_count"] == 54_836_746
+
+
+def test_full_scale_resource_canary_requires_external_watchdog(monkeypatch) -> None:
+    monkeypatch.setattr(
+        scale.host_resource_safety,
+        "accelerator_child_authorized",
+        lambda: False,
+    )
+    try:
+        scale.run_resource_canaries({}, {}, {}, {})
+    except scale.host_resource_safety.HostResourceSafetyFault as exc:
+        assert str(exc) == "ACCELERATOR_WATCHDOG_REQUIRED"
+    else:
+        raise AssertionError("full-scale MLX canary ran without watchdog authority")
 
 
 def test_task_contract_requires_replayable_content_identity(tmp_path: Path) -> None:

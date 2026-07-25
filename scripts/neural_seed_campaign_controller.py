@@ -269,6 +269,23 @@ def validate_review_receipt(row: dict[str, Any]) -> list[str]:
         gaps.append("review_budget_not_reached")
     if float(evidence.get("accepted_verified_outputs_per_second") or 0.0) < 0.0:
         gaps.append("throughput_invalid")
+    cost = evidence.get("cost_accounting") or {}
+    if cost.get("policy") != "project_theseus_architecture_review_training_cost_v1":
+        gaps.append("training_cost_accounting_missing")
+    if int(cost.get("optimizer_positions") or 0) != int(
+        evidence.get("optimizer_positions") or 0
+    ):
+        gaps.append("training_cost_position_mismatch")
+    for key in (
+        "active_forward_parameter_token_product",
+        "trainable_update_parameter_token_product",
+    ):
+        if int(cost.get(key) or 0) <= 0:
+            gaps.append(f"training_cost_invalid:{key}")
+    if float(cost.get("measured_training_wall_seconds") or 0.0) <= 0.0:
+        gaps.append("training_cost_wall_invalid")
+    if cost.get("hard_gaps"):
+        gaps.append("training_cost_hard_gaps_present")
     return gaps
 
 
@@ -396,6 +413,7 @@ def candidate_summary(row: dict[str, Any]) -> dict[str, Any]:
         ),
         "optimizer_positions": int(evidence["optimizer_positions"]),
         "checkpoint_sha256": evidence["checkpoint_sha256"],
+        "cost_accounting": evidence["cost_accounting"],
     }
 
 

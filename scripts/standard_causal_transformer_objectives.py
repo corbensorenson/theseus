@@ -7,10 +7,35 @@ the objective remains replayable under the canonical training runtime.
 from __future__ import annotations
 
 import hashlib
+import inspect
 import math
 from typing import Any
 
 import numpy as np
+
+
+def mtp_curriculum_scale(
+    step: int,
+    *,
+    warmup_steps: int,
+    ramp_steps: int,
+    maximum: float,
+) -> float:
+    """Return a monotonic NTP-to-MTP auxiliary-loss scale.
+
+    The base next-token objective remains active throughout.  A zero-valued
+    prefix lets the causal model establish ordinary token prediction before
+    the future-token auxiliary receives optimizer authority.
+    """
+
+    if step < 0 or warmup_steps < 0 or ramp_steps <= 0:
+        raise ValueError("MTP curriculum steps must be nonnegative with a positive ramp")
+    if not math.isfinite(maximum) or maximum < 0.0:
+        raise ValueError("MTP curriculum maximum must be finite and nonnegative")
+    if step < warmup_steps:
+        return 0.0
+    progress = min(1.0, (step - warmup_steps + 1) / float(ramp_steps))
+    return float(maximum) * progress
 
 
 def prepare_semantic_plan_labels(
@@ -242,6 +267,8 @@ def causal_loss(
     kerc_unit_class_weights: Any | None = None,
     source_conditioning: bool | None = None,
     prune_inactive_auxiliary_outputs: bool = True,
+    prune_zero_authority_decoder: bool = True,
+    normalization_mask: Any | None = None,
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -254,9 +281,42 @@ def causal_loss(
     ) or (kerc_verifier_labels is not None and kerc_verifier_weight > 0.0) or (
         kerc_decision_labels is not None and kerc_decision_weight > 0.0
     )
-    copy_loss_active = copy_weight > 0.0 and source_conditioning is not False
+    unit_conditioning_inputs = (
+        kerc_unit_byte_ids,
+        kerc_unit_kind_ids,
+        kerc_unit_candidate_features,
+        kerc_unit_mask,
+        kerc_unit_hard_block_mask,
+    )
+    unit_conditioning_active = any(
+        value is not None for value in unit_conditioning_inputs
+    )
+    if unit_conditioning_active and (
+        not all(value is not None for value in unit_conditioning_inputs)
+        or (kerc_unit_byte_mask is None) == (kerc_unit_byte_offsets is None)
+    ):
+        raise ValueError(
+            "KERC generator unit conditioning requires a complete byte layout and unit inputs"
+        )
+    token_supervision_active = bool(mx.any(mask > 0.0))
+    copy_loss_active = (
+        token_supervision_active
+        and copy_weight > 0.0
+        and source_conditioning is not False
+    )
+    mtp_loss_active = token_supervision_active and mtp_weight > 0.0
+    auxiliary_only = (
+        prune_zero_authority_decoder
+        and not token_supervision_active
+        and needs_kerc
+        and not needs_plan
+    )
     auxiliary_outputs_required = (
-        needs_plan or copy_loss_active or mtp_weight > 0.0 or needs_kerc
+        needs_plan
+        or copy_loss_active
+        or mtp_loss_active
+        or needs_kerc
+        or unit_conditioning_active
     )
     if not prune_inactive_auxiliary_outputs:
         auxiliary_outputs_required = (
@@ -274,6 +334,10 @@ def causal_loss(
             kerc_unit_candidate_features=kerc_unit_candidate_features,
             kerc_unit_mask=kerc_unit_mask,
             kerc_unit_hard_block_mask=kerc_unit_hard_block_mask,
+            auxiliary_only=auxiliary_only,
+            output_position_mask=(
+                mask if getattr(model, "compact_output_projection", False) else None
+            ),
         )
         plan_logits = training_aux.get("plan_logits")
         copy_aux = training_aux.get("copy_aux")
@@ -284,18 +348,54 @@ def causal_loss(
         if needs_kerc and not isinstance(kerc_aux, dict):
             raise ValueError("KERC labels require the faithful learned KERC modules")
     else:
-        logits, _cache = model(inputs, source_conditioning=source_conditioning)
+        logits, _cache = model(
+            inputs,
+            source_conditioning=source_conditioning,
+            output_position_mask=(
+                mask if getattr(model, "compact_output_projection", False) else None
+            ),
+        )
         plan_logits = None
         mtp_logits = []
         kerc_aux = None
-    token_loss = nn.losses.cross_entropy(logits, labels)
-    denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
-    body_loss = mx.sum(token_loss * mask) / denominator
+    output_width = int(logits.shape[1])
+    output_start = int(
+        (training_aux or {}).get(
+            "output_position_start",
+            int(labels.shape[1]) - output_width,
+        )
+    ) if auxiliary_outputs_required else int(labels.shape[1]) - output_width
+    output_stop = int(
+        (training_aux or {}).get(
+            "output_position_stop",
+            output_start + output_width,
+        )
+    ) if auxiliary_outputs_required else output_start + output_width
+    if (
+        output_width > int(labels.shape[1])
+        or output_start < 0
+        or output_stop > int(labels.shape[1])
+        or output_stop - output_start != output_width
+    ):
+        raise ValueError("model output width exceeds label width")
+    token_labels = labels[:, output_start:output_stop]
+    token_mask = mask[:, output_start:output_stop]
+    token_loss = nn.losses.cross_entropy(logits, token_labels)
+    denominator_mask = normalization_mask if normalization_mask is not None else mask
+    denominator = mx.maximum(
+        mx.sum(denominator_mask), mx.array(1.0, dtype=mx.float32)
+    )
+    body_loss = mx.sum(token_loss * token_mask) / denominator
     if copy_aux is not None and copy_loss_active:
         body_loss = body_loss + copy_weight * pointer_generator_auxiliary_loss(
-            copy_aux, labels, mask, mx
+            copy_aux,
+            token_labels,
+            token_mask,
+            mx,
+            normalization_labels=labels if normalization_mask is not None else None,
+            normalization_mask=normalization_mask,
         )
-    if mtp_weight > 0.0:
+    if mtp_loss_active:
         body_loss = body_loss + mtp_weight * mtp_auxiliary_loss(
             mtp_logits,
             labels,
@@ -513,6 +613,208 @@ def causal_loss(
     return body_loss + float(plan_weight) * plan_loss
 
 
+def checkpointed_causal_loss(model: Any, *args: Any, **kwargs: Any) -> Any:
+    """Recompute the complete scalar objective during backward.
+
+    Layer-only checkpointing cannot release forward intermediates created by the
+    vocabulary, pointer-generator, or auxiliary objectives. Passing the complete
+    trainable parameter tree to ``mx.checkpoint`` preserves parameter-gradient
+    ownership while allowing those intermediates to be recomputed exactly.
+    """
+
+    if len(args) < 5:
+        raise ValueError("checkpointed causal loss requires inputs, labels, mask, mx, and nn")
+    mx = args[3]
+
+    def recompute(parameters: Any) -> Any:
+        model.update(parameters)
+        return causal_loss(model, *args, **kwargs)
+
+    return mx.checkpoint(recompute)(model.trainable_parameters())
+
+
+def decomposed_checkpointed_causal_loss_and_grad(
+    model: Any, *args: Any, **kwargs: Any
+) -> tuple[Any, Any]:
+    """Accumulate an exact KERC objective as serial checkpointed backwards.
+
+    The ordinary complete objective is mathematically additive, but a single
+    lazy MLX graph retains the token/copy path and every KERC auxiliary path at
+    once. This route evaluates each active additive component independently,
+    accumulates its parameter gradients in FP32, and releases the superseded
+    graph before the next component. It is intentionally limited to KERC
+    objectives without a semantic-plan head.
+    """
+
+    token_loss_position_chunk_size = int(
+        kwargs.pop("token_loss_position_chunk_size", 0)
+    )
+    if token_loss_position_chunk_size < 0:
+        raise ValueError("token-loss position chunk size cannot be negative")
+    bound = inspect.signature(causal_loss).bind(model, *args, **kwargs)
+    bound.apply_defaults()
+    values = dict(bound.arguments)
+    mx = values["mx"]
+    nn = values["nn"]
+    if values["plan_labels"] is not None and float(values["plan_weight"]) > 0.0:
+        raise ValueError(
+            "decomposed KERC objective does not accept semantic-plan supervision"
+        )
+    call_base = {
+        key: value
+        for key, value in values.items()
+        if key not in {"model", "inputs", "labels", "mask", "mx", "nn"}
+    }
+    auxiliary_groups = {
+        "legacy_residual": (
+            "kerc_residual_labels",
+            "kerc_residual_weight",
+            (
+                "kerc_residual_class_weights",
+                "kerc_residual_loss_mask",
+            ),
+        ),
+        "unit_residual": (
+            "kerc_unit_residual_labels",
+            "kerc_unit_residual_weight",
+            (
+                "kerc_unit_residual_loss_mask",
+                "kerc_unit_confidence_targets",
+                "kerc_unit_byte_ids",
+                "kerc_unit_byte_mask",
+                "kerc_unit_byte_offsets",
+                "kerc_unit_kind_ids",
+                "kerc_unit_candidate_features",
+                "kerc_unit_mask",
+                "kerc_unit_hard_block_mask",
+                "kerc_unit_class_weights",
+            ),
+        ),
+        "verifier": (
+            "kerc_verifier_labels",
+            "kerc_verifier_weight",
+            (
+                "kerc_verifier_positive_weights",
+                "kerc_verifier_negative_weights",
+            ),
+        ),
+        "decision": (
+            "kerc_decision_labels",
+            "kerc_decision_weight",
+            (
+                "kerc_decision_class_weights",
+                "kerc_decision_loss_mask",
+            ),
+        ),
+    }
+    auxiliary_fields = {
+        field
+        for label_field, weight_field, extra_fields in auxiliary_groups.values()
+        for field in (label_field, weight_field, *extra_fields)
+    }
+    unit_conditioning_fields = (
+        "kerc_unit_byte_ids",
+        "kerc_unit_byte_mask",
+        "kerc_unit_byte_offsets",
+        "kerc_unit_kind_ids",
+        "kerc_unit_candidate_features",
+        "kerc_unit_mask",
+        "kerc_unit_hard_block_mask",
+    )
+
+    def inactive_kwargs() -> dict[str, Any]:
+        component = dict(call_base)
+        for _name, (label_field, weight_field, extra_fields) in auxiliary_groups.items():
+            component[label_field] = None
+            component[weight_field] = 0.0
+            for field in extra_fields:
+                component[field] = None
+        return component
+
+    components: list[tuple[str, Any, dict[str, Any]]] = []
+    token_mask = values["mask"]
+    if bool(mx.any(token_mask > 0.0).item()):
+        active_columns = mx.any(token_mask > 0.0, axis=0)
+        active_indices = np.flatnonzero(np.asarray(active_columns))
+        chunk_size = token_loss_position_chunk_size or len(active_indices)
+        for chunk_index, start in enumerate(range(0, len(active_indices), chunk_size)):
+            selected = active_indices[start : start + chunk_size]
+            first = int(selected[0])
+            last = int(selected[-1])
+            if not np.array_equal(selected, np.arange(first, last + 1)):
+                raise ValueError(
+                    "token-loss position chunking requires contiguous supervision"
+                )
+            position_mask = (
+                (mx.arange(int(token_mask.shape[1])) >= first)
+                & (mx.arange(int(token_mask.shape[1])) <= last)
+            )[None, :]
+            component_mask = mx.where(
+                position_mask,
+                token_mask,
+                mx.zeros(token_mask.shape, dtype=mx.float32),
+            )
+            token_component = inactive_kwargs()
+            token_component["normalization_mask"] = token_mask
+            for field in unit_conditioning_fields:
+                token_component[field] = values[field]
+            components.append(
+                (f"token_and_copy_{chunk_index}", component_mask, token_component)
+            )
+    zero_mask = mx.zeros(token_mask.shape, dtype=mx.float32)
+    for name, (label_field, weight_field, extra_fields) in auxiliary_groups.items():
+        if (
+            values[label_field] is None
+            or float(values[weight_field]) <= 0.0
+        ):
+            continue
+        component = inactive_kwargs()
+        component[label_field] = values[label_field]
+        component[weight_field] = values[weight_field]
+        for field in extra_fields:
+            component[field] = values[field]
+        components.append((name, zero_mask, component))
+    if not components:
+        raise ValueError("decomposed KERC objective has no active component")
+    if any(field not in call_base for field in auxiliary_fields):
+        raise AssertionError("decomposed KERC objective field inventory drifted")
+
+    value_and_grad = nn.value_and_grad(model, checkpointed_causal_loss)
+    tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
+    accumulated = None
+    total_loss = 0.0
+    for _name, component_mask, component_kwargs in components:
+        loss, gradients = value_and_grad(
+            model,
+            values["inputs"],
+            values["labels"],
+            component_mask,
+            mx,
+            nn,
+            **component_kwargs,
+        )
+        mx.eval(loss, gradients)
+        fp32_gradients = tree_map(
+            lambda value: value.astype(mx.float32), gradients
+        )
+        accumulated = (
+            fp32_gradients
+            if accumulated is None
+            else tree_map(
+                lambda prior, value: prior + value,
+                accumulated,
+                fp32_gradients,
+            )
+        )
+        mx.eval(accumulated)
+        total_loss += float(loss.item())
+        del gradients
+        del fp32_gradients
+        if hasattr(mx, "clear_cache"):
+            mx.clear_cache()
+    return mx.array(total_loss, dtype=mx.float32), accumulated
+
+
 def mtp_auxiliary_loss(
     logits_by_offset: list[Any],
     labels: Any,
@@ -550,7 +852,13 @@ def mtp_auxiliary_loss(
 
 
 def pointer_generator_auxiliary_loss(
-    copy_aux: dict[str, Any], labels: Any, mask: Any, mx: Any
+    copy_aux: dict[str, Any],
+    labels: Any,
+    mask: Any,
+    mx: Any,
+    *,
+    normalization_labels: Any | None = None,
+    normalization_mask: Any | None = None,
 ) -> Any:
     """Train pointer alignment and generation/copy gating on visible train labels."""
 
@@ -578,8 +886,25 @@ def pointer_generator_auxiliary_loss(
     )
     supervised = mask.astype(mx.float32)
     copy_mask = supervised * copyable.astype(mx.float32)
+    alignment_denominator = mx.sum(copy_mask)
+    gate_denominator = mx.sum(supervised)
+    if normalization_mask is not None:
+        if normalization_labels is None:
+            raise ValueError(
+                "pointer normalization mask requires full normalization labels"
+            )
+        normalization_matches = (
+            source_ids[:, None, :] == normalization_labels[:, :, None]
+        ) & source_valid[:, None, :]
+        normalization_copyable = mx.any(normalization_matches, axis=-1)
+        normalization_supervised = normalization_mask.astype(mx.float32)
+        alignment_denominator = mx.sum(
+            normalization_supervised
+            * normalization_copyable.astype(mx.float32)
+        )
+        gate_denominator = mx.sum(normalization_supervised)
     alignment = mx.sum(alignment_loss * copy_mask) / mx.maximum(
-        mx.sum(copy_mask), 1.0
+        alignment_denominator, 1.0
     )
     gate = mx.minimum(mx.maximum(generator_gate, 1e-6), 1.0 - 1e-6)
     generate_target = (~copyable).astype(mx.float32)
@@ -588,6 +913,6 @@ def pointer_generator_auxiliary_loss(
         + (1.0 - generate_target) * mx.log(1.0 - gate)
     )
     gate_loss = mx.sum(gate_loss * supervised) / mx.maximum(
-        mx.sum(supervised), 1.0
+        gate_denominator, 1.0
     )
     return alignment + gate_loss

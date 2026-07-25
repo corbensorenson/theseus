@@ -13,6 +13,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+import host_resource_safety
+from target_authoritative_drafting import mlx_drafting_adequacy_canary
+from kerc_structured_drafting import mlx_structured_drafting_canary
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONTRACT = ROOT / "configs" / "generation_architecture_contracts.json"
@@ -32,7 +36,7 @@ def digest(value: Any) -> str:
 
 def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
     contract = json.loads(path.read_text(encoding="utf-8"))
-    required = {"policy", "schema_version", "owner", "first_campaign_base", "maximum_architecture_canary_steps", "common_accounting", "modes", "mtp_shape_contract", "activation", "claim_boundaries"}
+    required = {"policy", "schema_version", "owner", "first_campaign_base", "maximum_architecture_canary_steps", "common_accounting", "modes", "mtp_shape_contract", "mtp_candidates", "draft_abi", "draft_candidates", "activation", "claim_boundaries"}
     missing = required.difference(contract) if isinstance(contract, dict) else required
     if missing:
         raise GenerationArchitectureFault(f"contract_missing:{','.join(sorted(missing))}")
@@ -50,7 +54,84 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
             raise GenerationArchitectureFault(f"mode_contract_incomplete:{mode_id}:{','.join(sorted(missing_mode))}")
         if mode["first_campaign_disposition"].startswith("retired") and not mode.get("reentry_condition"):
             raise GenerationArchitectureFault(f"retirement_reentry_missing:{mode_id}")
+    expected_candidates = {
+        "legacy_shared_rank1",
+        "conventional_independent",
+        "register_conditioned",
+    }
+    if set(contract["mtp_candidates"]) != expected_candidates:
+        raise GenerationArchitectureFault("mtp_candidate_coverage_invalid")
+    required_candidate = {
+        "selection_state",
+        "head_mode",
+        "future_offsets",
+        "loss_weights",
+        "low_rank",
+        "hidden_dim",
+        "register_count",
+        "maximum_parameter_overhead_ratio",
+        "curriculum",
+    }
+    for candidate_id, candidate in contract["mtp_candidates"].items():
+        missing_candidate = required_candidate.difference(candidate)
+        if missing_candidate:
+            raise GenerationArchitectureFault(
+                f"mtp_candidate_incomplete:{candidate_id}:{','.join(sorted(missing_candidate))}"
+            )
+        if candidate["head_mode"] not in {
+            "shared_low_rank",
+            "independent_mlp",
+            "register_conditioned",
+        }:
+            raise GenerationArchitectureFault(f"mtp_head_mode_invalid:{candidate_id}")
+        if len(candidate["future_offsets"]) != len(candidate["loss_weights"]):
+            raise GenerationArchitectureFault(f"mtp_target_alignment_invalid:{candidate_id}")
+        curriculum = candidate["curriculum"]
+        if set(curriculum) != {"warmup_steps", "ramp_steps", "maximum_loss_scale"}:
+            raise GenerationArchitectureFault(f"mtp_curriculum_invalid:{candidate_id}")
+        if int(curriculum["ramp_steps"]) <= 0 or float(curriculum["maximum_loss_scale"]) < 0:
+            raise GenerationArchitectureFault(f"mtp_curriculum_budget_invalid:{candidate_id}")
+    if not contract["mtp_candidates"]["legacy_shared_rank1"]["selection_state"].endswith(
+        "not_selectable"
+    ):
+        raise GenerationArchitectureFault("legacy_rank1_candidate_must_not_be_selectable")
+    if set(contract["draft_candidates"]) != {
+        "medusa_tree",
+        "eagle_feature",
+        "separate_draft",
+        "kerc_structured_unit",
+    }:
+        raise GenerationArchitectureFault("draft_candidate_coverage_invalid")
+    draft_abi = contract["draft_abi"]
+    if draft_abi.get("canonical_owner") != "scripts/target_authoritative_drafting.py":
+        raise GenerationArchitectureFault("draft_abi_owner_invalid")
+    if draft_abi.get("cache_commit_policy") != "target_accepted_prefix_only":
+        raise GenerationArchitectureFault("draft_abi_commit_policy_invalid")
+    if int(draft_abi.get("maximum_draft_depth", 0)) > 32:
+        raise GenerationArchitectureFault("draft_abi_depth_invalid")
     return contract
+
+
+def mtp_candidate_model_config(
+    candidate_id: str, contract: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    contract = contract or load_contract()
+    try:
+        candidate = contract["mtp_candidates"][candidate_id]
+    except KeyError as exc:
+        raise GenerationArchitectureFault("mtp_candidate_unknown") from exc
+    return {
+        "mtp_future_offsets": tuple(int(value) for value in candidate["future_offsets"]),
+        "mtp_head_mode": str(candidate["head_mode"]),
+        "mtp_low_rank": int(candidate["low_rank"]),
+        "mtp_hidden_dim": int(candidate["hidden_dim"]),
+        "mtp_register_count": int(candidate["register_count"]),
+        "mtp_loss_weights": tuple(float(value) for value in candidate["loss_weights"]),
+        "mtp_loss_scale": float(candidate["curriculum"]["maximum_loss_scale"]),
+        "mtp_maximum_head_parameter_overhead_ratio": float(
+            candidate["maximum_parameter_overhead_ratio"]
+        ),
+    }
 
 
 def generation_mode_record(mode_id: str, contract: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -151,6 +232,16 @@ def speculative_loader_receipt(target_checkpoint: dict[str, Any], draft_manifest
 
 def mlx_mtp_canary(contract: dict[str, Any] | None = None) -> dict[str, Any]:
     contract = contract or load_contract()
+    if not host_resource_safety.accelerator_child_authorized():
+        return {
+            "available": False,
+            "passed": False,
+            "fault": "ACCELERATOR_WATCHDOG_REQUIRED",
+            "mtp_parameter_overhead_ratio": float("inf"),
+            "optimizer_steps": 0,
+            "resource_decision": "ACCELERATOR_WATCHDOG_REQUIRED",
+            "capability_claim": "NOT_EVALUATED",
+        }
     shape = contract["mtp_shape_contract"]
     payload = {
         "shape": shape,
@@ -184,7 +275,16 @@ print(json.dumps({'base_shape':list(logits.shape),'mtp_shapes':[list(value.shape
 """
     proc = subprocess.run([sys.executable, "-c", code], input=json.dumps(payload), text=True, capture_output=True, timeout=30)
     if proc.returncode != 0:
-        return {"available": False, "passed": False, "returncode": proc.returncode, "stderr_tail": proc.stderr[-1000:]}
+        return {
+            "available": False,
+            "passed": False,
+            "returncode": proc.returncode,
+            "stderr_tail": proc.stderr[-1000:],
+            "mtp_parameter_overhead_ratio": float("inf"),
+            "optimizer_steps": 0,
+            "resource_decision": "ACCELERATOR_RUNTIME_UNAVAILABLE",
+            "capability_claim": "NOT_EVALUATED",
+        }
     observed = json.loads(proc.stdout)
     expected_shape = [shape["batch"], shape["sequence"], shape["vocabulary"]]
     finite = math.isfinite(observed["mtp_loss"]) and math.isfinite(observed["joint_loss"])
@@ -210,6 +310,187 @@ print(json.dumps({'base_shape':list(logits.shape),'mtp_shapes':[list(value.shape
     }
 
 
+def mlx_mtp_adequacy_canary(
+    contract: dict[str, Any] | None = None,
+    *,
+    optimizer_steps: int = 24,
+) -> dict[str, Any]:
+    """Exercise adequate MTP mechanisms without making a capability claim."""
+
+    contract = contract or load_contract()
+    if not host_resource_safety.accelerator_child_authorized():
+        return {
+            "available": False,
+            "passed": False,
+            "fault": "ACCELERATOR_WATCHDOG_REQUIRED",
+            "optimizer_steps": 0,
+            "capability_claim": "NOT_EVALUATED",
+        }
+    if optimizer_steps <= 0 or optimizer_steps > 48:
+        raise GenerationArchitectureFault("mtp_adequacy_step_budget_invalid")
+    candidates = {
+        candidate_id: candidate
+        for candidate_id, candidate in contract["mtp_candidates"].items()
+        if candidate["selection_state"] == "candidate_mechanics_qualification_required"
+    }
+    payload = {
+        "candidates": candidates,
+        "optimizer_steps": int(optimizer_steps),
+        "scripts": str(ROOT / "scripts"),
+    }
+    code = r'''
+import json, sys, tempfile
+from pathlib import Path
+import mlx.core as mx
+import mlx.nn as nn
+import mlx.optimizers as optim
+import mlx.utils as mlx_utils
+p=json.loads(sys.stdin.read()); sys.path.insert(0,p['scripts'])
+from standard_causal_transformer_model import CausalTransformerConfig, build_model
+from standard_causal_transformer_objectives import mtp_auxiliary_loss, mtp_curriculum_scale
+
+def scalar(value):
+    mx.eval(value)
+    return float(value.item())
+
+def objective(model, x, y, mask, scale):
+    logits, _cache, aux = model(x, return_training_aux=True)
+    token_loss = nn.losses.cross_entropy(logits, y)
+    denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
+    ntp = mx.sum(token_loss * mask) / denominator
+    mtp = mtp_auxiliary_loss(
+        list(aux['mtp_logits']), y, mask, model.mtp_future_offsets,
+        model.mtp_loss_weights, mx, nn,
+    )
+    return ntp + scale * mtp
+
+rows=[]
+for candidate_id, candidate in sorted(p['candidates'].items()):
+    cfg=CausalTransformerConfig(
+        vocab_size=32,d_model=16,num_layers=1,num_heads=4,num_kv_heads=2,ff_dim=32,
+        mtp_future_offsets=tuple(candidate['future_offsets']),
+        mtp_head_mode=candidate['head_mode'],
+        mtp_low_rank=int(candidate['low_rank']),
+        mtp_hidden_dim=int(candidate['hidden_dim']),
+        mtp_register_count=int(candidate['register_count']),
+        mtp_loss_weights=tuple(candidate['loss_weights']),
+        mtp_loss_scale=float(candidate['curriculum']['maximum_loss_scale']),
+        mtp_maximum_head_parameter_overhead_ratio=float(candidate['maximum_parameter_overhead_ratio']),
+    )
+    mx.random.seed(20260722)
+    model=build_model(cfg,mx=mx,nn=nn)
+    starts=mx.arange(8,dtype=mx.int32)[:,None]
+    positions=mx.arange(12,dtype=mx.int32)[None,:]
+    x=(starts+positions)%32; y=(x+1)%32; mask=mx.ones(y.shape,dtype=mx.float32)
+    initial_logits,_cache,initial_aux=model(x,return_training_aux=True)
+    initial_mtp=mtp_auxiliary_loss(list(initial_aux['mtp_logits']),y,mask,model.mtp_future_offsets,model.mtp_loss_weights,mx,nn)
+    loss_and_grad=nn.value_and_grad(model,objective)
+    maximum=float(candidate['curriculum']['maximum_loss_scale'])
+    loss_scales=[]; first_gradient_norm=0.0; zero_scale_gradient_norm=0.0
+    _zero_loss,zero_grads=loss_and_grad(model,x,y,mask,0.0)
+    for name,value in mlx_utils.tree_flatten(zero_grads):
+        if name.startswith('mtp_'):
+            zero_scale_gradient_norm += scalar(mx.sum(mx.abs(value)))
+    optimizer=optim.AdamW(learning_rate=0.02,weight_decay=0.0)
+    for step in range(int(p['optimizer_steps'])):
+        scale=mtp_curriculum_scale(
+            step,
+            warmup_steps=int(candidate['curriculum']['warmup_steps']),
+            ramp_steps=int(candidate['curriculum']['ramp_steps']),
+            maximum=maximum,
+        )
+        loss,grads=loss_and_grad(model,x,y,mask,scale)
+        if step == int(candidate['curriculum']['warmup_steps']):
+            for name,value in mlx_utils.tree_flatten(grads):
+                if name.startswith('mtp_'):
+                    first_gradient_norm += scalar(mx.sum(mx.abs(value)))
+        optimizer.update(model,grads); mx.eval(model.parameters(),optimizer.state,loss)
+        loss_scales.append(scale)
+    final_logits,_cache,final_aux=model(x,return_training_aux=True)
+    final_mtp=mtp_auxiliary_loss(list(final_aux['mtp_logits']),y,mask,model.mtp_future_offsets,model.mtp_loss_weights,mx,nn)
+    wrong_y=mx.roll(y,shift=3,axis=1)
+    wrong_mtp=mtp_auxiliary_loss(list(final_aux['mtp_logits']),wrong_y,mask,model.mtp_future_offsets,model.mtp_loss_weights,mx,nn)
+    flat=mlx_utils.tree_flatten(model.parameters())
+    mtp_params=sum(int(value.size) for name,value in flat if name.startswith('mtp_'))
+    total_params=sum(int(value.size) for _name,value in flat)
+    with tempfile.TemporaryDirectory(prefix='theseus-mtp-adequacy-') as tmp:
+        path=Path(tmp)/'weights.npz'; model.save_weights(str(path))
+        reloaded=build_model(cfg,mx=mx,nn=nn); reloaded.load_weights(str(path))
+        reload_logits,_cache,reload_aux=reloaded(x,return_training_aux=True)
+        deltas=[scalar(mx.max(mx.abs(final_logits-reload_logits)))]
+        deltas.extend(scalar(mx.max(mx.abs(a-b))) for a,b in zip(final_aux['mtp_logits'],reload_aux['mtp_logits']))
+        checkpoint_bytes=path.stat().st_size
+    rows.append({
+        'candidate_id':candidate_id,
+        'head_mode':candidate['head_mode'],
+        'optimizer_steps':int(p['optimizer_steps']),
+        'loss_scales':loss_scales,
+        'initial_mtp_loss':scalar(initial_mtp),
+        'final_mtp_loss':scalar(final_mtp),
+        'wrong_alignment_mtp_loss':scalar(wrong_mtp),
+        'first_active_mtp_gradient_l1':first_gradient_norm,
+        'zero_scale_mtp_gradient_l1':zero_scale_gradient_norm,
+        'mtp_parameter_count':mtp_params,
+        'total_parameter_count':total_params,
+        'checkpoint_bytes':checkpoint_bytes,
+        'checkpoint_reload_max_abs_delta':max(deltas),
+        'base_shape':list(final_logits.shape),
+        'mtp_shapes':[list(value.shape) for value in final_aux['mtp_logits']],
+    })
+print(json.dumps(rows,sort_keys=True))
+'''
+    proc = subprocess.run(
+        [sys.executable, "-c", code],
+        input=json.dumps(payload),
+        text=True,
+        capture_output=True,
+        timeout=120,
+    )
+    if proc.returncode != 0:
+        return {
+            "available": False,
+            "passed": False,
+            "returncode": proc.returncode,
+            "stderr_tail": proc.stderr[-2000:],
+            "optimizer_steps": 0,
+            "capability_claim": "NOT_EVALUATED",
+        }
+    rows = json.loads(proc.stdout)
+    checks = {}
+    for row in rows:
+        candidate = candidates[row["candidate_id"]]
+        scales = row["loss_scales"]
+        warmup = int(candidate["curriculum"]["warmup_steps"])
+        checks[row["candidate_id"]] = {
+            "head_gradient_flow": row["first_active_mtp_gradient_l1"] > 0.0,
+            "zero_scale_head_ablation": row["zero_scale_mtp_gradient_l1"] == 0.0,
+            "curriculum_warmup_and_ramp": all(value == 0.0 for value in scales[:warmup])
+            and scales[-1] == float(candidate["curriculum"]["maximum_loss_scale"])
+            and scales == sorted(scales),
+            "future_loss_learned": row["final_mtp_loss"] < row["initial_mtp_loss"],
+            "future_alignment_sensitive": row["final_mtp_loss"] < row["wrong_alignment_mtp_loss"],
+            "checkpoint_reload_exact": row["checkpoint_reload_max_abs_delta"] == 0.0,
+            "shape_contract": row["base_shape"] == [8, 12, 32]
+            and row["mtp_shapes"] == [[8, 12, 32]] * 3,
+            "parameter_inventory_present": row["mtp_parameter_count"] > 0
+            and row["total_parameter_count"] > row["mtp_parameter_count"],
+        }
+    return {
+        "available": True,
+        "passed": bool(checks)
+        and all(all(candidate_checks.values()) for candidate_checks in checks.values()),
+        "candidate_checks": checks,
+        "candidates": rows,
+        "optimizer_steps": sum(int(row["optimizer_steps"]) for row in rows),
+        "private_fixture_rows": 8,
+        "public_training_rows": 0,
+        "external_inference_calls": 0,
+        "fallback_or_template_credit": 0,
+        "capability_claim": "NOT_EVALUATED",
+        "claim_boundary": "mechanics canary only; no speed, utility, transfer, or architecture-selection claim",
+    }
+
+
 def activation_receipt(evidence: dict[str, Any] | None, contract: dict[str, Any] | None = None) -> dict[str, Any]:
     contract = contract or load_contract()
     evidence = evidence or {}
@@ -232,6 +513,9 @@ def run_reference_suite(contract: dict[str, Any] | None = None) -> dict[str, Any
     draft = {"draft_revision": "draft:fixture-v1", "target_model_revision": checkpoint["model_revision"], "target_base_parameter_digest": checkpoint["base_parameter_digest"], "draft_checkpoint_digest": digest({"draft": "fixture"}), "cache_commit_policy": "accepted_prefix_only"}
     speculative = speculative_loader_receipt(checkpoint, draft)
     mtp = mlx_mtp_canary(contract)
+    mtp_adequacy = mlx_mtp_adequacy_canary(contract)
+    drafting_adequacy = mlx_drafting_adequacy_canary()
+    kerc_structured_drafting = mlx_structured_drafting_canary()
     activation = activation_receipt({}, contract)
     controls = mutation_controls(contract)
     retired = sorted(mode_id for mode_id, mode in contract["modes"].items() if mode["first_campaign_disposition"].startswith("retired"))
@@ -239,7 +523,16 @@ def run_reference_suite(contract: dict[str, Any] | None = None) -> dict[str, Any
         "all_mode_records_valid": len(validations) == len(contract["modes"]),
         "first_campaign_base_ar": contract["first_campaign_base"] == "autoregressive",
         "mtp_mlx_shape_canary": mtp["available"] and mtp["passed"],
-        "mtp_resource_ceiling_passed": mtp["mtp_parameter_overhead_ratio"] <= float(contract["mtp_shape_contract"]["maximum_parameter_overhead_ratio"]),
+        "mtp_resource_ceiling_passed": float(
+            mtp.get("mtp_parameter_overhead_ratio", float("inf"))
+        )
+        <= float(contract["mtp_shape_contract"]["maximum_parameter_overhead_ratio"]),
+        "mtp_adequate_candidate_mechanics": mtp_adequacy["available"]
+        and mtp_adequacy["passed"],
+        "target_authoritative_drafting_mechanics": drafting_adequacy["available"]
+        and drafting_adequacy["passed"],
+        "kerc_structured_drafting_mechanics": kerc_structured_drafting["available"]
+        and kerc_structured_drafting["passed"],
         "mtp_zero_initial_weight": checkpoint["optional_head_groups"]["mtp"]["initial_weight"] == 0.0,
         "checkpoint_roundtrip_migration_cleanup": roundtrip["roundtrip_exact"] and roundtrip["migration_exact"] and roundtrip["cleanup_complete"],
         "retired_modes_absent_from_optimizer": roundtrip["retired_modes_absent_from_optimizer"],
@@ -247,18 +540,21 @@ def run_reference_suite(contract: dict[str, Any] | None = None) -> dict[str, Any
         "retirements_have_reentry_conditions": all(contract["modes"][mode_id].get("reentry_condition") for mode_id in retired),
         "runtime_mode_selection_disabled_without_behavior": not activation["authorized"],
         "mutation_controls_rejected": controls["case_count"] == controls["passed_count"],
-        "zero_optimizer_exposure": mtp["optimizer_steps"] == 0,
+        "zero_optimizer_exposure": int(mtp.get("optimizer_steps") or 0) == 0,
         "no_cheat_counters_clean": True,
     }
     return {
         "policy": contract["policy"],
         "trigger_state": "GREEN" if all(gates.values()) else "RED",
         "support_state": "synthetic-test-backed",
-        "summary": {"mode_count": len(records), "included_mode_count": sum(not mode["first_campaign_disposition"].startswith("retired") for mode in contract["modes"].values()), "retired_first_campaign_mode_count": len(retired), "mutation_case_count": controls["case_count"], "mutation_passed_count": controls["passed_count"], "mlx_available": mtp["available"], "mtp_canary_passed": mtp["passed"], "runtime_authorized": activation["authorized"], "optimizer_exposure_steps": 0, "public_training_rows_written": 0, "external_inference_calls": 0, "fallback_or_template_credit": 0},
+        "summary": {"mode_count": len(records), "included_mode_count": sum(not mode["first_campaign_disposition"].startswith("retired") for mode in contract["modes"].values()), "retired_first_campaign_mode_count": len(retired), "mutation_case_count": controls["case_count"], "mutation_passed_count": controls["passed_count"], "mlx_available": mtp.get("available", False), "mtp_canary_passed": mtp.get("passed", False), "mtp_adequacy_canary_passed": mtp_adequacy.get("passed", False), "drafting_adequacy_canary_passed": drafting_adequacy.get("passed", False), "kerc_structured_drafting_canary_passed": kerc_structured_drafting.get("passed", False), "mechanics_canary_optimizer_steps": int(mtp_adequacy.get("optimizer_steps") or 0) + int(drafting_adequacy.get("optimizer_steps") or 0), "runtime_authorized": activation["authorized"], "optimizer_exposure_steps": 0, "public_training_rows_written": 0, "external_inference_calls": 0, "fallback_or_template_credit": 0},
         "gates": gates,
         "mode_records": records,
         "checkpoint_receipt": roundtrip,
         "mtp_mlx_canary": mtp,
+        "mtp_adequacy_canary": mtp_adequacy,
+        "drafting_adequacy_canary": drafting_adequacy,
+        "kerc_structured_drafting_canary": kerc_structured_drafting,
         "speculative_loader_receipt": speculative,
         "activation_receipt": activation,
         "mutation_controls": controls,
@@ -282,7 +578,7 @@ def mutation_controls(contract: dict[str, Any] | None = None) -> dict[str, Any]:
     record("missing_mode", "generation_mode_coverage_invalid", lambda: load_contract_from_value(bad))
     bad = copy.deepcopy(contract); bad["first_campaign_base"] = "diffusion"
     record("base_substitution", "first_campaign_base_invalid", lambda: load_contract_from_value(bad))
-    bad = copy.deepcopy(contract); bad["modes"]["medusa"].pop("reentry_condition")
+    bad = copy.deepcopy(contract); bad["modes"]["layerskip"].pop("reentry_condition")
     record("retirement_without_reentry", "retirement_reentry_missing", lambda: load_contract_from_value(bad))
     tampered = generation_mode_record("mtp", contract); tampered["checkpoint_effect"] = "none"
     record("mode_record_tamper", "generation_mode_record_tampered", lambda: validate_mode_record(tampered, contract))
@@ -294,6 +590,13 @@ def mutation_controls(contract: dict[str, Any] | None = None) -> dict[str, Any]:
     bad_checkpoint = copy.deepcopy(checkpoint); bad_checkpoint["contract_digest"] = "sha256:wrong"
     record("checkpoint_contract_mismatch", "checkpoint_contract_digest_mismatch", lambda: migrate_checkpoint(bad_checkpoint, contract))
     record("unknown_mode", "generation_mode_unknown", lambda: generation_mode_record("unknown", contract))
+    bad = copy.deepcopy(contract); bad["mtp_candidates"]["legacy_shared_rank1"]["selection_state"] = "selectable"
+    record("legacy_rank1_selection", "legacy_rank1_candidate_must_not_be_selectable", lambda: load_contract_from_value(bad))
+    bad = copy.deepcopy(contract); bad["mtp_candidates"]["conventional_independent"]["curriculum"]["ramp_steps"] = 0
+    record("mtp_zero_ramp", "mtp_curriculum_budget_invalid", lambda: load_contract_from_value(bad))
+    record("unknown_mtp_candidate", "mtp_candidate_unknown", lambda: mtp_candidate_model_config("unknown", contract))
+    bad = copy.deepcopy(contract); bad["draft_abi"]["cache_commit_policy"] = "all_proposals"
+    record("draft_abi_cache_poison", "draft_abi_commit_policy_invalid", lambda: load_contract_from_value(bad))
     return {"case_count": len(cases), "passed_count": sum(bool(row["passed"]) for row in cases), "results": cases}
 
 

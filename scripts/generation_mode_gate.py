@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import generation_architecture_contracts
+import host_resource_safety
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,6 +53,20 @@ def main() -> int:
     parser.add_argument("--out", default=rel(DEFAULT_REPORT))
     parser.add_argument("--markdown-out", default=rel(DEFAULT_MARKDOWN))
     args = parser.parse_args()
+
+    if not host_resource_safety.accelerator_child_authorized():
+        print(
+            json.dumps(
+                {
+                    "trigger_state": "RED",
+                    "reason": "ACCELERATOR_WATCHDOG_REQUIRED",
+                    "reports_written": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2
 
     started = time.perf_counter()
     config_path = resolve(args.config)

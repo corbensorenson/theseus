@@ -1,0 +1,117 @@
+{
+  "policy": "project_theseus_optimizer_matched_adequacy_v1",
+  "candidate_lease_id": "optimizer_adequacy",
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "stage_metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+  "scratch_root": "runtime/t0a_canaries/optimizer_adequacy/matched_v1",
+  "report": "reports/optimizer_matched_adequacy.json",
+  "seeds": [20260722, 20260723, 20260724],
+  "scoped_arms": ["english", "python", "javascript_typescript", "html_css", "rust"],
+  "supervision": {
+    "root": "data/training_data/moecot_language_supervision_v1",
+    "train_split": "private_train",
+    "heldout_split": "private_dev",
+    "train_rows_per_arm": 24,
+    "tune_rows_per_arm": 4,
+    "heldout_rows_per_arm": 8,
+    "maximum_sequence_tokens": 256,
+    "selection_namespace": "t0a_private_optimizer_source_disjoint_v1"
+  },
+  "model": {
+    "d_model": 48,
+    "num_layers": 2,
+    "num_heads": 4,
+    "num_kv_heads": 2,
+    "ff_dim": 128,
+    "attention_policy": "prefix_lm"
+  },
+  "training": {
+    "tune_steps": 20,
+    "final_steps": 48,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "warmup_steps": 4,
+    "evaluation_interval_steps": 8
+  },
+  "policy_card_contract": {
+    "schema_version": "1.0.0",
+    "implementation_version": "project_theseus_pretraining_optimizers_v1",
+    "gradient_accumulation_steps": 1,
+    "distributed_placement": "single_host_mlx_unified_memory",
+    "stopping_rule": "finish the preregistered bounded rung unless a resource, nonfinite, checkpoint, or integrity gate fails",
+    "rescue_budget": "no post-heldout rescue; one future prospectively registered larger rung only"
+  },
+  "width_transfer": {
+    "policy": "selected_recipe_proxy_to_target_width_v1",
+    "target_architecture_config": "configs/neural_seed_50m_scale_preregistration.json",
+    "source_width": 48,
+    "target_width": 512,
+    "isolate_width_only": true,
+    "model": {
+      "d_model": 512,
+      "num_layers": 2,
+      "num_heads": 8,
+      "num_kv_heads": 2,
+      "ff_dim": 1536,
+      "attention_policy": "prefix_lm"
+    },
+    "steps": 48,
+    "seeds": [20260722, 20260723, 20260724],
+    "minimum_seed_progress_fraction": 1.0,
+    "maximum_mean_loss_regression_from_initial": 0.0,
+    "confirmation_surface_consumption": 0
+  },
+  "candidates": [
+    {
+      "id": "adamw_mlx",
+      "profiles": [
+        {"id": "adamw_lr_3e4", "learning_rate": 0.0003},
+        {"id": "adamw_lr_5e4", "learning_rate": 0.0005},
+        {"id": "adamw_lr_8e4", "learning_rate": 0.0008}
+      ]
+    },
+    {
+      "id": "adafactor_mlx",
+      "profiles": [
+        {"id": "adafactor_lr_1e2", "learning_rate": 0.01},
+        {"id": "adafactor_lr_3e2", "learning_rate": 0.03},
+        {"id": "adafactor_lr_1e1", "learning_rate": 0.1}
+      ]
+    },
+    {
+      "id": "muon_mlx",
+      "profiles": [
+        {"id": "muon_lr_003", "learning_rate": 0.0003, "muon_learning_rate": 0.003},
+        {"id": "muon_lr_010", "learning_rate": 0.0003, "muon_learning_rate": 0.01},
+        {"id": "muon_lr_020", "learning_rate": 0.0003, "muon_learning_rate": 0.02}
+      ]
+    },
+    {
+      "id": "schedule_free_adamw_mlx",
+      "profiles": [
+        {"id": "sf_lr_3e4", "learning_rate": 0.0003},
+        {"id": "sf_lr_5e4", "learning_rate": 0.0005},
+        {"id": "sf_lr_8e4", "learning_rate": 0.0008}
+      ]
+    }
+  ],
+  "prospective_decision": {
+    "reference_optimizer": "adamw_mlx",
+    "minimum_relative_heldout_loss_improvement": 0.01,
+    "maximum_weak_arm_relative_loss_regression": 0.02,
+    "minimum_seed_win_fraction": 0.6666666666666666,
+    "maximum_wall_time_ratio": 1.35,
+    "maximum_optimizer_state_ratio": 2.0,
+    "maximum_next_update_absolute_error": 1e-7
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0,
+    "confirmation_surface_consumption": 0,
+    "production_checkpoint_mutation": false,
+    "heldout_labels_visible_to_tuning": false,
+    "selection_from_update_throughput_alone": false
+  }
+}

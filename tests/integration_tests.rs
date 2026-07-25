@@ -1,9 +1,9 @@
-use symliquid_fep::core::tasks::active_classification::{
+use symliquid_core::tasks::active_classification::{
     run as run_active, ActiveClassificationConfig,
 };
-use symliquid_fep::core::tasks::active_gridworld::{run as run_gridworld, ActiveGridworldConfig};
-use symliquid_fep::core::tasks::delayed_recall::{run as run_delayed, DelayedRecallConfig};
-use symliquid_fep::core::tasks::role_filler::{run as run_role, RoleFillerConfig};
+use symliquid_core::tasks::active_gridworld::{run as run_gridworld, ActiveGridworldConfig};
+use symliquid_core::tasks::delayed_recall::{run as run_delayed, DelayedRecallConfig};
+use symliquid_core::tasks::role_filler::{run as run_role, RoleFillerConfig};
 
 #[test]
 fn toy_tasks_run_smoke_test() {

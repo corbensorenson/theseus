@@ -24,6 +24,7 @@ from typing import Any
 
 import numpy as np
 
+import host_resource_safety
 from kerc_checkpoint_schema import (
     canonical_sha256 as checkpoint_contract_sha256,
     migrate_legacy_checkpoint,
@@ -1945,6 +1946,10 @@ def run_resume_worker(
 ) -> dict[str, Any]:
     """Execute one isolated continuous, checkpoint, or resumed MLX trajectory."""
 
+    if not host_resource_safety.accelerator_child_authorized():
+        raise host_resource_safety.HostResourceSafetyFault(
+            "ACCELERATOR_WATCHDOG_REQUIRED"
+        )
     if mode not in {"continuous", "resumed"}:
         raise ValueError(f"unknown KERC resume worker mode: {mode}")
     bundled = load_resume_bundle(config_path, bundle_path)
@@ -2761,6 +2766,10 @@ def classify_gates(
 
 
 def run(config_path: Path) -> dict[str, Any]:
+    if not host_resource_safety.accelerator_child_authorized():
+        raise host_resource_safety.HostResourceSafetyFault(
+            "ACCELERATOR_WATCHDOG_REQUIRED"
+        )
     config_sha256 = sha256_file(config_path)
     prepared = prepare_canary_stage(config_path)
     config = prepared["config"]
@@ -3229,6 +3238,22 @@ def main() -> int:
     parser.add_argument("--resume-worker-bundle", default="")
     parser.add_argument("--resume-worker-seed", type=int, default=0)
     args = parser.parse_args()
+    if (
+        (args.execute or args.resume_worker_mode)
+        and not host_resource_safety.accelerator_child_authorized()
+    ):
+        print(
+            json.dumps(
+                {
+                    "trigger_state": "RED",
+                    "reason": "ACCELERATOR_WATCHDOG_REQUIRED",
+                    "report_written": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2
     config_path = resolve(args.config)
     config = read_json(config_path)
     if args.resume_worker_mode:

@@ -230,7 +230,7 @@
         },
         "policy_objective_implementation": {
           "path": "scripts/policy_objective_contracts.py",
-          "sha256": "39eb799698b2906d97871ac63c576467cb923d14a5168419fecd28ef91fbc278"
+          "sha256": "07efc0b304546e6e0fc04416125b4c0571ed1b98a1245bc2bf1fe29a1e2d5389"
         },
         "policy_objective_tests": {
           "path": "tests/test_policy_objective_contracts.py",
@@ -242,15 +242,39 @@
         },
         "generation_architecture_contract": {
           "path": "configs/generation_architecture_contracts.json",
-          "sha256": "8e7495c51f2fda99a73a5f465e514922797906e05cbe5b7ad7eafc1f3e5e62f8"
+          "sha256": "fd7141eb7c63da33ad5d2f31ef7b4ed482cb87127ecbcdf624c04ff7c3c5fe1f"
         },
         "generation_architecture_implementation": {
           "path": "scripts/generation_architecture_contracts.py",
-          "sha256": "4d5acf68446d63d28ac072eafab9d0d3caf74a9452766541ad5012fee5d2a2ba"
+          "sha256": "67dbde4a8e0f86291f51f490ca04c924b8e1ca259d5a52e081ab06839ae2a943"
         },
         "generation_architecture_tests": {
           "path": "tests/test_generation_architecture_contracts.py",
-          "sha256": "143c71a075bb088ec9d39fb668cca035c790886ba3920995f47520ff4bc2c0dd"
+          "sha256": "ac302de1f466ee24e3d490f35d30fbfdb13b2baf4d8edcf8ac79b5f57e44b756"
+        },
+        "target_authoritative_drafting": {
+          "path": "scripts/target_authoritative_drafting.py",
+          "sha256": "f57b4d55acbab31be0253b0f0f15c16d798264cd92420da5fbedac07afcb9a81"
+        },
+        "target_authoritative_drafting_tests": {
+          "path": "tests/test_target_authoritative_drafting.py",
+          "sha256": "a2bd1cb6c1cce2bc370b25f76187456e3fc2575d35ed74df62eb34f438384425"
+        },
+        "kerc_structured_drafting": {
+          "path": "scripts/kerc_structured_drafting.py",
+          "sha256": "2ee07cbdf8d469a605b2a9d111be734eb3ab613eb3fca503258f6719c8558271"
+        },
+        "kerc_structured_drafting_tests": {
+          "path": "tests/test_kerc_structured_drafting.py",
+          "sha256": "1fb5037a992690f81c21d975679621db0f9a16abcee58359355686dbfe7f315a"
+        },
+        "dynamic_byte_patch_codec": {
+          "path": "scripts/dynamic_byte_patch_codec.py",
+          "sha256": "9bf6890d161b8f48c70b6032bb4febe467a5362dfadbc0780c9d13aa5f3b706d"
+        },
+        "dynamic_byte_patch_codec_tests": {
+          "path": "tests/test_dynamic_byte_patch_codec.py",
+          "sha256": "f82e527f58e21515938fdbfa7cc90a7c2c4802f6c579f59ebd30d44bd22c2273"
         },
         "campaign_preregistration_config": {
           "path": "configs/neural_seed_50m_scale_preregistration.json",
@@ -288,17 +312,29 @@
           "path": "tests/test_neural_seed_functional_utility.py",
           "sha256": "ab899b4415b5684879a9b2e2e9bbb34ed57cd4ad4a8720e9cc8530211b201f9f"
         },
-        "moecot_training_config": {
-          "path": "configs/moecot_language_arm_training.json",
-          "sha256": "f40272aa305e611bdcb4476147d5a80b8cbd5d1f5238cb32cc90434b843b92ae"
-        },
-        "moecot_training_implementation": {
-          "path": "scripts/moecot_language_arm_training.py",
-          "sha256": "4db86ae20bdc4c1d242c0c45e177299953f4dc8ba65559792aadc5d221ba9ae4"
-        },
-        "moecot_training_tests": {
-          "path": "tests/test_moecot_language_arm_training.py",
-          "sha256": "cf3266cfd82d4e3104cfb7ca99bfe21ff45553aee5abdebb412c14360ad947f2"
+      "moecot_training_config": {
+        "path": "configs/moecot_language_arm_training.json",
+        "sha256": "9a9529030c8f725bf8b71ecd6e30636dc3db3f014a94bc9039ec9c5e9608fa21"
+      },
+      "moecot_training_implementation": {
+        "path": "scripts/moecot_language_arm_training.py",
+        "sha256": "09a2932eec19142126c9366ad4bf38646d559fff3d47c22fb6e475ae35216b1d"
+      },
+      "moecot_training_tests": {
+        "path": "tests/test_moecot_language_arm_training.py",
+        "sha256": "ad614573e9ccadc2b4f76e48f7d49eaafc0aa9ae203b92ba0094ce044c637eb1"
+      },
+      "canonical_pretraining_optimizers": {
+        "path": "scripts/pretraining_optimizers.py",
+        "sha256": "a6d6fa90ce22e7ef8a17cd2f89122dd40c9177bb5ef75c1de4b3a6915cfd7952"
+      },
+      "canonical_pretraining_optimizer_tests": {
+        "path": "tests/test_pretraining_optimizers.py",
+        "sha256": "0b459351453af3a679fe48541e223d470bc9c7d470546c081c18a897e75fc34e"
+      },
+        "standard_causal_transformer_model": {
+          "path": "scripts/standard_causal_transformer_model.py",
+          "sha256": "a1522c0c5e1f4359b148ad7116ba1dcd57c2eb7b1250c710b8de80a61b2fad9a"
         },
         "neural_seed_resident_runtime": {
           "path": "scripts/neural_seed_resident_runtime.py",
@@ -310,11 +346,11 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "83af4982988eff10b24b062a0c5419a2a5295046acf457846406c02c15b18c6b"
+          "sha256": "fd1a788afa9fe8724880dedf1fffdbf717eebc982ad31dd0cda499a52b705656"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
-          "sha256": "70e7f5aed8117c648193d5392d31d1190161b540d5426a9adb3d82e8f6743c93"
+          "sha256": "584511123b1015ff99338dc4283d97ab89b9e176eca7fafd96f73562ff912ece"
         },
         "openai_compat_server": {
           "path": "scripts/openai_compat_server.py",
@@ -326,7 +362,7 @@
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "f5645f468d196933fc720c894cd2e178900fee01abe64efcbd892364376b4d3c"
+          "sha256": "5f8d4713fe2aca7f7aab38109467523d460f90056511e914d5c975f0c3547be8"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
@@ -334,11 +370,11 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "e597ea9f886ec5b9d21a2bb3896096f11c68e8556f472a231fdda2f256748e8e"
+          "sha256": "bd2f739f21cdff014e64b1c7ca0dbd3751334aeed617b8e84296990ac4216846"
         },
         "canonical_training_objectives": {
           "path": "scripts/standard_causal_transformer_objectives.py",
-          "sha256": "727c55db352d29cb294fd3b08721818ab1d7766eb149b08972189e3ee82f6080"
+          "sha256": "88f6215fd687e687f61f61db48b5e87229b2669dd5c0bf09699c34a92d89b748"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
@@ -410,7 +446,7 @@
         },
         "open_vocabulary_implementation": {
           "path": "scripts/neural_seed_open_vocab.py",
-          "sha256": "df93257ef356e8d5ae8da03297cf46a0011440b7817660fbbb54dad6f8d5a385"
+          "sha256": "3caddf372319a40d53ab001bbe29a62fb654cd3257e7c56e03d9ecdb64cd21f6"
         },
         "open_vocabulary_tests": {
           "path": "tests/test_neural_seed_open_vocab.py",
@@ -538,7 +574,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "e0df724d57f77154503f05fc6204364ef1a845d8eb6e0e129ae460e0134b0660"
+          "sha256": "7828327326bdd03c23154d14048dce50959f5cbd7d3830e09632b2ab763d5c57"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -546,7 +582,39 @@
         },
         "semantic_ir": {
           "path": "scripts/semantic_ir.py",
-          "sha256": "5d18c7eb24785ac1ea8278e1c77e524b5c3ae0326a9ba80161dbb27bb0df9bd4"
+          "sha256": "87a82953d52fbddbd80e4453c64966297c4d0871979354fb89caa0f2bc367ba7"
+        },
+        "relational_dimension_compiler": {
+          "path": "scripts/relational_dimension_compiler.py",
+          "sha256": "ba3123fed5366e79f32a1b7d40e9de8fb33d3b0260c2f7eab1eb18da7045435a"
+        },
+        "relational_dimension_compiler_tests": {
+          "path": "tests/test_relational_dimension_compiler.py",
+          "sha256": "c1db0c769687c508c270d93568f2f546a6162f06047fa19547323cb6c299fab3"
+        },
+        "rdc_relation_learning": {
+          "path": "scripts/rdc_relation_learning.py",
+          "sha256": "b94cb62c55b13117be85fe062fa9a95938d86b734ac114c9096c10d3ff3bdb3a"
+        },
+        "rdc_relation_learning_tests": {
+          "path": "tests/test_rdc_relation_learning.py",
+          "sha256": "215480be57daa20903b474dc56bee859296a972bcc31c19cfc807036716ccd57"
+        },
+        "mtp_matched_adequacy_config": {
+          "path": "configs/mtp_matched_adequacy.json",
+          "sha256": "6544c06ddce680e63253f911273cb9af102f585787a30a9e30fe7cd875067a41"
+        },
+        "mtp_matched_adequacy_implementation": {
+          "path": "scripts/mtp_matched_adequacy.py",
+          "sha256": "8c76c0e801483391d89c88986861abb2c1f6802a1657465e3e485a225cfaefe0"
+        },
+        "mtp_matched_adequacy_tests": {
+          "path": "tests/test_mtp_matched_adequacy.py",
+          "sha256": "f157f01f1a782a812a70098ba776caaec47e400659adba08ddc63cff697128b9"
+        },
+        "mtp_matched_adequacy_report": {
+          "path": "reports/mtp_matched_adequacy.json",
+          "sha256": "a80d1cf1080286ed18e9fb6eaadd7e857d48ad0768a262c53ab1dc7df51ada81"
         },
         "token_renderer": {
           "path": "scripts/neural_seed_token_decoder_rendering.py",
@@ -566,7 +634,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "5e52cd661d5e5e849e3ad5243a96964312dde99501b56cbfc2bb12e77f4c61f2"
+          "sha256": "a1522c0c5e1f4359b148ad7116ba1dcd57c2eb7b1250c710b8de80a61b2fad9a"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -4471,7 +4539,7 @@
       "canonical_entrypoint": "scripts/theseus_plan_compiler.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve typed DAG, governed VCM packet, artifact graph, verifier, and residual trace outputs.",
-      "verification_command": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_vcm_semantic_memory.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/relational_dimension_compiler.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_relational_dimension_compiler.py tests/test_vcm_semantic_memory.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate",
       "role": "planning",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -4484,6 +4552,7 @@
         "scripts/viea_spine_records.py",
         "scripts/viea_spine_record_gate.py",
         "scripts/semantic_ir.py",
+        "scripts/relational_dimension_compiler.py",
         "scripts/semantic_ir_obligation_gate.py",
         "scripts/kernel_english_protocol.py",
         "scripts/strict_generator_semantic_ir_repair_bridge.py",
@@ -4497,6 +4566,7 @@
         "scripts/neural_seed_candidate_generation.py",
         "scripts/neural_seed_report_io.py",
         "tests/test_semantic_ir.py",
+        "tests/test_relational_dimension_compiler.py",
         "tests/test_kernel_english_protocol.py"
       ],
       "evidence_outputs": [
@@ -5256,7 +5326,7 @@
       "canonical_entrypoint": "scripts/standard_causal_transformer_survival.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve prompt/signature-only visibility, reversible tokenization, direct learned full-body generation, independent integrity and blind-flow audits, private verifier replay, exact checkpoint binding, and zero fallback/template/router/tool credit.",
-      "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py tests/test_moecot_language_arm_training.py tests/test_neural_seed_resident_runtime.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_neural_seed_50m_scale_preregistration.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py tests/test_policy_objective_contracts.py tests/test_generation_architecture_contracts.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/neural_seed_50m_scale_preregistration.py --execute-canaries && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
+      "verification_command": "python3 -m pytest -q -m 'not accelerator' tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py tests/test_moecot_language_arm_training.py tests/test_target_authoritative_drafting.py tests/test_kerc_structured_drafting.py tests/test_neural_seed_resident_runtime.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_neural_seed_50m_scale_preregistration.py tests/test_theseus_artifact_admission.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py tests/test_policy_objective_contracts.py tests/test_generation_architecture_contracts.py && python3 scripts/blind_information_flow_audit.py --source scripts/standard_causal_transformer_survival.py --config configs/standard_causal_transformer_survival.json --candidates reports/standard_causal_transformer_survival_candidates.jsonl --report reports/standard_causal_transformer_survival.json --report reports/standard_causal_transformer_survival_gate.json --out reports/blind_information_flow_audit_standard_causal_transformer_survival.json --markdown-out reports/blind_information_flow_audit_standard_causal_transformer_survival.md && python3 scripts/candidate_integrity.py --candidates reports/standard_causal_transformer_survival_candidates.jsonl --out reports/candidate_integrity_standard_causal_transformer_survival.json --markdown-out reports/candidate_integrity_standard_causal_transformer_survival.md && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/pretraining_factorized_bakeoff.py",
       "role": "matched_control",
       "trust_tier": "governed_training_candidate",
       "dependencies": [
@@ -5308,6 +5378,10 @@
         "scripts/generation_mode_gate.py",
         "scripts/generation_architecture_contracts.py",
         "tests/test_generation_architecture_contracts.py",
+        "scripts/target_authoritative_drafting.py",
+        "tests/test_target_authoritative_drafting.py",
+        "scripts/kerc_structured_drafting.py",
+        "tests/test_kerc_structured_drafting.py",
         "configs/moecot_language_arm_training.json",
         "scripts/moecot_language_arm_training.py",
         "scripts/neural_seed_resident_runtime.py",
@@ -5427,7 +5501,7 @@
             "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
             "reports/standard_causal_transformer_survival_gate.json"
           ],
-          "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py tests/test_policy_objective_contracts.py tests/test_generation_architecture_contracts.py && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py",
+          "verification_command": "python3 -m pytest -q tests/test_standard_causal_transformer_survival.py tests/test_target_authoritative_drafting.py tests/test_project_registry_route_evidence.py tests/test_teacher_provider_policy.py tests/test_policy_objective_contracts.py tests/test_generation_architecture_contracts.py && python3 scripts/standard_causal_transformer_survival_gate.py --gate && python3 scripts/pretraining_architecture_freeze.py --run-accelerator-shards --accelerator-shard policy_optimization_gate && python3 scripts/pretraining_architecture_freeze.py --run-accelerator-shards --accelerator-shard generation_mode_gate",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -5455,6 +5529,8 @@
             "scripts/generation_mode_gate.py",
             "scripts/generation_architecture_contracts.py",
             "tests/test_generation_architecture_contracts.py",
+            "scripts/target_authoritative_drafting.py",
+            "tests/test_target_authoritative_drafting.py",
             "scripts/candidate_integrity.py",
             "scripts/blind_information_flow_audit.py"
           ]
@@ -5534,12 +5610,14 @@
       "canonical_entrypoint": "scripts/moecot_language_arm_training.py",
       "swappable_under_contract": true,
       "replacement_policy": "Adopt only through a content-bound replacement transaction after direct family-disjoint behavior and both preregistered dense comparisons; training plumbing cannot make it canonical.",
-      "verification_command": "python3 -m pytest -q tests/test_kerc_implementation_fidelity.py tests/test_kerc_content_cache.py tests/test_kerc_source_family_identity.py tests/test_kerc_importance_policy.py tests/test_kerc_residual_economics.py tests/test_kerc_residual_allocator_qualification.py tests/test_kerc_masc_event_coreference.py tests/test_kerc_masc_mpqa_relations.py tests/test_kerc_gum_discourse_relations.py tests/test_kerc_gum_entity_coreference.py tests/test_kerc_concept_registry.py tests/test_kerc_scoped_semantics.py tests/test_kernel_english_protocol.py tests/test_kerc_semantic_corpus.py tests/test_kerc_adequacy_canary.py tests/test_moecot_language_arm_training.py tests/test_neural_seed_resident_runtime.py tests/test_moecot_dense_exact_recovery_diagnostic.py tests/test_moecot_language_tokenizer.py tests/test_moecot_language_supervision.py tests/test_moecot_source_conditioned_pretraining.py tests/test_moecot_language_vocabulary.py tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_functional_consumption.py tests/test_neural_seed_local_english_raters.py tests/test_standard_causal_transformer_corpus.py tests/test_standard_causal_transformer_survival.py && python3 scripts/kerc_scoped_semantics_gate.py && python3 scripts/kerc_implementation_fidelity_gate.py --gate && python3 scripts/kerc_concept_registry_verify.py --gate && python3 scripts/kerc_semantic_corpus.py && python3 scripts/kerc_semantic_corpus_verify.py && python3 scripts/moecot_language_vocabulary.py && python3 scripts/moecot_language_supervision.py && python3 scripts/moecot_source_conditioned_pretraining.py && python3 scripts/moecot_source_conditioned_pretraining.py --kernel-english --execute && python3 scripts/kerc_residual_allocator_qualification.py && python3 scripts/kerc_adequacy_canary.py --execute && python3 scripts/moecot_language_arm_training.py",
+      "verification_command": "python3 scripts/host_resource_safety.py && python3 scripts/pretraining_factorized_bakeoff.py && python3 -m pytest -q -m 'not accelerator' tests/test_pretraining_candidate_canary.py tests/test_relational_dimension_compiler.py tests/test_rdc_relation_learning.py tests/test_kerc_structured_drafting.py tests/test_rdc_kerc_matched_adequacy.py tests/test_rdc_kerc_resource_disposition.py tests/test_kerc_training_memory_preflight.py tests/test_pretraining_factorized_bakeoff.py tests/test_pretraining_architecture_freeze.py && python3 -m py_compile scripts/moecot_language_arm_training.py scripts/standard_causal_transformer_model.py scripts/pretraining_candidate_canary.py scripts/relational_dimension_compiler.py scripts/rdc_relation_learning.py scripts/kerc_structured_drafting.py scripts/kerc_training_memory_preflight.py scripts/pretraining_factorized_bakeoff.py scripts/pretraining_architecture_freeze.py",
       "role": "discovery",
       "trust_tier": "governed_training_candidate_non_routeable",
       "dependencies": [
         "configs/project_manifest_registry.json",
         "configs/moecot_language_arm_training.json",
+        "configs/pretraining_architecture_candidates.json",
+        "configs/pretraining_architecture_freeze.json",
         "configs/kerc_adequacy_canary.json",
         "configs/kerc_implementation_fidelity.json",
         "configs/kerc_residual_allocator_qualification.json",
@@ -5549,6 +5627,9 @@
         "configs/neural_seed_functional_utility_freeze.json",
         "configs/neural_seed_local_english_raters.json",
         "scripts/moecot_language_arm_training.py",
+        "scripts/kerc_training_memory_preflight.py",
+        "scripts/pretraining_architecture_freeze.py",
+        "scripts/pretraining_factorized_bakeoff.py",
         "scripts/neural_seed_resident_runtime.py",
         "scripts/openai_compat_server.py",
         "configs/openai_compat_policy.json",
@@ -6983,22 +7064,56 @@
       "canonical_entrypoint": "scripts/resource_aware_execution_policy.py",
       "swappable_under_contract": true,
       "replacement_policy": "Backend replacements must keep route-policy evidence separate from parity claims.",
-      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 scripts/neural_seed_architecture_review.py && python3 scripts/neural_seed_campaign_controller.py && python3 scripts/resource_acceleration_qualification.py --out runtime/tmp/resource_acceleration_qualification_plan.json --markdown-out runtime/tmp/resource_acceleration_qualification_plan.md && python3 -m pytest -q tests/test_neural_seed_architecture_review.py tests/test_neural_seed_campaign_controller.py tests/test_resource_acceleration_qualification.py tests/test_neural_seed_resident_runtime.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/neural_seed_architecture_review.py scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_qualification.py scripts/neural_seed_resident_runtime.py scripts/theseus_assistant_runtime.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+  "verification_command": "python3 scripts/host_resource_safety.py && python3 scripts/pretraining_factorized_bakeoff.py && python3 -m pytest -q -m 'not accelerator' tests/test_host_resource_safety.py tests/test_accelerator_watchdog_enforcement.py tests/test_pretraining_candidate_canary.py tests/test_rdc_kerc_resource_disposition.py tests/test_pretraining_factorized_bakeoff.py tests/test_resource_acceleration_qualification.py tests/test_resource_acceleration_assembly_line.py tests/test_theseus_corpus_acceleration.py tests/test_neural_seed_campaign_controller.py tests/test_neural_seed_resident_runtime.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile conftest.py scripts/host_resource_safety.py scripts/pretraining_candidate_canary.py scripts/pretraining_factorized_bakeoff.py scripts/rdc_kerc_resource_disposition.py scripts/resource_aware_execution_policy.py scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_assembly_line.py scripts/resource_acceleration_qualification.py scripts/theseus_corpus_acceleration.py scripts/neural_seed_resident_runtime.py scripts/theseus_assistant_runtime.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "role": "acceleration",
       "trust_tier": "platform_resource_route",
       "dependencies": [
-        "configs/project_manifest_registry.json",
-        "scripts/resource_aware_execution_policy.py",
+    "configs/project_manifest_registry.json",
+    "scripts/resource_aware_execution_policy.py",
+    "configs/pretraining_architecture_candidates.json",
+    "scripts/pretraining_candidate_canary.py",
+    "tests/test_pretraining_candidate_canary.py",
+    "scripts/host_resource_safety.py",
+    "tests/test_host_resource_safety.py",
+    "tests/test_accelerator_watchdog_enforcement.py",
+    "conftest.py",
+    "pytest.ini",
+    "configs/pretraining_architecture_freeze.json",
+    "scripts/pretraining_architecture_freeze.py",
+    "tests/test_pretraining_architecture_freeze.py",
+    "configs/moecot_language_arm_training.json",
+    "scripts/rdc_kerc_resource_disposition.py",
+    "tests/test_rdc_kerc_resource_disposition.py",
+    "configs/mtp_matched_adequacy.json",
+    "scripts/mtp_matched_adequacy.py",
+    "tests/test_mtp_matched_adequacy.py",
+    "scripts/pretraining_optimizers.py",
+    "tests/test_pretraining_optimizers.py",
+    "scripts/target_authoritative_drafting.py",
+    "tests/test_target_authoritative_drafting.py",
+    "scripts/kerc_structured_drafting.py",
+    "tests/test_kerc_structured_drafting.py",
+    "scripts/dynamic_byte_patch_codec.py",
+    "tests/test_dynamic_byte_patch_codec.py",
+    "scripts/relational_dimension_compiler.py",
+    "tests/test_relational_dimension_compiler.py",
         "configs/neural_seed_architecture_review.json",
         "configs/neural_seed_architecture_review_freeze.json",
         "configs/evaluation_history/neural_seed_architecture_review_freeze_pre_total_budget_v0.json",
         "scripts/neural_seed_architecture_review.py",
         "scripts/neural_seed_campaign_controller.py",
+        "scripts/resource_acceleration_assembly_line.py",
         "scripts/resource_acceleration_qualification.py",
+        "scripts/theseus_corpus_acceleration.py",
+        "crates/theseus-corpus/Cargo.toml",
+        "crates/theseus-corpus/src/lib.rs",
+        "crates/theseus-corpus/src/main.rs",
         "scripts/neural_seed_resident_runtime.py",
         "configs/theseus_assistant_runtime.json",
         "scripts/theseus_assistant_runtime.py",
         "tests/test_resource_acceleration_qualification.py",
+        "tests/test_resource_acceleration_assembly_line.py",
+        "tests/test_theseus_corpus_acceleration.py",
         "tests/test_neural_seed_architecture_review.py",
         "tests/test_neural_seed_resident_runtime.py",
         "tests/test_neural_seed_campaign_controller.py",
@@ -7019,9 +7134,12 @@
         "reports/neural_seed_campaign_controller.json",
         "reports/resource_acceleration_qualification.json",
         "reports/resource_acceleration_qualification.md",
+        "reports/theseus_corpus_acceleration.json",
         "reports/neural_seed_resident_runtime_qualification.json",
         "reports/windows_cuda_doctor.json",
         "reports/macos_mlx_environment_diagnosis.json"
+        ,"reports/rdc_kerc_resource_disposition.json"
+        ,"reports/mtp_matched_adequacy.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -7070,14 +7188,43 @@
         },
         "state_compatibility": {
           "reads": [
-            "configs/project_manifest_registry.json",
-            "scripts/resource_aware_execution_policy.py",
+        "configs/project_manifest_registry.json",
+        "scripts/resource_aware_execution_policy.py",
+        "configs/pretraining_architecture_candidates.json",
+        "scripts/pretraining_candidate_canary.py",
+        "tests/test_pretraining_candidate_canary.py",
+        "scripts/host_resource_safety.py",
+        "tests/test_host_resource_safety.py",
+        "tests/test_accelerator_watchdog_enforcement.py",
+        "conftest.py",
+        "pytest.ini",
+        "configs/pretraining_architecture_freeze.json",
+        "scripts/pretraining_architecture_freeze.py",
+        "tests/test_pretraining_architecture_freeze.py",
+        "configs/moecot_language_arm_training.json",
+        "scripts/rdc_kerc_resource_disposition.py",
+        "tests/test_rdc_kerc_resource_disposition.py",
+        "scripts/pretraining_optimizers.py",
+        "tests/test_pretraining_optimizers.py",
+        "scripts/target_authoritative_drafting.py",
+        "tests/test_target_authoritative_drafting.py",
+        "scripts/dynamic_byte_patch_codec.py",
+        "tests/test_dynamic_byte_patch_codec.py",
+        "scripts/relational_dimension_compiler.py",
+        "tests/test_relational_dimension_compiler.py",
+        "scripts/rdc_relation_learning.py",
+        "tests/test_rdc_relation_learning.py",
             "configs/neural_seed_architecture_review.json",
             "configs/neural_seed_architecture_review_freeze.json",
             "configs/evaluation_history/neural_seed_architecture_review_freeze_pre_total_budget_v0.json",
             "scripts/neural_seed_architecture_review.py",
             "scripts/neural_seed_campaign_controller.py",
+            "scripts/resource_acceleration_assembly_line.py",
             "scripts/resource_acceleration_qualification.py",
+            "scripts/theseus_corpus_acceleration.py",
+            "crates/theseus-corpus/Cargo.toml",
+            "crates/theseus-corpus/src/lib.rs",
+            "crates/theseus-corpus/src/main.rs",
             "scripts/neural_seed_resident_runtime.py",
             "configs/theseus_assistant_runtime.json",
             "scripts/theseus_assistant_runtime.py",
@@ -7091,9 +7238,11 @@
             "reports/neural_seed_campaign_controller.json",
             "reports/resource_acceleration_qualification.json",
             "reports/resource_acceleration_qualification.md",
+            "reports/theseus_corpus_acceleration.json",
             "reports/neural_seed_resident_runtime_qualification.json",
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
+            ,"reports/rdc_kerc_resource_disposition.json"
           ],
           "migration_required": false,
           "rollback_mode": "route_containment_plus_registered_successor_or_prior_evidence_view"
@@ -7107,17 +7256,46 @@
             "reports/resource_aware_execution_policy.json",
             "reports/resource_acceleration_qualification.json",
             "reports/resource_acceleration_qualification.md",
+            "reports/theseus_corpus_acceleration.json",
             "reports/neural_seed_resident_runtime_qualification.json",
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
+            ,"reports/rdc_kerc_resource_disposition.json"
           ],
-          "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 scripts/neural_seed_campaign_controller.py && python3 scripts/resource_acceleration_qualification.py --out runtime/tmp/resource_acceleration_qualification_plan.json --markdown-out runtime/tmp/resource_acceleration_qualification_plan.md && python3 -m pytest -q tests/test_neural_seed_campaign_controller.py tests/test_resource_acceleration_qualification.py tests/test_neural_seed_resident_runtime.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile scripts/resource_aware_execution_policy.py scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_qualification.py scripts/neural_seed_resident_runtime.py scripts/theseus_assistant_runtime.py scripts/macos_mlx_environment_diagnosis.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/host_resource_safety.py && python3 scripts/pretraining_factorized_bakeoff.py && python3 -m pytest -q -m 'not accelerator' tests/test_host_resource_safety.py tests/test_accelerator_watchdog_enforcement.py tests/test_pretraining_candidate_canary.py tests/test_rdc_kerc_resource_disposition.py tests/test_pretraining_factorized_bakeoff.py tests/test_resource_acceleration_qualification.py tests/test_resource_acceleration_assembly_line.py tests/test_theseus_corpus_acceleration.py tests/test_neural_seed_campaign_controller.py tests/test_neural_seed_resident_runtime.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile conftest.py scripts/host_resource_safety.py scripts/pretraining_candidate_canary.py scripts/pretraining_factorized_bakeoff.py scripts/rdc_kerc_resource_disposition.py scripts/resource_aware_execution_policy.py scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_assembly_line.py scripts/resource_acceleration_qualification.py scripts/theseus_corpus_acceleration.py scripts/neural_seed_resident_runtime.py scripts/theseus_assistant_runtime.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,
           "dependency_closure": [
-            "configs/project_manifest_registry.json",
-            "scripts/resource_aware_execution_policy.py",
+        "configs/project_manifest_registry.json",
+        "scripts/resource_aware_execution_policy.py",
+        "configs/pretraining_architecture_candidates.json",
+        "scripts/pretraining_candidate_canary.py",
+        "tests/test_pretraining_candidate_canary.py",
+        "scripts/host_resource_safety.py",
+        "tests/test_host_resource_safety.py",
+        "tests/test_accelerator_watchdog_enforcement.py",
+        "conftest.py",
+        "pytest.ini",
+        "configs/pretraining_architecture_freeze.json",
+        "scripts/pretraining_architecture_freeze.py",
+        "tests/test_pretraining_architecture_freeze.py",
+        "configs/moecot_language_arm_training.json",
+        "scripts/rdc_kerc_resource_disposition.py",
+        "tests/test_rdc_kerc_resource_disposition.py",
+        "scripts/pretraining_optimizers.py",
+        "tests/test_pretraining_optimizers.py",
+        "scripts/target_authoritative_drafting.py",
+        "tests/test_target_authoritative_drafting.py",
+        "scripts/dynamic_byte_patch_codec.py",
+        "tests/test_dynamic_byte_patch_codec.py",
+        "scripts/relational_dimension_compiler.py",
+        "tests/test_relational_dimension_compiler.py",
             "scripts/neural_seed_campaign_controller.py",
+            "scripts/resource_acceleration_assembly_line.py",
             "scripts/resource_acceleration_qualification.py",
+            "scripts/theseus_corpus_acceleration.py",
+            "crates/theseus-corpus/Cargo.toml",
+            "crates/theseus-corpus/src/lib.rs",
+            "crates/theseus-corpus/src/main.rs",
             "scripts/neural_seed_resident_runtime.py",
             "configs/theseus_assistant_runtime.json",
             "scripts/theseus_assistant_runtime.py",
@@ -8375,12 +8553,21 @@
       "owner": "rust_cuda_systems_arm",
       "status": "live",
       "patterns": [
+        "conftest.py",
+        "pytest.ini",
+        "configs/pretraining_architecture_freeze.json",
+        "configs/moecot_language_arm_training.json",
+        "scripts/host_resource_safety.py",
+        "scripts/pretraining_architecture_freeze.py",
+        "scripts/moecot_language_arm_training.py",
         "scripts/resource_*.py",
+        "scripts/theseus_corpus_acceleration.py",
         "scripts/neural_seed_campaign_controller.py",
         "scripts/windows_cuda_doctor.py",
         "scripts/macos_*.py",
         "crates/symliquid-cuda/**",
-        "crates/symliquid-metal/**"
+        "crates/symliquid-metal/**",
+        "crates/theseus-corpus/**"
       ],
       "canonical": "scripts/resource_aware_execution_policy.py",
       "report_outputs": [
@@ -8388,10 +8575,11 @@
         "reports/neural_seed_campaign_controller.json",
         "reports/resource_acceleration_qualification.json",
         "reports/resource_acceleration_qualification.md",
+        "reports/theseus_corpus_acceleration.json",
         "reports/windows_cuda_doctor.json",
         "reports/macos_mlx_environment_diagnosis.json"
       ],
-      "verification_command": "python3 scripts/resource_aware_execution_policy.py && python3 scripts/macos_mlx_environment_diagnosis.py && python3 scripts/neural_seed_campaign_controller.py && python3 scripts/resource_acceleration_qualification.py --out runtime/tmp/resource_acceleration_qualification_plan.json --markdown-out runtime/tmp/resource_acceleration_qualification_plan.md && python3 -m pytest -q tests/test_neural_seed_campaign_controller.py tests/test_resource_acceleration_qualification.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_qualification.py scripts/theseus_assistant_runtime.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
+      "verification_command": "python3 scripts/host_resource_safety.py && python3 scripts/pretraining_factorized_bakeoff.py && python3 -m pytest -q -m 'not accelerator' tests/test_host_resource_safety.py tests/test_accelerator_watchdog_enforcement.py tests/test_pretraining_candidate_canary.py tests/test_rdc_kerc_resource_disposition.py tests/test_pretraining_factorized_bakeoff.py tests/test_resource_acceleration_qualification.py tests/test_resource_acceleration_assembly_line.py tests/test_theseus_corpus_acceleration.py tests/test_neural_seed_campaign_controller.py tests/test_neural_seed_resident_runtime.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile conftest.py scripts/host_resource_safety.py scripts/pretraining_candidate_canary.py scripts/pretraining_factorized_bakeoff.py scripts/rdc_kerc_resource_disposition.py scripts/resource_aware_execution_policy.py scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_assembly_line.py scripts/resource_acceleration_qualification.py scripts/theseus_corpus_acceleration.py scripts/neural_seed_resident_runtime.py scripts/theseus_assistant_runtime.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
       "cleanup_policy": "host-specific reports must not leak stale Windows paths into Mac scheduling",
       "abstraction_id": "resource_acceleration_contract",
       "major_surface": true,
@@ -8428,7 +8616,7 @@
         "reports/training_inference_execution_plan_gate.json",
         "reports/training_inference_execution_plan_gate.md"
       ],
-      "verification_command": "python3 scripts/maturity_integrity_audit.py && python3 scripts/policy_optimization_gate.py && python3 scripts/generation_mode_gate.py && python3 scripts/training_inference_execution_plan_gate.py --gate && python3 -m pytest -q tests/test_training_inference_execution_plan_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/training_inference_execution_plan_gate.py",
+      "verification_command": "python3 scripts/maturity_integrity_audit.py && python3 scripts/pretraining_architecture_freeze.py --run-accelerator-shards --accelerator-shard policy_optimization_gate && python3 scripts/pretraining_architecture_freeze.py --run-accelerator-shards --accelerator-shard generation_mode_gate && python3 scripts/training_inference_execution_plan_gate.py --gate && python3 -m pytest -q tests/test_training_inference_execution_plan_gate.py && python3 -m py_compile scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py scripts/training_inference_execution_plan_gate.py",
       "cleanup_policy": "gates protect evidence quality; do not add artificial locks unrelated to leakage, reruns, provenance, or runtime safety",
       "abstraction_id": "candidate_integrity_contract",
       "major_surface": true,

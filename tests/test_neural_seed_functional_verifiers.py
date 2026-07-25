@@ -99,7 +99,8 @@ def test_rust_known_good_and_bad_candidates() -> None:
 
 def test_html_requires_dom_contract_and_real_render() -> None:
     row = case("html_css", "status_alert")
-    good = '<!doctype html><html><head><title>Status</title><style>section{border:1px solid red}button:focus-visible{outline:2px solid blue}</style></head><body><section role="alert"><h1>Sync 1 failed</h1><button type="button">Retry</button></section></body></html>'
+    status_text = row["verifier"]["required_text"][0]
+    good = f'<!doctype html><html><head><title>Status</title><style>section{{border:1px solid red}}button:focus-visible{{outline:2px solid blue}}</style></head><body><section role="alert"><h1>{status_text}</h1><button type="button">Retry</button></section></body></html>'
     external = good.replace("</body>", '<script src="https://example.com/x.js"></script></body>')
 
     passed = verify_candidate(row, good, CONFIG)
@@ -114,7 +115,8 @@ def test_html_requires_dom_contract_and_real_render() -> None:
 
 def test_html_responsive_behavior_is_computed_at_both_viewports() -> None:
     row = case("html_css", "responsive_cards")
-    body = '<main><h1>Projects 1</h1><section class="cards" aria-label="Projects"><article><h2>A</h2></article><article><h2>B</h2></article><article><h2>C</h2></article></section></main>'
+    title_text = row["verifier"]["required_text"][0]
+    body = f'<main><h1>{title_text}</h1><section class="cards" aria-label="Projects"><article><h2>A</h2></article><article><h2>B</h2></article><article><h2>C</h2></article></section></main>'
     good_css = '.cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:1fr}}'
     bad_css = '.cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:repeat(3,1fr)}}'
     page = lambda css: f'<!doctype html><html><head><title>Projects</title><style>{css}</style></head><body>{body}</body></html>'

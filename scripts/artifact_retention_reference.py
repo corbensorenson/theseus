@@ -29,6 +29,10 @@ CONFIG_EXCLUSIONS = {
     "artifact_retention_budget_policy.json",
     "roadmap_implementation_matrix.json",
 }
+HOT_REPORT_RETAIN_LIVE_NAMES = {
+    "theseus_artifact_budget_gate_current.json",
+    "theseus_artifact_retention_current.json",
+}
 
 
 def build_checkpoint_reference_index(
@@ -260,6 +264,8 @@ def build_hot_report_reference_index(
             continue
         ref = rel(path)
         protected_reasons = set(references.get(ref, set()))
+        if path.name in HOT_REPORT_RETAIN_LIVE_NAMES:
+            protected_reasons.add("renewable_canonical_live_view")
         if "ledger" in path.stem.lower() or path.suffix.lower() in {".sqlite", ".db"} or ".sqlite-" in path.name:
             protected_reasons.add("mutable_ledger_or_index")
         records.append(
@@ -299,12 +305,28 @@ def hot_report_archive_candidates(
     min_bytes: int,
     min_age_hours: float,
     target_hot_bytes: int,
+    target_hot_files: int = 0,
     now_timestamp: float | None = None,
 ) -> list[dict[str, Any]]:
     now_value = float(now_timestamp if now_timestamp is not None else datetime.now(timezone.utc).timestamp())
     records = list_dicts(reference_index.get("file_records"))
     total_bytes = sum(int(row.get("bytes") or 0) for row in records)
     required_reduction = max(0, total_bytes - max(0, int(target_hot_bytes))) if target_hot_bytes else total_bytes
+    hot_file_count = 0
+    for row in records:
+        path = resolve(str(row.get("path") or ""))
+        if (
+            path.is_file()
+            and not archive_pointer_payload(path)
+            and path.suffix.lower() not in {".sqlite", ".db"}
+            and ".sqlite-" not in path.name
+        ):
+            hot_file_count += 1
+    required_file_reduction = (
+        max(0, hot_file_count - max(0, int(target_hot_files)))
+        if target_hot_files
+        else 0
+    )
     reduced = 0
     candidates: list[dict[str, Any]] = []
     eligible = []
@@ -332,7 +354,10 @@ def hot_report_archive_candidates(
             }
         )
     for row in sorted(eligible, key=lambda item: (-int(item["bytes"]), str(item["path"]))):
-        if reduced >= required_reduction:
+        if (
+            reduced >= required_reduction
+            and len(candidates) >= required_file_reduction
+        ):
             break
         candidates.append(row)
         reduced += int(row["bytes"])
@@ -366,7 +391,7 @@ def archive_pointer_payload(path: Path) -> bool:
         return False
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return False
     return isinstance(payload, dict) and payload.get("policy") == "project_theseus_archived_artifact_pointer_v1"
 

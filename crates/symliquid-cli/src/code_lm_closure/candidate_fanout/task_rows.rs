@@ -658,10 +658,9 @@ pub(super) fn candidate_rows_for_task(
         let candidate_template_like = template_like_candidate(&candidate);
         let transformer_hybrid_survival_lane_stage =
             transformer_hybrid_survival_lane_candidate(&candidate);
-        let transformer_hybrid_import_syntax_release =
-            transformer_hybrid_survival_lane_stage
-                && transformer_hybrid_import_body_ok(&candidate.body)
-                && !candidate_template_like;
+        let transformer_hybrid_import_syntax_release = transformer_hybrid_survival_lane_stage
+            && transformer_hybrid_import_body_ok(&candidate.body)
+            && !candidate_template_like;
         let rejection = if template_free_student_candidates && candidate_template_like {
             Some("template_like_candidate".to_string())
         } else if !candidate_body_admissible_cached(
@@ -924,19 +923,16 @@ pub(super) fn candidate_rows_for_task(
             .iter()
             .map(|reason| reason.to_string())
             .collect::<Vec<_>>();
-        let transformer_hybrid_guardrail_only_release =
-            transformer_hybrid_survival_lane_stage
-                && decoder_contract_guardrail_only(task)
-                && candidate_syntax_lint_passed
-                && !candidate_template_like;
-        let transformer_hybrid_import_syntax_release =
-            transformer_hybrid_survival_lane_stage
-                && candidate_syntax_lint_passed
-                && !candidate_template_like;
+        let transformer_hybrid_guardrail_only_release = transformer_hybrid_survival_lane_stage
+            && decoder_contract_guardrail_only(task)
+            && candidate_syntax_lint_passed
+            && !candidate_template_like;
+        let transformer_hybrid_import_syntax_release = transformer_hybrid_survival_lane_stage
+            && candidate_syntax_lint_passed
+            && !candidate_template_like;
         let effective_deterministic_guardrail_passed =
             deterministic_guardrail.passed || transformer_hybrid_import_syntax_release;
-        let mut effective_deterministic_guardrail_reasons =
-            deterministic_guardrail.reasons.clone();
+        let mut effective_deterministic_guardrail_reasons = deterministic_guardrail.reasons.clone();
         if transformer_hybrid_import_syntax_release && !deterministic_guardrail.passed {
             effective_deterministic_guardrail_reasons
                 .push("transformer_hybrid_import_syntax_deterministic_release".to_string());
@@ -956,8 +952,8 @@ pub(super) fn candidate_rows_for_task(
             &semantic_plan,
             candidate_sts,
         );
-        let grammar_masked_learned_token_candidate = learned_token_decoder_candidate(&candidate)
-            || transformer_hybrid_survival_lane_stage;
+        let grammar_masked_learned_token_candidate =
+            learned_token_decoder_candidate(&candidate) || transformer_hybrid_survival_lane_stage;
         let grammar_masked_learned_token_candidate = grammar_masked_learned_token_candidate
             && candidate_syntax_lint_passed
             && !structural_or_adapter_candidate_family;

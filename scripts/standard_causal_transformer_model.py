@@ -39,12 +39,17 @@ class CausalTransformerConfig:
     semantic_plan_probability_mode: str = "independent_sigmoid"
     semantic_plan_factor_group_sizes: tuple[int, ...] = ()
     mtp_future_offsets: tuple[int, ...] = ()
+    mtp_head_mode: str = "shared_low_rank"
     mtp_low_rank: int = 0
+    mtp_hidden_dim: int = 0
+    mtp_register_count: int = 0
     mtp_loss_weights: tuple[float, ...] = ()
     mtp_loss_scale: float = 0.0
     mtp_maximum_head_parameter_overhead_ratio: float = 0.25
     kerc_task_token_ids: tuple[int, ...] = ()
     kerc_stage_adapter_dim: int = 0
+    kerc_decoder_stage_adapter_dim: int = 0
+    kerc_reasoner_output_delta_dim: int = 0
     kerc_residual_choice_count: int = 0
     kerc_residual_bottleneck_dim: int = 0
     kerc_residual_unit_kind_count: int = 0
@@ -163,20 +168,58 @@ class CausalTransformerConfig:
             raise ValueError("semantic plan separator token must be in vocabulary")
         mtp_offsets = tuple(int(value) for value in self.mtp_future_offsets)
         mtp_weights = tuple(float(value) for value in self.mtp_loss_weights)
-        mtp_enabled = bool(mtp_offsets or self.mtp_low_rank or mtp_weights)
+        if self.mtp_head_mode not in {
+            "shared_low_rank",
+            "independent_mlp",
+            "register_conditioned",
+        }:
+            raise ValueError("unsupported MTP head mode")
+        mtp_enabled = bool(
+            mtp_offsets
+            or self.mtp_low_rank
+            or self.mtp_hidden_dim
+            or self.mtp_register_count
+            or mtp_weights
+        )
         if mtp_enabled:
-            if self.mtp_low_rank <= 0:
-                raise ValueError("MTP requires a positive low-rank projection")
             if not mtp_offsets or len(mtp_offsets) != len(mtp_weights):
                 raise ValueError("MTP offsets and loss weights must be nonempty and aligned")
             if tuple(sorted(set(mtp_offsets))) != mtp_offsets or mtp_offsets[0] < 2:
                 raise ValueError("MTP future offsets must be unique, increasing, and at least two")
             if any(weight < 0.0 for weight in mtp_weights) or not any(mtp_weights):
                 raise ValueError("MTP loss weights must be nonnegative with positive mass")
-            head_parameters = (
-                self.d_model * self.mtp_low_rank
-                + len(mtp_offsets) * self.mtp_low_rank * self.vocab_size
-            )
+            if self.mtp_head_mode == "shared_low_rank":
+                if self.mtp_low_rank <= 0 or self.mtp_hidden_dim or self.mtp_register_count:
+                    raise ValueError(
+                        "shared-low-rank MTP requires only a positive low-rank projection"
+                    )
+                head_parameters = (
+                    self.d_model * self.mtp_low_rank
+                    + len(mtp_offsets) * self.mtp_low_rank * self.vocab_size
+                )
+            elif self.mtp_head_mode == "independent_mlp":
+                if self.mtp_hidden_dim <= 0 or self.mtp_low_rank or self.mtp_register_count:
+                    raise ValueError(
+                        "independent MTP requires only a positive hidden dimension"
+                    )
+                head_parameters = len(mtp_offsets) * (
+                    self.d_model * self.mtp_hidden_dim
+                    + self.mtp_hidden_dim * self.vocab_size
+                )
+            else:
+                if (
+                    self.mtp_hidden_dim <= 0
+                    or self.mtp_low_rank
+                    or self.mtp_register_count != len(mtp_offsets)
+                ):
+                    raise ValueError(
+                        "register-conditioned MTP requires one register per offset and a positive hidden dimension"
+                    )
+                head_parameters = (
+                    self.mtp_register_count * self.d_model
+                    + self.d_model * self.mtp_hidden_dim
+                    + len(mtp_offsets) * self.mtp_hidden_dim * self.vocab_size
+                )
             base_head_parameters = self.d_model * self.vocab_size
             if head_parameters / base_head_parameters > float(
                 self.mtp_maximum_head_parameter_overhead_ratio
@@ -210,6 +253,10 @@ class CausalTransformerConfig:
                 raise ValueError("KERC task tokens must be inside the model vocabulary")
             if self.kerc_stage_adapter_dim <= 0:
                 raise ValueError("KERC requires positive stage adapters")
+            if self.kerc_decoder_stage_adapter_dim < 0:
+                raise ValueError("KERC decoder stage adapter dimension cannot be negative")
+            if self.kerc_reasoner_output_delta_dim < 0:
+                raise ValueError("KERC reasoner output delta dimension cannot be negative")
             if self.kerc_residual_choice_count < 4:
                 raise ValueError("KERC requires at least four residual fidelity choices")
             if self.kerc_residual_bottleneck_dim <= 0:
@@ -254,6 +301,8 @@ class CausalTransformerConfig:
             value
             for value in (
                 self.kerc_stage_adapter_dim,
+                self.kerc_decoder_stage_adapter_dim,
+                self.kerc_reasoner_output_delta_dim,
                 self.kerc_residual_choice_count,
                 self.kerc_residual_bottleneck_dim,
                 self.kerc_residual_unit_kind_count,
@@ -274,6 +323,203 @@ class CausalTransformerConfig:
             raise ValueError("KERC dimensions require trusted task tokens")
 
 
+def analytical_parameter_breakdown(
+    config: CausalTransformerConfig,
+) -> dict[str, int]:
+    """Count the declared model graph without importing or allocating MLX tensors.
+
+    This is the canonical planning-time accounting path.  Keep every term tied to
+    an owning module in ``build_model`` so dry-run planning cannot initialize the
+    Metal runtime merely to inspect architecture size.
+    """
+
+    config.validate()
+    d_model = int(config.d_model)
+    head_dim = d_model // int(config.num_heads)
+    kv_width = int(config.num_kv_heads) * head_dim
+    attention = 2 * d_model * d_model + 2 * d_model * kv_width
+    feed_forward = 3 * d_model * int(config.ff_dim)
+    block_norms = 2 * d_model
+    base_block = attention + feed_forward + block_norms
+
+    def adapter(dimension: int) -> int:
+        return d_model + 2 * d_model * int(dimension) if dimension else 0
+
+    decoder_layer = base_block
+    decoder_layer += adapter(int(config.expert_adapter_dim))
+    decoder_layer += adapter(int(config.source_expert_adapter_dim))
+    if config.state_memory_mode != "none":
+        decoder_layer += (
+            int(config.state_memory_slots) * d_model
+            + 4 * d_model * d_model
+            + d_model
+        )
+
+    result = {
+        "token_embedding": int(config.vocab_size) * d_model,
+        "decoder_layers": int(config.num_layers) * decoder_layer,
+        "final_norm": d_model,
+    }
+
+    if config.attention_policy == "encoder_decoder":
+        source_block = base_block + adapter(int(config.source_expert_adapter_dim))
+        result["source_encoder_layers"] = int(config.source_encoder_layers) * source_block
+        result["source_final_norm"] = d_model
+        result["decoder_cross_attention"] = int(config.num_layers) * (
+            d_model + attention
+        )
+        if config.source_copy_mode == "pointer_generator":
+            result["pointer_generator"] = 2 * d_model * d_model + d_model + 1
+
+    if (
+        config.semantic_plan_feature_count > 0
+        and config.semantic_plan_conditioning_mode == "slot_attention"
+    ):
+        result["semantic_plan_cross_attention"] = int(config.num_layers) * (
+            d_model + attention
+        )
+    if config.semantic_plan_feature_count > 0:
+        feature_count = int(config.semantic_plan_feature_count)
+        plan_dim = int(config.semantic_plan_bottleneck_dim) or d_model
+        result["semantic_plan"] = (
+            (d_model * plan_dim if plan_dim != d_model else 0)
+            + plan_dim * feature_count
+            + feature_count
+            + feature_count * plan_dim
+            + plan_dim * d_model
+        )
+
+    future_count = len(tuple(config.mtp_future_offsets))
+    if future_count:
+        if config.mtp_head_mode == "shared_low_rank":
+            result["mtp_heads"] = (
+                d_model * int(config.mtp_low_rank)
+                + future_count * int(config.mtp_low_rank) * int(config.vocab_size)
+            )
+        elif config.mtp_head_mode == "independent_mlp":
+            result["mtp_heads"] = future_count * (
+                d_model * int(config.mtp_hidden_dim)
+                + int(config.mtp_hidden_dim) * int(config.vocab_size)
+            )
+        else:
+            result["mtp_heads"] = (
+                int(config.mtp_register_count) * d_model
+                + d_model * int(config.mtp_hidden_dim)
+                + future_count * int(config.mtp_hidden_dim) * int(config.vocab_size)
+            )
+
+    if config.kerc_task_token_ids:
+        stage_count = 4
+        choice_count = int(config.kerc_residual_choice_count)
+        bottleneck = int(config.kerc_residual_bottleneck_dim)
+        verifier_dim = int(config.kerc_verifier_dim)
+        verifier_outputs = int(config.kerc_verifier_output_dim)
+        decision_dim = int(config.kerc_decision_bottleneck_dim)
+        decision_outputs = int(config.kerc_decision_output_dim)
+        kerc = (
+            stage_count * d_model
+            + stage_count * adapter(int(config.kerc_stage_adapter_dim))
+            + int(config.num_layers)
+            * stage_count
+            * adapter(int(config.kerc_decoder_stage_adapter_dim))
+            + int(config.kerc_reasoner_output_delta_dim)
+            * (d_model + int(config.vocab_size))
+            + 2 * d_model * int(config.vocab_size)
+            + d_model * bottleneck
+            + bottleneck * stage_count * choice_count
+            + stage_count * choice_count
+            + stage_count * choice_count * d_model
+            + int(config.vocab_size) * verifier_dim
+            + 2 * verifier_dim * verifier_dim
+            + 4 * verifier_dim * verifier_outputs
+            + verifier_outputs
+            + d_model * decision_dim
+            + decision_dim * decision_outputs
+            + decision_outputs
+        )
+        if int(config.kerc_residual_unit_feature_dim) > 0:
+            unit_kinds = int(config.kerc_residual_unit_kind_count)
+            unit_features = int(config.kerc_residual_unit_feature_dim)
+            byte_vocab = int(config.kerc_residual_unit_byte_vocab_size)
+            kerc += (
+                byte_vocab * d_model
+                + unit_kinds * d_model
+                + 2 * d_model * bottleneck
+                + 4 * bottleneck * bottleneck
+                + unit_features * bottleneck
+                + choice_count * bottleneck
+                + 2 * (bottleneck + 1)
+                + choice_count * d_model
+            )
+        result["kerc_heads"] = kerc
+    return result
+
+
+def analytical_parameter_count(config: CausalTransformerConfig) -> int:
+    """Return the exact parameter count for the declared model graph."""
+
+    return sum(analytical_parameter_breakdown(config).values())
+
+
+def analytical_trainable_parameter_count(
+    config: CausalTransformerConfig, scope: str
+) -> int:
+    """Count parameters exposed by ``freeze_to_language_expert(scope)``."""
+
+    config.validate()
+    d_model = int(config.d_model)
+
+    def adapter(dimension: int) -> int:
+        return d_model + 2 * d_model * int(dimension) if dimension else 0
+
+    if int(config.expert_adapter_dim) <= 0:
+        raise ValueError("model has no expert adapter to train")
+    if scope not in {
+        "adapter_only",
+        "source_conditioned_delta",
+        "low_rank_source_adapters",
+    }:
+        raise ValueError(f"unsupported language expert scope: {scope}")
+    total = int(config.num_layers) * adapter(int(config.expert_adapter_dim))
+    if scope == "adapter_only":
+        return total
+    head_dim = d_model // int(config.num_heads)
+    kv_width = int(config.num_kv_heads) * head_dim
+    attention = 2 * d_model * d_model + 2 * d_model * kv_width
+    feed_forward = 3 * d_model * int(config.ff_dim)
+    base_block = attention + feed_forward + 2 * d_model
+    if scope == "source_conditioned_delta":
+        if (
+            config.attention_policy != "encoder_decoder"
+            or config.source_copy_mode != "pointer_generator"
+        ):
+            raise ValueError(
+                "source-conditioned expert scope requires encoder-decoder pointer mode"
+            )
+        total += int(config.num_layers) * (d_model + attention)
+        total += int(config.source_encoder_layers) * (
+            base_block + adapter(int(config.source_expert_adapter_dim))
+        )
+        total += d_model + 2 * d_model * d_model + d_model + 1
+        return total
+    if (
+        config.attention_policy != "encoder_decoder"
+        or int(config.source_expert_adapter_dim) <= 0
+    ):
+        raise ValueError(
+            "low-rank source expert scope requires source expert adapters"
+        )
+    total += int(config.num_layers) * adapter(
+        int(config.source_expert_adapter_dim)
+    )
+    total += int(config.source_encoder_layers) * adapter(
+        int(config.source_expert_adapter_dim)
+    )
+    if config.source_copy_mode == "pointer_generator":
+        total += d_model + 1
+    return total
+
+
 def build_model(
     config: CausalTransformerConfig,
     *,
@@ -282,12 +528,97 @@ def build_model(
     state_role_lookup: Any | None = None,
     source_to_target_lookup: Any | None = None,
     rope_kernel: str = "manual_reference",
+    gradient_checkpointing: bool = False,
+    attention_query_chunk_size: int = 0,
+    attention_key_chunk_size: int = 0,
+    compact_encoder_decoder_partitions: bool = False,
+    compact_partition_width_quantum: int = 0,
+    parameter_initialization_dtype: str = "float32",
+    exact_checkpoint_placeholder_initialization: bool = False,
 ) -> Any:
     """Build a pre-norm RoPE/GQA/SwiGLU causal LM with tied embeddings."""
 
     config.validate()
+    if parameter_initialization_dtype not in {"float32", "bfloat16"}:
+        raise ValueError(
+            "parameter initialization dtype must be float32 or bfloat16"
+        )
+    if (
+        exact_checkpoint_placeholder_initialization
+        and parameter_initialization_dtype != "bfloat16"
+    ):
+        raise ValueError(
+            "exact-checkpoint placeholder initialization requires bfloat16"
+        )
+    if compact_partition_width_quantum < 0 or (
+        compact_partition_width_quantum
+        and not compact_encoder_decoder_partitions
+    ):
+        raise ValueError(
+            "compact partition width quantum requires compact encoder-decoder partitions"
+        )
     if rope_kernel not in {"manual_reference", "mlx_fast"}:
         raise ValueError(f"unsupported RoPE kernel: {rope_kernel}")
+    if attention_query_chunk_size < 0:
+        raise ValueError("attention query chunk size cannot be negative")
+    if attention_key_chunk_size < 0:
+        raise ValueError("attention key chunk size cannot be negative")
+
+    if parameter_initialization_dtype == "bfloat16":
+        raw_nn = nn
+
+        class InitializationDtypeNN:
+            """Materialize each parameterized leaf directly into its retained dtype."""
+
+            Module = raw_nn.Module
+
+            def __getattr__(self, name: str) -> Any:
+                return getattr(raw_nn, name)
+
+            @staticmethod
+            def _compact(module: Any) -> Any:
+                if exact_checkpoint_placeholder_initialization:
+                    for name, value in module.parameters().items():
+                        setattr(
+                            module,
+                            name,
+                            mx.zeros(value.shape, dtype=mx.bfloat16),
+                        )
+                else:
+                    module.set_dtype(mx.bfloat16)
+                # Materialize large leaves immediately. Smaller leaves are
+                # evaluated once at their enclosing block boundary below,
+                # avoiding hundreds of Metal synchronizations while still
+                # preventing a whole FP32 model of lazy cast sources.
+                if (
+                    not exact_checkpoint_placeholder_initialization
+                    and sum(
+                    int(value.size)
+                    for value in module.parameters().values()
+                    )
+                    >= 1_000_000
+                ):
+                    mx.eval(module.parameters())
+                return module
+
+            def Linear(self, *args: Any, **kwargs: Any) -> Any:
+                return self._compact(raw_nn.Linear(*args, **kwargs))
+
+            def Embedding(self, *args: Any, **kwargs: Any) -> Any:
+                return self._compact(raw_nn.Embedding(*args, **kwargs))
+
+            def RMSNorm(self, *args: Any, **kwargs: Any) -> Any:
+                return self._compact(raw_nn.RMSNorm(*args, **kwargs))
+
+        nn = InitializationDtypeNN()
+
+    def materialize_initialization(module: Any) -> None:
+        if (
+            parameter_initialization_dtype == "bfloat16"
+            and not exact_checkpoint_placeholder_initialization
+        ):
+            mx.eval(module.parameters())
+
     head_dim = config.d_model // config.num_heads
     half_head_dim = head_dim // 2
     rope_inverse_frequency = mx.array(
@@ -300,6 +631,12 @@ def build_model(
     expert_adapter_enabled = config.expert_adapter_dim > 0
     source_expert_adapter_enabled = config.source_expert_adapter_dim > 0
     kerc_enabled = bool(config.kerc_task_token_ids)
+    kerc_decoder_stage_adapter_enabled = bool(
+        kerc_enabled and config.kerc_decoder_stage_adapter_dim > 0
+    )
+    kerc_reasoner_output_delta_enabled = bool(
+        kerc_enabled and config.kerc_reasoner_output_delta_dim > 0
+    )
     kerc_unit_allocator_enabled = bool(
         kerc_enabled and config.kerc_residual_unit_feature_dim > 0
     )
@@ -314,6 +651,28 @@ def build_model(
         plan_enabled and config.semantic_plan_conditioning_mode == "slot_attention"
     )
     mtp_enabled = bool(config.mtp_future_offsets)
+    mtp_head_mode = str(config.mtp_head_mode)
+
+    def uniform_kerc_stage_index(stage_weights: Any | None) -> int | None:
+        """Return an exact shared one-hot KERC stage, otherwise fail to fallback.
+
+        Stage-only KERC training uses one trusted control token per row.  The
+        generic router used to evaluate every stage adapter and projection and
+        multiply three results by zero.  Detecting a uniform one-hot batch lets
+        those mathematically inactive branches remain unmaterialized while
+        preserving the mixed-stage and malformed-control fallback.
+        """
+
+        if stage_weights is None or int(stage_weights.shape[0]) == 0:
+            return None
+        stage_indices = mx.argmax(stage_weights, axis=-1)
+        first = int(stage_indices[0].item())
+        exact_one_hot = mx.sum(stage_weights, axis=-1) == 1.0
+        shared_stage = stage_indices == first
+        if bool(mx.all(exact_one_hot & shared_stage).item()):
+            return first
+        return None
+
     if state_enabled:
         if state_role_lookup is None:
             raise ValueError("enabled state memory requires a causal token-role lookup")
@@ -361,6 +720,444 @@ def build_model(
             [first * cosine - second * sine, first * sine + second * cosine],
             axis=-1,
         )
+
+    def bounded_scaled_dot_product_attention(
+        query: Any,
+        key: Any,
+        value: Any,
+        *,
+        scale: float,
+        mask: Any | None,
+    ) -> Any:
+        """Evaluate attention with optional query and online-softmax KV chunks."""
+
+        query_length = int(query.shape[2])
+        key_length = int(key.shape[2])
+        query_position_offset = max(0, key_length - query_length)
+        query_chunk_size = int(attention_query_chunk_size)
+        key_chunk_size = int(attention_key_chunk_size)
+        if query_chunk_size <= 0:
+            query_chunk_size = query_length
+
+        def native_sdpa_mask(value: Any | None) -> Any | None:
+            if value is None or isinstance(value, str):
+                return value
+            if value.dtype == mx.bool_:
+                return value
+            return value.astype(query.dtype)
+
+        if key_chunk_size <= 0 or key_length <= key_chunk_size:
+            if query_length <= query_chunk_size:
+                return mx.fast.scaled_dot_product_attention(
+                    query,
+                    key,
+                    value,
+                    scale=scale,
+                    mask=native_sdpa_mask(mask),
+                )
+            outputs = []
+            key_positions = mx.arange(key_length, dtype=mx.int32)
+            for start in range(0, query_length, query_chunk_size):
+                stop = min(query_length, start + query_chunk_size)
+                chunk_mask = mask
+                if isinstance(mask, str) and mask == "causal":
+                    query_positions = mx.arange(
+                        query_position_offset + start,
+                        query_position_offset + stop,
+                        dtype=mx.int32,
+                    )
+                    chunk_mask = mx.where(
+                        key_positions[None, :] <= query_positions[:, None],
+                        mx.array(0.0, dtype=mx.float32),
+                        mx.array(-1e9, dtype=mx.float32),
+                    )
+                elif mask is not None and not isinstance(mask, str):
+                    mask_query_width = (
+                        int(mask.shape[-2]) if len(mask.shape) >= 2 else 1
+                    )
+                    if mask_query_width == query_length:
+                        chunk_mask = mask[..., start:stop, :]
+                    elif mask_query_width != 1:
+                        raise ValueError(
+                            "attention mask query width is incompatible with chunking"
+                        )
+                outputs.append(
+                    mx.fast.scaled_dot_product_attention(
+                        query[:, :, start:stop, :],
+                        key,
+                        value,
+                        scale=scale,
+                        mask=native_sdpa_mask(chunk_mask),
+                    )
+                )
+            return mx.concatenate(outputs, axis=2)
+
+        if gradient_checkpointing:
+            def native_chunk_mask(start: int, stop: int) -> Any:
+                chunk_mask = mask
+                if isinstance(mask, str):
+                    if mask != "causal":
+                        raise ValueError("unsupported string attention mask")
+                    query_positions = mx.arange(
+                        query_position_offset + start,
+                        query_position_offset + stop,
+                        dtype=mx.int32,
+                    )
+                    key_positions = mx.arange(key_length, dtype=mx.int32)
+                    chunk_mask = mx.where(
+                        key_positions[None, :] <= query_positions[:, None],
+                        mx.array(0.0, dtype=mx.float32),
+                        mx.array(-1e9, dtype=mx.float32),
+                    )
+                elif mask is not None:
+                    mask_query_width = (
+                        int(mask.shape[-2]) if len(mask.shape) >= 2 else 1
+                    )
+                    if mask_query_width == query_length:
+                        chunk_mask = mask[..., start:stop, :]
+                    elif mask_query_width != 1:
+                        raise ValueError(
+                            "attention mask query width is incompatible with chunking"
+                        )
+                return native_sdpa_mask(chunk_mask)
+
+            @mx.custom_function
+            def checkpointed_query_stream(
+                stream_query: Any,
+                stream_key: Any,
+                stream_value: Any,
+            ) -> Any:
+                chunks = []
+                for start in range(0, query_length, query_chunk_size):
+                    stop = min(query_length, start + query_chunk_size)
+                    chunk = mx.fast.scaled_dot_product_attention(
+                        stream_query[:, :, start:stop, :],
+                        stream_key,
+                        stream_value,
+                        scale=scale,
+                        mask=native_chunk_mask(start, stop),
+                    )
+                    # MLX is lazy: without this boundary every query tile's
+                    # score workspace can be scheduled together, defeating the
+                    # bounded-memory contract. The custom VJP below restores
+                    # exact end-to-end gradients through these materialized
+                    # forward chunks.
+                    mx.eval(chunk)
+                    chunks.append(chunk)
+                return mx.concatenate(chunks, axis=2)
+
+            @checkpointed_query_stream.vjp
+            def checkpointed_query_stream_vjp(
+                primals: tuple[Any, Any, Any],
+                cotangent: Any,
+                _output: Any,
+            ) -> tuple[Any, Any, Any]:
+                stream_query, stream_key, stream_value = primals
+                batch = int(stream_query.shape[0])
+                query_heads = int(stream_query.shape[1])
+                kv_heads = int(stream_key.shape[1])
+                if query_heads % kv_heads:
+                    raise ValueError(
+                        "query heads must divide evenly across KV heads"
+                    )
+                query_groups = query_heads // kv_heads
+
+                def grouped_chunk_mask(start: int, stop: int) -> Any | None:
+                    selected = native_chunk_mask(start, stop)
+                    if selected is None:
+                        return None
+                    if len(selected.shape) == 2:
+                        selected = selected[None, None, None, :, :]
+                    elif len(selected.shape) == 3:
+                        selected = selected[:, None, None, :, :]
+                    elif len(selected.shape) == 4:
+                        mask_heads = int(selected.shape[1])
+                        if mask_heads == query_heads:
+                            selected = selected.reshape(
+                                int(selected.shape[0]),
+                                kv_heads,
+                                query_groups,
+                                int(selected.shape[2]),
+                                int(selected.shape[3]),
+                            )
+                        elif mask_heads in {1, kv_heads}:
+                            selected = selected[:, :, None, :, :]
+                        else:
+                            raise ValueError(
+                                "attention mask head width is incompatible with grouped-query attention"
+                            )
+                    elif len(selected.shape) != 5:
+                        raise ValueError("unsupported attention mask rank")
+                    return selected.astype(mx.float32)
+
+                query_gradients = []
+                key_gradient = mx.zeros_like(stream_key)
+                value_gradient = mx.zeros_like(stream_value)
+                for start in range(0, query_length, query_chunk_size):
+                    stop = min(query_length, start + query_chunk_size)
+                    query_width = stop - start
+                    grouped_query = stream_query[
+                        :, :, start:stop, :
+                    ].reshape(
+                        batch,
+                        kv_heads,
+                        query_groups,
+                        query_width,
+                        head_dim,
+                    )
+                    grouped_cotangent = cotangent[
+                        :, :, start:stop, :
+                    ].reshape(
+                        batch,
+                        kv_heads,
+                        query_groups,
+                        query_width,
+                        head_dim,
+                    )
+                    grouped_key = stream_key[:, :, None, :, :]
+                    grouped_value = stream_value[:, :, None, :, :]
+                    scores = mx.matmul(
+                        grouped_query.astype(mx.float32),
+                        mx.swapaxes(grouped_key.astype(mx.float32), -1, -2),
+                    ) * float(scale)
+                    chunk_mask = grouped_chunk_mask(start, stop)
+                    if chunk_mask is not None:
+                        scores = scores + chunk_mask
+                    probabilities = mx.softmax(scores, axis=-1)
+                    cotangent_fp32 = grouped_cotangent.astype(mx.float32)
+                    value_fp32 = grouped_value.astype(mx.float32)
+                    probability_gradient = mx.matmul(
+                        cotangent_fp32,
+                        mx.swapaxes(value_fp32, -1, -2),
+                    )
+                    score_gradient = probabilities * (
+                        probability_gradient
+                        - mx.sum(
+                            probability_gradient * probabilities,
+                            axis=-1,
+                            keepdims=True,
+                        )
+                    )
+                    chunk_query_gradient = mx.matmul(
+                        score_gradient,
+                        grouped_key.astype(mx.float32),
+                    ) * float(scale)
+                    chunk_key_gradient = mx.sum(
+                        mx.matmul(
+                            mx.swapaxes(score_gradient, -1, -2),
+                            grouped_query.astype(mx.float32),
+                        ),
+                        axis=2,
+                    ) * float(scale)
+                    chunk_value_gradient = mx.sum(
+                        mx.matmul(
+                            mx.swapaxes(probabilities, -1, -2),
+                            cotangent_fp32,
+                        ),
+                        axis=2,
+                    )
+                    chunk_query_gradient = chunk_query_gradient.reshape(
+                        batch, query_heads, query_width, head_dim
+                    ).astype(stream_query.dtype)
+                    chunk_key_gradient = chunk_key_gradient.astype(
+                        stream_key.dtype
+                    )
+                    chunk_value_gradient = chunk_value_gradient.astype(
+                        stream_value.dtype
+                    )
+                    mx.eval(
+                        chunk_query_gradient,
+                        chunk_key_gradient,
+                        chunk_value_gradient,
+                    )
+                    query_gradients.append(chunk_query_gradient)
+                    key_gradient = key_gradient + chunk_key_gradient
+                    value_gradient = value_gradient + chunk_value_gradient
+                    # Fold the shared K/V contribution now so the score,
+                    # probability, and derivative workspaces for this tile can
+                    # be released before the next query tile is constructed.
+                    mx.eval(key_gradient, value_gradient)
+                return (
+                    mx.concatenate(query_gradients, axis=2),
+                    key_gradient,
+                    value_gradient,
+                )
+
+            return checkpointed_query_stream(query, key, value)
+
+        batch = int(query.shape[0])
+        query_heads = int(query.shape[1])
+        kv_heads = int(key.shape[1])
+        if query_heads % kv_heads:
+            raise ValueError("query heads must divide evenly across KV heads")
+        query_groups = query_heads // kv_heads
+
+        def sliced_mask(
+            query_start: int,
+            query_stop: int,
+            key_start: int,
+            key_stop: int,
+        ) -> Any:
+            if isinstance(mask, str):
+                if mask != "causal":
+                    raise ValueError("unsupported string attention mask")
+                query_positions = mx.arange(
+                    query_position_offset + query_start,
+                    query_position_offset + query_stop,
+                    dtype=mx.int32,
+                )
+                key_positions = mx.arange(key_start, key_stop, dtype=mx.int32)
+                selected = mx.where(
+                    key_positions[None, :] <= query_positions[:, None],
+                    mx.array(0.0, dtype=mx.float32),
+                    mx.array(-1e9, dtype=mx.float32),
+                )
+            elif mask is None:
+                return mx.zeros((1, 1, 1, 1, 1), dtype=mx.float32)
+            else:
+                selected = mask
+                mask_query_width = (
+                    int(selected.shape[-2]) if len(selected.shape) >= 2 else 1
+                )
+                mask_key_width = int(selected.shape[-1])
+                if mask_query_width == query_length:
+                    selected = selected[..., query_start:query_stop, :]
+                elif mask_query_width != 1:
+                    raise ValueError(
+                        "attention mask query width is incompatible with chunking"
+                    )
+                if mask_key_width == key_length:
+                    selected = selected[..., key_start:key_stop]
+                elif mask_key_width != 1:
+                    raise ValueError(
+                        "attention mask key width is incompatible with chunking"
+                    )
+            if len(selected.shape) == 2:
+                selected = selected[None, None, None, :, :]
+            elif len(selected.shape) == 3:
+                selected = selected[:, None, None, :, :]
+            elif len(selected.shape) == 4:
+                mask_heads = int(selected.shape[1])
+                if mask_heads == query_heads:
+                    selected = selected.reshape(
+                        int(selected.shape[0]),
+                        kv_heads,
+                        query_groups,
+                        int(selected.shape[2]),
+                        int(selected.shape[3]),
+                    )
+                elif mask_heads in {1, kv_heads}:
+                    selected = selected[:, :, None, :, :]
+                else:
+                    raise ValueError(
+                        "attention mask head width is incompatible with grouped-query attention"
+                    )
+            elif len(selected.shape) != 5:
+                raise ValueError("unsupported attention mask rank")
+            return selected.astype(mx.float32)
+
+        has_mask = mask is not None
+
+        def online_block(
+            running_maximum: Any,
+            running_denominator: Any,
+            running_numerator: Any,
+            grouped_query: Any,
+            block_key: Any,
+            block_value: Any,
+            block_mask: Any,
+        ) -> tuple[Any, Any, Any]:
+            scores = mx.matmul(
+                grouped_query,
+                mx.swapaxes(block_key, -1, -2),
+            ) * float(scale)
+            if has_mask:
+                scores = scores + block_mask
+            block_maximum = mx.max(scores, axis=-1, keepdims=True)
+            next_maximum = mx.maximum(running_maximum, block_maximum)
+            finite_next = mx.isfinite(next_maximum)
+            safe_next_maximum = mx.where(
+                finite_next, next_maximum, mx.zeros_like(next_maximum)
+            )
+            prior_scale = mx.where(
+                mx.isfinite(running_maximum) & finite_next,
+                mx.exp(running_maximum - safe_next_maximum),
+                mx.zeros_like(next_maximum),
+            )
+            block_weights = mx.where(
+                finite_next,
+                mx.exp(scores - safe_next_maximum),
+                mx.zeros_like(scores),
+            )
+            next_denominator = (
+                running_denominator * prior_scale
+                + mx.sum(block_weights, axis=-1, keepdims=True)
+            )
+            next_numerator = (
+                running_numerator * prior_scale
+                + mx.matmul(block_weights, block_value)
+            )
+            return next_maximum, next_denominator, next_numerator
+
+        # The enclosing transformer layer is already rematerialized when
+        # gradient checkpointing is enabled. Checkpointing every online-softmax
+        # tile again creates a query-chunk x key-chunk graph of nested replay
+        # boundaries and can exhaust Metal's graph resource table on long rows.
+        # Keep one layer-level replay boundary and let the exact online
+        # recurrence live inside it.
+        update_block = online_block
+        outputs = []
+        for query_start in range(0, query_length, query_chunk_size):
+            query_stop = min(query_length, query_start + query_chunk_size)
+            query_width = query_stop - query_start
+            grouped_query = query[:, :, query_start:query_stop, :].reshape(
+                batch,
+                kv_heads,
+                query_groups,
+                query_width,
+                head_dim,
+            ).astype(mx.float32)
+            running_maximum = mx.full(
+                (batch, kv_heads, query_groups, query_width, 1),
+                -float("inf"),
+                dtype=mx.float32,
+            )
+            running_denominator = mx.zeros_like(running_maximum)
+            running_numerator = mx.zeros(
+                (batch, kv_heads, query_groups, query_width, head_dim),
+                dtype=mx.float32,
+            )
+            for key_start in range(0, key_length, key_chunk_size):
+                key_stop = min(key_length, key_start + key_chunk_size)
+                block_key = key[:, :, None, key_start:key_stop, :].astype(
+                    mx.float32
+                )
+                block_value = value[:, :, None, key_start:key_stop, :].astype(
+                    mx.float32
+                )
+                running_maximum, running_denominator, running_numerator = (
+                    update_block(
+                        running_maximum,
+                        running_denominator,
+                        running_numerator,
+                        grouped_query,
+                        block_key,
+                        block_value,
+                        sliced_mask(
+                            query_start, query_stop, key_start, key_stop
+                        ),
+                    )
+                )
+            normalized = running_numerator / mx.maximum(
+                running_denominator,
+                mx.array(1e-30, dtype=mx.float32),
+            )
+            outputs.append(
+                normalized.reshape(
+                    batch, query_heads, query_width, head_dim
+                ).astype(query.dtype)
+            )
+        return mx.concatenate(outputs, axis=2)
 
     class CausalAttention(nn.Module):
         def __init__(self) -> None:
@@ -448,7 +1245,7 @@ def build_model(
                         mask = mask[None, None, :, :] + role_bias
             # MLX executes grouped-query attention directly. Pre-tiling KV heads
             # multiplies memory traffic and defeats the native GQA kernel.
-            attended = mx.fast.scaled_dot_product_attention(
+            attended = bounded_scaled_dot_product_attention(
                 query,
                 attention_key,
                 attention_value,
@@ -467,14 +1264,24 @@ def build_model(
             self.out_proj = nn.Linear(config.num_heads * head_dim, config.d_model, bias=False)
             if zero_output:
                 self.out_proj.weight = mx.zeros_like(self.out_proj.weight)
+            materialize_initialization(self)
 
         def __call__(
             self,
             hidden: Any,
             memory: Any,
             key_mask: Any | None = None,
+            query_access: Any | None = None,
         ) -> Any:
-            batch, length, _dims = hidden.shape
+            batch, original_length, _dims = hidden.shape
+            query_start = 0
+            if compact_encoder_decoder_partitions and query_access is not None:
+                active_positions = mx.any(query_access > 0, axis=0)
+                if not bool(mx.any(active_positions)):
+                    return mx.zeros_like(hidden)
+                query_start = int(mx.argmax(active_positions.astype(mx.int32)).item())
+                hidden = hidden[:, query_start:, :]
+            length = int(hidden.shape[1])
             slots = int(memory.shape[1])
             query = self.q_proj(hidden).reshape(
                 batch, length, config.num_heads, head_dim
@@ -485,7 +1292,7 @@ def build_model(
             value = self.v_proj(memory).reshape(
                 batch, slots, config.num_kv_heads, head_dim
             ).transpose(0, 2, 1, 3)
-            attended = mx.fast.scaled_dot_product_attention(
+            attended = bounded_scaled_dot_product_attention(
                 query,
                 key,
                 value,
@@ -503,7 +1310,21 @@ def build_model(
             attended = attended.transpose(0, 2, 1, 3).reshape(
                 batch, length, config.num_heads * head_dim
             )
-            return self.out_proj(attended)
+            projected = self.out_proj(attended)
+            if query_start:
+                projected = mx.concatenate(
+                    [
+                        mx.zeros(
+                            (batch, query_start, config.d_model),
+                            dtype=projected.dtype,
+                        ),
+                        projected,
+                    ],
+                    axis=1,
+                )
+                if int(projected.shape[1]) != original_length:
+                    raise ValueError("compacted cross-attention output lost alignment")
+            return projected
 
     class SourceEncoderBlock(nn.Module):
         def __init__(self) -> None:
@@ -514,6 +1335,7 @@ def build_model(
             self.feed_forward = SwiGLU()
             if source_expert_adapter_enabled:
                 self.expert_adapter = ExpertAdapter(config.source_expert_adapter_dim)
+            materialize_initialization(self)
 
         def __call__(self, hidden: Any, source_mask: Any) -> Any:
             key_mask = mx.where(
@@ -522,7 +1344,8 @@ def build_model(
                 mx.array(-1e9, dtype=mx.float32),
             )
             attended, _cache = self.attention(
-                self.attention_norm(hidden), attention_mask=key_mask
+                self.attention_norm(hidden),
+                attention_mask=key_mask,
             )
             hidden = hidden + attended
             hidden = hidden + self.feed_forward(self.ffn_norm(hidden))
@@ -564,10 +1387,16 @@ def build_model(
                 self.source_expert_adapter = ExpertAdapter(
                     config.source_expert_adapter_dim
                 )
+            if kerc_decoder_stage_adapter_enabled:
+                self.kerc_decoder_stage_adapters = [
+                    ExpertAdapter(config.kerc_decoder_stage_adapter_dim)
+                    for _stage in range(4)
+                ]
             if state_enabled:
                 self.state_embedding = nn.Embedding(config.state_memory_slots, config.d_model)
                 self.state_candidate = nn.Linear(config.d_model * 2, config.d_model, bias=False)
                 self.state_gate = nn.Linear(config.d_model * 2, config.d_model, bias=True)
+            materialize_initialization(self)
 
         def initial_memory(self, batch: int) -> Any:
             roles = self.state_embedding(mx.arange(config.state_memory_slots, dtype=mx.int32))
@@ -608,6 +1437,7 @@ def build_model(
             source_memory: Any | None = None,
             source_mask: Any | None = None,
             source_access: Any | None = None,
+            kerc_stage_weights: Any | None = None,
             attention_mask: Any | None = None,
         ) -> tuple[Any, tuple[Any, ...]]:
             token_cache = (cache[0], cache[1]) if cache is not None else None
@@ -629,7 +1459,10 @@ def build_model(
             hidden = hidden + attended
             if source_encoder_enabled and source_memory is not None:
                 source_attended = self.source_attention(
-                    self.source_attention_norm(hidden), source_memory, source_mask
+                    self.source_attention_norm(hidden),
+                    source_memory,
+                    source_mask,
+                    source_access if compact_encoder_decoder_partitions else None,
                 )
                 access = (
                     source_access
@@ -652,6 +1485,33 @@ def build_model(
             hidden = hidden + self.feed_forward(self.ffn_norm(hidden))
             if expert_adapter_enabled:
                 hidden = hidden + self.expert_adapter(hidden)
+            if (
+                kerc_decoder_stage_adapter_enabled
+                and kerc_stage_weights is not None
+            ):
+                uniform_stage = uniform_kerc_stage_index(kerc_stage_weights)
+                if uniform_stage is None:
+                    stage_delta = mx.sum(
+                        mx.stack(
+                            [
+                                adapter(hidden)
+                                for adapter in self.kerc_decoder_stage_adapters
+                            ],
+                            axis=1,
+                        )
+                        * kerc_stage_weights[:, :, None, None],
+                        axis=1,
+                    )
+                else:
+                    stage_delta = self.kerc_decoder_stage_adapters[
+                        uniform_stage
+                    ](hidden)
+                access = (
+                    source_access
+                    if source_access is not None
+                    else mx.ones(hidden.shape[:2], dtype=mx.float32)
+                )
+                hidden = hidden + stage_delta * access[:, :, None]
             if not state_enabled:
                 return hidden, next_cache
             next_memory = memory
@@ -679,6 +1539,11 @@ def build_model(
             self.layers = [DecoderBlock() for _ in range(config.num_layers)]
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.scale = math.sqrt(config.d_model)
+            self.gradient_checkpointing = bool(gradient_checkpointing)
+            self.kerc_stage_output_isolation = False
+            self.compact_output_projection = bool(
+                compact_encoder_decoder_partitions
+            )
             self.copy_auxiliary_loss_weight = float(
                 config.source_copy_auxiliary_loss_weight
             )
@@ -692,13 +1557,34 @@ def build_model(
                 config.kerc_residual_choice_count
             )
             if mtp_enabled:
-                self.mtp_shared_projection = nn.Linear(
-                    config.d_model, config.mtp_low_rank, bias=False
-                )
-                self.mtp_output_heads = [
-                    nn.Linear(config.mtp_low_rank, config.vocab_size, bias=False)
-                    for _offset in self.mtp_future_offsets
-                ]
+                if mtp_head_mode == "shared_low_rank":
+                    self.mtp_shared_projection = nn.Linear(
+                        config.d_model, config.mtp_low_rank, bias=False
+                    )
+                    self.mtp_output_heads = [
+                        nn.Linear(config.mtp_low_rank, config.vocab_size, bias=False)
+                        for _offset in self.mtp_future_offsets
+                    ]
+                elif mtp_head_mode == "independent_mlp":
+                    self.mtp_input_heads = [
+                        nn.Linear(config.d_model, config.mtp_hidden_dim, bias=False)
+                        for _offset in self.mtp_future_offsets
+                    ]
+                    self.mtp_output_heads = [
+                        nn.Linear(config.mtp_hidden_dim, config.vocab_size, bias=False)
+                        for _offset in self.mtp_future_offsets
+                    ]
+                else:
+                    self.mtp_registers = nn.Embedding(
+                        config.mtp_register_count, config.d_model
+                    )
+                    self.mtp_shared_projection = nn.Linear(
+                        config.d_model, config.mtp_hidden_dim, bias=False
+                    )
+                    self.mtp_output_heads = [
+                        nn.Linear(config.mtp_hidden_dim, config.vocab_size, bias=False)
+                        for _offset in self.mtp_future_offsets
+                    ]
             if kerc_enabled:
                 self.kerc_stage_embedding = nn.Embedding(4, config.d_model)
                 self.kerc_stage_adapters = [
@@ -710,6 +1596,20 @@ def build_model(
                 self.kerc_surface_output = nn.Linear(
                     config.d_model, config.vocab_size, bias=False
                 )
+                if kerc_reasoner_output_delta_enabled:
+                    self.kerc_reasoner_output_delta_down = nn.Linear(
+                        config.d_model,
+                        config.kerc_reasoner_output_delta_dim,
+                        bias=False,
+                    )
+                    self.kerc_reasoner_output_delta_up = nn.Linear(
+                        config.kerc_reasoner_output_delta_dim,
+                        config.vocab_size,
+                        bias=False,
+                    )
+                    self.kerc_reasoner_output_delta_up.weight = mx.zeros_like(
+                        self.kerc_reasoner_output_delta_up.weight
+                    )
                 self.kerc_residual_encoder = nn.Linear(
                     config.d_model,
                     config.kerc_residual_bottleneck_dim,
@@ -846,6 +1746,7 @@ def build_model(
                     self.semantic_plan_projection.weight = mx.zeros_like(
                         self.semantic_plan_projection.weight
                     )
+            materialize_initialization(self)
 
         def role_weights(self, tokens: Any) -> Any | None:
             if not state_enabled:
@@ -897,6 +1798,99 @@ def build_model(
                 if pointer_generator_enabled:
                     self.copy_gate.unfreeze()
 
+        def freeze_to_kerc_delta(
+            self, *, include_source_conditioned_bridge: bool = False
+        ) -> None:
+            """Preserve the warm trunk and train only faithful KERC modules."""
+
+            if not kerc_enabled:
+                raise ValueError("model has no KERC delta to train")
+            self.freeze()
+            module_names = [
+                "kerc_stage_embedding",
+                "kerc_kernel_output",
+                "kerc_surface_output",
+                "kerc_reasoner_output_delta_down",
+                "kerc_reasoner_output_delta_up",
+                "kerc_residual_encoder",
+                "kerc_residual_allocator",
+                "kerc_residual_values",
+                "kerc_unit_byte_embedding",
+                "kerc_unit_kind_embedding",
+                "kerc_unit_content_projection",
+                "kerc_unit_source_projection",
+                "kerc_unit_query",
+                "kerc_unit_key",
+                "kerc_unit_value",
+                "kerc_unit_attention_output",
+                "kerc_unit_candidate_projection",
+                "kerc_unit_fidelity_feature_embedding",
+                "kerc_unit_candidate_scorer",
+                "kerc_unit_confidence",
+                "kerc_unit_fidelity_values",
+                "kerc_verifier_embedding",
+                "kerc_verifier_source",
+                "kerc_verifier_target",
+                "kerc_verifier_classifier",
+                "kerc_decision_encoder",
+                "kerc_decision_classifier",
+            ]
+            for adapter in self.kerc_stage_adapters:
+                adapter.unfreeze()
+            if kerc_decoder_stage_adapter_enabled:
+                for layer in self.layers:
+                    for adapter in layer.kerc_decoder_stage_adapters:
+                        adapter.unfreeze()
+            for name in module_names:
+                module = getattr(self, name, None)
+                if module is not None:
+                    module.unfreeze()
+            if include_source_conditioned_bridge:
+                if not source_encoder_enabled:
+                    raise ValueError(
+                        "KERC source-conditioned bridge requires the source encoder"
+                    )
+                for layer in self.layers:
+                    layer.source_attention_norm.unfreeze()
+                    layer.source_attention.unfreeze()
+                for layer in self.source_layers:
+                    layer.unfreeze()
+                self.source_final_norm.unfreeze()
+
+        def freeze_to_kerc_stage(
+            self,
+            stage_index: int,
+            *,
+            include_stage_embedding: bool = True,
+            detach_frozen_trunk: bool = False,
+        ) -> None:
+            """Train one KERC generation stage without changing sibling stages."""
+
+            if not kerc_enabled or stage_index not in range(4):
+                raise ValueError("KERC stage-only scope requires a stage index in [0, 3]")
+            if detach_frozen_trunk and (
+                stage_index != 1 or include_stage_embedding
+            ):
+                raise ValueError(
+                    "detached KERC trunk isolation requires compiler stage 1 "
+                    "with a frozen stage embedding"
+                )
+            self.freeze()
+            self.kerc_stage_output_isolation = bool(detach_frozen_trunk)
+            if include_stage_embedding:
+                self.kerc_stage_embedding.unfreeze()
+            self.kerc_stage_adapters[stage_index].unfreeze()
+            if kerc_decoder_stage_adapter_enabled:
+                for layer in self.layers:
+                    layer.kerc_decoder_stage_adapters[stage_index].unfreeze()
+            if stage_index == 1:
+                self.kerc_kernel_output.unfreeze()
+            elif stage_index == 2 and kerc_reasoner_output_delta_enabled:
+                self.kerc_reasoner_output_delta_down.unfreeze()
+                self.kerc_reasoner_output_delta_up.unfreeze()
+            elif stage_index == 3:
+                self.kerc_surface_output.unfreeze()
+
         def sequence_attention_mask(self, tokens: Any, cache: Any | None) -> Any | None:
             if config.attention_policy != "prefix_lm" or cache is not None:
                 return None
@@ -931,7 +1925,12 @@ def build_model(
                 mx.float32
             )
             source_mask = (seen_separator == 0).astype(mx.float32) * has_separator[:, None]
-            target_access = ((seen_separator > 0) & ~separator).astype(mx.float32)
+            # Token zero is the canonical padding id.  Excluding right-padding
+            # here lets compact decoder execution recover the semantic target
+            # extent even when the outer training tensor is shape-bucketed.
+            target_access = (
+                (seen_separator > 0) & ~separator & (tokens != 0)
+            ).astype(mx.float32)
             return source_mask, target_access, has_separator
 
         def encode_source(
@@ -944,13 +1943,53 @@ def build_model(
             source_mask, target_access, has_separator = self.source_partition(tokens)
             if not assume_separator and not bool(mx.any(has_separator > 0)):
                 return None, None, None, None
-            hidden = self.token_embedding(tokens) * self.scale
+            source_tokens = tokens
+            if compact_encoder_decoder_partitions:
+                source_width = int(mx.max(mx.sum(source_mask, axis=1)).item())
+                if source_width <= 0:
+                    return None, None, target_access, None
+                source_tokens = tokens[:, :source_width]
+                source_mask = source_mask[:, :source_width]
+                if compact_partition_width_quantum:
+                    bucket_width = int(
+                        math.ceil(
+                            source_width / compact_partition_width_quantum
+                        )
+                        * compact_partition_width_quantum
+                    )
+                    padding = bucket_width - source_width
+                    if padding:
+                        source_tokens = mx.pad(
+                            source_tokens, ((0, 0), (0, padding))
+                        )
+                        source_mask = mx.pad(
+                            source_mask, ((0, 0), (0, padding))
+                        )
+            hidden = self.token_embedding(source_tokens) * self.scale
             hidden = hidden * source_mask[:, :, None]
             for layer in self.source_layers:
-                hidden = layer(hidden, source_mask)
+                if self.gradient_checkpointing and self.training:
+                    def checkpointed_source(
+                        parameters: Any,
+                        layer_hidden: Any,
+                        layer_mask: Any,
+                        layer_module: Any = layer,
+                    ) -> Any:
+                        layer_module.update(parameters)
+                        return layer_module(layer_hidden, layer_mask)
+
+                    hidden = mx.checkpoint(checkpointed_source)(
+                        layer.trainable_parameters(), hidden, source_mask
+                    )
+                else:
+                    hidden = layer(hidden, source_mask)
                 hidden = hidden * source_mask[:, :, None]
             memory = self.source_final_norm(hidden) * source_mask[:, :, None]
-            copy_ids = source_to_target_lookup[tokens] if pointer_generator_enabled else None
+            copy_ids = (
+                source_to_target_lookup[source_tokens]
+                if pointer_generator_enabled
+                else None
+            )
             return memory, source_mask, target_access, copy_ids
 
         def output_logits(
@@ -1035,6 +2074,16 @@ def build_model(
                 generator_log_probs + mx.log(mx.maximum(gate, 1e-6)),
                 pointer_log_probs + mx.log(mx.maximum(1.0 - gate, 1e-6)),
             )
+            if pointer_access is not None:
+                # A zero-authority stage must be generator-only exactly. The
+                # numerical 1e-6 mixture floor above is appropriate for an
+                # active learned gate, but otherwise lets copied source IDs
+                # bypass stage-specific output vocabulary masks.
+                logits = mx.where(
+                    pointer_access[:, None, None] > 0,
+                    logits,
+                    generator_log_probs,
+                )
             return logits, {
                 "pointer_scores": pointer_scores,
                 "source_copy_ids": source_copy_ids,
@@ -1320,12 +2369,8 @@ def build_model(
         def kerc_generator_logits(
             self, hidden: Any, stage_weights: Any | None
         ) -> Any:
-            base = self.token_embedding.as_linear(hidden)
             if not kerc_enabled or stage_weights is None:
-                return base
-            stage_hidden = [
-                hidden + adapter(hidden) for adapter in self.kerc_stage_adapters
-            ]
+                return self.token_embedding.as_linear(hidden)
             token_ids = mx.arange(config.vocab_size, dtype=mx.int32)
             surface_allowed = (
                 (
@@ -1355,13 +2400,57 @@ def build_model(
                 mx.array(0.0, dtype=mx.float32),
                 mx.array(-1e9, dtype=mx.float32),
             )
+            uniform_stage = uniform_kerc_stage_index(stage_weights)
+            if uniform_stage is not None:
+                stage_hidden = hidden + self.kerc_stage_adapters[
+                    uniform_stage
+                ](hidden)
+                if uniform_stage == 0:
+                    return self.token_embedding.as_linear(
+                        stage_hidden
+                    ) + surface_mask
+                if uniform_stage == 1:
+                    return self.kerc_kernel_output(stage_hidden) + kernel_mask
+                if uniform_stage == 2:
+                    reasoner_delta = (
+                        self.kerc_reasoner_output_delta_up(
+                            nn.silu(
+                                self.kerc_reasoner_output_delta_down(
+                                    stage_hidden
+                                )
+                            )
+                        )
+                        if kerc_reasoner_output_delta_enabled
+                        else 0.0
+                    )
+                    return (
+                        self.token_embedding.as_linear(stage_hidden)
+                        + reasoner_delta
+                        + kernel_mask
+                    )
+                return self.kerc_surface_output(stage_hidden) + surface_mask
+            base = self.token_embedding.as_linear(hidden)
+            stage_hidden = [
+                hidden + adapter(hidden) for adapter in self.kerc_stage_adapters
+            ]
             stage_logits = mx.stack(
                 [
                     self.token_embedding.as_linear(stage_hidden[0])
                     + surface_mask,
                     self.kerc_kernel_output(stage_hidden[1])
                     + kernel_mask,
-                    self.kerc_kernel_output(stage_hidden[2])
+                    self.token_embedding.as_linear(stage_hidden[2])
+                    + (
+                        self.kerc_reasoner_output_delta_up(
+                            nn.silu(
+                                self.kerc_reasoner_output_delta_down(
+                                    stage_hidden[2]
+                                )
+                            )
+                        )
+                        if kerc_reasoner_output_delta_enabled
+                        else 0.0
+                    )
                     + kernel_mask,
                     self.kerc_surface_output(stage_hidden[3])
                     + surface_mask,
@@ -1440,16 +2529,39 @@ def build_model(
         def mtp_logits(self, hidden: Any) -> list[Any]:
             if not mtp_enabled:
                 return []
-            shared = self.mtp_shared_projection(hidden)
-            return [head(shared) for head in self.mtp_output_heads]
+            if mtp_head_mode == "shared_low_rank":
+                shared = self.mtp_shared_projection(hidden)
+                return [head(shared) for head in self.mtp_output_heads]
+            if mtp_head_mode == "independent_mlp":
+                return [
+                    output_head(nn.silu(input_head(hidden)))
+                    for input_head, output_head in zip(
+                        self.mtp_input_heads, self.mtp_output_heads
+                    )
+                ]
+            return [
+                output_head(
+                    nn.silu(
+                        self.mtp_shared_projection(
+                            hidden + self.mtp_registers.weight[index]
+                        )
+                    )
+                )
+                for index, output_head in enumerate(self.mtp_output_heads)
+            ]
 
         def conditioned_embeddings(
             self,
             tokens: Any,
             cached_plan_context: Any | None,
             source_mask: Any | None = None,
+            input_embeddings: Any | None = None,
         ) -> tuple[Any, Any | None, Any | None, Any | None]:
-            hidden = self.token_embedding(tokens) * self.scale
+            hidden = (
+                input_embeddings
+                if input_embeddings is not None
+                else self.token_embedding(tokens) * self.scale
+            )
             if source_encoder_enabled and source_mask is not None:
                 neutral = self.token_embedding(
                     mx.zeros(tokens.shape, dtype=mx.int32)
@@ -1555,6 +2667,7 @@ def build_model(
             return_plan_logits: bool = False,
             return_copy_aux: bool = False,
             return_training_aux: bool = False,
+            input_embeddings: Any | None = None,
             kerc_unit_byte_ids: Any | None = None,
             kerc_unit_byte_mask: Any | None = None,
             kerc_unit_byte_offsets: Any | None = None,
@@ -1562,10 +2675,36 @@ def build_model(
             kerc_unit_candidate_features: Any | None = None,
             kerc_unit_mask: Any | None = None,
             kerc_unit_hard_block_mask: Any | None = None,
+            output_position_mask: Any | None = None,
+            auxiliary_only: bool = False,
         ) -> Any:
             if return_training_aux and (return_plan_logits or return_copy_aux):
                 raise ValueError(
                     "return_training_aux cannot be combined with legacy auxiliary returns"
+                )
+            if output_position_mask is not None and tuple(output_position_mask.shape) != tuple(
+                tokens.shape
+            ):
+                raise ValueError("output position mask must match token batch and length")
+            if input_embeddings is not None:
+                if tuple(input_embeddings.shape) != (
+                    int(tokens.shape[0]),
+                    int(tokens.shape[1]),
+                    config.d_model,
+                ):
+                    raise ValueError("input embeddings must match token batch, length, and model width")
+                if source_encoder_enabled or plan_enabled or kerc_enabled or state_enabled:
+                    raise ValueError(
+                        "external input embeddings currently require the plain causal core"
+                    )
+            if auxiliary_only and (
+                not return_training_aux
+                or not kerc_enabled
+                or cache is not None
+                or input_embeddings is not None
+            ):
+                raise ValueError(
+                    "auxiliary-only execution requires cache-free KERC training auxiliaries"
                 )
             cached_plan_context = None
             cached_source_memory = None
@@ -1630,11 +2769,126 @@ def build_model(
                     )
                 elif cache is not None:
                     source_access = mx.ones(tokens.shape, dtype=mx.float32)
+            if auxiliary_only:
+                (
+                    _kerc_context,
+                    kerc_stage_weights,
+                    kerc_residual_logits,
+                    kerc_unit_logits,
+                    kerc_unit_confidence_logits,
+                ) = self.kerc_context(
+                    tokens,
+                    source_memory,
+                    source_mask,
+                    unit_byte_ids=kerc_unit_byte_ids,
+                    unit_byte_mask=kerc_unit_byte_mask,
+                    unit_byte_offsets=kerc_unit_byte_offsets,
+                    unit_kind_ids=kerc_unit_kind_ids,
+                    unit_candidate_features=kerc_unit_candidate_features,
+                    unit_mask=kerc_unit_mask,
+                    unit_hard_block_mask=kerc_unit_hard_block_mask,
+                )
+                batch = int(tokens.shape[0])
+                # No supervised generator position exists on corruption-only
+                # verifier/decision rows.  Decoder, pointer, and vocabulary
+                # projection terms therefore have exactly zero loss and zero
+                # gradient; omit them rather than materializing a large graph.
+                logits = mx.zeros((batch, 1, config.vocab_size), dtype=mx.float32)
+                return logits, [], {
+                    "final_hidden": mx.zeros(
+                        (batch, 1, config.d_model), dtype=mx.float32
+                    ),
+                    "output_position_start": int(tokens.shape[1]) - 1,
+                    "plan_logits": None,
+                    "copy_aux": None,
+                    "mtp_logits": [],
+                    "decoder_execution": "pruned_zero_authority",
+                    "kerc": {
+                        "stage_weights": kerc_stage_weights,
+                        "residual_logits": kerc_residual_logits,
+                        "unit_residual_logits": kerc_unit_logits,
+                        "unit_confidence_logits": kerc_unit_confidence_logits,
+                        "verifier_logits": self.kerc_verifier_logits(tokens),
+                        "decision_logits": self.kerc_decision_logits(
+                            tokens, source_memory, source_mask
+                        ),
+                    },
+                }
             conditioned_hidden, plan_context, plan_logits, plan_access = self.conditioned_embeddings(
                 tokens,
                 cached_plan_context,
-                source_mask if cached_source_memory is None else None,
+                (
+                    self.source_partition(tokens)[0]
+                    if compact_encoder_decoder_partitions
+                    and cached_source_memory is None
+                    and source_mask is not None
+                    else source_mask if cached_source_memory is None else None
+                ),
+                input_embeddings,
             )
+            decoder_tokens = tokens
+            decoder_position_start = 0
+            decoder_unpadded_width = 0
+            if (
+                compact_encoder_decoder_partitions
+                and source_memory is not None
+                and source_access is not None
+                and cache is None
+            ):
+                active_decoder = mx.any(source_access > 0, axis=0)
+                if not bool(mx.any(active_decoder)):
+                    raise ValueError(
+                        "compact encoder-decoder requires a nonempty target partition"
+                    )
+                decoder_position_start = int(
+                    mx.argmax(active_decoder.astype(mx.int32)).item()
+                )
+                decoder_position_stop = int(
+                    int(active_decoder.shape[0])
+                    - mx.argmax(active_decoder[::-1].astype(mx.int32)).item()
+                )
+                conditioned_hidden = conditioned_hidden[
+                    :, decoder_position_start:decoder_position_stop, :
+                ]
+                decoder_tokens = tokens[
+                    :, decoder_position_start:decoder_position_stop
+                ]
+                source_access = source_access[
+                    :, decoder_position_start:decoder_position_stop
+                ]
+                if (
+                    plan_access is not None
+                    and len(plan_access.shape) == 2
+                    and int(plan_access.shape[1]) == int(tokens.shape[1])
+                ):
+                    plan_access = plan_access[
+                        :, decoder_position_start:decoder_position_stop
+                    ]
+                if compact_partition_width_quantum:
+                    decoder_width = int(conditioned_hidden.shape[1])
+                    decoder_unpadded_width = decoder_width
+                    bucket_width = int(
+                        math.ceil(
+                            decoder_width / compact_partition_width_quantum
+                        )
+                        * compact_partition_width_quantum
+                    )
+                    padding = bucket_width - decoder_width
+                    if padding:
+                        conditioned_hidden = mx.pad(
+                            conditioned_hidden,
+                            ((0, 0), (0, padding), (0, 0)),
+                        )
+                        decoder_tokens = mx.pad(
+                            decoder_tokens, ((0, 0), (0, padding))
+                        )
+                        source_access = mx.pad(
+                            source_access, ((0, 0), (0, padding))
+                        )
+                        if plan_access is not None:
+                            plan_access = mx.pad(
+                                plan_access, ((0, 0), (0, padding))
+                            )
             if kerc_enabled:
                 if cached_kerc_context is None:
                     (
@@ -1676,22 +2930,81 @@ def build_model(
                 kerc_residual_logits = None
                 kerc_unit_logits = None
                 kerc_unit_confidence_logits = None
-            attention_mask = self.sequence_attention_mask(tokens, cache)
+            attention_mask = self.sequence_attention_mask(decoder_tokens, cache)
             if not state_enabled:
                 hidden = conditioned_hidden
                 next_cache: list[tuple[Any, ...]] = []
                 for index, layer in enumerate(self.layers):
                     layer_cache = layer_cache_input[index] if layer_cache_input is not None else None
-                    hidden, layer_next = layer(
-                        hidden,
-                        layer_cache,
-                        plan_memory=plan_context if plan_slot_attention_enabled else None,
-                        plan_access=plan_access,
-                        source_memory=source_memory,
-                        source_mask=source_mask,
-                        source_access=source_access,
-                        attention_mask=attention_mask,
-                    )
+                    if self.gradient_checkpointing and self.training:
+                        if layer_cache is not None or plan_slot_attention_enabled:
+                            raise ValueError(
+                                "gradient checkpointing requires cache-free non-plan training"
+                            )
+                        if source_memory is None:
+                            def checkpointed_decoder(
+                                parameters: Any,
+                                layer_hidden: Any,
+                                layer_module: Any = layer,
+                            ) -> Any:
+                                layer_module.update(parameters)
+                                layer_output, _unused_training_cache = layer_module(
+                                    layer_hidden,
+                                    kerc_stage_weights=kerc_stage_weights,
+                                    attention_mask=attention_mask,
+                                )
+                                # This branch is explicitly cache-free training.
+                                # Returning K/V makes each layer cache a checkpoint
+                                # output, retaining it across backward even though
+                                # the scalar objective discards the model cache.
+                                return layer_output
+
+                            hidden = mx.checkpoint(
+                                checkpointed_decoder
+                            )(layer.trainable_parameters(), hidden)
+                            layer_next = ()
+                        else:
+                            def checkpointed_source_decoder(
+                                parameters: Any,
+                                layer_hidden: Any,
+                                layer_source_memory: Any,
+                                layer_source_mask: Any,
+                                layer_source_access: Any,
+                                layer_module: Any = layer,
+                            ) -> Any:
+                                layer_module.update(parameters)
+                                layer_output, _unused_training_cache = layer_module(
+                                    layer_hidden,
+                                    source_memory=layer_source_memory,
+                                    source_mask=layer_source_mask,
+                                    source_access=layer_source_access,
+                                    kerc_stage_weights=kerc_stage_weights,
+                                    attention_mask=attention_mask,
+                                )
+                                return layer_output
+
+                            hidden = mx.checkpoint(
+                                checkpointed_source_decoder
+                            )(
+                                layer.trainable_parameters(),
+                                hidden,
+                                source_memory,
+                                source_mask,
+                                source_access,
+                            )
+                            layer_next = ()
+                    else:
+                        hidden, layer_next = layer(
+                            hidden,
+                            layer_cache,
+                            plan_memory=plan_context if plan_slot_attention_enabled else None,
+                            plan_access=plan_access,
+                            source_memory=source_memory,
+                            source_mask=source_mask,
+                            source_access=source_access,
+                            kerc_stage_weights=kerc_stage_weights,
+                            attention_mask=attention_mask,
+                        )
                     next_cache.append(layer_next)
                 if source_encoder_enabled and source_memory is not None:
                     next_cache.append((source_memory, source_mask, source_copy_ids))
@@ -1708,8 +3021,75 @@ def build_model(
                         )
                     )
                 final_hidden = self.final_norm(hidden)
+                if decoder_unpadded_width and output_position_mask is None:
+                    final_hidden = final_hidden[:, :decoder_unpadded_width, :]
+                output_position_start = 0
+                output_position_stop = int(final_hidden.shape[1])
+                projected_hidden = final_hidden
+                if output_position_mask is not None:
+                    if not compact_encoder_decoder_partitions or cache is not None:
+                        raise ValueError(
+                            "output compaction requires cache-free compact partitions"
+                        )
+                    active_output = output_position_mask > 0
+                    active_any = mx.any(active_output, axis=0)
+                    if bool(mx.any(active_any)):
+                        output_position_start = int(
+                            mx.argmax(active_any.astype(mx.int32)).item()
+                        )
+                        for row_index in range(int(tokens.shape[0])):
+                            row_active = active_output[row_index]
+                            if not bool(mx.any(row_active)):
+                                continue
+                            first = int(
+                                mx.argmax(row_active.astype(mx.int32)).item()
+                            )
+                            last = int(
+                                tokens.shape[1]
+                                - 1
+                                - mx.argmax(
+                                    row_active[::-1].astype(mx.int32)
+                                ).item()
+                            )
+                            if not bool(mx.all(row_active[first : last + 1])):
+                                raise ValueError(
+                                    "output compaction requires one contiguous supervised window per row"
+                                )
+                            output_position_stop = max(
+                                output_position_stop
+                                if row_index
+                                else 0,
+                                last + 1,
+                            )
+                    else:
+                        # Verifier/decision corruption rows can intentionally
+                        # carry no generator target.  Preserve one zero-masked
+                        # position so the scalar token objective remains shape
+                        # valid without projecting the full sequence vocabulary.
+                        output_position_start = int(tokens.shape[1]) - 1
+                        output_position_stop = output_position_start + 1
+                    if decoder_position_start:
+                        if output_position_start < decoder_position_start:
+                            raise ValueError(
+                                "supervised output begins inside the compacted source partition"
+                            )
+                        projected_hidden = final_hidden[
+                            :,
+                            output_position_start - decoder_position_start :
+                            output_position_stop - decoder_position_start,
+                            :,
+                        ]
+                    else:
+                        projected_hidden = final_hidden[
+                            :, output_position_start:output_position_stop, :
+                        ]
                 generator_logits = self.kerc_generator_logits(
-                    final_hidden, kerc_stage_weights
+                    (
+                        mx.stop_gradient(projected_hidden)
+                        if self.kerc_stage_output_isolation
+                        else projected_hidden
+                    ),
+                    kerc_stage_weights,
                 )
                 pointer_access = None
                 if kerc_enabled and kerc_stage_weights is not None:
@@ -1718,10 +3098,9 @@ def build_model(
                         1.0
                         - active
                         + kerc_stage_weights[:, 0]
-                        + kerc_stage_weights[:, 3]
                     )
                 logits, copy_aux = self.output_logits(
-                    final_hidden,
+                    projected_hidden,
                     source_memory,
                     source_mask,
                     source_copy_ids,
@@ -1730,6 +3109,9 @@ def build_model(
                 )
                 if return_training_aux:
                     return logits, next_cache, {
+                        "final_hidden": projected_hidden,
+                        "output_position_start": output_position_start,
+                        "output_position_stop": output_position_stop,
                         "plan_logits": plan_logits,
                         "copy_aux": copy_aux,
                         "mtp_logits": self.mtp_logits(final_hidden),
@@ -1777,6 +3159,10 @@ def build_model(
                 next_cache = []
                 for index, layer in enumerate(self.layers):
                     layer_cache = current_cache[index] if current_cache is not None else None
+                    if self.gradient_checkpointing and self.training:
+                        raise ValueError(
+                            "gradient checkpointing is not qualified for recurrent state memory"
+                        )
                     hidden, layer_next = layer(
                         hidden,
                         layer_cache,
@@ -1796,6 +3182,7 @@ def build_model(
                 final_cache.append((plan_context,))
             if return_training_aux:
                 return logits, final_cache, {
+                    "final_hidden": final_hidden,
                     "plan_logits": plan_logits,
                     "copy_aux": None,
                     "mtp_logits": self.mtp_logits(final_hidden),

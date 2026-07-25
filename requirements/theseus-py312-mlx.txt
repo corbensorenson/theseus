@@ -1,0 +1,4 @@
+-c locks/theseus-py312-mlx.lock
+-r theseus-py312-data.txt
+mlx==0.29.3
+mlx-lm==0.29.1

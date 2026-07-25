@@ -1,0 +1,66 @@
+{
+  "policy": "project_theseus_python_environment_v1",
+  "python": {
+    "major": 3,
+    "minor": 12,
+    "rule": "The canonical verification environment uses exactly Python 3.12.x. A Python minor-version change requires a fresh dependency and full-suite qualification."
+  },
+  "profiles": {
+    "cpu": {
+      "requirements": "requirements/theseus-py312-cpu.txt",
+      "lock": "requirements/locks/theseus-py312-cpu.lock",
+      "lock_sha256": "4e6b8535a677a289933c1121e47ff29f82d1b16c4dafc7c8e7c54df9f95dec79",
+      "packages": [
+        {"distribution": "numpy", "version": "1.26.4", "module": "numpy"},
+        {"distribution": "pytest", "version": "8.3.5", "module": "pytest"},
+        {"distribution": "pytest-asyncio", "version": "1.0.0", "module": "pytest_asyncio"},
+        {"distribution": "pyarrow", "version": "21.0.0", "module": "pyarrow"},
+        {"distribution": "Pillow", "version": "10.4.0", "module": "PIL"},
+        {"distribution": "cryptography", "version": "41.0.7", "module": "cryptography"},
+        {"distribution": "safetensors", "version": "0.5.3", "module": "safetensors"},
+        {"distribution": "psutil", "version": "6.1.1", "module": "psutil"},
+        {"distribution": "PyYAML", "version": "6.0.1", "module": "yaml"},
+        {"distribution": "zstandard", "version": "0.25.0", "module": "zstandard"},
+        {"distribution": "pandas", "version": "2.3.3", "module": "pandas"},
+        {"distribution": "scipy", "version": "1.13.1", "module": "scipy"},
+        {"distribution": "sympy", "version": "1.14.0", "module": "sympy"},
+        {"distribution": "z3-solver", "version": "4.16.0.0", "module": "z3"},
+        {"distribution": "mpmath", "version": "1.3.0", "module": "mpmath"},
+        {"distribution": "pypdf", "version": "6.10.0", "module": "pypdf"}
+      ]
+    },
+    "data": {
+      "requirements": "requirements/theseus-py312-data.txt",
+      "lock": "requirements/locks/theseus-py312-data.lock",
+      "lock_sha256": "df0a787e214aa43a8ed099fbf54aa9c81c4fb72e8af65e0a4d62e9ce23668f65",
+      "inherits": ["cpu"],
+      "packages": [
+        {"distribution": "datasets", "version": "4.5.0", "module": "datasets"},
+        {"distribution": "huggingface-hub", "version": "0.33.0", "module": "huggingface_hub"}
+      ]
+    },
+    "mlx": {
+      "requirements": "requirements/theseus-py312-mlx.txt",
+      "lock": "requirements/locks/theseus-py312-mlx.lock",
+      "lock_sha256": "7e0ed1b915fa94ac71017ac61a78ee3f17377ed5bccc50821487c0537d3844f6",
+      "inherits": ["data"],
+      "metadata_only_without_watchdog": true,
+      "packages": [
+        {"distribution": "mlx", "version": "0.29.3", "module": "mlx.core", "accelerator": true},
+        {"distribution": "mlx-lm", "version": "0.29.1", "module": "mlx_lm", "accelerator": true}
+      ]
+    }
+  },
+  "canonical_checks": {
+    "environment": "python scripts/python_environment_gate.py --profile cpu --gate",
+    "python": "python -m pytest -q -m 'not accelerator'",
+    "rust": "cargo test --workspace",
+    "mlx_environment": "python scripts/python_environment_gate.py --profile mlx --gate"
+  },
+  "boundaries": {
+    "ambient_mlx_import_forbidden": true,
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0
+  }
+}

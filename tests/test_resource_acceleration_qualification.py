@@ -12,15 +12,34 @@ if str(SCRIPTS) not in sys.path:
 from resource_acceleration_qualification import (  # noqa: E402
     aggregate_training_routes,
     compare_parameter_snapshots,
+    directory_artifact,
     distribution,
     process_resource_delta,
+    parse_swap_usage,
+    parse_vm_stat,
     report_summary,
     select_qualification_rows,
     semantic_receipt,
     tensor_mapping_manifest,
     tree_numeric_receipt,
+    system_memory_delta,
     validate_packet,
 )
+
+
+def test_directory_artifact_binds_paths_and_bytes(tmp_path: Path) -> None:
+    trace = tmp_path / "capture.gputrace"
+    (trace / "nested").mkdir(parents=True)
+    (trace / "a.bin").write_bytes(b"abc")
+    (trace / "nested/b.bin").write_bytes(b"defg")
+
+    first = directory_artifact(trace)
+    second = directory_artifact(trace)
+
+    assert first == second
+    assert first["bytes"] == 7
+    assert first["file_count"] == 2
+    assert first["format"] == "apple_metal_gputrace_directory"
 
 
 def test_selection_covers_arms_before_filling_remaining_slots() -> None:
@@ -110,6 +129,33 @@ def test_process_resource_delta_preserves_peak_and_differences_counters() -> Non
     assert observed["block_output_operations_delta"] == 10
     assert observed["voluntary_context_switches_delta"] == 12
     assert observed["involuntary_context_switches_delta"] == 12
+
+
+def test_system_memory_parsers_and_delta_separate_baseline_from_run_pressure() -> None:
+    swap = parse_swap_usage(
+        "vm.swapusage: total = 12288.00M used = 10977.44M free = 1310.56M"
+    )
+    counters = parse_vm_stat(
+        "Pageouts: 100.\nSwapins: 200.\nSwapouts: 300.\n"
+        "Compressions: 400.\nDecompressions: 500.\n"
+    )
+    observed = system_memory_delta(
+        {"state": "READY", **swap, **counters},
+        {
+            "state": "READY",
+            **swap,
+            "pageouts": 101,
+            "swapins": 200,
+            "swapouts": 300,
+            "compressions": 410,
+            "decompressions": 505,
+        },
+    )
+
+    assert swap["swap_used_bytes"] > 10 * 1024**3
+    assert observed["pageouts_delta"] == 1
+    assert observed["compressions_delta"] == 10
+    assert observed["no_host_swap_io_observed"] is True
 
 
 def test_tree_numeric_receipt_tracks_precision_and_nonfinite_state() -> None:
@@ -216,12 +262,23 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
         "training": {
             "warmup_excluded_positions_per_second": 10.0,
             "paired_canary": {},
-            "precision_autotune": {},
+            "precision_autotune": {"adopt": True},
+            "bf16_checkpoint_resume": {"state": "RED"},
         },
         "private_dev_learning": {},
         "inference": {
             "uncached_aggregate_speedup": 9.5,
             "minimum_uncached_decode_speedup": 2.0,
+            "case_count": 1,
+            "exact_parity_case_count": 1,
+            "cases": [
+                {
+                    "arm_id": "python",
+                    "generation_state": "GREEN",
+                    "generation_reason": None,
+                    "output_sha256": "1" * 64,
+                }
+            ],
         },
         "checkpoint_storage": {},
         "assistant_context_refresh": {},
@@ -239,6 +296,7 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
         "architecture_decision_control": {},
         "hard_gaps": [],
         "remaining_gaps": ["production_serving_capability_qualification_pending"],
+        "adoption": {"bf16": "NOT_ADOPTED"},
     }
 
     observed = report_summary(report)
@@ -250,6 +308,12 @@ def test_summary_exposes_resident_runtime_without_claiming_serving() -> None:
     assert observed["continuous_batch_exact_parity"] is True
     assert observed["uncached_decode_aggregate_speedup"] == 9.5
     assert observed["uncached_decode_acceptance_threshold"] == 2.0
+    assert observed["decode_successful_nonempty_case_count"] == 1
+    assert observed["decode_capability_grade_speed_evidence"] is True
+    assert observed["mixed_precision_short_speed_gate_passed"] is True
+    assert observed["mixed_precision_resume_state"] == "RED"
+    assert observed["mixed_precision_adopted"] is False
+    assert observed["assembly_line_measurement_complete"] is False
     assert observed["remaining_gaps"] == [
         "production_serving_capability_qualification_pending"
     ]

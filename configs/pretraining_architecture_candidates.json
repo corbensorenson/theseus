@@ -1,0 +1,152 @@
+{
+  "policy": "project_theseus_pretraining_architecture_candidates_v1",
+  "schema_version": "1.0.0",
+  "owner": "resource_acceleration_contract",
+  "scratch_root": "runtime/t0a_canaries",
+  "host_safety_policy": {
+    "required_for_accelerator_subprocesses": true,
+    "maximum_process_physical_memory_fraction": 0.375,
+    "hard_maximum_process_memory_mib": 6144,
+    "minimum_available_before_launch_mib": 6144,
+    "minimum_available_during_run_mib": 4096,
+    "maximum_swapout_growth_mib": 64,
+    "poll_interval_seconds": 0.25,
+    "terminate_grace_seconds": 2.0,
+    "claim_boundary": "A resource guard prevents host instability; it provides no architecture or capability credit."
+  },
+  "immutable_control_roots": [
+    "checkpoints/moecot_mlx_57m_active_preregistered_v1",
+    "runtime/standard_causal_transformer_scale_v2"
+  ],
+  "stable_slots": [
+    "surface_codec",
+    "relational_ir",
+    "causal_generator",
+    "draft_accelerator",
+    "optimizer",
+    "kv_runtime",
+    "semantic_verifier"
+  ],
+  "implementation_card_required_fields": [
+    "id",
+    "slot",
+    "state",
+    "source_paths",
+    "checkpoint_state",
+    "migration_policy",
+    "rollback_policy",
+    "authority_ceiling",
+    "claim_boundary"
+  ],
+  "implementation_cards": [
+    {"id":"impl.t0a.fixed_open_vocab_codec.v1","slot":"surface_codec","state":"control","source_paths":["scripts/moecot_language_tokenizer.py","scripts/neural_seed_open_vocab.py"],"checkpoint_state":"tokenizer identity is immutable","migration_policy":"new codec creates a successor lineage","rollback_policy":"restore exact control tokenizer identity","authority_ceiling":"private admitted rows only","claim_boundary":"control codec, not a dynamic representation claim"},
+    {"id":"impl.t0a.dynamic_byte_patch.v1","slot":"surface_codec","state":"implemented_three_seed_scoped_discovery_not_selected_first_campaign","source_paths":["scripts/dynamic_byte_patch_codec.py","scripts/dynamic_patch_matched_adequacy.py","scripts/standard_causal_transformer_model.py"],"checkpoint_state":"candidate requires byte encoder, boundary, patch, within-patch position, causal-core, and decoder state","migration_policy":"no in-place migration of the step-3000 control","rollback_policy":"contain candidate namespace and retain control","authority_ceiling":"visible-prefix private rows only","claim_boundary":"2.75 percent loss-per-raw-byte regression at this bounded no-functional-verifier rung is a first-campaign disposition, not broad falsification","evidence":["reports/dynamic_patch_matched_adequacy.json"]},
+    {"id":"impl.t0a.semantic_ir_control.v1","slot":"relational_ir","state":"control","source_paths":["scripts/semantic_ir.py"],"checkpoint_state":"typed plan records are external to control weights","migration_policy":"versioned record migration only","rollback_policy":"restore prior semantic IR records","authority_ceiling":"prompt-visible context only","claim_boundary":"assisted IR is not learned generation"},
+    {"id":"impl.t0a.rdc_relational_ir.v1","slot":"relational_ir","state":"resource_deferred_on_this_16gib_host_registered_discovery","source_paths":["scripts/relational_dimension_compiler.py","scripts/rdc_relation_learning.py","scripts/semantic_ir.py","scripts/kernel_english_protocol.py","scripts/kerc_structured_drafting.py","scripts/moecot_language_arm_training.py","scripts/rdc_kerc_resource_disposition.py"],"checkpoint_state":"relation schema, lifecycle, lowering, contraction, and learned state are versioned separately","migration_policy":"reversible entity/relation/incidence migration receipt required","rollback_policy":"expand contracted state and restore retained slow path","authority_ceiling":"no execution authority from semantic resolution","claim_boundary":"the exact long-row route exceeds the current host safety envelope; this is resource deferral, not scientific falsification or a capability claim","evidence":["reports/rdc_kerc_canonical_integration_canary.json","reports/rdc_kerc_resource_disposition.json"]},
+    {"id":"impl.t0a.autoregressive_generator.v1","slot":"causal_generator","state":"control","source_paths":["scripts/standard_causal_transformer_model.py","scripts/moecot_language_arm_training.py"],"checkpoint_state":"canonical target model state","migration_policy":"exact checkpoint schema migration only","rollback_policy":"restore content-bound control checkpoint","authority_ceiling":"private admitted training and local serving only","claim_boundary":"direct model output only; no assisted credit"},
+    {"id":"impl.t0a.adequate_mtp.v1","slot":"causal_generator","state":"implemented_three_seed_scoped_discovery_not_selected_first_campaign","source_paths":["scripts/standard_causal_transformer_model.py","scripts/standard_causal_transformer_objectives.py","scripts/mtp_matched_adequacy.py"],"checkpoint_state":"independent future heads, curriculum, and register state are content-bound","migration_policy":"optional head groups cannot rewrite base weights","rollback_policy":"drop candidate heads and restore base-only decode","authority_ceiling":"causal future labels from admitted rows only","claim_boundary":"auxiliary loss and proposed tokens are not utility; re-entry requires verifier-bearing evidence","evidence":["reports/mtp_matched_adequacy.json"]},
+    {"id":"impl.t0a.no_draft.v1","slot":"draft_accelerator","state":"control","source_paths":["scripts/standard_causal_transformer_model.py"],"checkpoint_state":"none beyond target model","migration_policy":"not applicable","rollback_policy":"canonical target decode","authority_ceiling":"target model authority","claim_boundary":"baseline only"},
+    {"id":"impl.t0a.target_authoritative_drafting.v1","slot":"draft_accelerator","state":"implemented_posthoc_selection_waits_for_useful_base_checkpoint","source_paths":["scripts/target_authoritative_drafting.py","scripts/generation_architecture_contracts.py"],"checkpoint_state":"Medusa, EAGLE, and separate-draft state bind exact target revision","migration_policy":"draft state is replaceable and never mutates target state","rollback_policy":"discard rejected branch and resume target decode","authority_ceiling":"only target-accepted prefixes commit","claim_boundary":"proposals are not accepted output or capability; zero base-training optimizer exposure"},
+    {"id":"impl.t0a.adamw_mlx.v1","slot":"optimizer","state":"selected_first_campaign_policy_card_and_target_width_transfer_green","source_paths":["scripts/pretraining_optimizers.py","scripts/moecot_language_arm_training.py","scripts/optimizer_matched_adequacy.py"],"checkpoint_state":"full AdamW moments, step, learning-rate identity, and global pre-update gradient-clipping contract","migration_policy":"exact optimizer-state and policy-card schema only","rollback_policy":"restore matched initialization or exact checkpoint","authority_ceiling":"leased candidate namespace only","claim_boundary":"selected by the bounded private engineering rung and three-seed 512-width loss-progress transfer; this is not optimizer superiority, full-depth capability, or long-campaign evidence","evidence":["reports/optimizer_matched_adequacy.json"]},
+    {"id":"impl.t0a.adafactor_mlx.v1","slot":"optimizer","state":"implemented_not_selected_first_campaign_weak_arm_ceiling_miss","source_paths":["scripts/pretraining_optimizers.py","scripts/optimizer_matched_adequacy.py"],"checkpoint_state":"global step and learning rate, row/column second-moment factors for matrices, and unfactored second moments for vectors/scalars","migration_policy":"exact factor shapes, dtypes, parameter paths, and policy-card digest are mandatory; AdamW moments are not reinterpreted","rollback_policy":"restore matched initialization or exact Adafactor checkpoint","authority_ceiling":"leased candidate namespace only","claim_boundary":"Adafactor used 1.15 percent of AdamW optimizer-state bytes and improved mean heldout loss 2.34 percent at this rung, but missed the frozen weak-arm ceiling through a 6.69 percent English regression on seed 20260722; this is a first-campaign engineering disposition, not universal falsification","evidence":["reports/optimizer_matched_adequacy.json"]},
+    {"id":"impl.t0a.muon_mlx.v1","slot":"optimizer","state":"implemented_not_selected_first_campaign_reentry_requires_larger_functional_rung","source_paths":["scripts/pretraining_optimizers.py","scripts/moecot_language_arm_training.py","scripts/optimizer_matched_adequacy.py"],"checkpoint_state":"Muon matrix state plus AdamW nonmatrix state","migration_policy":"parameter-class map and orthogonalization state are content-bound","rollback_policy":"restore matched initialization; no optimizer-state reinterpretation","authority_ceiling":"eligible matrices in leased candidate only","claim_boundary":"10.85 percent heldout loss regression at this clipped matched rung is an engineering disposition, not universal falsification","evidence":["reports/optimizer_matched_adequacy.json"]},
+    {"id":"impl.t0a.schedule_free_adamw_mlx.v1","slot":"optimizer","state":"implemented_not_selected_first_campaign_reentry_requires_larger_functional_rung","source_paths":["scripts/pretraining_optimizers.py","scripts/moecot_language_arm_training.py","scripts/optimizer_matched_adequacy.py"],"checkpoint_state":"online and averaged iterates plus complete optimizer state","migration_policy":"evaluation iterate identity is mandatory","rollback_policy":"restore matched initialization and exact iterate","authority_ceiling":"leased candidate namespace only","claim_boundary":"57.83 percent heldout loss regression and state-cost miss at this clipped matched rung are an engineering disposition, not universal falsification","evidence":["reports/optimizer_matched_adequacy.json"]},
+    {"id":"impl.t0a.soap_full_shape_mlx.v1","slot":"optimizer","state":"formally_scope_removed_first_campaign_uneconomic_m1_mlx","source_paths":["scripts/soap_full_shape_resource_preflight.py","scripts/pretraining_optimizers.py"],"checkpoint_state":"full Adam moments plus per-axis Kronecker covariances and eigenbases would be required if a successor re-enters","migration_policy":"no reinterpretation of AdamW state as SOAP state","rollback_policy":"retain selected AdamW state and allocate no SOAP factors","authority_ceiling":"resource accounting only; no first-campaign optimizer lease","claim_boundary":"full-shape SOAP quality is not evaluated or falsified; measured native-kernel and amortized-timing failures support only its explicit first-campaign engineering scope removal","evidence":["reports/soap_full_shape_resource_preflight.json"]},
+    {"id":"impl.t0a.canonical_kv.v1","slot":"kv_runtime","state":"control","source_paths":["scripts/standard_causal_transformer_model.py"],"checkpoint_state":"runtime cache is disposable and model-bound","migration_policy":"cache schema binds model, codec, position, and branch","rollback_policy":"discard cache and replay visible prefix","authority_ceiling":"visible accepted prefix only","claim_boundary":"cache reuse is runtime evidence only"},
+    {"id":"impl.t0a.target_authoritative_tree_kv.v1","slot":"kv_runtime","state":"implemented_exact_mlx_rollback_posthoc_selection_deferred","source_paths":["scripts/target_authoritative_drafting.py","scripts/generation_architecture_contracts.py"],"checkpoint_state":"branch-local draft and target cache metadata","migration_policy":"no cache translation without exact prefix replay","rollback_policy":"discard rejected branch; commit accepted prefix only","authority_ceiling":"target acceptance controls mutation","claim_boundary":"draft cache speed is not useful-output speed; base training does not wait for draft adoption"},
+    {"id":"impl.t0a.independent_semantic_verifier.v1","slot":"semantic_verifier","state":"control_extend","source_paths":["scripts/code_lm_private_verifier.py","scripts/kerc_semantic_corpus_verify.py"],"checkpoint_state":"verifier policy and receipts are independent of generator","migration_policy":"policy changes invalidate dependent qualification","rollback_policy":"restore prior verifier and invalidate affected claims","authority_ceiling":"verification cannot reveal hidden targets to generation","claim_boundary":"verification and repair are separate from learned generation"}
+  ],
+  "compatibility_rules": [
+    {"id":"codec_generator_checkpoint","slots":["surface_codec","causal_generator"],"rule":"codec identity, vocabulary or byte protocol, position semantics, and generator checkpoint must match"},
+    {"id":"ir_verifier","slots":["relational_ir","semantic_verifier"],"rule":"relation schema, lifecycle state, contraction certificate, and verifier policy must match"},
+    {"id":"draft_kv_target","slots":["causal_generator","draft_accelerator","kv_runtime"],"rule":"draft and cache state bind the exact target revision and only accepted prefixes commit"},
+    {"id":"optimizer_generator","slots":["causal_generator","optimizer"],"rule":"parameter classes, dtype, clipping, update scale, and checkpoint state are complete and exact"}
+  ],
+  "canary_required_fields": [
+    "candidate_id",
+    "implementation_ids",
+    "allowed_targets",
+    "allowed_phases",
+    "max_steps",
+    "max_positions",
+    "max_wall_seconds",
+    "max_peak_memory_mib",
+    "max_disk_mib",
+    "seeds",
+    "heldout_contract",
+    "required_checks"
+  ],
+  "execution_policy_overrides": {
+    "rdc_kerc_adequacy": {
+      "objective_gradient_decomposition": true,
+      "token_loss_position_chunk_size": 64,
+      "attention_query_chunk_size": 32,
+      "attention_key_chunk_size": 32
+    },
+    "rdc_kerc_k5_adequacy": {
+      "objective_gradient_decomposition": true,
+      "token_loss_position_chunk_size": 32,
+      "maximum_training_sequence_tokens": 628,
+      "maximum_supervised_training_sequence_tokens_by_target": {
+        "english_kerc": 628
+      },
+      "compact_partition_width_quantum": 0,
+      "fresh_process_step_segment": 1,
+      "candidate_scratch_resume_policy": "exact_fresh_process_segment_v1",
+      "attention_query_chunk_size": 32,
+      "attention_key_chunk_size": 32,
+      "optimizer_state_offload_between_steps": true,
+      "optimizer_state_offload_minimum_target_positions": 600,
+      "kerc_resource_stress_prefix": false,
+      "continuation_source_report": "reports/rdc_kerc_k5_compiler_schema_continuation_loss_population_step32_merged_fp32_seed_20260722.json",
+      "continuation_source_report_sha256": "7926d5e15437a0a01033cb1e7abc5562e5fc3d4f4447c9386fef613317a4bc1e",
+      "continuation_source_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+      "continuation_source_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+      "continuation_source_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+      "continuation_source_mlx_rng_state_sha256": "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9",
+      "continuation_source_optimizer_steps": 4630,
+      "continuation_source_optimizer_positions": 447027,
+      "large_sequence_route": "compiler_full_stage_path_qualified_semantic_pointer_fidelity_loss4_schema_continuation_loss1_position32_q32_k32_coverage128_lr10x_v18"
+    },
+    "rdc_kerc_k5_overfit": {
+      "objective_gradient_decomposition": true,
+      "token_loss_position_chunk_size": 32,
+      "kerc_stage_minimum_coverage_rows": 8,
+      "kerc_stage_coverage_multiplier": 16
+    }
+  },
+  "host_safety_policy_overrides": {
+    "rdc_kerc_k5_adequacy": {
+      "maximum_swapout_growth_mib": 320
+    }
+  },
+  "measured_preflight_overrides": {
+    "rdc_kerc_k5_adequacy": {
+      "path": "reports/rdc_kerc_adequacy_q32_position_chunk64_resource32_width1005_seed_20260722.host_resource_safety.json",
+      "sha256": "4f2d4d98d9640ac316b55b22ba4a2c78c25abf97732f6ba2a3983790b96bcdd7",
+      "qualified_maximum_training_sequence_tokens": 1005,
+      "qualified_maximum_token_loss_position_chunk_size": 64,
+      "qualified_maximum_attention_query_chunk_size": 32,
+      "qualified_maximum_attention_key_chunk_size": 32,
+      "command_marker": "rdc_kerc_adequacy"
+    }
+  },
+  "canaries": [
+    {"candidate_id":"immutable_control_review","implementation_ids":["impl.t0a.autoregressive_generator.v1","impl.t0a.adamw_mlx.v1"],"allowed_targets":["shared_trunk","english","python","javascript_typescript","html_css","rust","dense_active_parameter","dense_total_parameter"],"allowed_phases":["all","pretraining"],"max_steps":8,"max_positions":131072,"max_wall_seconds":1800,"max_peak_memory_mib":12288,"max_disk_mib":2048,"seeds":[20260712],"heldout_contract":"private_development_only_no_confirmation_surface","required_checks":["gradient_flow","checkpoint_reload","control_immutability","resource_bounds"]},
+    {"candidate_id":"mtp_adequacy","implementation_ids":["impl.t0a.adequate_mtp.v1"],"allowed_targets":["shared_trunk","dense_active_parameter"],"allowed_phases":["pretraining"],"max_steps":96,"max_positions":1572864,"max_wall_seconds":14400,"max_peak_memory_mib":14336,"max_disk_mib":4096,"seeds":[20260722,20260723,20260724],"heldout_contract":"t0a_private_mtp_family_disjoint_v1","required_checks":["gradient_flow","representative_overfit","future_alignment","head_ablation","checkpoint_reload","resource_bounds"]},
+    {"candidate_id":"drafting_adequacy","implementation_ids":["impl.t0a.target_authoritative_drafting.v1","impl.t0a.target_authoritative_tree_kv.v1"],"allowed_targets":["shared_trunk"],"allowed_phases":["pretraining"],"max_steps":96,"max_positions":1572864,"max_wall_seconds":14400,"max_peak_memory_mib":14336,"max_disk_mib":4096,"seeds":[20260722,20260723,20260724],"heldout_contract":"t0a_private_drafting_family_disjoint_v1","required_checks":["gradient_flow","target_identity","rejection_rollback","checkpoint_reload","resource_bounds"]},
+    {"candidate_id":"dynamic_patch_adequacy","implementation_ids":["impl.t0a.dynamic_byte_patch.v1"],"allowed_targets":["shared_trunk","dense_active_parameter"],"allowed_phases":["pretraining"],"max_steps":128,"max_positions":2097152,"max_wall_seconds":21600,"max_peak_memory_mib":14336,"max_disk_mib":6144,"seeds":[20260722,20260723,20260724],"heldout_contract":"t0a_private_codec_family_disjoint_v1","required_checks":["byte_roundtrip","boundary_intervention","gradient_flow","representative_overfit","checkpoint_reload","resource_bounds"]},
+    {"candidate_id":"rdc_kerc_adequacy","implementation_ids":["impl.t0a.rdc_relational_ir.v1","impl.t0a.independent_semantic_verifier.v1"],"allowed_targets":["english_kerc","english_surface_control"],"allowed_phases":["kernel_english"],"max_steps":128,"max_positions":2097152,"max_wall_seconds":21600,"max_peak_memory_mib":14336,"max_peak_memory_basis":"physical_memory_minus_live_reserve","max_disk_mib":6144,"seeds":[20260722,20260723,20260724],"heldout_contract":"t0a_private_rdc_kerc_source_disjoint_v1","behavior_eval_rows":16,"host_safety_overrides":{"minimum_available_before_launch_mib":2048,"minimum_available_during_run_mib":2048,"maximum_swapout_growth_mib":16,"poll_interval_seconds":0.1},"execution_policy":{"batch_size":1,"maximum_training_sequence_tokens":2552,"maximum_supervised_training_sequence_tokens_by_target":{"english_kerc":1005,"english_surface_control":1005},"mlx_cache_limit_mib":512,"clear_mlx_cache_before_step":true,"clear_mlx_cache_after_backward":true,"clear_mlx_cache_after_step":true,"gradient_checkpointing":true,"objective_gradient_checkpointing":true,"transactional_eager_step":true,"optimizer_state_offload_between_steps":false,"optimizer_id":"adamw_bfloat16_moments_mlx","attention_query_chunk_size":128,"attention_key_chunk_size":128,"compact_encoder_decoder_partitions":true,"compute_dtype":"bfloat16","fp32_master":true,"require_external_watchdog":true,"large_sequence_route":"population_median_resource_entry_qualified_maximum_length_stress_open"},"required_checks":["relation_roundtrip","role_intervention","proposal_recall","contraction_reversal","gradient_flow","checkpoint_reload","source_disjoint_behavior","resource_bounds"]},
+    {"candidate_id":"rdc_kerc_k5_adequacy","implementation_ids":["impl.t0a.rdc_relational_ir.v1","impl.t0a.independent_semantic_verifier.v1"],"allowed_targets":["english_kerc"],"allowed_phases":["kernel_english"],"max_steps":6144,"max_positions":2097152,"max_wall_seconds":43200,"max_peak_memory_mib":14336,"max_peak_memory_basis":"physical_memory_minus_live_reserve","max_disk_mib":6144,"seeds":[20260722,20260723,20260724],"heldout_contract":"t0a_private_rdc_kerc_source_disjoint_v1","behavior_eval_rows":16,"host_safety_overrides":{"minimum_available_before_launch_mib":2048,"minimum_available_during_run_mib":2048,"maximum_swapout_growth_mib":16,"poll_interval_seconds":0.1},"measured_launch_preflight":{"path":"reports/rdc_kerc_k5_adequacy_broad_source_delta_objective_balanced_stratified_resource256_4096_rows_640_q32_k32_seed_20260722.host_resource_safety.json","sha256":"eecb23e6b499cf32483ae7cc97ed7016540c8598981bc5fa34364e09a57237ae","qualified_maximum_training_sequence_tokens":640},"execution_policy":{"batch_size":1,"kernel_optimizer_repetitions":4,"kerc_bounded_source_row_limit":128,"kerc_stage_minimum_coverage_rows":8,"kerc_stage_coverage_multiplier":16,"kerc_stage_learnability_intervention":true,"kerc_objective_balanced_sampling":false,"kerc_uniform_within_objective_sampling":false,"kerc_weighted_sampling_minimum_stratum_coverage":false,"kerc_stage_objective_filter":["surface_to_kernel_program_v1"],"kerc_stage_required_coverage_labels":["objective:surface_to_kernel_program_v1","decision:ANSWER","decision:CLARIFY","interaction:present","interaction:absent","residual:interaction:active","residual:segment:active","residual:token:active","residual:exact:active"],"kerc_stage_excluded_coverage_labels":{"decision:ABSTAIN":"K7_LONG_SEQUENCE_STRESS_MINIMUM_OBSERVED_TOKENS_2289"},"continuation_source_report":"reports/rdc_kerc_k5_adequacy_width628_two_exposure_terminal6144_dual_resource_stress_q32_k32_position_chunk64_seed_20260722.json","continuation_source_report_sha256":"60fa60ba5fc0d11076c1964690a8902114715f737e16f6735cda101a9833deb2","continuation_source_plan_sha256":"5df9c62f31f6f2ab2d34d2fa7af70e10ad31089369a35377b193996a68b27810","continuation_source_checkpoint_sha256":"5ce6ef85ae14cbab721e65f686f42457c55a6dc1ffa4fb2fb3cda19158bd5bbf","continuation_source_optimizer_state_sha256":"f1bc15871dcf9d7dfcbbaceb7eb564957525d6c235543763ae51eaaa35432e32","continuation_source_mlx_rng_state_sha256":"f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9","continuation_source_optimizer_steps":4566,"continuation_source_optimizer_positions":423227,"continuation_reset_data_cursor_phase":"kernel_english","continuation_reset_data_cursor_seed":20260722,"continuation_reset_phase_position_accounting":"kernel_english","continuation_learning_rate":0.0003,"continuation_min_learning_rate":0.0003,"continuation_warmup_steps":0,"continuation_optimizer_state_projection_policy":"project_theseus_exact_kerc_stage_optimizer_projection_v1","freeze_warm_trunk_train_kerc_delta":true,"kerc_delta_include_source_conditioned_bridge":false,"kerc_delta_stage_only":1,"kerc_stage_train_stage_embedding":true,"kerc_stage_detach_frozen_trunk":false,"initialization_policy":"registered_shared_trunk_progress_checkpoint_common_subspace_v1","maximum_training_sequence_tokens":640,"maximum_supervised_training_sequence_tokens_by_target":{"english_kerc":640},"mlx_cache_limit_mib":512,"clear_mlx_cache_before_step":true,"clear_mlx_cache_after_backward":true,"clear_mlx_cache_after_step":true,"gradient_checkpointing":true,"objective_gradient_checkpointing":true,"transactional_eager_step":true,"optimizer_state_offload_between_steps":false,"optimizer_id":"adamw_bfloat16_moments_mlx","attention_query_chunk_size":32,"attention_key_chunk_size":32,"compact_encoder_decoder_partitions":true,"compute_dtype":"bfloat16","fp32_master":false,"selective_fp32_trainables":true,"parameter_initialization_dtype":"bfloat16","exact_checkpoint_placeholder_initialization":true,"require_external_watchdog":true,"large_sequence_route":"compiler_full_stage_embedding_through_frozen_trunk_exact_optimizer_projection_selective_fp32_trainables_bfloat16_frozen_zero_placeholder_streaming_layer_objective_recompute_position32_q32_k32_coverage128_lr10x_v15"},"required_checks":["gradient_flow","representative_overfit","compiler_core_renderer_generation","checkpoint_reload","source_disjoint_behavior","resource_bounds"]},
+    {"candidate_id":"rdc_kerc_k5_overfit","implementation_ids":["impl.t0a.rdc_relational_ir.v1","impl.t0a.independent_semantic_verifier.v1"],"allowed_targets":["english_kerc"],"allowed_phases":["kernel_english"],"max_steps":1024,"max_positions":2097152,"max_wall_seconds":7200,"max_peak_memory_mib":14336,"max_peak_memory_basis":"physical_memory_minus_live_reserve","max_disk_mib":6144,"seeds":[20260722],"heldout_contract":"training_only_k5_learnability_sanity_no_capability_credit","behavior_eval_rows":1,"host_safety_overrides":{"minimum_available_before_launch_mib":2048,"minimum_available_during_run_mib":2048,"maximum_swapout_growth_mib":16,"poll_interval_seconds":0.1},"execution_policy":{"batch_size":1,"kernel_optimizer_repetitions":256,"kerc_bounded_source_row_limit":128,"kerc_overfit_rows_per_objective":1,"kerc_overfit_generator_rows_only":true,"kerc_stage_learnability_intervention":true,"kerc_stage_objective_filter":["surface_to_kernel_program_v1"],"kerc_stage_required_coverage_labels":["objective:surface_to_kernel_program_v1","decision:ANSWER","decision:CLARIFY","interaction:present","interaction:absent","residual:interaction:active","residual:segment:active","residual:token:active","residual:exact:active"],"kerc_stage_excluded_coverage_labels":{"decision:ABSTAIN":"K7_LONG_SEQUENCE_STRESS_MINIMUM_OBSERVED_TOKENS_2289"},"continuation_source_report":"reports/rdc_kerc_k5_adequacy_width628_two_exposure_terminal6144_dual_resource_stress_q32_k32_position_chunk64_seed_20260722.json","continuation_source_report_sha256":"60fa60ba5fc0d11076c1964690a8902114715f737e16f6735cda101a9833deb2","continuation_source_plan_sha256":"5df9c62f31f6f2ab2d34d2fa7af70e10ad31089369a35377b193996a68b27810","continuation_source_checkpoint_sha256":"5ce6ef85ae14cbab721e65f686f42457c55a6dc1ffa4fb2fb3cda19158bd5bbf","continuation_source_optimizer_state_sha256":"f1bc15871dcf9d7dfcbbaceb7eb564957525d6c235543763ae51eaaa35432e32","continuation_source_mlx_rng_state_sha256":"f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9","continuation_source_optimizer_steps":4566,"continuation_source_optimizer_positions":423227,"continuation_reset_data_cursor_phase":"kernel_english","continuation_reset_data_cursor_seed":20260722,"continuation_reset_phase_position_accounting":"kernel_english","continuation_learning_rate":0.0003,"continuation_min_learning_rate":0.0003,"continuation_warmup_steps":0,"continuation_optimizer_state_projection_policy":"project_theseus_exact_kerc_stage_optimizer_projection_v1","freeze_warm_trunk_train_kerc_delta":true,"kerc_delta_include_source_conditioned_bridge":false,"kerc_delta_stage_only":1,"kerc_stage_train_stage_embedding":true,"kerc_stage_detach_frozen_trunk":false,"initialization_policy":"registered_shared_trunk_progress_checkpoint_common_subspace_v1","maximum_training_sequence_tokens":640,"maximum_supervised_training_sequence_tokens_by_target":{"english_kerc":640},"mlx_cache_limit_mib":512,"clear_mlx_cache_before_step":true,"clear_mlx_cache_after_backward":true,"clear_mlx_cache_after_step":true,"gradient_checkpointing":true,"objective_gradient_checkpointing":true,"transactional_eager_step":true,"optimizer_state_offload_between_steps":false,"optimizer_id":"adamw_bfloat16_moments_mlx","attention_query_chunk_size":32,"attention_key_chunk_size":32,"compact_encoder_decoder_partitions":true,"compute_dtype":"bfloat16","fp32_master":false,"selective_fp32_trainables":true,"parameter_initialization_dtype":"bfloat16","exact_checkpoint_placeholder_initialization":true,"require_external_watchdog":true,"large_sequence_route":"training_only_single_compiler_row_full_stage_cache_elided_exact_optimizer_projection_lr10x_position32_q32_k32_v2"},"required_checks":["gradient_flow","exact_training_row_overfit","compiler_generation","checkpoint_reload","resource_bounds"]},
+    {"candidate_id":"optimizer_adequacy","implementation_ids":["impl.t0a.adamw_mlx.v1","impl.t0a.adafactor_mlx.v1","impl.t0a.muon_mlx.v1","impl.t0a.schedule_free_adamw_mlx.v1"],"allowed_targets":["shared_trunk","dense_active_parameter"],"allowed_phases":["pretraining"],"max_steps":192,"max_positions":3145728,"max_wall_seconds":21600,"max_peak_memory_mib":14336,"max_disk_mib":6144,"seeds":[20260722,20260723,20260724],"heldout_contract":"t0a_private_optimizer_progress_v1","required_checks":["gradient_flow","loss_progress","matched_initialization","checkpoint_reload","iterate_identity","policy_card_identity","target_width_transfer","resource_bounds"]}
+  ],
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit": 0,
+    "confirmation_surface_consumption": 0,
+    "production_checkpoint_mutation": false,
+    "resume_from_candidate_scratch": false
+  }
+}

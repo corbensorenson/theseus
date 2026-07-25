@@ -1,0 +1,29 @@
+{
+  "policy": "project_theseus_soap_full_shape_resource_preflight_v1",
+  "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+  "training_receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
+  "report": "reports/soap_full_shape_resource_preflight.json",
+  "host_peak_memory_mib": 14336,
+  "maximum_optimizer_memory_fraction": 0.65,
+  "precondition_frequency_steps": 10,
+  "maximum_step_time_overhead_fraction": 0.10,
+  "cpu_eigh_benchmark_dimensions": [128, 256, 512, 1024],
+  "timing_repetitions": 3,
+  "optimistic_throughput_multiplier": 4.0,
+  "dtype_bytes": 4,
+  "state_contract": {
+    "parameter_copies": 1,
+    "gradient_copies": 1,
+    "adam_moment_copies": 2,
+    "kronecker_covariance_copies": 1,
+    "eigenbasis_copies": 1,
+    "largest_factor_workspace_copies": 3
+  },
+  "campaign_scope_decision": {
+    "ineligible_disposition": "FORMALLY_SCOPE_REMOVED_FULL_SHAPE_SOAP_UNECONOMIC_M1_MLX",
+    "ineligible_membership": "REMOVED_FROM_FIRST_CAMPAIGN_FINITE_DOCKET",
+    "decision_authority": "measured full-shape memory, native-kernel availability, and optimistic amortized update timing gates",
+    "reentry_requires": "a native Metal/MLX eigensolver or a prospectively distinct low-rank or blocked implementation followed by full resource accounting and matched quality evidence"
+  },
+  "claim_boundary": "host/runtime resource disposition only; not a scientific optimizer-quality result"
+}

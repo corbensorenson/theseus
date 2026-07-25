@@ -1,0 +1,68 @@
+{
+  "policy": "project_theseus_dynamic_patch_matched_adequacy_v1",
+  "candidate_lease_id": "dynamic_patch_adequacy",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "stage_metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+  "scratch_root": "runtime/t0a_canaries/dynamic_patch_adequacy/matched_v1",
+  "report": "reports/dynamic_patch_matched_adequacy.json",
+  "seeds": [20260722, 20260723, 20260724],
+  "scoped_arms": ["english", "python", "javascript_typescript", "html_css", "rust"],
+  "supervision": {
+    "root": "data/training_data/moecot_language_supervision_v1",
+    "train_split": "private_train",
+    "heldout_split": "private_dev",
+    "train_rows_per_arm": 10,
+    "heldout_rows_per_arm": 4,
+    "maximum_raw_bytes": 512,
+    "maximum_open_vocab_tokens": 256,
+    "selection_namespace": "t0a_private_codec_family_disjoint_v1"
+  },
+  "model": {
+    "open_vocab_d_model": 6,
+    "patch_d_model": 40,
+    "patch_hidden_dim": 16,
+    "num_layers": 1,
+    "open_vocab_heads": 1,
+    "patch_heads": 4,
+    "maximum_patch_bytes": 16,
+    "fixed_patch_bytes": 8,
+    "entropy_boundary_threshold": 0.58,
+    "learned_boundary_threshold": 0.5
+  },
+  "training": {
+    "steps": 50,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01,
+    "boundary_loss_scale": 0.15,
+    "maximum_compute_matched_batch_size": 8,
+    "evaluation_interval_steps": 10
+  },
+  "candidates": [
+    {"id": "fixed_open_vocab_ar", "representation": "canonical_open_vocab", "boundary_source": "not_applicable"},
+    {"id": "raw_byte_ar", "representation": "byte_patch", "boundary_source": "every_byte"},
+    {"id": "fixed_byte_patch_ar", "representation": "byte_patch", "boundary_source": "fixed_width"},
+    {"id": "entropy_byte_patch_ar", "representation": "byte_patch", "boundary_source": "prefix_entropy"},
+    {"id": "whitespace_byte_patch_control", "representation": "byte_patch", "boundary_source": "visible_whitespace_and_code_punctuation"},
+    {"id": "learned_dynamic_byte_patch_ar", "representation": "byte_patch", "boundary_source": "learned_prefix_entropy_prediction"}
+  ],
+  "prospective_decision": {
+    "dynamic_candidate": "learned_dynamic_byte_patch_ar",
+    "minimum_relative_loss_per_raw_byte_improvement": 0.01,
+    "maximum_weak_arm_relative_loss_regression": 0.02,
+    "minimum_seed_win_fraction": 0.6666666666666666,
+    "maximum_mean_work_ratio": 1.05,
+    "maximum_parameter_count_ratio": 1.05,
+    "functional_verifier_required_for_adoption": true
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0,
+    "confirmation_surface_consumption": 0,
+    "production_checkpoint_mutation": false,
+    "heldout_labels_visible_to_optimizer": false,
+    "selection_from_compression_or_loss_alone": false
+  }
+}

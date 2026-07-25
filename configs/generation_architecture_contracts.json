@@ -1,6 +1,6 @@
 {
   "policy": "project_theseus_generation_architecture_contracts_v1",
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "owner": "generation_mode_registry",
   "first_campaign_base": "autoregressive",
   "maximum_architecture_canary_steps": 8,
@@ -21,19 +21,96 @@
   ],
   "modes": {
     "autoregressive": {"class": "canonical_base", "first_campaign_disposition": "included", "topology_effect": "base_causal_lm_head", "objective_effect": "next_token_cross_entropy", "checkpoint_effect": "required", "cache_policy": "causal_kv_cache", "adoption_state": "baseline_not_speed_claim"},
-    "mtp": {"class": "training_time_auxiliary", "first_campaign_disposition": "included_disabled_weight_zero_until_preregistered_schedule", "topology_effect": "shared_rank1_hidden_projection_with_three_offset_specific_vocabulary_projections", "objective_effect": "future_offsets_2_3_4_cross_entropy", "checkpoint_effect": "required_optional_head_group", "cache_policy": "heads_train_only_base_ar_cache_at_decode", "head_count": 3, "low_rank": 1, "loss_weights": [0.3, 0.2, 0.1], "adoption_state": "architecture_included_behavior_and_speed_unqualified"},
-    "medusa": {"class": "training_time_auxiliary", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "multiple_decode_heads", "objective_effect": "future_token_head_losses", "checkpoint_effect": "checkpoint_shaping", "cache_policy": "tree_attention_and_acceptance_cache_required", "reentry_condition": "MTP baseline produces verifier-positive outputs and a prospectively frozen accepted-output-per-second campaign justifies separate tree heads"},
-    "eagle": {"class": "draft_model_auxiliary", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "hidden_state_draft_predictor", "objective_effect": "draft_feature_and_token_prediction", "checkpoint_effect": "separate_checkpoint_and_base_revision_binding", "cache_policy": "draft_and_target_cache_coherence_required", "reentry_condition": "stable useful base checkpoint plus a matched post-training draft-cost campaign"},
-    "speculative": {"class": "post_hoc_checkpoint_compatible", "first_campaign_disposition": "disabled_post_training_candidate", "topology_effect": "none_to_target_model", "objective_effect": "none_to_target_model", "checkpoint_effect": "separate_draft_manifest_only", "cache_policy": "target_cache_commits_accepted_prefix_only", "reentry_condition": "draft revision is bound and accepted output per second improves without verifier or memory regression"},
+    "mtp": {"class": "training_time_auxiliary", "first_campaign_disposition": "compatibility_fixture_not_selectable", "topology_effect": "versioned_optional_future_token_head_group", "objective_effect": "causally_shifted_future_token_cross_entropy_with_explicit_curriculum", "checkpoint_effect": "required_optional_head_group_with_candidate_identity", "cache_policy": "training_heads_do_not_mutate_base_ar_decode_cache", "head_count": 3, "low_rank": 1, "loss_weights": [0.3, 0.2, 0.1], "adoption_state": "adequate_candidates_implemented_mechanics_qualification_required"},
+    "medusa": {"class": "post_hoc_frozen_backbone_draft_candidate", "first_campaign_disposition": "t0a_candidate_mechanics_implemented_selection_required", "topology_effect": "independent_residual_future_token_heads_outside_target_authority", "objective_effect": "future_token_head_losses_with_frozen_target", "checkpoint_effect": "separate_draft_checkpoint_bound_to_exact_target", "cache_policy": "branch_local_tree_cache_target_accepted_prefix_only"},
+    "eagle": {"class": "post_hoc_frozen_backbone_draft_candidate", "first_campaign_disposition": "t0a_candidate_mechanics_implemented_selection_required", "topology_effect": "hidden_state_and_token_conditioned_feature_predictor_outside_target_authority", "objective_effect": "next_feature_regression_plus_token_prediction_with_frozen_target", "checkpoint_effect": "separate_draft_checkpoint_bound_to_exact_target", "cache_policy": "branch_local_draft_cache_target_accepted_prefix_only"},
+    "speculative": {"class": "post_hoc_checkpoint_compatible_control", "first_campaign_disposition": "t0a_control_loader_and_selection_required", "topology_effect": "none_to_target_model", "objective_effect": "none_to_target_model", "checkpoint_effect": "separate_draft_manifest_bound_to_exact_target", "cache_policy": "target_accepted_prefix_only"},
     "layerskip": {"class": "training_time_early_exit", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "early_exit_logits_and_layer_dropout_schedule", "objective_effect": "intermediate_exit_supervision", "checkpoint_effect": "checkpoint_shaping", "cache_policy": "exit_layer_specific_cache_contract_required", "reentry_condition": "base model clears utility floor and layer-exit quality can be measured on accepted outputs"},
     "sketch_first_llada": {"class": "alternative_generation_architecture", "first_campaign_disposition": "retired_from_first_campaign", "topology_effect": "bidirectional_masked_denoiser_or_sketch_infill_model", "objective_effect": "corruption_schedule_and_iterative_denoising", "checkpoint_effect": "incompatible_alternative_checkpoint", "cache_policy": "iterative_full_sequence_state_not_ar_kv_cache", "reentry_condition": "AR base clears utility floor and a prospectively frozen matched-total-cost Semantic-IR-localized repair campaign can fund the alternative"}
   },
   "mtp_shape_contract": {"batch": 2, "sequence": 8, "hidden": 16, "vocabulary": 32, "low_rank": 1, "future_offsets": [2, 3, 4], "maximum_parameter_overhead_ratio": 0.25, "maximum_training_flop_overhead_ratio": 0.35, "maximum_checkpoint_overhead_ratio": 0.25},
+  "mtp_candidates": {
+    "legacy_shared_rank1": {
+      "selection_state": "compatibility_fixture_not_selectable",
+      "head_mode": "shared_low_rank",
+      "future_offsets": [2, 3, 4],
+      "loss_weights": [0.3, 0.2, 0.1],
+      "low_rank": 1,
+      "hidden_dim": 0,
+      "register_count": 0,
+      "maximum_parameter_overhead_ratio": 0.25,
+      "curriculum": {"warmup_steps": 0, "ramp_steps": 1, "maximum_loss_scale": 0.0}
+    },
+    "conventional_independent": {
+      "selection_state": "candidate_mechanics_qualification_required",
+      "head_mode": "independent_mlp",
+      "future_offsets": [2, 3, 4],
+      "loss_weights": [0.5, 0.3, 0.2],
+      "low_rank": 0,
+      "hidden_dim": 16,
+      "register_count": 0,
+      "maximum_parameter_overhead_ratio": 5.0,
+      "curriculum": {"warmup_steps": 4, "ramp_steps": 12, "maximum_loss_scale": 0.5}
+    },
+    "register_conditioned": {
+      "selection_state": "candidate_mechanics_qualification_required",
+      "head_mode": "register_conditioned",
+      "future_offsets": [2, 3, 4],
+      "loss_weights": [0.5, 0.3, 0.2],
+      "low_rank": 0,
+      "hidden_dim": 16,
+      "register_count": 3,
+      "maximum_parameter_overhead_ratio": 4.0,
+      "curriculum": {"warmup_steps": 4, "ramp_steps": 12, "maximum_loss_scale": 0.5}
+    }
+  },
+  "draft_abi": {
+    "schema_version": "1.0.0",
+    "canonical_owner": "scripts/target_authoritative_drafting.py",
+    "required_target_bindings": ["target_model_revision", "target_parameter_digest", "codec_digest"],
+    "cache_schema_version": "target_tree_kv_v1",
+    "cache_commit_policy": "target_accepted_prefix_only",
+    "maximum_draft_depth": 32,
+    "rejection_policy": "discard_unaccepted_suffix_and_branch_cache_then_commit_canonical_target_token",
+    "full_acceptance_policy": "commit_verified_prefix_then_request_one_additional_canonical_target_token",
+    "hidden_target_inputs_to_drafter": false
+  },
+  "draft_candidates": {
+    "medusa_tree": {
+      "selection_state": "mechanics_implemented_matched_selection_required",
+      "training_mode": "post_hoc_frozen_target",
+      "proposal_kind": "independent_residual_future_token_heads",
+      "target_authority": "exact_greedy_target_verification",
+      "checkpoint_owner": "separate_target_bound_draft_checkpoint"
+    },
+    "eagle_feature": {
+      "selection_state": "mechanics_implemented_matched_selection_required",
+      "training_mode": "post_hoc_frozen_target",
+      "proposal_kind": "target_hidden_plus_visible_token_embedding_feature_prediction",
+      "target_authority": "exact_greedy_target_verification",
+      "checkpoint_owner": "separate_target_bound_draft_checkpoint"
+    },
+    "separate_draft": {
+      "selection_state": "control_loader_implemented_matched_selection_required",
+      "training_mode": "independent_smaller_causal_model",
+      "proposal_kind": "ordinary_autoregressive_tokens",
+      "target_authority": "exact_greedy_target_verification",
+      "checkpoint_owner": "separate_target_bound_draft_checkpoint"
+    },
+    "kerc_structured_unit": {
+      "selection_state": "mechanics_implemented_canonical_path_and_matched_selection_required",
+      "training_mode": "post_hoc_frozen_target_hidden_state",
+      "proposal_kind": "complete_typed_relational_units_with_role_pointer_fidelity_and_closure_fields",
+      "target_authority": "incremental_grammar_then_independent_semantic_verifier_then_exact_target_acceptance",
+      "checkpoint_owner": "separate_target_bound_structured_draft_checkpoint"
+    }
+  },
   "activation": {"required_evidence_kind": "behavior_positive_generation_mode_receipt", "minimum_verified_pass_count": 1, "selection_metric": "useful_verified_solution_per_second"},
   "claim_boundaries": [
     "Proposed-token throughput, auxiliary loss, candidate count, or cache reuse is not useful speed or capability.",
     "Only verifier-accepted output per second under matched quality, compute, memory, and repair accounting can support a speed claim.",
-    "Retired modes are excluded from the first checkpoint and optimizer state; their names do not imply implementation or capability.",
+    "Draft candidates are post-hoc frozen-target modules and remain outside target optimizer state; mechanics do not imply useful acceleration or capability.",
     "No generation mode may receive learned-generation credit for templates, fallbacks, tools, deterministic renderers, hidden targets, or public benchmark artifacts."
+    ,"The legacy shared rank-one MTP route is a checkpoint compatibility fixture and cannot be selected or treated as an adequate negative control."
   ]
 }

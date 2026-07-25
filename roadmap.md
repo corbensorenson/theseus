@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last consolidated: 2026-07-20 UTC.
+Last consolidated: 2026-07-25 UTC.
 
 This is the forward-only human execution map. The complete machine-readable obligation
 set is `configs/roadmap_implementation_matrix.json`; implementation identity and route
@@ -37,31 +37,68 @@ The current falsifiable question is:
 6. A negative result applies only to the exact implementation, data, scale, objective,
    optimizer, budget, evaluator, and regime tested. Missing adequacy is
    `INCONCLUSIVE_IMPLEMENTATION` or `INCONCLUSIVE_EXPERIMENT`, never broad falsification.
-7. New architecture is frozen unless a concrete correctness, security, information-flow,
-   checkpoint, migration, replay, or measured hot-loop failure proves the current contract
-   cannot express the needed behavior.
+7. Long-run architecture is frozen only after the finite pre-training candidate docket below
+   closes. Bounded implementation and adequacy runs may alter topology, representation,
+   objectives, optimizer, or generation mode only in isolated successor lineages; they may
+   never mutate the durable step-3,000 control or consume confirmation/public surfaces.
 8. One canonical owner per abstraction. Improve or replace it transactionally; do not
    create adjacent versions, sidecars, loose lanes, or nearby green reports.
+9. External systems may supply design ideas, not implementation evidence. The token/data
+   acceleration program independently reimplements selected concepts; it does not import
+   Gigatoken source, packages, dependencies, tokenizer artifacts, caches, measurements, or
+   performance claims. Any future third-party dependency requires a separate registry,
+   license, supply-chain, parity, and replacement decision.
+10. No critical-path subsystem may close as `deferred`, `wired`, or mechanics-only. A
+    resource failure creates an optimization or redesign obligation with a bounded safe
+    reproducer; it does not remove the subsystem from evaluation. A candidate may leave the
+    practical stack only through an adequate matched verdict or explicit scope retirement,
+    never because the first implementation was slow or did not fit one host.
+11. "Works" means source-disjoint functional behavior, negative and adversarial controls,
+    exact checkpoint/restart/migration/rollback, canonical-path integration, and independently
+    observed effects. "Optimized" means a measured reference baseline, a profiled bottleneck,
+    a semantics-equivalent challenger, sustained p50/p95 and weak-tail results, bounded memory
+    and energy where observable, and total-system cost. A green schema or microbenchmark is
+    neither definition.
 
 ## Binding Execution Board
 
 | Gate | State | Exit condition |
 |---|---|---|
-| `T0` Finite architecture closure | complete | The 70-artifact freeze package passes 10 independent replays. KERC K0-K3 are banked; K4-K8 are explicitly deferred with zero first-campaign exposure. OneCell and optional generation modes are likewise content-bound and excluded. |
-| `T1` Frozen neural-seed campaign | review producer executable; matched run open | The exact 57.340M-active campaign has a durable production step-3,000 checkpoint at 22,999,779 optimizer positions. The separate frozen review producer now owns an isolated 100M-position matched rung, dependency-aware training, direct model-only generation, independent code verification, blind local English scoring, and controller-compatible receipts. One-step plus exact-resume smokes passed without changing the production checkpoint. Compiled training preserves bounded full-parameter parity and cuts peak MLX memory about 58%; stable repeated qualification was 1.88x pooled while a noisier combined run was 1.48x, so the 2x sustained gate remains open. Execute the full matched review; do not promote the 20x contractual opportunity as empirical speed or capability before receipts exist. |
+| `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
+| `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
+| `T0A` Pre-training architecture upgrade closure | open; KERC K4-K8, evaluator hardening, and remaining guarded replay remain | The practical control stack is provisionally fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. Optimizer Policy Cards, the bounded Adafactor comparator, selected-recipe 512-width transfer, explicit full-shape SOAP scope removal, and the resource-safe KERC representative objective are complete. Closure still requires the remaining guarded accelerator replay, dynamic-representation canonical integration, KERC K4-K8 behavior and matched utility, frozen evaluator prompt-injection/taint defenses, a clean reproducible test environment, and a replacement content-addressed package. `RESOURCE_DEFERRED_ON_THIS_HOST` cannot close KERC. |
+| `T1` Selected neural-seed campaign | waits for `T0A` | Preserve the exact 57.340M-active step-3,000 package as an immutable control. After `T0A`, freeze the selected representation, model, optimizer, objective, generation-head, data, checkpoint, and evaluation identities; then train the selected practical lane and matched controls. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
-| `T5` Matched causal flagship | waits for `T4` | Full governance, test-only, record-only, and appropriate ablations run on one frozen natural denominator with matched budgets, independent evaluation, uncertainty, weak tails, and a fair rescue ladder. |
+| `T5` Matched causal flagship | waits for `T4` | Run separate non-overlapping frozen denominators: Q1/D1 compares full governance, test-only, record-only, direct, and conservative-hold routes using the same already-competent worker; Q2/D2 measures the frozen local student and assisted product without transferring support or tuning between denominators. Both require matched budgets, independent evaluation, uncertainty, weak tails, false blocks/releases, and total lifecycle cost. |
 | `T6` Book handoff and challenge | waits for `T5` | A public-safe pack binds commits, artifacts, estimand, effects, costs, residuals, non-claims, and maximum inference; broadened claims face separate reproduction and transfer. |
 
 `T3` may gather assisted-product evidence before `T2`, but assistance cannot become model
 credit. A perfect governance trace around a behavior-zero proposer is not useful governed
 intelligence.
 
+Every gate uses one shared qualification standard:
+
+| Dimension | Required evidence |
+|---|---|
+| Correctness | Positive, negative, adversarial, mutation, corruption, and stale-state tests on the canonical path. |
+| Learning | Gradient flow, overfit, intervention, ablation, multi-seed source-disjoint behavior, uncertainty, and weak tails for learned components. |
+| State | Exact save/load/resume, migration, rollback, invalidation, custody, and crash recovery. |
+| Performance | Reference and optimized sustained cold/warm profiles with p50/p95, throughput, peak memory, swap, I/O, cache, verification, and lifecycle cost. |
+| Integration | One registry-owned implementation, joined identities, no sidecar authority, and end-to-end success plus blocked/rollback traces. |
+| Reproduction | Pinned dependencies, fresh-environment CPU checks, guarded accelerator shards, Rust workspace checks, and content-bound commands and outputs. |
+| Use | Direct functional outcomes and real operator outcomes separated from fixtures, canaries, tools, routers, and fallbacks. |
+
+A subsystem can be safely disabled while its repair is in progress, but disabled is not
+complete. The only externally blocked exception is evidence that literally requires an
+unavailable peer or device; its local simulator, policy, failure, and replay surfaces must
+still pass, and it cannot support a completion claim until the real receipt exists.
+
 ## Current Operating Decision
 
-The first practical architecture is frozen:
+The previous practical architecture remains frozen as an immutable comparator, not as the
+next long-run launch target:
 
 - MoECOT: a shared encoder-decoder transformer trunk plus independently owned low-rank
   English, Python, JS/TS, HTML/CSS, and Rust arms; 57,340,426 active parameters and
@@ -93,24 +130,170 @@ The first practical architecture is frozen:
   improved. Direct beam decoding is about 8.8x faster with 8/8 exact output-and-receipt parity,
   but seven of eight qualification outputs still fail closed on serialization.
 
-At the measured canary rate, the remaining shared-trunk raw-position budget is about four
-days of ideal continuous compute rather than more than eight; the complete 4.05B-position
-campaign is still about 14.5 ideal compute-days on this M1. Preserve the resumable
-step-3,000 lineage while qualifying faster numerics and evidence-efficient stopping.
-Never mutate weights in flight or tune from the frozen confirmation heldout.
+At the measured canary rate, the remaining old shared-trunk raw-position budget is about
+four days of ideal continuous compute and the complete old 4.05B-position campaign is about
+14.5 ideal compute-days on this M1. Preserve the resumable step-3,000 lineage, but do not
+continue it while already-planned checkpoint-shaping upgrades remain unresolved. `T0A`
+allows isolated, source-disjoint, prospectively bounded architecture learning curves because
+MTP, learned chunking, optimizers, and KERC cannot be assessed from shape tests alone. These
+runs receive no production checkpoint, capability, or public-calibration authority.
+
+### 2026-07-25 Deep Technical And ASI Stack Review Reconciliation
+
+Two external reviews were checked against the live source, the committed 84-chapter ASI
+Stack manifest at book commit `df0b675230c73e1a749f7d48f3263d126023f692`, and the
+current evidence graph. Their useful conclusion is activation discipline, not deletion:
+the book may describe the full architecture, while Theseus must separately record the
+architecture reference, implementation profile, active runtime instance, and earned
+evidence. A book contract can propose obligations but cannot silently change runtime
+authority; a Theseus report can return public-safe evidence but cannot move a book support
+state.
+
+The following findings have teeth and are accepted as roadmap obligations:
+
+1. **Local authority surfaces are not safe for routine exposure.** Before routine dashboard,
+   OpenAI-shim, Hive, or LAN use, require authentication on every mutation, exact Origin
+   validation and CSRF protection for browser control, strict JSON content type and bounded
+   bodies, rate/concurrency/SSE/job-record limits, random job IDs, sanitized errors, and a
+   less-privileged execution boundary. Teacher and network authority default to false at the
+   execution point and require request-local confirmation; omission can never inherit an
+   enabled policy default. Record `attempted`, `request_transmitted`, `response_received`,
+   `response_parsed`, and `response_admitted` separately. The OpenAI-compatible service
+   defaults to a token and CORS off or an exact local allowlist. Hive defaults to loopback,
+   signed discovery, header-only credentials, opt-in legacy-owner access, separated
+   coordinator/worker credentials, and sandboxed workers. These fixes may proceed beside
+   KERC because they repair existing exposed surfaces; they create no new product lane.
+   Teacher prompts/responses are minimized, encrypted at rest where retained, and governed
+   by retention limits. Untrusted-code evaluation receives memory, CPU, process, file,
+   output, and wall-time bounds inside a disposable unprivileged environment with no ordinary
+   host filesystem or socket access; regex scans are never the security boundary.
+2. **Safety-critical tool qualification must enforce a system floor.** The effective grade
+   is `max(caller_minimum_grade, system_required_grade_for_risk_class)`. Synthesized,
+   replayed, independently verified, and certified states remain distinct, and permissions,
+   side effects, preconditions, postconditions, and monitors become enforced predicates.
+3. **The frozen English evaluator is vulnerable to candidate-to-judge prompt injection.**
+   Before its identity is frozen for `T1`, treat candidate output as inert data, repeat the
+   rubric after it, detect judge-directed instructions, add adversarial injection/copy-rubric/
+   self-score/empty/malformed controls, report case-and-dimension agreement, and human-audit
+   a prospective sample. Candidate confidence and self-ratings receive no judge input.
+4. **Static blind-flow analysis is lint, not noninterference proof.** Rename its result
+   `STATIC_FLOW_LINT_PASS`; add runtime taint/capability wrappers that fail on forbidden-field
+   access through aliases, indexing, helpers, attributes, derived labels, cached artifacts,
+   or ranking. Independently recompute candidate integrity. This is a `T0A`/`T1` evaluator
+   boundary, not a post-hoc wording repair.
+5. **One-dimensional `GREEN` is too ambiguous.** Reports must expose separate semantic
+   well-formedness, epistemic support, execution authority, training completion, parseability,
+   direct utility, promotion eligibility, and production authorization. The existing
+   training report cannot use one passing task to imply utility. Mechanism, evidence, route,
+   and proof depth remain separate axes; legacy colors may only summarize a specifically
+   named gate.
+6. **The matched campaign needs full resource comparability.** In addition to optimizer
+   positions, freeze and report unique model-visible tokens, active parameter-token products,
+   estimated forward/training FLOPs, wall time, peak memory, swap, checkpoint bytes, decode
+   latency, verification/human cost, energy where observable, direct utility, and weakest-arm
+   utility. Equality on one denominator cannot stand in for equality on all of them.
+7. **Benchmark construct validity needs repair without inventing new benchmark families.**
+   Reclassify the current SymLiquid headline as a structured-feature/readout benchmark; after
+   `T2`, run parser-only, matched structured-feature, logistic-readout, random-projection,
+   answer-feature ablation, paraphrase, compositional-holdout, human-authored, adversarial,
+   and feature-attribution controls. Treat the current VCM-Bench as a governance conformance
+   suite; qualify real transcript-window, packet, lexical, vector, untyped-VCM, and full-VCM
+   implementations on the same natural event streams inside existing `T3`/`T5` work.
+8. **Natural transfer must complement the frozen synthetic surface.** Preserve the existing
+   exact-once 160-case contract. Do not create another private-ecology family. Use prospectively
+   admitted natural dogfood and the existing `T3`/`T5` denominator for real repository repairs,
+   ambiguity/clarification, abstention, irrelevant/adversarial context, multi-file effects, and
+   cross-language integration.
+9. **The Rust discovery substrate has real correctness debt.** Make Tensor/module construction
+   checked and overflow-safe; decide and test single-sample versus true per-row semantics;
+   validate liquid/reservoir/VSA/FEP/readout parameters; label the current EFE layer as an
+   approximate scorer; report CGS as a cost vector/Pareto comparison rather than a universal
+   scalar. CUDA must distinguish compiled/driver/device/initialization states, forbid silent
+   fallback in strict-device evidence, version in-place weights for resident-cache invalidation,
+   and mark unmeasured training metrics as unmeasured rather than zero. These discovery repairs
+   cannot delay the MLX neural seed unless the affected path becomes campaign-critical.
+10. **Evidence authority must continue moving away from mutable paths.** Reuse the existing
+    VIEA/SQLite artifact kernel as the append-only content-addressed owner; reports and
+    `latest` aliases are non-authoritative projections with generator/input identities,
+    freshness, supersession, revocation, and atomic-write rules. Do not create a second event
+    database or another report family. Converge machine authority on the registry (what
+    immutable artifacts exist), campaign manifest (what exact experiment is authorized), and
+    promotion decision (what candidate/evidence/route currently has authority); other JSON
+    is an input or derived view.
+11. **Maintainability and configuration debt are real.** Split the training monolith at tested
+    seams into corpus, training, checkpoint, generation, evaluation, and evidence owners; do
+    not perform a risky big-bang rewrite during the frozen campaign. Campaign-critical JSON
+    receives schemas, unknown-field rejection, referential integrity, typed generation,
+    semantic diffs, and migrations. Existing CLI/dashboard/Hive actions converge on one typed
+    action registry after the authority-boundary security repair.
+12. **Public reproducibility needs an honest capsule and CI.** Add Linux public CI for format,
+    lint, Rust/Python tests, registry/roadmap/release gates, secrets, vulnerabilities, and
+    licenses; retain guarded macOS/MLX/Metal and real CUDA lanes where hardware exists. Publish
+    a small licensed end-to-end evidence-protocol capsule with exact environment, commands,
+    tiny checkpoints/optimizer state, candidate packet, verifier output, digests, runtimes,
+    and tolerances. Private curricula, heldouts, user data, and decisive local checkpoints
+    remain private.
+13. **License metadata must be coherent.** Reconcile Cargo dual-license metadata with the
+    repository license texts. Present paid value as official builds, support, services,
+    enterprise policy/evidence packs, signed checkpoints, and trademarks rather than as
+    technical control over permissively licensed forks.
+
+The ASI Stack comparison adds six useful consolidations, all routed through existing owners:
+
+- Pin the committed book contract and reconcile all 84 chapters inside the existing roadmap
+  matrix. The current 54-row crosswalk is stale by 30 chapters. Every chapter receives one
+  primary disposition—shared kernel obligation, flagship instrument, research plug-in,
+  extension contract, or book consumer—plus maturity, activation gate, owner, evidence,
+  and non-claims. This does **not** create 84 services, scripts, or report families.
+- Encode noninheritance through the existing governed-transition/VIEA spine: capability,
+  context, plan, receipt, theorem, replacement, and improvement proposals inherit neither
+  authority nor evidence. Separate effect intent, authorization, attempt, observation,
+  acknowledgement, evaluation, compensation, residualization, and terminal disposition.
+- Implement the twelve shared transition invariants—authority non-escalation, evidence
+  non-promotion, context non-authority, plan/effect separation, receipt/observation
+  separation, residual conservation, revocation propagation, replacement noninheritance,
+  rollback closure, bounded liveness, cross-layer identity preservation, and no
+  self-ratification—by extending existing records and validators, not by creating a parallel
+  architecture.
+- Publish a minimal trusted-kernel/distrust map for identity, time, authority, policy,
+  context enforcement, artifact custody, observation, evaluator admission, sandboxing,
+  rollback, and release. Models, teachers, planners, routers, retrievers, schedulers,
+  dashboards, and optimizers remain untrusted proposal sources.
+- Give every mandatory blocked item an owner, executable trigger, expiry/review sequence,
+  retry ceiling, escalation, and terminal fallback. An indefinite `YELLOW`, repeated report
+  refresh, or ownerless `deferred` item fails bounded liveness.
+- After `T2`, join the existing curriculum, interaction, observed error, abstraction,
+  intervention, VCM consolidation, proceduralization, composition, stabilization, and SCF
+  promotion artifacts into one developmental episode. Lower loss, a report, or a teacher row
+  cannot imply learning; teacher and human contributions remain attributed. Durable semantic
+  identity stays inside the existing Semantic-IR/VCM field and separates object,
+  representation, prediction, observation, claim, support, commitment, and permission.
+
+Three recommendations are explicitly rejected or narrowed. Starting the long campaign before
+`T0A` would knowingly change the frozen intervention after training begins. Building 84
+chapter-specific subsystems would violate one-owner and breadth-freeze rules. Publishing
+private checkpoints or heldouts is not required for credibility; the reproducibility capsule
+must prove the evidence protocol without disclosing governed private state.
 
 ## Decision Rule
 
-1. Train the shared trunk, five arms, and both dense controls under the frozen contract.
-2. Evaluate direct arm behavior, routing behavior, and composed behavior separately.
-3. Select the dense/hybrid survival lane if it wins matched practical utility or if all
+1. Complete `T0A` through faithful implementation, canonical integration, matched bounded
+   canaries, independent adequacy review, and one replacement architecture freeze.
+2. Select the surface codec, relational path, generator, draft mode, optimizer, and runtime
+   together by direct utility per training/inference cost; preserve rejected candidates and
+   the old 57M package as replayable controls.
+3. Train the selected shared trunk, five arms, and matched dense controls under the new
+   immutable architecture/data/evaluation contract.
+4. Evaluate direct arm behavior, routing behavior, and composed behavior separately.
+5. Select the dense/hybrid survival lane if it wins matched practical utility or if all
    modular advantages disappear once route success is separated from answer success.
-4. Retain MoECOT only for a repeatable Pareto advantage without a weak-arm regression.
-5. Preserve SymLiquid as a nonblocking discovery comparator. It cannot delay the useful
+6. Retain MoECOT only for a repeatable Pareto advantage without a weak-arm regression.
+7. Preserve SymLiquid as a nonblocking discovery comparator. It cannot delay the useful
    assistant unless repeated matched-compute evidence earns that role.
-6. Preserve KERC as an inconclusive successor candidate until K4-K8 are faithful and
-   prospectively frozen. Its K0-K3 evidence is neither end-to-end success nor failure.
-7. If every 57M alternative remains functionally zero, falsify only this scale/data/
+8. Give KERC a faithful RDC-enhanced implementation and matched dynamic-patch/surface
+   controls before a verdict. K0-K3 evidence is neither end-to-end success nor failure.
+9. If every selected 57M alternative remains functionally zero, falsify only that exact
+   scale/data/
    training regime and advance once to a preregistered data-supported larger rung.
 
 ## Capability Tracks
@@ -122,9 +305,19 @@ tokenizer efficiency, task-complete units, optimizer exposure, continual update,
 deletion causality. Licensed product-aligned data is primary. Teacher rows are capped
 residual pressure, not the bootstrap corpus. Repeated positions never count as unique.
 
+The corpus-to-tensor path is one stable capability with independently replaceable readers,
+tokenizers, typed codecs, packers, and sinks. The current frozen lineage keeps its exact
+token IDs and row order; an accelerated backend must be byte-, token-, span-, mask-, and
+receipt-identical. A future BPE or vocabulary change is a new content-bound lineage, not a
+transparent speed patch, and must compare compression, per-language fertility, byte-fallback
+pressure, roundtrip, functional utility, memory, and end-to-end speed on licensed English,
+Python, JS/TS, HTML/CSS, and Rust data before adoption.
+
 Acceptance after training: every checkpoint traces to admitted rows and exact optimizer
 exposure; data deletion can identify descendants and prove model/storage consequences
-without claiming parametric unlearning from storage erasure alone.
+without claiming parametric unlearning from storage erasure alone. Before further long
+corpus work, the independently implemented fast path must prove exact reference parity,
+restartability, and bounded memory on representative mixed-language and KERC distributions.
 
 ### Track 1: Neural Seed
 
@@ -156,9 +349,12 @@ authority expansion, evaluator leakage, reward hacking, or unacceptable weak-tai
 
 ### Track 4: Fast Generation
 
-AR remains canonical. MTP is checkpointed but starts with zero loss scale. Speculative,
-self-draft, Medusa/EAGLE, LayerSkip, state-space, KV-cache, and sketch/diffusion routes
-remain disabled, retired, or post-hoc until independently qualified.
+Optimized AR remains the reference. `T0A` must replace the rank-one MTP compatibility
+fixture with adequate conventional, curriculum, and register-conditioned candidates and
+must implement frozen-backbone Medusa-style, EAGLE-style, and conventional speculative
+drafting behind one target-authoritative ABI. LayerSkip, state-space, and sketch/diffusion
+remain separately dispositioned unless admitted into this finite docket by a concrete defect.
+KV-cache, batching, and draft acceptance are runtime implementations, never generation credit.
 
 Acceptance: useful verified output per second improves under matched quality, memory,
 latency, and lifecycle cost. Proposed-token throughput alone never qualifies a route.
@@ -175,17 +371,38 @@ latency, failure behavior, and rollback. Fixture traces provide mechanics only.
 
 ### Phase 0: Repository Self-Model And Registry Discipline
 
-State: `wired`. The abstraction/implementation registry, SCF bindings, project steward,
-cleanup queue, AIBOM, ownership, and replacement contracts are canonical.
+State: `partial`; reproducibility is qualified. Exact Python 3.12 CPU, data, and MLX profiles
+now bind complete 25-, 52-, and 62-package dependency closures. The source-bound Phase 0 gate
+passes the full non-accelerator Python suite and Rust workspace from a fresh CPU environment,
+with accelerator imports excluded outside watchdog authority. The phase remains partial because
+the ongoing T0A/KERC edits intentionally invalidate the provisional replacement transaction's
+content bindings, and the superseded strict-generator/code-LM family still needs formal
+evidence-preserving retirement. A green test receipt cannot bless stale replacement bindings.
 
-Next: inventory and remove unrelated live dependency edges to the superseded
+Next: preserve the qualified environment and rerun its source-bound gate after implementation
+changes. Complete the mandatory KERC/T0A work, publish and replay the replacement package, then
+rebind the replacement transaction to that frozen content rather than to an intermediate edit.
+Also inventory and remove unrelated live dependency edges to the superseded
 strict-generator/code-LM-closure family, archive its bulky generated state through
 content-addressed pointers, and preserve independently useful verifier/guard code under
 its owning abstraction. Retire the predecessor executable route only after the registered
 57M successor passes the same functional contract and regression floor, or after an
 explicit evidence-preserving demotion; checkpoint durability alone is not behavioral
-replacement. Prove each change with import, CLI, registry, and evidence replay receipts.
-Keep this roadmap below 1,100 lines; keep complete detail in the matrix, registry, state,
+replacement. Prove each change with import, CLI, registry, and evidence replay receipts. Any
+Python dependency change must update the direct requirements, resolved profile lock, contract
+digest, clean install, and full Phase 0 qualification receipt together.
+The 2026-07-23 report-hygiene audit is now a binding regression gate. It initially found
+1,946,857,145 governed-hot report bytes and 6,375 governed-hot files, both over policy.
+Reference-aware retention converted 1,584 historical payloads across the cleanup sequence to
+hash-bound archive pointers without deleting evidence. The cumulative replay independently
+decoded and verified 3,698/3,698 retained generations. The final budget gate is GREEN at
+354,534,094 governed-hot bytes and 4,802 governed-hot files, below the 1 GiB/6,000 hard caps
+and the 80% file target. Raw `reports/` file count is not the acceptance metric because
+3,689 small pointer files intentionally preserve historical paths. Dry runs may never mutate
+or downgrade the cumulative manifest; execution must recover verified pointer custody, protect
+renewable canonical views, satisfy byte and file targets independently, and finish with both
+the replay and budget gates GREEN. Binary and list-shaped reports are explicitly non-pointers.
+Keep this roadmap compact; keep complete detail in the matrix, registry, state,
 and Git history.
 
 ### Phase 1: VIEA Execution Spine
@@ -249,21 +466,34 @@ outcome reconstruction, verifier replay, and heldout causal lift before training
 
 ### Phase 8: Resource, Cost, And Mac Acceleration
 
-State: `active`. Native GQA, semantics-qualified compiled microbatch training, prompt-only batched beam
-decoding, exact checkpoint-format comparison, and content-bound assistant refresh reuse
-are qualified. The stable repeated compiled/eager pair is 1.88x pooled; the latest long
-combined run was 1.48x pooled with large route-order drift, so the 2x training
-target remains open even though compiled execution is stable and uses about 58% less peak
-MLX memory. The 500-update route sustained 2,914.2 positions/second; uncached decode improved
-about 8.8x with 8/8 exact parity; unchanged governed assistant refresh remains over 100x under exact
-content identity. Scheduler records
-CPU/GPU/MLX/CUDA, memory, thermals, battery, disk, queue, latency, and lifecycle cost.
+State: `partial` for the replacement campaign and `implemented` only for the preserved control.
+The independent Rust corpus owner,
+semantics-qualified compiled FP32 MLX route, exact checkpoint migration, serialization-complete
+batched decoding, continuous request batching, and content-bound assistant refresh reuse are
+qualified. The Rust path preserves frozen token/tensor identities at 5.96x mixed-corpus and
+15.75x typed-KERC throughput; deterministic bounded parallel encoding is 2.97x over its serial
+Rust control and the verified warm materialization cache is 6.0x over cold. The attempted NEON
+scanner did not meet its preregistered floor and is rejected. The canonical alternating full
+training qualification preserves loss, parameter, checkpoint, and resume semantics and is
+materially faster, but remains below the 2x stretch target; 2x is therefore not claimed.
+Serialization-complete uncached decode preserves 8/8 outputs at about 8.5x, continuous batching
+is about 2.4x, and unchanged governed assistant refresh remains over 100x under exact content
+identity. A selected-route resource canary reports about 3.8 GB peak MLX allocation and zero host
+swapouts while leaving production state untouched. Scheduler records CPU/GPU/MLX/CUDA, memory,
+thermals, battery, disk, queue, latency, and lifecycle cost.
 
-Next: execute the acceleration program below. Preserve optimizer semantics and the frozen
-data/order/schedule unless a separately preregistered experiment changes them. Mixed
-precision, quantization, compilation, caching, and faster hardware require finite-loss,
-gradient, update, reload/resume, divergence, memory, throughput, and heldout-equivalence
-evidence before adoption.
+Next: execute `T0A` before another long continuation. Preserve the old FP32 route as the exact
+performance control while implementing adequate MTP/drafting, dynamic patches, RDC/KERC lowering,
+and optimizer challengers in isolated successor lineages. Preserve the accepted KERC online-attention
+parity and representative full-objective entry receipts. Judge larger routes by the external live-memory
+reserve and swap-growth watchdog, not an allocator high-water ceiling; continue profiling, chunking,
+rematerialization, sparse lowering, or architectural repair until they fit safely rather than recording
+a terminal resource deferral. Mixed precision, quantization,
+compilation, caching, custom kernels, or faster hardware still require finite-loss, gradient,
+update, reload/resume, divergence, memory, throughput, and heldout-equivalence evidence before
+adoption. Publish a replacement performance ledger and architecture freeze only after every
+candidate has a complete evidence-backed disposition and every selected canonical station has a
+sustained performance receipt.
 
 #### Capability-Critical Acceleration Program
 
@@ -273,18 +503,79 @@ diagnostic. The 100x target is a stretch target for end-to-end time-to-decision 
 portfolio of kernel speed, work avoidance, reuse, and parallelism; it is not a claim that
 software can create 100x more M1 arithmetic throughput.
 
+`T0P` is finite rather than an endless optimization search. Its candidate ledger must cover
+data layout and I/O, parsing/tokenization/packing, batching and scheduling, model kernels and
+graph compilation, precision and optimizer state, activation/checkpoint memory, host/device
+transfer, checkpoint publication, evaluation/verification parallelism, inference/KV state,
+cache/reuse, operating-system and hardware configuration, and independent-node fanout where
+available. Each candidate receives one evidence-backed disposition. New optimization work
+after closure requires a measured station regression or a materially new implementation class.
+
 1. **Measurement closure.** Establish reproducible cold/warm baselines for stage loading,
-   training step, checkpoint save/load, private-development loss, direct generation,
-   verification, VCM compilation/query, routing, and local assistant completion. Record
+   corpus read/decompression/parse, token scan, vocabulary encoding, row packing, host-to-MLX
+   transfer, training step, checkpoint save/load, private-development loss, direct generation,
+   grammar filtering, verification, VCM compilation/query, routing, and local assistant completion. Record
    useful positions or accepted outputs, p50/p95, peak unified memory, disk I/O, thermal
-   state, and energy when observable. Profile only canonical routes.
+   state, allocations/copies, cache hit/miss/eviction, worker utilization, queue stalls,
+   padding and masked-token waste, MLX compile-cache misses by shape/dtype/function identity,
+   graph evaluation count, implicit host synchronizations, memory compression/swap pressure,
+   and energy when observable. Profile only canonical routes. Every optimization report
+   carries both station time and its fraction of trustworthy end-to-end wall time so a large
+   microbenchmark speedup cannot masquerade as a training or inference speedup.
    Current evidence covers training, checkpoint load/format, private-development loss,
    direct generation, unchanged joined VCM/tool/planner/verifier refresh, and one
    registry-owned resident-model/prefix/completion qualification. Checkpoint publication,
    task-specific useful assistant completion and energy evidence remain open. A registered
    four-request qualification now covers cross-request scheduling and peak MLX memory for
    that bounded resident workload.
-2. **Sustained MLX training qualification.** Run the compiled microbatch route for at
+2. **Independent token and corpus acceleration.** Register one stable corpus-to-tensor
+   abstraction with reference and optimized implementations for the frozen exact-text ABI,
+   future language/code BPE experiments, and typed KERC. Implement the optimized path from
+   first principles in Theseus-owned Rust rather than copying or depending on Gigatoken.
+   It must provide:
+   - direct memory-mapped or streaming text, JSONL, Parquet, and bounded gzip/zstd ingestion;
+   - scalar-reference plus SIMD/SWAR exact scanners with differential fuzzing over Unicode,
+     malformed input, long atoms, separators, escapes, code syntax, and adversarial boundaries;
+   - record- and semantics-safe parallel splitting, strict row-order reconstruction, and
+     longest-processing-time scheduling using bytes, encoded length, KERC node/unit count,
+     protected-object count, objective, and codec cost rather than bytes alone;
+   - immutable shared vocabulary/grammar tables and persistent per-worker caches keyed by
+     implementation, tokenizer, vocabulary, protocol, policy, source, and KERC/VCM identity;
+   - a host-wide cache and worker budget for 16 GB Apple Silicon, with eviction and telemetry,
+     no per-thread unbounded reservation, no dependence on Linux huge pages, and safe
+     oversubscription behavior under Python multiprocessing and MLX execution;
+   - fused flat IDs, offsets, lengths, source spans, code-space tags, masks, unit tensors,
+     padding/truncation, checksums, and content-addressed Arrow/Parquet or memory-mapped shard
+     sinks, without per-row Python lists or repeated giant-JSON parsing;
+   - cold/warm, scalar/optimized, single/multiworker, M-series/Intel/Windows/Linux, and
+     corruption/restart comparisons with exact token, byte, span, row, tensor, and receipt
+     identity before route adoption.
+
+   Preserve the current 57M checkpoint tokenizer and row order exactly. For a successor
+   lineage only, compare the current exact/open-vocabulary tokenizer against an independently
+   implemented high-quality BPE candidate on the scoped English/code corpus. Tokenizer
+   quality, context compression, weak-language tails, and functional canaries outrank raw
+   tokenization throughput. Measure length bucketing and sequence packing, including padding
+   removed, mask construction, and kernel utilization. Packing that changes cross-example
+   attention, position IDs, loss masks, row order, or objective belongs to a successor lineage;
+   a current-lineage fast path must reproduce the existing tensors exactly. The first
+   acceptance target is removal of Python preprocessing
+   stalls and at least 5x corpus-to-tensor throughput at non-increased peak unified memory;
+   end-to-end training claims must separately show a material wall-time gain.
+   The independently written Rust slice is qualified against the canonical Python oracle: a
+   balanced 576-document English/Python/JS-TS/HTML-CSS/Rust/KERC sample produced 2,072,524
+   positions with exact input, label, mask, row, window, and receipt identity at 5.96x median
+   wall-time speed and lower measured peak RSS. A separate balanced 500-row KERC sample preserved
+   every JSON atom, `V_K`/`V_P` code-space assignment, global ID, round trip, and typed receipt at
+   15.75x. Plain, gzip, and zstd streams preserve identity. Deterministic bounded four-worker
+   encoding is 2.97x over serial Rust; content-addressed materialization, exact restart,
+   corruption rejection, budgeted LRU eviction, and immutable-manifest verification are qualified,
+   with a 6.0x warm-cache gain. AArch64 NEON scanner parity passed but performance did not: its
+   0.965x median missed the 1.10x adoption floor and it remains rejected. Columnar ingestion is
+   deferred until an admitted columnar corpus exists; cross-platform performance is deferred to
+   actual Intel/Windows/Linux hardware. These are preprocessing results only, not model-quality or
+   full-training speed claims.
+3. **Sustained MLX training qualification.** Run the compiled microbatch route for at
    least 500 real-data optimizer updates across a checkpoint boundary and exact resume.
    Require the same batch-16 token mass, one clip/update per logical batch, matching data
    order, finite gradients, bounded parameter delta, non-regressed private-development
@@ -292,12 +583,26 @@ software can create 100x more M1 arithmetic throughput.
    Autotune only safe microbatch and sequence-width buckets for each Mac memory tier.
    Semantics-qualified on M1: the adopted microbatch-four route measured 1.88x pooled over
    eager with about 58% lower peak MLX memory, and sustained 2,914.2 positions/second over
-   500 real updates. Microbatch eight was then checked over all 54,836,746 final parameters
-   across three alternating 24-update pairs; maximum drift was `2.38e-7` absolute/about
-   `8e-8` relative L2, but speed was only 1.52x median/1.62x pooled and varied from 1.36x to
-   1.97x. Reject it for performance despite semantic parity. The 2x gate remains uncleared.
+   500 real updates. Removal of a redundant post-update synchronization passed three isolated
+   paired canaries at about 2.03x, but the authoritative final full alternating qualification
+   measured only 1.562x pooled/1.624x median while preserving exact reported loss and bounded full-state
+   parity. The route is retained for its material absolute gain; the 2x claim is not earned.
+   A split accumulation/update graph showed an attractive paired ratio only because its eager
+   control slowed, while its compiled route was slower than the retained route; it was removed.
+   Microbatch eight was checked over all 54,836,746 final parameters across three alternating
+   24-update pairs; maximum drift was `2.38e-7` absolute/about `8e-8` relative L2, but speed was
+   only 1.52x median/1.62x pooled and varied from 1.36x to 1.97x. Reject it for performance despite
+   semantic parity.
    Aggregate dev loss improved 0.57%, with an explicit English weak-tail regression.
-3. **Precision and optimizer memory.** Compare float32, bfloat16, and mixed-precision
+   Qualify shape-specific width buckets against `shapeless` compilation, compile the outermost
+   stateful step with model, optimizer, and RNG state captured explicitly, and eliminate
+   accidental `.item()`, NumPy conversion, logging, or scalar-control-flow synchronizations
+   inside the hot graph. Use Metal traces to evaluate fused attention, RoPE, normalization,
+   MLP, cross-entropy, gradient clipping, and optimizer updates; custom Metal/Rust kernels
+   enter only when a measured residual remains after MLX-native fusion. Overlap ingestion,
+   hashing, evaluation, and independent CPU work with GPU execution only when dependency,
+   memory, and exact-replay tests prove no race or hidden synchronization.
+4. **Precision and optimizer memory.** Compare float32, bfloat16, and mixed-precision
    master-weight policies on the same checkpoint/data. The initial pure-bfloat16 canary
    produced only about 1.09x throughput and changed loss. The stricter compiled
    bf16-compute/fp32-master route preserved finite fp32 authority and bounded loss drift;
@@ -323,7 +628,26 @@ software can create 100x more M1 arithmetic throughput.
    inconclusive semantics evidence, remove the code, and do not retry it unchanged.
    All retained bounded update integrity. Stop local parameter fishing: the next training
    speed work needs a different measured backend/graph bottleneck or better hardware/parallelism.
-4. **Evidence-efficient rung control.** Make the declared pilot/review contract executable.
+   One isolated eight-update, three-order precision trial exposed a stronger interaction at
+   logical batch/microbatch 16: BF16 compute with FP32 authoritative weights and optimizer
+   measured 4,059 useful positions/second versus 1,826 for compiled FP32, or 2.22x pooled and
+   2.48x median, with 5.11 GB versus 8.59 GB peak MLX memory and at most `9.914e-5` relative
+   final-loss drift. Trial speed ranged from 1.44x to 2.75x, so this is a promising bounded
+   candidate rather than a production adoption. The required checkpoint experiment then
+   rejected it: two BF16 executions diverged on update two before serialization even though
+   the data sequence, model/optimizer reload, and exposed MLX RNG state were exact. Do not
+   adopt BF16 for the canonical reproducible route on this backend. The FP32 compiled route
+   passed the same real save/reload boundary with an identical loss trajectory and data order,
+   bit-exact state at reload, and final drift of only `1.19209e-7` absolute/about `1.17e-8`
+   relative L2 over all 54,836,746 parameters. Its sustained speed target remains open.
+   A two-update Metal capture was content-hashed but reached 56.1 GB and was evicted under the
+   2 GiB evidence ceiling. Capture boundaries were then moved inside the canonical loop so
+   compilation and update one were excluded; update two alone still produced 38.6 GB and was
+   likewise hashed and evicted. Retained Xcode GPU traces for this 57M model are therefore
+   deferred on the current disk budget. Continue with exclusive in-process station timings or
+   a demonstrably bounded profiler; do not retain an unbounded trace or write a custom kernel
+   without a measured residual.
+5. **Evidence-efficient rung control.** Make the declared pilot/review contract executable.
    Emit immutable learning-curve checkpoints and private-development measurements at
    short logarithmic intervals, then evaluate direct model-only behavior at preregistered
    review points. Use successive halving across MoECOT and dense controls so clearly
@@ -342,7 +666,7 @@ software can create 100x more M1 arithmetic throughput.
    scale/data/objective regime. A single review may halt a candidate only under the frozen,
    stringent aggregate and every-arm confidence separation, and never claims broad
    architecture falsification. Full 100M training/evaluation remains open.
-5. **Checkpoint and storage path.** The current 209 MB model plus 418 MB optimizer state is
+6. **Checkpoint and storage path.** The current 209 MB model plus 418 MB optimizer state is
    measured. Safetensors preserved the exact 197-tensor manifest and loaded 4.76x faster in
    the alternating three-load comparison; size and save time did not materially improve.
    The registered migration is committed with zero optimizer or training-position change,
@@ -351,8 +675,11 @@ software can create 100x more M1 arithmetic throughput.
    Next qualify publication cadence and peak memory; do not background-copy a 57M model on
    a 16 GB unified-memory host without immutable-snapshot and memory evidence. Retention
    keeps the canonical/latest generation plus explicit pins. Recovery integrity outranks
-   write speed, and free disk must remain high enough to prevent invisible swap cost.
-6. **Canonical inference hot path.** Replace per-case/per-beam Python stepping in the
+   write speed, and free disk must remain high enough to prevent invisible swap cost. Compare
+   chunked, incremental/delta, and asynchronous publication only against full restore-chain,
+   corruption, crash-at-every-boundary, peak-memory, and time-to-recover evidence; overlap is
+   adopted only when snapshot immutability prevents training-state races.
+7. **Canonical inference hot path.** Replace per-case/per-beam Python stepping in the
    MoECOT direct generator with resident model loading, batched prompt prefill, batched
    beam advance or greedy mode, incremental KV cache, prefix-cache reuse, and continuous
    batching. Remove host conversions and full-vocabulary Python sorts from token loops.
@@ -362,7 +689,7 @@ software can create 100x more M1 arithmetic throughput.
    Batched beam advance, device-side admissible ranking, and exact pre-forward pruning are
    qualified at about 8.8x aggregate uncached novel-request speed and 8/8 parity. Completion and
    prompt-prefix caches are disabled in that comparison and reported separately. The
-   deferred KERC decoder now
+   disabled-until-qualified KERC decoder now
    uses the same machinery and has serial/optimized token-path parity; a full KERC pipeline
    throughput claim remains pending. A registry-owned resident runtime now keeps one exact
    checkpoint loaded, reuses bounded content-bound prompt KV state, and caches deterministic
@@ -381,14 +708,53 @@ software can create 100x more M1 arithmetic throughput.
    but measured only 1.004x pooled against the simpler per-branch assembly and was removed.
    Bounded sequence-axis preallocation reached only 1.009x on a 512-token stress run and was
    also removed. Production serving qualification and bounded KV-cache growth under
-   sustained load remain open.
+   sustained load remain open. Explicitly qualify bounded/rotating and optional quantized KV
+   caches, prefix-trie eviction, prompt prepacking, chunked prefill, and cache-aware continuous
+   batching under concurrent-session isolation, logical-position/RoPE correctness, exact or
+   preregistered quality tolerance, memory ceilings, and long-context stress. Speculative,
+   MTP, or layer-skipping routes report accepted tokens per draft, verifier/rejection cost,
+   and fallback latency rather than draft tokens/second.
    A separate external speed-audit hypothesis that wide rows were silently forced to batch
    one was checked against executed receipts: the trunk is width 512 and cited KERC evidence
    peaked at width 4,242, so neither crossed the 8K batch-two boundary. Do not change that
-   safety bucket as a proxy fix. KERC is deferred from the first executable campaign, so
-   profile its auxiliary-objective path only when it re-enters a declared campaign and keep
-   any result scoped to that architecture.
-7. **Context, routing, and tools.** Profile the joined assistant route rather than isolated
+   safety bucket as a proxy fix. KERC is now a mandatory `T0A` qualification path: profile and
+   optimize its auxiliary-objective pipeline through the guarded resource-entry and K4-K8 ladder,
+   while keeping every result scoped to that architecture.
+   The 2026-07-23/24 external reviews were reconciled against live source and receipts. The claims that
+   `mx.compile` was absent, decode batching numbers were unpublished, KV preallocation was
+   untested, and the active 57M route was being throttled by the greater-than-8K batch-one branch
+   are stale or scope-invalid: compiled training is implemented and qualified; aggregate uncached
+   decode is 8.602944x with 2.30x median direct cross-request batching and 2.33x continuous
+   coalescing; bounded KV preallocation was rejected at 1.009x; and the step-3,000 trunk is fixed
+   width 512. Its PID is stale and the durable checkpoint is intentionally paused, not running.
+   Do not consume the frozen functional surface on that knowingly incomplete predecessor merely
+   to manufacture an evaluation number. Preserve it as the immutable control and evaluate the
+   selected successor once after `T0A`. The claim that the factorized bakeoff removed every
+   pre-training blocker is also stale: KERC K4-K8, guarded replacement replay, and package
+   publication still keep `T0A` open. The criticism that the project can remain in preparation
+   without producing a capability number has teeth. Close only those named blockers; once `T0A`
+   is green, do not admit another architecture-review cycle ahead of the declared matched
+   five-arm plus dense-active/dense-total campaign and the single frozen direct model-only
+   evaluation. The report-hygiene criticism is closed only by the Phase-0 replay and budget
+   gates above. The 117-file dirty worktree is a separate reproducibility risk: bank coherent,
+   reviewed checkpoints after gates pass, without treating a commit as qualification evidence
+   or sweeping unrelated user work into it.
+   A 2026-07-25 review repeated the same stale execution claims while correctly escalating the
+   outcome and repository risks. `HEAD` is still `11a5bec3` and the worktree now has 120 status
+   entries (54 tracked changes and 66 untracked files), so the next coherent tested gate must be
+   banked before another long-running experiment. This does not authorize sweeping unrelated user
+   work into one commit. The claims that nothing changed for eight hours and that the newest
+   reports are from July 22 confuse seed-stamped filenames with creation time: the 32-update
+   semantic K5 chain and its matched/free-generation gates were created on July 25. `mx.compile`
+   remains present on the qualified canonical trunk path, and the cited batch-one branch applies
+   only above 8,192 tokens; it does not throttle the width-512 trunk or the qualified width-628
+   K5 envelope. The old factorized bakeoff's 18.4 GiB maximum-row deferral does not retire KERC
+   under the current charter: the resource-safe bounded K5 route has re-entered, while 629+ and
+   the maximum positive row remain explicit K7 blockers. Do not start the long 57M campaign while
+   `T0A` is open. Close the named blockers, bank the coherent tested transaction, and then
+   transition directly to matched training and the frozen utility evaluation without another
+   elective preparation cycle.
+8. **Context, routing, and tools.** Profile the joined assistant route rather than isolated
    fixtures. Make VCM indexes persistent and incremental, cache content-bound compiled
    packets and denial decisions, prefetch only from observable plans, avoid repeated JSON
    scans, and batch independent verifier/tool calls. Cache hits must bind model, tokenizer,
@@ -398,15 +764,958 @@ software can create 100x more M1 arithmetic throughput.
    cold/warm comparison. Reuse binds exact command/input/output hashes and a
    300-second freshness window; mutation and stale controls force a rerun. Task-specific
    tool execution and model generation remain uncached and must be measured separately.
-8. **Native and distributed escalation.** Move only measured residual Python hot loops to
+9. **Native and distributed escalation.** Move only measured residual Python hot loops to
    Rust/Metal/MLX kernels. When another node is available, parallelize independent arms,
    controls, evaluation shards, and verification, not tightly synchronized dense steps
-   over a high-latency link. Record transfer and merge cost in the speed denominator.
+   over a high-latency link. Compare MLX RING over ordinary LAN and JACCL over direct
+   Thunderbolt only on hardware that supports them; tensor/pipeline synchronization must beat
+   independent-job fanout after communication, failure recovery, and merge cost. Record every
+   transfer and merge in the speed denominator.
 
-Milestones: at least 2x sustained same-semantics M1 training throughput; at least 10x
-shorter first architecture-decision wall time; at least 5x repeated-prompt end-to-end
-latency or 2x uncached decode throughput at non-regressed quality; and a stretch 100x
-time-to-feedback improvement on reuse-heavy workloads. Reject any optimization that wins
+#### Pre-Training Architecture Upgrade Program (`T0A`)
+
+This is a finite implementation program, not an invitation to postpone training forever.
+The candidate set below is closed for this cycle. A new candidate enters only when it exposes
+a correctness defect in this docket or represents a materially different mechanism with enough
+primary evidence to justify delaying the freeze. Every implementation extends an existing
+registry-owned abstraction; none may create a parallel trainer, token owner, checkpoint format,
+generation service, KERC sidecar, or private evaluator.
+
+1. **Stable replacement interfaces.** Extend SCF and the implementation registry so one
+   content-addressed campaign manifest selects independently replaceable implementations for:
+   `surface_codec`, `relational_ir`, `causal_generator`, `draft_accelerator`, `optimizer`,
+   `kv_runtime`, and `semantic_verifier`. Each implementation card binds source/data rights,
+   topology, objectives, parameter groups, optimizer state, tokenizer/codec identity, cache
+   schema, checkpoint migration, MLX resource contract, evaluator identity, and rollback.
+   Cross-product combinations are allowed only when their compatibility receipt passes. The
+   durable step-3,000 package remains loadable through its old implementation set and is never
+   migrated in place.
+
+   Current state: implemented for T0A intake. The registry-owned candidate contract covers all
+   seven slots, control and challenger cards, source/state/migration/rollback/authority/claim
+   bindings, and cross-slot compatibility. Candidate implementations remain non-routeable until
+   their own adequacy and replacement transactions pass.
+
+2. **Adequate MTP rather than rank-one plumbing.** Replace the current rank-one, zero-loss
+   canary as the experimental candidate while retaining it as a compatibility fixture. Implement
+   independently selectable future-token heads with adequate hidden capacity, weight tying or
+   factorization justified by measured parameter/FLOP cost, offsets/horizons declared per arm,
+   and exact causal masking. Add a forward NTP-to-MTP curriculum and a register-conditioned
+   challenger suitable for a small model. Verify gradient flow, overfit, checkpoint/reload,
+   head removal, base-only serving, future-label alignment, code-boundary weak tails, and loss
+   accounting. Compare NTP, conventional MTP, curriculum MTP, and register MTP on identical
+   private rows and bounded optimizer-position/FLOP budgets. Selection uses direct functional
+   utility and accepted target-verified spans, never auxiliary loss or proposed tokens alone.
+
+   Current state: mechanism implementation and a first source-disjoint matched rung are complete;
+   MTP is scoped out of the first campaign without a scientific falsification claim. The canonical MLX
+   model now has independently parameterized MLP heads and a register-conditioned challenger;
+   the canonical objective owner has a monotonic NTP-to-MTP warmup/ramp; the old rank-one path
+   is explicitly nonselectable. Both adequate candidates pass bounded gradient-flow, zero-weight
+   ablation, curriculum, future-alignment, learning, parameter-inventory, and exact-reload checks.
+   `reports/mtp_matched_adequacy.json` compares conventional, curriculum, and register-conditioned
+   MTP against topology-identical future-head controls whose auxiliary gradient is stopped at the
+   trunk. It uses 120 governed private training rows, 40 source-disjoint heldout rows, all five
+   scoped arms, three seeds, 129,315 optimizer positions, exact reload, and candidate-lease resource
+   accounting. All three MTP candidates are slightly worse on heldout NTP loss at this 24-step rung
+   (mean relative deltas `-0.000286`, `-0.000457`, and `-0.000196`) with no material weak-arm or
+   runtime regression. The experiment remains scientifically `INCONCLUSIVE_EXPERIMENT`: the corpus
+   does not carry executable functional verifiers, so it cannot authorize broad rejection. It does
+   support a narrower campaign decision because every candidate missed the preregistered bounded loss
+   floor: optimized AR receives the first-campaign budget and MTP remains a non-routeable discovery
+   implementation. Re-entry requires a separately frozen source-disjoint verifier-bearing workload
+   with accepted-span and matched-total-cost accounting, or an independently justified larger
+   data/scale rung. The frozen 160-case confirmation surface remains unconsumed.
+
+3. **Post-hoc draft acceleration with exact target authority.** Implement a frozen-backbone
+   Medusa-style multi-head/tree draft path and an EAGLE-style feature draft path behind the same
+   draft ABI. Also retain a conventional separate-draft speculative control. Draft caches bind
+   target revision, visible prefix, tokenizer/codec, position state, policy, and branch. Only
+   target-accepted prefixes commit to KV state; rejection resumes canonical target decoding and
+   never returns a canned answer. Prove greedy identity and, where stochastic sampling is used,
+   target-distribution equivalence. Measure accepted tokens per target pass, acceptance by task
+   family and entropy, verification/tree cost, TTFT, TPOT, p50/p95, memory, energy where
+   available, and verified useful outputs/second. Implementations may be completed before base
+   training; learned draft-head qualification uses only isolated canaries until the selected
+   base checkpoint exists.
+
+   Current state: the shared target-authoritative ABI and learned draft mechanics are implemented;
+   base-training dependency is closed and post-hoc selection waits for a useful selected checkpoint.
+   Medusa uses independent residual future-token heads and EAGLE uses
+   visible token embeddings plus frozen target final-hidden features. Both train in isolated MLX
+   canaries, leave the target parameters bit-identical, and reload their separate checkpoints with
+   zero output drift. A conventional smaller causal draft-model control passes the same bounded
+   gradient, overfit, and exact-reload mechanics. Manifests bind target revision, parameter digest,
+   codec, cache schema, and maximum depth. A deliberately wrong proposal suffix is discarded while
+   canonical target decode remains exact. Canonical MLX layer-KV branches now verify proposal spans
+   against real target cache state, truncate rejected suffix positions, commit only accepted
+   prefixes plus the target correction, and preserve exact greedy output under adversarial drafts.
+   No route has source-disjoint accepted-output latency, memory, energy, functional evidence, or
+   stochastic sampling-equivalence evidence yet. These post-hoc assistants therefore have zero first-
+   campaign optimizer exposure and cannot delay base training. They remain registered, non-routeable,
+   and require target-authoritative matched qualification after a useful base checkpoint exists.
+
+4. **Learned dynamic representation challenger.** Behind `surface_codec`, implement a
+   Theseus-owned byte-level dynamic-patch candidate informed by BLT/H-Net concepts without
+   importing their code or results. It requires a local byte encoder/decoder, learned
+   content-and-context-dependent boundaries, entropy/uncertainty signals computed from visible
+   prefixes, hierarchical patch latents, exact byte reconstruction, protected-span handling,
+   and a clean interface to the shared causal core and language arms. Compare fixed BPE/open
+   vocabulary, byte baseline, entropy patches, fully learned dynamic chunks, and deliberately
+   simple whitespace/code-boundary controls on identical raw bytes. Report bytes and model
+   positions per sample, boundary stability, patch entropy, compile/kernel utilization, Unicode,
+   identifier and code-syntax tails, loss per raw byte, functional utility, memory, and total
+   training/inference cost. No learned boundary may inspect targets or evaluator metadata.
+
+   Current state: causal codec/core mechanics and the first matched selection rung are complete;
+   the candidate is scoped out of the first campaign without a scientific falsification claim. The
+   MLX candidate has a byte encoder, prefix-only boundary scorer,
+   patch projection, the canonical transformer core with a one-patch predictive shift, explicit
+   within-patch positional decoder with a causal previous-byte local path, exact lossless byte
+   envelope, hard
+   maximum patch length, protected spans, corruption rejection, and separate checkpoint state. A
+   64-step bounded single-row capacity canary reduces joint predictive-byte/boundary loss from
+   about 6.32 to 0.58 while the multi-family fixture supplies round-trip and causal checks,
+   contracts 150 raw bytes to 60 patch positions, has zero future-suffix influence on prefix
+   boundary logits, reacts to boundary-head intervention, and reloads with zero drift. The first
+   pooled-latent decoder failed its overfit gate and was repaired rather than accepted by lowering
+   the threshold. A byte intervention now proves that changing byte `i` cannot alter logits through
+   `i`, while teacher-forced and one-position sequential local decoding agree. This repairs the
+   prior underpowered within-patch decoder rather than treating its future failure as evidence
+   against dynamic patches. A three-seed, five-arm, 50-train/20-heldout governed comparison now
+   matches parameter-position work across fixed open vocabulary, raw byte, fixed patch, entropy
+   patch, whitespace/punctuation control, and learned dynamic patch routes. The learned route
+   contracts raw bytes by `3.03x` but is `2.75%` worse than the raw-byte control on heldout loss per
+   raw byte, loses all three seeds, and reaches a `4.89%` weak-arm regression. Gradient flow,
+   intervention, exact reload, source disjointness, and resource checks pass. Because this bounded
+   corpus has no functional verifier, the result selects the fixed canonical codec for the first
+   campaign only; it does not falsify dynamic patching. Re-entry requires a larger source-disjoint
+   verifier-bearing direct-generation rung with matched total-system cost.
+
+5. **RDC-enhanced KERC rather than a fixed semantic vocabulary.** Make the Relational
+   Dimension Compiler the typed relational IR consumed by KERC, VCM, planning, tools, and the
+   verifier. Distinguish semantic arity, primitive computational arity, and storage arity.
+   Implement persistent relation instances with role-labelled incidences; dimensional-axis
+   typing; branch/evidence/uncertainty lifecycle; sparse candidate proposal with an observable
+   denominator and recall; least-sufficient relational-order/operator routing; independent
+   qualification; query-relative reversible macro-object contraction; expansion triggers; and
+   slow-path-to-specialist compilation with expiry, monitoring, rollback, and retained slow path.
+   Hardware lowering uses structure-of-arrays entity/relation/incidence tables, schema/shape
+   batching, block sparsity, branch sharing, bounded caches, and factorized MLX contractions.
+   KERC remains a codec/compiler lowering behind this IR, not the ontology owner.
+
+   The paper changes the evidence contract, not just the implementation vocabulary. Every
+   relational run must retain the complete proposed/rejected candidate denominator and report
+   recall before selected-tuple precision; compare the selected order against a separately tuned
+   lower-order rescue under matched data, compute, tuning, verifier, and lifecycle budgets; and
+   report route regret when higher order does not earn its total cost. Role permutation,
+   relation-instance deletion, branch swap, qualifier removal, and contraction-envelope escape
+   are mandatory causal interventions. The proposer and qualifier must be separately
+   parameterized and source/evidence independent enough that one cannot grade its own proposal.
+   Confidence remains evidence metadata and never becomes effect authority. Contraction is
+   admissible only with a query-relative certificate, exact in-envelope reconstruction or a
+   declared approximation residual, out-of-envelope expansion, retained slow path, and rollback.
+   Do not create a new RODIE benchmark family during the breadth freeze; exercise these invariants
+   on the frozen K4-K8 and existing discovery/control surfaces.
+
+   Current state: the shared Semantic-IR owner now exposes an RDC-1.0 relational-state ABI.
+   Implemented mechanics include independent dimension-axis declarations, persistent arbitrary
+   finite relation identity through role-labelled incidences, exact role reconstruction,
+   branch-local lifecycle transitions with hypothetical-actuality rejection, observable proposal
+   denominators and recall, costed least-qualified-order selection with abstention, query- and
+   environment-relative contraction certificates with mandatory expansion, and content-bound
+   structure-of-arrays entity/relation/incidence lowering. Versioned role mappings now migrate and
+   exactly roll back relation instances under content-bound receipts. K4 mechanics retain the slow
+   path while compiling only from paired verified observations, expire by revision, and roll back
+   on schema, environment, source-complex, or discrepancy drift. Sparse incidence lowering avoids
+   dense entity-by-relation-by-role tensors, and its factorized MLX contraction matches an
+   independently implemented NumPy reference. Mutation and branch-leak tests pass. This closes
+   additional representation, lifecycle, amortization, and hardware mechanics only. A separately
+   parameterized MLX proposer and qualifier now pass bounded gradient, overfit, source/evidence
+   intervention, evaluator-label noninterference, and exact reload checks while selecting only
+   from the observable denominator. A candidate-only overlay now reconstructs the exact enabled
+   KERC contract bound to the frozen 14,238-train/3,621-development/3,350-evaluation stage while
+   leaving production disabled pending qualification. The canonical 57M trainer completes an isolated 8-step MLX KERC
+   run over 1,885 structured positions with exact checkpoint/optimizer custody, no resource faults,
+   890.703 MiB peak RSS, 1,660.358 MiB scratch state, and 285.930 seconds wall time. Its bounded
+   selector validates the full artifact and set-covers objectives, rare decisions, verifier
+   dimensions, residual classes, interaction states, and context counterfactuals. This closes
+   canonical integration mechanics only. Real source-disjoint proposal/qualification utility,
+   multi-turn K4 behavior, structured-draft adoption, coordinated K5-K7 direct behavior, and
+   matched K8 utility/lifecycle-cost evidence remain. Checkpointed query/KV streaming attention,
+   compact encoder-decoder partitions, BF16 compute with FP32 authority, BF16 Adam moments,
+   transactional optimizer materialization, and zero-authority decoder pruning now pass exact
+   parity checks. The representative full-objective route is accepted by the external watchdog with
+   a 2,048 MiB live reserve and 16 MiB swap-growth limit; allocator peak is telemetry only. The
+   1,005-token q32/k32 route also completes a 32-step full-objective mechanics preflight with
+   2,772.219 MiB minimum reclaimable reserve, a 6,268.875 MiB inferred working set, and zero swap.
+   It is not a sustained-training qualification. The maximum 5,866-token positive row still breaches
+   the safe envelope (query chunk 128: 1,401 MiB minimum reserve and 241.938 MiB swap growth; query
+   chunk 64: 1,892.906 MiB and 26.688 MiB), so maximum-row K7 repair remains open without a capability
+   or scientific-negative claim. Three process-isolated
+   128-step KERC/control pairs now pass exact common initialization, checkpoint custody, zero-swap
+   training, and direct private evaluation. This exact undertrained KERC configuration produces empty
+   learned-pipeline outputs while the surface control is nonempty, so it is not selected for the first
+   campaign; the known 936-1,536-step tiny-profile learnability requirement makes the result scoped
+   engineering evidence, not a general KERC falsification. A later audit found that the historical
+   KERC learnability probe rebuilt the default noncompact encoder-decoder graph even when the
+   checkpoint had been trained with compact encoder-decoder partitions. Percentages produced by
+   that graph-mismatched evaluator—including apparently partial progressive results and later flat
+   branches—are retained as invalid diagnostics and have no architecture-decision authority. The
+   corrected evaluator binds compact-partition and attention-chunk policy directly from the training
+   lease and aligns full-length versus compact supervised logits explicitly. On the untouched
+   512-step progressive checkpoint, all four selected training rows reach 100% teacher-forced top-1
+   accuracy with EOS and exact free generation with valid syntax (4/4). Source-indexed row-instance
+   identities, a fixed 256-row bounded pool, and deterministic optional batch schedules now make
+   replay independent of duplicate source row IDs and requested step budget. This is a genuine
+   exact-training-row learnability/mechanics sanity check only: it is not source-disjoint behavior,
+   utility, K5 completion, or a KERC capability claim. A second execution-matched run then froze
+   the registered warm trunk while training every KERC delta module plus the source-conditioned
+   encoder/cross-attention bridge: 28,963,547 of 72,534,757 parameters remained trainable, the
+   512-step run stayed within the candidate-specific 2,048 MiB live-reserve/16 MiB swap-growth
+   policy, and exact free generation remained 4/4 with valid syntax. This establishes a
+   learnability-preserving memory optimization, not full-trunk equivalence or heldout capability.
+   The prior narrow 1,536-step checkpoint, trained from only 256 bounded source rows, scores 0/16
+   on the execution-matched source-disjoint panel (14 alignment-span faults and two protected-span
+   replay mismatches). Independent semantic selection reports the full proposal/rejection
+   denominator; beam-4 and beam-16 searches found no semantically valid learned alternative. That
+   evidence is `INCONCLUSIVE_EXPERIMENT`, not a KERC falsification, because the corpus scale and
+   graph/evaluation history do not meet the negative-evidence adequacy contract.
+
+   Broad 1,536-source full-model attempts at 2,552, 1,536, and 1,005 tokens breached the live
+   watchdog despite smaller attention tiles and optimizer-state offload; these are retained as
+   resource diagnostics only. The repaired route uses byte-offset bounded selection instead
+   of retaining decoded JSON rows, compact shared shifted-token storage instead of Python integer
+   lists, and a frozen-trunk KERC delta plus source bridge while K7 retains full-trunk and
+   long-context stress. Its first 768-token matched 64-step preflight scans all 37,048
+   artifact rows, selects 1,536 source rows, materializes 3,086 physical examples into 36.9 MiB
+   instead of a 448.8 MiB dense equivalent, retains 1,372 examples under the 768-token bound with
+   every required objective/decision/residual/verifier coverage label present, completes in 46.8
+   training seconds, writes/reloads its checkpoint, records zero swap growth, and passes the live
+   guard. Nonterminal resource preflights no longer spend the terminal 16-row heldout decode
+   budget; that independent direct-behavior panel remains mandatory at the 1,536-step terminal
+   rung. Two 768-token terminal attempts reached the deterministic step-200 region before the
+   watchdog stopped them: one for 80.625 MiB swap growth after a low-resource launch and one for
+   three consecutive live-reserve breaches despite a measured launch gate. They are resource
+   diagnostics, not model negatives. The 640-token maximum-width qualification then crosses that
+   region and completes 256 steps/17,645 positions in 133.35 training seconds with every one of 21
+   required coverage labels observed, 2,399.438 MiB minimum live reserve, zero swap growth, and a
+   green checkpoint report. Its measured 8,353.984 MiB inferred peak plus the 2,048 MiB live
+   reserve initially derived a 10,402 MiB launch requirement. A 512-token attempt is rejected
+   before training because it loses the rare protected-object-consistency negative, so coverage
+   forbids narrowing that far. Retaining 640 tokens while shrinking compact attention tiles from
+   128x128 to 64x64 keeps all coverage and cuts the representative inferred peak to 7,793.016 MiB;
+   the 256-step run remains green with zero swap and 2,721.312 MiB minimum live reserve, at the cost
+   of increasing training time from 133.35 to 186.83 seconds. That stronger receipt now derives a
+   9,842 MiB terminal launch requirement. When host availability later remains below that measured
+   threshold, a q32/k32 preflight is qualified instead of weakening the guard: all coverage still
+   passes, inferred peak falls again to 6,688.641 MiB, minimum reserve is 2,606.672 MiB from a
+   9,295.312 MiB launch, swap growth stays zero, and 256-step training time rises to 320.14 seconds.
+   The selected robust terminal policy therefore derives an 8,737 MiB launch requirement and
+   accepts the throughput cost explicitly. The first resource-valid seed-20260722 terminal run then
+   consumes the full one-pass 54,318-position target in 777 updates/558.74 training seconds, writes
+   exact checkpoint and optimizer custody, completes its 16-row panel, and passes the watchdog with
+   2,514.203 MiB minimum reserve and zero swap. Its embedded panel accidentally dropped the
+   candidate lease and rebuilt the default noncompact graph, so its 0/16 empty-output result is
+   retained as diagnostic-invalid. The separately guarded evaluator binds q64/k64 and compact
+   partitions from the training report and is valid: it also scores 0/16, with all rows failing
+   `KERC_LEARNED_STAGE_JSON_INVALID`, zero complete learned candidates reaching semantic selection,
+   no repair/fallback credit, and a 1,231.201-second evaluation cost. This is
+   `INCONCLUSIVE_EXPERIMENT`, not a scientific negative: the broad candidate received only one
+   exposure pass and consistently exhausted its decode budget without learning a complete JSON/EOS
+   boundary. The embedded lease propagation is repaired for future runs. A q32/k32 repair then
+   executes 1,536 updates and 104,827/108,636 requested positions (96.5% of two nominal passes),
+   with final loss 0.1367, exact checkpoint/optimizer custody, 2,430.406 MiB minimum live reserve,
+   7,420.719 MiB measured inferred peak, and zero swap growth. Its now-valid embedded panel and a
+   separately guarded semantic evaluator both remain 0/16: every row fails before a
+   serialization-valid `surface_to_kernel_program_v1` proposal exists, zero complete candidates
+   reach semantic selection, and no invalid candidate is repaired or rewritten. The separate
+   evaluator costs 336.446 seconds under q32/k32 while remaining below a 1,312.703 MiB inferred
+   peak. This remains `INCONCLUSIVE_EXPERIMENT`, not a KERC falsification.
+
+   The failure is now localized to the exposure owner rather than host memory. The 640-token bound
+   retained 792 rows but only 36 compiler rows, versus 360 core, 346 direct-surface, and 50 renderer
+   rows. Although every stored sampling weight was exactly 1.0, the generic trainer interpreted
+   their presence as weighted sampling with replacement: only 681/792 eligible rows were seen and
+   just 72/1,536 updates exercised the failing compiler objective. Uniform weights now restore
+   shuffled without-replacement epochs generally. The K5 adequacy route expands the bounded source
+   pool to 4,096, retaining 2,166 resource-valid rows including 97 compiler and 118 renderer rows,
+   and assigns inverse-group weights so all four objectives receive equal aggregate optimizer mass.
+   The receipt recomputes the group counts, masses, and weight hash rather than trusting the policy
+   flag. A fresh 256-step q32/k32 qualification observes objective counts 54/60/62/80 instead of
+   starving the compiler, consumes 23,601 positions in 431.358 training seconds, preserves all 21
+   required coverage labels, and passes the watchdog with a 6,882.750 MiB inferred peak,
+   2,449.453 MiB minimum live reserve, and zero swap growth. That measured result derives a new
+   8,931 MiB launch requirement; it is a resource/mechanics receipt, not behavior credit. The
+   resulting terminal seed-20260722 run completes 1,536 balanced updates and observes 367 compiler,
+   382 core, 378 renderer, and 409 direct-surface updates with every required coverage label, final
+   loss 0.0886, exact checkpoint/optimizer custody, 2,276.156 MiB minimum live reserve, a measured
+   7,666.891 MiB inferred peak, and zero swap growth. Its valid embedded source-disjoint panel is
+   still 0/16. Six rows end in a code-decode fault, seven exhaust the 640-token candidate envelope,
+   and three reach a complete proposal that the independent semantic validator rejects for an
+   unexpected serialization token; no output is repaired or rewritten. A separately guarded
+   independent replay exactly confirms the 0/16 numerator and 3/3 rejection denominator, costing
+   2,841.271 seconds wall time while reaching only a 914.453 MiB inferred unified-memory peak and
+   zero swap growth. The longer invalid prefixes are therefore also a measured K7 latency cost,
+   not behavior credit. This remains
+   `INCONCLUSIVE_EXPERIMENT`, not a KERC falsification. It closes resource entry and aggregate
+   objective-starvation as explanations for this exact run, while exposing two remaining adequacy
+   faults: the 1,536-step cap consumes only 148,147/303,402 planned target positions and sees only
+   868/2,166 retained rows, and the 640-token training envelope retains only 97 of 2,826 selected
+   compiler examples. The fixed heldout inputs are short (11-53 source tokens), so their failure is
+   not prompt truncation. A first teacher-forced follow-up was invalidated because its sampler
+   replay silently omitted the objective-balanced weights and contradicted the authoritative
+   868-row/148,147-position receipt. The repaired replay matches those receipts exactly and shows
+   retained-row underfitting: the most-exposed compiler row reaches only 72.2% top-1 after eight
+   updates (46.4% over Kernel tokens, 91.7% over pointers), while direct-surface reaches 58.0% with
+   EOS wrong; core reaches 81.1% and renderer 96.8%. The next sampler therefore uses smooth weighted
+   round-robin across equal-weight objective strata and shuffled without-replacement cycles within
+   each stratum. A fresh 256-step q32/k32 qualification samples 256 unique rows and, after the
+   mandatory coverage prefix, observes objective counts 63/63/63/67. It completes checkpoint/reload
+   in 439.507 training seconds, preserves all required coverage, and passes the watchdog with a
+   7,168.906 MiB inferred peak, 2,570.641 MiB minimum live reserve, and zero swap growth. The
+   resulting launch requirement is the measured 9,217 MiB peak-plus-live-reserve bound, not a fixed
+   8 GiB floor. The arbitrary incomplete-pass cap is removed: terminal seed 20260722 may run up to
+   4,096 steps but stops when the planned 303,402 target positions are consumed. The resulting run
+   reaches that boundary at 3,097 updates/303,443 positions, observes 776 direct, 774 compiler, 774
+   core, and 773 renderer updates, and samples 1,506/2,166 retained rows. It completes in 5,595.531
+   training seconds with exact checkpoint/optimizer custody, 2,511.531 MiB minimum live reserve,
+   a measured 7,542.281 MiB inferred peak, and zero swap growth. The valid embedded panel remains
+   0/16: fourteen code-decode faults, one incomplete candidate, and one run with no serialization-
+   valid sequence; zero complete candidates reach semantic selection. A separately guarded replay
+   exactly confirms 0/16 and zero complete proposals in 1,095.465 seconds with a 1,279.984 MiB
+   inferred peak and zero swap. Evaluation and probe launch floors are now derived separately from
+   their measured operation peaks plus the 2,048 MiB live reserve, so neither inherits the much
+   larger training requirement.
+
+   Removing the cap and sampling variance did not repair retained-row learning. An exact sampler-
+   bound teacher-forced probe finds the most-exposed compiler row at 74.1% top-1 after nine updates
+   (49.0% Kernel tokens, 93.5% pointers), direct-surface at 56.6% after two updates with EOS wrong,
+   core at 88.7%, and renderer at 87.3%. A guarded gradient diagnostic over those four token/copy
+   objectives finds all six whole-trainable pair cosines small and positive (0.0030-0.0235), with no
+   negative pair; destructive cross-objective cancellation is therefore not supported as the
+   primary owner for this checkpoint. This remains `INCONCLUSIVE_EXPERIMENT`, not KERC
+   falsification. Host memory, the arbitrary step cap, aggregate objective starvation, replacement
+   sampling variance, prompt truncation, and pairwise gradient cancellation are now closed as
+   explanations for this exact route. The next owner is a stage-specific compiler/direct
+   learnability curriculum plus memory-safe longer-program or semantics-preserving compact
+   transport for the still-open 97/2,826 compiler-row envelope gap. Require improved retained-row
+   semantic-token accuracy before spending seeds 20260723/20260724 or beam-search budget. All three
+   seeds and valid heldout panels remain required before K5 acceptance can be decided. `T0A` cannot
+   close by hiding either the maximum-row blocker or the K4-K7 behavior gap.
+
+   The next isolated curriculum canary is preregistered against the exact 256-update stratified
+   checkpoint rather than another terminal run. Its independent control probe preselects eight
+   rows per objective, all sampled exactly once. Compiler accuracy is 41.5% overall but only 2.17%
+   on singleton target tokens versus 56.2% on repeated tokens; direct-surface is 7.35% overall,
+   1.98% singleton, and 9.62% repeated. The challenger preserves each row's total objective mass
+   while applying inverse-square-root within-row target-frequency weighting (`power=0.5`). Seed,
+   warm trunk, rows, order, objective mass, 256 updates, model, optimizer, width, attention, and
+   watchdog remain fixed. It advances only if compiler singleton accuracy gains at least five
+   points, repeated compiler accuracy loses no more than three points, core/renderer overall
+   accuracy loses no more than five points, exact probe identities/exposures match, and swap growth
+   remains zero. Passing selects a longer isolated curriculum rung; it grants no heldout or
+   capability credit.
+
+   The challenger completed all 256 updates/23,844 positions with the same 256 unique rows and all
+   coverage labels, 2,564.734 MiB minimum live reserve, and zero swap. q16 reduced measured host
+   pressure by 716.625 MiB but increased guarded wall time from 489.711 to 1,227.350 seconds. The
+   independent 32-row probe exactly matches sampler receipts. Compiler singleton accuracy rises
+   from 2.17% to 7.15% (+4.984 points), narrowly missing the five-point gate, while repeated-token
+   accuracy falls from 56.20% to 49.25% (-6.944 points), failing the three-point regression ceiling;
+   overall compiler accuracy falls 3.706 points. The joint q16/inverse-frequency route is therefore
+   rejected for a longer rung and q32/no-frequency-weight is restored. This is scoped engineering
+   evidence about the exact canary, not a rejection of curricula, attention tiling, or KERC.
+
+   The next repair uses a reversible compact learned-compiler transport rather than deleting
+   semantics or raising an arbitrary memory floor. Version 2 serializes the same authoritative
+   Kernel object as a JSON array, restores only schema constants and field names, and requires the
+   model to emit every semantic value. On the exact 4,096-row source pool at the unchanged
+   640-token envelope it reduces compiler targets from 1,359,229 to 1,264,083 tokens, retains
+   310 positive compiler rows instead of 97, and raises the selected staged set from 2,166 to
+   2,630, with zero semantic values elided. Parsing and runtime materialization accept both the
+   frozen legacy form and the compact wire; deterministic reconstruction earns zero generation
+   credit. The first 256-step q32/k32 guarded canary reached step 125/10,619 positions, then the
+   live watchdog terminated it because swap growth reached 23.188 MiB over the 16 MiB ceiling,
+   despite 2,493.219 MiB minimum reclaimable reserve. Its 6,207.219 MiB inferred peak and partial
+   checkpoint are preserved as resource-engineering evidence only. Serial additive backward
+   reduced the next attempt's inferred working set but did not clear the deterministic long
+   direct-surface row. Exact 128-position token/copy chunks now preserve global token, pointer,
+   and gate normalization while retaining full causal context; guarded monolithic loss/gradient
+   parity passes. The repaired canary completes all 256 steps/20,840 positions, samples 256 unique
+   rows, preserves all 21 coverage labels, writes/reloads exact state, and reaches final loss
+   0.189204. Its watchdog receipt records 5,905.156 MiB inferred working set, 2,624.016 MiB
+   minimum reclaimable reserve, zero swap growth, and 1,069.003 seconds wall time. This closes
+   this exact resource/mechanics rung only; K5 still requires adequate multi-seed learnability and
+   source-disjoint direct behavior.
+
+   The broader compact-transport envelope is now stress-qualified rather than inferred from a
+   shuffled prefix. Coverage-first sampling appends the retained row with the most target positions,
+   and thresholded optimizer-state offload applies only to rows at or above 600 target positions.
+   A 768-token route repeatedly fails on deterministic step 139 (a 716-token direct-surface row
+   with 694 target positions) under the live watchdog; whole-route q32, thresholded offload,
+   16-position loss chunks, and selective q16 attention all fail safely and are retained only as
+   implementation diagnostics. A 715-token scan similarly fails when the explicit stress row is
+   executed. A 648-token q32/k32 route with exact 64-position loss chunks and thresholded offload
+   retains 2,779/8,232 rows, including 669 compiler rows versus 561 at 640 tokens (+19.3%), and
+   preserves all 21 required coverage labels. Its guarded 256-step run completes 22,641 positions
+   and 256 unique rows with exact checkpoint custody, 2,903.656 MiB minimum reclaimable reserve,
+   a 5,990.453 MiB inferred working set, and zero swap. Two fresh terminal launches then fail safely
+   on the same 637-token/609-target stress row: one begins with only 6,642.859 MiB reclaimable; the
+   other begins with 9,424.172 MiB but reaches a 7,694.938 MiB inferred working set and 1,729.234 MiB
+   reserve. The 648 route is therefore retained as a bounded 256-step mechanics success, not the
+   robust terminal policy.
+
+   The stress policy now independently preselects both maximum target positions and maximum active
+   width; neither can hide behind coverage or shuffled order. The first width discontinuity that
+   removes the unstable row is 628 tokens. It retains 2,393 rows and 428 compiler rows, while the
+   maximum-target row is 512/496 and the separate maximum-width row is 628/408. The dual-stress
+   16-step preflight executes both, preserves all coverage, reaches 2,591.875 MiB minimum reserve,
+   a 5,886.984 MiB inferred working set, and zero swap. This is the selected terminal resource
+   policy. It grants no K5 behavior, capability, or scientific-negative credit; 629+ token rows
+   and the 5,866-token maximum remain explicit K7 obligations. The independent stage probe
+   now replays and hash-checks the stress prefix instead of silently reconstructing the old sampler.
+   On eight outcome-independent rows per objective, the one-exposure canary reaches 31.52% compiler
+   token accuracy but only 1.01% on singleton compiler tokens; direct-surface is 51.45% overall and
+   10.40% singleton. Core and renderer are stronger, and all compiler/core/renderer EOS checks pass,
+   but no learned behavior credit follows from a teacher-forced training-row diagnostic. The prior
+   4,096-step canary ceiling could not consume the declared 423,166-position target. The terminal
+   ceiling was therefore raised to 6,144 steps with a 43,200-second watchdog wall budget. The
+   seed-20260722 terminal run reached the target at 4,566 updates/423,227 positions, with roughly
+   balanced objective counts of 1,140/1,141/1,142/1,143 updates, all 21 coverage labels, exact
+   checkpoint and optimizer custody, 2,445.547 MiB minimum live reserve, a 6,678.406 MiB inferred
+   working set, zero swap growth, and 39,342.743 seconds guarded wall time. The checkpoint is
+   `5ce6ef85...5bbf`; the training and host receipts are `60fa60ba...deb2` and
+   `4c63a31f...5782`. This closes the selected 628-token sustained resource/mechanics rung.
+   It does not close K5: the source-disjoint direct panel is still 0/16 with sixteen empty
+   outputs. The report-level `complete=false` reflects the deliberately phase-only execution of
+   `english_kerc`; the KERC phase itself met its position stop.
+
+   The run also invalidates the roadmap's former “exact two row exposures” wording. The
+   position-mass target sampled only 2,129/2,393 retained rows, so position completion is not a
+   row-coverage guarantee. The required exact checkpoint-specific diagnosis is now complete.
+   Its sampler replay matches all 4,566 authoritative updates, 423,227 positions, 2,129 unique
+   rows, and all 21 labels. Balanced objective update counts did not produce balanced row
+   exposure because the four objective populations contain 108, 965, 892, and 428 rows.
+   On sixteen outcome-independent training rows per objective, renderer reaches 95.87% top-1
+   and 15/16 EOS, core 76.07% and 16/16 EOS, direct surface 56.40% and 14/16 EOS, but the
+   compiler reaches only 47.97%, 18.78% on singleton targets, and 0/16 EOS. One-row free
+   generation terminates and is syntax-valid for renderer, core, and direct surface but the
+   compiler emits `FAULT`/`kerc_code_decode_fault` without EOS. The exact report identities are
+   `d656c7aa...a644` for the 64-row teacher-forced probe and `fc606589...056a` for generation.
+   This localizes the current empty-output owner to compiler learnability and exposure; it is
+   diagnostic evidence, not learned-behavior credit.
+
+   The smallest causal repair is now content-bound in the canonical candidate. Within-objective
+   sampling is uniform, the weighted order must cover every positive row, and the position-mass
+   target extends from two to four passes. A one-shot migration may import only the exact
+   seed-20260722 step-4,566 FP32 master, AdamW state, and MLX RNG into a fresh scratch namespace;
+   it resets only the invalidated kernel sampler cursor, leaves the source generation and
+   registered lineage immutable, and is now bound to the evidence-selected `3e-4` compiler rate
+   under candidate execution plan `6c351548...f5fc`. The current unoverlaid plan computation is
+   `79c2c68b...7be1` and remains RED only because the generation-architecture input must be
+   refreshed after the selective-compute implementation is parity-qualified. The
+   continuation/import, cursor reset, selective mixed-dtype resume,
+   residual scheduler, watchdog, resource-entry, and freeze contracts are covered by the focused
+   suite; its post-transactional-evaluator closure result is recorded below.
+
+   Before another long MLX launch, the scheduler was projected over the actual 2,393-row retained
+   stage from the exact step-4,566 boundary. The first coverage-safe equal-mass projection was
+   green but inefficient: 4,561 updates spent 1,140 updates on the already-strong 108-row
+   renderer, giving it 9-11 more exposures while the failed compiler received 1,140. A
+   diagnostic-deficit allocation therefore preserves one full-row coverage floor, then allocates
+   residual mass from the exact checkpoint's token error plus EOS failure. Its first projection
+   correctly failed because 65 core rows remained unseen (`5e95e6cc...91c2`). Raising only the
+   core coverage floor to the projected requirement yields the selected schedule: 3,594 updates
+   and 423,242 positions against a 423,105-position request, 2,393/2,393 unique rows, and zero
+   unsampled. Renderer/core/direct/compiler receive 159/1,006/1,098/1,331 updates with exposure
+   ranges 1-3, 1-2, 1-3, and 2-4. The selected content-bound projection is
+   `reports/rdc_kerc_k5_scheduler_projection_compiler_deficit_weighted_coverage_floor_seed_20260722.json`
+   (`75f971b2...9717`). It removes 981 low-value renderer updates, adds 191 compiler updates, and
+   saves 967 optimizer steps without changing the remaining position budget or losing any row.
+   This is scheduler evidence only: no checkpoint weights were changed, no heldout behavior was
+   evaluated, and it grants no K5 or learned-capability credit.
+
+   The first selected-plan launch exposed and fixed a content-binding bug: the migration had
+   named the unoverlaid preregistered plan rather than the governed candidate execution plan.
+   Receipt `e214b7a8...f443` reached the validator with zero swap and failed closed on
+   `plan_identity_mismatch`; the candidate hash is now independently recomputed across two fresh
+   scratch namespaces and bound to the current candidate plan. The next launch showed that one-shot
+   continuation still wrote a redundant 278 MiB common-random initialization and loaded the warm
+   trunk before immediately replacing both with the exact step-4,566 state. It stopped at
+   145.938 MiB swap (`ef997e32...cfe4`). The continuation path now skips both superseded
+   initializations, writes zero common-reference files, and retains the exact model/optimizer/RNG
+   import checks. With that repair, receipt `749f1376...f43f` used only 52 KiB of scratch metadata,
+   completed optimizer step 1, and entered step 2; the first stress update measured 1,305.745 MiB
+   MLX peak. It was stopped before a progress checkpoint when global swap reached 185.5 MiB while
+   live reserve remained 2,137.047 MiB. This proves execution reaches the real optimizer but grants
+   no learned behavior or durable-step credit. A q16/loss-chunk32 variant was then rejected for
+   this exact route: it increased stress-step peak to 1,408.371 MiB and still caused 96.688 MiB
+   swap (`e7c3cab0...def8`). The q32/loss-chunk64 policy is restored. Do not generalize this scoped
+   tiling result beyond the measured continuation.
+
+   The full-delta route was then narrowed for a causal compiler learnability intervention rather
+   than another seed or memory threshold. The exact source optimizer is a name-addressed
+   244-tensor/115,854,200-byte payload. A byte-preserving safetensors projection retains the
+   source `step` and `learning_rate` plus both Adam moments for exactly the five parameters
+   exposed by `freeze_to_kerc_stage(1)`: 12 tensors/27,541,516 bytes, independently replayed
+   with zero tensor mutation and no optimizer reset. Runtime validation recomputes the compiler
+   trainable names and rejects any missing or extra projected tensor. Only
+   `surface_to_kernel_program_v1` receives generator loss; residual allocator, verifier,
+   decision, and sibling-stage auxiliary losses are disabled for this intervention. The
+   128-source-row diagnostic budget is 16 times the independently measured eight-row minimum
+   label-cover set, not a host-memory floor. It expands to 256 canonical rows; the qualified
+   628-token bound retains 46 generator rows and every declared K5 compiler construct.
+   `decision:ABSTAIN` is not hidden: its shortest selected compiler row is 2,289 tokens, so it
+   remains an explicit K7 long-sequence blocker outside this K5 intervention.
+
+   Three early compiler-stage launches preserve useful negative operational evidence without
+   capability credit. The first exact-stage attempt was stopped at 29.188 MiB swap growth
+   (`10717739...ee7`) before a continuation receipt. The first 64-row slice reached the
+   sequence validator with zero swap and correctly failed because the old global four-objective
+   coverage contract was inapplicable (`26c51b39...091`); stage-specific coverage is now
+   explicit and fail-closed. The CPU replay of the repaired 128-row stage is green, but its
+   latest Metal launch was stopped after 3.417 seconds at 34.5 MiB global swap growth while
+   child RSS was only 78.234 MiB (`e6d7f3d0...bf8`). MLX initialization is now deferred until
+   after CPU-only materialization and garbage collection, eliminating that avoidable overlap.
+   Phase isolation then reached the real exact projected optimizer (`5e1af1ec...d7e5`) without
+   loading inactive canonical-pretraining memmaps, but ambient swap still rose 135 MiB
+   (`a9158f43...8773`). A full-FP32 single-model variant increased child RSS to 264.562 MiB and
+   is rejected for this diagnostic (`13d69860...e2c`), without scientific or KERC-negative
+   credit. The replacement route constructs frozen parameters directly in BF16, retains only
+   the five compiler trainables in exact FP32, and streams the 277 MiB source safetensors in
+   16 MiB batches; a behavior-positive delta must be merged back into an independently verified
+   FP32 source checkpoint before promotion. Its stage-instrumented run completed BF16 model
+   construction and compiler-scope binding with 78.281 MiB RSS, 272.859 MiB inferred working
+   set, and zero swap before exposing a null-metadata parser fault (`9bc96ecb...e2b5`). That
+   parser fault is fixed and regression-tested. The next admitted run was stopped at 17.312 MiB
+   swap, just above the unchanged 16 MiB ceiling (`04e68136...f1a3`), before an optimizer step.
+   None of these launches produced a checkpoint, behavior result, or K5 credit.
+
+   Two guarded scratch scheduler canaries were stopped before producing a training report when
+   global swap growth reached 30.812 MiB and 65.812 MiB, above the unchanged 16 MiB ceiling.
+   Preserve receipts `53ffe01e...0ba` and `19f1b14c...124a`; do not weaken the swap guard or
+   invent another memory floor. Two subsequent exact continuation launches were also stopped
+   safely before model materialization: global swap grew 20.062 MiB and 18.562 MiB in 6.837 and
+   6.644 seconds while child RSS was only 71.516 and 72.359 MiB. Their receipts are
+   `72c500a0...1055` and `15736e2b...1c3f`; neither produced a training report or checkpoint.
+   This is ambient host-pressure evidence, not a KERC resource or behavior result. It motivated
+   the exact same-seed compiler intervention below; it did not justify weakening the guard.
+
+   Exact layer and whole-objective recomputation preserve the five-parameter stage-only
+   loss/gradient, but the route still crossed the unchanged swap-growth ceiling. The q16 variant
+   was measured and rejected for this route, so q32/k32 was restored and exact loss decomposition
+   was reduced to 32 positions. Topology inspection showed that caching final frozen-trunk hidden
+   state while training the stage embedding would change the mechanism: the embedding enters the
+   trunk before decoding. The declared causal intervention therefore freezes that embedding,
+   detaches the frozen trunk, and trains only the four post-trunk output owners—the compiler
+   output matrix plus the stage-1 adapter down, norm, and up weights. This is explicitly not
+   equivalent to the full compiler stage.
+
+   The output-owner route is the first continuation to produce durable real updates. Its
+   two-step canary advances exact source step 4,566 to 4,568, lowers sampled loss from 3.969589
+   to 3.453082, peaks at 1,338.438 MiB inferred memory, and records zero swap growth. A subsequent
+   scheduler failure exposed 22 verifier-only rows with zero generator-token authority; the
+   canonical stage-only sampler now excludes those rows fail-closed while preserving the
+   generator coverage contract. The repaired 32-step same-seed run samples all 24 generator
+   rows, advances to step 4,598/11,596 positions, lowers final sampled loss to 3.271693 with
+   best observed 2.986589, peaks at 1,594.453 MiB, and again records zero swap growth. Its
+   four-tensor delta is `d400b825...9244`; its projected optimizer is `a2a6b1b7...1481`.
+
+   The delta merges into the exact FP32 source as `685a5d34...abb`, with all 235 frozen source
+   tensors independently verified byte-exact and neither input mutated. The frozen 16-row
+   source-disjoint panel then completes under the live guard with zero swap growth. It remains
+   0/16 and produces zero nonempty accepted outputs: ten rows end in
+   `kerc_code_decode_fault`, five in `kerc_code_incomplete_at_budget`, and one produces the only
+   complete candidate but fails independent compact-transport validation. Report
+   `06338e74...052`, evaluation receipt `12c58f7a...7eb`, and host receipt
+   `35d08d46...3eb` bind that result. The evaluator now commits identity-bound progress after
+   every row and resumes only an exact checkpoint/evaluation-contract match, so ambient resource
+   interruptions no longer erase completed expensive rows.
+
+   This is evidence that 32 post-trunk output-owner steps are insufficient, not a KERC
+   falsification and not evidence against the full five-parameter compiler mechanism.
+   Checkpoint-specific diagnosis initially exposed three stale assumptions in the probe itself:
+   it enforced four-objective coverage on a one-objective stage, reset the dense epoch order
+   instead of replaying the authoritative mutating cursor, and reconstructed the legacy compiler
+   target rather than reading the exact compact-transport arrays. Those paths now fail closed and
+   are regression-tested.
+
+   The corrected exact replay matches all 32 updates, 11,596 positions, 24/24 sampled generator
+   rows, and the authoritative cursor prefix. On sixteen outcome-independent rows from that
+   stage, the merged step-4,598 checkpoint reaches 65.32% top-1, 80.41% on repeated tokens,
+   28.81% on singleton tokens, 36.23% on Kernel tokens, 85.89% on pointer/transport tokens,
+   and 16/16 on the KERC end marker. Report `f2387d7f...f8c` and host receipt
+   `29c4c00f...40a` bind the zero-swap result. The measured owner is therefore sparse Kernel
+   semantics and singleton learning, not termination weighting. Because each row received only
+   one or two updates and loss was still improving, the next justified rung was 64 total steps
+   from the same immutable source and seed on the same four-parameter route.
+
+   That rung is now complete. It advances source step 4,566 to 4,630 over 23,769 positions,
+   samples all 24 generator rows, reaches final sampled loss 2.931635, peaks at 2,199.844 MiB
+   inferred memory, and records zero swap over 841.496 guarded seconds. Report
+   `e996e45f...a23`, delta `8670974e...005`, optimizer `8e699b95...b8f`, and host receipt
+   `bae9ddb9...42b` bind the run. The exact four-tensor FP32 merge is `84b61a49...97e`,
+   with all 235 frozen tensors preserved byte-exact. Its 16-row compact diagnostic reaches
+   67.14% top-1, 82.33% repeated, 27.70% singleton, 36.84% Kernel-token, 89.18%
+   pointer/transport-token, and 16/16 KERC-end accuracy. Because exposure-ranked selection
+   changes seven rows, the aggregate is not treated as a matched delta; on the exact nine-row
+   overlap, total, Kernel, pointer/transport, singleton, and repeated accuracy all improve.
+   The frozen source-disjoint panel on the step-4,630 merge still scores 0/16 with zero accepted
+   outputs. Thirteen rows end in decode faults; three reach complete candidates, of which two
+   fail alignment-span validity and one fails compact-transport validity. Report
+   `7cebfc9d...57f`, row receipt `dc55ef74...5fa`, and host receipt `c079f309...d3d`
+   bind the 1,364.034-second, zero-swap result. Relative to step 4,598, complete candidates rise
+   from one to three and incomplete-at-budget faults disappear, but none is valid. This is
+   movement at the protocol-validity boundary, not K5 success.
+
+   The four-parameter output-only proxy has done its job: it proves the optimizer moves and
+   narrows the fault, but additional blind doubling would not exercise the missing causal owner.
+   The full compiler route is now resource-safe without changing its mechanism. Gradient-
+   checkpointed training had returned and retained decoder K/V caches even though the training
+   path never consumed them; removing those cache tensors from checkpoint outputs preserves exact
+   eager/checkpointed loss and gradients. On the exact two-row replay it preserves every loss,
+   the final checkpoint (`168c3...`), and optimizer (`cf55a...`) byte-for-byte while lowering MLX
+   peak from 4.182 to 3.877 GB and post-warm step time from 8.08 to 6.92 seconds. The formerly
+   failing eight-row replay then completes all eight updates through widths up to 624, with
+   4,884.395 MiB MLX peak and 12.75 MiB swap growth under the unchanged 16 MiB stop. Report
+   `3fa41ae8...de3` and host receipt `26793c59...75f2` bind the result.
+
+   The exact step-4,574 merge preserves all 234 frozen source tensors. A matched source/checkpoint
+   teacher-forced comparison over the same 5,976 tokens shows only seven additional top-1
+   predictions at the old `3e-5` floor, all in pointer/transport positions, and zero additional
+   Kernel predictions. This establishes that the resource route is repaired but the inherited
+   learning-rate floor is ineffective for the current compiler owner; it does not justify a
+   longer floor-rate rung.
+
+   A prospectively bound one-row learnability gate therefore repeats the exact shortest compiler
+   row for 16 updates at `3e-4`, with the same five trainables, projected Adam state, source
+   checkpoint, seed, q32/k32 attention, 32-position objective decomposition, and 16 MiB swap
+   ceiling. Loss falls monotonically from 3.453700 to 1.944534. The exact FP32 merge preserves
+   all 234 frozen tensors, and the matched 140-token source counterfactual improves total top-1
+   from 82/140 to 124/140, Kernel from 9/25 to 17/25, pointer/transport from 72/114 to 106/114,
+   and singleton from 29/68 to 54/68; EOS remains correct. Training report
+   `e0de7e58...ff7`, host receipt `21166c80...3e0`, merge receipt `5010da10...eaf`,
+   trained probe `3b6510d2...5f9`, and source counterfactual `f4edf989...5e5` bind this
+   training-row-only result. It proves local learnability and the causal LR owner, not
+   source-disjoint behavior or K5.
+
+   That matched eight-row rung is complete. It uses the identical sampler order and 2,862
+   positions, records zero swap growth, and lowers every post-update sampled loss versus the
+   `3e-5` control; mean loss improves from 3.404921 to 3.392055. Its exact merge preserves all
+   234 frozen source tensors. On the identical 5,976-token panel, source / old floor / `3e-4`
+   score 3,916 / 3,923 / 3,962 correct overall, 888 / 888 / 897 Kernel, 3,012 / 3,019 /
+   3,049 pointer/transport, 441 / 443 / 454 singleton, and 3,475 / 3,480 / 3,508 repeated,
+   with EOS 16/16 throughout. Report `8bd0141a...b5ae`, host `e761574b...cbd`, merged
+   checkpoint `43b481aa...0bbd`, and probe `ead7143e...d296` bind the result.
+
+   The same-seed 32-update full-stage population rung is now complete. The original monolithic
+   process completed 22 updates and then accumulated a new graph while compiling row 23; it was
+   stopped after 68 MiB of swap growth and produced no checkpoint, so that attempt is resource
+   evidence only. Compact width bucketing was independently rejected: q64 raised peak memory and
+   retained per-row compilation, while q16 reduced inferred memory but ran roughly four times
+   slower and accumulated more swap. The selected repair keeps exact q32 math and executes one
+   optimizer step per fresh guarded process with content-bound checkpoint, optimizer, RNG, cursor,
+   sampler, and cumulative-coverage resume.
+
+   An exact eight-row segmented replay first proved the mechanism: all eight losses and the final
+   checkpoint, optimizer, RNG, step, position, and phase-position bytes match the uninterrupted
+   eight-row run. The population chain then reaches source step 4,598 over 11,900 continuation
+   positions, samples all 24 generator rows in 32 updates, and lowers first-eight / all / last-eight
+   mean loss to 3.392055 / 3.307042 / 3.254144 with final/best loss 2.867617. Row 23 completes,
+   confirming process-local graph accumulation as the monolithic resource owner. Successful
+   segments cost 2,687.115 seconds total, peak at 4,652.641 MiB inferred memory, retain at least
+   2,362.375 MiB reclaimable memory, and observe at most 264.75 MiB swap growth.
+
+   This evidence replaces the arbitrary 16 MiB K5 burst ceiling with a K5-only 320 MiB ceiling:
+   five observed 64 MiB macOS swap granules above the reproducible 268.69 MiB row-16 burst. The
+   independent 2,048 MiB live-reserve stop, process isolation, and all mathematical training
+   policies remain unchanged. This is a measured operation-specific bound, not a new host-memory
+   floor and not capability credit. Training report `37a7b810...f1d7a`, delta
+   `eca684c4...1b94`, optimizer `fc05108c...7699`, and exact FP32 merge
+   `20995704...3edf` bind the chain; merge receipt `10ae727a...c9ea` independently confirms all
+   five learned tensors and all 234 frozen source tensors byte-exact.
+
+   The exact matched 5,976-token source / old-floor / eight-update / 32-update comparison scores
+   3,916 / 3,923 / 3,962 / 4,065 correct overall, 888 / 888 / 897 / 945 Kernel,
+   3,012 / 3,019 / 3,049 / 3,104 pointer/transport, 441 / 443 / 454 / 476 singleton,
+   and 3,475 / 3,480 / 3,508 / 3,589 repeated, with EOS 16/16 throughout. The cumulative
+   evaluator independently matches all 32 steps, 11,900 positions, final cursor, final batch,
+   and coverage counts. Probe `32a6f823...def2` and host receipt `53bb7ca2...c539` bind this
+   positive population movement.
+
+   That evidence authorized the single frozen source-disjoint panel. It remains 0/16 accepted,
+   but the prior empty-output wall is overcome: all 16 rows now produce complete candidates.
+   The independent validator rejects eight for
+   `KERC_COMPACT_COMPILER_TRANSPORT_INVALID` and eight for
+   `KERC_COMPACT_COMPILER_TRANSPORT_SCHEMA_INVALID`; no invalid candidate is repaired or
+   rewritten. Report `54f2c73c...abd`, row receipt `fd9c987b...d2fd`, and host receipt
+   `d712f8a6...41b3` bind the 2,060.791-second, zero-swap result. K5 therefore remains
+   `INCONCLUSIVE_EXPERIMENT`, but its next owner is now exact compact-transport schema and
+   semantic serialization learning. Diagnose target/error structure and run a prospectively
+   bound same-seed intervention against matched retained rows before any additional seed or blind
+   step doubling. Do not consume K4 v2, add termination weighting, weaken the live-reserve stop,
+   or invent a memory floor. The 128.80-second-per-row frozen decode path also remains a separate
+   K7 throughput obligation.
+
+   Private K5 measurement is now exact-once rather than an informal “fresh” convention. The
+   evaluator freezes a content-addressed private surface manifest, selects only from row identities
+   never consumed by an earlier K5 execution attempt, binds the answer-blind selection contract,
+   and appends a durable attempt record before model scoring. An exact consumed surface cannot be
+   replayed. The first use of that gate evaluated the step-4,630 schema-continuation checkpoint on
+   16 new rows: all candidates were complete, but none passed. Independent validation assigned
+   nine alignment-span faults, four protected-span replay mismatches, two residual-unit fidelity
+   faults, and one compact-transport fault. The run took 1,405.757 seconds, peaked at only
+   624.125 MiB inferred unified memory, retained at least 4,901.625 MiB reclaimable memory, and
+   grew swap by zero. Surface `c327fba7...5def`, report `67afd5dc...2783`, row receipt
+   `f0e623cf...68d3`, and host receipt `1706b6c8...b262` bind the result. Fifteen of sixteen
+   failures have therefore moved past transport shape into span/replay/fidelity semantics, while
+   K5 remains `INCONCLUSIVE_EXPERIMENT`.
+
+   A subsequent audit found a real objective-indexing defect rather than a need for more memory or
+   another seed. The schema helper returned logical atom indices, but byte fallback expands one
+   logical atom into several model IDs; the trainer interpreted the logical index as an encoded
+   position. All 12,886 private-train compiler rows were affected, misplacing 202,421 of 288,052
+   intended schema-loss positions. Target encoding now returns an exact half-open encoded range for
+   every logical atom, and both schema and semantic weighting expand through those ranges. A
+   32-update corrected-schema branch reached step 4,662 over the same 11,900 phase positions and
+   improved matched teacher-forced accuracy from 4,140 to 4,197 of 5,976 tokens, but the identical
+   retained-row greedy generation regressed from an ABI-valid six-field residual to an invalid
+   four-field residual. That checkpoint is rejected for promotion despite its training metrics.
+   Merged report `d3f02e9a...83ae`, matched probe `5bcb09d4...9b43`, and retained-row probe
+   `d84baa7a...0740` bind the rejection.
+
+   The next bounded intervention returns to the last ABI-valid merged step-4,630 checkpoint,
+   restores ordinary 1x schema pressure, and applies 4x pressure only to existing target atoms that
+   carry spans, numeric pointers, residual-unit identities, or fidelity modes. It introduces no
+   answer metadata, new semantic value, runtime repair, template, or verifier selection. Promotion
+   requires both matched teacher-forced movement and a behavior-positive retained-row free
+   generation before another exact-once private surface may be spent.
+
+   That first semantic-pressure branch is complete and rejected. Its 32 exact isolated updates
+   reach step 4,662 over 11,900 phase positions; first-eight / all / last-eight mean loss is
+   3.808193 / 3.693221 / 3.545093 and final loss is 3.318297. All segments pass in
+   2,568.082 seconds with a 4,515.078 MiB maximum inferred-memory observation, at least
+   2,451.609 MiB reclaimable memory, and 0.625 MiB maximum swap growth. The exact merge
+   preserves all five learned and 234 frozen tensors. Matched teacher forcing improves from
+   4,140 to 4,185 of 5,976 tokens, including 514 to 533 singleton and 3,626 to 3,652
+   repeated targets, with EOS 16/16. Free generation nevertheless expands the root from six to
+   nine fields, shrinks the residual from six to five, and empties the three-field hierarchy.
+   Report `68088085...8116`, merge `dad41cb6...490b`, checkpoint
+   `112feaa3...a071`, matched probe `7b264409...04ac`, and retained-row probe
+   `778da4c0...02e4` bind the rejection. No fresh private surface is consumed.
+
+   The rejected branch exposed an overbroad classifier: every bare numeric atom received semantic
+   pressure, including the root ABI version, hierarchy chunk index, and unrelated numeric values.
+   The helper is now path-qualified. It selects only program `PSPANS` atoms, protected-object
+   character bounds, and residual unit-id/fidelity descendants, including every encoded byte of a
+   selected logical atom. Tests prove that protected bounds are selected while the root version and
+   hierarchy chunk index are excluded. The exact one-step rung is green at step 4,631: it reduces
+   selected semantic encoded positions from 48,099 to 40,877, adds no values, peaks at
+   1,912.312 MiB inferred memory, and grows swap by zero. Its exact merge preserves all five
+   learned and 234 frozen tensors. A new retained-row selection contract then replays the identical
+   accepted step-4,630 training row rather than silently substituting the one row sampled in the
+   one-step segment. Free generation remains complete, ABI-valid, EOS-terminated, and exactly
+   6/6/3 at root/residual/hierarchy; teacher-forced accuracy remains 291/408. Report
+   `e2cb95db...6765`, merge `117396de...230c`, checkpoint `777815b7...0d26`, and retained
+   probe `9dc891bc...1876` bind this structural-safety result. The focused KERC suite passes
+   78 tests with five skips. Bank this coherent gate before a longer population run; the next
+   behavior decision remains matched movement plus retained transport validity, not training loss.
+
+6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
+   Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity
+   choices, closure state, and one or more future semantic units. The incremental grammar
+   automaton builds a bounded candidate tree and the canonical target model plus independently
+   owned semantic verifier accept only valid prefixes. Compare ordinary surface MTP, KERC token
+   MTP, KERC structured-unit drafting, and no-draft KERC under equal parameter, proposal,
+   verification, and total-cost budgets. A deterministic grammar, pointer copy, macro expansion,
+   or exact-object lookup receives assisted-mechanism credit only, never learned-generation
+   correctness credit.
+
+   Current state: typed structured-unit mechanics are implemented behind the shared target-
+   authoritative draft ABI. Independent future-unit heads predict complete operator, modality,
+   polarity, quantifier, role-pointer, fidelity, node-closure, and program-closure fields from
+   frozen target hidden state. An incremental grammar rejects invalid field order and role budgets;
+   typed pointer checks reject incompatible entities; the independent semantic-verifier hook and
+   exact target comparison accept only the longest valid target-equal prefix. The heads pass bounded
+   gradient, overfit, hidden-state intervention, and exact checkpoint-reload checks. Grammar,
+   pointer lookup, and target comparison receive zero learned-generation credit. Canonical KERC
+   trainer/decode integration, real target-KV branch execution, source-disjoint accepted-unit
+   quality/cost evidence, and the matched surface-MTP/KERC-MTP/no-draft comparison remain open.
+
+7. **Training-progress optimizer challengers.** Implement native MLX optimizer cards for the
+   canonical AdamW reference, correctly scaled Muon with Newton-Schulz orthogonalization on
+   eligible matrices and AdamW on embeddings/norms/scalars, and schedule-free AdamW with exact
+   online/averaged iterate custody. Add Adafactor as the bounded state-memory comparator: factored
+   second moments for eligible matrices, explicit fallback for vectors/scalars, update clipping,
+   parameter-scale policy, and exact factored-state checkpoint/resume are part of its identity.
+   Add SOAP only if a full-shape preconditioner-memory and update
+   timing preflight fits the declared M1 resource envelope. If it does not, either qualify a
+   separately identified low-rank/blocked approximation or remove SOAP from this campaign through
+   an explicit resource-and-cost scope decision; `NOT_RUN_ON_THIS_HOST` cannot masquerade as tested
+   optimizer evidence. Every executed route owns full
+   optimizer/checkpoint state, dtype/precision, decay, update scaling, clipping order, schedule,
+   resume/evaluation iterate, migration, and rollback. Compare loss and source-disjoint
+   functional progress per raw byte, optimizer position, FLOP estimate, joule where available,
+   and wall hour across matched fresh initializations and multiple seeds. Update throughput alone
+   cannot choose an optimizer.
+
+   Every arm must emit an executable Optimizer Policy Card receipt covering implementation
+   version, parameterization, eligibility/groups/fallback, state tensors and dtypes, exact update,
+   learning-rate and warmup policy, decay, clipping, epsilon/stabilizers, approximation cadence and
+   precision, accumulation, distributed placement, tuning/rescue budget, stopping rule, and full
+   checkpoint state. Muon additionally reports orthogonalization residuals and matrix/spectral
+   diagnostics; schedule-free additionally proves evaluation-iterate publication and restoration
+   of every training iterate. Test whether the selected recipe transfers from its adequacy proxy
+   to the target width; a failed transfer triggers retuning or a prospectively isolated
+   maximal-update/modular-norm challenger, never a silent assumption that width/depth transfer is
+   free. Lion remains a possible low-state re-entry candidate; LAMB waits for a real large-batch
+   regime, and Shampoo/K-FAC/Sophia do not enter this finite docket unless a measured conditioning
+   defect and resource preflight justify them.
+
+   Current state: this finite optimizer docket is complete. The canonical owner preserves AdamW,
+   routes only eligible hidden matrices through MLX Muon with AdamW fallback for embeddings,
+   readouts, and scalars, implements reference x/y/z schedule-free AdamW with explicit
+   evaluation/training iterate custody, and implements MLX Adafactor with row/column factors for
+   matrices, unfactored vector/scalar fallback, parameter-RMS scaling, update-RMS clipping, and
+   exact factored-state checkpoint/resume. Four digest-bound executable Optimizer Policy Cards
+   specify parameter groups, state/dtypes, exact global-clip/update order, schedules, decay,
+   stabilizers, approximation, placement, tuning, stopping, and checkpoint custody. The guarded
+   mechanics shard passes `8/8`.
+
+   A source-disjoint three-seed tune/evaluate rung gives every optimizer three profile trials,
+   matched initialization and data order, global gradient clipping at norm `1.0`, and exact
+   next-update replay within the frozen `1e-7` tolerance. Adafactor uses `40,856` optimizer-state
+   bytes versus AdamW's `3,554,316` (`1.15%`) and improves mean heldout NTP loss by `2.34%`, but a
+   `6.69%` English regression on seed `20260722` misses the frozen `2%` weak-arm ceiling. Muon is
+   `10.85%` worse and schedule-free AdamW is `57.83%` worse than AdamW; schedule-free also misses
+   the state-cost ceiling. AdamW therefore remains the first-campaign selection. The unchanged
+   selected AdamW profile then passes exact checkpoint/next-update replay and improves private
+   heldout loss on all three width-isolated `d_model=512` transfer seeds by `73.67%` on average.
+   The external watchdog observes at most `846 MiB` RSS, `1,621 MiB` inferred unified memory,
+   `4,966 MiB` reclaimable reserve, and zero swap growth. These are engineering dispositions and
+   width-transfer evidence, not optimizer-superiority, full-depth capability, or long-campaign
+   claims; re-entry requires a larger prospectively matched rung with direct functional progress.
+
+   Full-shape SOAP is formally removed from the first-campaign finite docket as an uneconomic
+   implementation class on the current M1/MLX stack, not quality-rejected. Exact accounting over
+   the frozen 57M trunk finds 422,314,025 factor elements and a 4,827 MiB lower-bound state that fits
+   the declared memory cap, but MLX exposes no native GPU eigendecomposition and an optimistic 4x
+   CPU projection still costs `6.210` seconds per training step at refresh-every-ten, versus a
+   frozen `0.0445`-second overhead allowance. The bounded watchdog replay passes with zero swap,
+   and the canonical report records
+   `FORMALLY_SCOPE_REMOVED_FULL_SHAPE_SOAP_UNECONOMIC_M1_MLX`. No optimizer-quality claim is made.
+   Re-entry requires a native Metal/MLX eigensolver or a prospectively distinct low-rank/blocked
+   implementation, then full resource accounting and matched quality evidence.
+
+8. **Adequacy-sized canaries.** Replace the global eight-step architecture-canary assumption
+   with candidate-specific preregistrations. Use the smallest source-disjoint learning curve that
+   can establish gradient flow, representative overfit, divergence behavior, checkpoint resume,
+   intervention sensitivity, resource stability, and a predeclared minimally useful effect.
+   Each canary has a hard position, wall-time, disk, memory, and seed budget and runs in an
+   isolated namespace. It may not consume the functional confirmation surface, public
+   calibration, or the production checkpoint. An underpowered run is inconclusive, not a
+   rejection; an adequately powered loss is retained without rerunning until it wins.
+
+   Current state: authority implemented. The canonical trainer denies generic bounded canaries
+   and accepts only content-bound candidate leases with isolated namespaces plus step, position,
+   wall, memory, disk, seed, heldout, target, phase, and required-check boundaries. Runtime step
+   callbacks enforce host budgets and final receipts enforce optimizer positions. Accelerator
+   canaries now also require an out-of-process watchdog. The obsolete fixed 8 GiB launch floor and
+   allocator-peak kill rule are removed: generic guarded work uses a 6,144 MiB launch reserve and
+   4,096 MiB runtime reserve, while the measured KERC candidate uses a 2,048 MiB live reserve and
+   16 MiB swap-growth limit. The watchdog fails closed if
+   telemetry is unavailable, records preflight refusals without starting a child, and generic
+   telemetry cannot initialize MLX merely to inspect it. Root-level pytest collection ignores
+   top-level MLX modules and skips accelerator-marked tests unless the watchdog launched the test.
+   MTP, dynamic patch, and optimizer three-seed rungs are complete; SOAP has an explicit terminal
+   first-campaign scope decision, while RDC/KERC still has blocking resource-and-evidence
+   obligations. The canonical freeze owner now runs exact qualified shards one at
+   a time, reuses exact passing receipts after interruption, resumes at the first missing/invalid
+   shard, stops on the first refusal/failure, and derives readiness from complete content-bound
+   watchdog receipts; there is no manual `READY` switch. The factorized selection and
+   CPU/governance replay are complete. Each current shard has a source-justified risk class and a
+   tighter 1,024-2,048 MiB RSS, operation-specific launch/live reserves, 16 MiB swap-growth, and
+   100 ms polling envelope rather than inheriting the global emergency ceiling. The optimizer
+   mechanics and matched-selection shards use 5,120/4,096 MiB launch/live reserves; the SOAP probe
+   uses 5,632/4,096 MiB. The query/KV parity shard's prior 160.297 MiB inferred peak now binds it
+   to the existing 3,072/2,048 MiB tiny-KERC parity class instead of the former 5,632/4,096 MiB
+   inherited floor. A sandbox-only probe correctly sees no Metal device; the host-Metal replay
+   passes freshly against the selected compiler-stage implementation with 77.094 MiB inferred
+   working set and zero swap, and the exact decomposed-objective successor passes with 79.203 MiB
+   and zero swap. Its refreshed receipt is `d66f3eba...91f6`. The 72M representative successor's
+   prior result is now implementation-stale because the trainer changed; it must be rerun under
+   its evidence-backed 5,120 MiB launch requirement when the host admits it.
+   The schedule is now 17 serial shards: four duplicated native canaries were
+   removed because their aggregate generation/policy
+   gates already execute them, while the direct pytest node IDs remain explicitly guarded. Those
+   aggregate reports are content-bound into their shard receipts, so stale or modified output
+   cannot satisfy readiness. The separately justified full-scale preregistration shard runs its
+   three sequential 57M-class checkpoint/resume models under a 4,096 MiB process ceiling and binds
+   the generated report; direct canary execution without watchdog authority cannot mutate it.
+   A separate 72M KERC full-objective shard is admitted by external live-reserve and swap-growth
+   invariants and may run only
+   after tiny exact output/loss/gradient shards validate checkpointed online-softmax query/KV
+   chunking and serial position-chunked objective parity. Direct selection cannot bypass those
+   predecessors: the runner rejects a missing, stale,
+   reordered, or tampered parity receipt before child launch, and hash-binds the valid predecessor
+   into the representative receipt. Its row, coverage step, chunk sizes, compact-partition mode,
+   and output hash are bound directly into the guarded command and receipt.
+   Generation/policy aggregate gates also run only through their registered shards. Full KERC
+   adequacy and allocator entrypoints fail before native imports or report mutation without
+   watchdog authority; routine registry verification may read accepted receipts, but the final
+   freeze requires the mandatory parity, representative-objective, K4-K7, and K8 evidence rather
+   than inheriting a resource disposition.
+   A preflight below the operation's declared launch reserve starts no child. That refusal is a
+   safety result, not roadmap completion: Phase 0 reproduction, KERC maximum-row repair and K4-K7,
+   guarded replay, and the replacement freeze remain open.
+
+   Ordinary CPU/governance replay is now guarded too: raw subprocess execution is forbidden, each
+   command runs serially under a 2,048 MiB process-group ceiling, 6,144 MiB launch reserve, 4,096 MiB
+   runtime reserve, 16 MiB swap-growth limit, and atomic refusal/completion receipt. Replay children
+   receive no accelerator authority. Canonical MoECOT training, progress evaluation, and checkpoint
+   migration require the script's `--guarded` mode, which launches the qualified MLX child under a
+   5,120 MiB process-group RSS ceiling with the 6,144/4,096 MiB launch/runtime reserves. The freeze's
+   accelerator marker cannot authorize normal training by itself, and architecture candidates stay
+   confined to their stricter per-shard contracts. Dry-run planning and scale preregistration must
+   also remain allocation-free: parameter accounting is derived from the canonical declared graph,
+   never by importing MLX or constructing models. Frozen MLX receipts independently anchor trunk,
+   arm, specialist-scope, KERC, and matched-control counts; any new graph family needs a guarded
+   tensor-parity receipt before its analytical counter becomes authoritative.
+
+9. **Matched architecture bakeoff and freeze.** The final pre-training comparison includes at
+   least: optimized conventional AR; conventional AR plus selected MTP objective; dynamic-patch
+   AR; RDC-enhanced KERC; and the selected MoECOT versus dense controls. Post-hoc draft modes and
+   optimizers are evaluated through their compatible factorized comparisons so the full Cartesian
+   product is not trained blindly. Match raw data, source groups, optimizer opportunity, active and
+   total parameters, train FLOPs, wall/resource ceilings, tuning opportunity, inference and
+   verifier budgets, and evaluator access. Report English and each code arm separately, weak tails,
+   confidence intervals, interaction effects, complete lifecycle cost, and direct model-only
+   functional outcomes. Freeze exactly one practical configuration plus the necessary controls;
+   preserve discovery candidates only with precise re-entry conditions.
+
+   Current state: the factorized control selection is provisionally GREEN, but the replacement
+   architecture selection remains open. MTP and dynamic patches have scoped evidence, and AdamW
+   is selected; full-shape SOAP is explicitly scope-removed from the first campaign on measured
+   M1/MLX resource-and-cost grounds, while RDC/KERC requires the mandatory parity,
+   representative-objective, K4-K7, and matched K8 ladder.
+   The replacement freeze must not replay the monolithic MLX test
+   suite in the ambient Python environment. Accelerator replays must be split into externally
+   watched, bounded child processes using the qualified MLX environment; CPU/governance replays
+   remain separate. A guard termination is resource evidence, never a capability verdict.
+
+`T0A` closes only when all nine obligations are implemented in the canonical stack, independently
+replayed, and either adopted or excluded through adequate evidence. Resource deferral is not an
+exit state for KERC or another checkpoint-shaping candidate. Shape tests, private
+fixture perfection, shorter sequences, proposed draft tokens, compiler readability, router
+accuracy, or isolated kernel speed cannot close it. Closure publishes a new architecture package
+and invalidates training authority from the older package without deleting its evidence.
+
+Milestones: 5x corpus-to-tensor, 2x uncached decode, and 100x reuse-heavy refresh are met.
+The 2x sustained same-semantics M1 training target remains unclaimed, and the 10x shorter first
+architecture-decision wall time requires the frozen campaign receipts rather than another
+pretraining proxy. Production serving latency/quality requires a behavior-qualified checkpoint.
+Reject any optimization that wins
 only by skipping required work, reducing candidate/evaluation budgets without disclosure,
 changing the learning objective, weakening verification, or losing replayability.
 
@@ -422,13 +1731,15 @@ gateway authority.
 
 ### Phase 10: Practical Neural Seed
 
-State: `partial`, with the first 57M shared trunk actively training. The 10.8M rung is
-closed at 0/160 across MoECOT and both dense controls; that result does not transfer to
-the current rung.
+State: `partial`, with the first 57M shared trunk preserved at durable step 3,000 while
+long continuation waits for `T0A`. The 10.8M rung is closed at 0/160 across MoECOT and both
+dense controls; that result does not transfer to the current rung.
 
-Next: reach a durable checkpoint, prove resume, complete all frozen alternatives, and
-consume the fresh functional surface once. Only then qualify preference/RL, GVR, search,
-MTP, other generation modes, and substrate adoption from real behavior.
+Next: preserve exact resume and its unconsumed evaluation surface as a control while Phase 8
+and Phase 13 complete `T0A`. Select and refreeze the practical architecture, then train the
+selected model and matched controls and consume a newly bound fresh functional surface once.
+Preference/RL, GVR, and search still require direct behavior; MTP objectives, dynamic patches,
+KERC/RDC, optimizer choice, and checkpoint-shaping generation heads are pre-training work.
 
 ### Phase 11: Cognitive Kernel Discovery
 
@@ -448,16 +1759,93 @@ Next: after a confirmation-qualified private functional improvement, run one gen
 fresh public calibration. Report per benchmark and failure family; mine only abstract
 failure categories into private curriculum, never public payloads.
 
-### Phase 13: Semantic IR And KERC
+### Phase 13: Semantic IR, RDC, And KERC
 
-State: `partial`. KERC K0-K3 are banked: exact packet/object codecs, rate-distortion
+State: `active critical path`. KERC K0-K3 are banked: exact packet/object codecs, rate-distortion
 economics, calibrated source-visible per-unit allocation, real linguistic supervision,
-independent evaluation, causal intervention, MLX, and content-addressed replay.
+independent evaluation, causal intervention, MLX, and content-addressed replay. K4-K8 are
+mandatory before the replacement architecture freezes; a resource-blocked implementation remains
+an open engineering obligation rather than a deferred research lane.
 
-Next after the practical campaign: K4 real interaction amortization and codec challengers;
-K5 coordinated learned compiler/reasoner/renderer plus independent semantic verifier;
-K6 lifecycle/security/checkpoint/migration/rollback stress; K7 total-cost accounting;
-K8 prospective matched multi-seed campaign. Until then: `INCONCLUSIVE_IMPLEMENTATION`.
+The committed ASI Book Relational Dimension Compiler paper is now part of the pre-training
+design basis. Its role is a typed relational IR shared by KERC, VCM, planning, tools, world
+state, and verification. KERC may serialize or compile that state, but cannot become a second
+ontology, registry, router, evidence lifecycle, or effect authority. The implementation must
+preserve stable entity/relation identity, typed roles, branches, provenance, uncertainty,
+defeaters, contraction certificates, and expansion/rollback through every lowering.
+
+Before any KERC optimizer campaign, extend the Phase-8 token/data owner rather than create
+a KERC performance sidecar. Preserve `V_S`, `V_K`, `V_P`, control tokens, protected objects,
+source spans, unit ownership, causal residual state, and replay identities atomically. The
+optimized path must independently implement a typed single-pass Rust scanner, fused
+dual-space/open-vocabulary encoding, semantic-cost scheduling, flat unit/tensor packing,
+content-addressed columnar shards, and bounded typed caches with exact reference parity.
+Ordinary BPE may encode surface text only when registered boundaries prevent merges across
+control, protected, Kernel, pointer, unit, or residual spans.
+
+Replace prefix and vocabulary rescans in constrained generation with an incremental typed
+grammar automaton, precomputed state-transition tables and allowed-ID bitsets resident on
+MLX, batched beam state, bounded device top-k, incremental KV state, and no per-step host
+argsort/synchronization. Independently test grammar completeness, invalid transition
+rejection, byte-span closure, beam equivalence, checkpoint replay, memory growth, p50/p95,
+and accepted verified outputs/second. Current profiling estimates about 2.3 ms per Python
+allowed-ID calculation over the 5,120-row KERC vocabulary, but this station result is not a
+full-pipeline speed claim.
+
+Adapt cache-hierarchy ideas to K4 interaction amortization: inline common short typed units,
+spill long exact payloads to immutable content-addressed storage, key reuse by model,
+tokenizer, protocol, policy, VCM state, source, and interaction identities, and charge cold
+population, invalidation, eviction, verification, and storage to total cost. Cache reuse is
+systems efficiency and never learned-generation, compression, or semantic credit.
+
+The canonical scratch route consumes the exact frozen KERC stage under a content-bound lease,
+uses coverage-preserving bounded materialization, and publishes exact model/optimizer state. Its
+first 8-step run is resource-clean but slow and grants no capability claim. Execute the remaining
+ladder in order:
+
+1. **Resource entry (complete):** preserve the accepted guarded online-attention,
+   decomposed-objective parity, and representative full-objective receipts. The repaired
+   representative route binds both predecessors, q32/k32 checkpointed attention, compact
+   partitions, serial additive FP32 gradient accumulation, and exact 128-position token/copy
+   chunks. Its 72,534,757-parameter backward completed in 21.831 seconds with a 3,041.484 MiB
+   minimum reclaimable reserve, 3,859.141 MiB inferred working set, and 0.125 MiB swap growth.
+   The independent CPU-side audit recomputed guard limits, command identity, dependency and
+   generated-artifact hashes, objective/model identity, finite nonzero gradients, and all
+   anti-cheating/zero-external-use boundaries. The earlier q128/k128 attempt that stopped at
+   backward entry after 35.562 MiB swap growth remains a superseded diagnostic and grants no
+   negative scientific credit. The separate sustained-training policy is now guarded at 648
+   tokens: it deliberately executes the maximum-target retained row in the prefix, preserves all
+   required coverage, and completes 256 steps with 2,903.656 MiB minimum reserve and zero swap.
+   The 1,005-token 32-step mechanics preflight remains green, while 768- and 715-token sustained
+   attempts remain resource diagnostics. Continue enforcing the external 2,048 MiB live reserve
+   and 16 MiB swap-growth stop; allocator peak is observational, not an arbitrary completion limit.
+2. **K4 interaction:** demonstrate source-disjoint multi-turn amortization with context-present,
+   context-withheld, shuffled-context, wrong-user, stale-state, and expansion controls.
+   The consumed v1 surface is diagnostic-invalid for qualification: all 78 learned outputs were
+   empty, four cases had indistinguishable present/shuffled controls, and disjointness was only an
+   exact-string scan. A fresh unconsumed v2 surface freezes six distinct three-turn cases over
+   three seeds, prompt-only packets, normalized full-turn source scans, independent producer
+   custody, forbidden superseded-term controls, and two-way seed/case confidence and weak-tail
+   gates. Its 108-row packet is source-disjoint and remains unconsumed until a behavior-positive
+   checkpoint is ready.
+3. **K5 learning:** bind the proposer/qualifier to real relation rows and qualify the coordinated
+   learned compiler/reasoner/renderer, relational-order routing, and structured draft heads through
+   direct independently verified behavior. Preserve the complete proposal/rejection denominator,
+   report candidate recall, keep proposer and qualifier independently owned, and require causal
+   role-permutation/deletion plus a matched lower-order rescue before crediting higher-order routing.
+4. **K6 resilience:** pass lifecycle, security, checkpoint/resume, migration/rollback, branch leak,
+   ambiguity, poisoning, corruption, and denial-of-service resource tests.
+5. **K7 optimization:** profile and optimize corpus compilation, lowering, attention, cache,
+   constrained decoding, proposal/rejection, verification, latency, memory, energy where observable,
+   contraction/expansion, order-route regret, and weak tails without weakening the reference semantics.
+6. **K8 verdict:** run a prospectively frozen multi-seed matched-total-cost comparison against
+   optimized surface AR, byte, entropy-patch, and learned dynamic-patch controls under equal raw
+   data, parameters, train compute, tuning, inference, verifier, and lifecycle budgets. Include the
+   tuned lower-order rescue and report proposal recall, order decisions, role-sensitive causal
+   effects, exact/approximate contraction residuals, and branch-local failures separately.
+
+KERC may be selected or excluded after K8. Until the ladder completes it remains
+`INCONCLUSIVE_IMPLEMENTATION`, and that state blocks `T0A`; it is not a deferral or a failure claim.
 
 ### Phase 14: Compression, Proof, And Claim Evidence
 
@@ -499,20 +1887,36 @@ receipts and preserve the simulation-to-reality claim boundary.
 
 ### Phase 18: Governance And Failure Boundaries
 
-State: `wired`. The governance kernel owns roles, predicates, thresholds, authority,
-budgets, leases, revocation, dispute, shutdown, replay protection, and assurance use.
+State: `wired but not safe for routine exposed use`. The governance kernel owns roles,
+predicates, thresholds, authority, budgets, leases, revocation, dispute, shutdown, replay
+protection, and assurance use. The 2026-07-25 source audit confirmed missing authentication
+and browser-origin controls on dashboard mutations, permissive teacher/network inheritance,
+tokenless wildcard-CORS OpenAI defaults, and unsafe Hive exposure/credential defaults.
 
-Next: every new effect or inter-stack exchange must preserve these semantics and prove
-blocked, revoked, expired, replayed, conflicting, and rollback paths.
+Next: close the local authority-surface security package through the existing runtime owners:
+request-local opt-in authority, mutation authentication, Origin/CSRF/content-type/body/rate/
+concurrency gates, exact token/discovery policy, transmitted-attempt accounting, safety-grade
+floors, and adversarial HTTP tests. Then require every new effect or inter-stack exchange to
+prove blocked, revoked, expired, replayed, conflicting, and rollback paths. This package may
+run beside KERC but blocks routine dashboard, OpenAI-shim, Hive, or LAN exposure.
 
 ### Phase 19: Book-To-Theseus Synchronization
 
-State: `implemented`. The project binds a committed ASI-book manifest and source-owned
-chapter fields; live dirty-book edits are intake drift, not architecture regression.
+State: `historical pin implemented; current reconciliation open and nonblocking intake`. The
+project still binds the historical 54-chapter manifest and source-owned fields, but the reviewed
+committed ASI Stack manifest at
+`df0b675230c73e1a749f7d48f3263d126023f692` contains 84 argument-supported chapters.
+Thirty current chapter IDs do not yet appear in the implementation crosswalk. Dirty book
+edits remain intake drift and cannot silently change runtime or evidence authority.
 
-Next: reconcile only reviewed committed book revisions. Every accepted mechanism routes
-to an existing abstraction or receives an explicit disposition, acceptance gate, test
-obligation, and claim boundary.
+Next: advance the existing pin in one reviewed transaction, bind the committed manifest
+digest, reconcile all 84 IDs exactly once, and assign each to an existing capability field
+with one primary disposition, maturity/evidence/route state, activation gate, tests,
+residuals, and non-claims. Do not create a new registry, runtime owner, service, or report
+family merely to mirror a chapter. Book changes propose obligations only; Theseus evidence
+returns through a sanitized claim-specific handoff and never moves book support automatically.
+This intake may run beside KERC and cannot delay `T1` unless reconciliation finds a concrete
+campaign correctness or evaluator-integrity obligation that meets the existing intake rule.
 
 ## Registered Cross-Phase Contracts
 
@@ -522,7 +1926,8 @@ inventory:
 | Contract | State |
 |---|---|
 | Reflexive Router integration | pretraining wired; behavioral qualification pending |
-| Kernel English / KERC | K0-K3 banked; K4-K8 successor work pending |
+| Kernel English / RDC / KERC | `T0A` blocking; K0-K3 banked, guarded resource entry plus K4-K8 required before replacement freeze and long training |
+| Independent token and corpus acceleration | old `T0P` complete; dynamic-patch and successor-representation work active in `T0A` |
 | Private functional utility | 10.8M rung falsified; 57M evaluation pending |
 | Task-complete corpus and scale floor | first-campaign data frozen; behavioral result pending |
 | OneCell-RWM | excluded from first campaign; protected successor |
@@ -530,8 +1935,10 @@ inventory:
 | GRPO/RLOO/ReMax/RLVR | wired; behavior-dependent selection pending |
 | Multi-target policy leases | wired; learned effects pending |
 | Generate-verify-repair | wired; behavior-dependent qualification pending |
-| MTP | wired at zero initial loss; matched qualification pending |
-| Medusa/EAGLE/speculative/LayerSkip | explicit disabled/retired dispositions |
+| MTP | mechanics plus a three-seed topology-matched source-disjoint rung complete; scoped discovery excludes it from the first campaign without scientific falsification |
+| Medusa/EAGLE/speculative/LayerSkip | target-authoritative mechanics and real MLX KV rollback complete; post-hoc selection waits for a useful base checkpoint and does not block base training |
+| Optimizer challengers | complete for T0A: four executable policy cards; guarded four-way, three-profile, three-seed comparison; AdamW retained after Adafactor's weak-arm miss; three-seed 512-width transfer GREEN; full-shape SOAP explicitly scope-removed on measured M1/MLX cost without a quality claim |
+| Dynamic representation | byte, entropy-patch, and learned dynamic-chunk challengers required behind `surface_codec` |
 | Sketch-first/diffusion/LLaDA | retired from first campaign; separate re-entry contract |
 | VCM transaction certificate ABI | implemented |
 | Verification bandwidth/governance tax | implemented |
@@ -539,9 +1946,9 @@ inventory:
 | Procedural memory/lookahead trie | wired |
 | Circle/COIL/cyclic substrate matrix | protected discovery lane |
 | Continual learning and deletion causality | wired; empirical campaign pending |
-| Durable semantic memory | planned after direct behavior |
+| Durable semantic memory | behavior-gated but mandatory before final system qualification |
 | Governed usefulness/effect rollback | planned through real dogfood |
-| Ambiguous routing/adaptive deliberation | waits for nonfallback candidate quality |
+| Ambiguous routing/adaptive deliberation | behavior-gated but mandatory after nonfallback candidate quality exists |
 | Scalable oversight | wired; empirical use pending |
 | Cross-context evaluation integrity | wired |
 | Capability commitment/assurance graph | wired |
@@ -593,6 +2000,10 @@ scores are distinct.
 ## Repository And Runtime Discipline
 
 - `main` is the single working branch and should reflect this device's intended state.
+- Before another long-running experiment, bank a coherent reviewed transaction that binds
+  the exact source, config, tests, reports, checkpoints, and replay identities required by
+  that experiment. Do not sweep unrelated user changes into it; a commit is custody, not
+  qualification evidence.
 - Generated reports, checkpoints, runtime caches, and distribution artifacts stay out of
   source control unless they are small canonical manifests or public-safe evidence.
 - Hot reports stay below policy through reference-aware archive pointers; current routes,
@@ -603,14 +2014,29 @@ scores are distinct.
 - Repeated scans, tokenization, copies, oversized JSON, serial fanout, and Python hot loops
   must become cached, incremental, batched, streaming, Rust, Metal, or MLX implementations
   when measured profiles justify the change.
+- Fast token/data implementations remain behind one registry-owned abstraction. Reference
+  implementations stay executable as parity oracles; optimized routes cannot mutate token
+  IDs, row order, masks, spans, receipts, or checkpoint meaning. Corpus artifacts are
+  content-addressed, versioned, restartable, and disposable without losing provenance.
+- External performance repositories are research references only unless explicitly admitted
+  through supply-chain governance. Gigatoken concepts may inspire independent Theseus code,
+  but its code, package, dependency graph, artifacts, and benchmark numbers are not imported
+  or counted as Theseus evidence.
 - Performance claims require sustained workloads, not short warmup canaries. Report peak
   memory, thermals where available, checkpoint cost, useful throughput, and weak tails.
+- Campaign-critical configuration is a declarative program: require schema validation,
+  unknown-field rejection, referential integrity, semantic diffs, and migrations. Refactor
+  monoliths only across tested seams and never destabilize an in-flight frozen comparison.
+- Public CI and the tiny reproducibility capsule prove that the public evidence protocol
+  builds, tests, rejects corrupt states, resumes, evaluates, and replays. They do not publish
+  or weaken custody of private training rows, heldouts, user traces, or decisive checkpoints.
 
 ## Success Definition
 
 Theseus reaches the current roadmap milestone only when:
 
-1. the frozen campaign and matched controls complete with exact lineage;
+1. `T0A` closes with faithful integrated candidates, adequate matched canaries, a finite
+   disposition ledger, and a replacement architecture freeze;
 2. at least one checkpoint is independently loadable and useful on source-disjoint direct
    English and code tasks;
 3. architecture selection follows the preregistered matched decision, with no hidden
@@ -622,8 +2048,13 @@ Theseus reaches the current roadmap milestone only when:
    outcome pressure;
 7. updates, effects, memory, authority, evidence, cleanup, replay, migration, security,
    rollback, and retirement remain green under the selected implementation;
-8. every matrix row is mature and exercised or honestly marked external, time-dependent,
-   protected discovery, or inconclusive with a precise re-entry condition.
+8. every critical-path matrix row is exercised through correctness, performance, integration,
+   reproduction, and real-use evidence or is removed from the canonical stack through an adequate
+   scoped verdict; `deferred`, `wired`, and mechanics-only are not completion states;
+9. KERC K4-K8, VCM, routing, tools, serving, data ingestion, evaluation, checkpointing, and the
+   selected model all pass their canonical end-to-end resource and failure envelopes; and
+10. externally blocked peer/device evidence is the only permitted unfinished class and remains an
+    explicit non-claim until the real receipt exists.
 
 Mechanics canaries, schemas, report volume, private saturation, training loss, route
 accuracy, and governance completeness alone are not completion.
@@ -632,7 +2063,13 @@ accuracy, and governance completeness alone are not completion.
 
 ```bash
 python3 scripts/theseus_project_registry.py --gate
+python3 scripts/python_environment_gate.py --profile cpu --gate
+python3 scripts/phase0_reproducibility_gate.py --gate
+python3 scripts/kerc_resource_entry_gate.py --gate
 python3 scripts/pretraining_architecture_freeze.py --execute-replays
 python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready
 python3 scripts/theseus_artifact_retention.py --budget-gate
+# Required once Phase 0 reproducibility closure lands:
+python3 -m pytest -q -m "not accelerator"
+cargo test --workspace
 ```

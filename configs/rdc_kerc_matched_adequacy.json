@@ -1,0 +1,43 @@
+{
+  "policy": "project_theseus_rdc_kerc_matched_adequacy_v1",
+  "schema_version": "1.0.0",
+  "candidate_id": "rdc_kerc_adequacy",
+  "trainer_config": "configs/moecot_language_arm_training.json",
+  "trainer_source": "scripts/moecot_language_arm_training.py",
+  "aggregator_source": "scripts/rdc_kerc_matched_adequacy.py",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "k5_learnability_prerequisite": "reports/kerc_adequacy_canary.json",
+  "targets": [
+    "english_kerc",
+    "english_surface_control"
+  ],
+  "phase": "kernel_english",
+  "steps_per_target": 128,
+  "seeds": [
+    20260722,
+    20260723,
+    20260724
+  ],
+  "scratch_root_pattern": "runtime/t0a_canaries/rdc_kerc_adequacy/matched_128_common_init_v2_seed_{seed}",
+  "report_pattern": "reports/rdc_kerc_surface_matched_adequacy_seed_{seed}.json",
+  "adoption_gate": {
+    "required_rows_per_target": 16,
+    "minimum_mean_exact_match_gain_count": 2.0,
+    "minimum_exact_seed_win_fraction": 0.6666666666666666,
+    "minimum_mean_target_similarity_gain": 0.05,
+    "maximum_parameter_count_ratio": 1.001,
+    "maximum_training_wall_time_ratio": 4.0,
+    "require_equal_optimizer_steps": true,
+    "require_nonempty_rate_nonregression": true,
+    "require_byte_serialization_nonregression": true,
+    "scientific_falsification_allowed": false
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit": 0,
+    "production_checkpoint_mutation": false,
+    "confirmation_surface_consumption": 0
+  }
+}

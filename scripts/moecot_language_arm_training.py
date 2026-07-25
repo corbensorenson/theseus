@@ -14,6 +14,7 @@ import base64
 import copy
 import difflib
 import hashlib
+import heapq
 import json
 import math
 import os
@@ -21,14 +22,23 @@ import random
 import re
 import shutil
 import sqlite3
+import struct
 import subprocess
+import sys
 import time
+from collections import Counter
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
+
+import host_resource_safety
+import pretraining_candidate_canary
+import pretraining_optimizers
 
 
 KERC_UNIT_KIND_IDS = {
@@ -46,6 +56,179 @@ KERC_UNIT_CANDIDATE_FEATURE_DIM = (
 _KERC_RELATION_TOKEN_RE = re.compile(
     r"[A-Za-z_][A-Za-z0-9_.:-]{1,}|-?\d+(?:\.\d+)?"
 )
+
+
+def training_operation(args: argparse.Namespace) -> str:
+    if bool(getattr(args, "migrate_shared_trunk_checkpoint_format", False)):
+        return "checkpoint_migration"
+    if bool(getattr(args, "evaluate_progress", False)):
+        return "evaluation"
+    if bool(getattr(args, "execute", False)):
+        return "training"
+    return ""
+
+
+def training_host_policy(
+    config: dict[str, Any],
+) -> host_resource_safety.HostSafetyPolicy:
+    contract = config.get("host_resource_safety") or {}
+    required = {
+        "policy",
+        "required_for_training",
+        "required_for_evaluation",
+        "required_for_checkpoint_migration",
+        "candidate_canaries_use_freeze_shard_runner",
+        "qualified_python",
+        "receipt_directory",
+        "maximum_process_memory_mib",
+        "minimum_available_before_launch_mib",
+        "minimum_available_during_run_mib",
+        "maximum_swapout_growth_mib",
+        "maximum_wall_seconds",
+        "poll_interval_seconds",
+        "terminate_grace_seconds",
+    }
+    missing = sorted(required - set(contract))
+    if missing:
+        raise ValueError("host resource safety contract incomplete: " + ",".join(missing))
+    receipt_directory = Path(str(contract["receipt_directory"]))
+    qualified_python = resolve(str(contract["qualified_python"]))
+    if (
+        contract["policy"] != host_resource_safety.POLICY
+        or any(
+            contract[key] is not True
+            for key in (
+                "required_for_training",
+                "required_for_evaluation",
+                "required_for_checkpoint_migration",
+                "candidate_canaries_use_freeze_shard_runner",
+            )
+        )
+        or receipt_directory.is_absolute()
+        or not receipt_directory.parts
+        or receipt_directory.parts[0] != "reports"
+        or ".." in receipt_directory.parts
+        or not qualified_python.is_file()
+    ):
+        raise ValueError("host resource safety contract invalid")
+    policy = host_resource_safety.HostSafetyPolicy(
+        max_process_memory_mib=float(contract["maximum_process_memory_mib"]),
+        minimum_available_before_launch_mib=float(
+            contract["minimum_available_before_launch_mib"]
+        ),
+        minimum_available_during_run_mib=float(
+            contract["minimum_available_during_run_mib"]
+        ),
+        maximum_swapout_growth_mib=float(contract["maximum_swapout_growth_mib"]),
+        maximum_wall_seconds=float(contract["maximum_wall_seconds"]),
+        poll_interval_seconds=float(contract["poll_interval_seconds"]),
+        terminate_grace_seconds=float(contract["terminate_grace_seconds"]),
+    )
+    policy.validate(physical_memory_mib=host_resource_safety.physical_memory_mib())
+    return policy
+
+
+def launch_guarded_training(
+    config: dict[str, Any], operation: str, *, candidate_id: str = ""
+) -> int:
+    policy = training_host_policy(config)
+    if candidate_id:
+        contract = pretraining_candidate_canary.load_contract()
+        candidate = next(
+            (
+                row
+                for row in contract["canaries"]
+                if row["candidate_id"] == candidate_id
+            ),
+            None,
+        )
+        if candidate is None:
+            raise ValueError("guarded candidate is not registered")
+        policy = host_resource_safety.policy_from_mapping(
+            pretraining_candidate_canary.candidate_host_safety_mapping(
+                candidate_id, contract
+            ),
+            maximum_wall_seconds=float(candidate["max_wall_seconds"]),
+        )
+    child_args = list(sys.argv[1:])
+    child_args.remove("--guarded")
+    command = [
+        str(resolve(str(config["host_resource_safety"]["qualified_python"]))),
+        relative(Path(__file__).resolve()),
+        *child_args,
+    ]
+    try:
+        result = host_resource_safety.run_guarded(
+            command,
+            cwd=ROOT,
+            policy=policy,
+            env={
+                "THESEUS_GUARDED_ACCELERATOR_CHILD": "1",
+                "THESEUS_GUARDED_TRAINING_CHILD": "1",
+            },
+        )
+        receipt = {**result.receipt, "operation": operation}
+    except host_resource_safety.HostResourceSafetyFault as exc:
+        result = None
+        receipt = {
+            "policy": host_resource_safety.POLICY,
+            "operation": operation,
+            "command": command,
+            "passed": False,
+            "child_started": False,
+            "terminated_by_guard": False,
+            "fault": str(exc),
+            "returncode": None,
+            "limits": asdict(policy),
+        }
+    receipt_path = resolve(
+        str(
+            Path(config["host_resource_safety"]["receipt_directory"])
+            / (
+                f"{operation}-{candidate_id}-latest.json"
+                if candidate_id
+                else f"{operation}-latest.json"
+            )
+        )
+    )
+    write_json_atomic(receipt_path, receipt)
+    durable_receipt_path = guarded_output_receipt_path(child_args)
+    if durable_receipt_path is not None:
+        write_json_atomic(durable_receipt_path, receipt)
+    if result is not None and result.stdout:
+        print(result.stdout[-4000:], end="" if result.stdout.endswith("\n") else "\n")
+    if result is not None and result.stderr:
+        print(result.stderr[-4000:], end="" if result.stderr.endswith("\n") else "\n")
+    print(
+        json.dumps(
+            {
+                "passed": receipt["passed"],
+                "fault": receipt["fault"],
+                "returncode": receipt["returncode"],
+                "receipt": relative(receipt_path),
+                "durable_receipt": (
+                    relative(durable_receipt_path)
+                    if durable_receipt_path is not None
+                    else ""
+                ),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0 if receipt["passed"] else 2
+
+
+def guarded_output_receipt_path(child_args: list[str]) -> Path | None:
+    """Derive one durable watchdog receipt beside an explicit JSON report."""
+
+    if "--out" not in child_args:
+        return None
+    index = child_args.index("--out")
+    if index + 1 >= len(child_args) or not str(child_args[index + 1]).strip():
+        raise ValueError("guarded --out requires a report path")
+    report = resolve(child_args[index + 1])
+    return report.with_name(report.stem + ".host_resource_safety.json")
 
 
 def _kerc_relation_tokens(value: str | bytes) -> tuple[str, ...]:
@@ -315,13 +498,30 @@ from kerc_checkpoint_schema import CURRENT_SCHEMA, CURRENT_SCHEMA_VERSION, POLIC
 from kerc_concept_registry import ConceptRegistry
 from kernel_english_protocol import (
     ANSWER_DISPOSITION_ORDER,
+    KERC_HIERARCHICAL_COMPILER_POLICY,
     KERC_VERIFIER_DIMENSIONS,
+    KERNEL_VERSION,
+    LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY,
+    LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+    LEARNED_ANSWER_TRANSPORT_POLICY,
+    LEARNED_PROGRAM_TRANSPORT_POLICY,
     KernelProtocolFault,
     TRAINING_TASK_TAGS,
+    compact_learned_compiler_transport_text,
     execute_learned_pipeline,
+    learned_compiler_transport_required_continuation_token_indices,
+    learned_compiler_transport_semantic_pointer_token_indices,
+    parse_learned_answer_output,
+    parse_learned_compiler_output,
     validate_training_disposition,
 )
-from standard_causal_transformer_model import CausalTransformerConfig, build_model, parameter_count
+from standard_causal_transformer_model import (
+    CausalTransformerConfig,
+    analytical_parameter_count,
+    analytical_trainable_parameter_count,
+    build_model,
+    parameter_count,
+)
 from standard_causal_transformer_corpus import load_pretrain_memmaps, pretrain_array_paths
 from standard_causal_transformer_survival import (
     GLOBAL_BOS_ID,
@@ -330,12 +530,15 @@ from standard_causal_transformer_survival import (
     build_schedule,
     cache_arrays,
     causal_loss,
+    checkpointed_causal_loss,
+    decomposed_checkpointed_causal_loss_and_grad,
     evaluate_loss,
     model_vocab_size,
     required_steps,
     serial_beam_advance as advance_beams_serial,
     source_token_offset,
     target_token_offset,
+    stratified_low_variance_sampling_order,
     train_phase,
 )
 from moecot_language_tokenizer import exact_text_tokens
@@ -345,12 +548,16 @@ from moecot_source_conditioned_pretraining import (
     KERC_STRUCTURED_SOURCE_OBJECTIVES,
     decode_kerc_global_target,
     encode_kerc_global_target,
+    encode_kerc_global_target_with_logical_ranges,
+    kerc_code_tokens,
     kerc_surface_tokens,
 )
 from neural_seed_open_vocab import (
+    MAX_TOKEN_BYTES,
     TARGET_BYTE_BEGIN,
     TARGET_BYTE_END,
     active_target_span,
+    byte_token_bytes,
     decode_target_tokens,
     encode_tokens,
     is_byte_token,
@@ -449,23 +656,30 @@ class RaggedRows:
             batch[row_index, : len(row)] = row
         return batch
 
-    def sum(self) -> Any:
-        return sum((row.sum() for row in self._rows), start=0)
+    def sum(self, axis: int | None = None) -> Any:
+        if axis is None:
+            return sum((row.sum() for row in self._rows), start=0)
+        if axis == 1:
+            return np.asarray([row.sum() for row in self._rows])
+        raise ValueError(f"RaggedRows only supports axis=None or axis=1, got {axis}")
 
     def length_bucketed_order(
-        self, *, seed: int, probabilities: np.ndarray | None
+        self,
+        *,
+        seed: int,
+        probabilities: np.ndarray | None,
+        minimum_stratum_coverage: bool = False,
     ) -> list[int]:
-        rng = np.random.default_rng(seed)
         if probabilities is None:
             sampled = list(range(len(self._rows)))
             random.Random(seed).shuffle(sampled)
         else:
-            sampled = rng.choice(
-                len(self._rows),
-                size=len(self._rows),
-                replace=True,
-                p=probabilities,
-            ).tolist()
+            sampled = stratified_low_variance_sampling_order(
+                probabilities,
+                row_count=len(self._rows),
+                seed=seed,
+                minimum_stratum_coverage=minimum_stratum_coverage,
+            )
         buckets: dict[int, list[int]] = {}
         for index in sampled:
             width = len(self._rows[int(index)])
@@ -497,6 +711,403 @@ class RaggedRows:
     @property
     def physical_bytes(self) -> int:
         return sum(int(row.nbytes) for row in self._rows)
+
+
+def token_supervised_row_indices(loss_mask: Any) -> np.ndarray:
+    """Return only rows with generator-token training authority."""
+
+    return np.asarray(
+        [
+            index
+            for index in range(len(loss_mask))
+            if bool(np.asarray(loss_mask[index]).any())
+        ],
+        dtype=np.int64,
+    )
+
+
+def bound_supervision_stage_sequence_width(
+    stage: Any,
+    *,
+    maximum_sequence_tokens: int,
+    maximum_supervised_sequence_tokens: int | None = None,
+    required_kerc_coverage_labels: tuple[str, ...] | None = None,
+) -> Any:
+    """Retain the widest empirically qualified rows without hiding exclusions."""
+
+    if maximum_sequence_tokens <= 0:
+        raise ValueError("training sequence bound must be positive")
+    row_count = len(stage.inputs)
+    def active_width(index: int) -> int:
+        fields = [
+            np.asarray(getattr(stage, name)[index])
+            for name in ("inputs", "labels", "mask", "loss_mask")
+            if getattr(stage, name, None) is not None
+        ]
+        active = np.flatnonzero(
+            np.logical_or.reduce([value != 0 for value in fields])
+        )
+        return int(active[-1] + 1) if len(active) else 1
+
+    widths = [active_width(index) for index in range(row_count)]
+    supervised = [
+        bool(np.asarray(stage.loss_mask[index]).sum() > 0)
+        for index in range(row_count)
+    ]
+    supervised_limit = int(
+        maximum_supervised_sequence_tokens or maximum_sequence_tokens
+    )
+    if supervised_limit <= 0 or supervised_limit > maximum_sequence_tokens:
+        raise ValueError(
+            "supervised training sequence bound must be positive and no wider than the global bound"
+        )
+    selected = [
+        index for index, width in enumerate(widths)
+        if width <= maximum_sequence_tokens
+        and (not supervised[index] or width <= supervised_limit)
+    ]
+    if not selected:
+        raise ValueError("training sequence bound excludes every staged row")
+    coverage_rows = getattr(stage, "kerc_coverage_labels", None)
+    retained_labels = (
+        {label for index in selected for label in coverage_rows[index]}
+        if coverage_rows is not None
+        else set()
+    )
+    required_coverage = set(
+        required_kerc_coverage_labels
+        if required_kerc_coverage_labels is not None
+        else KERC_CANARY_REQUIRED_COVERAGE
+    )
+    if coverage_rows is not None:
+        missing = sorted(required_coverage - retained_labels)
+        if missing:
+            raise ValueError(
+                "training sequence bound loses KERC coverage: " + ",".join(missing)
+            )
+    values: dict[str, Any] = {}
+    for name, value in vars(stage).items():
+        if name == "receipt":
+            receipt = copy.deepcopy(value)
+            receipt["training_sequence_resource_selection"] = {
+                "policy": "project_theseus_empirically_qualified_training_width_v1",
+                "maximum_sequence_tokens": int(maximum_sequence_tokens),
+                "maximum_supervised_sequence_tokens": supervised_limit,
+                "qualification_basis": (
+                    "matched_guarded_full_objective_sequence_envelope"
+                ),
+                "original_row_count": row_count,
+                "selected_row_count": len(selected),
+                "excluded_row_count": row_count - len(selected),
+                "original_maximum_sequence_tokens": max(widths),
+                "selected_maximum_sequence_tokens": max(widths[index] for index in selected),
+                "selected_maximum_supervised_sequence_tokens": max(
+                    [
+                        widths[index]
+                        for index in selected
+                        if supervised[index]
+                    ]
+                    or [0]
+                ),
+                "excluded_supervised_row_count": sum(
+                    supervised[index] and index not in set(selected)
+                    for index in range(row_count)
+                ),
+                "excluded_supervised_minimum_sequence_tokens": min(
+                    [
+                        widths[index]
+                        for index in range(row_count)
+                        if supervised[index] and index not in set(selected)
+                    ]
+                    or [0]
+                ),
+                "excluded_minimum_sequence_tokens": min(
+                    [width for width in widths if width > maximum_sequence_tokens]
+                    or [0]
+                ),
+                "selected_indices_sha256": hashlib.sha256(
+                    np.asarray(selected, dtype=np.int64).tobytes()
+                ).hexdigest(),
+                "required_kerc_coverage_preserved": (
+                    coverage_rows is None
+                    or required_coverage.issubset(retained_labels)
+                ),
+                "required_kerc_coverage_labels": sorted(required_coverage),
+                "longer_row_disposition": (
+                    "K7_MAXIMUM_STRESS_REMAINS_ACTIVE_BLOCKER_NOT_CAPABILITY_NEGATIVE"
+                ),
+            }
+            values[name] = receipt
+        elif isinstance(value, RaggedRows):
+            values[name] = RaggedRows(
+                [np.asarray(value[index]) for index in selected],
+                dtype=value.dtype,
+                standard_width=value.standard_width,
+            )
+        elif isinstance(value, np.ndarray) and len(value) == row_count:
+            values[name] = np.asarray(value[selected])
+        elif isinstance(value, tuple) and len(value) == row_count:
+            values[name] = tuple(value[index] for index in selected)
+        else:
+            values[name] = value
+    return SimpleNamespace(**values)
+
+
+def kerc_overfit_batch_schedule(
+    *,
+    row_count: int,
+    single_objective_warmup_steps: int,
+    fixed_objective_index: int | None = None,
+) -> tuple[tuple[int, ...], ...]:
+    """Return a hard-stage-first warmup followed by the joint objective batch."""
+
+    if single_objective_warmup_steps < 0:
+        raise ValueError("KERC single-objective warmup steps cannot be negative")
+    if fixed_objective_index is not None:
+        if single_objective_warmup_steps:
+            raise ValueError("KERC fixed-objective and warmup schedules are exclusive")
+        if row_count != 4 or fixed_objective_index not in range(row_count):
+            raise ValueError("KERC fixed-objective schedule requires an index in [0, 3]")
+        return ((int(fixed_objective_index),),)
+    if not single_objective_warmup_steps:
+        return ()
+    if row_count != 4:
+        raise ValueError("KERC overfit curriculum requires exactly four objective rows")
+    hard_stage_first = (1, 2, 3, 0)
+    return tuple(
+        (hard_stage_first[index % len(hard_stage_first)],)
+        for index in range(single_objective_warmup_steps)
+    ) + (tuple(range(row_count)),)
+
+
+def kerc_objective_balanced_sample_weights(
+    stage: Any,
+    *,
+    uniform_within_objective: bool = False,
+    objective_sampling_mass: dict[str, float] | None = None,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Give retained KERC objectives explicit optimizer-sampling mass.
+
+    The legacy policy retained per-row source weights inside each objective.
+    That preserves the aggregate objective mass, but on a long run it can
+    recycle a small equal-weight stratum while leaving other admitted rows
+    unseen.  The coverage-safe policy makes rows uniform inside an objective;
+    smooth weighted round-robin then exhausts every objective-local row cycle
+    before repeating it.  A content-bound objective-mass policy may allocate
+    the post-coverage residual toward measured weak objectives without
+    sacrificing the positive-row coverage floor.
+    """
+
+    row_count = len(stage.inputs)
+    labels_by_row = tuple(getattr(stage, "kerc_coverage_labels", ()) or ())
+    base_weights = np.asarray(
+        getattr(stage, "sample_weights", np.ones(row_count)), dtype=np.float64
+    )
+    if (
+        row_count <= 0
+        or len(labels_by_row) != row_count
+        or len(base_weights) != row_count
+        or np.any(base_weights <= 0.0)
+    ):
+        raise ValueError("KERC objective balancing requires positive aligned rows")
+    objectives: list[str] = []
+    for labels in labels_by_row:
+        matched = [
+            label.split(":", 1)[1]
+            for label in labels
+            if label.startswith("objective:")
+        ]
+        if len(matched) != 1 or matched[0] not in TRAINING_TASK_TAGS:
+            raise ValueError("KERC rows require exactly one registered objective label")
+        objectives.append(matched[0])
+    missing = sorted(set(TRAINING_TASK_TAGS) - set(objectives))
+    if missing:
+        raise ValueError(f"KERC objective balancing is missing objectives: {missing}")
+    row_counts = {objective: objectives.count(objective) for objective in TRAINING_TASK_TAGS}
+    base_mass = {
+        objective: float(
+            sum(
+                base_weights[index]
+                for index, observed in enumerate(objectives)
+                if observed == objective
+            )
+        )
+        for objective in TRAINING_TASK_TAGS
+    }
+    if objective_sampling_mass is None:
+        target_mass = {objective: 1.0 for objective in TRAINING_TASK_TAGS}
+    else:
+        if set(objective_sampling_mass) != set(TRAINING_TASK_TAGS):
+            raise ValueError(
+                "KERC objective sampling mass must name every registered objective"
+            )
+        raw_target_mass = {
+            objective: float(objective_sampling_mass[objective])
+            for objective in TRAINING_TASK_TAGS
+        }
+        if any(
+            not np.isfinite(value) or value <= 0.0
+            for value in raw_target_mass.values()
+        ):
+            raise ValueError("KERC objective sampling mass must be finite and positive")
+        target_mass_total = float(sum(raw_target_mass.values()))
+        target_mass = {
+            objective: value / target_mass_total
+            for objective, value in raw_target_mass.items()
+        }
+    weights = np.asarray(
+        [
+            (
+                target_mass[objective] / float(row_counts[objective])
+                if uniform_within_objective
+                else (
+                    target_mass[objective]
+                    * float(base_weights[index])
+                    / base_mass[objective]
+                )
+            )
+            for index, objective in enumerate(objectives)
+        ],
+        dtype=np.float64,
+    )
+    balanced_mass = {
+        objective: float(
+            sum(
+                weights[index]
+                for index, observed in enumerate(objectives)
+                if observed == objective
+            )
+        )
+        for objective in TRAINING_TASK_TAGS
+    }
+    return weights, {
+        "policy": (
+            "project_theseus_kerc_objective_residual_allocation_v3"
+            if objective_sampling_mass is not None
+            else (
+                "project_theseus_kerc_objective_balanced_sampling_v2"
+                if uniform_within_objective
+                else "project_theseus_kerc_objective_balanced_sampling_v1"
+            )
+        ),
+        "active": True,
+        "row_count": row_count,
+        "objective_row_counts": row_counts,
+        "objective_base_sampling_mass": base_mass,
+        "objective_balanced_sampling_mass": balanced_mass,
+        "objective_target_sampling_mass": target_mass,
+        "objective_mass_policy": (
+            "checkpoint_diagnostic_residual_allocation_after_full_row_coverage_v1"
+            if objective_sampling_mass is not None
+            else "equal_objective_mass_v1"
+        ),
+        "sampling_policy": "stratified_smooth_weighted_round_robin_v1",
+        "within_objective_weight_policy": (
+            "uniform_without_replacement_cycle_v1"
+            if uniform_within_objective
+            else "source_weight_preserving_legacy_v1"
+        ),
+        "replacement_sampling_after_coverage_prefix": False,
+        "weight_sha256": hashlib.sha256(weights.tobytes()).hexdigest(),
+    }
+
+
+def select_kerc_overfit_stage(stage: Any, *, rows_per_objective: int) -> Any:
+    """Select a tiny generator-only stage for training-row learnability sanity."""
+
+    if rows_per_objective <= 0 or not getattr(stage, "training_row_ids", None):
+        raise ValueError("KERC overfit selection requires aligned training row identities")
+    selected: list[int] = []
+    selected_by_objective: dict[str, int] = {}
+    available_objectives = [
+        objective
+        for objective in TRAINING_TASK_TAGS
+        if any(
+            f"objective:{objective}" in labels
+            for labels in stage.kerc_coverage_labels
+        )
+    ]
+    if not available_objectives:
+        raise ValueError("KERC overfit stage has no generator objective")
+    for objective in available_objectives:
+        label = f"objective:{objective}"
+        candidates = [
+            index
+            for index, (row_id, labels) in enumerate(
+                zip(stage.training_row_ids, stage.kerc_coverage_labels)
+            )
+            if label in labels
+            and ":verifier_negative" not in row_id
+            and ":counterfactual:" not in row_id
+            and bool(np.asarray(stage.mask[index]).any())
+        ]
+        if len(candidates) < rows_per_objective:
+            raise ValueError(f"KERC overfit stage lacks generator rows for {objective}")
+        ranked = sorted(
+            candidates,
+            key=lambda index: (
+                len(np.asarray(stage.inputs[index])),
+                str(stage.training_row_ids[index]),
+            ),
+        )[:rows_per_objective]
+        selected.extend(ranked)
+        selected_by_objective[objective] = len(ranked)
+    values: dict[str, Any] = {}
+    for name, value in vars(stage).items():
+        if name == "receipt":
+            receipt = copy.deepcopy(value)
+            receipt.update(
+                {
+                    "row_count": len(selected),
+                    "generator_training_row_count": len(selected),
+                    "verifier_only_row_count": 0,
+                    "target_positions": int(
+                        sum(np.asarray(stage.mask[index]).sum() for index in selected)
+                    ),
+                    "weighted_loss_positions": float(
+                        sum(
+                            np.asarray(stage.loss_mask[index]).sum()
+                            for index in selected
+                        )
+                    ),
+                    "sampling_weight_sum": float(
+                        sum(float(stage.sample_weights[index]) for index in selected)
+                    ),
+                    "overfit_diagnostic": {
+                        "policy": (
+                            "project_theseus_kerc_four_objective_overfit_v1"
+                            if len(available_objectives) == 4
+                            else "project_theseus_kerc_filtered_objective_overfit_v1"
+                        ),
+                        "active": True,
+                        "rows_per_objective": int(rows_per_objective),
+                        "selected_by_objective": selected_by_objective,
+                        "selected_row_ids_sha256": hashlib.sha256(
+                            "\n".join(
+                                str(stage.training_row_ids[index])
+                                for index in selected
+                            ).encode()
+                        ).hexdigest(),
+                        "selection_uses_model_outcomes": False,
+                        "capability_claim": "NONE_TRAINING_ROW_LEARNABILITY_ONLY",
+                    },
+                }
+            )
+            values[name] = receipt
+        elif isinstance(value, RaggedRows):
+            values[name] = RaggedRows(
+                [np.asarray(value[index]) for index in selected],
+                dtype=value.dtype,
+                standard_width=value.standard_width,
+            )
+        elif isinstance(value, np.ndarray) and len(value) == len(stage.inputs):
+            values[name] = np.asarray(value[selected])
+        elif isinstance(value, tuple) and len(value) == len(stage.inputs):
+            values[name] = tuple(value[index] for index in selected)
+        else:
+            values[name] = value
+    return SimpleNamespace(**values)
+
 SHARED_TRUNK_ID = "shared_trunk"
 CONTROL_IDS = ("dense_total_parameter", "dense_active_parameter")
 KERC_ENGLISH_ID = "english_kerc"
@@ -520,17 +1131,62 @@ KERC_CANARY_REQUIRED_COVERAGE = (
 )
 
 
+def bounded_kerc_coverage_required(target: dict[str, Any], stage: Any) -> bool:
+    """Require set-cover batching for every bounded KERC lease, not only tiny canaries."""
+
+    return (
+        str(target.get("role") or "") == "kerc_english_candidate"
+        and stage is not None
+        and bool(
+            ((stage.receipt or {}).get("bounded_selection") or {}).get("active")
+        )
+        and not bool(
+            ((stage.receipt or {}).get("overfit_diagnostic") or {}).get("active")
+        )
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=relative(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     parser.add_argument("--execute", action="store_true")
     parser.add_argument(
+        "--guarded",
+        action="store_true",
+        help="Launch a heavy operation under the canonical external host watchdog.",
+    )
+    parser.add_argument(
         "--target",
         action="append",
         choices=[SHARED_TRUNK_ID, *ARM_IDS, *CONTROL_IDS, *ENGLISH_COMPARISON_IDS],
     )
     parser.add_argument("--max-steps", type=int, default=0)
+    parser.add_argument(
+        "--architecture-candidate-id",
+        default="",
+        help="Candidate-specific T0A canary id; required for bounded pre-freeze optimizer work.",
+    )
+    parser.add_argument(
+        "--candidate-seed",
+        type=int,
+        default=0,
+        help="Bind one preregistered seed for an isolated canonical candidate run.",
+    )
+    parser.add_argument(
+        "--candidate-initialization-state",
+        default="",
+        help=(
+            "Optional candidate-only JSON custody state used to align a matched "
+            "pair across separately watchdog-isolated target processes."
+        ),
+    )
+    parser.add_argument(
+        "--optimizer-id",
+        choices=sorted(pretraining_optimizers.OPTIMIZER_IDS),
+        default="",
+        help="Optimizer implementation for an optimizer_adequacy scratch canary.",
+    )
     parser.add_argument(
         "--phase",
         choices=("all", "pretraining", "source_conditioned_pretraining", "kernel_english", "supervision"),
@@ -539,11 +1195,21 @@ def main() -> int:
     )
     parser.add_argument("--resume", action="store_true")
     parser.add_argument(
+        "--candidate-continuation-report",
+        default="",
+        help=(
+            "Import one content-bound terminal candidate receipt into a fresh "
+            "scratch namespace for a governed one-shot continuation. This is "
+            "not general candidate scratch resume authority."
+        ),
+    )
+    parser.add_argument(
         "--scratch-checkpoint-root",
         default="",
         help=(
             "Write a bounded non-resumable canary outside the registered checkpoint "
-            "lineage. Requires --execute and 1..8 --max-steps."
+            "lineage. Requires --execute, --architecture-candidate-id, and a positive "
+            "candidate-authorized --max-steps."
         ),
     )
     parser.add_argument(
@@ -565,6 +1231,9 @@ def main() -> int:
         ),
     )
     args = parser.parse_args()
+    heavy_operation = training_operation(args)
+    if args.guarded and not heavy_operation:
+        parser.error("--guarded requires training, evaluation, or checkpoint migration")
     if args.migrate_shared_trunk_checkpoint_format and (
         args.execute
         or args.evaluate_progress
@@ -587,16 +1256,111 @@ def main() -> int:
         parser.error("execution or progress evaluation requires at least one explicit --target")
     if args.max_steps < 0:
         parser.error("--max-steps cannot be negative")
-    if args.scratch_checkpoint_root and (
-        not args.execute or args.resume or not 1 <= args.max_steps <= 8
+    if bool(args.scratch_checkpoint_root) != bool(args.architecture_candidate_id):
+        parser.error(
+            "--scratch-checkpoint-root and --architecture-candidate-id are required together"
+        )
+    if bool(args.scratch_checkpoint_root) != bool(args.candidate_seed):
+        parser.error(
+            "--candidate-seed is required exactly when candidate scratch training is requested"
+        )
+    if args.candidate_initialization_state and not args.architecture_candidate_id:
+        parser.error(
+            "--candidate-initialization-state requires an architecture candidate"
+        )
+    segmented_candidate_resume = bool(
+        args.resume
+        and args.architecture_candidate_id == "rdc_kerc_k5_adequacy"
+    )
+    if args.candidate_continuation_report and (
+        not args.execute
+        or (args.resume and not segmented_candidate_resume)
+        or not args.scratch_checkpoint_root
+        or args.architecture_candidate_id
+        not in {"rdc_kerc_k5_adequacy", "rdc_kerc_k5_overfit"}
+        or args.candidate_seed <= 0
+        or args.phase != "kernel_english"
+        or set(args.target or []) != {KERC_ENGLISH_ID}
     ):
         parser.error(
-            "--scratch-checkpoint-root requires non-resumable --execute with 1..8 --max-steps"
+            "--candidate-continuation-report requires a fresh or governed segmented-resume "
+            "rdc_kerc_k5 adequacy/overfit scratch execution for only english_kerc, "
+            "one bound seed, and the kernel_english phase"
+        )
+    if args.scratch_checkpoint_root and (
+        not args.execute
+        or (args.resume and not segmented_candidate_resume)
+        or args.max_steps <= 0
+    ):
+        parser.error(
+            "candidate scratch training requires fresh execution or the governed "
+            "K5 segmented-resume path with positive --max-steps"
+        )
+    if args.optimizer_id and (
+        args.architecture_candidate_id != "optimizer_adequacy"
+        or not args.scratch_checkpoint_root
+    ):
+        parser.error(
+            "--optimizer-id is restricted to an optimizer_adequacy scratch canary"
         )
 
     config_path = resolve(args.config)
-    config = bind_scale_preregistration(read_json(config_path))
-    plan = build_plan(config, config_path=config_path)
+    raw_config = read_json(config_path)
+    if heavy_operation:
+        accelerator_authorized = host_resource_safety.accelerator_child_authorized()
+        training_authorized = (
+            os.environ.get("THESEUS_GUARDED_TRAINING_CHILD") == "1"
+        )
+        if args.guarded:
+            if accelerator_authorized or training_authorized:
+                parser.error("nested guarded training launch is forbidden")
+            return launch_guarded_training(
+                raw_config,
+                heavy_operation,
+                candidate_id=args.architecture_candidate_id,
+            )
+        if args.architecture_candidate_id:
+            authorized = accelerator_authorized
+        else:
+            authorized = accelerator_authorized and training_authorized
+        if not authorized:
+            parser.error(
+                "heavy MLX execution requires --guarded or the replacement freeze shard runner"
+            )
+    config = bind_scale_preregistration(raw_config)
+    preissued_candidate_authority = None
+    if args.execute and args.max_steps > 0:
+        preissued_candidate_authority = architecture_training_authority(
+            config,
+            max_steps=args.max_steps,
+            candidate_id=args.architecture_candidate_id,
+            scratch_checkpoint_root=args.scratch_checkpoint_root,
+            targets=list(dict.fromkeys(args.target or [])),
+            phase=args.phase,
+            resume=args.resume,
+            candidate_seed=args.candidate_seed,
+        )
+        candidate_lease = (preissued_candidate_authority or {}).get(
+            "candidate_lease"
+        ) or {}
+        execution_policy = candidate_lease.get("execution_policy") or {}
+        if (
+            execution_policy.get("require_external_watchdog") is True
+            and os.environ.get("THESEUS_GUARDED_ACCELERATOR_CHILD") != "1"
+        ):
+            parser.error(
+                "this accelerator canary must be launched by the Theseus host "
+                "resource watchdog; direct execution is denied"
+            )
+    config = bind_candidate_canary_overlay(
+        config,
+        (preissued_candidate_authority or {}).get("candidate_lease"),
+    )
+    plan = build_plan(
+        config,
+        config_path=config_path,
+        candidate_lease=(preissued_candidate_authority or {}).get("candidate_lease"),
+    )
     if plan["trigger_state"] == "RED":
         write_json(resolve(args.out or config["report"]), plan)
         print(json.dumps(plan, indent=2, sort_keys=True))
@@ -628,7 +1392,16 @@ def main() -> int:
             baseline_checkpoint=args.baseline_checkpoint,
         )
     elif args.execute:
-        authority = architecture_training_authority(config, max_steps=args.max_steps)
+        authority = preissued_candidate_authority or architecture_training_authority(
+            config,
+            max_steps=args.max_steps,
+            candidate_id=args.architecture_candidate_id,
+            scratch_checkpoint_root=args.scratch_checkpoint_root,
+            targets=list(dict.fromkeys(args.target or [])),
+            phase=args.phase,
+            resume=args.resume,
+            candidate_seed=args.candidate_seed,
+        )
         if authority["trigger_state"] != "GREEN":
             report = {
                 **plan,
@@ -652,6 +1425,18 @@ def main() -> int:
                 if args.scratch_checkpoint_root
                 else None
             ),
+            candidate_lease=(authority.get("candidate_lease") or None),
+            optimizer_id=args.optimizer_id,
+            candidate_initialization_state_path=(
+                resolve(args.candidate_initialization_state)
+                if args.candidate_initialization_state
+                else None
+            ),
+            candidate_continuation_report_path=(
+                resolve(args.candidate_continuation_report)
+                if args.candidate_continuation_report
+                else None
+            ),
         )
     write_json(resolve(args.out or config["report"]), report)
     print(json.dumps(report, indent=2, sort_keys=True))
@@ -662,9 +1447,15 @@ def architecture_training_authority(
     config: dict[str, Any],
     *,
     max_steps: int,
+    candidate_id: str = "",
+    scratch_checkpoint_root: str | Path = "",
+    targets: list[str] | None = None,
+    phase: str = "all",
+    resume: bool = False,
+    candidate_seed: int = 0,
     runner: Any = subprocess.run,
 ) -> dict[str, Any]:
-    """Permit bounded architecture canaries, but gate long optimizer spend."""
+    """Permit content-bound candidate canaries, but gate long optimizer spend."""
 
     cfg = config.get("architecture_training_authority")
     if not isinstance(cfg, dict) or cfg.get("policy") != (
@@ -677,14 +1468,37 @@ def architecture_training_authority(
             "reason": "architecture_training_authority_contract_missing",
         }
     canary_cap = int(cfg.get("pre_training_canary_max_steps") or 0)
-    if 0 < max_steps <= canary_cap:
+    if max_steps > 0:
+        if not candidate_id:
+            return {
+                "policy": cfg["policy"],
+                "trigger_state": "RED",
+                "authority": "DENIED",
+                "reason": "candidate_specific_canary_lease_required",
+                "legacy_generic_canary_cap": canary_cap,
+            }
+        lease = pretraining_candidate_canary.candidate_lease(
+            candidate_id=candidate_id,
+            max_steps=max_steps,
+            scratch_checkpoint_root=scratch_checkpoint_root,
+            targets=list(targets or []),
+            phase=phase,
+            resume=resume,
+            selected_seed=(candidate_seed if candidate_seed > 0 else None),
+        )
         return {
             "policy": cfg["policy"],
-            "trigger_state": "GREEN",
-            "authority": "BOUNDED_ARCHITECTURE_CANARY",
+            "trigger_state": "GREEN" if lease["authorized"] else "RED",
+            "authority": (
+                "CANDIDATE_SPECIFIC_ARCHITECTURE_CANARY"
+                if lease["authorized"]
+                else "DENIED"
+            ),
             "maximum_steps": max_steps,
-            "canary_cap": canary_cap,
+            "legacy_generic_canary_cap": canary_cap,
             "long_optimizer_run_authorized": False,
+            "candidate_lease": lease,
+            "reason": "" if lease["authorized"] else "candidate_specific_canary_lease_denied",
         }
     command = [str(value) for value in cfg.get("gate_command") or []]
     if cfg.get("required_for_long_optimizer_runs") is not True or not command:
@@ -774,14 +1588,141 @@ def bind_scale_preregistration(config: dict[str, Any]) -> dict[str, Any]:
     return bound
 
 
-def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
+def bind_candidate_canary_overlay(
+    config: dict[str, Any], candidate_lease: dict[str, Any] | None
+) -> dict[str, Any]:
+    """Activate a deferred candidate only inside its bounded scratch lease.
+
+    KERC was removed from the first long campaign after K0-K3, but its frozen
+    source-disjoint stage remains bound to the earlier faithful-candidate
+    contract. Reconstructing that exact contract in memory lets K4-K8 canaries
+    use the canonical trainer without mutating the production disposition or
+    weakening the stage-manifest identity check.
+    """
+
+    if candidate_lease is None or candidate_lease.get("candidate_id") not in {
+        "rdc_kerc_adequacy",
+        "rdc_kerc_k5_adequacy",
+        "rdc_kerc_k5_overfit",
+    }:
+        return config
+    pretraining_candidate_canary.validate_lease(candidate_lease)
+    existing = config.get("_candidate_canary_overlay") or {}
+    if existing.get("lease_digest") == candidate_lease.get("lease_digest"):
+        return config
+    candidate_targets = list(candidate_lease.get("targets") or [])
+    if (
+        not candidate_targets
+        or not set(candidate_targets).issubset(set(ENGLISH_COMPARISON_IDS))
+        or candidate_lease.get("phase") != "kernel_english"
+    ):
+        raise ValueError(
+            "RDC/KERC candidate overlay requires a KERC matched-comparison target"
+        )
+
+    bound = copy.deepcopy(config)
+    kernel = bound["kernel_english_training"]
+    records = dict(kernel.get("deferred_candidate_records_by_split") or {})
+    if not records or any(int(value) <= 0 for value in records.values()):
+        raise ValueError("RDC/KERC candidate overlay requires frozen candidate records")
+    prior = dict(kernel.get("disposition") or {})
+    kernel["required"] = True
+    kernel["records_by_split"] = records
+    kernel.pop("deferred_candidate_records_by_split", None)
+    kernel["disposition"] = {
+        "policy": "project_theseus_kerc_pretraining_disposition_v1",
+        "state": "CANDIDATE_REQUIRED",
+        "qualification_scope": "faithful_full_compiler_core_renderer_candidate",
+        "basis": "adequacy_audit_reopened_after_toy_proxy",
+        "full_kerc_training_enabled": True,
+        "general_kerc_falsification_claimed": False,
+        "learned_capability_claimed": False,
+        "retained_mechanisms": [],
+        "superseded_proxy_evidence": copy.deepcopy(
+            prior.get("superseded_proxy_evidence") or {}
+        ),
+        "non_claims": list(prior.get("non_claims") or []),
+    }
+    execution_policy = dict(candidate_lease.get("execution_policy") or {})
+    kernel_repetitions = int(
+        execution_policy.get("kernel_optimizer_repetitions") or 1
+    )
+    if kernel_repetitions <= 0 or kernel_repetitions > int(
+        bound["training"]["maximum_kernel_english_optimizer_repetitions"]
+    ):
+        raise ValueError("candidate kernel optimizer repetitions exceed the frozen cap")
+    bound["training"]["kernel_english_optimizer_repetitions"] = kernel_repetitions
+    candidate_decode_envelopes = dict(
+        execution_policy.get(
+            "maximum_supervised_training_sequence_tokens_by_target"
+        )
+        or {}
+    )
+    if KERC_ENGLISH_ID in candidate_decode_envelopes:
+        bound["evaluation"]["kerc_decode_max_target_tokens"] = min(
+            int(bound["evaluation"]["kerc_decode_max_target_tokens"]),
+            int(candidate_decode_envelopes[KERC_ENGLISH_ID]),
+        )
+    comparison = bound["comparison_contract"]
+    comparison["first_campaign_candidate_ids"] = [
+        SHARED_TRUNK_ID,
+        *ARM_IDS,
+        *CONTROL_IDS,
+        *ENGLISH_COMPARISON_IDS,
+    ]
+    comparison["required_views"] = [
+        *comparison.get("required_views", []),
+        *comparison.pop("deferred_kerc_views", []),
+    ]
+    comparison["required_metrics"] = [
+        *comparison.get("required_metrics", []),
+        *comparison.pop("deferred_kerc_metrics", []),
+    ]
+    bound["_candidate_canary_overlay"] = {
+        "policy": "project_theseus_candidate_config_overlay_v1",
+        "candidate_id": "rdc_kerc_adequacy",
+        "lease_digest": candidate_lease["lease_digest"],
+        "production_disposition_mutated": False,
+        "stage_identity_relaxed": False,
+        "execution_policy": execution_policy,
+    }
+    return bound
+
+
+def build_plan(
+    config: dict[str, Any],
+    *,
+    config_path: Path,
+    candidate_lease: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    config = bind_candidate_canary_overlay(config, candidate_lease)
     config = bind_scale_preregistration(config)
     gaps: list[str] = []
     validate_config(config)
     base_path = resolve(str(config["base_config"]))
     base = read_json(base_path)
     scale_audit = audit_scale_preregistration(config)
-    gaps.extend(scale_audit["hard_gaps"])
+    scale_gaps = list(scale_audit["hard_gaps"])
+    candidate_scale_deviations: list[str] = []
+    if candidate_lease is not None:
+        pretraining_candidate_canary.validate_lease(candidate_lease)
+        if candidate_lease.get("authorized") is not True:
+            raise ValueError("candidate plan requires an authorized lease")
+        candidate_scale_deviations = [
+            gap
+            for gap in scale_gaps
+            if gap.startswith("scale_preregistration_input_stale:")
+            or gap == "scale_preregistration_report_config_identity_mismatch"
+        ]
+        scale_gaps = [
+            gap for gap in scale_gaps if gap not in candidate_scale_deviations
+        ]
+        scale_audit["production_hard_gaps_acknowledged_by_candidate_lease"] = (
+            candidate_scale_deviations
+        )
+        scale_audit["candidate_lease_digest"] = candidate_lease["lease_digest"]
+        scale_audit["state"] = "CANDIDATE_SCRATCH_ONLY"
+    gaps.extend(scale_gaps)
     stage_dir = resolve(str(config["stage_dir"]))
     metadata_path = stage_dir / "stage_metadata_v1.json"
     if not metadata_path.is_file():
@@ -863,21 +1804,39 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         models,
     )
     gaps.extend(specialist_scaling["hard_gaps"])
+    candidate_exposure_deviations: list[str] = []
     for target_id, target in targets.items():
         if target.get("optimizer_repetition_ceiling_ready") is not True:
-            gaps.append(f"optimizer_repetition_ceiling_exceeded:{target_id}")
+            gap = f"optimizer_repetition_ceiling_exceeded:{target_id}"
+            if candidate_lease is not None and target_id in ENGLISH_COMPARISON_IDS:
+                candidate_exposure_deviations.append(gap)
+            else:
+                gaps.append(gap)
     checkpoint_inventory = inspect_checkpoint_inventory(
         targets,
         plan_identity,
         summary.get("stage_signature"),
         plan_identity_contract=config.get("plan_identity") or {},
     )
-    gaps.extend(checkpoint_inventory["hard_gaps"])
+    checkpoint_gaps = list(checkpoint_inventory["hard_gaps"])
+    candidate_checkpoint_deviations: list[str] = []
+    if candidate_lease is not None:
+        candidate_checkpoint_deviations = checkpoint_gaps
+        checkpoint_inventory[
+            "production_hard_gaps_acknowledged_by_candidate_lease"
+        ] = candidate_checkpoint_deviations
+        checkpoint_inventory["candidate_scratch_only"] = True
+        checkpoint_gaps = []
+    gaps.extend(checkpoint_gaps)
     return {
         "policy": "project_theseus_moecot_language_arm_training_plan_v1",
         "created_utc": now(),
         "trigger_state": "RED" if gaps else "GREEN",
-        "mode": "preregistered_plan",
+        "mode": (
+            "candidate_scratch_plan"
+            if candidate_lease is not None
+            else "preregistered_plan"
+        ),
         "config": relative(config_path),
         "config_sha256": sha256_file(config_path),
         "base_config": relative(base_path),
@@ -902,6 +1861,22 @@ def build_plan(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]:
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
         "plan_identity": config.get("plan_identity") or {},
+        "candidate_canary_context": {
+            "active": candidate_lease is not None,
+            "lease_digest": (
+                str(candidate_lease.get("lease_digest") or "")
+                if candidate_lease is not None
+                else ""
+            ),
+            "production_scale_deviations": candidate_scale_deviations,
+            "production_checkpoint_deviations": candidate_checkpoint_deviations,
+            "production_optimizer_exposure_deviations": (
+                candidate_exposure_deviations
+            ),
+            "production_training_authorized": False,
+            "capability_claim_authorized": False,
+            "config_overlay": config.get("_candidate_canary_overlay") or {},
+        },
         "training_implementation_closure": training_implementation_closure(config),
         "plan_sha256": plan_identity,
         "hard_gaps": sorted(set(gaps)),
@@ -1234,10 +2209,6 @@ def model_accounting(
     config: dict[str, Any], base: dict[str, Any], metadata: dict[str, Any]
 ) -> dict[str, Any]:
     config = bind_scale_preregistration(config)
-    import mlx.core as mx
-    import mlx.nn as nn
-    import mlx.utils as mlx_utils
-
     canonical_vocab_size = model_vocab_size(
         base,
         dict(metadata.get("source_vocab") or {}),
@@ -1251,48 +2222,20 @@ def model_accounting(
     kernel_capacity = int(code_contract["kernel_max_vocab"]) if kerc_enabled else 0
     pointer_capacity = int(code_contract["pointer_max_vocab"]) if kerc_enabled else 0
     kerc_vocab_size = canonical_vocab_size + kernel_capacity + pointer_capacity
-    copy_lookup = build_source_to_target_lookup(
-        base, metadata, vocab_size=canonical_vocab_size
-    )
-
-    def instantiate(
-        model_config: dict[str, Any], *, vocab_size: int = canonical_vocab_size
-    ) -> Any:
-        lookup = (
-            copy_lookup
-            if vocab_size == canonical_vocab_size
-            else np.pad(
-                copy_lookup,
-                (0, vocab_size - canonical_vocab_size),
-                constant_values=-1,
-            )
-        )
-        return build_model(
-            CausalTransformerConfig(vocab_size=vocab_size, **model_config),
-            mx=mx,
-            nn=nn,
-            state_role_lookup=None,
-            source_to_target_lookup=lookup,
-        )
-
     def count(
         model_config: dict[str, Any], *, vocab_size: int = canonical_vocab_size
     ) -> int:
-        return int(
-            parameter_count(instantiate(model_config, vocab_size=vocab_size), mlx_utils)
+        return analytical_parameter_count(
+            CausalTransformerConfig(vocab_size=vocab_size, **model_config)
         )
 
     trunk_count = count(config["shared_trunk_model"])
-    arm = instantiate(config["arm_model"])
-    arm_count = int(parameter_count(arm, mlx_utils))
-    expert_scope = str(config["topology"]["expert_trainable_scope"])
-    arm.freeze_to_language_expert(expert_scope)
-    expert_count = int(
-        sum(
-            value.size
-            for _name, value in mlx_utils.tree_flatten(arm.trainable_parameters())
-        )
+    arm_config = CausalTransformerConfig(
+        vocab_size=canonical_vocab_size, **config["arm_model"]
     )
+    arm_count = analytical_parameter_count(arm_config)
+    expert_scope = str(config["topology"]["expert_trainable_scope"])
+    expert_count = analytical_trainable_parameter_count(arm_config, expert_scope)
     if expert_count <= 0:
         raise ValueError("language expert must add parameters to the shared trunk")
     system_total = trunk_count + expert_count * len(ARM_IDS)
@@ -1452,6 +2395,7 @@ def matched_encoder_decoder_config(
     for key in (
         "kerc_task_token_ids",
         "kerc_stage_adapter_dim",
+        "kerc_reasoner_output_delta_dim",
         "kerc_residual_choice_count",
         "kerc_residual_bottleneck_dim",
         "kerc_residual_unit_kind_count",
@@ -1660,7 +2604,7 @@ def target_contracts(
             ),
             "shared_trunk_checkpoint": (
                 relative(root / SHARED_TRUNK_ID / "weights.safetensors")
-                if target in ARM_IDS
+                if target in (*ARM_IDS, KERC_ENGLISH_ID)
                 else ""
             ),
             "optimizer_state": relative(directory / "optimizer.safetensors"),
@@ -2124,6 +3068,640 @@ def audit_kernel_english_stage(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def safetensors_payload_index(
+    path: Path,
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]], int]:
+    """Read and validate the small, non-executable safetensors index."""
+
+    with path.open("rb") as handle:
+        encoded_length = handle.read(8)
+        if len(encoded_length) != 8:
+            raise ValueError("optimizer safetensors header is truncated")
+        header_length = int(struct.unpack("<Q", encoded_length)[0])
+        if header_length <= 0 or header_length > path.stat().st_size - 8:
+            raise ValueError("optimizer safetensors header length is invalid")
+        encoded_header = handle.read(header_length)
+    try:
+        header = json.loads(encoded_header.rstrip(b" ").decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError("optimizer safetensors header is invalid") from error
+    if not isinstance(header, dict):
+        raise ValueError("optimizer safetensors header must be an object")
+    metadata = header.pop("__metadata__", {})
+    if metadata is None:
+        metadata = {}
+    if not isinstance(metadata, dict):
+        raise ValueError("optimizer safetensors metadata must be an object")
+    payload_bytes = path.stat().st_size - 8 - header_length
+    intervals: list[tuple[int, int, str]] = []
+    for name, row in header.items():
+        if (
+            not isinstance(name, str)
+            or not isinstance(row, dict)
+            or not isinstance(row.get("dtype"), str)
+            or not isinstance(row.get("shape"), list)
+            or not isinstance(row.get("data_offsets"), list)
+            or len(row["data_offsets"]) != 2
+        ):
+            raise ValueError("optimizer safetensors tensor index is invalid")
+        start, stop = (int(value) for value in row["data_offsets"])
+        if start < 0 or stop < start or stop > payload_bytes:
+            raise ValueError("optimizer safetensors tensor offsets are invalid")
+        intervals.append((start, stop, name))
+    ordered = sorted(intervals)
+    if any(left[1] > right[0] for left, right in zip(ordered, ordered[1:])):
+        raise ValueError("optimizer safetensors tensor payloads overlap")
+    return metadata, header, 8 + header_length
+
+
+def safetensors_raw_tensor_sha256(
+    path: Path,
+    row: dict[str, Any],
+    *,
+    payload_offset: int,
+) -> str:
+    start, stop = (int(value) for value in row["data_offsets"])
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        handle.seek(payload_offset + start)
+        remaining = stop - start
+        while remaining:
+            chunk = handle.read(min(1024 * 1024, remaining))
+            if not chunk:
+                raise ValueError("optimizer safetensors tensor payload is truncated")
+            digest.update(chunk)
+            remaining -= len(chunk)
+    return digest.hexdigest()
+
+
+def project_kerc_compiler_optimizer_state(
+    source: Path,
+    destination: Path,
+    *,
+    include_stage_embedding: bool = True,
+) -> dict[str, Any]:
+    """Project exact AdamW custody to the diagnosed compiler trainable scope.
+
+    This is a byte-preserving projection, not an optimizer reset. It retains the
+    global schedule/step scalars and both persistent moments for every parameter
+    that ``freeze_to_kerc_stage(1)`` exposes, while rejecting an incomplete or
+    structurally surprising source state.
+    """
+
+    if destination.exists():
+        raise ValueError("projected optimizer destination must be fresh")
+    metadata, index, source_payload_offset = safetensors_payload_index(source)
+    global_names = {"learning_rate", "step"}
+
+    def compiler_parameter(name: str) -> bool:
+        return (
+            (
+                include_stage_embedding
+                and name.startswith("kerc_stage_embedding.")
+            )
+            or name.startswith("kerc_stage_adapters.1.")
+            or ".kerc_decoder_stage_adapters.1." in name
+            or name.startswith("kerc_kernel_output.")
+        )
+
+    selected_names = sorted(
+        name
+        for name in index
+        if name in global_names
+        or (
+            (name.endswith(".m") or name.endswith(".v"))
+            and compiler_parameter(name.rsplit(".", 1)[0])
+        )
+    )
+    if not global_names.issubset(selected_names):
+        raise ValueError("compiler optimizer projection is missing global state")
+    selected_parameters = {
+        name.rsplit(".", 1)[0]
+        for name in selected_names
+        if name not in global_names
+    }
+    if (
+        not selected_parameters
+        or (
+            include_stage_embedding
+            and not any(
+                name.startswith("kerc_stage_embedding.")
+                for name in selected_parameters
+            )
+        )
+        or (
+            not include_stage_embedding
+            and any(
+                name.startswith("kerc_stage_embedding.")
+                for name in selected_parameters
+            )
+        )
+        or not any(name.startswith("kerc_stage_adapters.1.") for name in selected_parameters)
+        or not any(name.startswith("kerc_kernel_output.") for name in selected_parameters)
+        or any(
+            f"{parameter}.{moment}" not in index
+            for parameter in selected_parameters
+            for moment in ("m", "v")
+        )
+    ):
+        raise ValueError("compiler optimizer projection source scope is incomplete")
+    unexpected_scalars = sorted(
+        name
+        for name in index
+        if not (name.endswith(".m") or name.endswith(".v"))
+        and name not in global_names
+    )
+    if unexpected_scalars:
+        raise ValueError(
+            "compiler optimizer projection found unsupported global state: "
+            + ",".join(unexpected_scalars)
+        )
+
+    projected_index: dict[str, dict[str, Any]] = {}
+    cursor = 0
+    for name in selected_names:
+        source_row = index[name]
+        start, stop = (int(value) for value in source_row["data_offsets"])
+        size = stop - start
+        projected_index[name] = {
+            "dtype": source_row["dtype"],
+            "shape": source_row["shape"],
+            "data_offsets": [cursor, cursor + size],
+        }
+        cursor += size
+    projected_header: dict[str, Any] = {
+        "__metadata__": {
+            "policy": "project_theseus_exact_kerc_stage_optimizer_projection_v1",
+            "source_policy": str(metadata.get("policy") or ""),
+            "stage_index": "1",
+        },
+        **projected_index,
+    }
+    encoded_header = json.dumps(
+        projected_header, separators=(",", ":"), ensure_ascii=True
+    ).encode("utf-8")
+    encoded_header += b" " * (-len(encoded_header) % 8)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_suffix(destination.suffix + ".partial")
+    try:
+        with source.open("rb") as source_handle, temporary.open("xb") as output:
+            output.write(struct.pack("<Q", len(encoded_header)))
+            output.write(encoded_header)
+            for name in selected_names:
+                start, stop = (int(value) for value in index[name]["data_offsets"])
+                source_handle.seek(source_payload_offset + start)
+                remaining = stop - start
+                while remaining:
+                    chunk = source_handle.read(min(1024 * 1024, remaining))
+                    if not chunk:
+                        raise ValueError(
+                            "optimizer safetensors tensor payload is truncated"
+                        )
+                    output.write(chunk)
+                    remaining -= len(chunk)
+        os.replace(temporary, destination)
+    except BaseException:
+        if temporary.exists():
+            temporary.unlink()
+        raise
+
+    projected_metadata, projected_rows, projected_payload_offset = (
+        safetensors_payload_index(destination)
+    )
+    if (
+        set(projected_rows) != set(selected_names)
+        or projected_metadata.get("policy")
+        != "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+    ):
+        raise ValueError("projected compiler optimizer state failed structural replay")
+    tensor_sha256 = {
+        name: safetensors_raw_tensor_sha256(
+            source, index[name], payload_offset=source_payload_offset
+        )
+        for name in selected_names
+    }
+    mismatches = [
+        name
+        for name in selected_names
+        if tensor_sha256[name]
+        != safetensors_raw_tensor_sha256(
+            destination,
+            projected_rows[name],
+            payload_offset=projected_payload_offset,
+        )
+    ]
+    if mismatches:
+        raise ValueError(
+            "projected compiler optimizer tensor identity mismatch: "
+            + ",".join(mismatches)
+        )
+    return {
+        "policy": "project_theseus_exact_kerc_stage_optimizer_projection_v1",
+        "stage_index": 1,
+        "scope": "compiler",
+        "stage_embedding_included": bool(include_stage_embedding),
+        "source_optimizer_state": relative(source),
+        "source_optimizer_state_sha256": sha256_file(source),
+        "source_tensor_count": len(index),
+        "source_tensor_payload_bytes": sum(
+            int(row["data_offsets"][1]) - int(row["data_offsets"][0])
+            for row in index.values()
+        ),
+        "projected_optimizer_state": relative(destination),
+        "projected_optimizer_state_sha256": sha256_file(destination),
+        "projected_tensor_count": len(projected_rows),
+        "projected_tensor_payload_bytes": cursor,
+        "selected_parameter_count": len(selected_parameters),
+        "selected_tensor_names": selected_names,
+        "selected_raw_tensor_sha256": tensor_sha256,
+        "source_tensor_values_mutated": False,
+        "optimizer_step_reset": False,
+        "learning_rate_reset": False,
+        "independent_projection_replay": "GREEN",
+    }
+
+
+def merge_kerc_compiler_delta_checkpoint(
+    source: Path,
+    delta: Path,
+    destination: Path,
+) -> dict[str, Any]:
+    """Merge an exact compiler-output delta into the FP32 source lineage."""
+
+    if destination.exists():
+        raise ValueError("merged checkpoint destination must be fresh")
+    _source_metadata, source_index, source_payload = (
+        safetensors_payload_index(source)
+    )
+    _delta_metadata, delta_index, delta_payload = safetensors_payload_index(
+        delta
+    )
+
+    def compiler_parameter(name: str) -> bool:
+        return (
+            name.startswith("kerc_stage_embedding.")
+            or name.startswith("kerc_stage_adapters.1.")
+            or ".kerc_decoder_stage_adapters.1." in name
+            or name.startswith("kerc_kernel_output.")
+        )
+
+    full_compiler_names = {
+        name for name in source_index if compiler_parameter(name)
+    }
+    output_only_names = {
+        name
+        for name in full_compiler_names
+        if not name.startswith("kerc_stage_embedding.")
+    }
+    if (
+        len(full_compiler_names) != 5
+        or len(output_only_names) != 4
+        or frozenset(delta_index)
+        not in {frozenset(full_compiler_names), frozenset(output_only_names)}
+    ):
+        raise ValueError("compiler delta checkpoint scope is not exact")
+    expected_delta_names = set(delta_index)
+    incompatible = sorted(
+        name
+        for name in expected_delta_names
+        if delta_index[name]["dtype"] != source_index[name]["dtype"]
+        or delta_index[name]["dtype"] != "F32"
+        or delta_index[name]["shape"] != source_index[name]["shape"]
+    )
+    if incompatible:
+        raise ValueError(
+            "compiler delta tensor dtype or shape mismatch:"
+            + ",".join(incompatible)
+        )
+
+    merged_index: dict[str, dict[str, Any]] = {}
+    cursor = 0
+    for name in sorted(source_index):
+        row = delta_index[name] if name in delta_index else source_index[name]
+        start, stop = (int(value) for value in row["data_offsets"])
+        size = stop - start
+        merged_index[name] = {
+            "dtype": row["dtype"],
+            "shape": row["shape"],
+            "data_offsets": [cursor, cursor + size],
+        }
+        cursor += size
+    header: dict[str, Any] = {
+        "__metadata__": {
+            "policy": "project_theseus_kerc_compiler_delta_merge_v1",
+            "source_checkpoint_sha256": sha256_file(source),
+            "compiler_delta_sha256": sha256_file(delta),
+        },
+        **merged_index,
+    }
+    encoded_header = json.dumps(
+        header, separators=(",", ":"), ensure_ascii=True
+    ).encode("utf-8")
+    encoded_header += b" " * (-len(encoded_header) % 8)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_suffix(destination.suffix + ".partial")
+    try:
+        with temporary.open("xb") as output:
+            output.write(struct.pack("<Q", len(encoded_header)))
+            output.write(encoded_header)
+            for name in sorted(source_index):
+                selected_delta = name in delta_index
+                path = delta if selected_delta else source
+                payload_offset = (
+                    delta_payload if selected_delta else source_payload
+                )
+                row = (
+                    delta_index[name]
+                    if selected_delta
+                    else source_index[name]
+                )
+                start, stop = (int(value) for value in row["data_offsets"])
+                with path.open("rb") as input_handle:
+                    input_handle.seek(payload_offset + start)
+                    remaining = stop - start
+                    while remaining:
+                        chunk = input_handle.read(
+                            min(1024 * 1024, remaining)
+                        )
+                        if not chunk:
+                            raise ValueError(
+                                "checkpoint tensor payload is truncated"
+                            )
+                        output.write(chunk)
+                        remaining -= len(chunk)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+    _merged_metadata, observed_index, observed_payload = (
+        safetensors_payload_index(destination)
+    )
+    if set(observed_index) != set(source_index):
+        raise ValueError("merged checkpoint tensor identity changed")
+    selected_delta_exact = all(
+        safetensors_raw_tensor_sha256(
+            destination,
+            observed_index[name],
+            payload_offset=observed_payload,
+        )
+        == safetensors_raw_tensor_sha256(
+            delta,
+            delta_index[name],
+            payload_offset=delta_payload,
+        )
+        for name in delta_index
+    )
+    frozen_source_exact = all(
+        safetensors_raw_tensor_sha256(
+            destination,
+            observed_index[name],
+            payload_offset=observed_payload,
+        )
+        == safetensors_raw_tensor_sha256(
+            source,
+            source_index[name],
+            payload_offset=source_payload,
+        )
+        for name in source_index
+        if name not in delta_index
+    )
+    if not selected_delta_exact or not frozen_source_exact:
+        raise ValueError("merged checkpoint independent tensor replay failed")
+    return {
+        "policy": "project_theseus_kerc_compiler_delta_merge_v1",
+        "source_checkpoint": relative(source),
+        "source_checkpoint_sha256": sha256_file(source),
+        "compiler_delta": relative(delta),
+        "compiler_delta_sha256": sha256_file(delta),
+        "merged_checkpoint": relative(destination),
+        "merged_checkpoint_sha256": sha256_file(destination),
+        "source_tensor_count": len(source_index),
+        "compiler_delta_tensor_count": len(delta_index),
+        "stage_embedding_included": any(
+            name.startswith("kerc_stage_embedding.")
+            for name in delta_index
+        ),
+        "frozen_source_tensor_count": len(source_index) - len(delta_index),
+        "compiler_delta_tensor_names": sorted(delta_index),
+        "selected_delta_tensors_exact": selected_delta_exact,
+        "frozen_source_tensors_exact": frozen_source_exact,
+        "canonical_fp32_tensor_dtype_preserved": True,
+        "independent_merge_replay": "GREEN",
+        "source_checkpoint_mutated": False,
+        "delta_checkpoint_mutated": False,
+        "capability_claim": "NONE_CHECKPOINT_CUSTODY_ONLY",
+    }
+
+
+def initialize_candidate_continuation_receipt(
+    report_path: Path,
+    *,
+    target: dict[str, Any],
+    candidate_lease: dict[str, Any],
+) -> dict[str, Any]:
+    """Import one exact candidate generation into a fresh scratch namespace.
+
+    The source tensors remain immutable and are loaded by their content hashes.
+    Only the small receipt is copied.  The next committed generation is written
+    under the new scratch target, so the terminal source run is never mutated.
+    """
+
+    execution_policy = dict(candidate_lease.get("execution_policy") or {})
+    required_policy_fields = (
+        "continuation_source_report",
+        "continuation_source_report_sha256",
+        "continuation_source_plan_sha256",
+        "continuation_source_checkpoint_sha256",
+        "continuation_source_optimizer_state_sha256",
+        "continuation_source_mlx_rng_state_sha256",
+        "continuation_source_optimizer_steps",
+        "continuation_source_optimizer_positions",
+        "continuation_reset_data_cursor_phase",
+        "continuation_reset_data_cursor_seed",
+        "continuation_reset_phase_position_accounting",
+        "continuation_learning_rate",
+        "continuation_min_learning_rate",
+        "continuation_warmup_steps",
+    )
+    missing = [
+        key
+        for key in required_policy_fields
+        if execution_policy.get(key) in (None, "")
+    ]
+    if missing:
+        raise ValueError(
+            "candidate continuation policy is incomplete: " + ",".join(missing)
+        )
+    source_report = resolve(str(execution_policy["continuation_source_report"]))
+    if (
+        report_path.resolve() != source_report.resolve()
+        or not source_report.is_file()
+        or sha256_file(source_report)
+        != str(execution_policy["continuation_source_report_sha256"])
+    ):
+        raise ValueError("candidate continuation report identity mismatch")
+    report = read_json(source_report)
+    source_lease = report.get("candidate_canary_lease") or {}
+    results = report.get("results") or []
+    selected_seed = int(candidate_lease.get("selected_seed") or 0)
+    if (
+        report.get("policy")
+        != "project_theseus_moecot_language_arm_training_plan_v1"
+        or report.get("mode") != "training_execution"
+        or report.get("trigger_state") != "GREEN"
+        or report.get("hard_gaps")
+        or report.get("executed_targets") != [KERC_ENGLISH_ID]
+        or len(results) != 1
+        or source_lease.get("candidate_id") != "rdc_kerc_k5_adequacy"
+        or int(source_lease.get("selected_seed") or 0) != selected_seed
+    ):
+        raise ValueError("candidate continuation source report is not admissible")
+    receipt = copy.deepcopy(results[0])
+    expected_identities = {
+        "plan_sha256": str(execution_policy["continuation_source_plan_sha256"]),
+        "checkpoint_sha256": str(
+            execution_policy["continuation_source_checkpoint_sha256"]
+        ),
+        "optimizer_state_sha256": str(
+            execution_policy["continuation_source_optimizer_state_sha256"]
+        ),
+        "mlx_rng_state_sha256": str(
+            execution_policy["continuation_source_mlx_rng_state_sha256"]
+        ),
+        "optimizer_steps": int(
+            execution_policy["continuation_source_optimizer_steps"]
+        ),
+        "optimizer_positions": int(
+            execution_policy["continuation_source_optimizer_positions"]
+        ),
+    }
+    if (
+        receipt.get("policy")
+        != "project_theseus_moecot_language_arm_training_receipt_v1"
+        or receipt.get("target_id") != target.get("target_id")
+        or int(receipt.get("candidate_seed") or 0) != selected_seed
+        or any(receipt.get(key) != value for key, value in expected_identities.items())
+    ):
+        raise ValueError("candidate continuation source receipt identity mismatch")
+    source_artifacts = {
+        "checkpoint": (
+            resolve(str(receipt.get("checkpoint") or "")),
+            str(receipt.get("checkpoint_sha256") or ""),
+        ),
+        "optimizer_state": (
+            resolve(str(receipt.get("optimizer_state") or "")),
+            str(receipt.get("optimizer_state_sha256") or ""),
+        ),
+        "mlx_rng_state": (
+            resolve(str(receipt.get("mlx_rng_state") or "")),
+            str(receipt.get("mlx_rng_state_sha256") or ""),
+        ),
+    }
+    artifact_faults = [
+        name
+        for name, (path, expected_sha256) in source_artifacts.items()
+        if not path.is_file() or sha256_file(path) != expected_sha256
+    ]
+    if artifact_faults:
+        raise ValueError(
+            "candidate continuation artifact identity mismatch: "
+            + ",".join(artifact_faults)
+        )
+    receipt_path = resolve(str(target["receipt"]))
+    destination_optimizer = resolve(str(target["optimizer_state"]))
+    destination_artifacts = [
+        receipt_path,
+        resolve(str(target["checkpoint"])),
+        destination_optimizer,
+    ]
+    if any(path.exists() for path in destination_artifacts):
+        raise ValueError("candidate continuation requires a fresh scratch target")
+    optimizer_state_projection = None
+    kerc_stage_only = execution_policy.get("kerc_delta_stage_only")
+    if kerc_stage_only is not None:
+        if int(kerc_stage_only) != 1:
+            raise ValueError(
+                "candidate continuation optimizer projection currently supports "
+                "only the diagnosed KERC compiler stage"
+            )
+        if execution_policy.get("continuation_optimizer_state_projection_policy") != (
+            "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+        ):
+            raise ValueError(
+                "KERC stage-only continuation requires exact optimizer-state projection"
+            )
+        optimizer_state_projection = project_kerc_compiler_optimizer_state(
+            source_artifacts["optimizer_state"][0],
+            destination_optimizer,
+            include_stage_embedding=bool(
+                execution_policy.get(
+                    "kerc_stage_train_stage_embedding", True
+                )
+            ),
+        )
+        receipt["optimizer_state"] = relative(destination_optimizer)
+        receipt["optimizer_state_sha256"] = optimizer_state_projection[
+            "projected_optimizer_state_sha256"
+        ]
+        receipt["optimizer_state_projection"] = optimizer_state_projection
+    import_receipt = {
+        "policy": "project_theseus_exact_candidate_continuation_import_v1",
+        "source_report": relative(source_report),
+        "source_report_sha256": sha256_file(source_report),
+        "source_plan_sha256": receipt["plan_sha256"],
+        "source_checkpoint": relative(source_artifacts["checkpoint"][0]),
+        "source_checkpoint_sha256": receipt["checkpoint_sha256"],
+        "source_optimizer_state": relative(source_artifacts["optimizer_state"][0]),
+        "source_optimizer_state_sha256": receipt["optimizer_state_sha256"],
+        "source_mlx_rng_state": relative(source_artifacts["mlx_rng_state"][0]),
+        "source_mlx_rng_state_sha256": receipt["mlx_rng_state_sha256"],
+        "source_optimizer_steps": int(receipt["optimizer_steps"]),
+        "source_optimizer_positions": int(receipt["optimizer_positions"]),
+        "reset_phase_position_accounting": str(
+            execution_policy["continuation_reset_phase_position_accounting"]
+        ),
+        "selected_seed": selected_seed,
+        "destination_receipt": relative(receipt_path),
+        "source_generation_mutated": False,
+        "registered_lineage_mutated": False,
+    }
+    inherited_current_kernel_positions = int(
+        receipt.get("current_kernel_phase_optimizer_positions") or 0
+    )
+    inherited_coverage_counts = dict(
+        (
+            (
+                (receipt.get("phases") or {}).get("kernel_english")
+                or {}
+            ).get("coverage_first_sampling")
+            or {}
+        ).get("observed_label_counts")
+        or {}
+    )
+    import_receipt["inherited_current_kernel_phase_optimizer_positions"] = (
+        inherited_current_kernel_positions
+    )
+    import_receipt["inherited_coverage_observed_label_counts"] = (
+        inherited_coverage_counts
+    )
+    # This is a fresh candidate continuation, not another one-step segment in
+    # the source objective. The destination phase and coverage ledgers begin at
+    # zero; later fresh-process resumes accumulate from the first destination
+    # update.
+    receipt["current_kernel_phase_optimizer_positions"] = 0
+    receipt["current_kernel_phase_position_accounting_reset"] = False
+    if optimizer_state_projection is not None:
+        import_receipt["source_optimizer_state_sha256"] = expected_identities[
+            "optimizer_state_sha256"
+        ]
+        import_receipt["optimizer_state_projection"] = optimizer_state_projection
+    receipt["candidate_continuation_import"] = import_receipt
+    write_json_atomic(receipt_path, receipt)
+    return import_receipt
+
+
 def execute_targets(
     config: dict[str, Any],
     plan: dict[str, Any],
@@ -2133,16 +3711,37 @@ def execute_targets(
     resume: bool,
     training_phase: str = "all",
     scratch_checkpoint_root: Path | None = None,
+    candidate_lease: dict[str, Any] | None = None,
+    optimizer_id: str = "",
+    candidate_initialization_state_path: Path | None = None,
+    candidate_continuation_report_path: Path | None = None,
 ) -> dict[str, Any]:
-    import mlx.core as mx
-    import mlx.nn as nn
-    import mlx.optimizers as optim
-    import mlx.utils as mlx_utils
+    if candidate_lease is not None and candidate_lease.get("selected_seed") is None:
+        raise ValueError("canonical candidate execution requires one bound preregistered seed")
+    if candidate_continuation_report_path is not None and (
+        candidate_lease is None
+        or candidate_lease.get("candidate_id")
+        not in {"rdc_kerc_k5_adequacy", "rdc_kerc_k5_overfit"}
+        or scratch_checkpoint_root is None
+        or (
+            resume
+            and (
+                candidate_lease.get("execution_policy") or {}
+            ).get("candidate_scratch_resume_policy")
+            != "exact_fresh_process_segment_v1"
+        )
+        or training_phase != "kernel_english"
+        or set(targets) != {KERC_ENGLISH_ID}
+    ):
+        raise ValueError("candidate continuation authority is invalid")
 
     stage_dir = resolve(str(config["stage_dir"]))
     metadata = read_json(stage_dir / "stage_metadata_v1.json")
     base = read_json(resolve(str(config["base_config"])))
     if any(target_id == SHARED_TRUNK_ID or target_id in ARM_IDS for target_id in targets):
+        import mlx.core as mx
+        import mlx.nn as nn
+
         ensure_shared_trunk_migration(
             config,
             plan,
@@ -2153,16 +3752,10 @@ def execute_targets(
             require_existing=any(target_id in ARM_IDS for target_id in targets),
         )
     canonical = metadata["summary"]["canonical_pretrain_stage"]
-    shape = (int(canonical["window_count"]), int(canonical["max_sequence_tokens"]))
-    arrays = load_pretrain_memmaps(
-        pretrain_array_paths(stage_dir),
-        shape,
-        expected=canonical["array_artifacts"],
-    )
-    stage = SimpleNamespace(
-        pretrain_inputs=arrays[0],
-        pretrain_labels=arrays[1],
-        pretrain_mask=arrays[2],
+    stage = canonical_pretraining_execution_stage(
+        stage_dir,
+        canonical,
+        active=training_phase in {"all", "pretraining"},
     )
     supervision_stages = {
         target_id: materialize_target_supervision(
@@ -2189,6 +3782,109 @@ def execute_targets(
         else None
         for target_id in targets
     }
+    kerc_canary_row_limit = 0
+    if candidate_lease is not None and candidate_lease.get("candidate_id") in {
+        "rdc_kerc_adequacy",
+        "rdc_kerc_k5_adequacy",
+        "rdc_kerc_k5_overfit",
+    }:
+        kerc_batch = int(
+            (config.get("kernel_english_training") or {}).get("batch_size") or 1
+        )
+        configured_canary_row_limit = int(
+            (candidate_lease.get("execution_policy") or {}).get(
+                "kerc_bounded_source_row_limit", 0
+            )
+        )
+        kerc_canary_row_limit = (
+            configured_canary_row_limit
+            if configured_canary_row_limit
+            else min(
+                256,
+                max(64, int(candidate_lease["requested_steps"]) * kerc_batch * 2),
+            )
+        )
+        if not 4 <= kerc_canary_row_limit <= 4096:
+            raise ValueError("KERC bounded source row limit must be in [4, 4096]")
+    candidate_execution_policy = dict(
+        (candidate_lease or {}).get("execution_policy") or {}
+    )
+    kerc_stage_objective_filter = tuple(
+        str(value)
+        for value in (
+            candidate_execution_policy.get("kerc_stage_objective_filter") or ()
+        )
+    )
+    kerc_stage_required_coverage_labels = tuple(
+        str(value)
+        for value in (
+            candidate_execution_policy.get(
+                "kerc_stage_required_coverage_labels"
+            )
+            or ()
+        )
+    )
+    kerc_stage_excluded_coverage_labels = dict(
+        candidate_execution_policy.get(
+            "kerc_stage_excluded_coverage_labels"
+        )
+        or {}
+    )
+    if kerc_stage_objective_filter:
+        stage_learnability_intervention = bool(
+            candidate_execution_policy.get(
+                "kerc_stage_learnability_intervention", False
+            )
+        )
+        minimum_coverage_rows = int(
+            candidate_execution_policy.get(
+                "kerc_stage_minimum_coverage_rows", 0
+            )
+        )
+        coverage_multiplier = int(
+            candidate_execution_policy.get("kerc_stage_coverage_multiplier", 0)
+        )
+        bounded_source_rows = int(
+            candidate_execution_policy.get("kerc_bounded_source_row_limit", 0)
+        )
+        if (
+            set(targets) != {KERC_ENGLISH_ID}
+            or not set(kerc_stage_objective_filter).issubset(TRAINING_TASK_TAGS)
+            or candidate_execution_policy.get("kerc_objective_balanced_sampling")
+            is True
+            or not stage_learnability_intervention
+            or minimum_coverage_rows <= 0
+            or coverage_multiplier <= 0
+            or bounded_source_rows
+            != minimum_coverage_rows * coverage_multiplier
+            or not kerc_stage_required_coverage_labels
+            or not set(kerc_stage_required_coverage_labels).issubset(
+                KERC_CANARY_REQUIRED_COVERAGE
+            )
+            or {
+                label
+                for label in kerc_stage_required_coverage_labels
+                if label.startswith("objective:")
+            }
+            != {
+                f"objective:{objective}"
+                for objective in kerc_stage_objective_filter
+            }
+            or set(kerc_stage_required_coverage_labels).intersection(
+                kerc_stage_excluded_coverage_labels
+            )
+            or set(kerc_stage_excluded_coverage_labels)
+            != {"decision:ABSTAIN"}
+            or any(
+                not str(reason).startswith("K7_LONG_SEQUENCE_STRESS_")
+                for reason in kerc_stage_excluded_coverage_labels.values()
+            )
+        ):
+            raise ValueError(
+                "KERC stage objective filtering requires one KERC target, known "
+                "objectives, objective balancing disabled, and a declared "
+                "coverage-multiple learnability intervention"
+            )
     kernel_english_stages = {
         target_id: materialize_target_supervision(
             config,
@@ -2201,14 +3897,134 @@ def execute_targets(
                 config["kernel_english_training"]["maximum_sequence_tokens"]
             ),
             objective_filter=tuple(
-                plan["targets"][target_id].get("kernel_english_objectives") or ()
+                kerc_stage_objective_filter
+                if target_id == KERC_ENGLISH_ID and kerc_stage_objective_filter
+                else plan["targets"][target_id].get("kernel_english_objectives") or ()
             ),
+            bounded_source_row_limit=kerc_canary_row_limit,
         )
         if training_phase in {"all", "kernel_english"}
         and (plan["targets"][target_id].get("kernel_english_artifacts") or {})
         else None
         for target_id in targets
     }
+    if kerc_stage_objective_filter:
+        stage_receipt = (
+            kernel_english_stages[KERC_ENGLISH_ID].receipt
+            if kernel_english_stages.get(KERC_ENGLISH_ID) is not None
+            else {}
+        )
+        selected_source_rows = sum(
+            int(row.get("selected_row_count") or 0)
+            for row in stage_receipt.get("artifacts") or []
+        )
+        if selected_source_rows != int(
+            candidate_execution_policy["kerc_bounded_source_row_limit"]
+        ):
+            raise ValueError(
+                "KERC stage learnability intervention did not materialize its "
+                "declared source-row budget"
+            )
+    maximum_candidate_sequence_tokens = int(
+        ((candidate_lease or {}).get("execution_policy") or {}).get(
+            "maximum_training_sequence_tokens"
+        )
+        or 0
+    )
+    candidate_supervised_sequence_by_target = dict(
+        ((candidate_lease or {}).get("execution_policy") or {}).get(
+            "maximum_supervised_training_sequence_tokens_by_target"
+        )
+        or {}
+    )
+    if maximum_candidate_sequence_tokens:
+        kernel_english_stages = {
+            target_id: (
+                bound_supervision_stage_sequence_width(
+                    stage,
+                    maximum_sequence_tokens=maximum_candidate_sequence_tokens,
+                    maximum_supervised_sequence_tokens=(
+                        int(
+                            candidate_supervised_sequence_by_target.get(
+                                target_id, maximum_candidate_sequence_tokens
+                            )
+                        )
+                    ),
+                    required_kerc_coverage_labels=(
+                        kerc_stage_required_coverage_labels
+                        if target_id == KERC_ENGLISH_ID
+                        and kerc_stage_objective_filter
+                        else None
+                    ),
+                )
+                if stage is not None
+                else None
+            )
+            for target_id, stage in kernel_english_stages.items()
+        }
+    overfit_rows_per_objective = int(
+        ((candidate_lease or {}).get("execution_policy") or {}).get(
+            "kerc_overfit_rows_per_objective"
+        )
+        or 0
+    )
+    if overfit_rows_per_objective:
+        if (
+            ((candidate_lease or {}).get("execution_policy") or {}).get(
+                "kerc_overfit_generator_rows_only"
+            )
+            is not True
+            or set(targets) != {KERC_ENGLISH_ID}
+        ):
+            raise ValueError("KERC overfit policy requires one generator-only KERC target")
+        kernel_english_stages[KERC_ENGLISH_ID] = select_kerc_overfit_stage(
+            kernel_english_stages[KERC_ENGLISH_ID],
+            rows_per_objective=overfit_rows_per_objective,
+        )
+    # Candidate stage construction is CPU-only and can transiently retain
+    # source rows before the bounded RaggedRows projection replaces them.
+    # Initialize Metal only after that temporary residency has been collected.
+    import gc
+
+    gc.collect()
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    monitor = (
+        pretraining_candidate_canary.CandidateCanaryMonitor(candidate_lease)
+        if candidate_lease is not None
+        else None
+    )
+    candidate_initialization_state = None
+    if candidate_lease is not None:
+        expected_execution_policy = dict(
+            candidate_lease.get("execution_policy") or {}
+        )
+        if (
+            candidate_initialization_state_path is not None
+            and candidate_initialization_state_path.is_file()
+        ):
+            candidate_initialization_state = read_json(
+                candidate_initialization_state_path
+            )
+            if candidate_initialization_state.get(
+                "execution_policy"
+            ) != expected_execution_policy:
+                raise ValueError(
+                    "candidate initialization execution policy changed across isolated targets"
+                )
+            if int(candidate_initialization_state.get("seed") or 0) != int(
+                candidate_lease.get("selected_seed") or 0
+            ):
+                raise ValueError(
+                    "candidate initialization seed changed across isolated targets"
+                )
+        else:
+            candidate_initialization_state = {
+                "execution_policy": expected_execution_policy
+            }
     results = []
     for target_id in targets:
         target = (
@@ -2218,6 +4034,71 @@ def execute_targets(
             if scratch_checkpoint_root is not None
             else plan["targets"][target_id]
         )
+        continuation_import = None
+        target_resume = resume
+        if candidate_continuation_report_path is not None:
+            if resume:
+                execution_policy = dict(
+                    (candidate_lease or {}).get("execution_policy") or {}
+                )
+                prior_segment_receipt = read_json(resolve(str(target["receipt"])))
+                if (
+                    execution_policy.get("candidate_scratch_resume_policy")
+                    != "exact_fresh_process_segment_v1"
+                    or prior_segment_receipt.get(
+                        "current_kernel_phase_position_accounting_reset"
+                    )
+                    is not True
+                    or prior_segment_receipt.get("target_id") != target_id
+                    or int(prior_segment_receipt.get("candidate_seed") or 0)
+                    != int((candidate_lease or {}).get("selected_seed") or 0)
+                    or candidate_continuation_report_path.resolve()
+                    != resolve(
+                        str(execution_policy["continuation_source_report"])
+                    ).resolve()
+                    or sha256_file(candidate_continuation_report_path)
+                    != str(
+                        execution_policy[
+                            "continuation_source_report_sha256"
+                        ]
+                    )
+                ):
+                    raise ValueError(
+                        "candidate segmented continuation identity mismatch"
+                    )
+                continuation_import = {
+                    "policy": (
+                        "project_theseus_exact_candidate_continuation_import_v1"
+                    ),
+                    "source_checkpoint_sha256": str(
+                        execution_policy[
+                            "continuation_source_checkpoint_sha256"
+                        ]
+                    ),
+                    "source_optimizer_state_sha256": str(
+                        execution_policy[
+                            "continuation_source_optimizer_state_sha256"
+                        ]
+                    ),
+                    "source_mlx_rng_state_sha256": str(
+                        execution_policy[
+                            "continuation_source_mlx_rng_state_sha256"
+                        ]
+                    ),
+                    "segmented_resume": True,
+                }
+            else:
+                continuation_import = initialize_candidate_continuation_receipt(
+                    candidate_continuation_report_path,
+                    target=target,
+                    candidate_lease=candidate_lease or {},
+                )
+            if candidate_initialization_state is None:
+                raise ValueError("candidate continuation state is missing")
+            candidate_initialization_state["candidate_continuation"] = (
+                continuation_import
+            )
+            target_resume = True
         result = train_target(
             config,
             plan,
@@ -2227,24 +4108,58 @@ def execute_targets(
             kernel_english_stage=kernel_english_stages[target_id],
             supervision_stage=supervision_stages[target_id],
             max_steps=max_steps,
-            resume=resume,
+            resume=target_resume,
             training_phase=training_phase,
             mx=mx,
             nn=nn,
             optim=optim,
             mlx_utils=mlx_utils,
+            step_boundary_callback=(monitor.check if monitor is not None else None),
+            optimizer_id=optimizer_id,
+            candidate_seed=int(
+                (candidate_lease or {}).get("selected_seed") or 0
+            ),
+            candidate_initialization_state=candidate_initialization_state,
         )
-        if result.get("complete") and should_evaluate_target(target):
+        if (
+            candidate_initialization_state is not None
+            and candidate_initialization_state_path is not None
+        ):
+            write_json_atomic(
+                candidate_initialization_state_path,
+                candidate_initialization_state,
+            )
+        candidate_behavior_rows = terminal_candidate_behavior_rows(
+            candidate_lease
+        )
+        result["candidate_behavior_evaluation_disposition"] = {
+            "policy": "project_theseus_terminal_candidate_behavior_evaluation_v1",
+            "requested_rows": int(
+                (candidate_lease or {}).get("behavior_eval_rows") or 0
+            ),
+            "executed_rows": candidate_behavior_rows,
+            "terminal_candidate_run": candidate_behavior_rows > 0,
+            "nonterminal_resource_preflight": bool(candidate_lease)
+            and candidate_behavior_rows == 0,
+            "terminal_behavior_evaluation_required": bool(candidate_lease),
+        }
+        if should_evaluate_target(target) and (
+            result.get("complete") or candidate_behavior_rows > 0
+        ):
             result["evaluation"] = evaluate_target(
                 config,
                 base,
-                plan,
+                candidate_bound_evaluation_plan(plan, candidate_lease),
                 target,
                 metadata=metadata,
                 mx=mx,
                 nn=nn,
+                maximum_rows=candidate_behavior_rows,
             )
         results.append(result)
+    if candidate_initialization_state is not None and len(targets) == 2:
+        if not candidate_initialization_state.get("aligned_target_id"):
+            raise ValueError("candidate pair did not complete common initialization alignment")
     gaps = [
         f"{row['target_id']}:{gap}"
         for row in results
@@ -2253,9 +4168,14 @@ def execute_targets(
     refreshed_inventory = inspect_checkpoint_inventory(
         plan["targets"], plan["plan_sha256"], plan["stage"]["stage_signature"]
     )
+    canary_resource_receipt = monitor.finalize(results) if monitor is not None else None
+    if canary_resource_receipt and not canary_resource_receipt["passed"]:
+        gaps.extend(canary_resource_receipt["faults"])
     return {
         **plan,
         "checkpoint_inventory": refreshed_inventory,
+        "candidate_canary_lease": candidate_lease,
+        "candidate_canary_resource_receipt": canary_resource_receipt,
         "created_utc": now(),
         "trigger_state": "RED" if gaps else "GREEN",
         "mode": "training_execution",
@@ -2268,7 +4188,23 @@ def execute_targets(
                 else ""
             ),
             "registered_lineage_mutated": False,
-            "resumable": False if scratch_checkpoint_root is not None else resume,
+            "resumable": bool(
+                scratch_checkpoint_root is not None
+                and (
+                    (candidate_lease or {}).get("execution_policy") or {}
+                ).get("candidate_scratch_resume_policy")
+                == "exact_fresh_process_segment_v1"
+            )
+            if scratch_checkpoint_root is not None
+            else resume,
+            "one_shot_candidate_continuation": (
+                candidate_continuation_report_path is not None
+            ),
+            "candidate_continuation_report": (
+                relative(candidate_continuation_report_path)
+                if candidate_continuation_report_path is not None
+                else ""
+            ),
         },
         "results": results,
         "hard_gaps": gaps,
@@ -2630,6 +4566,18 @@ def should_evaluate_target(target: dict[str, Any]) -> bool:
     }
 
 
+def supervision_row_instance_id(
+    row_id: str, *, artifact_key: str, source_index: int
+) -> str:
+    """Disambiguate repeated semantic row ids without using answer metadata."""
+
+    if source_index < 0 or not artifact_key:
+        raise ValueError("supervision row instance identity requires source custody")
+    return (
+        f"{row_id or artifact_key}:artifact:{artifact_key}:source_index:{source_index}"
+    )
+
+
 def materialize_target_supervision(
     config: dict[str, Any],
     base: dict[str, Any],
@@ -2641,6 +4589,7 @@ def materialize_target_supervision(
     maximum_sequence_tokens: int | None = None,
     objective_filter: tuple[str, ...] = (),
     split: str = "private_train",
+    bounded_source_row_limit: int = 0,
 ) -> Any:
     """Encode one frozen private split without truncation or hidden-field routing."""
 
@@ -2669,9 +4618,15 @@ def materialize_target_supervision(
             f"target has no frozen {artifact_field} train artifact: {target['target_id']}"
         )
 
-    sequences: list[list[int]] = []
+    # Freeze token rows into compact arrays immediately. Keeping thousands of
+    # Python integer lists alive until the post-pass leaves allocator arenas
+    # resident during MLX execution and materially raises unified-memory pressure.
+    sequences: list[np.ndarray] = []
+    training_row_ids: list[str] = []
     mask_starts: list[int] = []
     generator_loss_enabled: list[bool] = []
+    compiler_schema_continuation_indices: list[tuple[int, ...]] = []
+    compiler_semantic_pointer_indices: list[tuple[int, ...]] = []
     sampling_weights: list[float] = []
     kerc_residual_rows: list[list[int]] = []
     kerc_residual_loss_enabled: list[bool] = []
@@ -2693,6 +4648,31 @@ def materialize_target_supervision(
         raise ValueError("KERC target requires its content-bound dual-code vocabulary")
     kernel_offset = int((target.get("model") or {}).get("kerc_kernel_token_start") or 0)
     pointer_offset = int((target.get("model") or {}).get("kerc_pointer_token_start") or 0)
+    pointer_end = int(
+        (target.get("model") or {}).get("kerc_pointer_token_end")
+        or (
+            pointer_offset
+            + max(
+                (int(value) for value in (code_vocabulary.get("pointer_vocab") or {}).values()),
+                default=-1,
+            )
+            + 1
+        )
+    )
+    code_token_rows = (
+        kerc_global_token_rows(
+            code_vocabulary,
+            kernel_offset=kernel_offset,
+            pointer_offset=pointer_offset,
+            pointer_end=pointer_end,
+        )
+        if kerc_mode
+        else {}
+    )
+    ground_truth_json_grammar_audited_count = 0
+    compact_compiler_transport_generator_rows = 0
+    compact_compiler_transport_legacy_target_tokens = 0
+    compact_compiler_transport_encoded_target_tokens = 0
     row_hashes: list[str] = []
     artifact_receipts: list[dict[str, Any]] = []
     context_counterfactual_counts = {
@@ -2707,17 +4687,40 @@ def materialize_target_supervision(
             raise ValueError(f"supervision artifact identity mismatch: {key}")
         observed_rows = 0
         source_rows = 0
+        bounded_row_references: list[tuple[int, str, int]] | None = None
+        if bounded_source_row_limit:
+            source_rows, bounded_row_references = (
+                select_bounded_supervision_row_references(
+                    path,
+                    split=split,
+                    objective_filter=objective_filter,
+                    maximum_rows=bounded_source_row_limit,
+                )
+            )
         with path.open(encoding="utf-8") as handle:
-            for line in handle:
-                row = json.loads(line)
-                source_rows += 1
+            row_iterator = (
+                iter_bounded_supervision_rows(path, bounded_row_references)
+                if bounded_row_references is not None
+                else (
+                    (index, json.loads(line))
+                    for index, line in enumerate(handle)
+                )
+            )
+            for source_index, row in row_iterator:
+                if bounded_row_references is None:
+                    source_rows += 1
                 if row.get("split") != split or row.get("public_benchmark") is not False:
-                    raise ValueError(f"invalid supervision boundary: {key}:{source_rows - 1}")
+                    raise ValueError(f"invalid supervision boundary: {key}:{source_index}")
                 if objective_filter and str(row.get("objective") or "") not in objective_filter:
                     continue
                 prompt = str(row.get("prompt") or "")
                 answer = str(row.get("target") or "")
                 objective = str(row.get("objective") or "")
+                row_instance_id = supervision_row_instance_id(
+                    str(row.get("row_id") or ""),
+                    artifact_key=str(key),
+                    source_index=int(source_index),
+                )
                 structured_source = (
                     kerc_mode and objective in KERC_STRUCTURED_SOURCE_OBJECTIVES
                 )
@@ -2765,13 +4768,83 @@ def materialize_target_supervision(
                     kerc_mode
                     and str(row.get("objective") or "") in KERC_KERNEL_OBJECTIVES
                 )
+                encoded_answer = (
+                    compact_learned_compiler_transport_text(answer)
+                    if kerc_mode and objective == "surface_to_kernel_program_v1"
+                    else answer
+                )
+                compiler_continuation_indices: tuple[int, ...] = ()
+                compiler_semantic_indices: tuple[int, ...] = ()
                 if kernel_objective:
-                    target_ids, target_receipt = encode_kerc_global_target(
-                        answer,
-                        code_vocabulary=code_vocabulary,
-                        kernel_offset=kernel_offset,
-                        pointer_offset=pointer_offset,
-                    )
+                    if objective == "surface_to_kernel_program_v1":
+                        (
+                            target_ids,
+                            target_receipt,
+                            logical_token_ranges,
+                        ) = encode_kerc_global_target_with_logical_ranges(
+                            encoded_answer,
+                            code_vocabulary=code_vocabulary,
+                            kernel_offset=kernel_offset,
+                            pointer_offset=pointer_offset,
+                        )
+                        code_tokens = [
+                            str(token) for token in kerc_code_tokens(encoded_answer)
+                        ]
+                        logical_continuation_indices = (
+                            learned_compiler_transport_required_continuation_token_indices(
+                                code_tokens
+                            )
+                        )
+                        compiler_continuation_indices = tuple(
+                            encoded_index
+                            for logical_index in logical_continuation_indices
+                            for encoded_index in range(
+                                logical_token_ranges[logical_index][0],
+                                logical_token_ranges[logical_index][1],
+                            )
+                        )
+                        logical_semantic_pointer_indices = (
+                            learned_compiler_transport_semantic_pointer_token_indices(
+                                code_tokens
+                            )
+                        )
+                        compiler_semantic_indices = tuple(
+                            encoded_index
+                            for logical_index in logical_semantic_pointer_indices
+                            for encoded_index in range(
+                                logical_token_ranges[logical_index][0],
+                                logical_token_ranges[logical_index][1],
+                            )
+                        )
+                    else:
+                        target_ids, target_receipt = encode_kerc_global_target(
+                            encoded_answer,
+                            code_vocabulary=code_vocabulary,
+                            kernel_offset=kernel_offset,
+                            pointer_offset=pointer_offset,
+                        )
+                    if objective == "surface_to_kernel_program_v1":
+                        legacy_target_ids, legacy_target_receipt = (
+                            encode_kerc_global_target(
+                                answer,
+                                code_vocabulary=code_vocabulary,
+                                kernel_offset=kernel_offset,
+                                pointer_offset=pointer_offset,
+                            )
+                        )
+                        if int(
+                            legacy_target_receipt.get("unknown_token_count") or 0
+                        ):
+                            raise ValueError(
+                                f"legacy KERC compiler target became unrepresentable: {key}"
+                            )
+                        compact_compiler_transport_generator_rows += 1
+                        compact_compiler_transport_legacy_target_tokens += len(
+                            legacy_target_ids
+                        )
+                        compact_compiler_transport_encoded_target_tokens += len(
+                            target_ids
+                        )
                 else:
                     target_ids, target_receipt = encode_tokens(
                         kerc_surface_tokens(answer), target_vocab, stream="target"
@@ -2780,6 +4853,15 @@ def materialize_target_supervision(
                     target_receipt.get("unknown_token_count") or 0
                 ):
                     raise ValueError(f"frozen supervision row became unrepresentable: {key}")
+                if kernel_objective:
+                    ground_truth_json_grammar_audited_count += 1
+                    if not kerc_ground_truth_serialization_valid(
+                        target_ids, code_token_rows
+                    ):
+                        raise ValueError(
+                            "KERC ground-truth target is outside the inference JSON grammar: "
+                            f"{key}:{source_index}"
+                        )
                 sequence = [GLOBAL_BOS_ID]
                 sequence.extend(int(value) for value in source_ids)
                 sequence.append(SOURCE_TARGET_SEPARATOR_ID)
@@ -2792,9 +4874,20 @@ def materialize_target_supervision(
                 sequence.append(target_offset + int(target_vocab["<eos>"]))
                 if len(sequence) > max_sequence + 1:
                     raise ValueError(f"frozen supervision row requires truncation: {key}")
-                sequences.append(sequence)
+                sequences.append(np.asarray(sequence, dtype=np.int32))
+                training_row_ids.append(row_instance_id)
                 mask_starts.append(target_start - 1)
                 generator_loss_enabled.append(True)
+                compiler_schema_continuation_indices.append(
+                    compiler_continuation_indices
+                    if kerc_mode and objective == "surface_to_kernel_program_v1"
+                    else ()
+                )
+                compiler_semantic_pointer_indices.append(
+                    compiler_semantic_indices
+                    if kerc_mode and objective == "surface_to_kernel_program_v1"
+                    else ()
+                )
                 sampling_weight = float(row.get("optimizer_sampling_weight", 1.0))
                 if not 0.0 < sampling_weight <= 1.0:
                     raise ValueError(f"invalid supervision sampling weight: {key}:{source_rows - 1}")
@@ -2831,9 +4924,14 @@ def materialize_target_supervision(
                     ):
                         raise ValueError(f"invalid KERC auxiliary supervision: {key}:{source_rows - 1}")
                     negative_answer = str(negative.get("target") or "")
+                    encoded_negative_answer = (
+                        compact_learned_compiler_transport_text(negative_answer)
+                        if objective == "surface_to_kernel_program_v1"
+                        else negative_answer
+                    )
                     if kernel_objective:
                         negative_ids, negative_receipt = encode_kerc_global_target(
-                            negative_answer,
+                            encoded_negative_answer,
                             code_vocabulary=code_vocabulary,
                             kernel_offset=kernel_offset,
                             pointer_offset=pointer_offset,
@@ -2879,9 +4977,14 @@ def materialize_target_supervision(
                     kerc_decision_loss_enabled.append(True)
                     base_coverage = kerc_training_coverage_labels(row, residual)
                     kerc_coverage_rows.append((*base_coverage, "verifier:positive"))
-                    sequences.append(negative_sequence)
+                    sequences.append(np.asarray(negative_sequence, dtype=np.int32))
+                    training_row_ids.append(
+                        row_instance_id + ":verifier_negative"
+                    )
                     mask_starts.append(negative_start - 1)
                     generator_loss_enabled.append(False)
+                    compiler_schema_continuation_indices.append(())
+                    compiler_semantic_pointer_indices.append(())
                     sampling_weights.append(sampling_weight)
                     kerc_residual_rows.append([int(value) for value in residual])
                     kerc_residual_loss_enabled.append(False)
@@ -2991,9 +5094,16 @@ def materialize_target_supervision(
                             ),
                         ]
                         if kernel_objective:
+                            encoded_counter_answer = (
+                                compact_learned_compiler_transport_text(
+                                    counter_answer
+                                )
+                                if objective == "surface_to_kernel_program_v1"
+                                else counter_answer
+                            )
                             counter_target_ids, counter_target_receipt = (
                                 encode_kerc_global_target(
-                                    counter_answer,
+                                    encoded_counter_answer,
                                     code_vocabulary=code_vocabulary,
                                     kernel_offset=kernel_offset,
                                     pointer_offset=pointer_offset,
@@ -3031,9 +5141,14 @@ def materialize_target_supervision(
                                 "KERC context counterfactual requires truncation: "
                                 f"{key}:{strategy}"
                             )
-                        sequences.append(counter_sequence)
+                        sequences.append(np.asarray(counter_sequence, dtype=np.int32))
+                        training_row_ids.append(
+                            row_instance_id + f":counterfactual:{strategy}"
+                        )
                         mask_starts.append(counter_start - 1)
                         generator_loss_enabled.append(False)
+                        compiler_schema_continuation_indices.append(())
+                        compiler_semantic_pointer_indices.append(())
                         sampling_weights.append(sampling_weight)
                         kerc_residual_rows.append([int(value) for value in residual])
                         kerc_residual_loss_enabled.append(False)
@@ -3094,6 +5209,7 @@ def materialize_target_supervision(
                 "sha256": str(artifact["sha256"]),
                 "row_count": source_rows,
                 "selected_row_count": observed_rows,
+                "bounded_source_row_limit": int(bounded_source_row_limit),
             }
         )
 
@@ -3117,8 +5233,27 @@ def materialize_target_supervision(
     label_rows: list[np.ndarray] = []
     mask_rows: list[np.ndarray] = []
     loss_rows: list[np.ndarray] = []
-    for sequence, mask_start, generator_enabled in zip(
-        sequences, mask_starts, generator_loss_enabled
+    compiler_schema_continuation_loss_weight = float(
+        config["training"]["kerc_compiler_schema_continuation_loss_weight"]
+    )
+    compiler_semantic_pointer_loss_weight = float(
+        config["training"].get("kerc_compiler_semantic_pointer_loss_weight", 1.0)
+    )
+    compiler_schema_continuation_position_count = 0
+    compiler_semantic_pointer_position_count = 0
+    for (
+        sequence,
+        mask_start,
+        generator_enabled,
+        continuation_indices,
+        semantic_pointer_indices,
+    ) in zip(
+        sequences,
+        mask_starts,
+        generator_loss_enabled,
+        compiler_schema_continuation_indices,
+        compiler_semantic_pointer_indices,
+        strict=True,
     ):
         row_inputs = np.asarray(sequence[:-1], dtype=np.int32)
         row_labels = np.asarray(sequence[1:], dtype=np.int32)
@@ -3137,6 +5272,38 @@ def materialize_target_supervision(
             row_loss[(row_mask == 1) & np.isin(row_labels, code_boundary_ids)] = float(
                 config["training"]["byte_boundary_loss_weight"]
             )
+        for continuation_index in continuation_indices:
+            loss_index = mask_start + int(continuation_index)
+            if (
+                not generator_enabled
+                or loss_index < 0
+                or loss_index >= len(row_loss)
+                or not row_mask[loss_index]
+            ):
+                raise ValueError(
+                    "KERC compiler schema continuation loss position is invalid"
+                )
+            row_loss[loss_index] = max(
+                float(row_loss[loss_index]),
+                compiler_schema_continuation_loss_weight,
+            )
+            compiler_schema_continuation_position_count += 1
+        for semantic_pointer_index in semantic_pointer_indices:
+            loss_index = mask_start + int(semantic_pointer_index)
+            if (
+                not generator_enabled
+                or loss_index < 0
+                or loss_index >= len(row_loss)
+                or not row_mask[loss_index]
+            ):
+                raise ValueError(
+                    "KERC compiler semantic-pointer loss position is invalid"
+                )
+            row_loss[loss_index] = max(
+                float(row_loss[loss_index]),
+                compiler_semantic_pointer_loss_weight,
+            )
+            compiler_semantic_pointer_position_count += 1
         input_rows.append(row_inputs)
         label_rows.append(row_labels)
         mask_rows.append(row_mask)
@@ -3173,6 +5340,26 @@ def materialize_target_supervision(
         "sampling_weight_maximum": float(max(sampling_weights or [1.0])),
         "termination_loss_weight": float(config["training"]["termination_loss_weight"]),
         "byte_boundary_loss_weight": float(config["training"]["byte_boundary_loss_weight"]),
+        "kerc_compiler_schema_continuation_loss_weight": (
+            compiler_schema_continuation_loss_weight
+        ),
+        "kerc_compiler_schema_continuation_position_count": (
+            compiler_schema_continuation_position_count
+        ),
+        "kerc_compiler_schema_continuation_semantic_values_added": 0,
+        "kerc_compiler_schema_continuation_position_mapping": (
+            "logical_atom_to_exact_encoded_half_open_range_v1"
+        ),
+        "kerc_compiler_semantic_pointer_loss_weight": (
+            compiler_semantic_pointer_loss_weight
+        ),
+        "kerc_compiler_semantic_pointer_position_count": (
+            compiler_semantic_pointer_position_count
+        ),
+        "kerc_compiler_semantic_pointer_position_mapping": (
+            "existing_target_atom_to_exact_encoded_half_open_range_v1"
+        ),
+        "kerc_compiler_semantic_pointer_values_added": 0,
         "sequence_width": materialized_width,
         "maximum_sequence_tokens_contract": max_sequence,
         "staged_padding_columns_elided": max_sequence - materialized_width,
@@ -3180,11 +5367,12 @@ def materialize_target_supervision(
             "objective_override" if maximum_sequence_tokens is not None else "base_stage"
         ),
         "storage_layout": (
-            "ragged_rows_dynamic_batch_padding_v1" if kerc_mode else "dense_rows_v1"
+            "ragged_rows_shared_shifted_token_storage_v2"
+            if kerc_mode
+            else "dense_rows_v1"
         ),
         "physical_array_bytes": (
-            inputs.physical_bytes
-            + labels.physical_bytes
+            sum(int(sequence.nbytes) for sequence in sequences)
             + mask.physical_bytes
             + loss_mask.physical_bytes
             if kerc_mode
@@ -3200,6 +5388,13 @@ def materialize_target_supervision(
             )
         ),
         "content_digest": hashlib.sha256("\n".join(row_hashes).encode()).hexdigest(),
+        "bounded_selection": {
+            "policy": "project_theseus_content_ranked_objective_stratified_canary_v1",
+            "active": bool(bounded_source_row_limit),
+            "maximum_source_rows_per_artifact": int(bounded_source_row_limit),
+            "full_artifact_identity_and_boundary_scan_required": True,
+            "capability_claim": "NONE" if bounded_source_row_limit else "NOT_APPLICABLE",
+        },
         "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
         "trusted_source_prefix_injected_separately_from_raw_text": True,
         "evaluator_only_fields": ["target", "target_sha256", "source_identity"],
@@ -3212,6 +5407,36 @@ def materialize_target_supervision(
         "kernel_target_token_offset": kernel_offset if kerc_mode else 0,
         "pointer_target_token_offset": pointer_offset if kerc_mode else 0,
         "dual_code_byte_boundary_ids": code_boundary_ids,
+        "ground_truth_json_grammar_audited_count": (
+            ground_truth_json_grammar_audited_count if kerc_mode else 0
+        ),
+        "ground_truth_json_grammar_rejected_count": 0,
+        "compact_compiler_transport": (
+            {
+                "policy": LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY,
+                "version": LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+                "migration_boundary": (
+                    "frozen_legacy_semantic_artifact_to_training_and_runtime_wire"
+                ),
+                "generator_row_count": compact_compiler_transport_generator_rows,
+                "legacy_target_token_count": (
+                    compact_compiler_transport_legacy_target_tokens
+                ),
+                "encoded_target_token_count": (
+                    compact_compiler_transport_encoded_target_tokens
+                ),
+                "target_tokens_elided": (
+                    compact_compiler_transport_legacy_target_tokens
+                    - compact_compiler_transport_encoded_target_tokens
+                ),
+                "exact_reconstruction_required": True,
+                "learned_semantic_values_elided": 0,
+                "target_metadata_visible_to_generator": False,
+                "deterministic_generation_credit": 0,
+            }
+            if kerc_mode
+            else {}
+        ),
         "kerc_verifier_dimensions": (
             list(KERC_VERIFIER_DIMENSIONS) if kerc_mode else []
         ),
@@ -3291,8 +5516,177 @@ def materialize_target_supervision(
             else None
         ),
         kerc_coverage_labels=(tuple(kerc_coverage_rows) if kerc_mode else None),
+        training_row_ids=tuple(training_row_ids),
         receipt=receipt,
     )
+
+
+def select_bounded_supervision_rows(
+    path: Path,
+    *,
+    split: str,
+    objective_filter: tuple[str, ...],
+    maximum_rows: int,
+) -> tuple[int, list[tuple[int, dict[str, Any]]]]:
+    """Compatibility wrapper returning selected rows after an offset-only scan."""
+
+    source_rows, references = select_bounded_supervision_row_references(
+        path,
+        split=split,
+        objective_filter=objective_filter,
+        maximum_rows=maximum_rows,
+    )
+    return source_rows, list(iter_bounded_supervision_rows(path, references))
+
+
+def iter_bounded_supervision_rows(
+    path: Path,
+    references: list[tuple[int, str, int]],
+) -> Any:
+    """Yield selected JSONL rows one at a time in deterministic row-id order."""
+
+    with path.open("rb") as handle:
+        for source_index, expected_row_id, byte_offset in references:
+            handle.seek(byte_offset)
+            line = handle.readline()
+            if not line:
+                raise ValueError(
+                    f"bounded supervision row offset vanished: {path}:{source_index}"
+                )
+            row = json.loads(line)
+            if str(row.get("row_id") or "") != expected_row_id:
+                raise ValueError(
+                    f"bounded supervision row identity changed: {path}:{source_index}"
+                )
+            yield source_index, row
+
+
+def select_bounded_supervision_row_references(
+    path: Path,
+    *,
+    split: str,
+    objective_filter: tuple[str, ...],
+    maximum_rows: int,
+) -> tuple[int, list[tuple[int, str, int]]]:
+    """Select rows using byte-offset metadata while validating the full artifact."""
+
+    objectives = tuple(dict.fromkeys(objective_filter))
+    if maximum_rows <= 0 or not objectives or maximum_rows < len(objectives):
+        raise ValueError("bounded supervision selection requires one row per objective")
+    heaps: dict[str, list[tuple[int, str, int, int]]] = {
+        objective: [] for objective in objectives
+    }
+    coverage_best: dict[str, tuple[int, str, int, int]] = {}
+    observed_residual_labels: set[str] = set()
+    observed_decision_labels: set[str] = set()
+    observed_verifier_labels: set[str] = set()
+    observed_context_counterfactual_labels: set[str] = set()
+    source_rows = 0
+    with path.open("rb") as handle:
+        while True:
+            byte_offset = handle.tell()
+            line = handle.readline()
+            if not line:
+                break
+            source_index = source_rows
+            row = json.loads(line)
+            source_rows += 1
+            if row.get("split") != split or row.get("public_benchmark") is not False:
+                raise ValueError(
+                    f"invalid bounded supervision boundary: {path}:{source_index}"
+                )
+            objective = str(row.get("objective") or "")
+            if objective not in heaps:
+                continue
+            row_id = str(row.get("row_id") or "")
+            if not row_id:
+                raise ValueError(f"bounded supervision row lacks row_id: {path}:{source_index}")
+            rank = int.from_bytes(
+                hashlib.sha256(
+                    b"project_theseus_kerc_canary_row_v1\0" + row_id.encode()
+                ).digest(),
+                "big",
+            )
+            entry = (-rank, row_id, source_index, byte_offset)
+            heap = heaps[objective]
+            heapq.heappush(heap, entry)
+            if len(heap) > maximum_rows:
+                heapq.heappop(heap)
+            residual = list(row.get("kerc_residual_labels") or [])
+            labels = {
+                f"objective:{objective}",
+                f"decision:{row.get('kerc_answer_disposition')}",
+                "interaction:present"
+                if residual and int(residual[0]) > 0
+                else "interaction:absent",
+            }
+            observed_decision_labels.add(
+                f"decision:{row.get('kerc_answer_disposition')}"
+            )
+            failed = str(
+                ((row.get("kerc_verifier_negative") or {}).get("failed_dimension"))
+                or ""
+            )
+            if failed:
+                verifier_label = f"verifier:{failed}"
+                labels.add(verifier_label)
+                observed_verifier_labels.add(verifier_label)
+            for counterfactual in row.get("kerc_context_counterfactuals") or []:
+                strategy = str(counterfactual.get("strategy") or "")
+                if strategy:
+                    counterfactual_label = f"verifier:counterfactual:{strategy}"
+                    labels.add(counterfactual_label)
+                    observed_context_counterfactual_labels.add(
+                        counterfactual_label
+                    )
+            if len(residual) == 4:
+                for channel, value in zip(
+                    ("interaction", "segment", "token", "exact"), residual
+                ):
+                    label = f"residual:{channel}:{int(value)}"
+                    labels.add(label)
+                    observed_residual_labels.add(label)
+            positive_rank_entry = (rank, row_id, source_index, byte_offset)
+            for label in labels:
+                prior = coverage_best.get(label)
+                if prior is None or positive_rank_entry[:2] < prior[:2]:
+                    coverage_best[label] = positive_rank_entry
+    required_labels = {
+        *(f"objective:{objective}" for objective in objectives),
+        *observed_decision_labels,
+        *observed_verifier_labels,
+        "interaction:present",
+        "interaction:absent",
+        *observed_context_counterfactual_labels,
+        *observed_residual_labels,
+    }
+    expected_decisions = {"decision:ANSWER", "decision:CLARIFY", "decision:ABSTAIN"}
+    if not expected_decisions.issubset(observed_decision_labels):
+        raise ValueError("bounded supervision source lacks required decision classes")
+    missing = sorted(required_labels.difference(coverage_best))
+    if missing:
+        raise ValueError("bounded supervision coverage missing: " + ",".join(missing))
+    chosen: dict[str, tuple[int, str, int]] = {}
+    for label in sorted(required_labels):
+        _rank, row_id, source_index, byte_offset = coverage_best[label]
+        chosen[row_id] = (source_index, row_id, byte_offset)
+    if len(chosen) > maximum_rows:
+        raise ValueError("bounded supervision limit cannot cover required KERC labels")
+    fill = sorted(
+        (
+            (-negative_rank, row_id, source_index, byte_offset)
+            for heap in heaps.values()
+            for negative_rank, row_id, source_index, byte_offset in heap
+        ),
+        key=lambda entry: (entry[0], entry[1]),
+    )
+    for _rank, row_id, source_index, byte_offset in fill:
+        chosen.setdefault(row_id, (source_index, row_id, byte_offset))
+        if len(chosen) >= maximum_rows:
+            break
+    selected = list(chosen.values())
+    selected.sort(key=lambda item: item[1])
+    return source_rows, selected
 
 
 def kerc_training_coverage_labels(
@@ -3346,6 +5740,61 @@ def answer_disposition_from_training_row(row: dict[str, Any]) -> str:
     return ""
 
 
+def candidate_evaluation_execution_policy(plan: dict[str, Any]) -> dict[str, Any]:
+    """Bind evaluation to the graph-shaping policy that produced a candidate."""
+
+    candidate = dict(
+        ((plan.get("candidate_canary_lease") or {}).get("execution_policy") or {})
+    )
+    return {
+        "attention_query_chunk_size": int(
+            candidate.get("attention_query_chunk_size") or 0
+        ),
+        "attention_key_chunk_size": int(
+            candidate.get("attention_key_chunk_size") or 0
+        ),
+        "compact_encoder_decoder_partitions": bool(
+            candidate.get("compact_encoder_decoder_partitions", False)
+        ),
+        "compact_partition_width_quantum": int(
+            candidate.get("compact_partition_width_quantum") or 0
+        ),
+        "gradient_checkpointing": False,
+    }
+
+
+def candidate_bound_evaluation_plan(
+    plan: dict[str, Any], candidate_lease: dict[str, Any] | None
+) -> dict[str, Any]:
+    """Carry graph-shaping candidate authority into embedded evaluation."""
+
+    return {**plan, "candidate_canary_lease": candidate_lease}
+
+
+def terminal_candidate_behavior_rows(
+    candidate_lease: dict[str, Any] | None,
+) -> int:
+    """Run the costly heldout decoder only for a candidate's terminal rung."""
+
+    if not candidate_lease or candidate_lease.get("candidate_id") not in {
+        "rdc_kerc_adequacy",
+        "rdc_kerc_k5_adequacy",
+        "rdc_kerc_k5_overfit",
+    }:
+        return 0
+    requested_steps = int(candidate_lease.get("requested_steps") or 0)
+    maximum_steps = int(
+        ((candidate_lease.get("budgets") or {}).get("max_steps")) or 0
+    )
+    if requested_steps <= 0 or maximum_steps <= 0:
+        raise ValueError("candidate behavior evaluation requires positive step budgets")
+    return (
+        int(candidate_lease.get("behavior_eval_rows") or 0)
+        if requested_steps == maximum_steps
+        else 0
+    )
+
+
 def evaluate_target(
     config: dict[str, Any],
     base: dict[str, Any],
@@ -3356,14 +5805,90 @@ def evaluate_target(
     mx: Any,
     nn: Any,
     split: str = "private_dev",
+    maximum_rows: int = 0,
+    selected_row_ids: tuple[str, ...] = (),
+    selection_namespace: str = "",
+    selection_contract_sha256: str = "",
 ) -> dict[str, Any]:
     """Evaluate frozen rows while keeping answers outside the generation call."""
+
+    output = resolve(str(target["receipt"])).with_name(
+        f"evaluation_{split}_receipt.json"
+    )
+    checkpoint = resolve(str(target["checkpoint"]))
+    checkpoint_sha256 = sha256_file(checkpoint)
+    evaluation_contract_sha256 = hashlib.sha256(
+        json.dumps(
+            config["evaluation"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    progress_policy = (
+        "project_theseus_transactional_model_evaluation_progress_v1"
+    )
+    progress_identity = {
+        "target_id": target["target_id"],
+        "split": split,
+        "checkpoint_sha256": checkpoint_sha256,
+        "evaluation_contract_sha256": evaluation_contract_sha256,
+        "maximum_rows_per_artifact": int(maximum_rows),
+    }
+    if selected_row_ids:
+        if maximum_rows != len(selected_row_ids):
+            raise ValueError(
+                "frozen evaluation selection must match the maximum row count"
+            )
+        if (
+            len(set(selected_row_ids)) != len(selected_row_ids)
+            or not selection_namespace
+            or len(selection_contract_sha256) != 64
+        ):
+            raise ValueError("frozen evaluation selection contract is invalid")
+        progress_identity.update(
+            {
+                "selection_namespace": selection_namespace,
+                "selection_contract_sha256": selection_contract_sha256,
+            }
+        )
+    resumed_rows: list[dict[str, Any]] = []
+    if output.is_file():
+        prior_evaluation = read_json(output)
+        identity_matches = all(
+            prior_evaluation.get(key) == value
+            for key, value in progress_identity.items()
+        )
+        if not identity_matches:
+            raise ValueError(
+                "evaluation progress identity mismatch; use a fresh output namespace"
+            )
+        if prior_evaluation.get("complete") is True:
+            return {
+                **prior_evaluation,
+                "rows": {
+                    "path": relative(output),
+                    "embedded_row_count": int(
+                        prior_evaluation.get("row_count") or 0
+                    ),
+                },
+            }
+        if prior_evaluation.get("policy") != progress_policy:
+            raise ValueError("evaluation progress policy mismatch")
+        resumed_rows = list(prior_evaluation.get("rows") or [])
+        if len(
+            {
+                str(row.get("row_id") or "")
+                for row in resumed_rows
+            }
+        ) != len(resumed_rows):
+            raise ValueError("evaluation progress contains duplicate row identities")
 
     source_vocab = dict(metadata.get("source_vocab") or {})
     target_vocab = dict(metadata.get("target_vocab") or {})
     evaluated_vocab_size = int(
         target.get("vocab_size") or plan["models"]["vocab_size"]
     )
+    evaluation_execution_policy = candidate_evaluation_execution_policy(plan)
     model = build_model(
         CausalTransformerConfig(
             vocab_size=evaluated_vocab_size, **target["model"]
@@ -3377,8 +5902,22 @@ def evaluate_target(
             vocab_size=evaluated_vocab_size,
             identity_ranges=target_copy_identity_ranges(target),
         ),
+        gradient_checkpointing=evaluation_execution_policy[
+            "gradient_checkpointing"
+        ],
+        attention_query_chunk_size=evaluation_execution_policy[
+            "attention_query_chunk_size"
+        ],
+        attention_key_chunk_size=evaluation_execution_policy[
+            "attention_key_chunk_size"
+        ],
+        compact_encoder_decoder_partitions=evaluation_execution_policy[
+            "compact_encoder_decoder_partitions"
+        ],
+        compact_partition_width_quantum=evaluation_execution_policy[
+            "compact_partition_width_quantum"
+        ],
     )
-    checkpoint = resolve(str(target["checkpoint"]))
     if target.get("role") == "language_expert":
         shared = resolve(str(target.get("shared_trunk_checkpoint") or ""))
         if not shared.is_file():
@@ -3395,7 +5934,10 @@ def evaluate_target(
         for key, row in artifacts.items()
         if key == split or str(key).endswith(f":{split}")
     ]
-    rows: list[dict[str, Any]] = []
+    rows: list[dict[str, Any]] = list(resumed_rows)
+    completed_row_ids = {
+        str(row.get("row_id") or "") for row in resumed_rows
+    }
     evaluation_artifacts: list[dict[str, Any]] = []
     for key, artifact in selected:
         path = resolve(str((artifact or {}).get("path") or ""))
@@ -3410,10 +5952,40 @@ def evaluate_target(
             }
         )
         with path.open(encoding="utf-8") as handle:
-            for line in handle:
-                row = json.loads(line)
+            source_rows = [json.loads(line) for line in handle]
+        if selected_row_ids:
+            rows_by_id = {
+                str(row.get("row_id") or ""): row for row in source_rows
+            }
+            if len(rows_by_id) != len(source_rows):
+                raise ValueError(f"evaluation artifact has duplicate row identities: {key}")
+            missing = [
+                row_id for row_id in selected_row_ids if row_id not in rows_by_id
+            ]
+            if missing:
+                raise ValueError(
+                    "frozen evaluation selection row identity missing: "
+                    + ",".join(missing)
+                )
+            source_rows = [rows_by_id[row_id] for row_id in selected_row_ids]
+        elif maximum_rows > 0:
+            source_rows = sorted(
+                source_rows,
+                key=lambda row: hashlib.sha256(
+                    (
+                        "t0a_private_rdc_kerc_source_disjoint_v1:"
+                        + str(row.get("row_id") or row.get("source_identity") or "")
+                    ).encode()
+                ).hexdigest(),
+            )[:maximum_rows]
+        for row in source_rows:
                 if row.get("split") != split or row.get("public_benchmark") is not False:
                     raise ValueError(f"invalid evaluation boundary: {key}")
+                row_id = str(row.get("row_id") or "")
+                if not row_id:
+                    raise ValueError(f"evaluation row lacks row_id: {key}")
+                if row_id in completed_row_ids:
+                    continue
                 if target.get("role") == "kerc_english_candidate":
                     generated, generation = generate_kerc_pipeline_text(
                         model,
@@ -3423,14 +5995,14 @@ def evaluate_target(
                         base,
                         target=target,
                         max_tokens=int(
-                            config["evaluation"]["decode_max_target_tokens"]
+                            config["evaluation"]["kerc_decode_max_target_tokens"]
                         ),
                         max_source_tokens=int(
                             config["kernel_english_training"]["maximum_sequence_tokens"]
                         ),
-                        beam_width=int(config["evaluation"]["beam_width"]),
+                        beam_width=int(config["evaluation"]["kerc_beam_width"]),
                         branching_factor=int(
-                            config["evaluation"]["branching_factor"]
+                            config["evaluation"]["kerc_branching_factor"]
                         ),
                         length_penalty=float(
                             config["evaluation"]["length_penalty"]
@@ -3485,6 +6057,30 @@ def evaluate_target(
                         "generation": generation,
                     }
                 )
+                completed_row_ids.add(row_id)
+                write_json_atomic(
+                    output,
+                    {
+                        "policy": progress_policy,
+                        "created_utc": now(),
+                        "complete": False,
+                        **progress_identity,
+                        "row_count": len(rows),
+                        "completed_row_ids": sorted(completed_row_ids),
+                        "rows": rows,
+                        "generator_visible_fields": ["prompt"],
+                        "evaluator_only_fields": [
+                            "target",
+                            "target_sha256",
+                            "source_identity",
+                        ],
+                        "target_visible_to_generator": False,
+                        "public_training_rows_written": 0,
+                        "external_inference_calls": 0,
+                        "fallback_return_count": 0,
+                        "capability_claim": "NONE_INCOMPLETE_EVALUATION_PROGRESS",
+                    },
+                )
     by_arm: dict[str, Any] = {}
     for arm_id in ARM_IDS:
         arm_rows = [row for row in rows if row["arm_id"] == arm_id]
@@ -3496,13 +6092,32 @@ def evaluate_target(
         "trigger_state": "GREEN",
         "target_id": target["target_id"],
         "split": split,
-        "evaluation_contract_sha256": hashlib.sha256(
-            json.dumps(config["evaluation"], sort_keys=True, separators=(",", ":")).encode()
-        ).hexdigest(),
+        "evaluation_contract_sha256": evaluation_contract_sha256,
         "evaluation_artifacts": evaluation_artifacts,
         "checkpoint": relative(checkpoint),
-        "checkpoint_sha256": sha256_file(checkpoint),
+        "checkpoint_sha256": checkpoint_sha256,
+        "maximum_rows_per_artifact": int(maximum_rows),
+        "complete": True,
+        "resumed_row_count": len(resumed_rows),
         "row_count": len(rows),
+        "bounded_candidate_evaluation": {
+            "active": maximum_rows > 0,
+            "maximum_rows_per_artifact": int(maximum_rows),
+            "selection_namespace": (
+                selection_namespace
+                if selected_row_ids
+                else "t0a_private_rdc_kerc_source_disjoint_v1"
+                if maximum_rows > 0
+                else ""
+            ),
+            "selection_contract_sha256": (
+                selection_contract_sha256 if selected_row_ids else ""
+            ),
+            "explicit_frozen_row_selection": bool(selected_row_ids),
+            "selection_uses_model_outcomes": False,
+            "selection_uses_answer_text": False,
+        },
+        "evaluation_execution_policy": evaluation_execution_policy,
         "summary": evaluation_summary(rows),
         "by_arm": by_arm,
         "rows": rows,
@@ -3525,7 +6140,6 @@ def evaluate_target(
             else "PRIVATE_FROZEN_CONFIRMATION_ONLY"
         ),
     }
-    output = resolve(str(target["receipt"])).with_name(f"evaluation_{split}_receipt.json")
     write_json_atomic(output, report)
     return {**report, "rows": {"path": relative(output), "embedded_row_count": len(rows)}}
 
@@ -3566,6 +6180,26 @@ def generate_kerc_pipeline_text(
 
     def execute_stage(objective: str, stage_prompt: str) -> tuple[str, dict[str, Any]]:
         if objective in KERC_KERNEL_OBJECTIVES:
+            def validate_completion(candidate_text: str) -> None:
+                if objective == "surface_to_kernel_program_v1":
+                    compiler_prompt = json.loads(stage_prompt)
+                    surface = str(compiler_prompt.get("source_surface") or "")
+                    parse_learned_compiler_output(
+                        candidate_text,
+                        protected_objects={},
+                        concept_capsules={},
+                        source_character_length=len(surface),
+                        source=surface,
+                        hrl_state=hrl_state,
+                        concept_resolver=(
+                            concept_registry.resolve
+                            if concept_registry is not None
+                            else None
+                        ),
+                    )
+                else:
+                    parse_learned_answer_output(candidate_text)
+
             return generate_kerc_code_text(
                 model,
                 stage_prompt,
@@ -3584,6 +6218,12 @@ def generate_kerc_pipeline_text(
                 trusted_source_prefix_token=TRAINING_TASK_TAGS[objective],
                 structured_source=(
                     objective in KERC_STRUCTURED_SOURCE_OBJECTIVES
+                ),
+                completion_validator=validate_completion,
+                completion_prefix_validator=(
+                    lambda rows: kerc_protocol_constant_prefix_valid(
+                        rows, objective=objective
+                    )
                 ),
                 mx=mx,
             )
@@ -3649,6 +6289,111 @@ def generate_kerc_pipeline_text(
     }
 
 
+def select_semantically_valid_completion(
+    decoded_complete: list[dict[str, Any]],
+    completion_validator: Callable[[str], None] | None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Select the highest-ranked independently valid learned proposal."""
+
+    if not decoded_complete:
+        raise ValueError("semantic completion selection requires candidates")
+    selected = decoded_complete[0]
+    receipt: dict[str, Any] = {
+        "validator_active": completion_validator is not None,
+        "complete_candidate_count": len(decoded_complete),
+        "rejected_candidate_count": 0,
+        "rejection_counts": {},
+        "selected_rank": int(selected["rank"]),
+        "selected_semantically_valid": None,
+        "output_repaired_or_rewritten": False,
+    }
+    if completion_validator is None:
+        return selected, receipt
+    rejection_counts: Counter[str] = Counter()
+    rejection_detail_classes: Counter[str] = Counter()
+    valid_candidate: dict[str, Any] | None = None
+    for candidate in decoded_complete:
+        try:
+            completion_validator(str(candidate["decoded_text"]))
+        except KernelProtocolFault as exc:
+            rejection_counts[exc.code] += 1
+            detail_class = (
+                "missing"
+                if exc.detail in {"None", "", "NoneType"}
+                else "present_invalid"
+            )
+            rejection_detail_classes[f"{exc.code}:{detail_class}"] += 1
+            continue
+        valid_candidate = candidate
+        break
+    receipt["rejected_candidate_count"] = int(sum(rejection_counts.values()))
+    receipt["rejection_counts"] = dict(sorted(rejection_counts.items()))
+    receipt["rejection_detail_classes"] = dict(
+        sorted(rejection_detail_classes.items())
+    )
+    receipt["selected_semantically_valid"] = valid_candidate is not None
+    if valid_candidate is not None:
+        selected = valid_candidate
+    receipt["selected_rank"] = int(selected["rank"])
+    return selected, receipt
+
+
+def kerc_decoded_prefix(rows: list[dict[str, str]]) -> str | None:
+    """Decode completed transport spans into the JSON prefix seen by validators."""
+
+    pieces: list[str] = []
+    active_space = ""
+    byte_tokens: list[str] = []
+    for row in rows:
+        token = row["token"]
+        if token == TARGET_BYTE_BEGIN:
+            if active_space:
+                return None
+            active_space = row["space"]
+            byte_tokens = [token]
+        elif token == TARGET_BYTE_END:
+            if row["space"] != active_space:
+                return None
+            decoded, receipt = decode_target_tokens([*byte_tokens, token])
+            if receipt.get("state") != "READY":
+                return None
+            pieces.extend(str(value) for value in decoded)
+            active_space = ""
+            byte_tokens = []
+        elif active_space:
+            if row["space"] != active_space or not is_byte_token(token):
+                return None
+            byte_tokens.append(token)
+        else:
+            pieces.append(token)
+    return "".join(pieces)
+
+
+def kerc_protocol_constant_prefix_valid(
+    rows: list[dict[str, str]], *, objective: str
+) -> bool:
+    """Constrain only immutable KERC ABI constants, never semantic values."""
+
+    prefix = kerc_decoded_prefix(rows)
+    if prefix is None:
+        return False
+    if objective == "surface_to_kernel_program_v1" and prefix.lstrip().startswith("["):
+        compact_prefix = prefix.lstrip()
+        return compact_prefix.startswith(
+            f"[{LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION},"
+        )
+    versions = re.findall(r'"kernel_version"\s*:\s*"([^"\\]*)"', prefix)
+    if any(value != KERNEL_VERSION for value in versions):
+        return False
+    policies = re.findall(r'"policy"\s*:\s*"([^"\\]*)"', prefix)
+    allowed_policies = (
+        {KERC_HIERARCHICAL_COMPILER_POLICY, LEARNED_PROGRAM_TRANSPORT_POLICY}
+        if objective == "surface_to_kernel_program_v1"
+        else {LEARNED_ANSWER_TRANSPORT_POLICY}
+    )
+    return all(value in allowed_policies for value in policies)
+
+
 def generate_kerc_code_text(
     model: Any,
     prompt: str,
@@ -3670,6 +6415,9 @@ def generate_kerc_code_text(
     batched_beam_advance: bool = True,
     device_logit_filter: bool = True,
     preprune_beam_expansions: bool = True,
+    completion_validator: Callable[[str], None] | None = None,
+    completion_prefix_validator: Callable[[list[dict[str, str]]], bool] | None = None,
+    online_completion_validation: bool = False,
     mx: Any,
 ) -> tuple[str, dict[str, Any]]:
     """Decode one grammar-serialized KERC code object in disjoint V_K/V_P."""
@@ -3723,6 +6471,10 @@ def generate_kerc_code_text(
         pointer_offset=pointer_offset,
         pointer_end=pointer_end,
     )
+    if online_completion_validation and completion_validator is None:
+        raise ValueError(
+            "online completion validation requires an independent validator"
+        )
     beams = [
         {
             "ids": [],
@@ -3733,12 +6485,31 @@ def generate_kerc_code_text(
         }
     ]
     complete: list[dict[str, Any]] = []
+    online_rejection_counts: Counter[str] = Counter()
+    online_rejection_detail_classes: Counter[str] = Counter()
+    online_complete_candidate_count = 0
     for _ in range(max_tokens):
         expansions: list[dict[str, Any]] = []
         for beam in beams:
             allowed = kerc_serialization_valid_ids(
                 beam["tokens"], token_rows, end_id=end_id
             )
+            if completion_prefix_validator is not None:
+                filtered: list[int] = []
+                for token_id in allowed:
+                    if token_id == end_id:
+                        filtered.append(token_id)
+                        continue
+                    row = token_rows[token_id]
+                    token = row["token"]
+                    if (
+                        token != TARGET_BYTE_END
+                        and '"' not in token
+                    ) or completion_prefix_validator(
+                        [*beam["tokens"], row]
+                    ):
+                        filtered.append(token_id)
+                allowed = filtered
             if not allowed:
                 continue
             ranked = rank_global_allowed_logits(
@@ -3751,13 +6522,45 @@ def generate_kerc_code_text(
             for token_id, log_probability in ranked:
                 score = float(beam["score"]) + log_probability
                 if token_id == end_id:
-                    complete.append(
-                        {
-                            "ids": list(beam["ids"]),
-                            "tokens": list(beam["tokens"]),
-                            "score": score,
-                        }
-                    )
+                    candidate = {
+                        "ids": list(beam["ids"]),
+                        "tokens": list(beam["tokens"]),
+                        "score": score,
+                    }
+                    if online_completion_validation:
+                        online_complete_candidate_count += 1
+                        candidate_text, candidate_receipt = (
+                            decode_kerc_global_target(
+                                list(candidate["ids"]),
+                                code_vocabulary=code_vocabulary,
+                                kernel_offset=kernel_offset,
+                                pointer_offset=pointer_offset,
+                            )
+                        )
+                        if candidate_receipt.get("state") != "READY":
+                            online_rejection_counts[
+                                "KERC_CODE_DECODE_FAULT"
+                            ] += 1
+                            online_rejection_detail_classes[
+                                "KERC_CODE_DECODE_FAULT:present_invalid"
+                            ] += 1
+                            continue
+                        try:
+                            completion_validator(str(candidate_text))
+                        except KernelProtocolFault as exc:
+                            online_rejection_counts[exc.code] += 1
+                            detail_class = (
+                                "missing"
+                                if exc.detail in {"None", "", "NoneType"}
+                                else "present_invalid"
+                            )
+                            online_rejection_detail_classes[
+                                f"{exc.code}:{detail_class}"
+                            ] += 1
+                            continue
+                        candidate["decoded_text"] = candidate_text
+                        candidate["decode_receipt"] = candidate_receipt
+                    complete.append(candidate)
                     continue
                 row = token_rows[token_id]
                 expansions.append(
@@ -3792,41 +6595,179 @@ def generate_kerc_code_text(
             >= beam_score(beams[0], length_penalty)
         ):
             break
+    semantic_selection: dict[str, Any] = {
+        "validator_active": completion_validator is not None,
+        "complete_candidate_count": len(complete),
+        "rejected_candidate_count": 0,
+        "rejection_counts": {},
+        "selected_rank": None,
+        "selected_semantically_valid": None,
+        "output_repaired_or_rewritten": False,
+        "online_completion_validation": bool(
+            online_completion_validation
+        ),
+        "rejected_candidates_terminated_search": False,
+        "assisted_output_credit_required": bool(
+            online_completion_validation
+        ),
+    }
+    if online_completion_validation:
+        semantic_selection["complete_candidate_count"] = int(
+            online_complete_candidate_count
+        )
+        semantic_selection["rejected_candidate_count"] = int(
+            sum(online_rejection_counts.values())
+        )
+        semantic_selection["rejection_counts"] = dict(
+            sorted(online_rejection_counts.items())
+        )
+        semantic_selection["rejection_detail_classes"] = dict(
+            sorted(online_rejection_detail_classes.items())
+        )
+    decoded = ""
+    decode_receipt: dict[str, Any] = {}
     if complete:
-        selected = max(complete, key=lambda row: beam_score(row, length_penalty))
+        ranked_complete = sorted(
+            complete,
+            key=lambda row: beam_score(row, length_penalty),
+            reverse=True,
+        )
+        decoded_complete: list[dict[str, Any]] = []
+        for rank, candidate in enumerate(ranked_complete, start=1):
+            candidate_text = candidate.get("decoded_text")
+            candidate_receipt = candidate.get("decode_receipt")
+            if candidate_text is None or candidate_receipt is None:
+                candidate_text, candidate_receipt = decode_kerc_global_target(
+                    list(candidate["ids"]),
+                    code_vocabulary=code_vocabulary,
+                    kernel_offset=kernel_offset,
+                    pointer_offset=pointer_offset,
+                )
+            if candidate_receipt.get("state") != "READY":
+                continue
+            decoded_complete.append(
+                {
+                    **candidate,
+                    "decoded_text": candidate_text,
+                    "decode_receipt": candidate_receipt,
+                    "rank": rank,
+                }
+            )
+        if not decoded_complete:
+            return "", {
+                **generation_fault("kerc_code_decode_fault"),
+                **acceleration,
+                "semantic_selection": semantic_selection,
+            }
+        selected, semantic_selection = select_semantically_valid_completion(
+            decoded_complete, completion_validator
+        )
+        if online_completion_validation:
+            semantic_selection["complete_candidate_count"] = int(
+                online_complete_candidate_count
+            )
+            semantic_selection["rejected_candidate_count"] = (
+                int(semantic_selection["rejected_candidate_count"])
+                + int(sum(online_rejection_counts.values()))
+            )
+            combined_rejections = Counter(
+                semantic_selection.get("rejection_counts") or {}
+            )
+            combined_rejections.update(online_rejection_counts)
+            semantic_selection["rejection_counts"] = dict(
+                sorted(combined_rejections.items())
+            )
+            combined_detail = Counter(
+                semantic_selection.get("rejection_detail_classes") or {}
+            )
+            combined_detail.update(online_rejection_detail_classes)
+            semantic_selection["rejection_detail_classes"] = dict(
+                sorted(combined_detail.items())
+            )
+            semantic_selection["online_completion_validation"] = True
+            semantic_selection["rejected_candidates_terminated_search"] = (
+                False
+            )
+            semantic_selection["assisted_output_credit_required"] = True
+        if (
+            completion_validator is not None
+            and semantic_selection["selected_semantically_valid"] is not True
+        ):
+            return "", {
+                **generation_fault("no_semantically_valid_completion"),
+                **acceleration,
+                "semantic_selection": semantic_selection,
+            }
+        decoded = str(selected["decoded_text"])
+        decode_receipt = dict(selected["decode_receipt"])
         stop_reason = "eos"
     elif beams:
         selected = max(beams, key=lambda row: beam_score(row, length_penalty))
         stop_reason = "max_tokens"
+        decoded, decode_receipt = decode_kerc_global_target(
+            list(selected["ids"]),
+            code_vocabulary=code_vocabulary,
+            kernel_offset=kernel_offset,
+            pointer_offset=pointer_offset,
+        )
+    elif online_completion_validation and online_rejection_counts:
+        semantic_selection["complete_candidate_count"] = int(
+            online_complete_candidate_count
+        )
+        semantic_selection["rejected_candidate_count"] = int(
+            sum(online_rejection_counts.values())
+        )
+        semantic_selection["rejection_counts"] = dict(
+            sorted(online_rejection_counts.items())
+        )
+        semantic_selection["rejection_detail_classes"] = dict(
+            sorted(online_rejection_detail_classes.items())
+        )
+        return "", {
+            **generation_fault("no_semantically_valid_completion"),
+            **acceleration,
+            "semantic_selection": semantic_selection,
+        }
     else:
         return "", {
             **generation_fault("no_serialization_valid_sequence"),
             **acceleration,
         }
-    decoded, decode_receipt = decode_kerc_global_target(
-        list(selected["ids"]),
-        code_vocabulary=code_vocabulary,
-        kernel_offset=kernel_offset,
-        pointer_offset=pointer_offset,
-    )
     if decode_receipt.get("state") != "READY":
         return "", {
             **generation_fault("kerc_code_decode_fault"),
             **acceleration,
             "decode_receipt": decode_receipt,
         }
+    generated_token_sha256 = hashlib.sha256(
+        json.dumps(selected["ids"], separators=(",", ":")).encode()
+    ).hexdigest()
+    if stop_reason == "max_tokens":
+        return "", {
+            **generation_fault("kerc_code_incomplete_at_budget"),
+            **acceleration,
+            "semantic_selection": semantic_selection,
+            "stop_reason": stop_reason,
+            "generated_token_count": len(selected["ids"]),
+            "generated_token_sha256": generated_token_sha256,
+            "byte_serialization_valid": True,
+            "json_prefix_complete": False,
+            "target_visible_to_generator": False,
+            "trusted_source_prefix_tokens": [trusted_source_prefix_token],
+            "fallback_return_count": 0,
+        }
     return decoded, {
         "state": "GREEN",
         "decoder": "beam_kerc_dual_code_serialization_v1",
         **acceleration,
+        "semantic_selection": semantic_selection,
         "beam_width": int(beam_width),
         "branching_factor": int(branching_factor),
         "stop_reason": stop_reason,
         "generated_token_count": len(selected["ids"]),
-        "generated_token_sha256": hashlib.sha256(
-            json.dumps(selected["ids"], separators=(",", ":")).encode()
-        ).hexdigest(),
+        "generated_token_sha256": generated_token_sha256,
         "byte_serialization_valid": True,
+        "json_prefix_complete": True,
         "target_visible_to_generator": False,
         "trusted_source_prefix_tokens": [trusted_source_prefix_token],
         "fallback_return_count": 0,
@@ -3896,43 +6837,428 @@ def kerc_global_token_rows(
     return rows
 
 
+def kerc_ground_truth_serialization_valid(
+    token_ids: list[int], token_rows: dict[int, dict[str, str]]
+) -> bool:
+    """Audit that one supervised KERC target is reachable by the decoder."""
+
+    state: KercJsonStreamState | None = KercJsonStreamState()
+    active_space = ""
+    byte_tokens: list[str] = []
+    byte_payload_length = 0
+    for token_id in token_ids:
+        row = token_rows.get(int(token_id))
+        if row is None:
+            return False
+        token = row["token"]
+        if token == TARGET_BYTE_BEGIN:
+            if active_space or not kerc_json_state_accepts_atom(state):
+                return False
+            active_space = row["space"]
+            byte_tokens = [token]
+            byte_payload_length = 0
+        elif token == TARGET_BYTE_END:
+            if row["space"] != active_space:
+                return False
+            decoded, receipt = decode_target_tokens([*byte_tokens, token])
+            if receipt.get("state") != "READY":
+                return False
+            state = kerc_json_token_transition(state, "".join(decoded))
+            if state is None:
+                return False
+            active_space = ""
+            byte_tokens = []
+            byte_payload_length = 0
+        elif active_space:
+            if row["space"] != active_space or not is_byte_token(token):
+                return False
+            byte_payload_length += len(byte_token_bytes(token))
+            if byte_payload_length > MAX_TOKEN_BYTES:
+                return False
+            byte_tokens.append(token)
+        else:
+            state = kerc_json_token_transition(state, token)
+            if state is None:
+                return False
+    return not active_space and kerc_json_state_complete(state)
+
+
 def kerc_serialization_valid_ids(
     generated: list[dict[str, str]],
     token_rows: dict[int, dict[str, str]],
     *,
     end_id: int,
 ) -> list[int]:
+    """Return byte-safe IDs that also preserve canonical JSON syntax.
+
+    KERC code targets are JSON.  The earlier decoder constrained only byte-span
+    transport, so malformed punctuation remained eligible and dominated learned
+    beams.  This independent pushdown state rejects invalid JSON transitions
+    without supplying any semantic field value or hidden answer information.
+    """
+
     active_space = ""
+    byte_tokens: list[str] = []
+    byte_payload_length = 0
+    json_state: KercJsonStreamState | None = KercJsonStreamState()
     for row in generated:
         token = row["token"]
         if token == TARGET_BYTE_BEGIN:
             if active_space:
                 return []
             active_space = row["space"]
+            byte_tokens = [token]
+            byte_payload_length = 0
         elif token == TARGET_BYTE_END:
             if row["space"] != active_space:
                 return []
+            byte_tokens.append(token)
+            decoded, receipt = decode_target_tokens(byte_tokens)
+            if receipt.get("state") != "READY":
+                return []
+            json_state = kerc_json_token_transition(
+                json_state, "".join(decoded)
+            )
+            if json_state is None:
+                return []
             active_space = ""
+            byte_tokens = []
+            byte_payload_length = 0
         elif active_space and (
             row["space"] != active_space or not is_byte_token(token)
         ):
             return []
+        elif active_space:
+            byte_payload_length += len(byte_token_bytes(token))
+            if byte_payload_length > MAX_TOKEN_BYTES:
+                return []
+            byte_tokens.append(token)
+        else:
+            json_state = kerc_json_token_transition(json_state, token)
+            if json_state is None:
+                return []
     allowed: list[int] = []
     for token_id, row in token_rows.items():
         token = row["token"]
         if active_space:
-            if row["space"] == active_space and (
-                is_byte_token(token) or token == TARGET_BYTE_END
-            ):
+            if row["space"] != active_space:
+                continue
+            if is_byte_token(token) and byte_payload_length + len(
+                byte_token_bytes(token)
+            ) <= MAX_TOKEN_BYTES:
                 allowed.append(token_id)
+            elif token == TARGET_BYTE_END:
+                decoded, receipt = decode_target_tokens(
+                    [*byte_tokens, TARGET_BYTE_END]
+                )
+                if receipt.get("state") == "READY" and kerc_json_token_transition(
+                    json_state, "".join(decoded)
+                ) is not None:
+                    allowed.append(token_id)
         elif token == TARGET_BYTE_BEGIN or (
             token not in {"<pad>", "<unk>", "<bos>", "<eos>", TARGET_BYTE_END}
             and not is_byte_token(token)
         ):
-            allowed.append(token_id)
-    if not active_space:
+            if token == TARGET_BYTE_BEGIN:
+                if kerc_json_state_accepts_atom(json_state):
+                    allowed.append(token_id)
+            elif kerc_json_token_transition(json_state, token) is not None:
+                allowed.append(token_id)
+    if not active_space and kerc_json_state_complete(json_state):
         allowed.append(end_id)
     return allowed
+
+
+def kerc_json_state_accepts_atom(
+    state: KercJsonStreamState | None,
+) -> bool:
+    # A byte span is a transport fragment, not necessarily one complete JSON
+    # atom.  It may therefore begin at any unfinished valid prefix (including
+    # between two fragments of one long string, number, or literal).
+    return state is not None and not kerc_json_state_complete(state)
+
+
+def kerc_json_state_complete(
+    state: KercJsonStreamState | None,
+) -> bool:
+    if state is None or state.root_phase != "done" or state.stack:
+        return False
+    if state.mode == "structural":
+        return True
+    return state.mode == "number" and state.number_state in {
+        "zero",
+        "integer",
+        "fraction",
+        "exponent_digits",
+    }
+
+
+@dataclass(frozen=True)
+class KercJsonStreamState:
+    """Incremental JSON-prefix state across arbitrary KERC token fragments."""
+
+    root_phase: str = "value"
+    stack: tuple[tuple[str, str], ...] = ()
+    mode: str = "structural"
+    string_role: str = ""
+    unicode_remaining: int = 0
+    literal_remaining: str = ""
+    number_state: str = ""
+
+
+def kerc_json_token_transition(
+    state: KercJsonStreamState | None,
+    token: str,
+) -> KercJsonStreamState | None:
+    """Advance an arbitrary JSON text fragment through a deterministic PDA.
+
+    KERC's lossless tokenizer may split one long JSON string across adjacent
+    byte spans.  Treating every closed span as a complete JSON atom made valid
+    supervised sequences impossible to decode.  This state machine retains
+    lexical state across span boundaries while still constraining syntax only;
+    it supplies no field names, values, or answer-derived metadata.
+    """
+
+    if state is None:
+        return None
+    root_phase = state.root_phase
+    stack = [list(frame) for frame in state.stack]
+    mode = state.mode
+    string_role = state.string_role
+    unicode_remaining = state.unicode_remaining
+    literal_remaining = state.literal_remaining
+    number_state = state.number_state
+
+    def snapshot() -> KercJsonStreamState:
+        return KercJsonStreamState(
+            root_phase=root_phase,
+            stack=tuple((str(kind), str(phase)) for kind, phase in stack),
+            mode=mode,
+            string_role=string_role,
+            unicode_remaining=unicode_remaining,
+            literal_remaining=literal_remaining,
+            number_state=number_state,
+        )
+
+    def begin_value() -> bool:
+        nonlocal root_phase
+        if stack:
+            kind, phase = stack[-1]
+            if (kind == "object" and phase != "value") or (
+                kind == "array" and phase not in {"value", "value_or_end"}
+            ):
+                return False
+            stack[-1][1] = "comma_or_end"
+            return True
+        if root_phase != "value":
+            return False
+        root_phase = "done"
+        return True
+
+    def number_accepting() -> bool:
+        return number_state in {
+            "zero",
+            "integer",
+            "fraction",
+            "exponent_digits",
+        }
+
+    index = 0
+    while index < len(token):
+        character = token[index]
+        if mode == "string":
+            if character == '"':
+                mode = "structural"
+                if string_role == "key":
+                    if not stack or stack[-1][0] != "object" or stack[-1][1] not in {
+                        "key",
+                        "key_or_end",
+                    }:
+                        return None
+                    stack[-1][1] = "colon"
+                string_role = ""
+            elif character == "\\":
+                mode = "string_escape"
+            elif ord(character) < 0x20:
+                return None
+            index += 1
+            continue
+        if mode == "string_escape":
+            if character == "u":
+                mode = "string_unicode"
+                unicode_remaining = 4
+            elif character in '"\\/bfnrt':
+                mode = "string"
+            else:
+                return None
+            index += 1
+            continue
+        if mode == "string_unicode":
+            if character not in "0123456789abcdefABCDEF":
+                return None
+            unicode_remaining -= 1
+            if unicode_remaining == 0:
+                mode = "string"
+            index += 1
+            continue
+        if mode == "literal":
+            if not literal_remaining or character != literal_remaining[0]:
+                return None
+            literal_remaining = literal_remaining[1:]
+            if not literal_remaining:
+                mode = "structural"
+            index += 1
+            continue
+        if mode == "number":
+            if number_state == "minus":
+                if character == "0":
+                    number_state = "zero"
+                elif character in "123456789":
+                    number_state = "integer"
+                else:
+                    return None
+                index += 1
+                continue
+            if number_state == "zero":
+                if character == ".":
+                    number_state = "decimal_point"
+                    index += 1
+                    continue
+                if character in "eE":
+                    number_state = "exponent"
+                    index += 1
+                    continue
+            elif number_state == "integer":
+                if character.isdigit():
+                    index += 1
+                    continue
+                if character == ".":
+                    number_state = "decimal_point"
+                    index += 1
+                    continue
+                if character in "eE":
+                    number_state = "exponent"
+                    index += 1
+                    continue
+            elif number_state == "decimal_point":
+                if character.isdigit():
+                    number_state = "fraction"
+                    index += 1
+                    continue
+                return None
+            elif number_state == "fraction":
+                if character.isdigit():
+                    index += 1
+                    continue
+                if character in "eE":
+                    number_state = "exponent"
+                    index += 1
+                    continue
+            elif number_state == "exponent":
+                if character in "+-":
+                    number_state = "exponent_sign"
+                    index += 1
+                    continue
+                if character.isdigit():
+                    number_state = "exponent_digits"
+                    index += 1
+                    continue
+                return None
+            elif number_state == "exponent_sign":
+                if character.isdigit():
+                    number_state = "exponent_digits"
+                    index += 1
+                    continue
+                return None
+            elif number_state == "exponent_digits":
+                if character.isdigit():
+                    index += 1
+                    continue
+            if not number_accepting():
+                return None
+            mode = "structural"
+            number_state = ""
+            # Reprocess the delimiter under the structural state.
+            continue
+
+        if character in " \t\r\n":
+            index += 1
+            continue
+        if not stack:
+            if root_phase == "done":
+                return None
+            phase = "value"
+            kind = "root"
+        else:
+            kind, phase = stack[-1]
+        if kind == "object" and phase in {"key", "key_or_end"}:
+            if character == '"':
+                mode = "string"
+                string_role = "key"
+                index += 1
+                continue
+            if phase == "key_or_end" and character == "}":
+                stack.pop()
+                index += 1
+                continue
+            return None
+        if kind == "object" and phase == "colon":
+            if character != ":":
+                return None
+            stack[-1][1] = "value"
+            index += 1
+            continue
+        if phase == "comma_or_end":
+            if character == ",":
+                stack[-1][1] = "key" if kind == "object" else "value"
+                index += 1
+                continue
+            if (kind == "object" and character == "}") or (
+                kind == "array" and character == "]"
+            ):
+                stack.pop()
+                index += 1
+                continue
+            return None
+        if kind == "array" and phase == "value_or_end" and character == "]":
+            stack.pop()
+            index += 1
+            continue
+        if phase not in {"value", "value_or_end"}:
+            return None
+        if character == "{":
+            if not begin_value():
+                return None
+            stack.append(["object", "key_or_end"])
+        elif character == "[":
+            if not begin_value():
+                return None
+            stack.append(["array", "value_or_end"])
+        elif character == '"':
+            if not begin_value():
+                return None
+            mode = "string"
+            string_role = "value"
+        elif character in "tfn":
+            if not begin_value():
+                return None
+            mode = "literal"
+            literal_remaining = {"t": "rue", "f": "alse", "n": "ull"}[character]
+        elif character == "-" or character.isdigit():
+            if not begin_value():
+                return None
+            mode = "number"
+            number_state = (
+                "minus"
+                if character == "-"
+                else "zero"
+                if character == "0"
+                else "integer"
+            )
+        else:
+            return None
+        index += 1
+    return snapshot()
 
 
 def prepare_model_text_prompt(
@@ -4084,6 +7410,7 @@ def generate_model_text(
         {"tokens": [], "score": 0.0, "logits": logits[0, -1], "cache": cache}
     ]
     complete: list[dict[str, Any]] = []
+    serialization_complete: list[dict[str, Any]] = []
     for _ in range(max_tokens):
         expansion_specs: list[dict[str, Any]] = []
         for beam in beams:
@@ -4140,6 +7467,16 @@ def generate_model_text(
             key=lambda row: beam_score(row, length_penalty),
             reverse=True,
         )[: max(1, beam_width)]
+        serialization_complete.extend(
+            {"tokens": list(row["tokens"]), "score": float(row["score"])}
+            for row in beams
+            if not bool(active_target_span(row["tokens"])["active"])
+        )
+        serialization_complete = sorted(
+            serialization_complete,
+            key=lambda row: beam_score(row, length_penalty),
+            reverse=True,
+        )[: max(1, beam_width)]
         complete = sorted(
             complete,
             key=lambda row: beam_score(row, length_penalty),
@@ -4155,6 +7492,7 @@ def generate_model_text(
     return finalize_model_text_generation(
         beams=beams,
         complete=complete,
+        serialization_complete=serialization_complete,
         length_penalty=length_penalty,
         beam_width=beam_width,
         branching_factor=branching_factor,
@@ -4167,6 +7505,7 @@ def finalize_model_text_generation(
     *,
     beams: list[dict[str, Any]],
     complete: list[dict[str, Any]],
+    serialization_complete: list[dict[str, Any]],
     length_penalty: float,
     beam_width: int,
     branching_factor: int,
@@ -4179,10 +7518,13 @@ def finalize_model_text_generation(
         selected = max(complete, key=lambda row: beam_score(row, length_penalty))
         generated_tokens = list(selected["tokens"])
         stop_reason = "eos"
-    elif beams:
-        selected = max(beams, key=lambda row: beam_score(row, length_penalty))
+    elif serialization_complete:
+        selected = max(
+            serialization_complete,
+            key=lambda row: beam_score(row, length_penalty),
+        )
         generated_tokens = list(selected["tokens"])
-        stop_reason = "max_tokens"
+        stop_reason = "max_tokens_serialization_complete"
     else:
         return "", {
             **generation_fault("no_serialization_valid_sequence"),
@@ -4284,6 +7626,7 @@ def generate_model_text_batch(
             "acceleration": acceleration,
             "beams": [],
             "complete": [],
+            "serialization_complete": [],
             "active": True,
             "prefill_bucket_size": 1,
         }
@@ -4453,6 +7796,16 @@ def generate_model_text_batch(
                 key=lambda row: beam_score(row, length_penalty),
                 reverse=True,
             )[: max(1, beam_width)]
+            record["serialization_complete"].extend(
+                {"tokens": list(row["tokens"]), "score": float(row["score"])}
+                for row in record["beams"]
+                if not bool(active_target_span(row["tokens"])["active"])
+            )
+            record["serialization_complete"] = sorted(
+                record["serialization_complete"],
+                key=lambda row: beam_score(row, length_penalty),
+                reverse=True,
+            )[: max(1, beam_width)]
             record["complete"] = sorted(
                 record["complete"],
                 key=lambda row: beam_score(row, length_penalty),
@@ -4492,6 +7845,7 @@ def generate_model_text_batch(
         results[request_index] = finalize_model_text_generation(
             beams=record["beams"],
             complete=record["complete"],
+            serialization_complete=record["serialization_complete"],
             length_penalty=length_penalty,
             beam_width=beam_width,
             branching_factor=branching_factor,
@@ -4743,6 +8097,623 @@ def evaluation_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _candidate_tensor_manifest(mapping: dict[str, np.ndarray]) -> dict[str, Any]:
+    manifest = tensor_mapping_manifest(mapping)
+    return {
+        "sha256": manifest["sha256"],
+        "tensor_count": manifest["tensor_count"],
+        "element_count": manifest["element_count"],
+        "payload_bytes": manifest["payload_bytes"],
+    }
+
+
+def canonical_tensor_dtype(value: Any) -> str:
+    """Normalize equivalent NumPy and MLX dtype spellings for custody checks."""
+
+    return str(getattr(value, "dtype", value)).rsplit(".", 1)[-1]
+
+
+def exact_candidate_continuation_initialization_receipt(
+    state: dict[str, Any] | None,
+    *,
+    target_id: str,
+    seed: int,
+) -> dict[str, Any] | None:
+    """Describe the exact-checkpoint initialization path without materializing a random reference.
+
+    Matched scratch candidates need a common random named-tensor reference.
+    A governed one-shot continuation does not: its already validated model,
+    optimizer, and RNG artifacts replace the fresh model before any optimizer
+    step. Writing hundreds of random reference tensors in that case adds disk,
+    memory, and swap pressure without affecting the resumed state.
+    """
+
+    continuation = dict((state or {}).get("candidate_continuation") or {})
+    if not continuation:
+        return None
+    if continuation.get("policy") != (
+        "project_theseus_exact_candidate_continuation_import_v1"
+    ):
+        raise ValueError("candidate continuation import policy mismatch")
+    required = (
+        "source_checkpoint_sha256",
+        "source_optimizer_state_sha256",
+        "source_mlx_rng_state_sha256",
+    )
+    if any(not str(continuation.get(key) or "") for key in required):
+        raise ValueError("candidate continuation exact state identity is incomplete")
+    return {
+        "policy": "project_theseus_exact_candidate_continuation_initialization_v1",
+        "state": "EXACT_CHECKPOINT_IMPORT_REPLACES_RANDOM_INITIALIZATION",
+        "target_id": target_id,
+        "seed": int(seed),
+        "source_checkpoint_sha256": continuation["source_checkpoint_sha256"],
+        "source_optimizer_state_sha256": continuation[
+            "source_optimizer_state_sha256"
+        ],
+        "source_mlx_rng_state_sha256": continuation[
+            "source_mlx_rng_state_sha256"
+        ],
+        "common_random_reference_required": False,
+        "common_initialization_files_written": 0,
+        "optimizer_step_before_exact_state_load": False,
+    }
+
+
+def load_kerc_stage_selective_compute_checkpoint(
+    model: Any,
+    checkpoint: Path,
+    *,
+    stage_index: int,
+    include_stage_embedding: bool = True,
+    mx: Any,
+    mlx_utils: Any,
+) -> dict[str, Any]:
+    """Load one diagnostic checkpoint with exact FP32 stage trainables.
+
+    Frozen tensors are materialized as BF16 to avoid retaining a second full
+    FP32 model. The selected stage tensors remain the source checkpoint's exact
+    FP32 values. This is a bounded compute representation, not a canonical
+    checkpoint migration; any behavior-positive delta must be merged back into
+    the independently verified FP32 source lineage before promotion.
+    """
+
+    if stage_index != 1:
+        raise ValueError(
+            "selective compute checkpoint loading currently supports KERC stage 1"
+        )
+    if not checkpoint.is_file():
+        raise ValueError("selective compute source checkpoint is missing")
+    destination = dict(mlx_utils.tree_flatten(model.parameters()))
+    selected = dict(mlx_utils.tree_flatten(model.trainable_parameters()))
+    if not destination or not selected:
+        raise ValueError("selective compute model scope is empty")
+    _metadata, source_index, payload_offset = safetensors_payload_index(
+        checkpoint
+    )
+    if set(source_index) != set(destination):
+        missing = sorted(set(destination) - set(source_index))
+        unexpected = sorted(set(source_index) - set(destination))
+        raise ValueError(
+            "selective compute checkpoint tensor identity mismatch:"
+            f"missing={','.join(missing[:8])};unexpected={','.join(unexpected[:8])}"
+        )
+    shape_faults = sorted(
+        name
+        for name, row in source_index.items()
+        if row.get("dtype") != "F32"
+        or tuple(int(value) for value in row["shape"])
+        != tuple(destination[name].shape)
+    )
+    if shape_faults:
+        raise ValueError(
+            "selective compute checkpoint tensor dtype or shape mismatch:"
+            + ",".join(shape_faults[:8])
+        )
+    selected_names = set(selected)
+    expected_selected_count = 5 if include_stage_embedding else 4
+    if (
+        len(selected_names) != expected_selected_count
+        or (
+            include_stage_embedding
+            and not any(
+                name.startswith("kerc_stage_embedding.")
+                for name in selected_names
+            )
+        )
+        or (
+            not include_stage_embedding
+            and any(
+                name.startswith("kerc_stage_embedding.")
+                for name in selected_names
+            )
+        )
+        or not any(name.startswith("kerc_stage_adapters.1.") for name in selected_names)
+        or not any(name.startswith("kerc_kernel_output.") for name in selected_names)
+    ):
+        raise ValueError("selective compute compiler trainable scope is not exact")
+    selected_source_raw_sha256 = {
+        name: safetensors_raw_tensor_sha256(
+            checkpoint,
+            source_index[name],
+            payload_offset=payload_offset,
+        )
+        for name in sorted(selected_names)
+    }
+
+    batch: list[tuple[str, Any]] = []
+    batch_bytes = 0
+    for name in sorted(source_index):
+        row = source_index[name]
+        start, _stop = (int(value) for value in row["data_offsets"])
+        source_view = np.memmap(
+            checkpoint,
+            dtype=np.float32,
+            mode="r",
+            offset=payload_offset + start,
+            shape=tuple(int(value) for value in row["shape"]),
+            order="C",
+        )
+        value = mx.array(
+            source_view,
+            dtype=(
+                mx.float32
+                if name in selected_names
+                else mx.bfloat16
+            ),
+        )
+        batch.append((name, value))
+        batch_bytes += int(value.size) * (4 if name in selected_names else 2)
+        if batch_bytes >= 16 * 1024 * 1024:
+            model.load_weights(batch, strict=False)
+            mx.eval(*[tensor for _name, tensor in batch])
+            batch = []
+            batch_bytes = 0
+    if batch:
+        model.load_weights(batch, strict=False)
+        mx.eval(*[tensor for _name, tensor in batch])
+
+    loaded = dict(mlx_utils.tree_flatten(model.parameters()))
+    selected_loaded_raw_sha256: dict[str, str] = {}
+    selected_exact = True
+    for name in sorted(selected_names):
+        row = source_index[name]
+        start, _stop = (int(value) for value in row["data_offsets"])
+        source_view = np.memmap(
+            checkpoint,
+            dtype=np.float32,
+            mode="r",
+            offset=payload_offset + start,
+            shape=tuple(int(value) for value in row["shape"]),
+            order="C",
+        )
+        loaded_array = np.ascontiguousarray(np.asarray(loaded[name]))
+        loaded_sha256 = hashlib.sha256(
+            memoryview(loaded_array).cast("B")
+        ).hexdigest()
+        selected_loaded_raw_sha256[name] = loaded_sha256
+        selected_exact = bool(
+            selected_exact
+            and loaded_sha256 == selected_source_raw_sha256[name]
+            and np.array_equal(source_view, loaded_array)
+        )
+        del loaded_array, source_view
+    selected_fp32 = all(
+        canonical_tensor_dtype(loaded[name]) == "float32"
+        for name in selected_names
+    )
+    frozen_bfloat16 = all(
+        canonical_tensor_dtype(value) == "bfloat16"
+        for name, value in loaded.items()
+        if name not in selected_names
+    )
+    if not selected_exact or not selected_fp32 or not frozen_bfloat16:
+        raise ValueError("selective compute checkpoint dtype or custody check failed")
+    selected_source_manifest_sha256 = hashlib.sha256(
+        json.dumps(
+            selected_source_raw_sha256,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    selected_loaded_manifest_sha256 = hashlib.sha256(
+        json.dumps(
+            selected_loaded_raw_sha256,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    return {
+        "policy": "project_theseus_kerc_stage_selective_compute_checkpoint_v1",
+        "stage_index": stage_index,
+        "scope": "compiler",
+        "stage_embedding_included": bool(include_stage_embedding),
+        "source_checkpoint": relative(checkpoint),
+        "source_checkpoint_sha256": sha256_file(checkpoint),
+        "source_tensor_count": len(source_index),
+        "selected_tensor_names": sorted(selected_names),
+        "selected_tensor_count": len(selected_names),
+        "selected_source_raw_tensor_sha256": selected_source_raw_sha256,
+        "selected_loaded_raw_tensor_sha256": selected_loaded_raw_sha256,
+        "selected_source_manifest_sha256": selected_source_manifest_sha256,
+        "selected_loaded_manifest_sha256": selected_loaded_manifest_sha256,
+        "selected_fp32_exact": selected_exact,
+        "frozen_parameter_dtype": "bfloat16",
+        "frozen_tensor_count": len(source_index) - len(selected_names),
+        "canonical_checkpoint_migration": False,
+        "merge_into_verified_fp32_source_required_for_promotion": True,
+        "optimizer_step_before_custody_check": False,
+        "capability_claim": "NONE_DIAGNOSTIC_COMPUTE_REPRESENTATION",
+    }
+
+
+def apply_kerc_stage_selective_delta_checkpoint(
+    model: Any,
+    checkpoint: Path,
+    *,
+    mx: Any,
+    mlx_utils: Any,
+) -> dict[str, Any]:
+    """Overlay one exact FP32 compiler delta on a verified source-backed model."""
+
+    if not checkpoint.is_file():
+        raise ValueError("selective compute delta checkpoint is missing")
+    selected = dict(mlx_utils.tree_flatten(model.trainable_parameters()))
+    delta = dict(mx.load(str(checkpoint)))
+    if set(delta) != set(selected):
+        raise ValueError("selective compute delta tensor identity mismatch")
+    faults = sorted(
+        name
+        for name, value in delta.items()
+        if canonical_tensor_dtype(value) != "float32"
+        or tuple(value.shape) != tuple(selected[name].shape)
+    )
+    if faults:
+        raise ValueError(
+            "selective compute delta dtype or shape mismatch:"
+            + ",".join(faults)
+        )
+    model.load_weights(list(delta.items()), strict=False)
+    mx.eval(model.trainable_parameters())
+    loaded = dict(mlx_utils.tree_flatten(model.trainable_parameters()))
+    mismatches = sorted(
+        name
+        for name in delta
+        if not np.array_equal(np.asarray(delta[name]), np.asarray(loaded[name]))
+    )
+    if mismatches:
+        raise ValueError(
+            "selective compute delta load custody mismatch:"
+            + ",".join(mismatches)
+        )
+    raw_sha256 = {
+        name: hashlib.sha256(
+            memoryview(np.ascontiguousarray(np.asarray(value))).cast("B")
+        ).hexdigest()
+        for name, value in sorted(delta.items())
+    }
+    return {
+        "policy": "project_theseus_exact_kerc_stage_delta_overlay_v1",
+        "checkpoint": relative(checkpoint),
+        "checkpoint_sha256": sha256_file(checkpoint),
+        "tensor_count": len(delta),
+        "tensor_names": sorted(delta),
+        "raw_tensor_sha256": raw_sha256,
+        "loaded_exact": True,
+    }
+
+
+def align_candidate_common_initialization(
+    model: Any,
+    *,
+    state: dict[str, Any] | None,
+    target_id: str,
+    seed: int,
+    receipt_path: Path,
+    mx: Any,
+    mlx_utils: Any,
+) -> dict[str, Any] | None:
+    """Align common candidate tensors without hiding candidate-only parameters.
+
+    A shared PRNG seed is insufficient when two architectures consume a different
+    number of random draws during construction.  The first candidate is therefore
+    the named-tensor reference.  Later candidates copy only tensors with the same
+    name, shape, and dtype.  Candidate-specific tensors remain at their original
+    initialization and are content-checked before and after alignment.
+    """
+
+    if state is None:
+        return None
+    if seed <= 0:
+        raise ValueError("candidate common initialization requires a positive seed")
+    flat = dict(mlx_utils.tree_flatten(model.parameters()))
+    if not flat:
+        raise ValueError("candidate model has no parameters to align")
+    reference = state.get("reference")
+    if reference is None:
+        reference_root = receipt_path.parent.parent / "candidate_common_initialization"
+        reference_root.mkdir(parents=True, exist_ok=True)
+        reference_files: dict[str, dict[str, Any]] = {}
+        for name, value in sorted(flat.items()):
+            array = np.array(value)
+            filename = hashlib.sha256(name.encode("utf-8")).hexdigest() + ".npy"
+            path = reference_root / filename
+            np.save(path, array, allow_pickle=False)
+            reference_files[name] = {
+                "path": str(path),
+                "shape": list(array.shape),
+                "dtype": canonical_tensor_dtype(array),
+                "nbytes": int(array.nbytes),
+                "sha256": sha256_file(path),
+            }
+            del array
+        receipt: dict[str, Any] = {
+            "policy": "project_theseus_candidate_common_initialization_v1",
+            "role": "reference",
+            "target_id": target_id,
+            "seed": int(seed),
+            "exact_alignment": None,
+            "common_tensor_manifest": None,
+            "architecture_specific_tensor_manifest": None,
+            "architecture_specific_tensors_unchanged": True,
+            "comparison_state": "PENDING_MATCHED_TARGET",
+        }
+        state.update(
+            {
+                "seed": int(seed),
+                "reference_target_id": target_id,
+                "reference": reference_files,
+                "reference_storage": "disk_backed_npy_per_tensor_v1",
+                "reference_receipt": receipt,
+                "reference_receipt_path": str(receipt_path),
+            }
+        )
+        return receipt
+    if int(state.get("seed") or 0) != int(seed):
+        raise ValueError("candidate common initialization seed changed within pair")
+    if state.get("aligned_target_id"):
+        raise ValueError("candidate common initialization supports exactly one matched pair")
+
+    common_names = sorted(
+        name
+        for name, value in flat.items()
+        if name in reference
+        and tuple(reference[name]["shape"]) == tuple(value.shape)
+        and canonical_tensor_dtype(reference[name]["dtype"])
+        == canonical_tensor_dtype(value)
+    )
+    if not common_names:
+        raise ValueError("candidate pair has no common named tensors to align")
+    unique_before = {
+        name: value for name, value in flat.items() if name not in common_names
+    }
+    unique_before_manifest = _candidate_tensor_manifest(unique_before)
+    batch: list[tuple[str, Any]] = []
+    batch_bytes = 0
+    for name in common_names:
+        metadata = reference[name]
+        path = Path(str(metadata["path"]))
+        if not path.is_file() or sha256_file(path) != metadata["sha256"]:
+            raise ValueError("candidate initialization reference tensor drifted")
+        batch.append((name, mx.array(np.load(path, mmap_mode="r"))))
+        batch_bytes += int(metadata["nbytes"])
+        if batch_bytes >= 32 * 1024 * 1024:
+            model.load_weights(batch, strict=False)
+            mx.eval(model.parameters())
+            batch = []
+            batch_bytes = 0
+    if batch:
+        model.load_weights(batch, strict=False)
+        mx.eval(model.parameters())
+    aligned = dict(mlx_utils.tree_flatten(model.parameters()))
+    common_after = {name: aligned[name] for name in common_names}
+    reference_common = {
+        name: np.load(Path(str(reference[name]["path"])), mmap_mode="r")
+        for name in common_names
+    }
+    reference_manifest = _candidate_tensor_manifest(reference_common)
+    aligned_manifest = _candidate_tensor_manifest(common_after)
+    unique_after = {
+        name: value for name, value in aligned.items() if name not in common_names
+    }
+    unique_after_manifest = _candidate_tensor_manifest(unique_after)
+    exact = (
+        reference_manifest == aligned_manifest
+        and all(
+            np.array_equal(reference_common[name], common_after[name])
+            for name in common_names
+        )
+    )
+    unique_unchanged = unique_before_manifest == unique_after_manifest
+    if not exact or not unique_unchanged:
+        raise ValueError("candidate common initialization integrity failure")
+
+    reference_unique = {
+        name: np.load(Path(str(value["path"])), mmap_mode="r")
+        for name, value in reference.items()
+        if name not in common_names
+    }
+    reference_receipt = state["reference_receipt"]
+    reference_receipt.update(
+        {
+            "exact_alignment": True,
+            "common_tensor_manifest": reference_manifest,
+            "architecture_specific_tensor_manifest": _candidate_tensor_manifest(
+                reference_unique
+            ),
+            "architecture_specific_tensors_unchanged": True,
+            "comparison_state": "EXACT_COMMON_SUBSPACE_ALIGNED",
+            "matched_target_id": target_id,
+        }
+    )
+    receipt = {
+        "policy": "project_theseus_candidate_common_initialization_v1",
+        "role": "aligned",
+        "target_id": target_id,
+        "seed": int(seed),
+        "exact_alignment": True,
+        "common_tensor_manifest": aligned_manifest,
+        "architecture_specific_tensor_manifest": unique_after_manifest,
+        "architecture_specific_tensors_unchanged": unique_unchanged,
+        "comparison_state": "EXACT_COMMON_SUBSPACE_ALIGNED",
+        "reference_target_id": state["reference_target_id"],
+    }
+    state["aligned_target_id"] = target_id
+    state["aligned_receipt"] = receipt
+
+    # The first target has already published its transactional training receipt.
+    # Advance only its initialization subreceipt after the second target proves
+    # the common subset; all other immutable checkpoint fields remain unchanged.
+    reference_path = Path(str(state["reference_receipt_path"]))
+    if reference_path.is_file():
+        durable = read_json(reference_path)
+        durable["candidate_initialization"] = reference_receipt
+        write_json_atomic(reference_path, durable)
+    return receipt
+
+
+def initialize_kerc_from_shared_trunk(
+    model: Any,
+    *,
+    checkpoint: Path,
+    receipt_path: Path,
+    mx: Any,
+    mlx_utils: Any,
+) -> dict[str, Any]:
+    """Warm-start the exact KERC/common subspace from the registered trunk.
+
+    KERC extends the canonical vocabulary and adds architecture-specific heads,
+    so the shared token embedding is prefix-expanded while every shape-identical
+    trunk tensor is copied exactly.  New KERC rows and modules retain their
+    seeded initialization.
+    """
+
+    if not checkpoint.is_file() or not receipt_path.is_file():
+        raise ValueError("KERC shared-trunk initialization artifacts are missing")
+    receipt = read_json(receipt_path)
+    checkpoint_sha256 = sha256_file(checkpoint)
+    if (
+        checkpoint_sha256 != str(receipt.get("checkpoint_sha256") or "")
+        or int(receipt.get("optimizer_steps") or 0) < 3000
+        or receipt.get("trigger_state") != "GREEN"
+        or int(receipt.get("public_training_rows_written") or 0)
+        or int(receipt.get("external_inference_calls") or 0)
+        or int(receipt.get("fallback_return_count") or 0)
+    ):
+        raise ValueError("KERC shared-trunk progress checkpoint custody failed")
+    source = dict(mx.load(str(checkpoint)))
+    destination = dict(mlx_utils.tree_flatten(model.parameters()))
+    missing = sorted(set(source) - set(destination))
+    if missing:
+        raise ValueError(
+            "KERC model is missing shared-trunk tensors: " + ",".join(missing[:8])
+        )
+    exact: list[tuple[str, Any]] = []
+    expanded: list[tuple[str, Any]] = []
+    incompatible: list[str] = []
+    for name, value in source.items():
+        target = destination[name]
+        if tuple(value.shape) == tuple(target.shape):
+            exact.append((name, value))
+            continue
+        if (
+            (
+                name == "token_embedding.weight"
+                or name.startswith("mtp_output_heads.")
+            )
+            and len(value.shape) == len(target.shape) == 2
+            and int(value.shape[0]) < int(target.shape[0])
+            and int(value.shape[1]) == int(target.shape[1])
+        ):
+            expanded.append(
+                (
+                    name,
+                    mx.concatenate(
+                        [value, target[int(value.shape[0]) :]], axis=0
+                    ),
+                )
+            )
+            continue
+        incompatible.append(name)
+    required_expansions = {
+        "token_embedding.weight",
+        "mtp_output_heads.0.weight",
+        "mtp_output_heads.1.weight",
+        "mtp_output_heads.2.weight",
+    }
+    if incompatible or {name for name, _value in expanded} != required_expansions:
+        raise ValueError(
+            "KERC shared-trunk tensor compatibility failure:"
+            + ",".join(incompatible[:8])
+        )
+    model.load_weights([*exact, *expanded], strict=False)
+    mx.eval(model.parameters())
+    warmed = dict(mlx_utils.tree_flatten(model.parameters()))
+    embedding = warmed.get("token_embedding.weight")
+    output_head_names = (
+        "kerc_kernel_output.weight",
+        "kerc_surface_output.weight",
+    )
+    if embedding is None or any(
+        name not in warmed or tuple(warmed[name].shape) != tuple(embedding.shape)
+        for name in output_head_names
+    ):
+        raise ValueError("KERC output heads cannot inherit the warm token embedding")
+    model.load_weights(
+        [(name, embedding) for name in output_head_names], strict=False
+    )
+    mx.eval(model.parameters())
+    initialized = dict(mlx_utils.tree_flatten(model.parameters()))
+    if any(
+        not np.array_equal(initialized[name], initialized["token_embedding.weight"])
+        for name in output_head_names
+    ):
+        raise ValueError("KERC warm output-head initialization is not exact")
+    shared_elements = sum(int(value.size) for _name, value in exact) + sum(
+        int(source[name].size) for name, _value in expanded
+    )
+    return {
+        "policy": "registered_shared_trunk_progress_checkpoint_common_subspace_v1",
+        "checkpoint": relative(checkpoint),
+        "checkpoint_sha256": checkpoint_sha256,
+        "receipt": relative(receipt_path),
+        "receipt_sha256": sha256_file(receipt_path),
+        "source_optimizer_steps": int(receipt["optimizer_steps"]),
+        "source_receipt_complete": bool(receipt.get("complete")),
+        "source_receipt_state": receipt.get("trigger_state"),
+        "exact_shape_tensor_count": len(exact),
+        "prefix_expanded_tensor_names": [name for name, _value in expanded],
+        "source_tensor_count": len(source),
+        "shared_element_count": shared_elements,
+        "new_kerc_non_output_tensor_initialization_preserved": True,
+        "kerc_output_head_initialization": {
+            "policy": "warm_token_embedding_exact_copy_v1",
+            "head_names": list(output_head_names),
+            "head_count": len(output_head_names),
+            "canonical_rows_inherit_shared_trunk": True,
+            "kerc_only_rows_inherit_seeded_token_embeddings": True,
+            "heads_remain_independently_trainable": True,
+            "answer_metadata_used": False,
+        },
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "capability_claim": "NONE_PROGRESS_CHECKPOINT_INITIALIZATION_ONLY",
+    }
+
+
+def kerc_segmented_delta_resume_required(receipt: dict[str, Any]) -> bool:
+    """Distinguish a five-tensor delta generation from its full merged image."""
+
+    selective = dict(receipt.get("selective_compute_checkpoint") or {})
+    return bool(
+        receipt.get("current_kernel_phase_position_accounting_reset")
+        and selective.get("source_checkpoint")
+        and receipt.get("checkpoint_representation")
+        != "full_fp32_source_with_exact_compiler_delta_merge_v1"
+    )
+
+
 def train_target(
     config: dict[str, Any],
     plan: dict[str, Any],
@@ -4759,6 +8730,10 @@ def train_target(
     source_conditioned_stage: Any | None = None,
     kernel_english_stage: Any | None = None,
     supervision_stage: Any | None = None,
+    step_boundary_callback: Any = None,
+    optimizer_id: str = "",
+    candidate_seed: int = 0,
+    candidate_initialization_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     active_phases = {
         "pretraining",
@@ -4771,12 +8746,43 @@ def train_target(
             raise ValueError(f"unknown training phase: {training_phase}")
         active_phases = {training_phase}
     target_id = str(target["target_id"])
+    effective_seed = (
+        int(candidate_seed)
+        if candidate_seed > 0
+        else int(config["seed"]) + stable_int(target_id)
+    )
+    candidate_execution_policy = dict(
+        (candidate_initialization_state or {}).get("execution_policy") or {}
+    )
+    candidate_continuation = dict(
+        (candidate_initialization_state or {}).get("candidate_continuation") or {}
+    )
+    exact_continuation_initialization = (
+        exact_candidate_continuation_initialization_receipt(
+            candidate_initialization_state,
+            target_id=target_id,
+            seed=effective_seed,
+        )
+    )
+    candidate_cache_limit_bytes = int(
+        candidate_execution_policy.get("mlx_cache_limit_mib") or 0
+    ) * 1024 * 1024
+    if candidate_cache_limit_bytes:
+        mx.set_cache_limit(candidate_cache_limit_bytes)
+        mx.clear_cache()
+        if hasattr(mx, "reset_peak_memory"):
+            mx.reset_peak_memory()
     trained_vocab_size = int(
         target.get("vocab_size") or plan["models"]["vocab_size"]
     )
-    inputs = range_view(stage.pretrain_inputs, target["row_ranges"])
-    labels = range_view(stage.pretrain_labels, target["row_ranges"])
-    mask = range_view(stage.pretrain_mask, target["row_ranges"])
+    if "pretraining" in active_phases:
+        inputs = range_view(stage.pretrain_inputs, target["row_ranges"])
+        labels = range_view(stage.pretrain_labels, target["row_ranges"])
+        mask = range_view(stage.pretrain_mask, target["row_ranges"])
+    else:
+        inputs = np.empty((0, 1), dtype=np.int32)
+        labels = np.empty((0, 1), dtype=np.int32)
+        mask = np.empty((0, 1), dtype=np.uint8)
     copy_lookup = None
     if str((target.get("model") or {}).get("source_copy_mode") or "none") != "none":
         copy_lookup = build_source_to_target_lookup(
@@ -4785,8 +8791,84 @@ def train_target(
             vocab_size=trained_vocab_size,
             identity_ranges=target_copy_identity_ranges(target),
         )
+    if candidate_seed > 0:
+        random.seed(effective_seed)
+        mx.random.seed(effective_seed)
+    model_config = CausalTransformerConfig(
+        vocab_size=trained_vocab_size, **target["model"]
+    )
+    selective_fp32_trainables = bool(
+        candidate_execution_policy.get("selective_fp32_trainables", False)
+    )
+    kerc_stage_only_value = candidate_execution_policy.get(
+        "kerc_delta_stage_only"
+    )
+    kerc_stage_only = (
+        int(kerc_stage_only_value) if kerc_stage_only_value is not None else None
+    )
+    kerc_stage_train_stage_embedding = bool(
+        candidate_execution_policy.get(
+            "kerc_stage_train_stage_embedding", True
+        )
+    )
+    kerc_stage_detach_frozen_trunk = bool(
+        candidate_execution_policy.get(
+            "kerc_stage_detach_frozen_trunk", False
+        )
+    )
+    gradient_checkpointing_active = bool(
+        candidate_execution_policy.get("gradient_checkpointing", False)
+    )
+    parameter_initialization_dtype = str(
+        candidate_execution_policy.get("parameter_initialization_dtype")
+        or "float32"
+    )
+    if selective_fp32_trainables and (
+        not candidate_continuation
+        or candidate_execution_policy.get("compute_dtype") != "bfloat16"
+        or candidate_execution_policy.get("fp32_master") is not False
+        or parameter_initialization_dtype != "bfloat16"
+        or candidate_execution_policy.get(
+            "exact_checkpoint_placeholder_initialization"
+        )
+        is not True
+        or candidate_execution_policy.get("freeze_warm_trunk_train_kerc_delta")
+        is not True
+        or int(candidate_execution_policy.get("kerc_delta_stage_only") or -1)
+        != 1
+        or (
+            (kerc_stage_train_stage_embedding, kerc_stage_detach_frozen_trunk)
+            not in {(True, False), (False, True)}
+        )
+        or candidate_execution_policy.get(
+            "continuation_optimizer_state_projection_policy"
+        )
+        != "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+    ):
+        raise ValueError(
+            "selective FP32 trainables require the exact stage-1 BF16 "
+            "continuation policy"
+        )
+
+    def record_selective_initialization_stage(stage_name: str) -> None:
+        if not selective_fp32_trainables:
+            return
+        diagnostic_receipt_path = resolve(str(target["receipt"]))
+        if not diagnostic_receipt_path.is_file():
+            raise ValueError(
+                "selective compute continuation receipt is missing"
+            )
+        diagnostic_receipt = read_json(diagnostic_receipt_path)
+        diagnostic_receipt["selective_compute_initialization_stage"] = (
+            stage_name
+        )
+        diagnostic_receipt[
+            "selective_compute_initialization_stage_optimizer_step"
+        ] = False
+        write_json_atomic(diagnostic_receipt_path, diagnostic_receipt)
+
     model = build_model(
-        CausalTransformerConfig(vocab_size=trained_vocab_size, **target["model"]),
+        model_config,
         mx=mx,
         nn=nn,
         state_role_lookup=None,
@@ -4795,7 +8877,87 @@ def train_target(
             config["training"].get("training_rope_kernel")
             or "manual_reference"
         ),
+        gradient_checkpointing=gradient_checkpointing_active,
+        attention_query_chunk_size=int(
+            candidate_execution_policy.get("attention_query_chunk_size") or 0
+        ),
+        attention_key_chunk_size=int(
+            candidate_execution_policy.get("attention_key_chunk_size") or 0
+        ),
+        compact_encoder_decoder_partitions=bool(
+            candidate_execution_policy.get(
+                "compact_encoder_decoder_partitions", False
+            )
+        ),
+        compact_partition_width_quantum=int(
+            candidate_execution_policy.get(
+                "compact_partition_width_quantum", 0
+            )
+        ),
+        parameter_initialization_dtype=parameter_initialization_dtype,
+        exact_checkpoint_placeholder_initialization=bool(
+            candidate_execution_policy.get(
+                "exact_checkpoint_placeholder_initialization", False
+            )
+        ),
     )
+    record_selective_initialization_stage("BF16_MODEL_CONSTRUCTED")
+    shared_trunk_initialization = None
+    if (
+        target.get("role") == "kerc_english_candidate"
+        and candidate_execution_policy.get("initialization_policy")
+        == "registered_shared_trunk_progress_checkpoint_common_subspace_v1"
+        and not candidate_continuation
+    ):
+        shared_checkpoint = resolve(str(target.get("shared_trunk_checkpoint") or ""))
+        shared_trunk_initialization = initialize_kerc_from_shared_trunk(
+            model,
+            checkpoint=shared_checkpoint,
+            receipt_path=shared_checkpoint.parent / "training_receipt.json",
+            mx=mx,
+            mlx_utils=mlx_utils,
+        )
+    candidate_initialization_receipt = (
+        exact_continuation_initialization
+        if exact_continuation_initialization is not None
+        else align_candidate_common_initialization(
+            model,
+            state=candidate_initialization_state,
+            target_id=target_id,
+            seed=effective_seed,
+            receipt_path=resolve(str(target["receipt"])),
+            mx=mx,
+            mlx_utils=mlx_utils,
+        )
+    )
+    if shared_trunk_initialization is not None:
+        candidate_initialization_receipt = {
+            **candidate_initialization_receipt,
+            "shared_trunk_initialization": shared_trunk_initialization,
+        }
+    kerc_delta_scope = bool(
+        candidate_execution_policy.get("freeze_warm_trunk_train_kerc_delta", False)
+    )
+    kerc_source_bridge = bool(
+        candidate_execution_policy.get(
+            "kerc_delta_include_source_conditioned_bridge", False
+        )
+    )
+    if kerc_stage_only is not None:
+        if not kerc_delta_scope or target.get("role") != "kerc_english_candidate":
+            raise ValueError("KERC stage-only scope requires frozen KERC delta training")
+        model.freeze_to_kerc_stage(
+            kerc_stage_only,
+            include_stage_embedding=kerc_stage_train_stage_embedding,
+            detach_frozen_trunk=kerc_stage_detach_frozen_trunk,
+        )
+    elif kerc_delta_scope:
+        if target.get("role") != "kerc_english_candidate":
+            raise ValueError("KERC delta scope requires the KERC English candidate")
+        model.freeze_to_kerc_delta(
+            include_source_conditioned_bridge=kerc_source_bridge
+        )
+    record_selective_initialization_stage("COMPILER_TRAINABLE_SCOPE_BOUND")
     expert_mode = target.get("role") == "language_expert"
     expert_scope = ""
     shared_trunk_checkpoint = resolve(str(target.get("shared_trunk_checkpoint") or ""))
@@ -4816,13 +8978,67 @@ def train_target(
             or config["topology"]["expert_trainable_scope"]
         )
         model.freeze_to_language_expert(expert_scope)
-    observed_parameters = int(parameter_count(model, mlx_utils))
+    authoritative_model = model
+    master_model = None
+    compute_dtype_name = str(
+        candidate_execution_policy.get("compute_dtype") or "float32"
+    )
+    if candidate_execution_policy.get("fp32_master") is True:
+        if compute_dtype_name != "bfloat16":
+            raise ValueError("candidate FP32 master requires bfloat16 execution")
+        master_model = authoritative_model
+        model = build_model(
+            model_config,
+            mx=mx,
+            nn=nn,
+            state_role_lookup=None,
+            source_to_target_lookup=copy_lookup,
+            rope_kernel=str(
+                config["training"].get("training_rope_kernel")
+                or "manual_reference"
+            ),
+            gradient_checkpointing=gradient_checkpointing_active,
+            attention_query_chunk_size=int(
+                candidate_execution_policy.get("attention_query_chunk_size") or 0
+            ),
+            attention_key_chunk_size=int(
+                candidate_execution_policy.get("attention_key_chunk_size") or 0
+            ),
+            compact_encoder_decoder_partitions=bool(
+                candidate_execution_policy.get(
+                    "compact_encoder_decoder_partitions", False
+                )
+            ),
+            compact_partition_width_quantum=int(
+                candidate_execution_policy.get(
+                    "compact_partition_width_quantum", 0
+                )
+            ),
+        )
+        model.load_weights(
+            list(mlx_utils.tree_flatten(master_model.parameters())), strict=True
+        )
+        if kerc_stage_only is not None:
+            model.freeze_to_kerc_stage(
+                kerc_stage_only,
+                include_stage_embedding=kerc_stage_train_stage_embedding,
+                detach_frozen_trunk=kerc_stage_detach_frozen_trunk,
+            )
+        elif kerc_delta_scope:
+            model.freeze_to_kerc_delta(
+                include_source_conditioned_bridge=kerc_source_bridge
+            )
+        model.set_dtype(mx.bfloat16)
+        mx.eval(model.parameters(), master_model.parameters())
+    observed_parameters = int(parameter_count(authoritative_model, mlx_utils))
     if observed_parameters != int(target["parameter_count"]):
         raise ValueError("target model parameter identity changed after preregistration")
     trainable_parameters = int(
         sum(
             value.size
-            for _name, value in mlx_utils.tree_flatten(model.trainable_parameters())
+            for _name, value in mlx_utils.tree_flatten(
+                authoritative_model.trainable_parameters()
+            )
         )
     )
     if expert_mode and trainable_parameters != int(
@@ -4846,10 +9062,14 @@ def train_target(
             / max(1, int(target.get("unique_target_positions") or 0))
         )
     )
-    planned_steps = required_steps(
-        mask,
-        int(training["batch_size"]),
-        optimizer_target_positions,
+    planned_steps = (
+        required_steps(
+            mask,
+            int(training["batch_size"]),
+            optimizer_target_positions,
+        )
+        if "pretraining" in active_phases
+        else 0
     )
     unique_sft_positions = int(supervision_stage.mask.sum()) if supervision_stage is not None else 0
     sft_repetitions = int(training.get("supervision_optimizer_repetitions") or 1)
@@ -4887,7 +9107,8 @@ def train_target(
     kernel_repetitions = int(training.get("kernel_english_optimizer_repetitions") or 1)
     kernel_positions = unique_kernel_positions * kernel_repetitions
     kernel_batch_size = int(
-        (config.get("kernel_english_training") or {}).get("batch_size")
+        candidate_execution_policy.get("batch_size")
+        or (config.get("kernel_english_training") or {}).get("batch_size")
         or training["batch_size"]
     )
     kernel_planned_steps = (
@@ -4899,17 +9120,93 @@ def train_target(
         if kernel_positions
         else 0
     )
+    schedule_training = dict(training)
+    if candidate_continuation:
+        if (
+            candidate_continuation.get("policy")
+            != "project_theseus_exact_candidate_continuation_import_v1"
+        ):
+            raise ValueError("candidate continuation import policy mismatch")
+        schedule_training.update(
+            {
+                "learning_rate": float(
+                    candidate_execution_policy["continuation_learning_rate"]
+                ),
+                "min_learning_rate": float(
+                    candidate_execution_policy["continuation_min_learning_rate"]
+                ),
+                "warmup_steps": int(
+                    candidate_execution_policy["continuation_warmup_steps"]
+                ),
+            }
+        )
+    schedule_override_keys = (
+        "learning_rate",
+        "min_learning_rate",
+        "warmup_steps",
+    )
+    if (
+        not candidate_continuation
+        and any(key in candidate_execution_policy for key in schedule_override_keys)
+    ):
+        if not all(key in candidate_execution_policy for key in schedule_override_keys):
+            raise ValueError(
+                "candidate optimizer schedule override requires learning rate, floor, and warmup"
+            )
+        schedule_training.update(
+            {
+                "learning_rate": float(candidate_execution_policy["learning_rate"]),
+                "min_learning_rate": float(
+                    candidate_execution_policy["min_learning_rate"]
+                ),
+                "warmup_steps": int(candidate_execution_policy["warmup_steps"]),
+            }
+        )
+    if (
+        schedule_training["learning_rate"] <= 0
+        or schedule_training["min_learning_rate"] <= 0
+        or schedule_training["min_learning_rate"]
+        > schedule_training["learning_rate"]
+        or schedule_training["warmup_steps"] < 0
+    ):
+        raise ValueError("candidate optimizer schedule override is invalid")
     schedule = build_schedule(
         optim,
         mx,
-        training,
+        schedule_training,
         planned_steps
         + source_planned_steps
         + kernel_planned_steps
         + sft_planned_steps
         + 128,
     )
-    optimizer = optim.AdamW(learning_rate=schedule, weight_decay=float(training["weight_decay"]))
+    selected_optimizer_id = str(
+        candidate_execution_policy.get("optimizer_id")
+        or optimizer_id
+        or training.get("optimizer_id")
+        or "adamw_mlx"
+    )
+    optimizer_learning_rate = (
+        float(schedule_training["learning_rate"])
+        if selected_optimizer_id in {"muon_mlx", "schedule_free_adamw_mlx"}
+        else schedule
+    )
+    optimizer = pretraining_optimizers.build_optimizer(
+        selected_optimizer_id,
+        learning_rate=optimizer_learning_rate,
+        weight_decay=float(training["weight_decay"]),
+        warmup_steps=int(schedule_training.get("warmup_steps") or 0),
+        optim=optim,
+        mx=mx,
+    )
+    # Candidate-specific optimizer mechanics use the stable eager route.  The
+    # production AdamW control keeps its previously qualified compiled path;
+    # compiled Muon/schedule-free qualification is a separate resource gate.
+    optimizer_training_step_mode = (
+        "eager"
+        if optimizer_id or candidate_execution_policy.get("optimizer_id")
+        else "auto"
+    )
     prior_steps = 0
     prior_pretrain_positions = 0
     prior_source_positions = 0
@@ -4917,7 +9214,10 @@ def train_target(
     prior_sft_positions = 0
     prior_checkpoint_hash = ""
     resumed = False
+    prior_receipt: dict[str, Any] = {}
+    mlx_rng_restored = False
     resume_plan_identity_migration: dict[str, Any] | None = None
+    selective_compute_checkpoint: dict[str, Any] | None = None
     if resume and not receipt_path.is_file():
         orphaned_state = [
             relative(path)
@@ -4931,6 +9231,7 @@ def train_target(
             )
     if resume and receipt_path.is_file():
         prior = read_json(receipt_path)
+        prior_receipt = prior
         resume_checkpoint = resolve(str(prior.get("checkpoint") or checkpoint))
         resume_optimizer = resolve(
             str(prior.get("optimizer_state") or optimizer_path)
@@ -4942,11 +9243,140 @@ def train_target(
             resume_checkpoint,
             resume_optimizer,
         )
-        model.load_weights(str(resume_checkpoint), strict=not expert_mode)
+        resume_model = master_model if master_model is not None else model
+        if selective_fp32_trainables:
+            prior_selective = dict(
+                prior.get("selective_compute_checkpoint") or {}
+            )
+            segmented_delta_resume = kerc_segmented_delta_resume_required(
+                prior
+            )
+            source_backing_checkpoint = (
+                resolve(str(prior_selective["source_checkpoint"]))
+                if segmented_delta_resume
+                else resume_checkpoint
+            )
+            selective_compute_checkpoint = (
+                load_kerc_stage_selective_compute_checkpoint(
+                    resume_model,
+                    source_backing_checkpoint,
+                    stage_index=int(kerc_stage_only or -1),
+                    include_stage_embedding=kerc_stage_train_stage_embedding,
+                    mx=mx,
+                    mlx_utils=mlx_utils,
+                )
+            )
+            if segmented_delta_resume:
+                selective_compute_checkpoint["resume_delta_overlay"] = (
+                    apply_kerc_stage_selective_delta_checkpoint(
+                        resume_model,
+                        resume_checkpoint,
+                        mx=mx,
+                        mlx_utils=mlx_utils,
+                    )
+                )
+                selective_compute_checkpoint[
+                    "selected_loaded_raw_tensor_sha256"
+                ] = selective_compute_checkpoint["resume_delta_overlay"][
+                    "raw_tensor_sha256"
+                ]
+                selective_compute_checkpoint[
+                    "selected_loaded_manifest_sha256"
+                ] = hashlib.sha256(
+                    json.dumps(
+                        selective_compute_checkpoint[
+                            "selected_loaded_raw_tensor_sha256"
+                        ],
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode()
+                ).hexdigest()
+            prior["selective_compute_checkpoint"] = (
+                selective_compute_checkpoint
+            )
+            prior["selective_compute_checkpoint_state"] = (
+                "LOADED_AND_VERIFIED_BEFORE_OPTIMIZER_STEP"
+            )
+            write_json_atomic(receipt_path, prior)
+        else:
+            resume_model.load_weights(
+                str(resume_checkpoint), strict=not expert_mode
+            )
+        if master_model is not None:
+            model.update(
+                mlx_utils.tree_map(
+                    lambda value: value.astype(mx.bfloat16),
+                    master_model.trainable_parameters(),
+                )
+            )
+        flat_optimizer_state = mx.load(str(resume_optimizer))
+        optimizer_state_projection = prior.get("optimizer_state_projection")
+        if optimizer_state_projection is not None:
+            trainable_names = {
+                name
+                for name, _value in mlx_utils.tree_flatten(
+                    authoritative_model.trainable_parameters()
+                )
+            }
+            expected_optimizer_names = {"learning_rate", "step"} | {
+                f"{name}.{moment}"
+                for name in trainable_names
+                for moment in ("m", "v")
+            }
+            observed_optimizer_names = set(flat_optimizer_state)
+            if (
+                optimizer_state_projection.get("policy")
+                != "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+                or kerc_stage_only != 1
+                or candidate_execution_policy.get(
+                    "continuation_optimizer_state_projection_policy"
+                )
+                != "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+                or str(optimizer_state_projection.get(
+                    "projected_optimizer_state_sha256"
+                ) or "")
+                != sha256_file(resume_optimizer)
+                or int(
+                    optimizer_state_projection.get("selected_parameter_count")
+                    or 0
+                )
+                != len(trainable_names)
+                or observed_optimizer_names != expected_optimizer_names
+            ):
+                raise ValueError(
+                    "resume denied: projected optimizer state does not exactly "
+                    "match the compiler trainable scope"
+                )
         optimizer.state = mlx_utils.tree_unflatten(
-            list(mx.load(str(resume_optimizer)).items())
+            list(flat_optimizer_state.items())
         )
-        mx.eval(model.parameters(), optimizer.state)
+        if hasattr(optimizer, "set_training_iterate"):
+            optimizer.set_training_iterate(
+                master_model if master_model is not None else model
+            )
+        prior_rng_path = resolve(str(prior.get("mlx_rng_state") or ""))
+        if prior.get("mlx_rng_state"):
+            if (
+                not prior_rng_path.is_file()
+                or sha256_file(prior_rng_path)
+                != str(prior.get("mlx_rng_state_sha256") or "")
+            ):
+                raise ValueError("resume denied: mlx_rng_state_identity_mismatch")
+            flat_rng = mx.load(str(prior_rng_path))
+            expected_names = [f"state.{index}" for index in range(len(mx.random.state))]
+            if sorted(flat_rng) != expected_names:
+                raise ValueError("resume denied: mlx_rng_state_shape_mismatch")
+            mx.random.state = [flat_rng[name] for name in expected_names]
+            mlx_rng_restored = True
+        mx.eval(
+            model.parameters(),
+            (
+                master_model.parameters()
+                if master_model is not None
+                else model.parameters()
+            ),
+            optimizer.state,
+        )
         prior_steps = int(prior.get("optimizer_steps") or 0)
         prior_pretrain_positions = int(prior.get("pretrain_optimizer_positions") or 0)
         prior_source_positions = int(
@@ -4958,6 +9388,44 @@ def train_target(
         prior_sft_positions = int(prior.get("supervision_optimizer_positions") or 0)
         prior_checkpoint_hash = sha256_file(resume_checkpoint)
         resumed = True
+    continuation_source_kernel_positions = 0
+    kernel_phase_prior_positions = prior_kernel_positions
+    if candidate_continuation:
+        reset_phase_position_accounting = str(
+            candidate_execution_policy.get(
+                "continuation_reset_phase_position_accounting"
+            )
+            or ""
+        )
+        if reset_phase_position_accounting != "kernel_english":
+            raise ValueError(
+                "candidate continuation must explicitly reset only kernel "
+                "phase-position accounting"
+            )
+        continuation_segment_resume = bool(
+            prior_receipt.get(
+                "current_kernel_phase_position_accounting_reset"
+            )
+        )
+        continuation_source_kernel_positions = int(
+            prior_receipt.get(
+                "continuation_source_kernel_english_optimizer_positions",
+                prior_kernel_positions,
+            )
+            or prior_kernel_positions
+        )
+        kernel_phase_prior_positions = (
+            int(
+                prior_receipt.get(
+                    "current_kernel_phase_optimizer_positions", 0
+                )
+                or 0
+            )
+            if continuation_segment_resume
+            else 0
+        )
+    else:
+        continuation_segment_resume = False
     remaining_positions = (
         max(0, optimizer_target_positions - prior_pretrain_positions)
         if "pretraining" in active_phases
@@ -4974,7 +9442,7 @@ def train_target(
         else 0
     )
     remaining_kernel_positions = (
-        max(0, kernel_positions - prior_kernel_positions)
+        max(0, kernel_positions - kernel_phase_prior_positions)
         if "kernel_english" in active_phases
         else 0
     )
@@ -4998,6 +9466,17 @@ def train_target(
         "kernel": prior_kernel_positions,
         "supervision": prior_sft_positions,
     }
+
+    def phase_resume_state(
+        phase_key: str, default_seed: int
+    ) -> tuple[int, dict[str, Any] | None]:
+        return resume_phase_data_state(
+            prior_receipt,
+            resume_plan_identity_migration,
+            target_id=target_id,
+            phase_key=phase_key,
+            default_seed=default_seed,
+        )
 
     def commit_progress_checkpoint(progress: dict[str, Any]) -> None:
         phase = str(progress["phase"])
@@ -5024,9 +9503,10 @@ def train_target(
             optimizer_path,
             global_step,
         )
+        generation_rng = rng_state_path(generation_optimizer)
         previous = read_json(receipt_path) if receipt_path.is_file() else {}
         publication = publish_checkpoint_pair(
-            model,
+            authoritative_model,
             generation_checkpoint,
             generation_checkpoint.with_name(
                 generation_checkpoint.stem + ".partial" + generation_checkpoint.suffix
@@ -5035,7 +9515,8 @@ def train_target(
             generation_optimizer,
             mx=mx,
             mlx_utils=mlx_utils,
-            trainable_only=expert_mode,
+            trainable_only=expert_mode or selective_fp32_trainables,
+            rng_path=generation_rng,
         )
         progress_receipt = {
             "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
@@ -5043,6 +9524,15 @@ def train_target(
             "trigger_state": "GREEN",
             "target_id": target_id,
             "role": target["role"],
+            "optimizer_id": selected_optimizer_id,
+            "candidate_seed": int(candidate_seed),
+            "effective_training_seed": int(effective_seed),
+            "candidate_initialization": candidate_initialization_receipt,
+            "candidate_execution_policy": candidate_execution_policy,
+            "selective_compute_checkpoint": selective_compute_checkpoint,
+            "optimizer_state_kind": pretraining_optimizers.optimizer_state_kind(
+                optimizer
+            ),
             "plan_sha256": plan["plan_sha256"],
             "stage_signature": plan["stage"]["stage_signature"],
             "stage_metadata_sha256": plan["stage"]["metadata_sha256"],
@@ -5069,6 +9559,20 @@ def train_target(
             "pretrain_optimizer_positions": positions["pretrain"],
             "source_conditioned_optimizer_positions": positions["source"],
             "kernel_english_optimizer_positions": positions["kernel"],
+            "continuation_source_kernel_english_optimizer_positions": (
+                continuation_source_kernel_positions
+                if candidate_continuation
+                else 0
+            ),
+            "current_kernel_phase_optimizer_positions": (
+                kernel_phase_prior_positions
+                + int(progress["target_positions_consumed"])
+                if "kernel_english" in phase
+                else kernel_phase_prior_positions
+            ),
+            "current_kernel_phase_position_accounting_reset": bool(
+                candidate_continuation
+            ),
             "supervision_optimizer_positions": positions["supervision"],
             "unique_target_positions": int(target["unique_target_positions"]),
             "optimizer_target_positions": optimizer_target_positions,
@@ -5076,7 +9580,16 @@ def train_target(
             "checkpoint_sha256": publication["checkpoint_sha256"],
             "optimizer_state": relative(generation_optimizer),
             "optimizer_state_sha256": publication["optimizer_state_sha256"],
+            "mlx_rng_state": relative(generation_rng),
+            "mlx_rng_state_sha256": publication["mlx_rng_state_sha256"],
             "checkpoint_publication": publication,
+            "checkpoint_representation": (
+                "kerc_compiler_fp32_delta_over_content_bound_source_v1"
+                if selective_fp32_trainables
+                else "language_expert_trainable_delta_v1"
+                if expert_mode
+                else "full_model_v1"
+            ),
             "complete": False,
             "transactional_progress": progress,
             "resume_base_checkpoint_sha256": prior_checkpoint_hash,
@@ -5090,12 +9603,57 @@ def train_target(
             previous,
             canonical_checkpoint=checkpoint,
             canonical_optimizer=optimizer_path,
-            keep={generation_checkpoint, generation_optimizer},
+            canonical_rng=rng_state_path(optimizer_path),
+            keep={generation_checkpoint, generation_optimizer, generation_rng},
         )
 
-    random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
-    mx.random.seed(int(config["seed"]) + stable_int(target_id) + prior_steps)
-    loss_and_grad = nn.value_and_grad(model, causal_loss)
+    random.seed(effective_seed + prior_steps)
+    if not mlx_rng_restored:
+        mx.random.seed(effective_seed + prior_steps)
+    objective_gradient_checkpointing_active = bool(
+        candidate_execution_policy.get("objective_gradient_checkpointing", False)
+    )
+    objective_gradient_decomposition_active = bool(
+        candidate_execution_policy.get("objective_gradient_decomposition", False)
+    )
+    if (
+        objective_gradient_decomposition_active
+        and not objective_gradient_checkpointing_active
+    ):
+        raise ValueError(
+            "objective gradient decomposition requires complete-objective checkpointing"
+        )
+    configured_token_loss_position_chunk_size = int(
+        candidate_execution_policy.get("token_loss_position_chunk_size", 0)
+    )
+    token_loss_position_chunk_size = (
+        configured_token_loss_position_chunk_size
+        if objective_gradient_decomposition_active
+        else 0
+    )
+    if (
+        configured_token_loss_position_chunk_size
+        and not objective_gradient_decomposition_active
+    ):
+        raise ValueError(
+            "token-loss position chunking requires objective gradient decomposition"
+        )
+    loss_and_grad = (
+        partial(
+            decomposed_checkpointed_causal_loss_and_grad,
+            token_loss_position_chunk_size=token_loss_position_chunk_size,
+        )
+        if objective_gradient_decomposition_active
+        else nn.value_and_grad(
+            model,
+            checkpointed_causal_loss
+            if objective_gradient_checkpointing_active
+            else causal_loss,
+        )
+    )
+    pretrain_seed, pretrain_cursor = phase_resume_state(
+        "pretraining", effective_seed + prior_steps
+    )
     pretrain_phase = train_phase(
         model,
         optimizer,
@@ -5117,7 +9675,8 @@ def train_target(
         target_positions=remaining_positions,
         batch_size=int(training["batch_size"]),
         gradient_clip=float(training["gradient_clip_norm"]),
-        seed=int(config["seed"]) + stable_int(target_id) + prior_steps,
+        seed=pretrain_seed,
+        resume_data_cursor=pretrain_cursor,
         max_steps=allowed_steps,
         checkpoint=temporary_checkpoint,
         checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
@@ -5129,6 +9688,10 @@ def train_target(
         optim=optim,
         checkpoint_callback=commit_progress_checkpoint,
         source_conditioning=False,
+        step_boundary_callback=step_boundary_callback,
+        training_step_mode=optimizer_training_step_mode,
+        master_model=master_model,
+        compute_dtype_name=compute_dtype_name,
     )
     completed_positions["pretrain"] = prior_pretrain_positions + int(
         pretrain_phase["target_positions_consumed"]
@@ -5147,6 +9710,10 @@ def train_target(
         and remaining_source_positions > 0
         and used_steps < allowed_steps
     ):
+        source_seed, source_cursor = phase_resume_state(
+            "source_conditioned_pretraining",
+            effective_seed + prior_steps + used_steps,
+        )
         source_conditioned_phase = train_phase(
             model,
             optimizer,
@@ -5168,7 +9735,8 @@ def train_target(
             target_positions=remaining_source_positions,
             batch_size=int(training["batch_size"]),
             gradient_clip=float(training["gradient_clip_norm"]),
-            seed=int(config["seed"]) + stable_int(target_id) + prior_steps + used_steps,
+            seed=source_seed,
+            resume_data_cursor=source_cursor,
             max_steps=allowed_steps - used_steps,
             checkpoint=temporary_checkpoint,
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
@@ -5179,6 +9747,10 @@ def train_target(
             mx=mx,
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
+            step_boundary_callback=step_boundary_callback,
+            training_step_mode=optimizer_training_step_mode,
+            master_model=master_model,
+            compute_dtype_name=compute_dtype_name,
         )
         used_steps += int(source_conditioned_phase["optimizer_steps"])
         completed_positions["source"] = prior_source_positions + int(
@@ -5200,10 +9772,159 @@ def train_target(
         and remaining_kernel_positions > 0
         and used_steps < allowed_steps
     ):
+        kernel_seed, kernel_cursor = phase_resume_state(
+            "kernel_english",
+            effective_seed + prior_steps + used_steps,
+        )
         kerc_target = str(target.get("role") or "") == "kerc_english_candidate"
+        generator_only_overfit = bool(
+            ((kernel_english_stage.receipt or {}).get("overfit_diagnostic") or {}).get(
+                "active"
+            )
+        )
+        if generator_only_overfit and candidate_execution_policy.get(
+            "kerc_overfit_generator_rows_only"
+        ) is not True:
+            raise ValueError("KERC overfit stage requires generator-only candidate authority")
+        kerc_target_only_overfit_loss = bool(
+            candidate_execution_policy.get("kerc_overfit_target_only_loss", False)
+        )
+        if kerc_target_only_overfit_loss and not generator_only_overfit:
+            raise ValueError("KERC target-only loss requires the generator overfit stage")
+        objective_balanced_full_batch = bool(
+            candidate_execution_policy.get("objective_balanced_full_batch", False)
+        )
+        if objective_balanced_full_batch and (
+            not generator_only_overfit
+            or kernel_batch_size != len(kernel_english_stage.inputs)
+            or len(kernel_english_stage.inputs) != 4
+        ):
+            raise ValueError(
+                "objective-balanced KERC overfit requires one four-objective full batch"
+            )
+        kerc_single_objective_warmup_steps = int(
+            candidate_execution_policy.get(
+                "kerc_overfit_single_objective_warmup_steps", 0
+            )
+        )
+        fixed_objective_value = candidate_execution_policy.get(
+            "kerc_overfit_fixed_objective_index"
+        )
+        kerc_fixed_objective_index = (
+            int(fixed_objective_value)
+            if fixed_objective_value is not None
+            else None
+        )
+        if kerc_single_objective_warmup_steps and not (
+            generator_only_overfit and objective_balanced_full_batch
+        ):
+            raise ValueError(
+                "KERC single-objective warmup requires the four-objective overfit stage"
+            )
+        if kerc_fixed_objective_index is not None and not (
+            generator_only_overfit and objective_balanced_full_batch
+        ):
+            raise ValueError(
+                "KERC fixed-objective training requires the four-objective overfit stage"
+            )
+        kerc_batch_index_schedule = kerc_overfit_batch_schedule(
+            row_count=len(kernel_english_stage.inputs),
+            single_objective_warmup_steps=kerc_single_objective_warmup_steps,
+            fixed_objective_index=kerc_fixed_objective_index,
+        )
+        kerc_objective_balancing_active = bool(
+            candidate_execution_policy.get("kerc_objective_balanced_sampling", False)
+        )
+        if kerc_objective_balancing_active:
+            if not kerc_target or generator_only_overfit:
+                raise ValueError(
+                    "KERC objective-balanced sampling requires the adequacy stage"
+                )
+            kernel_sample_weights, kerc_objective_sampling_receipt = (
+                kerc_objective_balanced_sample_weights(
+                    kernel_english_stage,
+                    uniform_within_objective=bool(
+                        candidate_execution_policy.get(
+                            "kerc_uniform_within_objective_sampling", False
+                        )
+                    ),
+                    objective_sampling_mass=(
+                        candidate_execution_policy.get(
+                            "kerc_objective_sampling_mass"
+                        )
+                        or None
+                    ),
+                )
+            )
+        else:
+            kernel_sample_weights = getattr(
+                kernel_english_stage, "sample_weights", None
+            )
+            kerc_objective_sampling_receipt = {
+                "policy": "project_theseus_kerc_objective_balanced_sampling_v1",
+                "active": False,
+            }
+        kernel_training_indices = np.arange(
+            len(kernel_english_stage.inputs), dtype=np.int64
+        )
+        stage_only_missing_coverage: list[str] = []
+        if kerc_stage_only is not None:
+            kernel_training_indices = token_supervised_row_indices(
+                kernel_english_stage.loss_mask
+            )
+            if not len(kernel_training_indices):
+                raise ValueError(
+                    "KERC stage-only training has no token-supervised rows"
+                )
+            retained_coverage = {
+                label
+                for index in kernel_training_indices
+                for label in kernel_english_stage.kerc_coverage_labels[
+                    int(index)
+                ]
+            }
+            required_stage_coverage = set(
+                candidate_execution_policy.get(
+                    "kerc_stage_required_coverage_labels"
+                )
+                or ()
+            )
+            stage_only_missing_coverage = sorted(
+                required_stage_coverage - retained_coverage
+            )
+            if stage_only_missing_coverage and not generator_only_overfit:
+                raise ValueError(
+                    "KERC stage-only token-supervised rows lose required "
+                    "coverage: "
+                    + ",".join(stage_only_missing_coverage)
+                )
+        kernel_training_inputs = kernel_english_stage.inputs[
+            kernel_training_indices
+        ]
+        kernel_training_labels = kernel_english_stage.labels[
+            kernel_training_indices
+        ]
+        kernel_training_loss_mask = (
+            kernel_english_stage.mask[kernel_training_indices]
+            if kerc_target_only_overfit_loss
+            else kernel_english_stage.loss_mask[kernel_training_indices]
+        )
+        kernel_training_progress_mask = kernel_english_stage.mask[
+            kernel_training_indices
+        ]
+        kernel_training_coverage_labels = tuple(
+            kernel_english_stage.kerc_coverage_labels[int(index)]
+            for index in kernel_training_indices
+        )
+        if kernel_sample_weights is not None:
+            kernel_sample_weights = np.asarray(kernel_sample_weights)[
+                kernel_training_indices
+            ]
         unit_allocator_rows = (
             getattr(kernel_english_stage, "kerc_unit_allocator_rows", None)
             if kerc_target
+            and not generator_only_overfit
+            and kerc_stage_only is None
             else None
         )
         unit_allocator_rows_present = bool(
@@ -5221,12 +9942,16 @@ def train_target(
             model,
             optimizer,
             loss_and_grad,
-            kernel_english_stage.inputs,
-            kernel_english_stage.labels,
-            kernel_english_stage.loss_mask,
-            progress_mask=kernel_english_stage.mask,
+            kernel_training_inputs,
+            kernel_training_labels,
+            kernel_training_loss_mask,
+            progress_mask=kernel_training_progress_mask,
             ordered_plan_loss_weight=1.0,
-            sample_weights=getattr(kernel_english_stage, "sample_weights", None),
+            sample_weights=(
+                None
+                if objective_balanced_full_batch
+                else kernel_sample_weights
+            ),
             plan_labels=None,
             plan_label_mode="none",
             plan_auxiliary_weight=0.0,
@@ -5236,17 +9961,26 @@ def train_target(
             plan_factor_group_sizes=(),
             kerc_residual_labels=(
                 kernel_english_stage.kerc_residual_labels
-                if kerc_target and not unit_allocator_rows_present
+                if kerc_target
+                and not unit_allocator_rows_present
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else None
             ),
             kerc_residual_weight=(
                 float(config["kernel_english_training"]["residual_auxiliary_weight"])
-                if kerc_target and not unit_allocator_rows_present
+                if kerc_target
+                and not unit_allocator_rows_present
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else 0.0
             ),
             kerc_residual_loss_mask=(
                 kernel_english_stage.kerc_residual_loss_mask
-                if kerc_target and not unit_allocator_rows_present
+                if kerc_target
+                and not unit_allocator_rows_present
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else None
             ),
             kerc_unit_allocator_rows=(
@@ -5267,11 +10001,15 @@ def train_target(
             kerc_verifier_labels=(
                 kernel_english_stage.kerc_verifier_labels
                 if str(target.get("role") or "") == "kerc_english_candidate"
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else None
             ),
             kerc_verifier_weight=(
                 float(config["kernel_english_training"]["verifier_auxiliary_weight"])
                 if str(target.get("role") or "") == "kerc_english_candidate"
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else 0.0
             ),
             kerc_verifier_balance_maximum=float(
@@ -5287,11 +10025,15 @@ def train_target(
             kerc_decision_labels=(
                 kernel_english_stage.kerc_decision_labels
                 if str(target.get("role") or "") == "kerc_english_candidate"
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else None
             ),
             kerc_decision_weight=(
                 float(config["kernel_english_training"]["decision_auxiliary_weight"])
                 if str(target.get("role") or "") == "kerc_english_candidate"
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else 0.0
             ),
             kerc_decision_class_count=len(ANSWER_DISPOSITION_ORDER),
@@ -5304,47 +10046,175 @@ def train_target(
             kerc_decision_loss_mask=(
                 kernel_english_stage.kerc_decision_loss_mask
                 if str(target.get("role") or "") == "kerc_english_candidate"
+                and not generator_only_overfit
+                and kerc_stage_only is None
                 else None
             ),
             coverage_labels=(
-                kernel_english_stage.kerc_coverage_labels
-                if str(target.get("role") or "") == "kerc_english_candidate"
-                and max_steps > 0
-                and max_steps
-                <= int(
-                    (config.get("architecture_training_authority") or {}).get(
-                        "pre_training_canary_max_steps", 0
-                    )
-                )
+                kernel_training_coverage_labels
+                if bounded_kerc_coverage_required(target, kernel_english_stage)
                 else None
             ),
             required_coverage_labels=(
-                KERC_CANARY_REQUIRED_COVERAGE
-                if str(target.get("role") or "") == "kerc_english_candidate"
-                and max_steps > 0
-                and max_steps
-                <= int(
-                    (config.get("architecture_training_authority") or {}).get(
-                        "pre_training_canary_max_steps", 0
+                ()
+                if generator_only_overfit
+                else
+                tuple(
+                    candidate_execution_policy.get(
+                        "kerc_stage_required_coverage_labels"
                     )
+                    or ()
                 )
+                if kerc_stage_only is not None
+                else KERC_CANARY_REQUIRED_COVERAGE
+                if bounded_kerc_coverage_required(target, kernel_english_stage)
                 else ()
             ),
             phase_name=f"moecot_kernel_english:{target_id}",
             target_positions=remaining_kernel_positions,
             batch_size=kernel_batch_size,
             gradient_clip=float(training["gradient_clip_norm"]),
-            seed=int(config["seed"]) + stable_int(target_id) + prior_steps + used_steps,
+            seed=kernel_seed,
+            resume_data_cursor=kernel_cursor,
             max_steps=allowed_steps - used_steps,
             checkpoint=temporary_checkpoint,
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
             global_step_offset=prior_steps + used_steps,
-            heartbeat_position_offset=prior_kernel_positions,
+            heartbeat_position_offset=kernel_phase_prior_positions,
             heartbeat_position_target_total=kernel_positions,
             mx=mx,
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
+            step_boundary_callback=step_boundary_callback,
+            training_step_mode=optimizer_training_step_mode,
+            clear_device_cache_before_step=bool(
+                candidate_execution_policy.get("clear_mlx_cache_before_step", False)
+            ),
+            clear_device_cache_after_backward=bool(
+                candidate_execution_policy.get(
+                    "clear_mlx_cache_after_backward", False
+                )
+            ),
+            clear_device_cache_after_step=bool(
+                candidate_execution_policy.get("clear_mlx_cache_after_step", False)
+            ),
+            transactional_eager_step=bool(
+                candidate_execution_policy.get("transactional_eager_step", False)
+            ),
+            optimizer_state_offload_path=(
+                temporary_checkpoint.with_name(
+                    "optimizer_between_step_offload.npz"
+                )
+                if candidate_execution_policy.get(
+                    "optimizer_state_offload_between_steps", False
+                )
+                else None
+            ),
+            optimizer_state_offload_minimum_target_positions=int(
+                candidate_execution_policy.get(
+                    "optimizer_state_offload_minimum_target_positions", 0
+                )
+            ),
+            master_model=master_model,
+            compute_dtype_name=compute_dtype_name,
+            sequence_balanced_token_loss=bool(
+                candidate_execution_policy.get(
+                    "sequence_balanced_token_loss", False
+                )
+            ),
+            target_token_frequency_balance_power=float(
+                candidate_execution_policy.get(
+                    "target_token_frequency_balance_power", 0.0
+                )
+            ),
+            weighted_sampling_minimum_stratum_coverage=bool(
+                candidate_execution_policy.get(
+                    "kerc_weighted_sampling_minimum_stratum_coverage", False
+                )
+            ),
+            eager_gradient_accumulation_microbatch_size=int(
+                candidate_execution_policy.get(
+                    "eager_gradient_accumulation_microbatch_size", 0
+                )
+            ),
+            eager_execution_width_quantum=int(
+                candidate_execution_policy.get(
+                    "compact_partition_width_quantum", 0
+                )
+            ),
+            batch_index_schedule=kerc_batch_index_schedule,
+            resource_stress_prefix=bool(
+                candidate_execution_policy.get(
+                    "kerc_resource_stress_prefix", False
+                )
+            ),
+            prior_coverage_observed_counts=dict(
+                (
+                    (
+                        (prior_receipt.get("phases") or {}).get(
+                            "kernel_english"
+                        )
+                        or {}
+                    ).get("coverage_first_sampling")
+                    or {}
+                ).get("observed_label_counts")
+                or {}
+            )
+            if continuation_segment_resume
+            else {},
+            allow_incomplete_required_coverage=bool(
+                int(
+                    candidate_execution_policy.get(
+                        "fresh_process_step_segment", 0
+                    )
+                    or 0
+                )
+            ),
+        )
+        kernel_english_phase["kerc_overfit_loss_scope"] = (
+            "target_positions_only"
+            if kerc_target_only_overfit_loss
+            else "canonical_loss_mask"
+        )
+        kernel_english_phase["objective_gradient_checkpointing_active"] = bool(
+            objective_gradient_checkpointing_active
+        )
+        kernel_english_phase["objective_gradient_decomposition_active"] = bool(
+            objective_gradient_decomposition_active
+        )
+        kernel_english_phase["token_loss_position_chunk_size"] = int(
+            token_loss_position_chunk_size
+        )
+        kernel_english_phase["gradient_checkpointing_active"] = bool(
+            gradient_checkpointing_active
+        )
+        kernel_english_phase["kerc_stage_only"] = kerc_stage_only
+        kernel_english_phase["kerc_stage_train_stage_embedding"] = bool(
+            kerc_stage_train_stage_embedding
+        )
+        kernel_english_phase["kerc_stage_detach_frozen_trunk"] = bool(
+            kerc_stage_detach_frozen_trunk
+        )
+        kernel_english_phase[
+            "stage_only_token_supervised_row_count"
+        ] = int(len(kernel_training_indices))
+        kernel_english_phase[
+            "stage_only_zero_token_authority_rows_excluded"
+        ] = int(
+            len(kernel_english_stage.inputs) - len(kernel_training_indices)
+        )
+        kernel_english_phase["stage_only_missing_coverage_labels"] = (
+            stage_only_missing_coverage
+        )
+        kernel_english_phase[
+            "overfit_population_coverage_gate_applied_before_row_selection"
+        ] = bool(generator_only_overfit and stage_only_missing_coverage)
+        kernel_english_phase["stage_only_auxiliary_losses_disabled"] = bool(
+            kerc_stage_only is not None
+        )
+        kernel_english_phase["kerc_objective_sampling"] = (
+            kerc_objective_sampling_receipt
         )
         used_steps += int(kernel_english_phase["optimizer_steps"])
         completed_positions["kernel"] = prior_kernel_positions + int(
@@ -5359,6 +10229,10 @@ def train_target(
         "final_loss": None,
     }
     if supervision_stage is not None and remaining_sft_positions > 0 and used_steps < allowed_steps:
+        supervision_seed, supervision_cursor = phase_resume_state(
+            "supervision",
+            effective_seed + prior_steps + used_steps,
+        )
         supervision_phase = train_phase(
             model,
             optimizer,
@@ -5380,7 +10254,8 @@ def train_target(
             target_positions=remaining_sft_positions,
             batch_size=int(training["batch_size"]),
             gradient_clip=float(training["gradient_clip_norm"]),
-            seed=int(config["seed"]) + stable_int(target_id) + prior_steps + used_steps,
+            seed=supervision_seed,
+            resume_data_cursor=supervision_cursor,
             max_steps=allowed_steps - used_steps,
             checkpoint=temporary_checkpoint,
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
@@ -5391,18 +10266,38 @@ def train_target(
             mx=mx,
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
+            step_boundary_callback=step_boundary_callback,
+            training_step_mode=optimizer_training_step_mode,
+            master_model=master_model,
+            compute_dtype_name=compute_dtype_name,
         )
+    total_steps = prior_steps + used_steps + int(supervision_phase["optimizer_steps"])
+    final_checkpoint, final_optimizer = checkpoint_generation_paths(
+        checkpoint, optimizer_path, total_steps
+    )
+    final_rng = rng_state_path(final_optimizer)
     publication = publish_checkpoint_pair(
-        model,
-        checkpoint,
-        temporary_checkpoint,
+        authoritative_model,
+        final_checkpoint,
+        final_checkpoint.with_name(
+            final_checkpoint.stem + ".partial" + final_checkpoint.suffix
+        ),
         optimizer,
-        optimizer_path,
+        final_optimizer,
         mx=mx,
         mlx_utils=mlx_utils,
-        trainable_only=expert_mode,
+        trainable_only=expert_mode or selective_fp32_trainables,
+        rng_path=final_rng,
     )
-    total_steps = prior_steps + used_steps + int(supervision_phase["optimizer_steps"])
+    publish_generation_alias(final_checkpoint, checkpoint)
+    publish_generation_alias(final_optimizer, optimizer_path)
+    publish_generation_alias(final_rng, rng_state_path(optimizer_path))
+    publication["canonical_aliases"] = {
+        "checkpoint": relative(checkpoint),
+        "optimizer_state": relative(optimizer_path),
+        "mlx_rng_state": relative(rng_state_path(optimizer_path)),
+        "mechanism": "atomic_hard_link_replace",
+    }
     total_pretrain_positions = prior_pretrain_positions + int(
         pretrain_phase["target_positions_consumed"]
     )
@@ -5413,6 +10308,9 @@ def train_target(
         source_conditioned_phase["target_positions_consumed"]
     )
     total_kernel_positions = prior_kernel_positions + int(
+        kernel_english_phase["target_positions_consumed"]
+    )
+    kernel_phase_positions = kernel_phase_prior_positions + int(
         kernel_english_phase["target_positions_consumed"]
     )
     total_positions = (
@@ -5427,6 +10325,15 @@ def train_target(
         "trigger_state": "GREEN",
         "target_id": target_id,
         "role": target["role"],
+        "optimizer_id": selected_optimizer_id,
+        "candidate_seed": int(candidate_seed),
+        "effective_training_seed": int(effective_seed),
+        "candidate_initialization": candidate_initialization_receipt,
+        "candidate_execution_policy": candidate_execution_policy,
+        "selective_compute_checkpoint": selective_compute_checkpoint,
+        "optimizer_state_kind": pretraining_optimizers.optimizer_state_kind(
+            optimizer
+        ),
         "plan_sha256": plan["plan_sha256"],
         "stage_signature": plan["stage"]["stage_signature"],
         "stage_metadata_sha256": plan["stage"]["metadata_sha256"],
@@ -5455,6 +10362,15 @@ def train_target(
         "pretrain_optimizer_positions": total_pretrain_positions,
         "source_conditioned_optimizer_positions": total_source_positions,
         "kernel_english_optimizer_positions": total_kernel_positions,
+        "continuation_source_kernel_english_optimizer_positions": (
+            continuation_source_kernel_positions
+            if candidate_continuation
+            else 0
+        ),
+        "current_kernel_phase_optimizer_positions": kernel_phase_positions,
+        "current_kernel_phase_position_accounting_reset": bool(
+            candidate_continuation
+        ),
         "supervision_optimizer_positions": total_sft_positions,
         "unique_target_positions": int(target["unique_target_positions"]),
         "optimizer_target_positions": optimizer_target_positions,
@@ -5474,14 +10390,24 @@ def train_target(
         "complete": (
             total_pretrain_positions >= optimizer_target_positions
             and total_source_positions >= source_positions
-            and total_kernel_positions >= kernel_positions
+            and kernel_phase_positions >= kernel_positions
             and total_sft_positions >= sft_positions
         ),
-        "checkpoint": relative(checkpoint),
+        "checkpoint": relative(final_checkpoint),
         "checkpoint_sha256": publication["checkpoint_sha256"],
-        "optimizer_state": relative(optimizer_path),
+        "optimizer_state": relative(final_optimizer),
         "optimizer_state_sha256": publication["optimizer_state_sha256"],
+        "mlx_rng_state": relative(final_rng),
+        "mlx_rng_state_sha256": publication["mlx_rng_state_sha256"],
         "checkpoint_publication": publication,
+        "checkpoint_representation": (
+            "kerc_compiler_fp32_delta_over_content_bound_source_v1"
+            if selective_fp32_trainables
+            else "language_expert_trainable_delta_v1"
+            if expert_mode
+            else "full_model_v1"
+        ),
+        "immutable_generation_publication": True,
         "resume_requested": resume,
         "resume": resumed,
         "training_phase_selection": training_phase,
@@ -5518,9 +10444,44 @@ def train_target(
         previous_receipt,
         canonical_checkpoint=checkpoint,
         canonical_optimizer=optimizer_path,
-        keep={checkpoint, optimizer_path},
+        canonical_rng=rng_state_path(optimizer_path),
+        keep={final_checkpoint, final_optimizer, final_rng},
     )
     return receipt
+
+
+def canonical_pretraining_execution_stage(
+    stage_dir: Path,
+    canonical: dict[str, Any],
+    *,
+    active: bool,
+) -> SimpleNamespace:
+    """Load canonical pretraining arrays only for an active pretraining phase."""
+
+    if not active:
+        return SimpleNamespace(
+            pretrain_inputs=np.empty((0, 1), dtype=np.int32),
+            pretrain_labels=np.empty((0, 1), dtype=np.int32),
+            pretrain_mask=np.empty((0, 1), dtype=np.uint8),
+            loaded=False,
+            phase_inactive=True,
+        )
+    shape = (
+        int(canonical["window_count"]),
+        int(canonical["max_sequence_tokens"]),
+    )
+    arrays = load_pretrain_memmaps(
+        pretrain_array_paths(stage_dir),
+        shape,
+        expected=canonical["array_artifacts"],
+    )
+    return SimpleNamespace(
+        pretrain_inputs=arrays[0],
+        pretrain_labels=arrays[1],
+        pretrain_mask=arrays[2],
+        loaded=True,
+        phase_inactive=False,
+    )
 
 
 def range_view(array: np.ndarray, ranges: list[dict[str, int]]) -> np.ndarray:
@@ -5746,6 +10707,32 @@ def publish_optimizer(mx: Any, mlx_utils: Any, optimizer: Any, path: Path) -> No
     os.replace(temporary, path)
 
 
+def rng_state_path(optimizer_path: Path) -> Path:
+    return optimizer_path.with_name(
+        optimizer_path.stem + ".mlx-rng" + optimizer_path.suffix
+    )
+
+
+def publish_mlx_rng_state(mx: Any, path: Path) -> None:
+    temporary = path.with_name(path.stem + ".partial" + path.suffix)
+    temporary.unlink(missing_ok=True)
+    mx.save_safetensors(
+        str(temporary),
+        {f"state.{index}": value for index, value in enumerate(mx.random.state)},
+        metadata={"policy": "project_theseus_mlx_rng_state_v1"},
+    )
+    os.replace(temporary, path)
+
+
+def publish_generation_alias(generation: Path, alias: Path) -> None:
+    """Atomically point a compatibility filename at an immutable generation."""
+
+    temporary = alias.with_name(alias.name + ".alias-partial")
+    temporary.unlink(missing_ok=True)
+    os.link(generation, temporary)
+    os.replace(temporary, alias)
+
+
 def publish_checkpoint_pair(
     model: Any,
     checkpoint: Path,
@@ -5756,37 +10743,56 @@ def publish_checkpoint_pair(
     mx: Any,
     mlx_utils: Any,
     trainable_only: bool,
+    rng_path: Path | None = None,
 ) -> dict[str, Any]:
     """Publish model and optimizer atomically per file with measured durable costs."""
 
     started = time.perf_counter()
-    publish_model(
-        model,
-        checkpoint,
-        temporary_checkpoint,
-        mx=mx,
-        mlx_utils=mlx_utils,
-        trainable_only=trainable_only,
-    )
+    evaluation_iterate = hasattr(optimizer, "set_evaluation_iterate")
+    if evaluation_iterate:
+        optimizer.set_evaluation_iterate(model)
+    try:
+        publish_model(
+            model,
+            checkpoint,
+            temporary_checkpoint,
+            mx=mx,
+            mlx_utils=mlx_utils,
+            trainable_only=trainable_only,
+        )
+    finally:
+        if evaluation_iterate:
+            optimizer.set_training_iterate(model)
     model_seconds = time.perf_counter() - started
     optimizer_started = time.perf_counter()
     publish_optimizer(mx, mlx_utils, optimizer, optimizer_path)
     optimizer_seconds = time.perf_counter() - optimizer_started
+    rng_seconds = 0.0
+    if rng_path is not None:
+        rng_started = time.perf_counter()
+        publish_mlx_rng_state(mx, rng_path)
+        rng_seconds = time.perf_counter() - rng_started
     hash_started = time.perf_counter()
     checkpoint_sha256 = sha256_file(checkpoint)
     optimizer_state_sha256 = sha256_file(optimizer_path)
+    mlx_rng_state_sha256 = sha256_file(rng_path) if rng_path is not None else ""
     hash_seconds = time.perf_counter() - hash_started
     return {
         "policy": "project_theseus_checkpoint_publication_timing_v1",
         "model_serialization_seconds": round(model_seconds, 6),
         "optimizer_serialization_seconds": round(optimizer_seconds, 6),
+        "mlx_rng_serialization_seconds": round(rng_seconds, 6),
         "content_hash_seconds": round(hash_seconds, 6),
         "total_seconds": round(time.perf_counter() - started, 6),
         "checkpoint_bytes": checkpoint.stat().st_size,
         "optimizer_state_bytes": optimizer_path.stat().st_size,
         "checkpoint_sha256": checkpoint_sha256,
         "optimizer_state_sha256": optimizer_state_sha256,
+        "mlx_rng_state_bytes": rng_path.stat().st_size if rng_path is not None else 0,
+        "mlx_rng_state_sha256": mlx_rng_state_sha256,
         "atomic_file_replacement": True,
+        "published_model_iterate": "evaluation_x" if evaluation_iterate else "training",
+        "training_iterate_restored_after_publication": True,
         "background_serialization": False,
     }
 
@@ -5808,27 +10814,75 @@ def cleanup_progress_generation(
     *,
     canonical_checkpoint: Path,
     canonical_optimizer: Path,
+    canonical_rng: Path | None = None,
     keep: set[Path] | None = None,
 ) -> None:
     """Delete only superseded step generations after a newer receipt commits."""
 
     retained = {path.resolve() for path in (keep or set())}
+    canonical_rng = canonical_rng or rng_state_path(canonical_optimizer)
     for key, canonical in (
         ("checkpoint", canonical_checkpoint),
         ("optimizer_state", canonical_optimizer),
+        ("mlx_rng_state", canonical_rng),
     ):
         value = str(receipt.get(key) or "")
         if not value:
             continue
         candidate = resolve(value)
-        prefix = canonical.stem + ".step-"
+        if key == "mlx_rng_state":
+            prefix = canonical_optimizer.stem + ".step-"
+            suffix_matches = candidate.name.endswith(
+                ".mlx-rng" + canonical_optimizer.suffix
+            )
+        else:
+            prefix = canonical.stem + ".step-"
+            suffix_matches = candidate.suffix == canonical.suffix
         if (
             candidate.resolve() not in retained
             and candidate.parent.resolve() == canonical.parent.resolve()
             and candidate.name.startswith(prefix)
-            and candidate.suffix == canonical.suffix
+            and suffix_matches
         ):
             candidate.unlink(missing_ok=True)
+
+
+def resume_phase_data_state(
+    prior_receipt: dict[str, Any],
+    plan_migration: dict[str, Any] | None,
+    *,
+    target_id: str,
+    phase_key: str,
+    default_seed: int,
+) -> tuple[int, dict[str, Any] | None]:
+    """Resolve an exact phase cursor, including explicit sampler migrations."""
+
+    if (
+        plan_migration
+        and plan_migration.get("reset_data_cursor_phase") == phase_key
+    ):
+        return (
+            int(plan_migration.get("reset_data_cursor_seed", default_seed)),
+            None,
+        )
+    phase_name = {
+        "pretraining": f"moecot_pretraining:{target_id}",
+        "source_conditioned_pretraining": (
+            f"moecot_source_conditioned_pretraining:{target_id}"
+        ),
+        "kernel_english": f"moecot_kernel_english:{target_id}",
+        "supervision": f"moecot_supervision:{target_id}",
+    }[phase_key]
+    transactional = prior_receipt.get("transactional_progress") or {}
+    phase_receipt = (prior_receipt.get("phases") or {}).get(phase_key) or {}
+    cursor = None
+    if transactional.get("phase") == phase_name:
+        cursor = transactional.get("data_cursor")
+    if cursor is None:
+        cursor = phase_receipt.get("data_cursor_next")
+    if not isinstance(cursor, dict):
+        return default_seed, None
+    return int(cursor.get("seed", default_seed)), cursor
 
 
 def validate_resume(
@@ -5925,6 +10979,8 @@ def accepted_plan_identity_migration(
                 ),
                 "evidence": row.get("evidence"),
                 "reason": row.get("reason"),
+                "reset_data_cursor_phase": row.get("reset_data_cursor_phase"),
+                "reset_data_cursor_seed": row.get("reset_data_cursor_seed"),
             }
     return None
 
@@ -5940,8 +10996,23 @@ def migration_receipt_identity_matches(
     )
     for migration_field, receipt_field in fields:
         expected = migration.get(migration_field)
-        if expected is not None and expected != receipt.get(receipt_field):
-            return False
+        if expected is None or expected == receipt.get(receipt_field):
+            continue
+        if migration_field == "legacy_optimizer_state_sha256":
+            projection = receipt.get("optimizer_state_projection") or {}
+            if (
+                projection.get("policy")
+                == "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+                and projection.get("source_optimizer_state_sha256") == expected
+                and projection.get("projected_optimizer_state_sha256")
+                == receipt.get(receipt_field)
+                and projection.get("source_tensor_values_mutated") is False
+                and projection.get("optimizer_step_reset") is False
+                and projection.get("learning_rate_reset") is False
+                and projection.get("independent_projection_replay") == "GREEN"
+            ):
+                continue
+        return False
     return True
 
 
@@ -6052,13 +11123,28 @@ def plan_sha256(
 def validate_config(config: dict[str, Any]) -> None:
     if config.get("policy") != "project_theseus_moecot_language_arm_training_v1":
         raise ValueError("unexpected MoECOT training policy")
+    training_host_policy(config)
+    optimizer_id = str((config.get("training") or {}).get("optimizer_id") or "adamw_mlx")
+    if optimizer_id not in pretraining_optimizers.OPTIMIZER_IDS:
+        raise ValueError("training optimizer is not registered")
     authority = config.get("architecture_training_authority") or {}
     if authority.get("policy") != "project_theseus_pre_training_architecture_authority_v1":
         raise ValueError("pre-training architecture authority contract is required")
     if authority.get("required_for_long_optimizer_runs") is not True:
         raise ValueError("long optimizer runs must require architecture readiness")
     if int(authority.get("pre_training_canary_max_steps") or 0) != 8:
-        raise ValueError("pre-training architecture canaries must remain capped at eight steps")
+        raise ValueError("legacy pre-training canary cap must remain recorded at eight steps")
+    canary_contract = resolve(str(authority.get("candidate_canary_contract") or ""))
+    if (
+        not canary_contract.is_file()
+        or authority.get("candidate_canary_policy")
+        != "project_theseus_pretraining_architecture_candidates_v1"
+        or authority.get("generic_canary_authority") != "denied"
+    ):
+        raise ValueError("candidate-specific architecture canary contract is required")
+    loaded_canary_contract = pretraining_candidate_canary.load_contract(canary_contract)
+    if loaded_canary_contract.get("policy") != authority.get("candidate_canary_policy"):
+        raise ValueError("candidate-specific architecture canary policy mismatch")
     if [str(value) for value in authority.get("gate_command") or []] != [
         "python3",
         "scripts/roadmap_implementation_gate.py",
@@ -6143,6 +11229,8 @@ def validate_config(config: dict[str, Any]) -> None:
             key: int(kerc_model.pop(key, 0))
             for key in (
                 "kerc_stage_adapter_dim",
+                "kerc_decoder_stage_adapter_dim",
+                "kerc_reasoner_output_delta_dim",
                 "kerc_residual_choice_count",
                 "kerc_residual_bottleneck_dim",
                 "kerc_residual_unit_kind_count",
@@ -6212,6 +11300,28 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("evaluation beam width must be bounded")
     if not 1 <= int(evaluation.get("branching_factor") or 0) <= 16:
         raise ValueError("evaluation branching factor must be bounded")
+    kernel_training = config.get("kernel_english_training") or {}
+    kerc_decode_tokens = int(evaluation.get("kerc_decode_max_target_tokens") or 0)
+    kerc_training_active = bool(kernel_training.get("required")) or bool(
+        (kernel_training.get("disposition") or {}).get("full_kerc_training_enabled")
+    )
+    if (
+        (kerc_training_active and kerc_decode_tokens < 1)
+        or kerc_decode_tokens
+        > int(kernel_training.get("maximum_sequence_tokens") or 0)
+    ):
+        raise ValueError(
+            "KERC evaluation decode envelope must fit the registered KERC sequence envelope"
+        )
+    kerc_beam_width = int(evaluation.get("kerc_beam_width") or 0)
+    if (kerc_training_active and kerc_beam_width < 1) or kerc_beam_width > 16:
+        raise ValueError("KERC evaluation beam width must be bounded")
+    kerc_branching_factor = int(evaluation.get("kerc_branching_factor") or 0)
+    if (
+        (kerc_training_active and kerc_branching_factor < 1)
+        or kerc_branching_factor > 16
+    ):
+        raise ValueError("KERC evaluation branching factor must be bounded")
     if evaluation.get("target_visible_to_generator") is not False:
         raise ValueError("evaluation target must remain hidden from generation")
     if evaluation.get("templates_renderers_routers_tools_allowed") is not False:
@@ -6314,6 +11424,18 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("termination loss weight must remain bounded")
     if not 1.0 <= float(training.get("byte_boundary_loss_weight") or 0.0) <= 8.0:
         raise ValueError("byte-boundary loss weight must remain bounded")
+    if not 1.0 <= float(
+        training.get("kerc_compiler_schema_continuation_loss_weight") or 0.0
+    ) <= 8.0:
+        raise ValueError(
+            "KERC compiler schema-continuation loss weight must remain bounded"
+        )
+    if not 1.0 <= float(
+        training.get("kerc_compiler_semantic_pointer_loss_weight", 1.0)
+    ) <= 8.0:
+        raise ValueError(
+            "KERC compiler semantic-pointer loss weight must remain bounded"
+        )
 
 
 def no_cheat(config: dict[str, Any]) -> dict[str, Any]:

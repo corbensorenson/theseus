@@ -23,6 +23,9 @@ import standard_causal_transformer_survival as survival
 import standard_causal_transformer_corpus as corpus
 from standard_causal_transformer_model import (
     CausalTransformerConfig,
+    analytical_parameter_breakdown,
+    analytical_parameter_count,
+    analytical_trainable_parameter_count,
     build_model,
     parameter_count,
 )
@@ -50,6 +53,7 @@ from standard_causal_transformer_survival import (
     materialize_stage_only_receipt,
     assign_body_balanced_sampling_weights,
     normalized_sampling_probabilities,
+    prepend_coverage_indices,
     prepare_semantic_plan_labels,
     prepare_ordered_plan_sequences,
     publish_candidate_artifact,
@@ -70,6 +74,7 @@ from standard_causal_transformer_survival import (
     source_tokens,
     stage_materialization_lock,
     stage_signature,
+    stratified_low_variance_sampling_order,
     target_token_offset,
     training_heartbeat_record,
     training_target_tokens,
@@ -87,6 +92,114 @@ from standard_causal_transformer_conditioning import (
     validate_config as validate_conditioning_config,
 )
 from code_lm_private_verifier import evaluate_all_private_candidates
+
+
+def test_analytical_parameter_accounting_covers_encoder_adapters_and_copy() -> None:
+    config = CausalTransformerConfig(
+        vocab_size=101,
+        d_model=16,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=24,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        source_copy_auxiliary_loss_weight=0.25,
+        expert_adapter_dim=8,
+        source_expert_adapter_dim=4,
+    )
+    breakdown = analytical_parameter_breakdown(config)
+
+    assert breakdown == {
+        "token_embedding": 1_616,
+        "decoder_layers": 4_736,
+        "final_norm": 16,
+        "source_encoder_layers": 2_096,
+        "source_final_norm": 16,
+        "decoder_cross_attention": 1_568,
+        "pointer_generator": 529,
+    }
+    assert analytical_parameter_count(config) == 10_577
+    assert analytical_trainable_parameter_count(config, "adapter_only") == 544
+    assert (
+        analytical_trainable_parameter_count(config, "low_rank_source_adapters")
+        == 993
+    )
+    assert (
+        analytical_trainable_parameter_count(config, "source_conditioned_delta")
+        == 4_753
+    )
+
+
+def test_ragged_accumulation_weights_reconstruct_requested_batch_mean() -> None:
+    objective_mass = np.asarray(
+        [
+            [1.0, 1.0, 0.0, 0.0],
+            [1.0, 1.0, 1.0, 1.0],
+            [1.0, 0.0, 0.0, 0.0],
+        ],
+        dtype=np.float32,
+    )
+    token_weights = [
+        survival.eager_accumulation_microbatch_weight(
+            objective_mass,
+            micro_start=index,
+            micro_stop=index + 1,
+            micro_width=width,
+            sequence_balanced_token_loss=False,
+        )
+        for index, width in enumerate((2, 4, 1))
+    ]
+    sequence_weights = [
+        survival.eager_accumulation_microbatch_weight(
+            objective_mass,
+            micro_start=index,
+            micro_stop=index + 1,
+            micro_width=width,
+            sequence_balanced_token_loss=True,
+        )
+        for index, width in enumerate((2, 4, 1))
+    ]
+
+    assert token_weights == pytest.approx([2.0 / 7.0, 4.0 / 7.0, 1.0 / 7.0])
+    assert sequence_weights == pytest.approx([1.0 / 3.0] * 3)
+    assert sum(token_weights) == pytest.approx(1.0)
+
+
+def test_target_frequency_balancing_preserves_row_mass_and_boosts_singletons() -> None:
+    labels = np.asarray([[7, 7, 7, 9, 0]], dtype=np.int32)
+    objective_mass = np.asarray([[1.0, 1.0, 1.0, 1.0, 0.0]], dtype=np.float32)
+
+    balanced = survival.target_frequency_balanced_objective_mass(
+        labels, objective_mass, power=0.5
+    )
+
+    assert float(balanced.sum()) == pytest.approx(float(objective_mass.sum()))
+    assert balanced[0, 3] > balanced[0, 0]
+    assert balanced[0, 0] == pytest.approx(balanced[0, 1])
+    assert balanced[0, 4] == 0.0
+
+
+def test_analytical_accounting_reproduces_frozen_57m_candidate() -> None:
+    preregistration = json.loads(
+        (ROOT / "configs" / "neural_seed_50m_scale_preregistration.json").read_text()
+    )
+    candidate = preregistration["candidate"]
+    vocab_size = 8_195
+    trunk = CausalTransformerConfig(
+        vocab_size=vocab_size, **candidate["shared_trunk_model"]
+    )
+    arm = CausalTransformerConfig(vocab_size=vocab_size, **candidate["arm_model"])
+
+    assert analytical_parameter_count(trunk) == 54_836_746
+    assert analytical_parameter_count(arm) == 57_340_426
+    assert (
+        analytical_trainable_parameter_count(
+            arm, candidate["expert_trainable_scope"]
+        )
+        == 2_504_193
+    )
 
 
 def test_pretrain_stage_and_optimizer_targets_are_distinct_and_legacy_safe() -> None:
@@ -1169,6 +1282,78 @@ def test_kerc_configuration_requires_complete_modular_architecture() -> None:
         CausalTransformerConfig(**common, kerc_stage_adapter_dim=8).validate()
 
 
+def test_kerc_reasoner_output_delta_preserves_tied_warm_start_and_learns() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    mx.random.seed(79)
+    common = dict(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        source_copy_auxiliary_loss_weight=0.0,
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    disabled = CausalTransformerConfig(**common)
+    enabled = CausalTransformerConfig(**common, kerc_reasoner_output_delta_dim=8)
+    assert analytical_parameter_count(enabled) - analytical_parameter_count(disabled) == 8 * (32 + 96)
+
+    model = build_model(
+        enabled,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    assert float(mx.max(mx.abs(model.kerc_reasoner_output_delta_up.weight)).item()) == 0.0
+    hidden = mx.ones((1, 2, 32), dtype=mx.float32)
+    initial_delta = model.kerc_reasoner_output_delta_up(
+        nn.silu(model.kerc_reasoner_output_delta_down(hidden))
+    )
+    mx.eval(initial_delta)
+    assert float(mx.max(mx.abs(initial_delta)).item()) == 0.0
+
+    model.freeze_to_kerc_delta()
+    loss_and_grad = nn.value_and_grad(model, causal_loss)
+    inputs = mx.array([[1, 12, 20, 2, 45]], dtype=mx.int32)
+    labels = mx.array([[0, 0, 0, 0, 46]], dtype=mx.int32)
+    mask = mx.array([[0, 0, 0, 0, 1]], dtype=mx.float32)
+    loss, gradients = loss_and_grad(model, inputs, labels, mask, mx, nn)
+    mx.eval(loss, gradients)
+    first = dict(mlx_utils.tree_flatten(gradients))
+    assert float(mx.linalg.norm(first["kerc_reasoner_output_delta_up.weight"]).item()) > 0.0
+    assert float(mx.linalg.norm(first["kerc_reasoner_output_delta_down.weight"]).item()) == 0.0
+
+    optimizer = optim.SGD(learning_rate=0.1)
+    optimizer.update(model, gradients)
+    mx.eval(model.parameters(), optimizer.state)
+    _loss, gradients = loss_and_grad(model, inputs, labels, mask, mx, nn)
+    mx.eval(gradients)
+    second = dict(mlx_utils.tree_flatten(gradients))
+    assert float(mx.linalg.norm(second["kerc_reasoner_output_delta_down.weight"]).item()) > 0.0
+
+
 def test_kerc_per_unit_allocator_is_content_sensitive_and_hard_constrained() -> None:
     import mlx.core as mx
     import mlx.nn as nn
@@ -1186,6 +1371,7 @@ def test_kerc_per_unit_allocator_is_content_sensitive_and_hard_constrained() -> 
         source_copy_mode="pointer_generator",
         kerc_task_token_ids=(10, 11, 12, 13),
         kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_residual_unit_kind_count=5,
@@ -1429,6 +1615,7 @@ def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
         source_copy_mode="pointer_generator",
         kerc_task_token_ids=(10, 11, 12, 13),
         kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
@@ -1484,16 +1671,44 @@ def test_kerc_stage_residual_and_cache_are_source_bound() -> None:
         atol=1e-7,
     ))
 
-    renderer = mx.array([[1, 13, 20, 21, 2, 30, 31]], dtype=mx.int32)
+    # Structured renderer sources carry kernel IDs. The pointer generator must
+    # not bypass the surface-only vocabulary mask by copying those IDs.
+    renderer = mx.array([[1, 13, 45, 46, 2, 30, 31]], dtype=mx.int32)
     _renderer_logits, _renderer_cache, renderer_aux = model(
         renderer, return_training_aux=True
     )
-    mx.eval(renderer_aux["copy_aux"]["generator_gate"])
-    assert not bool(mx.allclose(
+    mx.eval(_renderer_logits, renderer_aux["copy_aux"]["generator_gate"])
+    assert bool(mx.allclose(
         renderer_aux["copy_aux"]["generator_gate"],
         mx.ones_like(renderer_aux["copy_aux"]["generator_gate"]),
         atol=1e-7,
     ))
+    assert float(_renderer_logits[0, -1, 45].item()) < -1e8
+
+    # A uniform one-hot stage batch takes the exact sparse stage route, while a
+    # mixed batch retains the generic four-stage fallback.  Batch rows are
+    # independent, so matching each sparse result to its fallback row proves
+    # the optimization preserves both decoder-adapter and output-head behavior.
+    compiler_only, _compiler_only_cache = model(compiler)
+    renderer_only, _renderer_only_cache = model(renderer)
+    mixed, _mixed_cache = model(mx.concatenate([compiler, renderer], axis=0))
+    mx.eval(compiler_only, renderer_only, mixed)
+    assert bool(mx.allclose(compiler_only[0], mixed[0], atol=1e-5))
+    assert bool(mx.allclose(renderer_only[0], mixed[1], atol=1e-5))
+
+    reasoner_hidden = mx.ones((1, 1, config.d_model), dtype=mx.float32)
+    reasoner_weights = mx.array([[0.0, 0.0, 1.0, 0.0]], dtype=mx.float32)
+    before_reasoner = model.kerc_generator_logits(
+        reasoner_hidden, reasoner_weights
+    )
+    model.kerc_kernel_output.weight = mx.zeros_like(
+        model.kerc_kernel_output.weight
+    )
+    after_reasoner = model.kerc_generator_logits(
+        reasoner_hidden, reasoner_weights
+    )
+    mx.eval(before_reasoner, after_reasoner)
+    assert bool(mx.allclose(before_reasoner, after_reasoner, atol=1e-7))
 
     _prefill, cache = model(compiler[:, :6])
     cached, _next = model(compiler[:, 6:], cache)
@@ -1528,6 +1743,7 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
         source_copy_mode="pointer_generator",
         kerc_task_token_ids=(10, 11, 12, 13),
         kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
         kerc_residual_choice_count=4,
         kerc_residual_bottleneck_dim=8,
         kerc_verifier_dim=8,
@@ -1596,6 +1812,7 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
         or "kerc_surface_output" in name
         for name in changed
     )
+    assert any("kerc_decoder_stage_adapters" in name for name in changed)
 
     checkpoint = tmp_path / "kerc_mechanics.npz"
     model.save_weights(str(checkpoint))
@@ -1605,6 +1822,238 @@ def test_kerc_joint_loss_updates_modules_and_checkpoint_reloads(tmp_path: Path) 
     observed, _ = restored(inputs)
     mx.eval(expected, observed)
     assert bool(mx.allclose(expected, observed, atol=1e-6))
+
+
+def test_kerc_delta_scope_freezes_warm_trunk_and_owns_every_kerc_module() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    model.freeze_to_kerc_delta()
+    trainable = {
+        name for name, _value in mlx_utils.tree_flatten(model.trainable_parameters())
+    }
+    assert trainable
+    assert all(
+        name.startswith("kerc_")
+        or (
+            name.startswith("layers.")
+            and ".kerc_decoder_stage_adapters." in name
+        )
+        for name in trainable
+    )
+    assert "kerc_kernel_output.weight" in trainable
+    assert "kerc_surface_output.weight" in trainable
+    assert "kerc_stage_embedding.weight" in trainable
+    assert any(name.startswith("kerc_stage_adapters.") for name in trainable)
+    assert any(
+        ".kerc_decoder_stage_adapters." in name for name in trainable
+    )
+    assert "token_embedding.weight" not in trainable
+    assert not any(
+        name.startswith("layers.")
+        and ".kerc_decoder_stage_adapters." not in name
+        for name in trainable
+    )
+    assert not any(name.startswith("source_layers.") for name in trainable)
+
+    model.freeze_to_kerc_delta(include_source_conditioned_bridge=True)
+    bridged = {
+        name for name, _value in mlx_utils.tree_flatten(model.trainable_parameters())
+    }
+    assert trainable.issubset(bridged)
+    assert any(name.startswith("source_layers.") for name in bridged)
+    assert any(".source_attention." in name for name in bridged)
+    assert "source_final_norm.weight" in bridged
+    assert "token_embedding.weight" not in bridged
+    assert not any(
+        ".attention.q_proj." in name
+        and ".source_attention." not in name
+        and not name.startswith("source_layers.")
+        for name in bridged
+    )
+
+
+def test_kerc_stage_only_scope_preserves_sibling_generation_modules() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    model.freeze_to_kerc_stage(3)
+    trainable = {
+        name for name, _value in mlx_utils.tree_flatten(model.trainable_parameters())
+    }
+
+    assert "kerc_stage_embedding.weight" in trainable
+    assert "kerc_surface_output.weight" in trainable
+    assert any(name.startswith("kerc_stage_adapters.3.") for name in trainable)
+    assert any(".kerc_decoder_stage_adapters.3." in name for name in trainable)
+    assert "kerc_kernel_output.weight" not in trainable
+    assert "token_embedding.weight" not in trainable
+    assert not any(name.startswith("kerc_stage_adapters.0.") for name in trainable)
+    model.freeze_to_kerc_stage(
+        1,
+        include_stage_embedding=False,
+        detach_frozen_trunk=True,
+    )
+    output_only_trainable = {
+        name
+        for name, _value in mlx_utils.tree_flatten(
+            model.trainable_parameters()
+        )
+    }
+    assert model.kerc_stage_output_isolation is True
+    assert "kerc_stage_embedding.weight" not in output_only_trainable
+    assert "kerc_kernel_output.weight" in output_only_trainable
+    assert any(
+        name.startswith("kerc_stage_adapters.1.")
+        for name in output_only_trainable
+    )
+    with pytest.raises(ValueError, match="frozen stage embedding"):
+        model.freeze_to_kerc_stage(
+            1,
+            include_stage_embedding=True,
+            detach_frozen_trunk=True,
+        )
+    with pytest.raises(ValueError, match="stage index"):
+        model.freeze_to_kerc_stage(4)
+
+
+def test_uniform_kerc_stage_fast_path_preserves_compiler_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    mx.random.seed(59)
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    model.freeze_to_kerc_stage(1)
+    compiler = mx.array([[1, 11, 20, 21, 2, 45, 46]], dtype=mx.int32)
+    renderer = mx.array([[1, 13, 45, 46, 2, 30, 31]], dtype=mx.int32)
+
+    def uniform_loss(candidate: object) -> object:
+        logits, _cache = candidate(compiler)
+        return mx.mean(logits[0, -2:, 40:60])
+
+    def fallback_loss(candidate: object) -> object:
+        logits, _cache = candidate(mx.concatenate([compiler, renderer], axis=0))
+        return mx.mean(logits[0, -2:, 40:60])
+
+    uniform_value, uniform_gradients = nn.value_and_grad(model, uniform_loss)(model)
+    fallback_value, fallback_gradients = nn.value_and_grad(model, fallback_loss)(model)
+    mx.eval(
+        uniform_value,
+        fallback_value,
+        uniform_gradients,
+        fallback_gradients,
+    )
+    uniform_flat = dict(mlx_utils.tree_flatten(uniform_gradients))
+    fallback_flat = dict(mlx_utils.tree_flatten(fallback_gradients))
+
+    assert uniform_flat.keys() == fallback_flat.keys()
+    assert bool(mx.allclose(uniform_value, fallback_value, atol=1e-6))
+    for name in uniform_flat:
+        assert bool(
+            mx.allclose(
+                uniform_flat[name],
+                fallback_flat[name],
+                atol=1e-5,
+            )
+        ), name
 
 
 def test_kerc_verifier_class_weights_balance_sparse_corruptions() -> None:
@@ -1621,6 +2070,177 @@ def test_kerc_verifier_class_weights_balance_sparse_corruptions() -> None:
         positive_mass = float(labels[:, feature].sum() * positive[feature])
         negative_mass = float((1.0 - labels[:, feature]).sum() * negative[feature])
         assert positive_mass == pytest.approx(negative_mass)
+
+
+def test_kerc_stage_only_layer_checkpointing_preserves_exact_loss_and_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        source_copy_auxiliary_loss_weight=0.0,
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    copy_lookup = np.arange(96, dtype=np.int32)
+    mx.random.seed(20260722)
+    direct = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=copy_lookup,
+        compact_encoder_decoder_partitions=True,
+    )
+    checkpointed = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=copy_lookup,
+        gradient_checkpointing=True,
+        compact_encoder_decoder_partitions=True,
+        compact_partition_width_quantum=8,
+    )
+    checkpointed.load_weights(
+        list(mlx_utils.tree_flatten(direct.parameters())), strict=True
+    )
+    direct.freeze_to_kerc_stage(1)
+    checkpointed.freeze_to_kerc_stage(1)
+    inputs = mx.array([[1, 11, 20, 21, 2, 45, 46]], dtype=mx.int32)
+    labels = mx.array([[0, 0, 0, 0, 0, 46, 47]], dtype=mx.int32)
+    mask = mx.array([[0, 0, 0, 0, 0, 1, 1]], dtype=mx.float32)
+
+    direct_loss, direct_gradients = nn.value_and_grad(direct, causal_loss)(
+        direct, inputs, labels, mask, mx, nn
+    )
+    checkpointed_loss, checkpointed_gradients = nn.value_and_grad(
+        checkpointed, causal_loss
+    )(checkpointed, inputs, labels, mask, mx, nn)
+    mx.eval(
+        direct_loss,
+        checkpointed_loss,
+        direct_gradients,
+        checkpointed_gradients,
+    )
+    direct_flat = dict(mlx_utils.tree_flatten(direct_gradients))
+    checkpointed_flat = dict(mlx_utils.tree_flatten(checkpointed_gradients))
+
+    assert float(direct_loss.item()) == pytest.approx(
+        float(checkpointed_loss.item()), rel=1e-6, abs=1e-6
+    )
+    assert set(direct_flat) == set(checkpointed_flat)
+    assert float(
+        mx.linalg.norm(direct_flat["kerc_stage_embedding.weight"]).item()
+    ) > 0.0
+    for name in direct_flat:
+        assert np.allclose(
+            np.asarray(direct_flat[name]),
+            np.asarray(checkpointed_flat[name]),
+            rtol=2e-5,
+            atol=2e-5,
+        ), name
+
+
+def test_kerc_zero_authority_decoder_pruning_preserves_loss_and_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_decoder_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_verifier_dim=8,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    lookup = np.arange(96, dtype=np.int32)
+    mx.random.seed(20260722)
+    pruned = build_model(config, mx=mx, nn=nn, source_to_target_lookup=lookup)
+    full = build_model(config, mx=mx, nn=nn, source_to_target_lookup=lookup)
+    full.load_weights(list(mlx_utils.tree_flatten(pruned.parameters())), strict=True)
+    inputs = mx.array([[1, 12, 20, 21, 22, 2, 45, 46, 47]], dtype=mx.int32)
+    labels = mx.array([[12, 20, 21, 22, 2, 45, 46, 47, 0]], dtype=mx.int32)
+    mask = mx.zeros(inputs.shape, dtype=mx.float32)
+    residual = mx.array([[1, 2, 3, 0]], dtype=mx.int32)
+    verifier = mx.array([[1, 0, 1, 1]], dtype=mx.float32)
+    decision = mx.array([0], dtype=mx.int32)
+    kwargs = {
+        "kerc_residual_labels": residual,
+        "kerc_residual_weight": 0.5,
+        "kerc_verifier_labels": verifier,
+        "kerc_verifier_weight": 0.5,
+        "kerc_decision_labels": decision,
+        "kerc_decision_weight": 0.5,
+        "kerc_decision_class_weights": mx.ones((4,), dtype=mx.float32),
+        "kerc_decision_loss_mask": mx.ones((1,), dtype=mx.float32),
+        "source_conditioning": True,
+    }
+    pruned_loss, pruned_grads = nn.value_and_grad(pruned, causal_loss)(
+        pruned, inputs, labels, mask, mx, nn, **kwargs
+    )
+    full_loss, full_grads = nn.value_and_grad(full, causal_loss)(
+        full,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        **kwargs,
+        prune_zero_authority_decoder=False,
+    )
+    mx.eval(pruned_loss, full_loss, pruned_grads, full_grads)
+    assert float(pruned_loss.item()) == pytest.approx(float(full_loss.item()), abs=1e-6)
+    pruned_flat = dict(mlx_utils.tree_flatten(pruned_grads))
+    full_flat = dict(mlx_utils.tree_flatten(full_grads))
+    assert pruned_flat.keys() == full_flat.keys()
+    for name in pruned_flat:
+        np.testing.assert_allclose(
+            np.asarray(pruned_flat[name]),
+            np.asarray(full_flat[name]),
+            rtol=1e-5,
+            atol=1e-6,
+            err_msg=name,
+        )
 
 
 def test_kerc_verifier_class_weights_fail_closed_without_both_classes() -> None:
@@ -2016,6 +2636,361 @@ def test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint(
     assert checkpoint_dtypes == {"mlx.core.float32"}
 
 
+def test_eager_bfloat16_auxiliary_route_updates_fp32_master_checkpoint(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(61)
+    master = build_model(config, mx=mx, nn=nn)
+    compute = build_model(
+        config, mx=mx, nn=nn, gradient_checkpointing=True
+    )
+    compute.load_weights(list(mlx_utils.tree_flatten(master.parameters())))
+    compute.set_dtype(mx.bfloat16)
+    before = {
+        name: np.array(value)
+        for name, value in mlx_utils.tree_flatten(master.parameters())
+    }
+    inputs = np.arange(3, 3 + 32, dtype=np.int32).reshape(2, 16) % 64
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.ones_like(inputs, dtype=np.float32)
+    checkpoint = tmp_path / "eager-master.safetensors"
+    report = survival.train_phase(
+        compute,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(compute, causal_loss),
+        inputs,
+        labels,
+        mask,
+        progress_mask=mask,
+        ordered_plan_loss_weight=1.0,
+        sample_weights=None,
+        plan_labels=None,
+        plan_label_mode="none",
+        plan_auxiliary_weight=0.0,
+        plan_shuffle_seed=0,
+        plan_loss_mode="binary_multilabel",
+        plan_slot_count=0,
+        plan_factor_group_sizes=(),
+        phase_name="eager-mixed-precision-master",
+        target_positions=int(mask.sum()),
+        batch_size=2,
+        gradient_clip=1.0,
+        seed=37,
+        max_steps=1,
+        checkpoint=checkpoint,
+        checkpoint_every=1,
+        heartbeat=tmp_path / "heartbeat.json",
+        global_step_offset=0,
+        mx=mx,
+        optim=optim,
+        source_conditioning=False,
+        training_step_mode="eager",
+        master_model=master,
+        compute_dtype_name="bfloat16",
+        transactional_eager_step=True,
+    )
+    after = dict(mlx_utils.tree_flatten(master.parameters()))
+    assert report["training_step_execution"] == "mlx_eager_auxiliary_objective_v1"
+    assert report["transactional_eager_step"] is True
+    assert [
+        row["station"] for row in report["eager_transaction_memory_prefix"]
+    ] == ["backward_materialized", "optimizer_materialized"]
+    assert report["authoritative_weight_dtype"] == "float32_master"
+    assert any(
+        not np.array_equal(before[name], np.array(after[name])) for name in before
+    )
+    assert {str(value.dtype) for value in after.values()} == {"mlx.core.float32"}
+    assert {str(value.dtype) for value in mx.load(str(checkpoint)).values()} == {
+        "mlx.core.float32"
+    }
+
+
+def test_transactional_eager_step_matches_single_graph_update(tmp_path: Path) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(67)
+    single_graph = build_model(config, mx=mx, nn=nn)
+    mx.eval(single_graph.parameters())
+    transactional = build_model(config, mx=mx, nn=nn)
+    transactional.load_weights(
+        list(mlx_utils.tree_flatten(single_graph.parameters())), strict=True
+    )
+    inputs = np.arange(3, 3 + 32, dtype=np.int32).reshape(2, 16) % 64
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.ones_like(inputs, dtype=np.float32)
+    common = {
+        "inputs": inputs,
+        "labels": labels,
+        "mask": mask,
+        "progress_mask": mask,
+        "ordered_plan_loss_weight": 1.0,
+        "sample_weights": None,
+        "plan_labels": None,
+        "plan_label_mode": "none",
+        "plan_auxiliary_weight": 0.0,
+        "plan_shuffle_seed": 0,
+        "plan_loss_mode": "binary_multilabel",
+        "plan_slot_count": 0,
+        "plan_factor_group_sizes": (),
+        "phase_name": "transactional-eager-parity",
+        "target_positions": int(mask.sum()),
+        "batch_size": 2,
+        "gradient_clip": 1.0,
+        "seed": 41,
+        "max_steps": 1,
+        "checkpoint": tmp_path / "unused.safetensors",
+        "checkpoint_every": 99,
+        "heartbeat": tmp_path / "heartbeat.json",
+        "global_step_offset": 0,
+        "mx": mx,
+        "optim": optim,
+        "source_conditioning": False,
+        "training_step_mode": "eager",
+    }
+    single_report = survival.train_phase(
+        single_graph,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(single_graph, causal_loss),
+        **common,
+    )
+    transaction_report = survival.train_phase(
+        transactional,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(transactional, causal_loss),
+        transactional_eager_step=True,
+        **common,
+    )
+    single_parameters = dict(mlx_utils.tree_flatten(single_graph.parameters()))
+    transaction_parameters = dict(mlx_utils.tree_flatten(transactional.parameters()))
+    maximum_delta = max(
+        float(
+            mx.max(
+                mx.abs(single_parameters[name] - transaction_parameters[name])
+            ).item()
+        )
+        for name in single_parameters
+    )
+    assert transaction_report["final_loss"] == pytest.approx(
+        single_report["final_loss"], abs=2e-6
+    )
+    assert maximum_delta < 5e-6
+    assert transaction_report["transactional_eager_step"] is True
+
+
+def test_complete_objective_checkpoint_matches_loss_and_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=48,
+        d_model=24,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=48,
+    )
+    mx.random.seed(71)
+    model = build_model(config, mx=mx, nn=nn)
+    mx.eval(model.parameters())
+    inputs = mx.array([[3, 4, 5, 6, 7]], dtype=mx.int32)
+    labels = mx.array([[4, 5, 6, 7, 8]], dtype=mx.int32)
+    mask = mx.ones(inputs.shape, dtype=mx.float32)
+    ordinary = nn.value_and_grad(model, causal_loss)
+    checkpointed = nn.value_and_grad(model, survival.checkpointed_causal_loss)
+    ordinary_loss, ordinary_grads = ordinary(
+        model, inputs, labels, mask, mx, nn, source_conditioning=False
+    )
+    checkpointed_loss, checkpointed_grads = checkpointed(
+        model, inputs, labels, mask, mx, nn, source_conditioning=False
+    )
+    mx.eval(ordinary_loss, ordinary_grads, checkpointed_loss, checkpointed_grads)
+    ordinary_flat = dict(mlx_utils.tree_flatten(ordinary_grads))
+    checkpointed_flat = dict(mlx_utils.tree_flatten(checkpointed_grads))
+    maximum_delta = max(
+        float(mx.max(mx.abs(ordinary_flat[name] - checkpointed_flat[name])).item())
+        for name in ordinary_flat
+    )
+    gradient_mass = sum(
+        float(mx.sum(mx.abs(value)).item()) for value in checkpointed_flat.values()
+    )
+    assert float(checkpointed_loss.item()) == pytest.approx(
+        float(ordinary_loss.item()), abs=1e-7
+    )
+    assert maximum_delta == pytest.approx(0.0, abs=1e-7)
+    assert gradient_mass > 0.0
+
+
+def test_decomposed_kerc_backward_matches_monolithic_loss_and_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=96,
+        d_model=32,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(10, 11, 12, 13),
+        kerc_stage_adapter_dim=8,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=8,
+        kerc_residual_unit_kind_count=5,
+        kerc_residual_unit_feature_dim=18,
+        kerc_residual_unit_byte_vocab_size=257,
+        kerc_verifier_dim=8,
+        kerc_verifier_output_dim=5,
+        kerc_decision_bottleneck_dim=8,
+        kerc_decision_output_dim=4,
+        kerc_surface_token_start=20,
+        kerc_surface_token_end=40,
+        kerc_kernel_token_start=40,
+        kerc_kernel_token_end=60,
+        kerc_pointer_token_start=60,
+        kerc_pointer_token_end=90,
+        kerc_end_token_id=3,
+    )
+    mx.random.seed(79)
+    model = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=np.arange(96, dtype=np.int32),
+    )
+    mx.eval(model.parameters())
+    inputs = mx.array(
+        [[1, 10, 20, 2, 45, 46], [1, 11, 21, 2, 47, 48]],
+        dtype=mx.int32,
+    )
+    labels = mx.array(
+        [[10, 20, 2, 45, 46, 3], [11, 21, 2, 47, 48, 3]],
+        dtype=mx.int32,
+    )
+    mask = mx.array(
+        [[0, 0, 0, 1, 1, 1], [0, 0, 0, 1, 1, 1]],
+        dtype=mx.float32,
+    )
+    unit_bytes = mx.array(
+        [[[1, 2, 256], [3, 4, 256]], [[5, 6, 256], [7, 8, 256]]],
+        dtype=mx.int32,
+    )
+    byte_mask = mx.array(
+        [[[1, 1, 0], [1, 1, 0]], [[1, 1, 0], [1, 1, 0]]],
+        dtype=mx.float32,
+    )
+    unit_labels = mx.array([[0, 1], [2, 3]], dtype=mx.int32)
+    unit_authority = mx.ones((2, 2), dtype=mx.float32)
+    unit_confidence = mx.array(
+        [[0.9, 0.8], [0.7, 1.0]], dtype=mx.float32
+    )
+    unit_kinds = mx.array([[0, 1], [2, 4]], dtype=mx.int32)
+    unit_features = mx.zeros((2, 2, 4, 18), dtype=mx.float32)
+    unit_mask = mx.ones((2, 2), dtype=mx.float32)
+    unit_hard = mx.zeros((2, 2, 4), dtype=mx.bool_)
+    verifier_labels = mx.array(
+        [[1, 1, 1, 1, 1], [1, 0, 1, 1, 1]], dtype=mx.float32
+    )
+    decision_labels = mx.array([1, 2], dtype=mx.int32)
+    decision_mask = mx.ones((2,), dtype=mx.float32)
+    kwargs = {
+        "kerc_unit_residual_labels": unit_labels,
+        "kerc_unit_residual_weight": 0.7,
+        "kerc_unit_residual_loss_mask": unit_authority,
+        "kerc_unit_confidence_targets": unit_confidence,
+        "kerc_unit_byte_ids": unit_bytes,
+        "kerc_unit_byte_mask": byte_mask,
+        "kerc_unit_kind_ids": unit_kinds,
+        "kerc_unit_candidate_features": unit_features,
+        "kerc_unit_mask": unit_mask,
+        "kerc_unit_hard_block_mask": unit_hard,
+        "kerc_verifier_labels": verifier_labels,
+        "kerc_verifier_weight": 0.5,
+        "kerc_decision_labels": decision_labels,
+        "kerc_decision_weight": 0.6,
+        "kerc_decision_loss_mask": decision_mask,
+        "source_conditioning": True,
+    }
+    monolithic = nn.value_and_grad(
+        model, survival.checkpointed_causal_loss
+    )
+    monolithic_loss, monolithic_grads = monolithic(
+        model, inputs, labels, mask, mx, nn, **kwargs
+    )
+    decomposed_loss, decomposed_grads = (
+        survival.decomposed_checkpointed_causal_loss_and_grad(
+            model,
+            inputs,
+            labels,
+            mask,
+            mx,
+            nn,
+            token_loss_position_chunk_size=2,
+            **kwargs,
+        )
+    )
+    mx.eval(
+        monolithic_loss,
+        monolithic_grads,
+        decomposed_loss,
+        decomposed_grads,
+    )
+    monolithic_flat = dict(mlx_utils.tree_flatten(monolithic_grads))
+    decomposed_flat = dict(mlx_utils.tree_flatten(decomposed_grads))
+    assert set(monolithic_flat) == set(decomposed_flat)
+    deltas = {
+        name: float(
+            mx.max(
+                mx.abs(
+                    monolithic_flat[name].astype(mx.float32)
+                    - decomposed_flat[name]
+                )
+            ).item()
+        )
+        for name in monolithic_flat
+    }
+    maximum_name = max(deltas, key=deltas.get)
+    maximum_delta = deltas[maximum_name]
+    assert float(decomposed_loss.item()) == pytest.approx(
+        float(monolithic_loss.item()), abs=2e-5
+    )
+    assert maximum_delta < 3e-4, {
+        "maximum_name": maximum_name,
+        "maximum_delta": maximum_delta,
+        "largest": sorted(deltas.items(), key=lambda row: row[1], reverse=True)[
+            :12
+        ],
+    }
+
+
 def test_compiled_training_rejects_invalid_microbatch_size(tmp_path: Path) -> None:
     import mlx.core as mx
     import mlx.nn as nn
@@ -2069,6 +3044,145 @@ def test_compiled_training_rejects_invalid_microbatch_size(tmp_path: Path) -> No
             source_conditioning=False,
             compiled_microbatch_size=0,
         )
+
+
+def test_optimizer_state_offload_can_target_only_large_decoder_rows(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=32,
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    inputs = np.asarray([[1, 2, 3, 4], [5, 6, 7, 8]], dtype=np.int32)
+    labels = np.asarray([[2, 3, 4, 5], [6, 7, 8, 9]], dtype=np.int32)
+    mask = np.asarray([[0, 0, 1, 1], [1, 1, 1, 1]], dtype=np.float32)
+    report = survival.train_phase(
+        model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(model, causal_loss),
+        inputs,
+        labels,
+        mask,
+        progress_mask=mask,
+        ordered_plan_loss_weight=1.0,
+        sample_weights=None,
+        plan_labels=None,
+        plan_label_mode="none",
+        plan_auxiliary_weight=0.0,
+        plan_shuffle_seed=0,
+        plan_loss_mode="binary_multilabel",
+        plan_slot_count=0,
+        plan_factor_group_sizes=(),
+        phase_name="thresholded-optimizer-offload",
+        target_positions=int(mask.sum()),
+        batch_size=1,
+        gradient_clip=1.0,
+        seed=1,
+        max_steps=2,
+        checkpoint=tmp_path / "unused.npz",
+        checkpoint_every=99,
+        heartbeat=tmp_path / "heartbeat.json",
+        global_step_offset=0,
+        mx=mx,
+        optim=optim,
+        source_conditioning=False,
+        training_step_mode="eager",
+        optimizer_state_offload_path=tmp_path / "optimizer-offload.npz",
+        optimizer_state_offload_minimum_target_positions=3,
+        batch_index_schedule=((0,), (1,)),
+    )
+    assert report["optimizer_state_offload_between_steps"] is True
+    assert report["optimizer_state_offload_minimum_target_positions"] == 3
+    assert report["optimizer_state_offload_count"] == 1
+    assert (tmp_path / "optimizer-offload.npz").is_file()
+
+
+def test_resource_stress_prefix_executes_maximum_target_and_width_rows_first(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=32,
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    inputs = np.asarray(
+        [[1, 2, 3, 0, 0], [5, 6, 7, 8, 9]], dtype=np.int32
+    )
+    labels = np.asarray(
+        [[2, 3, 4, 0, 0], [6, 7, 8, 9, 10]], dtype=np.int32
+    )
+    mask = np.asarray(
+        [[1, 1, 1, 0, 0], [0, 0, 0, 0, 1]], dtype=np.float32
+    )
+    report = survival.train_phase(
+        model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(model, causal_loss),
+        inputs,
+        labels,
+        mask,
+        progress_mask=mask,
+        ordered_plan_loss_weight=1.0,
+        sample_weights=None,
+        plan_labels=None,
+        plan_label_mode="none",
+        plan_auxiliary_weight=0.0,
+        plan_shuffle_seed=0,
+        plan_loss_mode="binary_multilabel",
+        plan_slot_count=0,
+        plan_factor_group_sizes=(),
+        coverage_labels=((), ()),
+        required_coverage_labels=(),
+        phase_name="maximum-target-resource-stress",
+        target_positions=4,
+        batch_size=1,
+        gradient_clip=1.0,
+        seed=1,
+        max_steps=2,
+        checkpoint=tmp_path / "unused.npz",
+        checkpoint_every=99,
+        heartbeat=tmp_path / "heartbeat.json",
+        global_step_offset=0,
+        mx=mx,
+        optim=optim,
+        source_conditioning=False,
+        training_step_mode="eager",
+        resource_stress_prefix=True,
+    )
+    stress = report["coverage_first_sampling"]["resource_stress"]
+    assert report["optimizer_steps"] == 2
+    assert report["target_positions_consumed"] == 4
+    assert report["coverage_first_sampling"]["selected_row_count"] == 2
+    assert stress["active"] is True
+    assert stress["target_positions"] == 3
+    assert stress["active_width"] == 3
+    assert stress["selected_row_count"] == 2
+    assert stress["rows"][0]["roles"] == ["maximum_target_positions"]
+    assert stress["rows"][1]["roles"] == ["maximum_active_width"]
+    assert stress["rows"][1]["active_width"] == 5
 
 
 def test_zero_initialized_expert_adapter_preserves_trunk_and_freezes_exactly() -> None:
@@ -4685,6 +5799,61 @@ def test_private_prompt_variants_share_fixed_body_sampling_mass() -> None:
     )
     assert probabilities is not None
     assert float(probabilities.sum()) == pytest.approx(1.0)
+
+
+def test_uniform_sampling_weights_preserve_without_replacement_epochs() -> None:
+    assert normalized_sampling_probabilities(np.ones(8), 8) is None
+
+
+def test_low_variance_weighted_order_preserves_mass_and_rare_row_coverage() -> None:
+    probabilities = np.asarray(
+        [1 / 8, 1 / 8, 1 / 16, 1 / 16, 1 / 16, 1 / 16, 1 / 4, 1 / 4],
+        dtype=np.float64,
+    )
+    order = stratified_low_variance_sampling_order(
+        probabilities, row_count=8, seed=20260722
+    )
+    counts = np.bincount(order, minlength=8)
+    expected = probabilities * 8
+    assert len(order) == 8
+    assert np.all(np.abs(counts - expected) < 1.0)
+    assert counts[0] == counts[1] == 1
+    assert counts[6] == counts[7] == 2
+    assert order == stratified_low_variance_sampling_order(
+        probabilities, row_count=8, seed=20260722
+    )
+
+
+def test_coverage_prefix_moves_one_occurrence_without_erasing_weighted_duplicates() -> None:
+    order = [2, 0, 2, 3, 2, 1]
+    prefixed = prepend_coverage_indices(order, [2, 1])
+    assert prefixed[:2] == [2, 1]
+    assert len(prefixed) == len(order)
+    assert sorted(prefixed) == sorted(order)
+    assert prefixed.count(2) == 3
+
+
+def test_stratified_weighted_order_balances_every_kerc_objective_prefix() -> None:
+    group_sizes = (910, 97, 1041, 118)
+    probabilities = np.concatenate(
+        [
+            np.full(size, 0.25 / size, dtype=np.float64)
+            for size in group_sizes
+        ]
+    )
+    order = stratified_low_variance_sampling_order(
+        probabilities,
+        row_count=len(probabilities),
+        seed=20260722,
+    )
+    boundaries = np.cumsum((0, *group_sizes))
+    first_256 = order[:256]
+    counts = [
+        sum(boundaries[index] <= row < boundaries[index + 1] for row in first_256)
+        for index in range(4)
+    ]
+    assert counts == [64, 64, 64, 64]
+    assert len(set(first_256)) == 256
 
 
 def test_coverage_first_plan_is_deterministic_and_covers_overlapping_groups() -> None:

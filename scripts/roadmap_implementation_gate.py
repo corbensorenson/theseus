@@ -39,8 +39,138 @@ DEFAULT_PROJECT_STEWARD = ROOT / "configs" / "project_steward.json"
 DEFAULT_AI_BOOK_ROOT = ROOT.parent / "AI_book"
 DEFAULT_KERC_FIDELITY_OUT = ROOT / "reports" / "kerc_implementation_fidelity_gate.json"
 REQUIRED_PHASES = set(range(20))
-ALLOWED_PHASE_STATES = {"implemented", "wired", "partial", "missing", "frozen"}
-DONE_STATES = {"implemented", "wired"}
+ALLOWED_PHASE_STATES = {"qualified", "implemented", "wired", "partial", "missing", "frozen"}
+# DONE_STATES means implementation evidence exists. Architecture readiness is
+# deliberately stricter: only QUALIFIED_PHASE_STATES may close a prerequisite.
+DONE_STATES = {"qualified", "implemented", "wired"}
+QUALIFIED_PHASE_STATES = {"qualified"}
+REQUIRED_KERC_REPLACEMENT_LADDER = (
+    "guarded_online_attention_output_loss_gradient_parity",
+    "guarded_representative_full_objective_inside_watchdog_safety_envelope",
+    "k4_source_disjoint_multi_turn_interaction_causality",
+    "k5_learned_compiler_reasoner_renderer_and_structured_drafting",
+    "k6_lifecycle_security_checkpoint_migration_rollback_and_poisoning",
+    "k7_end_to_end_performance_and_total_lifecycle_cost",
+    "k8_multi_seed_matched_total_cost_verdict",
+)
+REQUIRED_KERC_COMMON_ACCEPTANCE = (
+    {"path": "independent_audit.passed", "operator": "equals", "value": True},
+    {"path": "independent_audit.producer_evaluator_separated", "operator": "equals", "value": True},
+    {"path": "independent_audit.candidate_flags_recomputed", "operator": "equals", "value": True},
+    {"path": "anti_cheating.answer_identifying_metadata_exposed", "operator": "equals", "value": False},
+    {"path": "public_benchmark_prompts_used_for_training", "operator": "equals", "value": 0},
+    {"path": "runtime_external_inference_calls", "operator": "equals", "value": 0},
+)
+REQUIRED_KERC_REPLACEMENT_ACCEPTANCE = {
+    REQUIRED_KERC_REPLACEMENT_LADDER[0]: (
+        {"path": "parity.output", "operator": "equals", "value": True},
+        {"path": "parity.loss", "operator": "equals", "value": True},
+        {"path": "parity.gradients", "operator": "equals", "value": True},
+        {"path": "parity.cached_decode", "operator": "equals", "value": True},
+        {"path": "independent_reference", "operator": "equals", "value": True},
+        {"path": "host_resource_safety.passed", "operator": "equals", "value": True},
+        {"path": "host_resource_safety.child_started", "operator": "equals", "value": True},
+        {"path": "host_resource_safety.terminated_by_guard", "operator": "equals", "value": False},
+        {"path": "public_training_rows", "operator": "equals", "value": 0},
+        {"path": "external_inference_calls", "operator": "equals", "value": 0},
+    ),
+    REQUIRED_KERC_REPLACEMENT_LADDER[1]: (
+        {"path": "representative_full_objective_backward", "operator": "equals", "value": True},
+        {"path": "online_attention_predecessor_bound", "operator": "equals", "value": True},
+        {"path": "decomposed_objective_predecessor_bound", "operator": "equals", "value": True},
+        {"path": "objective_gradient_decomposition", "operator": "equals", "value": True},
+        {"path": "memory_execution_policy.token_loss_position_chunk_size", "operator": "equals", "value": 128},
+        {"path": "host_resource_safety.passed", "operator": "equals", "value": True},
+        {"path": "resource_acceptance_basis", "operator": "equals", "value": "external_watchdog_live_reserve_and_swap_not_allocator_peak"},
+        {"path": "host_resource_safety.minimum_reclaimable_available_mib", "operator": "gte", "value": 2048},
+        {"path": "host_resource_safety.maximum_swapout_growth_mib", "operator": "lte", "value": 16},
+        {"path": "objective_gradient_finite", "operator": "equals", "value": True},
+        {"path": "public_training_rows", "operator": "equals", "value": 0},
+        {"path": "external_inference_calls", "operator": "equals", "value": 0},
+    ),
+    REQUIRED_KERC_REPLACEMENT_LADDER[2]: (
+        {"path": "source_family_disjoint", "operator": "equals", "value": True},
+        {"path": "seed_count", "operator": "gte", "value": 3},
+        {"path": "controls.context_present", "operator": "equals", "value": True},
+        {"path": "controls.context_withheld", "operator": "equals", "value": True},
+        {"path": "controls.context_shuffled", "operator": "equals", "value": True},
+        {"path": "controls.wrong_user", "operator": "equals", "value": True},
+        {"path": "controls.stale_state", "operator": "equals", "value": True},
+        {"path": "controls.expansion_replay", "operator": "equals", "value": True},
+        {"path": "effect.confidence_interval_lower", "operator": "gt", "value": 0},
+        {"path": "fallback_template_router_tool_credit", "operator": "equals", "value": 0},
+    ),
+    REQUIRED_KERC_REPLACEMENT_LADDER[3]: (
+        {"path": "source_family_disjoint", "operator": "equals", "value": True},
+        {"path": "seed_count", "operator": "gte", "value": 3},
+        {"path": "proposal.denominator_complete", "operator": "equals", "value": True},
+        {"path": "proposal.recall_reported", "operator": "equals", "value": True},
+        {"path": "qualification.proposer_qualifier_independent", "operator": "equals", "value": True},
+        {"path": "order_router.least_sufficient_order", "operator": "equals", "value": True},
+        {"path": "order_router.matched_lower_order_rescue", "operator": "equals", "value": True},
+        {"path": "interventions.role_permutation_causal", "operator": "equals", "value": True},
+        {"path": "interventions.relation_instance_deletion_causal", "operator": "equals", "value": True},
+        {"path": "learned.compiler", "operator": "equals", "value": True},
+        {"path": "learned.reasoner", "operator": "equals", "value": True},
+        {"path": "learned.renderer", "operator": "equals", "value": True},
+        {"path": "learned.structured_drafting", "operator": "equals", "value": True},
+        {"path": "independent_direct_behavior", "operator": "equals", "value": True},
+        {"path": "effect.confidence_interval_lower", "operator": "gt", "value": 0},
+        {"path": "assisted_output_credit", "operator": "equals", "value": 0},
+        {"path": "evaluator_label_exposure", "operator": "equals", "value": 0},
+    ),
+    REQUIRED_KERC_REPLACEMENT_LADDER[4]: (
+        {"path": "lifecycle.checkpoint_resume", "operator": "equals", "value": True},
+        {"path": "lifecycle.migration_rollback", "operator": "equals", "value": True},
+        {"path": "lifecycle.confidence_grants_effect_authority", "operator": "equals", "value": False},
+        {"path": "lifecycle.contraction_out_of_envelope_expands", "operator": "equals", "value": True},
+        {"path": "lifecycle.compiled_specialist_retains_slow_path", "operator": "equals", "value": True},
+        {"path": "security.branch_leak_rejected", "operator": "equals", "value": True},
+        {"path": "security.ambiguity_fail_closed", "operator": "equals", "value": True},
+        {"path": "security.poisoning_rejected", "operator": "equals", "value": True},
+        {"path": "security.corruption_rejected", "operator": "equals", "value": True},
+        {"path": "security.denial_of_service_bounded", "operator": "equals", "value": True},
+        {"path": "state_custody_exact", "operator": "equals", "value": True},
+        {"path": "external_inference_calls", "operator": "equals", "value": 0},
+    ),
+    REQUIRED_KERC_REPLACEMENT_LADDER[5]: (
+        {"path": "reference_semantics_preserved", "operator": "equals", "value": True},
+        {"path": "sustained_profile", "operator": "equals", "value": True},
+        {"path": "corpus_compilation_profiled", "operator": "equals", "value": True},
+        {"path": "attention_and_cache_profiled", "operator": "equals", "value": True},
+        {"path": "constrained_decode_profiled", "operator": "equals", "value": True},
+        {"path": "proposal_and_rejection_profiled", "operator": "equals", "value": True},
+        {"path": "contraction_and_expansion_profiled", "operator": "equals", "value": True},
+        {"path": "order_route_regret_reported", "operator": "equals", "value": True},
+        {"path": "verification_profiled", "operator": "equals", "value": True},
+        {"path": "weak_tail_regression", "operator": "equals", "value": False},
+        {"path": "total_lifecycle_cost_complete", "operator": "equals", "value": True},
+        {"path": "unsafe_swap", "operator": "equals", "value": False},
+    ),
+    REQUIRED_KERC_REPLACEMENT_LADDER[6]: (
+        {"path": "prospectively_frozen", "operator": "equals", "value": True},
+        {"path": "seed_count", "operator": "gte", "value": 5},
+        {"path": "matched.raw_data", "operator": "equals", "value": True},
+        {"path": "matched.parameters", "operator": "equals", "value": True},
+        {"path": "matched.training_compute", "operator": "equals", "value": True},
+        {"path": "matched.tuning_opportunity", "operator": "equals", "value": True},
+        {"path": "matched.inference_and_verifier_budget", "operator": "equals", "value": True},
+        {"path": "matched.lifecycle_cost", "operator": "equals", "value": True},
+        {"path": "matched.lower_order_rescue", "operator": "equals", "value": True},
+        {"path": "proposal_recall_and_order_decisions_reported", "operator": "equals", "value": True},
+        {"path": "role_and_branch_interventions_reported", "operator": "equals", "value": True},
+        {"path": "contraction_residuals_reported", "operator": "equals", "value": True},
+        {"path": "uncertainty_and_weak_tails_reported", "operator": "equals", "value": True},
+        {"path": "disposition", "operator": "in", "value": ["QUALIFIED_SELECTED", "QUALIFIED_NOT_SELECTED", "EXCLUDED_AFTER_ADEQUATE_K8"]},
+        {"path": "public_training_rows", "operator": "equals", "value": 0},
+        {"path": "fallback_template_router_tool_credit", "operator": "equals", "value": 0},
+    ),
+}
+KERC_REPLACEMENT_TERMINAL_STATES = {
+    "QUALIFIED_SELECTED",
+    "QUALIFIED_NOT_SELECTED",
+    "EXCLUDED_AFTER_ADEQUATE_K8",
+}
 EXTERNAL_FREEZE_TERMS = {"peer", "reachable", "external", "travel", "network", "coordinator_unreachable", "no route to host"}
 DISALLOWED_OUT_OF_SCOPE_TERMS = {
     "public_benchmark_training",
@@ -257,6 +387,11 @@ def build_report(
     )
 
     implemented = sum(1 for row in phase_reports if row["status"] in DONE_STATES and not row["hard_gaps"])
+    qualified = sum(
+        1
+        for row in phase_reports
+        if row["status"] in QUALIFIED_PHASE_STATES and not row["hard_gaps"]
+    )
     partial = sum(1 for row in phase_reports if row["status"] == "partial")
     missing = sum(1 for row in phase_reports if row["status"] == "missing")
     frozen = sum(1 for row in phase_reports if row["status"] == "frozen")
@@ -275,6 +410,7 @@ def build_report(
             "phase_count": len(phases),
             "required_phase_count": len(REQUIRED_PHASES),
             "implemented_or_wired_count": implemented,
+            "qualified_count": qualified,
             "partial_count": partial,
             "missing_count": missing,
             "frozen_count": frozen,
@@ -345,11 +481,20 @@ def build_report(
             "kerc_hypothesis_evidence_active_count": kerc_fidelity_report["summary"][
                 "hypothesis_evidence_active_count"
             ],
+            "kerc_replacement_qualification_ready": kerc_fidelity_report[
+                "mandatory_replacement_qualification"
+            ]["ready"],
+            "kerc_replacement_qualification_state": kerc_fidelity_report[
+                "mandatory_replacement_qualification"
+            ]["state"],
+            "kerc_replacement_remaining_step_count": len(
+                kerc_fidelity_report["mandatory_replacement_qualification"]["remaining_ladder"]
+            ),
             "runtime_ms": int((time.perf_counter() - started) * 1000),
         },
         "rules": {
             "registry_binding": "Every phase must bind to an existing registry surface and abstraction.",
-            "completion": "A phase may be implemented/wired only when it has evidence, gates, docs, and execution spine hooks.",
+            "completion": "Implemented/wired records implementation progress. Only qualified closes a prerequisite, after correctness, state, sustained performance, canonical integration, reproduction, and applicable functional or real-use evidence pass.",
             "source_of_truth": "The matrix is the machine-readable roadmap state; roadmap.md remains the human narrative.",
             "no_cheat": "Benchmarks stay calibration-only; routers/templates/tools/fallbacks do not count as learned generation.",
             "scope": "This gate does not authorize long training, public benchmark spends, or new strict-generator target-mode experiments.",
@@ -425,6 +570,7 @@ def audit_kerc_fidelity_contract(matrix: dict[str, Any]) -> dict[str, Any]:
         for row in report["faults"]
     ]
     exclusion = audit_kerc_first_campaign_exclusion(binding)
+    mandatory_replacement = audit_kerc_mandatory_replacement_qualification(binding)
     suppressible_source_drift = bool(report["faults"]) and all(
         row.get("kind") == "source_artifact_stale_or_missing"
         for row in report["faults"]
@@ -449,11 +595,100 @@ def audit_kerc_fidelity_contract(matrix: dict[str, Any]) -> dict[str, Any]:
                 exclusion,
             )
         )
+    if not mandatory_replacement["ready"]:
+        roadmap_gaps.append(
+            gap(
+                "kerc_implementation_fidelity",
+                "mandatory_replacement_qualification_incomplete",
+                mandatory_replacement,
+            )
+        )
     return {
         **report,
         "first_practical_campaign_exclusion": exclusion,
+        "mandatory_replacement_qualification": mandatory_replacement,
         "roadmap_hard_gaps": roadmap_gaps,
         "roadmap_warnings": roadmap_warnings,
+    }
+
+
+def audit_kerc_mandatory_replacement_qualification(binding: dict[str, Any]) -> dict[str, Any]:
+    """Fail closed until the complete replacement-campaign KERC ladder is evidenced."""
+
+    contract = dict_value(binding.get("mandatory_replacement_qualification"))
+    faults: list[str] = []
+    if contract.get("policy") != "project_theseus_kerc_mandatory_replacement_qualification_v1":
+        faults.append("wrong_or_missing_policy")
+    state = str(contract.get("state") or "")
+    if state not in {"ACTIVE_BLOCKING", *KERC_REPLACEMENT_TERMINAL_STATES}:
+        faults.append("invalid_state")
+    required_ladder = tuple(str(value) for value in list_values(contract.get("required_ladder")))
+    if required_ladder != REQUIRED_KERC_REPLACEMENT_LADDER:
+        faults.append("required_ladder_missing_reordered_or_drifted")
+    completed_ladder = tuple(str(value) for value in list_values(contract.get("completed_ladder")))
+    if len(completed_ladder) != len(set(completed_ladder)):
+        faults.append("completed_ladder_has_duplicates")
+    unknown_completed = sorted(set(completed_ladder) - set(REQUIRED_KERC_REPLACEMENT_LADDER))
+    if unknown_completed:
+        faults.append("completed_ladder_has_unknown_steps")
+    if completed_ladder != REQUIRED_KERC_REPLACEMENT_LADDER[: len(completed_ladder)]:
+        faults.append("completed_ladder_not_ordered_prefix")
+    common_acceptance = tuple(dict_value(value) for value in list_values(contract.get("common_acceptance")))
+    if common_acceptance != REQUIRED_KERC_COMMON_ACCEPTANCE:
+        faults.append("common_acceptance_missing_or_drifted")
+    acceptance_by_ladder = dict_value(contract.get("acceptance_by_ladder"))
+    if set(acceptance_by_ladder) != set(REQUIRED_KERC_REPLACEMENT_LADDER):
+        faults.append("acceptance_ladder_missing_or_extra_steps")
+    for step in REQUIRED_KERC_REPLACEMENT_LADDER:
+        observed = tuple(
+            dict_value(value) for value in list_values(acceptance_by_ladder.get(step))
+        )
+        if observed != REQUIRED_KERC_REPLACEMENT_ACCEPTANCE[step]:
+            faults.append(f"acceptance_contract_missing_or_drifted:{step}")
+    evidence_by_ladder = dict_value(contract.get("evidence_by_ladder"))
+    if set(evidence_by_ladder) != set(completed_ladder):
+        faults.append("evidence_keys_do_not_exactly_match_completed_prefix")
+    evidence_audits = {
+        step: audit_pre_training_backlog_evidence(
+            dict_value(evidence_by_ladder.get(step)),
+            acceptance=REQUIRED_KERC_COMMON_ACCEPTANCE
+            + REQUIRED_KERC_REPLACEMENT_ACCEPTANCE[step],
+        )
+        for step in completed_ladder
+    }
+    missing_evidence = sorted(
+        step
+        for step, receipt in evidence_audits.items()
+        if not receipt.get("declared") or not receipt.get("ready")
+    )
+    if missing_evidence:
+        faults.append("completed_steps_missing_evidence")
+    terminal = state in KERC_REPLACEMENT_TERMINAL_STATES
+    if terminal and completed_ladder != REQUIRED_KERC_REPLACEMENT_LADDER:
+        faults.append("terminal_state_without_complete_ordered_ladder")
+    if terminal and set(evidence_by_ladder) != set(REQUIRED_KERC_REPLACEMENT_LADDER):
+        faults.append("terminal_state_without_exact_ladder_evidence")
+    if terminal and completed_ladder == REQUIRED_KERC_REPLACEMENT_LADDER:
+        k8_audit = evidence_audits.get(REQUIRED_KERC_REPLACEMENT_LADDER[-1]) or {}
+        if (k8_audit.get("acceptance_observed") or {}).get("disposition") != state:
+            faults.append("terminal_state_mismatches_k8_disposition")
+    resource_rule = str(contract.get("resource_rule") or "")
+    if "not an exit state" not in resource_rule or "optimize or redesign" not in resource_rule:
+        faults.append("resource_failure_rule_missing")
+    ready = terminal and not faults
+    return {
+        "policy": "project_theseus_kerc_mandatory_replacement_qualification_audit_v1",
+        "ready": ready,
+        "state": state,
+        "required_ladder": list(REQUIRED_KERC_REPLACEMENT_LADDER),
+        "completed_ladder": list(completed_ladder),
+        "remaining_ladder": [
+            step for step in REQUIRED_KERC_REPLACEMENT_LADDER if step not in completed_ladder
+        ],
+        "evidence_audits": evidence_audits,
+        "missing_evidence": missing_evidence,
+        "faults": faults,
+        "block_reason": None if ready else "KERC replacement qualification is incomplete and T0A remains closed.",
     }
 
 
@@ -745,7 +980,7 @@ def audit_book_implementation_contract(
 
     critical_path = list_dicts(flagship.get("critical_path"))
     critical_path_ids = [str(row.get("id") or "") for row in critical_path]
-    expected_critical_path_ids = [f"T{index}" for index in range(7)]
+    expected_critical_path_ids = ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"]
     if critical_path_ids != expected_critical_path_ids:
         hard_gaps.append(
             gap(
@@ -1481,7 +1716,7 @@ def audit_pre_training_architecture_readiness(
         }
         for row in phases
         if int_or(row.get("phase"), -1) in required_architecture_phase_ids
-        and str(row.get("status") or "") not in DONE_STATES
+        and str(row.get("status") or "") not in QUALIFIED_PHASE_STATES
         and not phase_is_external_frozen(row)
     ]
     if unfinished:
@@ -1503,7 +1738,7 @@ def audit_pre_training_architecture_readiness(
         }
         for row in phases
         if int_or(row.get("phase"), -1) in deferred_phase_ids
-        and str(row.get("status") or "") not in DONE_STATES
+        and str(row.get("status") or "") not in QUALIFIED_PHASE_STATES
     ]
 
     frozen_without_external_reason = []
@@ -1578,7 +1813,7 @@ def audit_pre_training_architecture_readiness(
     for report in phase_reports:
         phase_id = int_or(report.get("phase"), -1)
         phase = phase_by_id.get(phase_id, {})
-        if str(report.get("status") or "") in DONE_STATES:
+        if str(report.get("status") or "") in QUALIFIED_PHASE_STATES:
             gate_count = len(list_values(phase.get("required_gates")))
             evidence_count = len(list_values(phase.get("current_evidence")))
             smoke_count = len(list_values(phase.get("integration_smoke")))
@@ -1622,7 +1857,7 @@ def audit_pre_training_architecture_readiness(
         "support_rank": support_rank,
         "rules": {
             "scope": "This gate decides whether architecture is ready for training/public calibration focus; it does not run training.",
-            "training_boundary": "No long training, public calibration, or score chasing should be primary while required architecture phases or declared cross-phase pre-training contracts remain unfinished; training and behavior qualification phases cannot circularly block architecture readiness.",
+            "training_boundary": "No long training, public calibration, or score chasing should be primary while required architecture phases are below qualified or declared cross-phase pre-training contracts remain unfinished; training and behavior qualification phases cannot circularly block architecture readiness.",
             "external_frozen_exception": "A frozen item can remain only when it names a concrete external-environment blocker such as unreachable trusted peers.",
             "claim_boundary": "Tools, routers, templates, deterministic solvers, and assisted product traces stay separate from learned-generation claims.",
         },
@@ -1631,7 +1866,49 @@ def audit_pre_training_architecture_readiness(
     }
 
 
-def audit_pre_training_backlog_evidence(contract: dict[str, Any]) -> dict[str, Any]:
+def nested_report_value(report: dict[str, Any], path: str) -> tuple[bool, Any]:
+    value: Any = report
+    for part in path.split("."):
+        if not isinstance(value, dict) or part not in value:
+            return False, None
+        value = value[part]
+    return True, value
+
+
+def audit_acceptance_predicates(
+    report: dict[str, Any], predicates: tuple[dict[str, Any], ...]
+) -> tuple[list[str], dict[str, Any]]:
+    faults: list[str] = []
+    observed: dict[str, Any] = {}
+    for predicate in predicates:
+        path = str(predicate.get("path") or "")
+        operator = str(predicate.get("operator") or "")
+        expected = predicate.get("value")
+        exists, actual = nested_report_value(report, path)
+        observed[path] = actual if exists else None
+        passed = False
+        if exists and operator == "equals":
+            passed = actual == expected and type(actual) is type(expected)
+        elif exists and operator in {"gt", "gte", "lt", "lte"}:
+            if isinstance(actual, (int, float)) and not isinstance(actual, bool) and isinstance(expected, (int, float)):
+                passed = {
+                    "gt": actual > expected,
+                    "gte": actual >= expected,
+                    "lt": actual < expected,
+                    "lte": actual <= expected,
+                }[operator]
+        elif exists and operator == "in" and isinstance(expected, list):
+            passed = actual in expected
+        if not passed:
+            faults.append(f"acceptance_failed:{path}:{operator}")
+    return faults, observed
+
+
+def audit_pre_training_backlog_evidence(
+    contract: dict[str, Any],
+    *,
+    acceptance: tuple[dict[str, Any], ...] = (),
+) -> dict[str, Any]:
     if not contract:
         return {"declared": False, "ready": True, "faults": []}
     path = resolve(str(contract.get("path") or ""))
@@ -1659,6 +1936,10 @@ def audit_pre_training_backlog_evidence(contract: dict[str, Any]) -> dict[str, A
             stale_refs.append(str(ref_id))
     if stale_refs:
         faults.append("source_artifacts_stale:" + ",".join(sorted(stale_refs)))
+    acceptance_faults, acceptance_observed = audit_acceptance_predicates(
+        report, acceptance
+    )
+    faults.extend(acceptance_faults)
     return {
         "declared": True,
         "ready": not faults,
@@ -1667,6 +1948,7 @@ def audit_pre_training_backlog_evidence(contract: dict[str, Any]) -> dict[str, A
         "trigger_state": report.get("trigger_state"),
         "disposition": report.get("disposition"),
         "source_artifact_count": len(refs),
+        "acceptance_observed": acceptance_observed,
         "faults": faults,
     }
 
@@ -1785,6 +2067,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Matrix: `{summary['matrix']}`",
         f"- Phases: `{summary['phase_count']}/{summary['required_phase_count']}`",
         f"- Implemented/wired: `{summary['implemented_or_wired_count']}`",
+        f"- Qualified: `{summary.get('qualified_count', 0)}`",
         f"- Partial: `{summary['partial_count']}`",
         f"- Missing: `{summary['missing_count']}`",
         f"- Frozen: `{summary['frozen_count']}`",
@@ -2447,6 +2730,7 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "trigger_state": report["trigger_state"],
         "phase_count": summary["phase_count"],
         "implemented_or_wired_count": summary["implemented_or_wired_count"],
+        "qualified_count": summary.get("qualified_count", 0),
         "partial_count": summary["partial_count"],
         "missing_count": summary["missing_count"],
         "frozen_count": summary["frozen_count"],
@@ -2504,6 +2788,15 @@ def gate_view(report: dict[str, Any]) -> dict[str, Any]:
         "kerc_faithful_mechanism_count": summary.get("kerc_faithful_mechanism_count", 0),
         "kerc_hypothesis_evidence_active_count": summary.get(
             "kerc_hypothesis_evidence_active_count", 0
+        ),
+        "kerc_replacement_qualification_ready": summary.get(
+            "kerc_replacement_qualification_ready", False
+        ),
+        "kerc_replacement_qualification_state": summary.get(
+            "kerc_replacement_qualification_state", ""
+        ),
+        "kerc_replacement_remaining_step_count": summary.get(
+            "kerc_replacement_remaining_step_count", 0
         ),
         "book_chapter_crosswalk_missing_required_field_count": summary.get("book_chapter_crosswalk_missing_required_field_count", 0),
         "book_chapter_invalid_phase_ref_count": summary.get("book_chapter_invalid_phase_ref_count", 0),

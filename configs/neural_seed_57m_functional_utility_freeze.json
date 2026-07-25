@@ -44,7 +44,7 @@
     "reason": "Checkpoint lineage migrations do not change model, data, objective, schedule, generator, or evaluation behavior."
   },
   "training_config_sha256": "fbf824f8d178680859b4e79d2dde8ce4ffbe377240f531ad0ecced870de31bd9",
-  "training_generator_sha256": "4db86ae20bdc4c1d242c0c45e177299953f4dc8ba65559792aadc5d221ba9ae4",
+  "training_generator_sha256": "fe9efb7a4765e8a8b906cb8ddf638c42990adf98aead02dee64117ffc91e95b0",
   "training_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
   "training_state_at_freeze": {
     "candidate_id": "moecot_mlx_57m_active_preregistered_v1",

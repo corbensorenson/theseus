@@ -44,8 +44,9 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
     probes = [probe_python(path, timeout_seconds=max(1, int(args.timeout_seconds))) for path in candidate_pythons()]
     usable = [row for row in probes if row.get("mlx_core_usable")]
     native_aborts = [row for row in probes if row.get("native_abort")]
+    metal_unavailable = [row for row in probes if row.get("metal_unavailable")]
     active = probes[0] if probes else {}
-    route = route_decision(usable, native_aborts, active)
+    route = route_decision(usable, native_aborts, metal_unavailable, active)
     gates = [
         gate("candidate_python_found", bool(probes), [row.get("python") for row in probes], "hard"),
         gate("parent_survived_native_probes", True, "all mlx.core checks ran in child processes", "hard"),
@@ -65,6 +66,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
             "candidate_python_count": len(probes),
             "usable_mlx_runtime_count": len(usable),
             "native_abort_count": len(native_aborts),
+            "metal_unavailable_count": len(metal_unavailable),
             "active_python": active.get("python"),
             "active_python_status": active.get("status"),
             "route_action": route["action"],
@@ -117,14 +119,33 @@ def probe_python(path: Path, *, timeout_seconds: int) -> dict[str, Any]:
     metadata = run_child(path, METADATA_CODE, timeout_seconds=timeout_seconds)
     core = run_child(path, CORE_CODE, timeout_seconds=timeout_seconds)
     native_abort = core.get("returncode", 0) < 0 or "NSException" in str(core.get("stderr_tail") or "")
+    core_output = (
+        str(core.get("stdout_tail") or "")
+        + "\n"
+        + str(core.get("stderr_tail") or "")
+    )
+    metal_unavailable = "No Metal device available" in core_output
     missing_mlx = "No module named 'mlx'" in str(core.get("stdout_tail") or "") or "No module named 'mlx'" in str(core.get("stderr_tail") or "")
     usable = core.get("returncode") == 0 and bool(get_json_stdout(core).get("ok"))
-    status = "usable" if usable else ("native_abort" if native_abort else ("missing_mlx" if missing_mlx else "failed"))
+    status = (
+        "usable"
+        if usable
+        else (
+            "metal_unavailable"
+            if metal_unavailable
+            else (
+                "native_abort"
+                if native_abort
+                else ("missing_mlx" if missing_mlx else "failed")
+            )
+        )
+    )
     return {
         "python": str(path),
         "status": status,
         "mlx_core_usable": usable,
         "native_abort": native_abort,
+        "metal_unavailable": metal_unavailable,
         "missing_mlx": missing_mlx,
         "identity": get_json_stdout(identity),
         "metadata": get_json_stdout(metadata),
@@ -132,7 +153,12 @@ def probe_python(path: Path, *, timeout_seconds: int) -> dict[str, Any]:
     }
 
 
-def route_decision(usable: list[dict[str, Any]], native_aborts: list[dict[str, Any]], active: dict[str, Any]) -> dict[str, Any]:
+def route_decision(
+    usable: list[dict[str, Any]],
+    native_aborts: list[dict[str, Any]],
+    metal_unavailable: list[dict[str, Any]],
+    active: dict[str, Any],
+) -> dict[str, Any]:
     if usable:
         best = usable[0]
         return {
@@ -140,6 +166,28 @@ def route_decision(usable: list[dict[str, Any]], native_aborts: list[dict[str, A
             "recommended_python": best.get("python"),
             "reason": "At least one child-probed Python runtime imports mlx.core and runs a tensor eval.",
             "environment_export": f"export THESEUS_MLX_PYTHON='{best.get('python')}'",
+            "production_routing_allowed": False,
+            "parity_claim_allowed": False,
+        }
+    if active.get("metal_unavailable"):
+        return {
+            "action": "disable_mlx_acceleration_route",
+            "recommended_python": None,
+            "reason": (
+                "The active MLX package imports, but this execution context cannot "
+                "access a Metal device. This is a sandbox/host-authority fault, not "
+                "evidence that the installed MLX runtime is corrupt."
+            ),
+            "smallest_safe_fix": (
+                "Rerun the exact child probe through the governed host-Metal runner. "
+                "Do not reinstall MLX solely because a sandboxed probe reports no "
+                "Metal device."
+            ),
+            "safe_current_route": (
+                "No MLX work or parity claim in this execution context; host-Metal "
+                "work remains eligible only behind the registered resource watchdog."
+            ),
+            "execution_context_fault": "metal_device_unavailable_in_current_context",
             "production_routing_allowed": False,
             "parity_claim_allowed": False,
         }

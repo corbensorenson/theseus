@@ -1,12 +1,12 @@
 {
   "confirmation_surface_consumed": false,
   "development_surface_reusable": true,
-  "frozen_utc": "2026-07-22T03:50:51.127150Z",
+  "frozen_utc": "2026-07-22T04:00:41.759412Z",
   "hard_gaps": [],
   "immutable": true,
   "policy": "project_theseus_neural_seed_architecture_review_freeze_v1",
   "public_surface_consumed": false,
-  "review_id": "neural_seed_57m_private_dev_rung_v2",
+  "review_id": "neural_seed_57m_private_dev_rung_v3",
   "review_optimizer_positions": [
     100000000
   ],
@@ -30,11 +30,11 @@
       },
       "review_config": {
         "path": "configs/neural_seed_architecture_review.json",
-        "sha256": "9a806235580bf8d46629d74afc009882baef59168a9407b49cbcf960c70b85a7"
+        "sha256": "2e2ebff4a9cfffcefa3b2fdc59763ad51fa8bad8a280c7446ed6bddde2f4aa98"
       },
       "review_runner": {
         "path": "scripts/neural_seed_architecture_review.py",
-        "sha256": "d6303269dc1cea546bec6adbbfa19c6a3d1965198bac30b9063a46bc03686a6c"
+        "sha256": "3505a38e3205e41430e2887e80e7f2c4b536b07692b42a195d7dab76ed715d91"
       },
       "scale_config": {
         "path": "configs/neural_seed_50m_scale_preregistration.json",
@@ -55,13 +55,13 @@
     },
     "candidate_packet_sha256": "b93c7d2593d1f989112ea4c1c02f5d42eecc5983755cdaba57d197d19efe7376",
     "case_contract_sha256": "3b17c30d6bfc1f5c563fab10b6d5d57de842fd5027e8945f202ae9e193d6502d",
-    "plan_sha256": "b6b024538d918cfac2101b44765536e29165543428be61a4751142f5772cbe51",
+    "plan_sha256": "fdb328280d5cb3652847ff504d8c7a9b1c32ebd8ccff16f370202f2633b5fef7",
     "policy": "project_theseus_architecture_review_semantic_identity_v1",
-    "review_id": "neural_seed_57m_private_dev_rung_v2",
+    "review_id": "neural_seed_57m_private_dev_rung_v3",
     "stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
     "verifier_budget_sha256": "7e0d117345dbd616260bfd51d36c51214fe13a184f9483a0a0e0159d4aedef05"
   },
-  "supersedes_freeze_sha256": "fa18639bc9f1d1a99ab1fce9127cd46cb43c8a69cc61b6597564f49562c6a782",
+  "supersedes_freeze_sha256": "5b5dffb766da9437104ddc07d101f1e5c474554f32e26f98391b92db1e629621",
   "training_eligible": false,
   "trigger_state": "GREEN"
 }

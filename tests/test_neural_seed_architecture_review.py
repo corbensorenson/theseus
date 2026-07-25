@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 import json
 import sys
+import threading
+import time
 from pathlib import Path
 
 
@@ -71,7 +73,7 @@ def test_review_plan_is_isolated_and_preserves_canonical_architecture() -> None:
         assert target["review_only"] is True
         assert target["plan_sha256"] == planned["plan_sha256"]
         assert target["checkpoint"].startswith(
-            "checkpoints/neural_seed_57m_architecture_review_v2/100000000/"
+            "checkpoints/neural_seed_57m_architecture_review_v3/100000000/"
         )
         assert target["checkpoint"] != canonical["targets"][target_id]["checkpoint"]
         assert target["review_component_total_optimizer_positions"] == phases[target_id]["total"]
@@ -126,3 +128,64 @@ def test_next_action_respects_shared_trunk_dependency() -> None:
     action = review.next_action(rows, {"complete": False, "rows": []})
     assert action["kind"] == "train_review_component"
     assert action["target_id"] == training.SHARED_TRUNK_ID
+
+
+def test_parallel_verifier_preserves_case_order_and_bounds_tool_concurrency(
+    monkeypatch,
+) -> None:
+    lock = threading.Lock()
+    active = 0
+    maximum_active = 0
+
+    def fake_verify(case, output, _config):
+        nonlocal active, maximum_active
+        with lock:
+            active += 1
+            maximum_active = max(maximum_active, active)
+        time.sleep(0.02)
+        with lock:
+            active -= 1
+        return {
+            "case_id": case["case_id"],
+            "arm_id": case["arm_id"],
+            "verifier_kind": case["verifier"]["kind"],
+            "passed": output == "ok",
+            "duration_ms": 20.0,
+        }
+
+    monkeypatch.setattr(review, "verify_candidate", fake_verify)
+    cases = [
+        {
+            "case_id": f"case-{index}",
+            "arm_id": "python",
+            "verifier": {"kind": "python_isolated_tests_v1"},
+        }
+        for index in range(6)
+    ]
+    contract = {
+        "config_payload": {
+            "evaluation": {
+                "verifier_parallelism": {
+                    "maximum_workers": 4,
+                    "per_verifier_maximum": {"python_isolated_tests_v1": 2},
+                }
+            }
+        },
+        "functional_config": {},
+    }
+    prepared = [
+        {
+            "candidate_id": "candidate",
+            "cases": cases,
+            "outputs": {row["case_id"]: "ok" for row in cases},
+        }
+    ]
+
+    observed = review.verify_candidate_bundles(contract, prepared)
+
+    assert maximum_active == 2
+    assert [row["case_id"] for row in observed["rows"]["candidate"]] == [
+        row["case_id"] for row in cases
+    ]
+    assert observed["case_count"] == 6
+    assert observed["sum_case_duration_ms"] == 120.0

@@ -98,10 +98,12 @@ def encode_tokens(
     vocab: dict[str, int],
     *,
     stream: str,
+    fallback_active: bool | None = None,
 ) -> tuple[list[int], dict[str, Any]]:
     logical_tokens = [str(token) for token in tokens]
     begin, end = stream_boundaries(stream)
-    fallback_active = begin in vocab and end in vocab and all(token in vocab for token in BYTE_TOKENS)
+    if fallback_active is None:
+        fallback_active = byte_fallback_available(vocab, stream=stream)
     ids: list[int] = []
     fallback_token_count = 0
     fallback_byte_count = 0
@@ -133,6 +135,15 @@ def encode_tokens(
         "unknown_token_count": unknown_token_count,
         "failure_behavior": "explicit_unknown_only_when_byte_bound_exceeded",
     }
+
+
+def byte_fallback_available(vocab: dict[str, int], *, stream: str) -> bool:
+    """Validate the complete reversible byte alphabet once per vocabulary use."""
+
+    begin, end = stream_boundaries(stream)
+    return begin in vocab and end in vocab and all(
+        token in vocab for token in BYTE_TOKENS
+    )
 
 
 def bound_logical_tokens(

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import policy_update_lease
+import host_resource_safety
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -259,6 +260,14 @@ def policy_lease_rollback_receipt() -> dict[str, Any]:
 
 
 def mlx_parity_probe(pair: dict[str, Any], contract: dict[str, Any] | None = None) -> dict[str, Any]:
+    if not host_resource_safety.accelerator_child_authorized():
+        return {
+            "available": False,
+            "passed": False,
+            "parity": False,
+            "fault": "ACCELERATOR_WATCHDOG_REQUIRED",
+            "optimizer_exposure_steps": 0,
+        }
     contract = contract or load_contract()
     expected = {name: preference_loss(name, pair, contract) for name in contract["offline_preference_objectives"]}
     payload = {key: pair[key] for key in ("chosen_policy_logp", "rejected_policy_logp", "chosen_reference_logp", "rejected_reference_logp")}

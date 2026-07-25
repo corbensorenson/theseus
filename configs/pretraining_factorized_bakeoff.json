@@ -1,0 +1,56 @@
+{
+  "policy": "project_theseus_pretraining_factorized_bakeoff_v1",
+  "schema_version": "1.0.0",
+  "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "canonical_training_config": "configs/moecot_language_arm_training.json",
+  "evidence": {
+    "mtp": {
+      "path": "reports/mtp_matched_adequacy.json",
+      "policy": "project_theseus_mtp_matched_adequacy_v1"
+    },
+    "dynamic_patch": {
+      "path": "reports/dynamic_patch_matched_adequacy.json",
+      "policy": "project_theseus_dynamic_patch_matched_adequacy_v1"
+    },
+    "optimizer": {
+      "path": "reports/optimizer_matched_adequacy.json",
+      "policy": "project_theseus_optimizer_matched_adequacy_v1"
+    },
+    "soap": {
+      "path": "reports/soap_full_shape_resource_preflight.json",
+      "policy": "project_theseus_soap_full_shape_resource_preflight_v1"
+    },
+    "rdc_kerc": {
+      "path": "reports/rdc_kerc_resource_disposition.json",
+      "policy": "project_theseus_rdc_kerc_resource_disposition_v1"
+    }
+  },
+  "kerc_required_seed_count": 3,
+  "selected_control_implementations": {
+    "surface_codec": "impl.t0a.fixed_open_vocab_codec.v1",
+    "relational_ir": "impl.t0a.semantic_ir_control.v1",
+    "causal_generator": "impl.t0a.autoregressive_generator.v1",
+    "draft_accelerator": "impl.t0a.no_draft.v1",
+    "optimizer": "impl.t0a.adamw_mlx.v1",
+    "kv_runtime": "impl.t0a.canonical_kv.v1",
+    "semantic_verifier": "impl.t0a.independent_semantic_verifier.v1"
+  },
+  "topology_campaign": {
+    "practical_survival_candidate": "dense_active_parameter",
+    "required_matched_candidates": [
+      "moecot_language_arms",
+      "dense_active_parameter",
+      "dense_total_parameter"
+    ],
+    "selection_boundary": "The old 10.8M exact-recovery diagnostics cannot select the 57M topology. Train and evaluate all required matched candidates under the frozen T1 utility contract before a topology capability verdict."
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit": 0,
+    "production_checkpoint_mutation": false,
+    "scientific_falsification_from_campaign_exclusion": false
+  }
+}

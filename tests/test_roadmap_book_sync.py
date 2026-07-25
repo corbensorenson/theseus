@@ -80,6 +80,54 @@ class RoadmapBookSyncTests(unittest.TestCase):
         report = self.audit(matrix)
         self.assertIn("pinned_book_manifest_unavailable", self.gap_kinds(report))
 
+    def test_84_chapter_reconciliation_queue_is_explicit_and_non_authorizing(self) -> None:
+        review = self.matrix[
+            "latest_deep_technical_and_asi_stack_review_reconciliation"
+        ]
+        audit = review["live_source_audit"]
+        intake = self.matrix["asi_stack_completion_program"]["live_book_intake"]
+
+        self.assertEqual(84, audit["book_committed_chapter_count"])
+        self.assertEqual(54, audit["authoritative_theseus_crosswalk_row_count"])
+        self.assertEqual(30, audit["unmapped_current_chapter_count"])
+        self.assertEqual(
+            30, len(set(audit["unmapped_current_chapter_ids"]))
+        )
+        self.assertEqual(84, intake["observed_chapter_count"])
+        self.assertEqual(30, intake["unmapped_current_chapter_count"])
+        self.assertTrue(
+            self.matrix["asi_stack_completion_program"][
+                "authoritative_book_pin_unchanged"
+            ]
+        )
+        self.assertIn(
+            "no automatic runtime or support-state effect",
+            next(
+                row["acceptance_boundary"]
+                for row in self.matrix["asi_stack_completion_program"][
+                    "work_packages"
+                ]
+                if row["id"] == "ASI-00"
+            ),
+        )
+
+    def test_security_and_evaluator_review_work_has_bounded_owners(self) -> None:
+        program = self.matrix["asi_stack_completion_program"]
+        packages = {row["id"]: row for row in program["work_packages"]}
+
+        self.assertEqual("required_now", packages["ASI-31"]["state"])
+        self.assertEqual("pretraining_contract", packages["ASI-32"]["state"])
+        self.assertIn(
+            "ASI-31", program["execution_waves"][0]["work_package_ids"]
+        )
+        self.assertIn(
+            "ASI-32", program["execution_waves"][1]["work_package_ids"]
+        )
+        self.assertIn(
+            "runtime forbidden-field taint",
+            packages["ASI-32"]["acceptance_boundary"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -36,6 +36,7 @@ from moecot_language_supervision import (
 )
 from moecot_language_tokenizer import exact_text_tokens
 from neural_seed_open_vocab import (
+    byte_fallback_available,
     bound_logical_tokens,
     decode_target_tokens,
     encode_tokens,
@@ -598,28 +599,63 @@ def encode_kerc_view_target(
     target = str(view.get("target") or "")
     if objective not in KERC_KERNEL_OBJECTIVES:
         return encode_tokens(kerc_surface_tokens(target), target_vocab, stream="target")
+    ids, encoding = _encode_kerc_code_stream(
+        kerc_code_tokens(target),
+        code_vocabulary=code_vocabulary,
+        offsets={"V_K": 0, "V_P": 0},
+    )
+    return ids, {
+        "policy": "project_theseus_kerc_dual_code_encoding_v1",
+        "unknown_token_count": encoding["unknown_token_count"],
+        "fallback_token_count": encoding["fallback_token_count"],
+        "encoded_token_count": len(ids),
+        "encoded_tokens_by_space": encoding["encoded_tokens_by_space"],
+        "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
+        "failure_behavior": "reject_without_surface_or_template_fallback",
+    }
+
+
+def _encode_kerc_code_stream(
+    tokens: list[str],
+    *,
+    code_vocabulary: dict[str, Any],
+    offsets: dict[str, int],
+) -> tuple[list[int], dict[str, Any]]:
+    """Encode code atoms and retain their exact model-position ranges."""
+
+    vocabularies = {
+        "V_K": code_vocabulary.get("kernel_vocab") or {},
+        "V_P": code_vocabulary.get("pointer_vocab") or {},
+    }
+    fallback_by_space = {
+        space: byte_fallback_available(vocab, stream="target")
+        for space, vocab in vocabularies.items()
+    }
     ids: list[int] = []
     unknown = 0
     fallback_tokens = 0
     by_space = {"V_K": 0, "V_P": 0}
-    kernel_vocab = code_vocabulary.get("kernel_vocab") or {}
-    pointer_vocab = code_vocabulary.get("pointer_vocab") or {}
-    for token in kerc_code_tokens(target):
+    logical_token_ranges: list[tuple[int, int]] = []
+    for token in tokens:
         space = kerc_code_space(token)
-        vocab = pointer_vocab if space == "V_P" else kernel_vocab
-        encoded, receipt = encode_tokens([token], vocab, stream="target")
-        ids.extend(encoded)
+        start = len(ids)
+        encoded, receipt = encode_tokens(
+            [token],
+            vocabularies[space],
+            stream="target",
+            fallback_active=fallback_by_space[space],
+        )
+        offset = int(offsets[space])
+        ids.extend(offset + int(value) for value in encoded)
         unknown += int(receipt.get("unknown_token_count") or 0)
         fallback_tokens += int(receipt.get("fallback_token_count") or 0)
         by_space[space] += len(encoded)
+        logical_token_ranges.append((start, len(ids)))
     return ids, {
-        "policy": "project_theseus_kerc_dual_code_encoding_v1",
         "unknown_token_count": unknown,
         "fallback_token_count": fallback_tokens,
-        "encoded_token_count": len(ids),
         "encoded_tokens_by_space": by_space,
-        "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
-        "failure_behavior": "reject_without_surface_or_template_fallback",
+        "logical_token_ranges": logical_token_ranges,
     }
 
 
@@ -658,32 +694,69 @@ def encode_kerc_global_target(
 ) -> tuple[list[int], dict[str, Any]]:
     """Encode a Kernel/answer target into disjoint global V_K/V_P ranges."""
 
-    ids: list[int] = []
-    unknown = 0
-    fallback_tokens = 0
-    by_space = {"V_K": 0, "V_P": 0}
-    kernel_vocab = code_vocabulary.get("kernel_vocab") or {}
-    pointer_vocab = code_vocabulary.get("pointer_vocab") or {}
-    for token in kerc_code_tokens(text):
-        space = kerc_code_space(token)
-        vocab = pointer_vocab if space == "V_P" else kernel_vocab
-        offset = pointer_offset if space == "V_P" else kernel_offset
-        encoded, receipt = encode_tokens([token], vocab, stream="target")
-        ids.extend(offset + int(value) for value in encoded)
-        unknown += int(receipt.get("unknown_token_count") or 0)
-        fallback_tokens += int(receipt.get("fallback_token_count") or 0)
-        by_space[space] += len(encoded)
+    ids, encoding = _encode_kerc_code_stream(
+        kerc_code_tokens(text),
+        code_vocabulary=code_vocabulary,
+        offsets={"V_K": int(kernel_offset), "V_P": int(pointer_offset)},
+    )
     return ids, {
         "policy": "project_theseus_kerc_global_dual_code_encoding_v1",
-        "unknown_token_count": unknown,
-        "fallback_token_count": fallback_tokens,
+        "unknown_token_count": encoding["unknown_token_count"],
+        "fallback_token_count": encoding["fallback_token_count"],
         "encoded_token_count": len(ids),
-        "encoded_tokens_by_space": by_space,
+        "encoded_tokens_by_space": encoding["encoded_tokens_by_space"],
         "kernel_offset": int(kernel_offset),
         "pointer_offset": int(pointer_offset),
         "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
         "failure_behavior": "reject_without_surface_or_template_fallback",
     }
+
+
+def encode_kerc_global_target_with_logical_ranges(
+    text: str,
+    *,
+    code_vocabulary: dict[str, Any],
+    kernel_offset: int,
+    pointer_offset: int,
+) -> tuple[list[int], dict[str, Any], tuple[tuple[int, int], ...]]:
+    """Encode a target and bind each logical atom to exact model positions."""
+
+    ids, encoding = _encode_kerc_code_stream(
+        kerc_code_tokens(text),
+        code_vocabulary=code_vocabulary,
+        offsets={"V_K": int(kernel_offset), "V_P": int(pointer_offset)},
+    )
+    ranges = tuple(
+        (int(start), int(stop))
+        for start, stop in encoding["logical_token_ranges"]
+    )
+    if (
+        len(ranges) != len(kerc_code_tokens(text))
+        or not ranges
+        or ranges[0][0] != 0
+        or ranges[-1][1] != len(ids)
+        or any(
+            start < 0
+            or stop <= start
+            or (index > 0 and start != ranges[index - 1][1])
+            for index, (start, stop) in enumerate(ranges)
+        )
+    ):
+        raise ValueError("KERC logical-token position mapping is invalid")
+    return ids, {
+        "policy": "project_theseus_kerc_global_dual_code_encoding_v1",
+        "unknown_token_count": encoding["unknown_token_count"],
+        "fallback_token_count": encoding["fallback_token_count"],
+        "encoded_token_count": len(ids),
+        "encoded_tokens_by_space": encoding["encoded_tokens_by_space"],
+        "kernel_offset": int(kernel_offset),
+        "pointer_offset": int(pointer_offset),
+        "code_vocabulary_sha256": code_vocabulary.get("contract_sha256"),
+        "failure_behavior": "reject_without_surface_or_template_fallback",
+        "logical_token_position_mapping": (
+            "exact_per_atom_encoded_half_open_ranges_v1"
+        ),
+    }, ranges
 
 
 def decode_kerc_global_target(

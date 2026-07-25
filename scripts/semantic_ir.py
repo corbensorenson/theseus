@@ -19,6 +19,12 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Iterable
 
+from relational_dimension_compiler import (
+    POLICY as RELATIONAL_DIMENSION_POLICY,
+    SCHEMA_VERSION as RELATIONAL_DIMENSION_SCHEMA_VERSION,
+    run_reference_suite as run_relational_dimension_reference_suite,
+)
+
 
 POLICY = "project_theseus_typed_semantic_ir_v1"
 TARGET_MODE = "typed_semantic_ir_tokens_v1"
@@ -151,6 +157,20 @@ NO_CHEAT = {
     "external_inference_calls": 0,
     "fallback_return_count": 0,
 }
+
+
+def relational_dimension_contract() -> dict[str, Any]:
+    """Expose RDC as the relational lowering of the canonical Semantic-IR owner."""
+
+    return {
+        "policy": RELATIONAL_DIMENSION_POLICY,
+        "schema_version": RELATIONAL_DIMENSION_SCHEMA_VERSION,
+        "owner": "semantic_ir",
+        "implementation": "scripts/relational_dimension_compiler.py",
+        "learned_proposal_qualification_implementation": "scripts/rdc_relation_learning.py",
+        "effect_authority": "none",
+        "learned_generation_credit": 0,
+    }
 
 
 class SemanticIRFault(ValueError):

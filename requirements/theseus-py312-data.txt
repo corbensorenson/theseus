@@ -1,0 +1,4 @@
+-c locks/theseus-py312-data.lock
+-r theseus-py312-cpu.txt
+datasets==4.5.0
+huggingface-hub==0.33.0

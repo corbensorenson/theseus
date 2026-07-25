@@ -18,6 +18,7 @@ from typing import Any
 
 import numpy as np
 
+import host_resource_safety
 from moecot_language_arm_training import (
     ARM_IDS,
     build_source_to_target_lookup,
@@ -27,6 +28,8 @@ from moecot_language_tokenizer import exact_text_tokens
 from neural_seed_open_vocab import encode_tokens
 from standard_causal_transformer_model import (
     CausalTransformerConfig,
+    analytical_parameter_count,
+    analytical_trainable_parameter_count,
     build_model,
     parameter_count,
 )
@@ -50,6 +53,22 @@ def main() -> int:
     parser.add_argument("--out", default="")
     parser.add_argument("--execute-canaries", action="store_true")
     args = parser.parse_args()
+    if (
+        args.execute_canaries
+        and not host_resource_safety.accelerator_child_authorized()
+    ):
+        print(
+            json.dumps(
+                {
+                    "trigger_state": "RED",
+                    "reason": "ACCELERATOR_WATCHDOG_REQUIRED",
+                    "report_written": False,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2
     config_path = resolve(args.config)
     config = read_json(config_path)
     report = build_report(config, config_path=config_path, execute_canaries=args.execute_canaries)
@@ -294,46 +313,27 @@ def terminal_report(
 
 
 def architecture_contract(config: dict[str, Any], vocabulary: dict[str, Any]) -> dict[str, Any]:
-    import mlx.core as mx
-    import mlx.nn as nn
-    import mlx.utils as mlx_utils
-
     source_vocab = dict(vocabulary.get("source_vocab") or {})
     target_vocab = dict(vocabulary.get("target_vocab") or {})
     if not source_vocab or not target_vocab:
         raise ValueError("canonical exact vocabulary is empty")
     base: dict[str, Any] = {"tokenization": {"shared_source_target_vocabulary": False}}
     vocab_size = model_vocab_size(base, source_vocab, target_vocab)
-    metadata = {"source_vocab": source_vocab, "target_vocab": target_vocab}
-    copy_lookup = build_source_to_target_lookup(base, metadata)
-
-    def instantiate(model_config: dict[str, Any]) -> Any:
-        return build_model(
-            CausalTransformerConfig(vocab_size=vocab_size, **model_config),
-            mx=mx,
-            nn=nn,
-            source_to_target_lookup=(
-                mx.array(copy_lookup, dtype=mx.int32)
-                if model_config.get("attention_policy") == "encoder_decoder"
-                else None
-            ),
-        )
 
     def count(model_config: dict[str, Any]) -> int:
-        model = instantiate(model_config)
-        observed = int(parameter_count(model, mlx_utils))
-        del model
-        return observed
+        return analytical_parameter_count(
+            CausalTransformerConfig(vocab_size=vocab_size, **model_config)
+        )
 
     candidate = config["candidate"]
     trunk_count = count(candidate["shared_trunk_model"])
-    arm = instantiate(candidate["arm_model"])
-    arm_count = int(parameter_count(arm, mlx_utils))
-    arm.freeze_to_language_expert(candidate["expert_trainable_scope"])
-    expert_count = int(sum(
-        value.size for _name, value in mlx_utils.tree_flatten(arm.trainable_parameters())
-    ))
-    del arm
+    arm_config = CausalTransformerConfig(
+        vocab_size=vocab_size, **candidate["arm_model"]
+    )
+    arm_count = analytical_parameter_count(arm_config)
+    expert_count = analytical_trainable_parameter_count(
+        arm_config, str(candidate["expert_trainable_scope"])
+    )
     total_count = trunk_count + expert_count * int(candidate["arm_count"])
     dense_active_model, dense_active_count = matched_decoder_only_config(
         arm_count, candidate["arm_model"], count=count
@@ -390,6 +390,10 @@ def run_resource_canaries(
     vocabulary: dict[str, Any],
     task_report: dict[str, Any],
 ) -> dict[str, Any]:
+    if not host_resource_safety.accelerator_child_authorized():
+        raise host_resource_safety.HostResourceSafetyFault(
+            "ACCELERATOR_WATCHDOG_REQUIRED"
+        )
     ledger = resolve(str((task_report.get("ledger_receipt") or {}).get("path") or ""))
     ledger_receipt = task_report.get("ledger_receipt") or {}
     if not ledger.is_file() or file_sha256(ledger) != ledger_receipt.get("sha256"):

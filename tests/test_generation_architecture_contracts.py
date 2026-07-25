@@ -11,6 +11,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import generation_architecture_contracts as generation
+from standard_causal_transformer_objectives import mtp_curriculum_scale
 
 
 class GenerationArchitectureContractTests(unittest.TestCase):
@@ -46,10 +47,56 @@ class GenerationArchitectureContractTests(unittest.TestCase):
         self.assertEqual(0, receipt["optimizer_steps"])
         self.assertEqual([7, 6, 5], receipt["observed"]["valid_positions"])
 
+    def test_adequate_mtp_candidates_train_heads_and_reload_exactly(self) -> None:
+        receipt = generation.mlx_mtp_adequacy_canary(
+            self.contract, optimizer_steps=24
+        )
+        self.assertTrue(receipt["available"])
+        self.assertTrue(receipt["passed"])
+        self.assertEqual(
+            {"conventional_independent", "register_conditioned"},
+            set(receipt["candidate_checks"]),
+        )
+        self.assertEqual(0, receipt["public_training_rows"])
+        self.assertEqual("NOT_EVALUATED", receipt["capability_claim"])
+        for checks in receipt["candidate_checks"].values():
+            self.assertTrue(all(checks.values()))
+
+    def test_mtp_curriculum_starts_with_ntp_and_ramps_monotonically(self) -> None:
+        scales = [
+            mtp_curriculum_scale(
+                step, warmup_steps=2, ramp_steps=4, maximum=0.5
+            )
+            for step in range(8)
+        ]
+        self.assertEqual([0.0, 0.0], scales[:2])
+        self.assertEqual(0.5, scales[-1])
+        self.assertEqual(sorted(scales), scales)
+
+    def test_legacy_rank_one_is_not_a_selectable_candidate(self) -> None:
+        candidate = self.contract["mtp_candidates"]["legacy_shared_rank1"]
+        self.assertEqual(
+            "compatibility_fixture_not_selectable", candidate["selection_state"]
+        )
+        with self.assertRaisesRegex(
+            generation.GenerationArchitectureFault, "mtp_candidate_unknown"
+        ):
+            generation.mtp_candidate_model_config("missing", self.contract)
+
     def test_retired_modes_have_explicit_reentry_conditions(self) -> None:
         retired = [mode for mode in self.contract["modes"].values() if mode["first_campaign_disposition"].startswith("retired")]
-        self.assertEqual(4, len(retired))
+        self.assertEqual(2, len(retired))
         self.assertTrue(all(mode.get("reentry_condition") for mode in retired))
+
+    def test_draft_candidates_share_target_authoritative_abi(self) -> None:
+        self.assertEqual(
+            {"medusa_tree", "eagle_feature", "separate_draft", "kerc_structured_unit"},
+            set(self.contract["draft_candidates"]),
+        )
+        self.assertEqual(
+            "target_accepted_prefix_only",
+            self.contract["draft_abi"]["cache_commit_policy"],
+        )
 
     def test_mode_selection_requires_behavior_positive_receipt(self) -> None:
         receipt = generation.activation_receipt({}, self.contract)
@@ -59,7 +106,7 @@ class GenerationArchitectureContractTests(unittest.TestCase):
     def test_mutation_controls_fail_closed(self) -> None:
         controls = generation.mutation_controls(self.contract)
         self.assertEqual(controls["case_count"], controls["passed_count"])
-        self.assertGreaterEqual(controls["case_count"], 8)
+        self.assertGreaterEqual(controls["case_count"], 11)
 
     def test_reference_suite_is_green_without_training_or_credit(self) -> None:
         report = generation.run_reference_suite(self.contract)

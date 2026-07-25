@@ -54,6 +54,14 @@ def review(candidate: str, *, passed: int, arm_passed: int, position: int = 100_
             "verifier_budget_sha256": digest,
             "optimizer_positions": position,
             "accepted_verified_outputs_per_second": 0.1,
+            "cost_accounting": {
+                "policy": "project_theseus_architecture_review_training_cost_v1",
+                "optimizer_positions": position,
+                "active_forward_parameter_token_product": position * 100,
+                "trainable_update_parameter_token_product": position * 80,
+                "measured_training_wall_seconds": 10.0,
+                "hard_gaps": [],
+            },
         },
     }
 

@@ -190,6 +190,10 @@ LEARNED_RESIDUAL_EXACT_TAG_CODES = {
 }
 LEARNED_PROGRAM_TRANSPORT_POLICY = "project_theseus_kerc_learned_program_tokens_v1"
 LEARNED_ANSWER_TRANSPORT_POLICY = "project_theseus_kerc_learned_answer_tokens_v1"
+LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION = 2
+LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY = (
+    "project_theseus_kerc_compiler_compact_transport_v2"
+)
 KERC_HIERARCHICAL_CORE_POLICY = "project_theseus_kerc_hierarchical_core_v1"
 KERC_CORE_CHUNK_MAX_NODES = 8
 KERC_HIERARCHICAL_COMPILER_POLICY = "project_theseus_kerc_hierarchical_compiler_v1"
@@ -1954,6 +1958,577 @@ def learned_kernel_program_view_from_program(
     }
 
 
+def compact_learned_compiler_transport(payload: Any) -> list[Any]:
+    """Encode the learned compiler object as a reversible low-overhead JSON ABI.
+
+    The model still emits every variable semantic value.  Only invariant policy
+    strings, fixed field names, and fixed container shapes are represented by the
+    versioned wire schema and restored before independent protocol validation.
+    """
+
+    if not isinstance(payload, dict):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_SOURCE_INVALID",
+            str(type(payload)),
+            path="compiler_output",
+        )
+    expected = {
+        "kernel_version",
+        "protected_objects",
+        "concept_capsules",
+        "program",
+        "residual",
+        "hierarchical_compiler",
+    }
+    if set(payload) != expected or payload.get("kernel_version") != KERNEL_VERSION:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_SOURCE_SCHEMA_INVALID",
+            canonical_json(payload),
+            path="compiler_output",
+        )
+    program = payload.get("program")
+    if (
+        not isinstance(program, dict)
+        or set(program) != {"policy", "tokens"}
+        or program.get("policy") != LEARNED_PROGRAM_TRANSPORT_POLICY
+        or not isinstance(program.get("tokens"), list)
+    ):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_PROGRAM_INVALID",
+            canonical_json(program),
+            path="compiler_output.program",
+        )
+    protected = payload.get("protected_objects")
+    protected_fields = (
+        "handle",
+        "object_type",
+        "copy_policy",
+        "character_start",
+        "character_end",
+    )
+    if not isinstance(protected, list) or any(
+        not isinstance(row, dict) or set(row) != set(protected_fields)
+        for row in protected
+    ):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_PROTECTED_INVALID",
+            canonical_json(protected),
+            path="compiler_output.protected_objects",
+        )
+    concepts = payload.get("concept_capsules")
+    if not isinstance(concepts, dict):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_CONCEPTS_INVALID",
+            str(type(concepts)),
+            path="compiler_output.concept_capsules",
+        )
+    residual = payload.get("residual")
+    residual_fields = (
+        "mode",
+        "unit_fidelity",
+        "interaction",
+        "segment",
+        "tokens",
+        "exact_handles",
+    )
+    if not isinstance(residual, dict) or set(residual) != set(residual_fields):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_RESIDUAL_INVALID",
+            canonical_json(residual),
+            path="compiler_output.residual",
+        )
+    hierarchy = payload.get("hierarchical_compiler")
+    hierarchy_fields = ("chunk_index", "continuation", "root_node_ids")
+    if (
+        not isinstance(hierarchy, dict)
+        or set(hierarchy)
+        != {"policy", "chunk_index", "continuation", "root_node_ids"}
+        or hierarchy.get("policy") != KERC_HIERARCHICAL_COMPILER_POLICY
+    ):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_HIERARCHY_INVALID",
+            canonical_json(hierarchy),
+            path="compiler_output.hierarchical_compiler",
+        )
+    return [
+        LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+        [[copy.deepcopy(row[field]) for field in protected_fields] for row in protected],
+        copy.deepcopy(concepts),
+        copy.deepcopy(program["tokens"]),
+        [copy.deepcopy(residual[field]) for field in residual_fields],
+        [copy.deepcopy(hierarchy[field]) for field in hierarchy_fields],
+    ]
+
+
+def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
+    """Expand compact compiler transport, while accepting the legacy object ABI."""
+
+    if isinstance(payload, dict):
+        return copy.deepcopy(payload)
+    if (
+        not isinstance(payload, list)
+        or len(payload) != 6
+        or payload[0] != LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+    ):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_TRANSPORT_INVALID",
+            canonical_json(payload),
+            path="compiler_output",
+        )
+    _, protected_rows, concepts, program_tokens, residual_values, hierarchy_values = (
+        payload
+    )
+    protected_fields = (
+        "handle",
+        "object_type",
+        "copy_policy",
+        "character_start",
+        "character_end",
+    )
+    residual_fields = (
+        "mode",
+        "unit_fidelity",
+        "interaction",
+        "segment",
+        "tokens",
+        "exact_handles",
+    )
+    hierarchy_fields = ("chunk_index", "continuation", "root_node_ids")
+    if (
+        not isinstance(protected_rows, list)
+        or any(
+            not isinstance(row, list) or len(row) != len(protected_fields)
+            for row in protected_rows
+        )
+        or not isinstance(concepts, dict)
+        or not isinstance(program_tokens, list)
+        or not isinstance(residual_values, list)
+        or len(residual_values) != len(residual_fields)
+        or not isinstance(hierarchy_values, list)
+        or len(hierarchy_values) != len(hierarchy_fields)
+    ):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_TRANSPORT_SCHEMA_INVALID",
+            canonical_json(payload),
+            path="compiler_output",
+        )
+    materialized = {
+        "kernel_version": KERNEL_VERSION,
+        "protected_objects": [
+            dict(zip(protected_fields, copy.deepcopy(row))) for row in protected_rows
+        ],
+        "concept_capsules": copy.deepcopy(concepts),
+        "program": {
+            "policy": LEARNED_PROGRAM_TRANSPORT_POLICY,
+            "tokens": copy.deepcopy(program_tokens),
+        },
+        "residual": dict(zip(residual_fields, copy.deepcopy(residual_values))),
+        "hierarchical_compiler": {
+            "policy": KERC_HIERARCHICAL_COMPILER_POLICY,
+            **dict(zip(hierarchy_fields, copy.deepcopy(hierarchy_values))),
+        },
+    }
+    # Run the inverse transform as a strict schema and reversibility audit.
+    if compact_learned_compiler_transport(materialized) != payload:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_TRANSPORT_REPLAY_MISMATCH",
+            canonical_json(payload),
+            path="compiler_output",
+        )
+    return materialized
+
+
+def learned_compiler_transport_shape_signature(payload: Any) -> dict[str, Any]:
+    """Describe transport shape without retaining any generated semantic value."""
+
+    def type_name(value: Any) -> str:
+        if value is None:
+            return "null"
+        if isinstance(value, bool):
+            return "boolean"
+        if isinstance(value, dict):
+            return "object"
+        if isinstance(value, list):
+            return "array"
+        if isinstance(value, str):
+            return "string"
+        if isinstance(value, (int, float)):
+            return "number"
+        return type(value).__name__
+
+    signature: dict[str, Any] = {
+        "root_type": type_name(payload),
+        "root_length": len(payload) if isinstance(payload, (list, dict)) else None,
+        "version_matches": (
+            bool(
+                isinstance(payload, list)
+                and payload
+                and payload[0] == LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+            )
+        ),
+        "slot_types": [],
+        "protected_row_count": None,
+        "protected_row_length_counts": {},
+        "residual_length": None,
+        "hierarchy_length": None,
+    }
+    if not isinstance(payload, list):
+        return signature
+    signature["slot_types"] = [type_name(value) for value in payload[:6]]
+    if len(payload) > 1 and isinstance(payload[1], list):
+        protected_lengths = Counter(
+            len(row) if isinstance(row, list) else -1 for row in payload[1]
+        )
+        signature["protected_row_count"] = len(payload[1])
+        signature["protected_row_length_counts"] = {
+            str(length): int(count)
+            for length, count in sorted(protected_lengths.items())
+        }
+    if len(payload) > 4 and isinstance(payload[4], list):
+        signature["residual_length"] = len(payload[4])
+    if len(payload) > 5 and isinstance(payload[5], list):
+        signature["hierarchy_length"] = len(payload[5])
+    return signature
+
+
+def learned_compiler_transport_required_continuation_token_indices(
+    tokens: list[str],
+) -> list[int]:
+    """Locate learned separators that preserve the compact ABI cardinalities.
+
+    The returned positions contain no semantic value. They are the commas that
+    separate fixed transport slots: six root fields, five fields in each
+    protected-object row, six residual fields, and three hierarchy fields.
+    Variable-length semantic containers (including program tokens) are not
+    weighted by this helper.
+    """
+
+    text = "".join(str(token) for token in tokens)
+    try:
+        materialize_learned_compiler_transport(json.loads(text))
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
+            str(exc),
+            path="compiler_output",
+        ) from exc
+
+    required_lengths: dict[tuple[Any, ...], int] = {
+        (): 6,
+        (1, "*"): 5,
+        (4,): 6,
+        (5,): 3,
+    }
+    stack: list[dict[str, Any]] = []
+    required_offsets: list[int] = []
+    index = 0
+    while index < len(text):
+        character = text[index]
+        if character == '"':
+            index += 1
+            escaped = False
+            while index < len(text):
+                current = text[index]
+                index += 1
+                if escaped:
+                    escaped = False
+                elif current == "\\":
+                    escaped = True
+                elif current == '"':
+                    break
+            else:
+                raise KernelProtocolFault(
+                    "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
+                    "unterminated string",
+                    path="compiler_output",
+                )
+            continue
+        if character in "[{":
+            parent = stack[-1] if stack else None
+            path: tuple[Any, ...] | None = None
+            if character == "[":
+                if parent is None:
+                    path = ()
+                elif parent["kind"] == "array" and parent["path"] is not None:
+                    parent_path = tuple(parent["path"])
+                    parent_index = int(parent["element_index"])
+                    path = (
+                        (1, "*")
+                        if parent_path == (1,)
+                        else (*parent_path, parent_index)
+                    )
+            stack.append(
+                {
+                    "kind": "array" if character == "[" else "object",
+                    "path": path,
+                    "element_index": 0,
+                }
+            )
+        elif character in "]}":
+            if not stack:
+                raise KernelProtocolFault(
+                    "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
+                    "unbalanced container close",
+                    path="compiler_output",
+                )
+            expected_kind = "array" if character == "]" else "object"
+            if stack[-1]["kind"] != expected_kind:
+                raise KernelProtocolFault(
+                    "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
+                    "mismatched container close",
+                    path="compiler_output",
+                )
+            stack.pop()
+        elif character == "," and stack:
+            frame = stack[-1]
+            if frame["kind"] == "array":
+                path = frame["path"]
+                required_length = required_lengths.get(
+                    tuple(path) if path is not None else ()
+                )
+                if path is not None and required_length is not None:
+                    if int(frame["element_index"]) >= required_length - 1:
+                        raise KernelProtocolFault(
+                            "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
+                            "fixed transport container exceeds its cardinality",
+                            path="compiler_output",
+                        )
+                    required_offsets.append(index)
+                frame["element_index"] = int(frame["element_index"]) + 1
+        index += 1
+    if stack:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
+            "unclosed container",
+            path="compiler_output",
+        )
+
+    token_indices: list[int] = []
+    offset = 0
+    required = set(required_offsets)
+    for token_index, token in enumerate(tokens):
+        value = str(token)
+        for local_index, character in enumerate(value):
+            absolute = offset + local_index
+            if absolute in required:
+                if character != ",":
+                    raise KernelProtocolFault(
+                        "KERC_COMPACT_COMPILER_CONTINUATION_TOKENIZATION_INVALID",
+                        value,
+                        path="compiler_output",
+                    )
+                token_indices.append(token_index)
+        offset += len(value)
+    if len(token_indices) != len(required_offsets):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_CONTINUATION_TOKENIZATION_INVALID",
+            f"expected={len(required_offsets)} observed={len(token_indices)}",
+            path="compiler_output",
+        )
+    return token_indices
+
+
+def learned_compiler_transport_semantic_pointer_token_indices(
+    tokens: list[str],
+) -> list[int]:
+    """Locate path-qualified target atoms that carry spans or residual fidelity.
+
+    This classifier adds no value or answer metadata. It parses only the
+    existing compact target and selects program-span atoms, protected-object
+    character bounds, and residual unit-id/fidelity atoms. In particular, it
+    does not treat the root ABI version, hierarchy chunk index, or unrelated
+    numeric values as semantic pointers.
+    """
+
+    text = "".join(str(token) for token in tokens)
+    try:
+        compact = json.loads(text)
+        materialize_learned_compiler_transport(compact)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_SEMANTIC_POINTER_SOURCE_INVALID",
+            str(exc),
+            path="compiler_output",
+        ) from exc
+    token_ranges: list[tuple[int, int]] = []
+    offset = 0
+    for token in tokens:
+        start = offset
+        offset += len(str(token))
+        token_ranges.append((start, offset))
+    if offset != len(text):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_SEMANTIC_POINTER_TOKENIZATION_INVALID",
+            f"expected={len(text)} observed={offset}",
+            path="compiler_output",
+        )
+
+    scalar_spans: list[tuple[tuple[Any, ...], Any, int, int]] = []
+    number_pattern = re.compile(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?")
+
+    def parse_string(index: int) -> tuple[Any, int]:
+        start = index
+        index += 1
+        escaped = False
+        while index < len(text):
+            character = text[index]
+            index += 1
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                return json.loads(text[start:index]), index
+        raise ValueError("unterminated compact-transport string")
+
+    def parse_value(index: int, path: tuple[Any, ...]) -> int:
+        if index >= len(text):
+            raise ValueError("compact transport ended before a value")
+        start = index
+        character = text[index]
+        if character == '"':
+            value, index = parse_string(index)
+            scalar_spans.append((path, value, start, index))
+            return index
+        if character == "[":
+            index += 1
+            item_index = 0
+            if index < len(text) and text[index] == "]":
+                return index + 1
+            while True:
+                index = parse_value(index, (*path, item_index))
+                item_index += 1
+                if index >= len(text):
+                    raise ValueError("unterminated compact-transport array")
+                if text[index] == "]":
+                    return index + 1
+                if text[index] != ",":
+                    raise ValueError("compact-transport array separator is invalid")
+                index += 1
+        if character == "{":
+            index += 1
+            if index < len(text) and text[index] == "}":
+                return index + 1
+            while True:
+                if index >= len(text) or text[index] != '"':
+                    raise ValueError("compact-transport object key is invalid")
+                key, index = parse_string(index)
+                if index >= len(text) or text[index] != ":":
+                    raise ValueError("compact-transport object colon is invalid")
+                index = parse_value(index + 1, (*path, key))
+                if index >= len(text):
+                    raise ValueError("unterminated compact-transport object")
+                if text[index] == "}":
+                    return index + 1
+                if text[index] != ",":
+                    raise ValueError("compact-transport object separator is invalid")
+                index += 1
+        number = number_pattern.match(text, index)
+        if number is not None:
+            index = number.end()
+            value = json.loads(text[start:index])
+            scalar_spans.append((path, value, start, index))
+            return index
+        for literal, value in (("true", True), ("false", False), ("null", None)):
+            if text.startswith(literal, index):
+                index += len(literal)
+                scalar_spans.append((path, value, start, index))
+                return index
+        raise ValueError("compact-transport scalar is invalid")
+
+    try:
+        parsed_end = parse_value(0, ())
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_SEMANTIC_POINTER_SOURCE_INVALID",
+            str(exc),
+            path="compiler_output",
+        ) from exc
+    if parsed_end != len(text):
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_SEMANTIC_POINTER_SOURCE_INVALID",
+            f"parsed={parsed_end} expected={len(text)}",
+            path="compiler_output",
+        )
+
+    selected_spans: list[tuple[int, int]] = []
+    for path, value, start, end in scalar_spans:
+        program_span = (
+            len(path) == 2
+            and path[0] == 3
+            and isinstance(value, str)
+            and value.startswith("PSPANS:")
+        )
+        protected_character_bound = (
+            len(path) == 3
+            and path[0] == 1
+            and isinstance(path[1], int)
+            and path[2] in {3, 4}
+            and isinstance(value, (int, float))
+            and not isinstance(value, bool)
+        )
+        residual_fidelity = (
+            len(path) >= 2
+            and path[0:2] == (4, 1)
+            and (
+                (
+                    isinstance(value, str)
+                    and (
+                        re.fullmatch(r"ru:[0-9a-f]{24}", value)
+                        or value in FIDELITY_MODES
+                    )
+                )
+                or (
+                    isinstance(value, (int, float))
+                    and not isinstance(value, bool)
+                )
+            )
+        )
+        if program_span or protected_character_bound or residual_fidelity:
+            selected_spans.append((start, end))
+
+    indices: list[int] = []
+    token_cursor = 0
+    for start, end in selected_spans:
+        while (
+            token_cursor < len(token_ranges)
+            and token_ranges[token_cursor][1] <= start
+        ):
+            token_cursor += 1
+        index = token_cursor
+        while index < len(token_ranges) and token_ranges[index][0] < end:
+            if token_ranges[index][1] > start:
+                indices.append(index)
+            index += 1
+    indices = sorted(set(indices))
+    return indices
+
+
+def compact_learned_compiler_transport_text(output: str) -> str:
+    """Migrate one canonical legacy/compact target to compact transport."""
+
+    try:
+        decoded = json.loads(output)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
+        ) from exc
+    materialized = materialize_learned_compiler_transport(decoded)
+    return canonical_json(compact_learned_compiler_transport(materialized))
+
+
+def decode_learned_compiler_transport(output: str) -> dict[str, Any]:
+    """Decode a legacy or compact learned compiler target into the canonical ABI."""
+
+    try:
+        decoded = json.loads(output)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
+        ) from exc
+    return materialize_learned_compiler_transport(decoded)
+
+
 def materialize_learned_kernel_program(
     view: Any,
     *,
@@ -3001,7 +3576,21 @@ def execute_learned_pipeline(
         if not isinstance(receipt, dict) or receipt.get("state") != "GREEN":
             raise KernelProtocolFault(
                 "KERC_LEARNED_STAGE_FAULT",
-                f"{objective}:{receipt.get('reason') if isinstance(receipt, dict) else type(receipt)}",
+                canonical_json(
+                    {
+                        "objective": objective,
+                        "reason": (
+                            receipt.get("reason")
+                            if isinstance(receipt, dict)
+                            else type(receipt).__name__
+                        ),
+                        "semantic_selection": (
+                            receipt.get("semantic_selection")
+                            if isinstance(receipt, dict)
+                            else None
+                        ),
+                    }
+                ),
                 path=objective,
             )
         if int(receipt.get("fallback_return_count") or 0):
@@ -3062,7 +3651,7 @@ def execute_learned_pipeline(
                     }
                 ),
             )
-            decoded = parse_object("surface_to_kernel_program_v1", compiler_text)
+            decoded = decode_learned_compiler_transport(compiler_text)
             hierarchy = decoded.get("hierarchical_compiler")
             if (
                 not isinstance(hierarchy, dict)
@@ -3972,12 +4561,7 @@ def parse_learned_compiler_output(
 ) -> dict[str, Any]:
     """Parse and independently validate a learned compiler result."""
 
-    try:
-        decoded = json.loads(output)
-    except (TypeError, json.JSONDecodeError) as exc:
-        raise KernelProtocolFault(
-            "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
-        ) from exc
+    decoded = decode_learned_compiler_transport(output)
     if not isinstance(decoded, dict) or decoded.get("kernel_version") != KERNEL_VERSION:
         raise KernelProtocolFault(
             "KERC_LEARNED_COMPILER_VERSION_INVALID",

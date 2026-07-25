@@ -4,6 +4,8 @@ import json
 import inspect
 import hashlib
 import base64
+import builtins
+import struct
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -18,57 +20,81 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import moecot_language_arm_training as training_module  # noqa: E402
+import kerc_merge_compiler_delta_checkpoint as merge_cli  # noqa: E402
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     KERC_UNIT_CANDIDATE_FEATURE_DIM,
     RaggedRows,
     architecture_training_authority,
+    align_candidate_common_initialization,
     audit_arm_views,
     audit_scale_preregistration,
     audit_specialist_data_scaling,
     audit_tokenizer_stage,
     build_source_to_target_lookup,
     behavior_diagnostics,
+    bind_candidate_canary_overlay,
     bind_scale_preregistration,
     checkpoint_generation_paths,
     cleanup_progress_generation,
     ensure_shared_trunk_migration,
     evaluation_freeze_semantic_sha256,
+    finalize_model_text_generation,
     generate_kerc_code_text,
     generate_kerc_pipeline_text,
     generate_model_text,
     generate_model_text_batch,
     inspect_checkpoint_inventory,
+    initialize_candidate_continuation_receipt,
     kerc_global_token_rows,
+    kerc_overfit_batch_schedule,
     kerc_serialization_valid_ids,
     kerc_unit_allocator_training_authority,
     matched_decoder_only_config,
     materialize_kerc_unit_allocator_row,
     materialize_target_supervision,
+    merge_kerc_compiler_delta_checkpoint,
     migrate_shared_trunk_checkpoint_format,
     model_accounting,
+    load_kerc_stage_selective_compute_checkpoint,
     pack_kerc_unit_allocator_batch,
     plan_sha256,
+    publish_checkpoint_pair,
     range_view,
+    resume_phase_data_state,
+    rng_state_path,
     serialization_valid_local_ids,
+    supervision_row_instance_id,
     scratch_target_contract,
+    select_bounded_supervision_rows,
     should_evaluate_target,
     target_contracts,
     target_optimizer_exposure,
     target_copy_identity_ranges,
     tensor_mapping_manifest,
+    training_host_policy,
+    training_operation,
     training_implementation_closure,
     train_target,
     accepted_plan_identity_migration,
     validate_config,
     validate_resume,
 )
+from moecot_source_conditioned_pretraining import (  # noqa: E402
+    encode_kerc_global_target_with_logical_ranges,
+    kerc_code_space,
+    kerc_code_tokens,
+)
 from standard_causal_transformer_model import (  # noqa: E402
     CausalTransformerConfig,
     build_model,
     parameter_count,
 )
-from standard_causal_transformer_survival import causal_loss  # noqa: E402
+from standard_causal_transformer_survival import (  # noqa: E402
+    causal_loss,
+    normalized_sampling_probabilities,
+    stratified_low_variance_sampling_order,
+)
 from neural_seed_open_vocab import (  # noqa: E402
     TARGET_BYTE_BEGIN,
     TARGET_BYTE_END,
@@ -77,10 +103,887 @@ from neural_seed_open_vocab import (  # noqa: E402
 from neural_seed_50m_scale_preregistration import (  # noqa: E402
     architecture_contract as scale_architecture_contract,
 )
+
+
+def test_canonical_heavy_operations_require_the_external_host_guard() -> None:
+    config = training_module.read_json(
+        ROOT / "configs" / "moecot_language_arm_training.json"
+    )
+    policy = training_host_policy(config)
+
+    assert policy.max_process_memory_mib == 5120
+    assert policy.minimum_available_before_launch_mib == 6144
+    assert policy.minimum_available_during_run_mib == 4096
+    assert policy.maximum_swapout_growth_mib == 16
+    assert training_operation(SimpleNamespace(execute=True)) == "training"
+    assert training_operation(SimpleNamespace(evaluate_progress=True)) == "evaluation"
+    assert training_operation(
+        SimpleNamespace(migrate_shared_trunk_checkpoint_format=True)
+    ) == "checkpoint_migration"
+    assert training_operation(SimpleNamespace()) == ""
+
+
+def test_kernel_only_execution_does_not_load_canonical_pretraining_memmaps(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr(
+        training_module,
+        "load_pretrain_memmaps",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("inactive pretraining arrays were loaded")
+        ),
+    )
+
+    stage = training_module.canonical_pretraining_execution_stage(
+        tmp_path,
+        {},
+        active=False,
+    )
+
+    assert stage.loaded is False
+    assert stage.phase_inactive is True
+    assert stage.pretrain_inputs.shape == (0, 1)
+    assert stage.pretrain_labels.shape == (0, 1)
+    assert stage.pretrain_mask.shape == (0, 1)
+
+
+def test_stage_only_row_filter_excludes_zero_token_authority_rows() -> None:
+    loss_mask = RaggedRows(
+        [
+            np.asarray([0, 1, 1], dtype=np.uint8),
+            np.asarray([0, 0], dtype=np.uint8),
+            np.asarray([1], dtype=np.uint8),
+            np.asarray([0, 0, 0], dtype=np.uint8),
+        ],
+        dtype=np.uint8,
+    )
+
+    assert training_module.token_supervised_row_indices(
+        loss_mask
+    ).tolist() == [0, 2]
+
+
+def test_evaluation_reuses_only_identity_matched_complete_receipt(
+    tmp_path: Path,
+) -> None:
+    checkpoint = tmp_path / "weights.safetensors"
+    checkpoint.write_bytes(b"checkpoint")
+    target = {
+        "target_id": "english_kerc",
+        "checkpoint": str(checkpoint),
+        "receipt": str(tmp_path / "training_receipt.json"),
+    }
+    config = {"evaluation": {"policy": "test-evaluation-policy"}}
+    contract_sha256 = hashlib.sha256(
+        json.dumps(
+            config["evaluation"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    output = tmp_path / "evaluation_private_dev_receipt.json"
+    output.write_text(
+        json.dumps(
+            {
+                "policy": "test-evaluation-policy",
+                "complete": True,
+                "target_id": "english_kerc",
+                "split": "private_dev",
+                "checkpoint_sha256": hashlib.sha256(
+                    checkpoint.read_bytes()
+                ).hexdigest(),
+                "evaluation_contract_sha256": contract_sha256,
+                "maximum_rows_per_artifact": 16,
+                "row_count": 1,
+                "rows": [{"row_id": "row-1"}],
+            }
+        )
+    )
+
+    reused = training_module.evaluate_target(
+        config,
+        {},
+        {},
+        target,
+        metadata={},
+        mx=None,
+        nn=None,
+        maximum_rows=16,
+    )
+
+    assert reused["complete"] is True
+    assert reused["rows"] == {
+        "path": training_module.relative(output),
+        "embedded_row_count": 1,
+    }
+    with pytest.raises(ValueError, match="identity mismatch"):
+        training_module.evaluate_target(
+            config,
+            {},
+            {},
+            target,
+            metadata={},
+            mx=None,
+            nn=None,
+            maximum_rows=8,
+        )
+
+
+def test_evaluation_frozen_selection_identity_is_part_of_progress_receipt(
+    tmp_path: Path,
+) -> None:
+    checkpoint = tmp_path / "weights.safetensors"
+    checkpoint.write_bytes(b"checkpoint")
+    target = {
+        "target_id": "english_kerc",
+        "checkpoint": str(checkpoint),
+        "receipt": str(tmp_path / "training_receipt.json"),
+    }
+    config = {"evaluation": {"policy": "test-evaluation-policy"}}
+    contract_sha256 = hashlib.sha256(
+        json.dumps(
+            config["evaluation"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    output = tmp_path / "evaluation_private_dev_receipt.json"
+    output.write_text(
+        json.dumps(
+            {
+                "policy": "test-evaluation-policy",
+                "complete": True,
+                "target_id": "english_kerc",
+                "split": "private_dev",
+                "checkpoint_sha256": hashlib.sha256(
+                    checkpoint.read_bytes()
+                ).hexdigest(),
+                "evaluation_contract_sha256": contract_sha256,
+                "maximum_rows_per_artifact": 2,
+                "selection_namespace": "fresh-surface-v1",
+                "selection_contract_sha256": "a" * 64,
+                "row_count": 2,
+                "rows": [{"row_id": "row-1"}, {"row_id": "row-2"}],
+            }
+        )
+    )
+
+    reused = training_module.evaluate_target(
+        config,
+        {},
+        {},
+        target,
+        metadata={},
+        mx=None,
+        nn=None,
+        maximum_rows=2,
+        selected_row_ids=("row-1", "row-2"),
+        selection_namespace="fresh-surface-v1",
+        selection_contract_sha256="a" * 64,
+    )
+    assert reused["complete"] is True
+    with pytest.raises(ValueError, match="identity mismatch"):
+        training_module.evaluate_target(
+            config,
+            {},
+            {},
+            target,
+            metadata={},
+            mx=None,
+            nn=None,
+            maximum_rows=2,
+            selected_row_ids=("row-1", "row-2"),
+            selection_namespace="fresh-surface-v2",
+            selection_contract_sha256="b" * 64,
+        )
+
+
+def test_kerc_overfit_batch_schedule_warms_hard_stages_then_consolidates() -> None:
+    schedule = kerc_overfit_batch_schedule(
+        row_count=4, single_objective_warmup_steps=10
+    )
+
+    assert schedule[:10] == (
+        (1,),
+        (2,),
+        (3,),
+        (0,),
+        (1,),
+        (2,),
+        (3,),
+        (0,),
+        (1,),
+        (2,),
+    )
+    assert schedule[-1] == (0, 1, 2, 3)
+    assert kerc_overfit_batch_schedule(
+        row_count=4, single_objective_warmup_steps=0
+    ) == ()
+    assert kerc_overfit_batch_schedule(
+        row_count=4,
+        single_objective_warmup_steps=0,
+        fixed_objective_index=3,
+    ) == ((3,),)
+    with pytest.raises(ValueError, match="exclusive"):
+        kerc_overfit_batch_schedule(
+            row_count=4,
+            single_objective_warmup_steps=1,
+            fixed_objective_index=3,
+        )
+
+
+def test_kerc_overfit_stage_accepts_one_filtered_generator_objective() -> None:
+    stage = SimpleNamespace(
+        inputs=RaggedRows(
+            [
+                np.asarray([1, 2, 3, 4, 5], dtype=np.int32),
+                np.asarray([1, 2, 3, 4], dtype=np.int32),
+            ],
+            dtype=np.int32,
+            standard_width=5,
+        ),
+        labels=RaggedRows(
+            [
+                np.asarray([0, 0, 0, 4, 5], dtype=np.int32),
+                np.asarray([0, 0, 3, 4], dtype=np.int32),
+            ],
+            dtype=np.int32,
+            standard_width=5,
+        ),
+        mask=RaggedRows(
+            [
+                np.asarray([0, 0, 0, 1, 1], dtype=np.uint8),
+                np.asarray([0, 0, 1, 1], dtype=np.uint8),
+            ],
+            dtype=np.uint8,
+            standard_width=5,
+        ),
+        loss_mask=RaggedRows(
+            [
+                np.asarray([0, 0, 0, 1, 1], dtype=np.float32),
+                np.asarray([0, 0, 1, 1], dtype=np.float32),
+            ],
+            dtype=np.float32,
+            standard_width=5,
+        ),
+        sample_weights=np.asarray([1.0, 1.0], dtype=np.float32),
+        training_row_ids=("compiler-long", "compiler-short"),
+        kerc_coverage_labels=(
+            ("objective:surface_to_kernel_program_v1",),
+            ("objective:surface_to_kernel_program_v1",),
+        ),
+        receipt={"policy": "fixture"},
+    )
+
+    selected = training_module.select_kerc_overfit_stage(
+        stage, rows_per_objective=1
+    )
+
+    assert selected.training_row_ids == ("compiler-short",)
+    assert selected.kerc_coverage_labels == (
+        ("objective:surface_to_kernel_program_v1",),
+    )
+    assert len(selected.kerc_coverage_labels) == len(selected.inputs) == 1
+    assert selected.receipt["row_count"] == 1
+    assert selected.receipt["overfit_diagnostic"]["policy"] == (
+        "project_theseus_kerc_filtered_objective_overfit_v1"
+    )
+    assert selected.receipt["overfit_diagnostic"]["selected_by_objective"] == {
+        "surface_to_kernel_program_v1": 1
+    }
+
+
+def test_supervision_row_instance_identity_disambiguates_duplicate_row_ids() -> None:
+    first = supervision_row_instance_id(
+        "semantic-row", artifact_key="private_train", source_index=7
+    )
+    second = supervision_row_instance_id(
+        "semantic-row", artifact_key="private_train", source_index=8
+    )
+
+    assert first != second
+    assert first.endswith(":artifact:private_train:source_index:7")
+    with pytest.raises(ValueError, match="source custody"):
+        supervision_row_instance_id(
+            "semantic-row", artifact_key="private_train", source_index=-1
+        )
+    with pytest.raises(ValueError, match="exactly four"):
+        kerc_overfit_batch_schedule(
+            row_count=3, single_objective_warmup_steps=1
+        )
+    with pytest.raises(ValueError, match="cannot be negative"):
+        kerc_overfit_batch_schedule(
+            row_count=4, single_objective_warmup_steps=-1
+        )
+
+
+def test_guarded_training_preflight_refusal_starts_no_child_and_writes_receipt(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    config = training_module.read_json(
+        ROOT / "configs" / "moecot_language_arm_training.json"
+    )
+    config["host_resource_safety"]["receipt_directory"] = (
+        "reports/test-training-resource-safety"
+    )
+    original_resolve = training_module.resolve
+
+    def isolated_resolve(value: str | Path) -> Path:
+        if str(value).startswith("reports/test-training-resource-safety"):
+            return tmp_path / Path(str(value)).name
+        return original_resolve(value)
+
+    monkeypatch.setattr(training_module, "resolve", isolated_resolve)
+    monkeypatch.setattr(
+        training_module.host_resource_safety,
+        "physical_memory_mib",
+        lambda: 16384.0,
+    )
+    monkeypatch.setattr(
+        training_module.host_resource_safety,
+        "run_guarded",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            training_module.host_resource_safety.HostResourceSafetyFault(
+                "host_memory_preflight_failed"
+            )
+        ),
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "moecot_language_arm_training.py",
+            "--guarded",
+            "--execute",
+            "--target",
+            "shared_trunk",
+        ],
+    )
+
+    assert training_module.launch_guarded_training(config, "training") == 2
+    receipt = json.loads((tmp_path / "training-latest.json").read_text())
+    assert receipt["passed"] is False
+    assert receipt["child_started"] is False
+    assert receipt["fault"] == "host_memory_preflight_failed"
 from moecot_source_conditioned_pretraining import (  # noqa: E402
     build_kerc_code_vocabulary,
 )
 from neural_seed_resident_runtime import BoundedPromptPrefixCache  # noqa: E402
+
+
+def test_candidate_pair_uses_exact_common_subspace_initialization(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = tiny_config(tmp_path)
+    model_config = CausalTransformerConfig(vocab_size=64, **config["arm_model"])
+    mx.random.seed(101)
+    reference = build_model(model_config, mx=mx, nn=nn)
+    mx.random.seed(202)
+    aligned = build_model(
+        CausalTransformerConfig(vocab_size=72, **config["arm_model"]),
+        mx=mx,
+        nn=nn,
+    )
+    state: dict = {}
+    reference_receipt = align_candidate_common_initialization(
+        reference,
+        state=state,
+        target_id="candidate",
+        seed=909,
+        receipt_path=tmp_path / "candidate-receipt.json",
+        mx=mx,
+        mlx_utils=mlx_utils,
+    )
+    aligned_receipt = align_candidate_common_initialization(
+        aligned,
+        state=state,
+        target_id="control",
+        seed=909,
+        receipt_path=tmp_path / "control-receipt.json",
+        mx=mx,
+        mlx_utils=mlx_utils,
+    )
+    assert reference_receipt["exact_alignment"] is True
+    assert aligned_receipt["exact_alignment"] is True
+    assert (
+        reference_receipt["common_tensor_manifest"]
+        == aligned_receipt["common_tensor_manifest"]
+    )
+    assert reference_receipt["common_tensor_manifest"]["tensor_count"] > 0
+    assert aligned_receipt["architecture_specific_tensor_manifest"]["tensor_count"] > 0
+    assert aligned_receipt["architecture_specific_tensors_unchanged"] is True
+
+
+def test_empirical_sequence_bound_retains_rows_and_publishes_exclusions() -> None:
+    stage = SimpleNamespace(
+        inputs=training_module.RaggedRows(
+            [np.arange(4), np.arange(9), np.arange(6)], dtype=np.int32
+        ),
+        labels=training_module.RaggedRows(
+            [np.arange(4), np.arange(9), np.arange(6)], dtype=np.int32
+        ),
+        mask=training_module.RaggedRows(
+            [np.ones(4), np.ones(9), np.ones(6)], dtype=np.float32
+        ),
+        loss_mask=training_module.RaggedRows(
+            [np.ones(4), np.ones(9), np.ones(6)], dtype=np.float32
+        ),
+        sample_weights=np.ones(3, dtype=np.float64),
+        kerc_coverage_labels=None,
+        receipt={"policy": "fixture"},
+    )
+    bounded = training_module.bound_supervision_stage_sequence_width(
+        stage, maximum_sequence_tokens=6
+    )
+    selection = bounded.receipt["training_sequence_resource_selection"]
+    assert len(bounded.inputs) == 2
+    assert bounded.inputs.shape == (2, 6)
+    assert selection["original_row_count"] == 3
+    assert selection["selected_row_count"] == 2
+    assert selection["excluded_row_count"] == 1
+    assert selection["selected_maximum_sequence_tokens"] == 6
+    assert selection["excluded_supervised_minimum_sequence_tokens"] == 9
+    assert selection["excluded_minimum_sequence_tokens"] == 9
+    assert selection["longer_row_disposition"].startswith("K7_MAXIMUM_STRESS")
+
+
+def test_empirical_sequence_bound_exposes_supervised_only_exclusions() -> None:
+    stage = SimpleNamespace(
+        inputs=training_module.RaggedRows(
+            [np.arange(4), np.arange(8), np.arange(9)], dtype=np.int32
+        ),
+        labels=training_module.RaggedRows(
+            [np.arange(4), np.arange(8), np.arange(9)], dtype=np.int32
+        ),
+        mask=training_module.RaggedRows(
+            [np.ones(4), np.ones(8), np.ones(9)], dtype=np.float32
+        ),
+        loss_mask=training_module.RaggedRows(
+            [np.ones(4), np.ones(8), np.zeros(9)], dtype=np.float32
+        ),
+        sample_weights=np.ones(3, dtype=np.float64),
+        kerc_coverage_labels=None,
+        receipt={"policy": "fixture"},
+    )
+    bounded = training_module.bound_supervision_stage_sequence_width(
+        stage,
+        maximum_sequence_tokens=9,
+        maximum_supervised_sequence_tokens=6,
+    )
+    selection = bounded.receipt["training_sequence_resource_selection"]
+    assert [len(row) for row in bounded.inputs] == [4, 9]
+    assert selection["excluded_supervised_row_count"] == 1
+    assert selection["excluded_supervised_minimum_sequence_tokens"] == 8
+    assert selection["excluded_minimum_sequence_tokens"] == 0
+
+
+def test_empirical_sequence_bound_uses_active_not_padded_width() -> None:
+    padded = np.zeros((2, 12), dtype=np.int32)
+    padded[0, :5] = 1
+    padded[1, :9] = 1
+    stage = SimpleNamespace(
+        inputs=padded.copy(),
+        labels=padded.copy(),
+        mask=padded.astype(np.float32),
+        loss_mask=padded.astype(np.float32),
+        sample_weights=np.ones(2, dtype=np.float64),
+        kerc_coverage_labels=None,
+        receipt={"policy": "fixture"},
+    )
+    bounded = training_module.bound_supervision_stage_sequence_width(
+        stage,
+        maximum_sequence_tokens=6,
+    )
+    selection = bounded.receipt["training_sequence_resource_selection"]
+    assert bounded.inputs.shape == (1, 12)
+    assert selection["original_maximum_sequence_tokens"] == 9
+    assert selection["selected_maximum_sequence_tokens"] == 5
+    assert selection["excluded_minimum_sequence_tokens"] == 9
+
+
+def test_empirical_sequence_bound_preserves_declared_stage_coverage_only() -> None:
+    stage = SimpleNamespace(
+        inputs=training_module.RaggedRows(
+            [np.arange(5), np.arange(9)], dtype=np.int32
+        ),
+        labels=training_module.RaggedRows(
+            [np.arange(5), np.arange(9)], dtype=np.int32
+        ),
+        mask=training_module.RaggedRows(
+            [np.ones(5), np.ones(9)], dtype=np.float32
+        ),
+        loss_mask=training_module.RaggedRows(
+            [np.ones(5), np.ones(9)], dtype=np.float32
+        ),
+        sample_weights=np.ones(2, dtype=np.float64),
+        kerc_coverage_labels=(
+            ("objective:surface_to_kernel_program_v1", "decision:ANSWER"),
+            ("objective:answer_packet_to_surface_v1", "decision:ABSTAIN"),
+        ),
+        receipt={"policy": "fixture"},
+    )
+
+    bounded = training_module.bound_supervision_stage_sequence_width(
+        stage,
+        maximum_sequence_tokens=6,
+        required_kerc_coverage_labels=(
+            "objective:surface_to_kernel_program_v1",
+            "decision:ANSWER",
+        ),
+    )
+
+    selection = bounded.receipt["training_sequence_resource_selection"]
+    assert len(bounded.inputs) == 1
+    assert selection["required_kerc_coverage_preserved"] is True
+    assert selection["required_kerc_coverage_labels"] == [
+        "decision:ANSWER",
+        "objective:surface_to_kernel_program_v1",
+    ]
+
+
+def test_gradient_checkpointed_transformer_matches_eager_loss_and_gradients(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = tiny_config(tmp_path)
+    model_config = CausalTransformerConfig(vocab_size=64, **config["arm_model"])
+    mx.random.seed(303)
+    eager = build_model(model_config, mx=mx, nn=nn)
+    checkpointed = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        gradient_checkpointing=True,
+    )
+    checkpointed.load_weights(list(mlx_utils.tree_flatten(eager.parameters())))
+    inputs = mx.array([[1, 5, 6, 7, 8, 9]], dtype=mx.int32)
+    labels = mx.array([[5, 6, 7, 8, 9, 2]], dtype=mx.int32)
+    mask = mx.ones(labels.shape, dtype=mx.float32)
+    eager_loss, eager_grads = nn.value_and_grad(eager, causal_loss)(
+        eager, inputs, labels, mask, mx, nn
+    )
+    checkpointed_loss, checkpointed_grads = nn.value_and_grad(
+        checkpointed, causal_loss
+    )(checkpointed, inputs, labels, mask, mx, nn)
+    mx.eval(eager_loss, checkpointed_loss, eager_grads, checkpointed_grads)
+    assert float(eager_loss.item()) == pytest.approx(
+        float(checkpointed_loss.item()), abs=1e-6
+    )
+    eager_flat = dict(mlx_utils.tree_flatten(eager_grads))
+    checkpointed_flat = dict(mlx_utils.tree_flatten(checkpointed_grads))
+    assert eager_flat.keys() == checkpointed_flat.keys()
+    for name in eager_flat:
+        np.testing.assert_allclose(
+            np.array(eager_flat[name]),
+            np.array(checkpointed_flat[name]),
+            rtol=1e-5,
+            atol=1e-6,
+        )
+
+
+def test_query_chunked_encoder_decoder_matches_outputs_loss_and_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    model_config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_target_separator_token_id=2,
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        source_copy_auxiliary_loss_weight=0.25,
+    )
+    lookup = np.arange(64, dtype=np.int32)
+    mx.random.seed(313)
+    full = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=lookup,
+        compact_encoder_decoder_partitions=True,
+    )
+    chunked = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=lookup,
+        gradient_checkpointing=True,
+        attention_query_chunk_size=3,
+        attention_key_chunk_size=2,
+        compact_encoder_decoder_partitions=True,
+    )
+    chunked.load_weights(
+        list(mlx_utils.tree_flatten(full.parameters())), strict=True
+    )
+    bucketed = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=lookup,
+        gradient_checkpointing=True,
+        attention_query_chunk_size=3,
+        attention_key_chunk_size=2,
+        compact_encoder_decoder_partitions=True,
+        compact_partition_width_quantum=8,
+    )
+    bucketed.load_weights(
+        list(mlx_utils.tree_flatten(full.parameters())), strict=True
+    )
+    inputs = mx.array([[1, 11, 12, 2, 21, 22, 23, 24, 25]], dtype=mx.int32)
+    labels = mx.array([[11, 12, 2, 21, 22, 23, 24, 25, 2]], dtype=mx.int32)
+    mask = mx.array([[0, 0, 0, 0, 1, 1, 1, 1, 1]], dtype=mx.float32)
+    full_logits, _cache = full(inputs, source_conditioning=True)
+    chunked_logits, _cache = chunked(inputs, source_conditioning=True)
+    full_loss, full_grads = nn.value_and_grad(full, causal_loss)(
+        full, inputs, labels, mask, mx, nn, source_conditioning=True
+    )
+    chunked_loss, chunked_grads = nn.value_and_grad(chunked, causal_loss)(
+        chunked, inputs, labels, mask, mx, nn, source_conditioning=True
+    )
+    bucketed_logits, _cache = bucketed(inputs, source_conditioning=True)
+    bucketed_loss, bucketed_grads = nn.value_and_grad(
+        bucketed, causal_loss
+    )(bucketed, inputs, labels, mask, mx, nn, source_conditioning=True)
+    outer_padded_inputs = mx.pad(inputs, ((0, 0), (0, 7)))
+    outer_padded_labels = mx.pad(labels, ((0, 0), (0, 7)))
+    outer_padded_mask = mx.pad(mask, ((0, 0), (0, 7)))
+    outer_padded_logits, _cache = bucketed(
+        outer_padded_inputs, source_conditioning=True
+    )
+    outer_padded_loss, outer_padded_grads = nn.value_and_grad(
+        bucketed, causal_loss
+    )(
+        bucketed,
+        outer_padded_inputs,
+        outer_padded_labels,
+        outer_padded_mask,
+        mx,
+        nn,
+        source_conditioning=True,
+    )
+    mx.eval(
+        full_logits,
+        chunked_logits,
+        bucketed_logits,
+        full_loss,
+        chunked_loss,
+        bucketed_loss,
+        outer_padded_logits,
+        outer_padded_loss,
+        full_grads,
+        chunked_grads,
+        bucketed_grads,
+        outer_padded_grads,
+    )
+    np.testing.assert_allclose(
+        np.array(full_logits), np.array(chunked_logits), rtol=1e-5, atol=1e-6
+    )
+    assert float(chunked_loss.item()) == pytest.approx(
+        float(full_loss.item()), abs=1e-6
+    )
+    np.testing.assert_allclose(
+        np.array(full_logits), np.array(bucketed_logits), rtol=1e-5, atol=1e-6
+    )
+    assert float(bucketed_loss.item()) == pytest.approx(
+        float(full_loss.item()), abs=1e-6
+    )
+    np.testing.assert_allclose(
+        np.array(bucketed_logits),
+        np.array(outer_padded_logits),
+        rtol=1e-5,
+        atol=1e-6,
+    )
+    assert float(outer_padded_loss.item()) == pytest.approx(
+        float(bucketed_loss.item()), abs=1e-6
+    )
+    full_flat = dict(mlx_utils.tree_flatten(full_grads))
+    chunked_flat = dict(mlx_utils.tree_flatten(chunked_grads))
+    bucketed_flat = dict(mlx_utils.tree_flatten(bucketed_grads))
+    outer_padded_flat = dict(mlx_utils.tree_flatten(outer_padded_grads))
+    assert full_flat.keys() == chunked_flat.keys()
+    assert full_flat.keys() == bucketed_flat.keys()
+    assert bucketed_flat.keys() == outer_padded_flat.keys()
+    for name in full_flat:
+        np.testing.assert_allclose(
+            np.array(full_flat[name]),
+            np.array(chunked_flat[name]),
+            rtol=2e-5,
+            atol=2e-6,
+        )
+        np.testing.assert_allclose(
+            np.array(full_flat[name]),
+            np.array(bucketed_flat[name]),
+            rtol=2e-5,
+            atol=2e-6,
+        )
+        np.testing.assert_allclose(
+            np.array(bucketed_flat[name]),
+            np.array(outer_padded_flat[name]),
+            rtol=2e-5,
+            atol=2e-6,
+        )
+
+    zero_mask = mx.zeros_like(mask)
+    zero_loss = causal_loss(
+        chunked,
+        inputs,
+        labels,
+        zero_mask,
+        mx,
+        nn,
+        source_conditioning=True,
+    )
+    zero_logits, _zero_cache = chunked(
+        inputs,
+        source_conditioning=True,
+        output_position_mask=zero_mask,
+    )
+    mx.eval(zero_loss, zero_logits)
+    assert np.isfinite(float(zero_loss.item()))
+    assert tuple(zero_logits.shape) == (1, 1, 64)
+
+    batch_inputs = mx.array(
+        [
+            [1, 11, 12, 2, 21, 22, 23, 24, 25],
+            [1, 13, 14, 15, 16, 2, 31, 32, 33],
+        ],
+        dtype=mx.int32,
+    )
+    batch_labels = mx.array(
+        [
+            [11, 12, 2, 21, 22, 23, 24, 25, 2],
+            [13, 14, 15, 16, 2, 31, 32, 33, 2],
+        ],
+        dtype=mx.int32,
+    )
+    batch_mask = mx.array(
+        [
+            [0, 0, 0, 0, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 1, 1, 1],
+        ],
+        dtype=mx.float32,
+    )
+    batch_loss = causal_loss(
+        chunked,
+        batch_inputs,
+        batch_labels,
+        batch_mask,
+        mx,
+        nn,
+        source_conditioning=True,
+    )
+    batch_logits, _batch_cache = chunked(
+        batch_inputs,
+        source_conditioning=True,
+        output_position_mask=batch_mask,
+    )
+    mx.eval(batch_loss, batch_logits)
+    assert np.isfinite(float(batch_loss.item()))
+    assert tuple(batch_logits.shape) == (2, 5, 64)
+
+    bf16_chunked = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=lookup,
+        gradient_checkpointing=True,
+        attention_query_chunk_size=3,
+        attention_key_chunk_size=2,
+        compact_encoder_decoder_partitions=True,
+    )
+    bf16_chunked.load_weights(
+        list(mlx_utils.tree_flatten(full.parameters())), strict=True
+    )
+    bf16_chunked.set_dtype(mx.bfloat16)
+    bf16_loss, bf16_grads = nn.value_and_grad(bf16_chunked, causal_loss)(
+        bf16_chunked,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        source_conditioning=True,
+    )
+    mx.eval(bf16_loss, bf16_grads)
+    assert np.isfinite(float(bf16_loss.item()))
+
+    full.eval()
+    chunked.eval()
+    prefix = mx.array([[1, 11, 12, 13]], dtype=mx.int32)
+    continuation = mx.array([[21, 22, 23]], dtype=mx.int32)
+    _full_prefix_logits, full_cache = full(prefix, source_conditioning=False)
+    _chunked_prefix_logits, chunked_cache = chunked(
+        prefix, source_conditioning=False
+    )
+    full_cached_logits, _full_cache = full(
+        continuation, cache=full_cache, source_conditioning=False
+    )
+    chunked_cached_logits, _chunked_cache = chunked(
+        continuation, cache=chunked_cache, source_conditioning=False
+    )
+    mx.eval(full_cached_logits, chunked_cached_logits)
+    np.testing.assert_allclose(
+        np.array(full_cached_logits),
+        np.array(chunked_cached_logits),
+        rtol=1e-5,
+        atol=1e-6,
+    )
+
+
+def test_text_finalizer_never_credits_unfinished_byte_span() -> None:
+    text, receipt = finalize_model_text_generation(
+        beams=[
+            {
+                "tokens": [TARGET_BYTE_BEGIN, "<byte:61>"],
+                "score": 100.0,
+            }
+        ],
+        complete=[],
+        serialization_complete=[{"tokens": ["hello"], "score": 1.0}],
+        length_penalty=0.0,
+        beam_width=2,
+        branching_factor=2,
+        acceleration={},
+        trusted_source_prefix_tokens=(),
+    )
+
+    assert text == "hello"
+    assert receipt["state"] == "GREEN"
+    assert receipt["stop_reason"] == "max_tokens_serialization_complete"
+    assert receipt["fallback_return_count"] == 0
+
+    rejected_text, rejected_receipt = finalize_model_text_generation(
+        beams=[
+            {
+                "tokens": [TARGET_BYTE_BEGIN, "<byte:61>"],
+                "score": 100.0,
+            }
+        ],
+        complete=[],
+        serialization_complete=[],
+        length_penalty=0.0,
+        beam_width=2,
+        branching_factor=2,
+        acceleration={},
+        trusted_source_prefix_tokens=(),
+    )
+    assert rejected_text == ""
+    assert rejected_receipt["state"] == "FAULT"
+    assert rejected_receipt["reason"] == "no_serialization_valid_sequence"
 
 
 def test_scratch_target_contract_preserves_registered_lineage_as_metadata(
@@ -258,9 +1161,20 @@ def test_ragged_rows_isolates_long_sequences_without_dense_corpus_padding() -> N
 
     assert ragged.physical_bytes == sum(row.nbytes for row in rows)
     assert ragged.physical_bytes < ragged.shape[0] * ragged.shape[1] * 4
+    assert ragged.sum() == sum(int(row.sum()) for row in rows)
+    np.testing.assert_array_equal(
+        ragged.sum(axis=1), np.asarray([row.sum() for row in rows])
+    )
 
 
 def tiny_config(tmp_path: Path) -> dict:
+    host_resource_safety = json.loads(
+        json.dumps(
+            training_module.read_json(
+                ROOT / "configs" / "moecot_language_arm_training.json"
+            )["host_resource_safety"]
+        )
+    )
     return {
         "policy": "project_theseus_moecot_language_arm_training_v1",
         "seed": 7,
@@ -268,6 +1182,9 @@ def tiny_config(tmp_path: Path) -> dict:
             "policy": "project_theseus_pre_training_architecture_authority_v1",
             "required_for_long_optimizer_runs": True,
             "pre_training_canary_max_steps": 8,
+            "candidate_canary_contract": "configs/pretraining_architecture_candidates.json",
+            "candidate_canary_policy": "project_theseus_pretraining_architecture_candidates_v1",
+            "generic_canary_authority": "denied",
             "gate_command": [
                 "python3",
                 "scripts/roadmap_implementation_gate.py",
@@ -275,6 +1192,7 @@ def tiny_config(tmp_path: Path) -> dict:
                 "--require-pre-training-ready",
             ],
         },
+        "host_resource_safety": host_resource_safety,
         "generation_architecture": {
             "contract": "configs/generation_architecture_contracts.json",
             "required_policy": "project_theseus_generation_architecture_contracts_v1",
@@ -353,6 +1271,7 @@ def tiny_config(tmp_path: Path) -> dict:
             "kernel_english_optimizer_repetitions": 1,
             "termination_loss_weight": 4.0,
             "byte_boundary_loss_weight": 2.0,
+            "kerc_compiler_schema_continuation_loss_weight": 8.0,
         },
         "comparison_contract": {
             "preregistered_before_training": True,
@@ -415,6 +1334,9 @@ def tiny_config(tmp_path: Path) -> dict:
             "policy": "project_theseus_moecot_direct_model_only_evaluation_v1",
             "beam_width": 2,
             "branching_factor": 2,
+            "kerc_decode_max_target_tokens": 16384,
+            "kerc_beam_width": 1,
+            "kerc_branching_factor": 1,
             "target_visible_to_generator": False,
             "templates_renderers_routers_tools_allowed": False,
         },
@@ -429,7 +1351,7 @@ def tiny_config(tmp_path: Path) -> dict:
     }
 
 
-def test_training_authority_allows_bounded_canaries_but_gates_long_runs(
+def test_training_authority_requires_candidate_bound_canaries_and_gates_long_runs(
     tmp_path: Path,
 ) -> None:
     cfg = tiny_config(tmp_path)
@@ -439,10 +1361,24 @@ def test_training_authority_allows_bounded_canaries_but_gates_long_runs(
         calls.append(command)
         return SimpleNamespace(returncode=2, stdout="not ready", stderr="")
 
-    canary = architecture_training_authority(cfg, max_steps=8, runner=denied_runner)
+    generic = architecture_training_authority(cfg, max_steps=8, runner=denied_runner)
+    assert generic["trigger_state"] == "RED"
+    assert generic["reason"] == "candidate_specific_canary_lease_required"
+
+    scratch = ROOT / "runtime" / "t0a_canaries" / "immutable_control_review" / "unit-test"
+    canary = architecture_training_authority(
+        cfg,
+        max_steps=8,
+        candidate_id="immutable_control_review",
+        scratch_checkpoint_root=scratch,
+        targets=["shared_trunk"],
+        phase="pretraining",
+        runner=denied_runner,
+    )
     assert canary["trigger_state"] == "GREEN"
-    assert canary["authority"] == "BOUNDED_ARCHITECTURE_CANARY"
+    assert canary["authority"] == "CANDIDATE_SPECIFIC_ARCHITECTURE_CANARY"
     assert canary["long_optimizer_run_authorized"] is False
+    assert canary["candidate_lease"]["authorized"] is True
     assert calls == []
 
     long_run = architecture_training_authority(cfg, max_steps=0, runner=denied_runner)
@@ -456,6 +1392,557 @@ def test_training_authority_allows_bounded_canaries_but_gates_long_runs(
             "--require-pre-training-ready",
         ]
     ]
+
+
+def test_rdc_kerc_candidate_overlay_replays_frozen_stage_without_mutation() -> None:
+    config = bind_scale_preregistration(
+        training_module.read_json(
+            ROOT / "configs" / "moecot_language_arm_training.json"
+        )
+    )
+    original = json.loads(json.dumps(config))
+    lease = training_module.pretraining_candidate_canary.candidate_lease(
+        candidate_id="rdc_kerc_adequacy",
+        max_steps=8,
+        scratch_checkpoint_root=(
+            ROOT / "runtime" / "t0a_canaries" / "rdc_kerc_adequacy" / "test"
+        ),
+        targets=[
+            training_module.KERC_ENGLISH_ID,
+            training_module.SURFACE_ENGLISH_CONTROL_ID,
+        ],
+        phase="kernel_english",
+        resume=False,
+        selected_seed=20260722,
+    )
+    assert lease["authorized"] is True
+
+    bound = bind_candidate_canary_overlay(config, lease)
+    assert config == original
+    assert bound["kernel_english_training"]["required"] is True
+    assert bound["kernel_english_training"]["disposition"][
+        "full_kerc_training_enabled"
+    ] is True
+    manifest = training_module.read_json(
+        ROOT / "data" / "training_data" / "moecot_kernel_english_v1" / "manifest.json"
+    )
+    contract_sha = hashlib.sha256(
+        json.dumps(
+            bound["kernel_english_training"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+    assert contract_sha == manifest["contract_sha256"]
+    assert bound["training"]["kernel_english_optimizer_repetitions"] == 1
+    assert bound["evaluation"]["kerc_decode_max_target_tokens"] == 1005
+    assert bound["kernel_english_training"]["batch_size"] == 2
+    execution_policy = bound["_candidate_canary_overlay"]["execution_policy"]
+    expected_policy = {
+        "batch_size": 1,
+        "mlx_cache_limit_mib": 512,
+        "clear_mlx_cache_after_step": True,
+        "gradient_checkpointing": True,
+        "compute_dtype": "bfloat16",
+        "fp32_master": True,
+    }
+    assert {key: execution_policy[key] for key in expected_policy} == expected_policy
+    assert execution_policy["clear_mlx_cache_before_step"] is True
+    assert execution_policy["attention_query_chunk_size"] == 32
+    assert execution_policy["attention_key_chunk_size"] == 32
+    assert execution_policy["compact_encoder_decoder_partitions"] is True
+    assert training_module.KERC_ENGLISH_ID in bound["comparison_contract"][
+        "first_campaign_candidate_ids"
+    ]
+
+
+def test_candidate_behavior_evaluation_runs_only_at_terminal_rung() -> None:
+    lease = {
+        "candidate_id": "rdc_kerc_k5_adequacy",
+        "requested_steps": 64,
+        "behavior_eval_rows": 16,
+        "budgets": {"max_steps": 1536},
+    }
+    assert training_module.terminal_candidate_behavior_rows(lease) == 0
+    lease["requested_steps"] = 1536
+    assert training_module.terminal_candidate_behavior_rows(lease) == 16
+
+
+def test_guarded_training_derives_durable_receipt_from_output_path() -> None:
+    path = training_module.guarded_output_receipt_path(
+        ["--execute", "--out", "reports/example.json"]
+    )
+    assert path == ROOT / "reports/example.host_resource_safety.json"
+    assert training_module.guarded_output_receipt_path(["--execute"]) is None
+
+
+def test_k5_candidate_uses_exact_compiler_stage_continuation() -> None:
+    config = bind_scale_preregistration(
+        training_module.read_json(
+            ROOT / "configs" / "moecot_language_arm_training.json"
+        )
+    )
+    lease = training_module.pretraining_candidate_canary.candidate_lease(
+        candidate_id="rdc_kerc_k5_adequacy",
+        max_steps=1,
+        scratch_checkpoint_root=(
+            ROOT / "runtime" / "t0a_canaries" / "rdc_kerc_k5_adequacy" / "test"
+        ),
+        targets=[training_module.KERC_ENGLISH_ID],
+        phase="kernel_english",
+        resume=False,
+        selected_seed=20260722,
+    )
+    assert lease["authorized"] is True
+    assert lease["seeds"] == [20260722, 20260723, 20260724]
+    assert lease["execution_policy"]["kerc_bounded_source_row_limit"] == 128
+    assert lease["execution_policy"]["kerc_stage_minimum_coverage_rows"] == 8
+    assert lease["execution_policy"]["kerc_stage_coverage_multiplier"] == 16
+    assert lease["execution_policy"]["kerc_stage_learnability_intervention"] is True
+    assert lease["execution_policy"]["kerc_objective_balanced_sampling"] is False
+    assert lease["execution_policy"].get("target_token_frequency_balance_power", 0.0) == 0.0
+    assert lease["execution_policy"]["kernel_optimizer_repetitions"] == 4
+    assert lease["execution_policy"]["maximum_training_sequence_tokens"] == 628
+    assert lease["execution_policy"][
+        "maximum_supervised_training_sequence_tokens_by_target"
+    ] == {"english_kerc": 628}
+    assert lease["execution_policy"]["token_loss_position_chunk_size"] == 32
+    assert lease["execution_policy"]["attention_query_chunk_size"] == 32
+    assert lease["execution_policy"]["attention_key_chunk_size"] == 32
+    assert lease["execution_policy"]["optimizer_state_offload_between_steps"] is True
+    assert (
+        lease["execution_policy"][
+            "optimizer_state_offload_minimum_target_positions"
+        ]
+        == 600
+    )
+    assert lease["execution_policy"]["kerc_resource_stress_prefix"] is False
+    assert (
+        lease["execution_policy"]["kerc_stage_train_stage_embedding"]
+        is True
+    )
+    assert lease["execution_policy"]["kerc_stage_detach_frozen_trunk"] is False
+    assert (
+        lease["execution_policy"]["kerc_uniform_within_objective_sampling"]
+        is False
+    )
+    assert (
+        lease["execution_policy"][
+            "kerc_weighted_sampling_minimum_stratum_coverage"
+        ]
+        is False
+    )
+    assert lease["execution_policy"]["kerc_delta_stage_only"] == 1
+    assert lease["execution_policy"]["kerc_stage_objective_filter"] == [
+        "surface_to_kernel_program_v1"
+    ]
+    assert set(
+        lease["execution_policy"]["kerc_stage_required_coverage_labels"]
+    ) >= {
+        "objective:surface_to_kernel_program_v1",
+        "decision:ANSWER",
+        "decision:CLARIFY",
+    }
+    assert lease["execution_policy"]["kerc_stage_excluded_coverage_labels"] == {
+        "decision:ABSTAIN": "K7_LONG_SEQUENCE_STRESS_MINIMUM_OBSERVED_TOKENS_2289"
+    }
+    assert lease["execution_policy"][
+        "continuation_optimizer_state_projection_policy"
+    ] == "project_theseus_exact_kerc_stage_optimizer_projection_v1"
+    assert (
+        lease["execution_policy"]["kerc_delta_include_source_conditioned_bridge"]
+        is False
+    )
+    assert lease["execution_policy"]["initialization_policy"] == (
+        "registered_shared_trunk_progress_checkpoint_common_subspace_v1"
+    )
+    bound = bind_candidate_canary_overlay(config, lease)
+    assert bound["evaluation"]["kerc_decode_max_target_tokens"] == 628
+    plan = training_module.build_plan(
+        bound,
+        config_path=ROOT / "configs" / "moecot_language_arm_training.json",
+        candidate_lease=lease,
+    )
+    assert plan["targets"][training_module.KERC_ENGLISH_ID][
+        "shared_trunk_checkpoint"
+    ].endswith("/shared_trunk/weights.safetensors")
+
+
+def test_kerc_objective_balancing_equalizes_sampling_mass() -> None:
+    objectives = list(training_module.TRAINING_TASK_TAGS)
+    observed = [objectives[0]] * 2 + [objectives[1]] * 4 + objectives[2:]
+    stage = SimpleNamespace(
+        inputs=np.zeros((len(observed), 3), dtype=np.int32),
+        sample_weights=np.ones(len(observed), dtype=np.float64),
+        kerc_coverage_labels=tuple(
+            (f"objective:{objective}",) for objective in observed
+        ),
+    )
+    weights, receipt = training_module.kerc_objective_balanced_sample_weights(stage)
+    masses = {
+        objective: sum(
+            float(weights[index])
+            for index, value in enumerate(observed)
+            if value == objective
+        )
+        for objective in objectives
+    }
+    assert masses == pytest.approx({objective: 1.0 for objective in objectives})
+    assert receipt["objective_row_counts"] == {
+        objectives[0]: 2,
+        objectives[1]: 4,
+        objectives[2]: 1,
+        objectives[3]: 1,
+    }
+    assert (
+        receipt["sampling_policy"]
+        == "stratified_smooth_weighted_round_robin_v1"
+    )
+    assert receipt["replacement_sampling_after_coverage_prefix"] is False
+
+
+def test_kerc_coverage_safe_objective_balancing_exhausts_every_row_before_repeat() -> None:
+    objectives = list(training_module.TRAINING_TASK_TAGS)
+    observed = [objectives[0]] * 3 + [objectives[1]] * 7 + [objectives[2]] * 5 + [objectives[3]] * 2
+    base_weights = np.asarray(
+        [1.0, 2.0, 8.0, 1.0, 1.0, 2.0, 2.0, 4.0, 8.0, 16.0, 1.0, 3.0, 9.0, 27.0, 81.0, 1.0, 32.0],
+        dtype=np.float64,
+    )
+    stage = SimpleNamespace(
+        inputs=np.zeros((len(observed), 3), dtype=np.int32),
+        sample_weights=base_weights,
+        kerc_coverage_labels=tuple(
+            (f"objective:{objective}",) for objective in observed
+        ),
+    )
+    weights, receipt = training_module.kerc_objective_balanced_sample_weights(
+        stage,
+        uniform_within_objective=True,
+    )
+    probabilities = normalized_sampling_probabilities(
+        weights, len(observed)
+    )
+    assert probabilities is not None
+    order = stratified_low_variance_sampling_order(
+        probabilities,
+        row_count=len(observed),
+        seed=20260722,
+        minimum_stratum_coverage=True,
+    )
+    assert len(order) > len(observed)
+    assert set(order) == set(range(len(observed)))
+    assert receipt["policy"] == "project_theseus_kerc_objective_balanced_sampling_v2"
+    assert receipt["within_objective_weight_policy"] == (
+        "uniform_without_replacement_cycle_v1"
+    )
+    for objective in objectives:
+        objective_weights = [
+            float(weights[index])
+            for index, value in enumerate(observed)
+            if value == objective
+        ]
+        assert len(set(objective_weights)) == 1
+        assert sum(objective_weights) == pytest.approx(1.0)
+
+
+def test_kerc_deficit_weighted_objective_mass_preserves_coverage_floor() -> None:
+    objectives = list(training_module.TRAINING_TASK_TAGS)
+    observed = (
+        [objectives[0]] * 3
+        + [objectives[1]] * 7
+        + [objectives[2]] * 5
+        + [objectives[3]] * 2
+    )
+    target_mass = {
+        objectives[0]: 0.05,
+        objectives[1]: 0.25,
+        objectives[2]: 0.30,
+        objectives[3]: 0.40,
+    }
+    stage = SimpleNamespace(
+        inputs=np.zeros((len(observed), 3), dtype=np.int32),
+        sample_weights=np.ones(len(observed), dtype=np.float64),
+        kerc_coverage_labels=tuple(
+            (f"objective:{objective}",) for objective in observed
+        ),
+    )
+    weights, receipt = training_module.kerc_objective_balanced_sample_weights(
+        stage,
+        uniform_within_objective=True,
+        objective_sampling_mass=target_mass,
+    )
+    masses = {
+        objective: sum(
+            float(weights[index])
+            for index, value in enumerate(observed)
+            if value == objective
+        )
+        for objective in objectives
+    }
+    assert masses == pytest.approx(target_mass)
+    assert receipt["policy"] == (
+        "project_theseus_kerc_objective_residual_allocation_v3"
+    )
+    assert receipt["objective_target_sampling_mass"] == pytest.approx(target_mass)
+    order = stratified_low_variance_sampling_order(
+        normalized_sampling_probabilities(weights, len(observed)),
+        row_count=len(observed),
+        seed=20260722,
+        minimum_stratum_coverage=True,
+    )
+    assert set(order) == set(range(len(observed)))
+
+
+def test_candidate_evaluation_replays_graph_shaping_training_policy() -> None:
+    policy = training_module.candidate_evaluation_execution_policy(
+        {
+            "candidate_canary_lease": {
+                "execution_policy": {
+                    "attention_query_chunk_size": 64,
+                    "attention_key_chunk_size": 128,
+                    "compact_encoder_decoder_partitions": True,
+                    "compact_partition_width_quantum": 64,
+                    "gradient_checkpointing": True,
+                }
+            }
+        }
+    )
+
+    assert policy == {
+        "attention_query_chunk_size": 64,
+        "attention_key_chunk_size": 128,
+        "compact_encoder_decoder_partitions": True,
+        "compact_partition_width_quantum": 64,
+        "gradient_checkpointing": False,
+    }
+
+    rebound = training_module.candidate_bound_evaluation_plan(
+        {"plan_sha256": "plan"},
+        {
+            "execution_policy": {
+                "attention_query_chunk_size": 64,
+                "attention_key_chunk_size": 64,
+                "compact_encoder_decoder_partitions": True,
+                "gradient_checkpointing": True,
+            }
+        },
+    )
+    assert training_module.candidate_evaluation_execution_policy(rebound) == {
+        "attention_query_chunk_size": 64,
+        "attention_key_chunk_size": 64,
+        "compact_encoder_decoder_partitions": True,
+        "compact_partition_width_quantum": 0,
+        "gradient_checkpointing": False,
+    }
+
+
+def test_semantic_completion_selection_rejects_without_rewriting() -> None:
+    candidates = [
+        {"rank": 1, "decoded_text": "invalid"},
+        {"rank": 2, "decoded_text": "valid"},
+    ]
+
+    def validate(text: str) -> None:
+        if text != "valid":
+            raise training_module.KernelProtocolFault(
+                "KERC_TEST_INVALID", text, path="candidate"
+            )
+
+    selected, receipt = training_module.select_semantically_valid_completion(
+        candidates, validate
+    )
+
+    assert selected is candidates[1]
+    assert receipt["selected_rank"] == 2
+    assert receipt["selected_semantically_valid"] is True
+    assert receipt["rejection_counts"] == {"KERC_TEST_INVALID": 1}
+    assert receipt["rejection_detail_classes"] == {
+        "KERC_TEST_INVALID:present_invalid": 1
+    }
+    assert receipt["output_repaired_or_rewritten"] is False
+
+
+def test_kerc_prefix_constraint_binds_only_public_protocol_constants() -> None:
+    valid = [
+        {
+            "space": "V_P",
+            "token": (
+                '{"hierarchical_compiler":{"policy":'
+                '"project_theseus_kerc_hierarchical_compiler_v1"},'
+                '"kernel_version":"KE-1.0","program":{"policy":'
+                '"project_theseus_kerc_learned_program_tokens_v1"}'
+            ),
+        }
+    ]
+    invalid_version = [
+        {**valid[0], "token": valid[0]["token"].replace("KE-1.0", "BAD")}
+    ]
+    semantic_change = [
+        {**valid[0], "token": valid[0]["token"] + ',"operator":"ANY_LEARNED_VALUE"'}
+    ]
+    compact_valid = [{"space": "V_P", "token": '[2,[["ANY_LEARNED_VALUE"]'}]
+    compact_invalid = [{"space": "V_P", "token": '[3,[["ANY_LEARNED_VALUE"]'}]
+
+    assert training_module.kerc_protocol_constant_prefix_valid(
+        valid, objective="surface_to_kernel_program_v1"
+    )
+    assert not training_module.kerc_protocol_constant_prefix_valid(
+        invalid_version, objective="surface_to_kernel_program_v1"
+    )
+    assert training_module.kerc_protocol_constant_prefix_valid(
+        semantic_change, objective="surface_to_kernel_program_v1"
+    )
+    assert training_module.kerc_protocol_constant_prefix_valid(
+        compact_valid, objective="surface_to_kernel_program_v1"
+    )
+    assert not training_module.kerc_protocol_constant_prefix_valid(
+        compact_invalid, objective="surface_to_kernel_program_v1"
+    )
+
+
+def test_bounded_kerc_selector_is_deterministic_stratified_and_scans_boundaries(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "rows.jsonl"
+    objectives = ("compiler", "core", "renderer", "control")
+    rows = [
+        {
+            "row_id": f"row-{objective}-{index}",
+            "objective": objective,
+            "split": "private_train",
+            "public_benchmark": False,
+            "kerc_answer_disposition": training_module.ANSWER_DISPOSITION_ORDER[
+                index % len(training_module.ANSWER_DISPOSITION_ORDER)
+            ],
+            "kerc_verifier_negative": {
+                "failed_dimension": training_module.KERC_VERIFIER_DIMENSIONS[
+                    index % len(training_module.KERC_VERIFIER_DIMENSIONS)
+                ]
+            },
+            "kerc_residual_labels": [
+                index % 4,
+                (index + 1) % 4,
+                (index + 2) % 4,
+                (index + 3) % 4,
+            ],
+            "kerc_context_counterfactuals": [
+                {"strategy": "context_withheld"},
+                {"strategy": "context_shuffled"},
+            ],
+        }
+        for objective in objectives
+        for index in range(10)
+    ]
+    path.write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+    count, first = select_bounded_supervision_rows(
+        path,
+        split="private_train",
+        objective_filter=objectives,
+        maximum_rows=24,
+    )
+    _, second = select_bounded_supervision_rows(
+        path,
+        split="private_train",
+        objective_filter=objectives,
+        maximum_rows=24,
+    )
+    reference_count, references = (
+        training_module.select_bounded_supervision_row_references(
+            path,
+            split="private_train",
+            objective_filter=objectives,
+            maximum_rows=24,
+        )
+    )
+    assert count == 40
+    assert reference_count == count
+    assert all(
+        isinstance(source_index, int)
+        and isinstance(row_id, str)
+        and isinstance(byte_offset, int)
+        for source_index, row_id, byte_offset in references
+    )
+    assert [row[1]["row_id"] for row in first] == [
+        row[1]["row_id"] for row in second
+    ]
+    assert [row[1]["row_id"] for row in first] == [
+        row_id for _source_index, row_id, _byte_offset in references
+    ]
+    assert len(first) == 24
+    assert {row[1]["objective"] for row in first} == set(objectives)
+
+    rows[-1]["public_benchmark"] = True
+    path.write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="invalid bounded supervision boundary"):
+        select_bounded_supervision_rows(
+            path,
+            split="private_train",
+            objective_filter=objectives,
+            maximum_rows=24,
+        )
+
+
+def test_bounded_kerc_selector_requires_only_objective_defined_verifier_classes(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "surface-control.jsonl"
+    rows = [
+        {
+            "row_id": f"surface-{index}",
+            "split": "private_train",
+            "public_benchmark": False,
+            "objective": "surface_direct_control_v1",
+            "kerc_answer_disposition": disposition,
+            "kerc_residual_labels": residual,
+            "kerc_verifier_negative": {"failed_dimension": failed},
+            "kerc_context_counterfactuals": [],
+        }
+        for index, (disposition, residual, failed) in enumerate(
+            (
+                ("ANSWER", [1, 0, 0, 0], "semantic_consistency"),
+                ("CLARIFY", [0, 1, 0, 0], "numeric_value_consistency"),
+                ("ABSTAIN", [0, 0, 1, 1], "protected_object_consistency"),
+            )
+        )
+    ]
+    path.write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+
+    source_count, selected = select_bounded_supervision_rows(
+        path,
+        split="private_train",
+        objective_filter=("surface_direct_control_v1",),
+        maximum_rows=3,
+    )
+
+    assert source_count == 3
+    assert len(selected) == 3
+
+
+def test_bounded_kerc_coverage_is_required_independent_of_step_budget() -> None:
+    stage = SimpleNamespace(
+        receipt={"bounded_selection": {"active": True}},
+        kerc_coverage_labels=(("objective:surface_direct_control_v1",),),
+    )
+
+    assert training_module.bounded_kerc_coverage_required(
+        {"role": "kerc_english_candidate"}, stage
+    )
+    assert not training_module.bounded_kerc_coverage_required(
+        {"role": "english_surface_control"}, stage
+    )
+    assert not training_module.bounded_kerc_coverage_required(
+        {"role": "kerc_english_candidate"},
+        SimpleNamespace(receipt={"bounded_selection": {"active": False}}),
+    )
 
 
 def test_deferred_kerc_path_has_zero_optimizer_and_target_exposure(tmp_path: Path) -> None:
@@ -589,6 +2076,8 @@ def test_progress_generation_paths_and_cleanup_are_step_scoped(tmp_path: Path) -
     new_checkpoint, new_optimizer = checkpoint_generation_paths(
         checkpoint, optimizer, 1000
     )
+    old_rng = rng_state_path(old_optimizer)
+    new_rng = rng_state_path(new_optimizer)
     for path in (
         checkpoint,
         optimizer,
@@ -596,6 +2085,8 @@ def test_progress_generation_paths_and_cleanup_are_step_scoped(tmp_path: Path) -
         old_optimizer,
         new_checkpoint,
         new_optimizer,
+        old_rng,
+        new_rng,
     ):
         path.write_bytes(path.name.encode())
 
@@ -603,19 +2094,69 @@ def test_progress_generation_paths_and_cleanup_are_step_scoped(tmp_path: Path) -
         {
             "checkpoint": str(old_checkpoint),
             "optimizer_state": str(old_optimizer),
+            "mlx_rng_state": str(old_rng),
         },
         canonical_checkpoint=checkpoint,
         canonical_optimizer=optimizer,
-        keep={new_checkpoint, new_optimizer},
+        keep={new_checkpoint, new_optimizer, new_rng},
     )
 
     assert not old_checkpoint.exists()
     assert not old_optimizer.exists()
+    assert not old_rng.exists()
     assert checkpoint.exists() and optimizer.exists()
     assert new_checkpoint.exists() and new_optimizer.exists()
+    assert new_rng.exists()
 
     with pytest.raises(ValueError, match="step must be positive"):
         checkpoint_generation_paths(checkpoint, optimizer, 0)
+
+
+def test_checkpoint_transaction_publishes_exact_mlx_rng_state(tmp_path: Path) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    model = build_model(
+        CausalTransformerConfig(
+            vocab_size=32,
+            d_model=16,
+            num_layers=1,
+            num_heads=2,
+            num_kv_heads=1,
+            ff_dim=32,
+        ),
+        mx=mx,
+        nn=nn,
+    )
+    optimizer = optim.AdamW(learning_rate=1e-3)
+    optimizer.init(model.trainable_parameters())
+    mx.random.seed(71)
+    mx.eval(model.parameters(), optimizer.state, *mx.random.state)
+    expected_rng = [np.asarray(value).copy() for value in mx.random.state]
+    checkpoint = tmp_path / "weights.safetensors"
+    optimizer_path = tmp_path / "optimizer.safetensors"
+    rng_path = rng_state_path(optimizer_path)
+
+    receipt = publish_checkpoint_pair(
+        model,
+        checkpoint,
+        tmp_path / "weights.partial.safetensors",
+        optimizer,
+        optimizer_path,
+        mx=mx,
+        mlx_utils=mlx_utils,
+        trainable_only=False,
+        rng_path=rng_path,
+    )
+    observed_rng = mx.load(str(rng_path))
+
+    assert receipt["atomic_file_replacement"] is True
+    assert receipt["mlx_rng_state_bytes"] == rng_path.stat().st_size
+    assert receipt["mlx_rng_state_sha256"]
+    assert sorted(observed_rng) == ["state.0"]
+    np.testing.assert_array_equal(np.asarray(observed_rng["state.0"]), expected_rng[0])
 
 
 def test_training_denies_legacy_stage_without_each_language_tokenizer_receipt() -> None:
@@ -879,6 +2420,59 @@ def test_live_trainer_parameter_accounting_matches_scale_preregistration() -> No
     ]["parameter_count"]
 
 
+def test_planning_parameter_accounting_never_imports_mlx(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    bound = bind_scale_preregistration(config)
+    base = json.loads((ROOT / bound["base_config"]).read_text())
+    metadata = json.loads(
+        (ROOT / bound["stage_dir"] / "stage_metadata_v1.json").read_text()
+    )
+    original_import = builtins.__import__
+
+    def reject_mlx(name: str, *args: object, **kwargs: object) -> object:
+        if name == "mlx" or name.startswith("mlx."):
+            raise AssertionError("planning parameter accounting imported MLX")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", reject_mlx)
+    models = model_accounting(bound, base, metadata)
+    assert models["moecot_system"]["shared_trunk_parameter_count"] == 54_836_746
+    assert models["moecot_system"]["active_parameter_count_per_request"] == 57_340_426
+
+
+def test_step3000_receipt_accepts_optional_online_kv_attention_migration() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    receipt = json.loads(
+        (
+            ROOT
+            / "checkpoints"
+            / "moecot_mlx_57m_active_preregistered_v1"
+            / "shared_trunk"
+            / "training_receipt.json"
+        ).read_text()
+    )
+    stage_signature = "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9"
+    migration = accepted_plan_identity_migration(
+        receipt,
+        {
+            "plan_identity": config["plan_identity"],
+            "plan_sha256": "237064d3cbc38c04211b6d2f1cbe2bba5257b545d5cf3e508e3c98b891ec3f35",
+            "stage": {"stage_signature": stage_signature},
+        },
+        {"target_id": "shared_trunk"},
+    )
+    assert migration is not None
+    assert migration["migration_id"] == (
+        "shared_trunk_step3000_optional_online_kv_attention_v1"
+    )
+
+
 def test_only_executable_compositions_receive_direct_evaluation() -> None:
     assert should_evaluate_target({"role": "language_expert"}) is True
     assert should_evaluate_target({"role": "dense_control"}) is True
@@ -1097,7 +2691,11 @@ def test_exact_supervision_masks_only_target_and_never_truncates(
         }
     }
     training_config = {
-        "training": {"termination_loss_weight": 4.0, "byte_boundary_loss_weight": 2.0}
+        "training": {
+            "termination_loss_weight": 4.0,
+            "byte_boundary_loss_weight": 2.0,
+            "kerc_compiler_schema_continuation_loss_weight": 8.0,
+        }
     }
     stage = materialize_target_supervision(
         training_config,
@@ -1183,6 +2781,8 @@ def test_exact_supervision_can_materialize_private_dev_without_training_credit(
             "training": {
                 "termination_loss_weight": 4.0,
                 "byte_boundary_loss_weight": 2.0,
+                "kerc_compiler_schema_continuation_loss_weight": 8.0,
+                "kerc_compiler_semantic_pointer_loss_weight": 4.0,
             }
         },
         {
@@ -1202,7 +2802,13 @@ def test_exact_supervision_can_materialize_private_dev_without_training_credit(
 
     with pytest.raises(ValueError, match="unsupported private supervision split"):
         materialize_target_supervision(
-            {"training": {"termination_loss_weight": 1.0, "byte_boundary_loss_weight": 1.0}},
+            {
+                "training": {
+                    "termination_loss_weight": 1.0,
+                    "byte_boundary_loss_weight": 1.0,
+                    "kerc_compiler_schema_continuation_loss_weight": 1.0,
+                }
+            },
             {"tokenization": {"max_sequence_tokens": 64}},
             target,
             metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
@@ -1218,13 +2824,45 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     reserve_byte_fallback_tokens(source_vocab, max_vocab=270, stream="source")
     reserve_byte_fallback_tokens(target_vocab, max_vocab=270, stream="target")
     source_vocab["<KERC_TASK_SURFACE_TO_KERNEL>"] = len(source_vocab)
+
+    def compiler_target(program_token: str) -> str:
+        return json.dumps(
+            {
+                "kernel_version": training_module.KERNEL_VERSION,
+                "protected_objects": [],
+                "concept_capsules": {},
+                "program": {
+                    "policy": training_module.LEARNED_PROGRAM_TRANSPORT_POLICY,
+                    "tokens": [program_token],
+                },
+                "residual": {
+                    "mode": "SOURCE_RECONSTRUCTION",
+                    "unit_fidelity": [],
+                    "interaction": [],
+                    "segment": [],
+                    "tokens": [],
+                    "exact_handles": [],
+                },
+                "hierarchical_compiler": {
+                    "policy": training_module.KERC_HIERARCHICAL_COMPILER_POLICY,
+                    "chunk_index": 0,
+                    "continuation": False,
+                    "root_node_ids": [],
+                },
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+
+    positive_target = compiler_target("KOP:valid")
+    negative_target = compiler_target("KOP:corrupted")
     row = {
         "split": "private_train",
         "arm_id": "english",
         "objective": "surface_to_kernel_program_v1",
         "public_benchmark": False,
         "prompt": "Compile this governed sentence.",
-        "target": '{"program":"valid"}',
+        "target": positive_target,
         "trusted_source_prefix_tokens": ["<KERC_TASK_SURFACE_TO_KERNEL>"],
         "trusted_prefix_authority": "internal_objective_route_only",
         "optimizer_sampling_weight": 0.25,
@@ -1240,9 +2878,9 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
         "kerc_verifier_positive_labels": [1, 1, 1, 1, 1],
         "kerc_answer_disposition": "ANSWER",
         "kerc_verifier_negative": {
-            "target": '{"program":"corrupted"}',
+            "target": negative_target,
             "target_sha256": "sha256:"
-            + hashlib.sha256(b'{"program":"corrupted"}').hexdigest(),
+            + hashlib.sha256(negative_target.encode()).hexdigest(),
             "labels": [0, 1, 1, 1, 1],
             "failed_dimension": "semantic_consistency",
             "generator_loss_enabled": False,
@@ -1253,9 +2891,9 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
                 "prompt": counter_prompt,
                 "prompt_sha256": "sha256:"
                 + hashlib.sha256(counter_prompt.encode()).hexdigest(),
-                "target": '{"program":"valid"}',
+                "target": positive_target,
                 "target_sha256": "sha256:"
-                + hashlib.sha256(b'{"program":"valid"}').hexdigest(),
+                + hashlib.sha256(positive_target.encode()).hexdigest(),
                 "labels": [0, 1, 1, 1, 0],
                 "failed_dimensions": [
                     "semantic_consistency",
@@ -1299,6 +2937,8 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
             "training": {
                 "termination_loss_weight": 4.0,
                 "byte_boundary_loss_weight": 2.0,
+                "kerc_compiler_schema_continuation_loss_weight": 8.0,
+                "kerc_compiler_semantic_pointer_loss_weight": 4.0,
             }
         },
         {"tokenization": {"max_sequence_tokens": 128}},
@@ -1312,7 +2952,10 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
 
     assert stage.inputs.shape[0] == 4
     assert isinstance(stage.inputs, RaggedRows)
-    assert stage.receipt["storage_layout"] == "ragged_rows_dynamic_batch_padding_v1"
+    assert (
+        stage.receipt["storage_layout"]
+        == "ragged_rows_shared_shifted_token_storage_v2"
+    )
     assert (
         stage.receipt["physical_array_bytes"]
         <= stage.receipt["dense_equivalent_array_bytes"]
@@ -1323,6 +2966,37 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert int(stage.mask[3].sum()) == 0
     assert stage.receipt["generator_training_row_count"] == 1
     assert stage.receipt["verifier_only_row_count"] == 3
+    compact_receipt = stage.receipt["compact_compiler_transport"]
+    assert compact_receipt["policy"] == (
+        "project_theseus_kerc_compiler_compact_transport_v2"
+    )
+    assert compact_receipt["generator_row_count"] == 1
+    assert compact_receipt["target_tokens_elided"] > 0
+    assert compact_receipt["learned_semantic_values_elided"] == 0
+    assert compact_receipt["deterministic_generation_credit"] == 0
+    assert stage.receipt[
+        "kerc_compiler_schema_continuation_loss_weight"
+    ] == 8.0
+    assert stage.receipt[
+        "kerc_compiler_schema_continuation_position_count"
+    ] == 12
+    assert stage.receipt[
+        "kerc_compiler_schema_continuation_semantic_values_added"
+    ] == 0
+    assert stage.receipt[
+        "kerc_compiler_semantic_pointer_loss_weight"
+    ] == 4.0
+    assert stage.receipt[
+        "kerc_compiler_semantic_pointer_position_count"
+    ] == 0
+    assert stage.receipt[
+        "kerc_compiler_semantic_pointer_values_added"
+    ] == 0
+    assert int(np.sum(np.asarray(stage.loss_mask[0]) == 8.0)) == 12
+    assert all(
+        not bool(np.any(np.asarray(stage.loss_mask[index]) == 8.0))
+        for index in (1, 2, 3)
+    )
     assert stage.kerc_residual_labels.tolist() == [[1, 0, 0, 3]] * 4
     assert stage.kerc_residual_loss_mask.tolist() == [1.0, 0.0, 0.0, 0.0]
     assert stage.receipt["kerc_residual_supervision_row_count"] == 1
@@ -1375,6 +3049,8 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
                 "training": {
                     "termination_loss_weight": 4.0,
                     "byte_boundary_loss_weight": 2.0,
+                    "kerc_compiler_schema_continuation_loss_weight": 8.0,
+                    "kerc_compiler_semantic_pointer_loss_weight": 4.0,
                 }
             },
             {"tokenization": {"max_sequence_tokens": 128}},
@@ -1426,6 +3102,9 @@ def test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_mat
     )
     assert kerc["vocab_size"] == models["kerc_vocab_size"]
     assert control["vocab_size"] == models["canonical_vocab_size"]
+    # Frozen full-MLX counts from the accepted RDC/KERC integration canary.
+    assert kerc["parameter_count"] == 72_534_757
+    assert control["parameter_count"] == 72_534_538
     assert abs(control["parameter_delta_vs_kerc"]) / kerc["parameter_count"] < 0.001
     model = kerc["model"]
     assert model["kerc_surface_token_end"] == models["canonical_vocab_size"]
@@ -1620,7 +3299,7 @@ def test_batched_kerc_beam_advance_matches_serial_reference() -> None:
             "<pad>": 0,
             "<unk>": 1,
             TARGET_BYTE_BEGIN: 2,
-            "<byte:41>": 3,
+            "<byte:31>": 3,
             TARGET_BYTE_END: 4,
             "PROGRAM": 5,
         },
@@ -1746,14 +3425,91 @@ def test_kerc_code_decoder_keeps_byte_fallback_inside_one_code_space() -> None:
         code_vocabulary, kernel_offset=100, pointer_offset=200, pointer_end=300
     )
     open_ids = kerc_serialization_valid_ids([], rows, end_id=10)
-    assert 10 in open_ids
+    assert 10 not in open_ids
     assert 102 in open_ids and 202 in open_ids
     kernel_byte_ids = kerc_serialization_valid_ids(
         [{"space": "V_K", "token": TARGET_BYTE_BEGIN}], rows, end_id=10
     )
-    assert 103 in kernel_byte_ids and 104 in kernel_byte_ids
+    assert 103 in kernel_byte_ids and 104 not in kernel_byte_ids
     assert 203 not in kernel_byte_ids and 204 not in kernel_byte_ids
     assert 10 not in kernel_byte_ids
+    closed_kernel_byte_ids = kerc_serialization_valid_ids(
+        [
+            {"space": "V_K", "token": TARGET_BYTE_BEGIN},
+            {"space": "V_K", "token": "<byte:31>"},
+        ],
+        rows,
+        end_id=10,
+    )
+    assert 104 in closed_kernel_byte_ids
+
+
+def test_kerc_code_decoder_rejects_invalid_json_transitions() -> None:
+    code_vocabulary = {
+        "kernel_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            '"key"': 2,
+            '"value"': 3,
+            "true": 4,
+        },
+        "pointer_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            "{": 2,
+            "}": 3,
+            "[": 4,
+            "]": 5,
+            ":": 6,
+            ",": 7,
+        },
+    }
+    rows = kerc_global_token_rows(
+        code_vocabulary, kernel_offset=100, pointer_offset=200, pointer_end=300
+    )
+    generated = [
+        rows[202],
+        rows[102],
+    ]
+    after_key = kerc_serialization_valid_ids(generated, rows, end_id=10)
+    assert after_key == [206]
+    invalid = kerc_serialization_valid_ids(
+        [*generated, rows[103]], rows, end_id=10
+    )
+    assert invalid == []
+    complete = kerc_serialization_valid_ids(
+        [*generated, rows[206], rows[103], rows[203]], rows, end_id=10
+    )
+    assert 10 in complete
+
+
+def test_kerc_code_decoder_streams_one_json_string_across_byte_spans() -> None:
+    code_vocabulary = {
+        "kernel_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+            TARGET_BYTE_BEGIN: 2,
+            '<bytes:22616263>': 3,
+            '<bytes:64656622>': 4,
+            TARGET_BYTE_END: 5,
+        },
+        "pointer_vocab": {
+            "<pad>": 0,
+            "<unk>": 1,
+        },
+    }
+    rows = kerc_global_token_rows(
+        code_vocabulary, kernel_offset=100, pointer_offset=200, pointer_end=300
+    )
+    first_span = [rows[102], rows[103], rows[105]]
+    after_incomplete_string = kerc_serialization_valid_ids(
+        first_span, rows, end_id=10
+    )
+    assert 10 not in after_incomplete_string
+    assert 102 in after_incomplete_string
+    second_span = [*first_span, rows[102], rows[104], rows[105]]
+    complete = kerc_serialization_valid_ids(second_span, rows, end_id=10)
+    assert 10 in complete
 
 
 def test_decoder_only_control_is_mechanically_parameter_matched() -> None:
@@ -1983,6 +3739,688 @@ def test_resume_accepts_only_exact_semantic_plan_identity_migration(tmp_path: Pa
     plan["plan_sha256"] = "different-plan"
     with pytest.raises(ValueError, match="plan_identity_mismatch"):
         validate_resume(receipt, plan, target, checkpoint, optimizer)
+
+
+def test_resume_migration_accepts_only_a_replayed_exact_optimizer_projection() -> None:
+    source_sha256 = "a" * 64
+    projected_sha256 = "b" * 64
+    migration = {
+        "legacy_checkpoint_sha256": "c" * 64,
+        "legacy_optimizer_state_sha256": source_sha256,
+        "legacy_optimizer_steps": 4566,
+        "legacy_optimizer_positions": 423227,
+    }
+    receipt = {
+        "checkpoint_sha256": "c" * 64,
+        "optimizer_state_sha256": projected_sha256,
+        "optimizer_steps": 4566,
+        "optimizer_positions": 423227,
+        "optimizer_state_projection": {
+            "policy": "project_theseus_exact_kerc_stage_optimizer_projection_v1",
+            "source_optimizer_state_sha256": source_sha256,
+            "projected_optimizer_state_sha256": projected_sha256,
+            "source_tensor_values_mutated": False,
+            "optimizer_step_reset": False,
+            "learning_rate_reset": False,
+            "independent_projection_replay": "GREEN",
+        },
+    }
+
+    assert training_module.migration_receipt_identity_matches(migration, receipt)
+    receipt["optimizer_state_projection"]["optimizer_step_reset"] = True
+    assert not training_module.migration_receipt_identity_matches(
+        migration, receipt
+    )
+
+
+def test_sampler_migration_resets_only_the_declared_phase_cursor() -> None:
+    kernel_cursor = {"seed": 17, "epoch": 1, "batch_index": 9}
+    pretrain_cursor = {"seed": 18, "epoch": 2, "batch_index": 4}
+    prior = {
+        "phases": {
+            "kernel_english": {"data_cursor_next": kernel_cursor},
+            "pretraining": {"data_cursor_next": pretrain_cursor},
+        }
+    }
+    migration = {
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+    }
+
+    assert resume_phase_data_state(
+        prior,
+        migration,
+        target_id="english_kerc",
+        phase_key="kernel_english",
+        default_seed=99,
+    ) == (20260722, None)
+    assert resume_phase_data_state(
+        prior,
+        migration,
+        target_id="english_kerc",
+        phase_key="pretraining",
+        default_seed=99,
+    ) == (18, pretrain_cursor)
+
+
+def test_candidate_continuation_import_is_content_bound_and_scratch_only(
+    tmp_path: Path,
+) -> None:
+    checkpoint = tmp_path / "source.weights.safetensors"
+    optimizer = tmp_path / "source.optimizer.safetensors"
+    rng = tmp_path / "source.rng.safetensors"
+    checkpoint.write_bytes(b"weights")
+    optimizer.write_bytes(b"optimizer")
+    rng.write_bytes(b"rng")
+
+    def digest(path: Path) -> str:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    source_receipt = {
+        "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
+        "target_id": "english_kerc",
+        "candidate_seed": 20260722,
+        "plan_sha256": "legacy-plan",
+        "optimizer_steps": 4566,
+        "optimizer_positions": 423227,
+        "checkpoint": str(checkpoint),
+        "checkpoint_sha256": digest(checkpoint),
+        "optimizer_state": str(optimizer),
+        "optimizer_state_sha256": digest(optimizer),
+        "mlx_rng_state": str(rng),
+        "mlx_rng_state_sha256": digest(rng),
+        "current_kernel_phase_optimizer_positions": 11900,
+        "current_kernel_phase_position_accounting_reset": True,
+        "phases": {
+            "kernel_english": {
+                "coverage_first_sampling": {
+                    "observed_label_counts": {"objective:compiler": 32}
+                }
+            }
+        },
+    }
+    report = tmp_path / "source-report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "policy": "project_theseus_moecot_language_arm_training_plan_v1",
+                "mode": "training_execution",
+                "trigger_state": "GREEN",
+                "hard_gaps": [],
+                "executed_targets": ["english_kerc"],
+                "candidate_canary_lease": {
+                    "candidate_id": "rdc_kerc_k5_adequacy",
+                    "selected_seed": 20260722,
+                },
+                "results": [source_receipt],
+            }
+        )
+    )
+    destination = tmp_path / "fresh" / "english_kerc"
+    policy = {
+        "continuation_source_report": str(report),
+        "continuation_source_report_sha256": digest(report),
+        "continuation_source_plan_sha256": "legacy-plan",
+        "continuation_source_checkpoint_sha256": digest(checkpoint),
+        "continuation_source_optimizer_state_sha256": digest(optimizer),
+        "continuation_source_mlx_rng_state_sha256": digest(rng),
+        "continuation_source_optimizer_steps": 4566,
+        "continuation_source_optimizer_positions": 423227,
+        "continuation_reset_data_cursor_phase": "kernel_english",
+        "continuation_reset_data_cursor_seed": 20260722,
+        "continuation_reset_phase_position_accounting": "kernel_english",
+        "continuation_learning_rate": 0.00003,
+        "continuation_min_learning_rate": 0.00003,
+        "continuation_warmup_steps": 0,
+    }
+    target = {
+        "target_id": "english_kerc",
+        "checkpoint": str(destination / "weights.safetensors"),
+        "optimizer_state": str(destination / "optimizer.safetensors"),
+        "receipt": str(destination / "training_receipt.json"),
+    }
+    imported = initialize_candidate_continuation_receipt(
+        report,
+        target=target,
+        candidate_lease={
+            "selected_seed": 20260722,
+            "execution_policy": policy,
+        },
+    )
+
+    durable = json.loads(Path(target["receipt"]).read_text())
+    assert imported["source_checkpoint_sha256"] == digest(checkpoint)
+    assert imported["reset_phase_position_accounting"] == "kernel_english"
+    assert durable["checkpoint"] == str(checkpoint)
+    assert durable["candidate_continuation_import"] == imported
+    assert durable["current_kernel_phase_optimizer_positions"] == 0
+    assert durable["current_kernel_phase_position_accounting_reset"] is False
+    assert imported[
+        "inherited_current_kernel_phase_optimizer_positions"
+    ] == 11900
+    assert imported["inherited_coverage_observed_label_counts"] == {
+        "objective:compiler": 32
+    }
+    assert checkpoint.read_bytes() == b"weights"
+    with pytest.raises(ValueError, match="fresh scratch target"):
+        initialize_candidate_continuation_receipt(
+            report,
+            target=target,
+            candidate_lease={
+                "selected_seed": 20260722,
+                "execution_policy": policy,
+            },
+        )
+
+
+def test_compiler_optimizer_projection_preserves_exact_named_state(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.optimizer.safetensors"
+    destination = tmp_path / "projected" / "optimizer.safetensors"
+    arrays = {
+        "learning_rate": ("F32", [], struct.pack("<f", 3e-5)),
+        "step": ("U64", [], struct.pack("<Q", 4566)),
+        "kerc_stage_embedding.weight.m": ("BF16", [8], b"\x01\x00" * 8),
+        "kerc_stage_embedding.weight.v": ("BF16", [8], b"\x02\x00" * 8),
+        "kerc_stage_adapters.1.down.weight.m": (
+            "BF16",
+            [3, 4],
+            b"\x03\x00" * 12,
+        ),
+        "kerc_stage_adapters.1.down.weight.v": (
+            "BF16",
+            [3, 4],
+            b"\x04\x00" * 12,
+        ),
+        "kerc_kernel_output.weight.m": ("BF16", [3, 5], b"\x05\x00" * 15),
+        "kerc_kernel_output.weight.v": ("BF16", [3, 5], b"\x06\x00" * 15),
+        "source_layers.0.attention.query_proj.weight.m": (
+            "BF16",
+            [6],
+            b"\x07\x00" * 6,
+        ),
+        "source_layers.0.attention.query_proj.weight.v": (
+            "BF16",
+            [6],
+            b"\x08\x00" * 6,
+        ),
+    }
+
+    def write_safetensors(
+        path: Path, selected: dict[str, tuple[str, list[int], bytes]]
+    ) -> None:
+        cursor = 0
+        header: dict = {
+            "__metadata__": {"policy": "moecot_optimizer_state_v1"}
+        }
+        payload = bytearray()
+        for name, (dtype, shape, data) in selected.items():
+            header[name] = {
+                "dtype": dtype,
+                "shape": shape,
+                "data_offsets": [cursor, cursor + len(data)],
+            }
+            cursor += len(data)
+            payload.extend(data)
+        encoded = json.dumps(header, separators=(",", ":")).encode()
+        encoded += b" " * (-len(encoded) % 8)
+        path.write_bytes(struct.pack("<Q", len(encoded)) + encoded + payload)
+
+    write_safetensors(source, arrays)
+    source_sha256 = hashlib.sha256(source.read_bytes()).hexdigest()
+
+    receipt = training_module.project_kerc_compiler_optimizer_state(
+        source, destination
+    )
+    _metadata, source_rows, source_payload = (
+        training_module.safetensors_payload_index(source)
+    )
+    projected_metadata, projected_rows, projected_payload = (
+        training_module.safetensors_payload_index(destination)
+    )
+
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == source_sha256
+    assert receipt["source_optimizer_state_sha256"] == source_sha256
+    assert receipt["projected_tensor_count"] == 8
+    assert receipt["selected_parameter_count"] == 3
+    assert receipt["optimizer_step_reset"] is False
+    assert projected_metadata["stage_index"] == "1"
+    assert set(projected_rows) == set(arrays) - {
+        "source_layers.0.attention.query_proj.weight.m",
+        "source_layers.0.attention.query_proj.weight.v",
+    }
+    for name, projected_row in projected_rows.items():
+        assert training_module.safetensors_raw_tensor_sha256(
+            source, source_rows[name], payload_offset=source_payload
+        ) == training_module.safetensors_raw_tensor_sha256(
+            destination, projected_row, payload_offset=projected_payload
+        )
+    output_only_destination = (
+        tmp_path / "projected-output-only" / "optimizer.safetensors"
+    )
+    output_only = training_module.project_kerc_compiler_optimizer_state(
+        source,
+        output_only_destination,
+        include_stage_embedding=False,
+    )
+    _output_metadata, output_rows, _output_payload = (
+        training_module.safetensors_payload_index(output_only_destination)
+    )
+    assert output_only["stage_embedding_included"] is False
+    assert output_only["projected_tensor_count"] == 6
+    assert output_only["selected_parameter_count"] == 2
+    assert not any(
+        name.startswith("kerc_stage_embedding.") for name in output_rows
+    )
+
+    null_metadata = tmp_path / "null-metadata.safetensors"
+    header = {
+        "__metadata__": None,
+        "weight": {
+            "dtype": "F32",
+            "shape": [1],
+            "data_offsets": [0, 4],
+        },
+    }
+    encoded = json.dumps(header, separators=(",", ":")).encode()
+    encoded += b" " * (-len(encoded) % 8)
+    null_metadata.write_bytes(
+        struct.pack("<Q", len(encoded))
+        + encoded
+        + struct.pack("<f", 1.0)
+    )
+    observed_metadata, observed_rows, _payload = (
+        training_module.safetensors_payload_index(null_metadata)
+    )
+    assert observed_metadata == {}
+    assert set(observed_rows) == {"weight"}
+
+    incomplete = tmp_path / "incomplete.optimizer.safetensors"
+    write_safetensors(
+        incomplete,
+        {
+            name: value
+            for name, value in arrays.items()
+            if not name.startswith("kerc_kernel_output.")
+        },
+    )
+    with pytest.raises(ValueError, match="source scope is incomplete"):
+        training_module.project_kerc_compiler_optimizer_state(
+            incomplete, tmp_path / "incomplete-projected.safetensors"
+        )
+
+
+def test_compiler_delta_merge_preserves_every_tensor_owner_exactly(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.safetensors"
+    delta = tmp_path / "delta.safetensors"
+    merged = tmp_path / "merged.safetensors"
+    compiler_names = (
+        "kerc_kernel_output.weight",
+        "kerc_stage_adapters.1.down.weight",
+        "kerc_stage_adapters.1.norm.weight",
+        "kerc_stage_adapters.1.up.weight",
+        "kerc_stage_embedding.weight",
+    )
+
+    def write(path: Path, tensors: dict[str, bytes]) -> None:
+        cursor = 0
+        header: dict[str, object] = {"__metadata__": None}
+        payload = bytearray()
+        for name in sorted(tensors):
+            data = tensors[name]
+            header[name] = {
+                "dtype": "F32",
+                "shape": [len(data) // 4],
+                "data_offsets": [cursor, cursor + len(data)],
+            }
+            cursor += len(data)
+            payload.extend(data)
+        encoded = json.dumps(header, separators=(",", ":")).encode()
+        encoded += b" " * (-len(encoded) % 8)
+        path.write_bytes(
+            struct.pack("<Q", len(encoded)) + encoded + payload
+        )
+
+    source_tensors = {
+        **{
+            name: struct.pack("<2f", float(index), float(index + 1))
+            for index, name in enumerate(compiler_names)
+        },
+        "layers.0.attention.weight": struct.pack("<2f", 91.0, 92.0),
+        "token_embedding.weight": struct.pack("<2f", 93.0, 94.0),
+    }
+    delta_tensors = {
+        name: struct.pack("<2f", float(index + 20), float(index + 21))
+        for index, name in enumerate(compiler_names)
+    }
+    write(source, source_tensors)
+    write(delta, delta_tensors)
+
+    receipt = merge_kerc_compiler_delta_checkpoint(
+        source, delta, merged
+    )
+    _source_metadata, source_rows, source_payload = (
+        training_module.safetensors_payload_index(source)
+    )
+    _delta_metadata, delta_rows, delta_payload = (
+        training_module.safetensors_payload_index(delta)
+    )
+    _merged_metadata, merged_rows, merged_payload = (
+        training_module.safetensors_payload_index(merged)
+    )
+
+    assert receipt["selected_delta_tensors_exact"] is True
+    assert receipt["frozen_source_tensors_exact"] is True
+    assert receipt["compiler_delta_tensor_count"] == 5
+    assert receipt["source_checkpoint_mutated"] is False
+    for name in merged_rows:
+        expected_path, expected_rows, expected_payload = (
+            (delta, delta_rows, delta_payload)
+            if name in delta_rows
+            else (source, source_rows, source_payload)
+        )
+        assert training_module.safetensors_raw_tensor_sha256(
+            merged, merged_rows[name], payload_offset=merged_payload
+        ) == training_module.safetensors_raw_tensor_sha256(
+            expected_path,
+            expected_rows[name],
+            payload_offset=expected_payload,
+        )
+
+    output_only = tmp_path / "output-only.safetensors"
+    write(
+        output_only,
+        {
+            name: value
+            for name, value in delta_tensors.items()
+            if name != "kerc_stage_embedding.weight"
+        },
+    )
+    output_only_receipt = merge_kerc_compiler_delta_checkpoint(
+        source,
+        output_only,
+        tmp_path / "output-only-merged.safetensors",
+    )
+    assert output_only_receipt["compiler_delta_tensor_count"] == 4
+    assert output_only_receipt["stage_embedding_included"] is False
+    malformed = tmp_path / "malformed.safetensors"
+    write(
+        malformed,
+        {
+            name: value
+            for name, value in delta_tensors.items()
+            if name
+            not in {
+                "kerc_stage_embedding.weight",
+                "kerc_stage_adapters.1.norm.weight",
+            }
+        },
+    )
+    with pytest.raises(ValueError, match="scope is not exact"):
+        merge_kerc_compiler_delta_checkpoint(
+            source, malformed, tmp_path / "rejected.safetensors"
+        )
+
+
+def test_compiler_delta_merge_cli_binds_fresh_evaluation_report(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "source.safetensors"
+    delta = tmp_path / "delta.safetensors"
+    compiler_names = (
+        "kerc_kernel_output.weight",
+        "kerc_stage_adapters.1.down.weight",
+        "kerc_stage_adapters.1.norm.weight",
+        "kerc_stage_adapters.1.up.weight",
+        "kerc_stage_embedding.weight",
+    )
+
+    def write(path: Path, tensors: dict[str, bytes]) -> None:
+        cursor = 0
+        header: dict[str, object] = {"__metadata__": None}
+        payload = bytearray()
+        for name in sorted(tensors):
+            data = tensors[name]
+            header[name] = {
+                "dtype": "F32",
+                "shape": [len(data) // 4],
+                "data_offsets": [cursor, cursor + len(data)],
+            }
+            cursor += len(data)
+            payload.extend(data)
+        encoded = json.dumps(header, separators=(",", ":")).encode()
+        encoded += b" " * (-len(encoded) % 8)
+        path.write_bytes(
+            struct.pack("<Q", len(encoded)) + encoded + payload
+        )
+
+    write(
+        source,
+        {
+            **{
+                name: struct.pack("<2f", float(index), float(index + 1))
+                for index, name in enumerate(compiler_names)
+            },
+            "layers.0.attention.weight": struct.pack("<2f", 91.0, 92.0),
+        },
+    )
+    write(
+        delta,
+        {
+            name: struct.pack("<2f", float(index + 20), float(index + 21))
+            for index, name in enumerate(compiler_names)
+        },
+    )
+    source_report_path = tmp_path / "training.json"
+    source_report = {
+        "results": [
+            {
+                "checkpoint": str(delta),
+                "checkpoint_sha256": training_module.sha256_file(delta),
+                "checkpoint_representation": (
+                    "kerc_compiler_fp32_delta_over_content_bound_source_v1"
+                ),
+                "selective_compute_checkpoint": {
+                    "policy": (
+                        "project_theseus_kerc_stage_selective_compute_checkpoint_v1"
+                    ),
+                    "scope": "compiler",
+                    "selected_fp32_exact": True,
+                    "merge_into_verified_fp32_source_required_for_promotion": True,
+                    "source_checkpoint": str(source),
+                    "source_checkpoint_sha256": (
+                        training_module.sha256_file(source)
+                    ),
+                },
+            }
+        ]
+    }
+    training_module.write_json(source_report_path, source_report)
+    merged = tmp_path / "merged.safetensors"
+    receipt_path = tmp_path / "merge-receipt.json"
+    output_report_path = tmp_path / "evaluation.json"
+
+    result = merge_cli.merge_training_report(
+        source_report_path,
+        merged,
+        receipt_path,
+        output_report_path,
+    )
+    derived = training_module.read_json(output_report_path)
+    derived_result = derived["results"][0]
+
+    assert result["independent_merge_replay"] == "GREEN"
+    assert derived_result["checkpoint"] == str(merged)
+    assert derived_result["checkpoint_sha256"] == result[
+        "merged_checkpoint_sha256"
+    ]
+    assert derived_result["checkpoint_representation"] == (
+        "full_fp32_source_with_exact_compiler_delta_merge_v1"
+    )
+    assert derived_result["selective_compute_checkpoint"][
+        "resume_representation"
+    ] == "full_checkpoint_no_delta_overlay"
+    assert training_module.kerc_segmented_delta_resume_required(
+        {
+            **derived_result,
+            "current_kernel_phase_position_accounting_reset": True,
+        }
+    ) is False
+    assert training_module.kerc_segmented_delta_resume_required(
+        {
+            **source_report["results"][0],
+            "current_kernel_phase_position_accounting_reset": True,
+        }
+    ) is True
+    assert derived["derived_diagnostic_report"]["merge_receipt_sha256"] == (
+        training_module.sha256_file(receipt_path)
+    )
+    with pytest.raises(ValueError, match="must be fresh"):
+        merge_cli.merge_training_report(
+            source_report_path,
+            merged,
+            receipt_path,
+            output_report_path,
+        )
+
+
+def test_exact_continuation_skips_random_common_initialization_files() -> None:
+    receipt = training_module.exact_candidate_continuation_initialization_receipt(
+        {
+            "candidate_continuation": {
+                "policy": "project_theseus_exact_candidate_continuation_import_v1",
+                "source_checkpoint_sha256": "a" * 64,
+                "source_optimizer_state_sha256": "b" * 64,
+                "source_mlx_rng_state_sha256": "c" * 64,
+            }
+        },
+        target_id="english_kerc",
+        seed=20260722,
+    )
+    assert receipt == {
+        "policy": "project_theseus_exact_candidate_continuation_initialization_v1",
+        "state": "EXACT_CHECKPOINT_IMPORT_REPLACES_RANDOM_INITIALIZATION",
+        "target_id": "english_kerc",
+        "seed": 20260722,
+        "source_checkpoint_sha256": "a" * 64,
+        "source_optimizer_state_sha256": "b" * 64,
+        "source_mlx_rng_state_sha256": "c" * 64,
+        "common_random_reference_required": False,
+        "common_initialization_files_written": 0,
+        "optimizer_step_before_exact_state_load": False,
+    }
+    assert (
+        training_module.exact_candidate_continuation_initialization_receipt(
+            {"execution_policy": {}},
+            target_id="english_kerc",
+            seed=20260722,
+        )
+        is None
+    )
+
+
+def test_kerc_continuation_migration_binds_candidate_execution_plan(
+) -> None:
+    config_path = ROOT / "configs" / "moecot_language_arm_training.json"
+    config = bind_scale_preregistration(training_module.read_json(config_path))
+    base_plan = training_module.build_plan(config, config_path=config_path)
+    candidate_plan_hashes: set[str] = set()
+    for suffix in ("candidate-plan-hash-a", "candidate-plan-hash-b"):
+        authority = architecture_training_authority(
+            config,
+            max_steps=6144,
+            candidate_id="rdc_kerc_k5_adequacy",
+            scratch_checkpoint_root=(
+                ROOT
+                / "runtime"
+                / "t0a_canaries"
+                / "rdc_kerc_k5_adequacy"
+                / suffix
+            ),
+            targets=["english_kerc"],
+            phase="kernel_english",
+            resume=False,
+            candidate_seed=20260722,
+        )
+        lease = authority["candidate_lease"]
+        candidate_plan = training_module.build_plan(
+            bind_candidate_canary_overlay(config, lease),
+            config_path=config_path,
+            candidate_lease=lease,
+        )
+        migration = next(
+                    row
+                    for row in candidate_plan["plan_identity"]["legacy_migrations"]
+                    if row["migration_id"]
+                    == "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_v2"
+                )
+        assert migration["required_current_plan_sha256"] == (
+            candidate_plan["plan_sha256"]
+        )
+        candidate_plan_hashes.add(candidate_plan["plan_sha256"])
+
+    assert len(candidate_plan_hashes) == 1
+    assert candidate_plan_hashes != {base_plan["plan_sha256"]}
+
+
+def test_kerc_logical_loss_positions_follow_byte_fallback_expansion() -> None:
+    row = {
+        "objective": "surface_to_kernel_program_v1",
+        "target": json.dumps(
+            {
+                "kernel_version": "KE-1.0",
+                "protected_objects": [],
+                "concept_capsules": {},
+                "program": {
+                    "policy": "project_theseus_kerc_learned_program_tokens_v1",
+                    "tokens": ["PVERSION:KE-1.0", "PSPANS:[[7,19]]"],
+                },
+                "residual": {
+                    "mode": "SOURCE_RECONSTRUCTION",
+                    "unit_fidelity": [],
+                    "interaction": [],
+                    "segment": [],
+                    "tokens": [],
+                    "exact_handles": [],
+                },
+                "hierarchical_compiler": {
+                    "policy": "project_theseus_kerc_hierarchical_compiler_v1",
+                    "chunk_index": 0,
+                    "continuation": False,
+                    "root_node_ids": [],
+                },
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    }
+    code_vocabulary = build_kerc_code_vocabulary(
+        [row], {"kernel_max_vocab": 512, "pointer_max_vocab": 512}
+    )
+    compact = training_module.compact_learned_compiler_transport_text(
+        row["target"]
+    )
+    tokens = [str(token) for token in kerc_code_tokens(compact)]
+    rare_index = next(
+        index for index, token in enumerate(tokens) if "PSPANS:" in token
+    )
+    rare_space = kerc_code_space(tokens[rare_index])
+    vocabulary_key = "kernel_vocab" if rare_space == "V_K" else "pointer_vocab"
+    code_vocabulary[vocabulary_key].pop(tokens[rare_index], None)
+    ids, receipt, ranges = encode_kerc_global_target_with_logical_ranges(
+        compact,
+        code_vocabulary=code_vocabulary,
+        kernel_offset=600,
+        pointer_offset=1200,
+    )
+    assert receipt["fallback_token_count"] >= 1
+    assert ranges[rare_index][1] - ranges[rare_index][0] > 1
+    later_index = rare_index + 1
+    assert ranges[later_index][0] > later_index
+    assert ranges[-1][1] == len(ids)
 
 
 def test_checkpoint_format_migration_is_exact_atomic_and_idempotent(
@@ -2243,6 +4681,11 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(
     assert checkpoint.is_file() and optimizer_path.is_file() and receipt_path.is_file()
     assert not checkpoint.with_name("weights.partial.npz").exists()
     assert first["checkpoint_sha256"] != first["optimizer_state_sha256"]
+    assert first["immutable_generation_publication"] is True
+    assert ".step-00000001." in first["checkpoint"]
+    assert Path(first["mlx_rng_state"]).is_file()
+    assert first["phases"]["pretraining"]["data_cursor_next"]["epoch"] == 1
+    assert checkpoint.stat().st_ino == Path(first["checkpoint"]).stat().st_ino
     assert first["public_training_rows_written"] == 0
 
     second = train_target(
@@ -2261,9 +4704,187 @@ def test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state(
     assert second["optimizer_steps"] == 2
     assert second["optimizer_positions"] > first["optimizer_positions"]
     assert second["resume_base_checkpoint_sha256"] == first["checkpoint_sha256"]
+    assert second["phases"]["pretraining"]["data_cursor_start"] == first["phases"][
+        "pretraining"
+    ]["data_cursor_next"]
+    assert second["mlx_rng_state_sha256"]
     assert (
         json.loads(receipt_path.read_text())["optimizer_state_sha256"]
         == second["optimizer_state_sha256"]
+    )
+
+
+def test_tiny_fp32_master_candidate_resumes_exact_optimizer_and_rng(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = tiny_config(tmp_path)
+    model = build_model(
+        CausalTransformerConfig(vocab_size=64, **config["arm_model"]),
+        mx=mx,
+        nn=nn,
+        state_role_lookup=None,
+    )
+    stage = SimpleNamespace(
+        pretrain_inputs=np.asarray([[1, 4, 5, 6]], dtype=np.int32),
+        pretrain_labels=np.asarray([[4, 5, 6, 2]], dtype=np.int32),
+        pretrain_mask=np.ones((1, 4), dtype=np.uint8),
+    )
+    directory = tmp_path / "fp32-master"
+    target = {
+        "target_id": "fp32_master",
+        "role": "shared_trunk",
+        "row_ranges": [{"start": 0, "stop": 1}],
+        "unique_target_positions": 8,
+        "model": config["arm_model"],
+        "parameter_count": int(parameter_count(model, mlx_utils)),
+        "checkpoint": str(directory / "weights.safetensors"),
+        "optimizer_state": str(directory / "optimizer.safetensors"),
+        "receipt": str(directory / "training_receipt.json"),
+    }
+    plan = {
+        "plan_sha256": "e" * 64,
+        "stage": {"stage_signature": "stage-e", "metadata_sha256": "f" * 64},
+        "models": {"vocab_size": 64},
+    }
+    candidate_state = {
+        "execution_policy": {
+            "compute_dtype": "bfloat16",
+            "fp32_master": True,
+            "optimizer_id": "adamw_bfloat16_moments_mlx",
+        }
+    }
+    first = train_target(
+        config,
+        plan,
+        target,
+        stage=stage,
+        max_steps=1,
+        resume=False,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+        candidate_seed=20260722,
+        candidate_initialization_state=candidate_state,
+    )
+    second = train_target(
+        config,
+        plan,
+        target,
+        stage=stage,
+        max_steps=1,
+        resume=True,
+        mx=mx,
+        nn=nn,
+        optim=optim,
+        mlx_utils=mlx_utils,
+        candidate_seed=20260722,
+        candidate_initialization_state=candidate_state,
+    )
+
+    assert second["resume"] is True
+    assert second["optimizer_steps"] == first["optimizer_steps"] + 1
+    assert second["resume_base_checkpoint_sha256"] == first["checkpoint_sha256"]
+    assert second["optimizer_state_kind"] == first["optimizer_state_kind"]
+    assert second["mlx_rng_state_sha256"] != first["mlx_rng_state_sha256"]
+
+
+def test_kerc_selective_compute_load_preserves_only_compiler_fp32(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=16,
+        num_layers=1,
+        num_heads=2,
+        num_kv_heads=1,
+        ff_dim=32,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        kerc_task_token_ids=(3, 4, 5, 6),
+        kerc_stage_adapter_dim=4,
+        kerc_residual_choice_count=4,
+        kerc_residual_bottleneck_dim=4,
+        kerc_verifier_dim=4,
+        kerc_decision_bottleneck_dim=4,
+        kerc_decision_output_dim=3,
+        kerc_surface_token_start=7,
+        kerc_surface_token_end=20,
+        kerc_kernel_token_start=20,
+        kerc_kernel_token_end=40,
+        kerc_pointer_token_start=40,
+        kerc_pointer_token_end=60,
+        kerc_end_token_id=6,
+    )
+    copy_lookup = np.arange(64, dtype=np.int32)
+    mx.random.seed(20260722)
+    source = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=copy_lookup,
+    )
+    mx.eval(source.parameters())
+    checkpoint = tmp_path / "source.safetensors"
+    mx.save_safetensors(
+        str(checkpoint),
+        dict(mlx_utils.tree_flatten(source.parameters())),
+    )
+
+    selective = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=copy_lookup,
+        parameter_initialization_dtype="bfloat16",
+        exact_checkpoint_placeholder_initialization=True,
+    )
+    assert {
+        training_module.canonical_tensor_dtype(value)
+        for _name, value in mlx_utils.tree_flatten(selective.parameters())
+    } == {"bfloat16"}
+    selective.freeze_to_kerc_stage(1)
+    receipt = load_kerc_stage_selective_compute_checkpoint(
+        selective,
+        checkpoint,
+        stage_index=1,
+        mx=mx,
+        mlx_utils=mlx_utils,
+    )
+    parameters = dict(mlx_utils.tree_flatten(selective.parameters()))
+    trainable_names = {
+        name
+        for name, _value in mlx_utils.tree_flatten(
+            selective.trainable_parameters()
+        )
+    }
+
+    assert receipt["selected_fp32_exact"] is True
+    assert receipt["selected_tensor_count"] == 5
+    assert receipt["merge_into_verified_fp32_source_required_for_promotion"] is True
+    assert all(
+        training_module.canonical_tensor_dtype(parameters[name]) == "float32"
+        for name in trainable_names
+    )
+    assert all(
+        training_module.canonical_tensor_dtype(value) == "bfloat16"
+        for name, value in parameters.items()
+        if name not in trainable_names
+    )
+    source_parameters = dict(mlx_utils.tree_flatten(source.parameters()))
+    assert all(
+        np.array_equal(parameters[name], source_parameters[name])
+        for name in trainable_names
     )
 
 

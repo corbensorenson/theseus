@@ -10,6 +10,8 @@ import math
 import os
 import platform
 import resource
+import re
+import shutil
 import statistics
 import subprocess
 import sys
@@ -30,6 +32,10 @@ if str(SCRIPTS) not in sys.path:
 import moecot_language_arm_training as training  # noqa: E402
 import neural_seed_campaign_controller as campaign_controller  # noqa: E402
 import neural_seed_resident_runtime as resident_runtime  # noqa: E402
+from resource_acceleration_assembly_line import (  # noqa: E402
+    build_assembly_line,
+    generation_quality_receipt,
+)
 
 
 DEFAULT_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
@@ -42,6 +48,7 @@ DEFAULT_LEARNING_CURVE = (
 )
 DEFAULT_OUT = ROOT / "reports/resource_acceleration_qualification.json"
 DEFAULT_MARKDOWN = ROOT / "reports/resource_acceleration_qualification.md"
+DEFAULT_CORPUS_REPORT = ROOT / "reports/theseus_corpus_acceleration.json"
 DEFAULT_ASSISTANT_CONFIG = ROOT / "configs/theseus_assistant_runtime.json"
 ACCELERATION_KEYS = {
     "beam_advance",
@@ -52,6 +59,7 @@ ACCELERATION_KEYS = {
 MAX_FINAL_LOSS_ABSOLUTE_DELTA = 2e-6
 MAX_PARAMETER_ABSOLUTE_DELTA = 5e-6
 MAX_PARAMETER_RELATIVE_L2_DELTA = 1e-6
+MAX_RETAINED_METAL_TRACE_BYTES = 2 * 1024 * 1024 * 1024
 
 
 def main() -> int:
@@ -60,6 +68,7 @@ def main() -> int:
     parser.add_argument("--packet", default=relative(DEFAULT_PACKET))
     parser.add_argument("--training-report", default=relative(DEFAULT_TRAINING_REPORT))
     parser.add_argument("--learning-curve", default=relative(DEFAULT_LEARNING_CURVE))
+    parser.add_argument("--corpus-report", default=relative(DEFAULT_CORPUS_REPORT))
     parser.add_argument("--out", default=relative(DEFAULT_OUT))
     parser.add_argument("--markdown-out", default=relative(DEFAULT_MARKDOWN))
     parser.add_argument("--sample-count", type=int, default=8)
@@ -69,6 +78,7 @@ def main() -> int:
     parser.add_argument("--compiled-microbatch-size", type=int, default=4)
     parser.add_argument("--precision-pair-steps", type=int, default=8)
     parser.add_argument("--precision-pair-repetitions", type=int, default=2)
+    parser.add_argument("--metal-trace-out", default="")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     if args.sample_count < 1:
@@ -86,11 +96,15 @@ def main() -> int:
     if args.precision_pair_repetitions < 2:
         parser.error("--precision-pair-repetitions must be at least two")
 
+    metal_trace_path = resolve(args.metal_trace_out) if args.metal_trace_out else None
+    if metal_trace_path is not None:
+        os.environ["MTL_CAPTURE_ENABLED"] = "1"
     report = qualify(
         config_path=resolve(args.config),
         packet_path=resolve(args.packet),
         training_report_path=resolve(args.training_report),
         learning_curve_path=resolve(args.learning_curve),
+        corpus_report_path=resolve(args.corpus_report),
         sample_count=args.sample_count,
         max_tokens=args.max_tokens,
         training_pair_steps=args.training_pair_steps,
@@ -98,6 +112,7 @@ def main() -> int:
         compiled_microbatch_size=args.compiled_microbatch_size,
         precision_pair_steps=args.precision_pair_steps,
         precision_pair_repetitions=args.precision_pair_repetitions,
+        metal_trace_path=metal_trace_path,
         execute=args.execute,
     )
     write_json(resolve(args.out), report)
@@ -112,6 +127,7 @@ def qualify(
     packet_path: Path,
     training_report_path: Path,
     learning_curve_path: Path,
+    corpus_report_path: Path,
     sample_count: int,
     max_tokens: int,
     training_pair_steps: int,
@@ -119,10 +135,12 @@ def qualify(
     compiled_microbatch_size: int,
     precision_pair_steps: int,
     precision_pair_repetitions: int,
+    metal_trace_path: Path | None,
     execute: bool,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     process_resources_before = process_resource_receipt()
+    system_memory_before = system_memory_receipt()
     config = training.bind_scale_preregistration(read_json(config_path))
     plan = training.build_plan(config, config_path=config_path)
     decision_control = campaign_controller.build_campaign_status(
@@ -133,6 +151,7 @@ def qualify(
     packet = read_json(packet_path)
     packet_rows = packet.get("rows") if isinstance(packet.get("rows"), list) else []
     gaps = validate_packet(packet_rows)
+    performance_shortfalls: list[str] = []
     selected = select_qualification_rows(packet_rows, sample_count)
     target = (plan.get("targets") or {}).get(training.SHARED_TRUNK_ID) or {}
     receipt_path = resolve(str(target.get("receipt") or ""))
@@ -157,10 +176,21 @@ def qualify(
             gaps.append(f"checkpoint_lineage_invalid:{exc}")
     training_evidence = training_summary(training_report_path)
     learning_evidence = learning_summary(learning_curve_path)
+    corpus_evidence = (
+        read_json(corpus_report_path)
+        if corpus_report_path.is_file()
+        else {"state": "MISSING", "path": relative(corpus_report_path)}
+    )
     if training_evidence.get("state") != "READY":
         gaps.append("training_acceleration_evidence_missing")
     if learning_evidence.get("state") != "READY":
         gaps.append("private_dev_learning_evidence_missing")
+    corpus_acceleration_ready = bool(
+        corpus_evidence.get("state") == "GREEN"
+        and corpus_evidence.get("route_adoption_ready")
+    )
+    if execute and not corpus_acceleration_ready:
+        gaps.append("corpus_to_tensor_acceleration_evidence_missing_or_unqualified")
 
     inference = {
         "state": "NOT_EXECUTED",
@@ -173,6 +203,7 @@ def qualify(
     checkpoint_storage = {"state": "NOT_EXECUTED"}
     assistant_refresh = {"state": "NOT_EXECUTED"}
     resident = {"trigger_state": "NOT_EXECUTED"}
+    metal_trace = {"state": "NOT_REQUESTED"}
     if execute and not gaps:
         training_pair = run_training_pair_qualification(
             config=config,
@@ -185,8 +216,30 @@ def qualify(
             compiled_microbatch_size=compiled_microbatch_size,
         )
         training_evidence["paired_canary"] = training_pair
-        if training_pair.get("state") != "GREEN":
-            gaps.append("same_semantics_training_speedup_below_2x")
+        pair_acceptance = training_pair.get("acceptance") or {}
+        if not (
+            pair_acceptance.get("bounded_loss_parity_every_trial") is True
+            and pair_acceptance.get("bounded_full_parameter_parity_every_trial")
+            is True
+        ):
+            gaps.append("same_semantics_training_parity_failed")
+        if not (
+            pair_acceptance.get("median_speedup_at_least_2x") is True
+            and pair_acceptance.get("pooled_speedup_at_least_2x") is True
+        ):
+            performance_shortfalls.append("same_semantics_training_speedup_below_2x")
+        if metal_trace_path is not None:
+            metal_trace = run_metal_trace_qualification(
+                config=config,
+                plan=plan,
+                target=target,
+                checkpoint=checkpoint,
+                optimizer_path=optimizer,
+                compiled_microbatch_size=compiled_microbatch_size,
+                output_path=metal_trace_path,
+            )
+            if metal_trace.get("state") != "GREEN":
+                gaps.append("mlx_metal_trace_capture_failed")
         precision = run_precision_pair_qualification(
             config=config,
             plan=plan,
@@ -200,6 +253,29 @@ def qualify(
         training_evidence["precision_autotune"] = precision
         if precision.get("state") == "RED":
             gaps.append("mixed_precision_qualification_fault")
+        precision_resume = run_precision_resume_qualification(
+            config=config,
+            plan=plan,
+            target=target,
+            checkpoint=checkpoint,
+            optimizer_path=optimizer,
+            steps=precision_pair_steps,
+            compiled_microbatch_size=compiled_microbatch_size,
+        )
+        training_evidence["bf16_checkpoint_resume"] = precision_resume
+        fp32_resume = run_precision_resume_qualification(
+            config=config,
+            plan=plan,
+            target=target,
+            checkpoint=checkpoint,
+            optimizer_path=optimizer,
+            steps=precision_pair_steps,
+            compiled_microbatch_size=min(4, compiled_microbatch_size),
+            precision_mode="float32",
+        )
+        training_evidence["fp32_checkpoint_resume"] = fp32_resume
+        if fp32_resume.get("state") != "GREEN":
+            gaps.append("canonical_fp32_exact_resume_failed")
         checkpoint_storage = run_checkpoint_storage_qualification(checkpoint)
         if checkpoint_storage.get("exact_tensor_parity") is not True:
             gaps.append("checkpoint_format_exact_tensor_parity_failed")
@@ -220,6 +296,9 @@ def qualify(
             gaps.append("optimized_decode_exact_parity_failed")
         if float(inference.get("uncached_aggregate_speedup") or 0.0) < 2.0:
             gaps.append("optimized_decode_speedup_below_2x")
+        inference["quality_denominator"] = generation_quality_receipt(inference)
+        if not inference["quality_denominator"]["capability_grade_speed_evidence"]:
+            gaps.append("optimized_decode_successful_nonempty_quality_floor_failed")
         resident = resident_runtime.qualify_resident_runtime(
             config_path=config_path,
             packet_path=packet_path,
@@ -232,8 +311,16 @@ def qualify(
         if float(resident.get("repeated_prompt_speedup") or 0.0) < 5.0:
             gaps.append("resident_repeated_prompt_speedup_below_5x")
 
-    state = "RED" if gaps else "GREEN" if execute else "READY"
-    return {
+    state = (
+        "RED"
+        if gaps
+        else "YELLOW"
+        if execute and performance_shortfalls
+        else "GREEN"
+        if execute
+        else "READY"
+    )
+    report = {
         "policy": "project_theseus_resource_acceleration_qualification_v1",
         "created_utc": now(),
         "trigger_state": state,
@@ -242,10 +329,14 @@ def qualify(
         "process_resources": process_resource_delta(
             process_resources_before, process_resource_receipt()
         ),
+        "system_memory_pressure": system_memory_delta(
+            system_memory_before, system_memory_receipt()
+        ),
         "config": artifact(config_path),
         "packet": artifact(packet_path),
         "training_report": artifact(training_report_path),
         "learning_curve": artifact(learning_curve_path),
+        "corpus_report": artifact(corpus_report_path),
         "plan_sha256": plan.get("plan_sha256"),
         "checkpoint_lineage": {
             "receipt": relative(receipt_path),
@@ -267,7 +358,9 @@ def qualify(
             "prompt_or_target_text_retained": False,
         },
         "training": training_evidence,
+        "metal_trace": metal_trace,
         "private_dev_learning": learning_evidence,
+        "corpus_to_tensor": corpus_evidence,
         "architecture_decision_control": decision_control,
         "checkpoint_storage": checkpoint_storage,
         "assistant_context_refresh": assistant_refresh,
@@ -275,6 +368,23 @@ def qualify(
         "inference": inference,
         "resident_runtime": resident,
         "adoption": {
+            "rust_exact_corpus_to_tensor": (
+                "QUALIFIED_FROZEN_LINEAGE"
+                if corpus_evidence.get("state") == "GREEN"
+                and bool(corpus_evidence.get("route_adoption_ready"))
+                else "NOT_QUALIFIED"
+            ),
+            "rust_kerc_dual_space_encoding": (
+                "QUALIFIED_TYPED_PREPROCESSING"
+                if ((corpus_evidence.get("kerc_dual_space") or {}).get("state"))
+                == "GREEN"
+                and bool(
+                    (corpus_evidence.get("kerc_dual_space") or {}).get(
+                        "route_adoption_ready"
+                    )
+                )
+                else "NOT_QUALIFIED"
+            ),
             "mlx_compiled_fixed_width_microbatch": (
                 "QUALIFIED"
                 if ((training_evidence.get("paired_canary") or {}).get("state") == "GREEN")
@@ -284,15 +394,36 @@ def qualify(
             ),
             "bf16": (
                 "QUALIFIED_BFLOAT16_COMPUTE_FP32_MASTER"
-                if ((training_evidence.get("precision_autotune") or {}).get("adopt"))
+                if (
+                    (training_evidence.get("precision_autotune") or {}).get("adopt")
+                    and (
+                        training_evidence.get("bf16_checkpoint_resume") or {}
+                    ).get("state")
+                    == "GREEN"
+                )
                 else "NOT_ADOPTED"
                 if execute
                 else "PENDING_MIXED_PRECISION_QUALIFICATION"
+            ),
+            "canonical_fp32_checkpoint_resume": (
+                "QUALIFIED"
+                if (training_evidence.get("fp32_checkpoint_resume") or {}).get(
+                    "state"
+                )
+                == "GREEN"
+                else "NOT_QUALIFIED"
             ),
             "batched_beam_device_filter_preprune": (
                 "QUALIFIED"
                 if inference.get("exact_parity_case_count") == inference.get("case_count")
                 and float(inference.get("uncached_aggregate_speedup") or 0.0) >= 2.0
+                and bool(
+                    (inference.get("quality_denominator") or {}).get(
+                        "capability_grade_speed_evidence"
+                    )
+                )
+                else "MECHANICS_PARITY_ONLY_CAPABILITY_BLOCKED"
+                if inference.get("exact_parity_case_count") == inference.get("case_count")
                 else "NOT_QUALIFIED"
             ),
             "kerc_batched_beam_device_filter_preprune": (
@@ -345,7 +476,19 @@ def qualify(
             "quality_or_verification_skipped_for_speed": False,
         },
         "hard_gaps": gaps,
+        "performance_shortfalls": performance_shortfalls,
         "remaining_gaps": [
+            *performance_shortfalls,
+            *(
+                []
+                if metal_trace.get("state") == "GREEN"
+                else ["canonical_mlx_metal_trace_pending"]
+            ),
+            *(
+                []
+                if corpus_acceleration_ready
+                else ["corpus_to_tensor_acceleration_qualification_pending"]
+            ),
             *(
                 []
                 if decision_control.get("target_speedup_empirically_proven") is True
@@ -371,6 +514,8 @@ def qualify(
             "capability, public-transfer, or model-quality claim."
         ),
     }
+    report["assembly_line"] = build_assembly_line(report)
+    return report
 
 
 def run_assistant_refresh_qualification(config_path: Path) -> dict[str, Any]:
@@ -870,6 +1015,323 @@ def run_precision_pair_qualification(
     }
 
 
+def run_precision_resume_qualification(
+    *,
+    config: dict[str, Any],
+    plan: dict[str, Any],
+    target: dict[str, Any],
+    checkpoint: Path,
+    optimizer_path: Path,
+    steps: int,
+    compiled_microbatch_size: int,
+    precision_mode: str = "bfloat16_fp32_master",
+) -> dict[str, Any]:
+    """Prove selected precision state and data order survive a real reload."""
+
+    if steps < 4:
+        raise ValueError("resume qualification requires at least four updates")
+    first_steps = steps // 2
+    second_steps = steps - first_steps
+    context = build_training_route_context(
+        config=config,
+        plan=plan,
+        target=target,
+        checkpoint=checkpoint,
+        optimizer_path=optimizer_path,
+        steps=steps,
+        compiled_microbatch_size=compiled_microbatch_size,
+    )
+    mx = context["mx"]
+    if hasattr(mx, "clear_cache"):
+        mx.clear_cache()
+    uninterrupted = run_training_route(
+        mode="compiled",
+        precision_mode=precision_mode,
+        capture_parameter_snapshot=True,
+        capture_optimizer_snapshot=True,
+        capture_rng_snapshot=True,
+        **context,
+    )
+    uninterrupted_parameters = uninterrupted.pop("_parameter_snapshot")
+    uninterrupted_optimizer = uninterrupted.pop("_optimizer_snapshot")
+    uninterrupted_rng = uninterrupted.pop("_rng_snapshot")
+
+    first_context = {**context, "steps": first_steps}
+    if hasattr(mx, "clear_cache"):
+        mx.clear_cache()
+    first = run_training_route(
+        mode="compiled",
+        precision_mode=precision_mode,
+        capture_parameter_snapshot=True,
+        capture_optimizer_snapshot=True,
+        capture_rng_snapshot=True,
+        **first_context,
+    )
+    first_parameters = first.pop("_parameter_snapshot")
+    first_optimizer = first.pop("_optimizer_snapshot")
+    first_rng = first.pop("_rng_snapshot")
+    with tempfile.TemporaryDirectory(prefix="theseus-precision-resume-") as directory:
+        root = Path(directory)
+        resumed_checkpoint = root / "model.safetensors"
+        resumed_optimizer = root / "optimizer.safetensors"
+        resumed_rng = root / "rng.safetensors"
+        checkpoint_started = time.perf_counter()
+        save_array_mapping_atomic(mx, first_parameters, resumed_checkpoint)
+        save_array_mapping_atomic(mx, first_optimizer, resumed_optimizer)
+        save_array_mapping_atomic(mx, first_rng, resumed_rng)
+        checkpoint_seconds = time.perf_counter() - checkpoint_started
+        checkpoint_receipt = {
+            "checkpoint_sha256": file_sha256(resumed_checkpoint),
+            "optimizer_state_sha256": file_sha256(resumed_optimizer),
+            "rng_state_sha256": file_sha256(resumed_rng),
+            "checkpoint_bytes": resumed_checkpoint.stat().st_size,
+            "optimizer_state_bytes": resumed_optimizer.stat().st_size,
+            "rng_state_bytes": resumed_rng.stat().st_size,
+            "publication_seconds": round(checkpoint_seconds, 6),
+            "atomic_file_replacement": True,
+        }
+        second_context = {
+            **context,
+            "checkpoint": resumed_checkpoint,
+            "optimizer_path": resumed_optimizer,
+            "steps": second_steps,
+        }
+        if hasattr(mx, "clear_cache"):
+            mx.clear_cache()
+        reloaded_rng = {
+            name: value for name, value in mx.load(str(resumed_rng)).items()
+        }
+        resumed = run_training_route(
+            mode="compiled",
+            precision_mode=precision_mode,
+            resume_data_cursor=first["data_cursor_next"],
+            resume_rng_state=reloaded_rng,
+            capture_parameter_snapshot=True,
+            capture_optimizer_snapshot=True,
+            capture_rng_snapshot=True,
+            capture_starting_snapshot=True,
+            **second_context,
+        )
+        resumed_parameters = resumed.pop("_parameter_snapshot")
+        resumed_optimizer_state = resumed.pop("_optimizer_snapshot")
+        resumed_rng_state = resumed.pop("_rng_snapshot")
+        resumed_start_parameters = resumed.pop("_starting_parameter_snapshot")
+        resumed_start_optimizer = resumed.pop("_starting_optimizer_snapshot")
+        resumed_start_rng = resumed.pop("_starting_rng_snapshot")
+
+    parameter_comparison = compare_parameter_snapshots(
+        uninterrupted_parameters, resumed_parameters
+    )
+    optimizer_comparison = compare_parameter_snapshots(
+        uninterrupted_optimizer, resumed_optimizer_state
+    )
+    rng_comparison = compare_parameter_snapshots(
+        uninterrupted_rng, resumed_rng_state
+    )
+    reload_parameter_comparison = compare_parameter_snapshots(
+        first_parameters, resumed_start_parameters
+    )
+    reload_optimizer_comparison = compare_parameter_snapshots(
+        first_optimizer, resumed_start_optimizer
+    )
+    reload_rng_comparison = compare_parameter_snapshots(
+        first_rng, resumed_start_rng
+    )
+    batch_hashes = [
+        *first.get("batch_index_sha256_prefix", []),
+        *resumed.get("batch_index_sha256_prefix", []),
+    ]
+    exact_data_order = batch_hashes == uninterrupted.get(
+        "batch_index_sha256_prefix", []
+    )
+    exact_cursor = resumed.get("data_cursor_next") == uninterrupted.get(
+        "data_cursor_next"
+    )
+    final_loss_delta = abs(
+        float(resumed["final_loss"]) - float(uninterrupted["final_loss"])
+    )
+    state = "GREEN" if all(
+        (
+            parameter_comparison.get("within_tolerance") is True,
+            optimizer_comparison.get("within_tolerance") is True,
+            rng_comparison.get("within_tolerance") is True,
+            reload_parameter_comparison.get("within_tolerance") is True,
+            reload_optimizer_comparison.get("within_tolerance") is True,
+            reload_rng_comparison.get("within_tolerance") is True,
+            exact_data_order,
+            exact_cursor,
+            final_loss_delta <= MAX_FINAL_LOSS_ABSOLUTE_DELTA,
+        )
+    ) else "RED"
+    return {
+        "policy": "project_theseus_mlx_precision_checkpoint_resume_v1",
+        "state": state,
+        "precision_mode": precision_mode,
+        "updates": {
+            "uninterrupted": steps,
+            "before_checkpoint": first_steps,
+            "after_reload": second_steps,
+        },
+        "checkpoint_publication": checkpoint_receipt,
+        "data_order_exact": exact_data_order,
+        "data_cursor_exact": exact_cursor,
+        "batch_index_sha256": hashlib.sha256(
+            json.dumps(batch_hashes, separators=(",", ":")).encode()
+        ).hexdigest(),
+        "final_loss_absolute_delta": round(final_loss_delta, 12),
+        "parameter_comparison": parameter_comparison,
+        "optimizer_state_comparison": optimizer_comparison,
+        "rng_state_comparison": rng_comparison,
+        "reload_boundary": {
+            "parameter_comparison": reload_parameter_comparison,
+            "optimizer_state_comparison": reload_optimizer_comparison,
+            "rng_state_comparison": reload_rng_comparison,
+        },
+        "uninterrupted": uninterrupted,
+        "before_checkpoint": first,
+        "after_reload": resumed,
+        "durable_training_state_mutated": False,
+        "scratch_artifacts_retained": False,
+        "public_training_rows": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "claim_boundary": "bounded exact-resume mechanics only; not convergence or capability evidence",
+    }
+
+
+def save_array_mapping_atomic(mx: Any, mapping: dict[str, Any], path: Path) -> None:
+    """Write one flat tensor mapping without exposing a partial checkpoint."""
+
+    temporary = path.with_name(path.stem + ".partial" + path.suffix)
+    temporary.unlink(missing_ok=True)
+    mx.save_safetensors(
+        str(temporary),
+        {name: mx.array(value) for name, value in mapping.items()},
+        metadata={"policy": "project_theseus_scratch_resume_state_v1"},
+    )
+    os.replace(temporary, path)
+
+
+def run_metal_trace_qualification(
+    *,
+    config: dict[str, Any],
+    plan: dict[str, Any],
+    target: dict[str, Any],
+    checkpoint: Path,
+    optimizer_path: Path,
+    compiled_microbatch_size: int,
+    output_path: Path,
+    precision_mode: str = "float32",
+) -> dict[str, Any]:
+    """Capture two immutable compiled updates for native Metal inspection."""
+
+    if output_path.exists():
+        return {
+            "state": "FAULT",
+            "reason": "trace_output_already_exists",
+            "path": relative(output_path),
+        }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    context = build_training_route_context(
+        config=config,
+        plan=plan,
+        target=target,
+        checkpoint=checkpoint,
+        optimizer_path=optimizer_path,
+        steps=2,
+        compiled_microbatch_size=compiled_microbatch_size,
+    )
+    mx = context["mx"]
+    capture_started = False
+    capture_completed = False
+
+    def capture_boundary(boundary: str, phase_step: int) -> None:
+        nonlocal capture_started, capture_completed
+        if phase_step != 2:
+            return
+        if boundary == "before_device_step":
+            mx.metal.start_capture(str(output_path.resolve()))
+            capture_started = True
+        elif boundary == "after_device_step" and capture_started:
+            mx.metal.stop_capture()
+            capture_started = False
+            capture_completed = True
+
+    try:
+        route = run_training_route(
+            mode="compiled",
+            precision_mode=precision_mode,
+            rope_kernel="mlx_fast",
+            prune_inactive_auxiliary_outputs=True,
+            step_boundary_callback=capture_boundary,
+            **context,
+        )
+    except Exception as exc:
+        return {
+            "state": "FAULT",
+            "reason": f"{type(exc).__name__}:{exc}",
+            "path": relative(output_path),
+        }
+    finally:
+        if capture_started:
+            try:
+                mx.metal.stop_capture()
+            except Exception:
+                pass
+    if not capture_completed or not output_path.is_dir():
+        return {
+            "state": "FAULT",
+            "reason": "post_compile_capture_artifact_missing",
+            "path": relative(output_path),
+        }
+    trace = directory_artifact(output_path)
+    if int(trace["bytes"]) > MAX_RETAINED_METAL_TRACE_BYTES:
+        shutil.rmtree(output_path)
+        return {
+            "policy": "project_theseus_mlx_metal_trace_qualification_v1",
+            "state": "CAPTURED_AND_EVICTED",
+            "trace": {
+                **trace,
+                "retained": False,
+                "inspectable": False,
+                "eviction_reason": "raw capture exceeded the 2 GiB evidence-retention ceiling",
+            },
+            "route": route,
+            "checkpoint_sha256": file_sha256(checkpoint),
+            "optimizer_state_sha256": file_sha256(optimizer_path),
+            "optimizer_steps": 2,
+            "captured_optimizer_steps": [2],
+            "compile_and_first_step_excluded": True,
+            "compiled_microbatch_size": compiled_microbatch_size,
+            "precision_mode": precision_mode,
+            "checkpoint_or_training_state_written": False,
+            "public_training_rows": 0,
+            "external_inference_calls": 0,
+            "fallback_return_count": 0,
+            "adoption_ready": False,
+            "smallest_next_patch": "capture one post-compile optimizer step with bounded signposts",
+            "claim_boundary": "capture identity and mechanics timings only; raw trace was not retained",
+        }
+    return {
+        "policy": "project_theseus_mlx_metal_trace_qualification_v1",
+        "state": "GREEN",
+        "trace": trace,
+        "route": route,
+        "checkpoint_sha256": file_sha256(checkpoint),
+        "optimizer_state_sha256": file_sha256(optimizer_path),
+        "optimizer_steps": 2,
+        "captured_optimizer_steps": [2],
+        "compile_and_first_step_excluded": True,
+        "compiled_microbatch_size": compiled_microbatch_size,
+        "precision_mode": precision_mode,
+        "checkpoint_or_training_state_written": False,
+        "public_training_rows": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "claim_boundary": "native trace and mechanics timings only; not speed or learning evidence",
+    }
+
+
 def build_training_route_context(
     *,
     config: dict[str, Any],
@@ -887,22 +1349,29 @@ def build_training_route_context(
     import mlx.optimizers as optim
     import mlx.utils as mlx_utils
 
+    setup_started = time.perf_counter()
     stage_dir = resolve(str(config["stage_dir"]))
+    metadata_started = time.perf_counter()
     metadata = read_json(stage_dir / "stage_metadata_v1.json")
     base = read_json(resolve(str(config["base_config"])))
+    metadata_seconds = time.perf_counter() - metadata_started
     canonical = metadata["summary"]["canonical_pretrain_stage"]
     shape = (
         int(canonical["window_count"]),
         int(canonical["max_sequence_tokens"]),
     )
+    open_started = time.perf_counter()
     arrays = training.load_pretrain_memmaps(
         training.pretrain_array_paths(stage_dir),
         shape,
         expected=canonical["array_artifacts"],
     )
+    memmap_open_seconds = time.perf_counter() - open_started
+    view_started = time.perf_counter()
     inputs = training.range_view(arrays[0], target["row_ranges"])
     labels = training.range_view(arrays[1], target["row_ranges"])
     mask = training.range_view(arrays[2], target["row_ranges"])
+    range_view_seconds = time.perf_counter() - view_started
     training_cfg = config["training"]
     total_schedule_steps = training.required_steps(
         mask,
@@ -910,12 +1379,14 @@ def build_training_route_context(
         int(target["optimizer_target_positions"]),
     ) + 128
     vocab_size = int(target.get("vocab_size") or plan["models"]["vocab_size"])
+    lookup_started = time.perf_counter()
     copy_lookup = training.build_source_to_target_lookup(
         base,
         metadata,
         vocab_size=vocab_size,
         identity_ranges=training.target_copy_identity_ranges(target),
     )
+    copy_lookup_seconds = time.perf_counter() - lookup_started
     return {
         "config": config,
         "plan": plan,
@@ -934,6 +1405,13 @@ def build_training_route_context(
         "nn": nn,
         "optim": optim,
         "mlx_utils": mlx_utils,
+        "setup_timings": {
+            "metadata_and_base_config_seconds": round(metadata_seconds, 6),
+            "memmap_open_and_validation_seconds": round(memmap_open_seconds, 6),
+            "range_view_seconds": round(range_view_seconds, 6),
+            "copy_lookup_seconds": round(copy_lookup_seconds, 6),
+            "total_seconds": round(time.perf_counter() - setup_started, 6),
+        },
     }
 
 
@@ -957,8 +1435,15 @@ def run_training_route(
     nn: Any,
     optim: Any,
     mlx_utils: Any,
+    setup_timings: dict[str, float],
     precision_mode: str = "float32",
     capture_parameter_snapshot: bool = False,
+    capture_optimizer_snapshot: bool = False,
+    capture_rng_snapshot: bool = False,
+    capture_starting_snapshot: bool = False,
+    resume_data_cursor: dict[str, Any] | None = None,
+    resume_rng_state: dict[str, Any] | None = None,
+    step_boundary_callback: Any = None,
     rope_kernel: str = "mlx_fast",
     prune_inactive_auxiliary_outputs: bool = True,
 ) -> dict[str, Any]:
@@ -971,6 +1456,7 @@ def run_training_route(
     if hasattr(mx, "reset_peak_memory"):
         mx.reset_peak_memory()
     mx.random.seed(int(config["seed"]) + training.stable_int(training.SHARED_TRUNK_ID))
+    construct_started = time.perf_counter()
     model = training.build_model(
         training.CausalTransformerConfig(vocab_size=vocab_size, **target["model"]),
         mx=mx,
@@ -989,11 +1475,15 @@ def run_training_route(
             source_to_target_lookup=copy_lookup,
             rope_kernel=rope_kernel,
         )
+    model_construct_seconds = time.perf_counter() - construct_started
+    optimizer_construct_started = time.perf_counter()
     schedule = training.build_schedule(optim, mx, training_cfg, total_schedule_steps)
     optimizer = optim.AdamW(
         learning_rate=schedule,
         weight_decay=float(training_cfg["weight_decay"]),
     )
+    optimizer_construct_seconds = time.perf_counter() - optimizer_construct_started
+    restore_started = time.perf_counter()
     model.load_weights(str(checkpoint))
     if master_model is not None:
         master_model.load_weights(str(checkpoint))
@@ -1004,6 +1494,34 @@ def run_training_route(
         master_model.parameters() if master_model is not None else model.parameters(),
         optimizer.state,
     )
+    checkpoint_restore_seconds = time.perf_counter() - restore_started
+    if resume_rng_state is not None:
+        expected_rng_names = [f"state.{index}" for index in range(len(mx.random.state))]
+        if sorted(resume_rng_state) != expected_rng_names:
+            raise ValueError("MLX RNG state shape contract mismatch")
+        mx.random.state = [
+            resume_rng_state[name] for name in expected_rng_names
+        ]
+        mx.eval(*mx.random.state)
+    starting_parameter_snapshot = None
+    starting_optimizer_snapshot = None
+    starting_rng_snapshot = None
+    if capture_starting_snapshot:
+        authoritative_model = master_model if master_model is not None else model
+        starting_parameter_snapshot = {
+            name: np.asarray(value).copy()
+            for name, value in mlx_utils.tree_flatten(
+                authoritative_model.trainable_parameters()
+            )
+        }
+        starting_optimizer_snapshot = {
+            name: np.asarray(value).copy()
+            for name, value in mlx_utils.tree_flatten(optimizer.state)
+        }
+        starting_rng_snapshot = {
+            f"state.{index}": np.asarray(value).copy()
+            for index, value in enumerate(mx.random.state)
+        }
     if master_model is not None:
         loss_function = mixed_precision_token_loss
     elif prune_inactive_auxiliary_outputs:
@@ -1046,6 +1564,7 @@ def run_training_route(
         checkpoint_every=10**9,
         heartbeat=Path("/tmp/theseus_acceleration_heartbeat.json"),
         global_step_offset=int(receipt.get("optimizer_steps") or 0),
+        resume_data_cursor=resume_data_cursor,
         mx=mx,
         optim=optim,
         source_conditioning=False,
@@ -1055,10 +1574,15 @@ def run_training_route(
         compute_dtype_name=(
             "bfloat16" if master_model is not None else "float32"
         ),
+        step_boundary_callback=step_boundary_callback,
     )
     authoritative_model = master_model if master_model is not None else model
     observed = {
         "training_step_execution": phase["training_step_execution"],
+        "setup_timings": setup_timings,
+        "model_construct_seconds": round(model_construct_seconds, 6),
+        "optimizer_construct_seconds": round(optimizer_construct_seconds, 6),
+        "checkpoint_restore_seconds": round(checkpoint_restore_seconds, 6),
         "optimizer_steps": phase["optimizer_steps"],
         "optimizer_positions": phase["optimizer_all_target_positions_consumed"],
         "warmup_excluded_positions": phase["warmup_excluded_positions"],
@@ -1073,17 +1597,35 @@ def run_training_route(
         "median_optimizer_step_seconds": phase["median_optimizer_step_seconds"],
         "mean_loss": phase["mean_loss"],
         "final_loss": phase["final_loss"],
+        "loss_prefix": phase["loss_prefix"],
         "optimizer_step_seconds_prefix": phase["optimizer_step_seconds_prefix"],
         "compiled_accumulation_seconds_total": phase[
             "compiled_accumulation_seconds_total"
         ],
         "compiled_update_seconds_total": phase["compiled_update_seconds_total"],
+        "host_batch_preparation_seconds_total": phase[
+            "host_batch_preparation_seconds_total"
+        ],
+        "unit_allocator_pack_seconds_total": phase[
+            "unit_allocator_pack_seconds_total"
+        ],
+        "device_step_seconds_total": phase["device_step_seconds_total"],
+        "static_sequence_width": phase["static_sequence_width"],
+        "maximum_dynamic_batch_width": phase["maximum_dynamic_batch_width"],
+        "mean_dynamic_batch_width": phase["mean_dynamic_batch_width"],
+        "maximum_execution_batch_width": phase["maximum_execution_batch_width"],
+        "padded_positions_avoided": phase["padded_positions_avoided"],
+        "compile_width_quantum": phase["compile_width_quantum"],
+        "compiled_microbatch_size": phase["compiled_microbatch_size"],
         "compiled_accumulation_seconds_prefix": phase[
             "compiled_accumulation_seconds_prefix"
         ],
         "compiled_update_seconds_prefix": phase[
             "compiled_update_seconds_prefix"
         ],
+        "data_cursor_start": phase["data_cursor_start"],
+        "data_cursor_next": phase["data_cursor_next"],
+        "batch_index_sha256_prefix": phase["batch_index_sha256_prefix"],
         "precision_mode": precision_mode,
         "rope_kernel": rope_kernel,
         "prune_inactive_auxiliary_outputs": prune_inactive_auxiliary_outputs,
@@ -1105,6 +1647,20 @@ def run_training_route(
                 authoritative_model.trainable_parameters()
             )
         }
+    if capture_optimizer_snapshot:
+        observed["_optimizer_snapshot"] = {
+            name: np.asarray(value).copy()
+            for name, value in mlx_utils.tree_flatten(optimizer.state)
+        }
+    if capture_rng_snapshot:
+        observed["_rng_snapshot"] = {
+            f"state.{index}": np.asarray(value).copy()
+            for index, value in enumerate(mx.random.state)
+        }
+    if capture_starting_snapshot:
+        observed["_starting_parameter_snapshot"] = starting_parameter_snapshot
+        observed["_starting_optimizer_snapshot"] = starting_optimizer_snapshot
+        observed["_starting_rng_snapshot"] = starting_rng_snapshot
     del model, master_model, optimizer
     return observed
 
@@ -1234,6 +1790,50 @@ def aggregate_training_routes(rows: list[dict[str, Any]]) -> dict[str, Any]:
             ),
             6,
         ),
+        "host_batch_preparation_seconds_total": round(
+            sum(
+                float(row.get("host_batch_preparation_seconds_total") or 0.0)
+                for row in rows
+            ),
+            6,
+        ),
+        "unit_allocator_pack_seconds_total": round(
+            sum(
+                float(row.get("unit_allocator_pack_seconds_total") or 0.0)
+                for row in rows
+            ),
+            6,
+        ),
+        "device_step_seconds_total": round(
+            sum(float(row.get("device_step_seconds_total") or 0.0) for row in rows),
+            6,
+        ),
+        "padded_positions_avoided_total": sum(
+            int(row.get("padded_positions_avoided") or 0) for row in rows
+        ),
+        "dynamic_width": {
+            "static_sequence_width": max(
+                int(row.get("static_sequence_width") or 0) for row in rows
+            ),
+            "maximum_dynamic_batch_width": max(
+                int(row.get("maximum_dynamic_batch_width") or 0) for row in rows
+            ),
+            "maximum_execution_batch_width": max(
+                int(row.get("maximum_execution_batch_width") or 0) for row in rows
+            ),
+            "mean_dynamic_batch_width": round(
+                statistics.mean(
+                    float(row.get("mean_dynamic_batch_width") or 0.0) for row in rows
+                ),
+                3,
+            ),
+            "compile_width_quanta": sorted(
+                {int(row.get("compile_width_quantum") or 0) for row in rows}
+            ),
+            "compiled_microbatch_sizes": sorted(
+                {int(row.get("compiled_microbatch_size") or 0) for row in rows}
+            ),
+        },
         "positions_per_second_distribution": distribution(
             [float(row["warmup_excluded_positions_per_second"]) for row in rows]
         ),
@@ -1567,6 +2167,67 @@ def process_resource_delta(
     }
 
 
+def parse_swap_usage(value: str) -> dict[str, int]:
+    units = {"K": 1024, "M": 1024**2, "G": 1024**3, "T": 1024**4}
+    observed: dict[str, int] = {}
+    for key in ("total", "used", "free"):
+        match = re.search(rf"\b{key}\s*=\s*([0-9.]+)([KMGT])", value)
+        if match:
+            observed[f"swap_{key}_bytes"] = int(
+                float(match.group(1)) * units[match.group(2)]
+            )
+    return observed
+
+
+def parse_vm_stat(value: str) -> dict[str, int]:
+    counters: dict[str, int] = {}
+    for label, key in (
+        ("Pageouts", "pageouts"),
+        ("Swapins", "swapins"),
+        ("Swapouts", "swapouts"),
+        ("Compressions", "compressions"),
+        ("Decompressions", "decompressions"),
+    ):
+        match = re.search(rf"^{label}:\s+([0-9]+)\.", value, re.MULTILINE)
+        if match:
+            counters[key] = int(match.group(1))
+    return counters
+
+
+def system_memory_receipt() -> dict[str, int | str]:
+    if platform.system() != "Darwin":
+        return {"state": "UNAVAILABLE", "scope": "host_cumulative_counters"}
+    return {
+        "state": "READY",
+        **parse_swap_usage(command_output(["sysctl", "vm.swapusage"])),
+        **parse_vm_stat(
+            subprocess.run(
+                ["vm_stat"], capture_output=True, text=True, check=False
+            ).stdout
+        ),
+        "scope": "host_cumulative_counters",
+    }
+
+
+def system_memory_delta(
+    before: dict[str, int | str], after: dict[str, int | str]
+) -> dict[str, int | str | bool]:
+    if before.get("state") != "READY" or after.get("state") != "READY":
+        return {"state": "UNAVAILABLE", "scope": "host_during_qualification"}
+    result: dict[str, int | str | bool] = {
+        "state": "READY",
+        "scope": "host_during_qualification_not_process_attributed",
+        "swap_used_bytes_start": int(before.get("swap_used_bytes") or 0),
+        "swap_used_bytes_end": int(after.get("swap_used_bytes") or 0),
+    }
+    for key in ("pageouts", "swapins", "swapouts", "compressions", "decompressions"):
+        result[f"{key}_delta"] = int(after.get(key) or 0) - int(before.get(key) or 0)
+    result["no_host_swap_io_observed"] = (
+        int(result["swapins_delta"]) == 0 and int(result["swapouts_delta"]) == 0
+    )
+    return result
+
+
 def command_output(command: list[str]) -> str:
     completed = subprocess.run(command, capture_output=True, text=True, check=False)
     return (completed.stdout or completed.stderr or "").strip()[:1000]
@@ -1580,13 +2241,25 @@ def render_markdown(report: dict[str, Any]) -> str:
     assistant_refresh = report["assistant_context_refresh"]
     resident = report.get("resident_runtime") or {}
     decision = report["architecture_decision_control"]
+    corpus = report.get("corpus_to_tensor") or {}
+    corpus_performance = corpus.get("performance") or {}
     training_pair = training.get("paired_canary") or {}
     precision = training.get("precision_autotune") or {}
+    bf16_resume = training.get("bf16_checkpoint_resume") or {}
+    bf16_adopted = (report.get("adoption") or {}).get("bf16") == (
+        "QUALIFIED_BFLOAT16_COMPUTE_FP32_MASTER"
+    )
+    quality = inference.get("quality_denominator") or generation_quality_receipt(inference)
+    assembly = report.get("assembly_line") or build_assembly_line(report)
+    memory = report.get("system_memory_pressure") or {}
     return "\n".join(
         [
             "# Resource Acceleration Qualification",
             "",
             f"- State: **{report['trigger_state']}**",
+            f"- Exact corpus-to-tensor state: `{corpus.get('state')}`",
+            f"- Exact corpus-to-tensor speedup: `{float(corpus_performance.get('corpus_to_tensor_speedup') or 0.0):.3f}x`",
+            f"- Exact corpus-to-tensor route adoption ready: `{corpus.get('route_adoption_ready')}`",
             f"- Training throughput: `{training.get('warmup_excluded_positions_per_second', 0):.3f}` positions/s",
             f"- Training execution: `{training.get('training_step_execution')}`",
             f"- Repeated paired training median speedup: `{float(training_pair.get('median_speedup') or 0.0):.3f}x`",
@@ -1595,12 +2268,16 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"- Mixed-precision candidate state: `{precision.get('state')}`",
             f"- Mixed-precision median speedup: `{float(precision.get('median_speedup') or 0.0):.3f}x`",
             f"- Mixed-precision pooled speedup: `{float(precision.get('pooled_speedup') or 0.0):.3f}x`",
-            f"- Mixed-precision adopted: `{precision.get('adopt')}`",
-            "- Mixed-precision timing scope: `rejected bf16-compute/fp32-master candidate; not resident-runtime overhead`",
+            f"- Short mixed-precision speed gate passed: `{precision.get('adopt')}`",
+            f"- BF16 exact-resume state: `{bf16_resume.get('state')}`",
+            f"- Mixed-precision adopted after resume qualification: `{bf16_adopted}`",
+            "- Mixed-precision timing scope: `bf16-compute/fp32-master candidate; final adoption also requires reproducible resume`",
             f"- Private-dev loss delta: `{learning.get('absolute_loss_delta')}`",
             f"- Weak-tail regressions: `{', '.join(learning.get('regressed_arms') or []) or 'none'}`",
             f"- Decode cases: `{inference.get('case_count', 0)}`",
             f"- Exact parity cases: `{inference.get('exact_parity_case_count', 0)}`",
+            f"- Successful nonempty decode cases: `{quality.get('successful_nonempty_case_count', 0)}/{quality.get('case_count', 0)}`",
+            f"- Capability-grade decode speed evidence: `{quality.get('capability_grade_speed_evidence')}`",
             f"- Uncached novel-request aggregate decode speedup: `{float(inference.get('uncached_aggregate_speedup') or 0.0):.3f}x`",
             f"- Uncached decode acceptance threshold: `{float(inference.get('minimum_uncached_decode_speedup') or 0.0):.3f}x`",
             f"- Checkpoint tensor parity: `{checkpoint.get('exact_tensor_parity')}`",
@@ -1612,8 +2289,13 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"- Resident production serving allowed: `{((resident.get('boundaries') or {}).get('runtime_serving_allowed'))}`",
             f"- First architecture-review budget opportunity: `{float(decision.get('first_review_budget_speedup_opportunity') or 0.0):.3f}x`",
             f"- First-decision speedup empirically proven: `{decision.get('target_speedup_empirically_proven')}`",
+            f"- Assembly-line measurement complete: `{assembly.get('measurement_complete')}`",
+            f"- Assembly-line quality complete: `{assembly.get('quality_complete')}`",
+            f"- Host swap used at start/end: `{int(memory.get('swap_used_bytes_start') or 0)}` / `{int(memory.get('swap_used_bytes_end') or 0)}` bytes",
+            f"- Host swap I/O observed during qualification: `{not bool(memory.get('no_host_swap_io_observed'))}`",
             "",
             "The decode comparison disables completion and prompt-prefix caches on both routes. Resident cache speedups are reported separately and do not contribute to uncached decode speedup. This qualification does not claim model capability or public transfer.",
+            "Faulted or empty generations can establish route parity, but they cannot qualify capability-grade speed.",
             "",
             "## Hard Gaps",
             "",
@@ -1631,11 +2313,25 @@ def render_markdown(report: dict[str, Any]) -> str:
 def report_summary(report: dict[str, Any]) -> dict[str, Any]:
     training_pair = report["training"].get("paired_canary") or {}
     precision = report["training"].get("precision_autotune") or {}
+    bf16_resume = report["training"].get("bf16_checkpoint_resume") or {}
+    bf16_adopted = (report.get("adoption") or {}).get("bf16") == (
+        "QUALIFIED_BFLOAT16_COMPUTE_FP32_MASTER"
+    )
+    quality = report["inference"].get("quality_denominator") or generation_quality_receipt(
+        report["inference"]
+    )
+    assembly = report.get("assembly_line") or build_assembly_line(report)
+    corpus = report.get("corpus_to_tensor") or {}
+    corpus_performance = corpus.get("performance") or {}
+    memory = report.get("system_memory_pressure") or {}
     return {
         "policy": report["policy"],
         "created_utc": report["created_utc"],
         "trigger_state": report["trigger_state"],
         "mode": report["mode"],
+        "corpus_to_tensor_state": corpus.get("state"),
+        "corpus_to_tensor_speedup": corpus_performance.get("corpus_to_tensor_speedup"),
+        "corpus_to_tensor_route_adoption_ready": corpus.get("route_adoption_ready"),
         "training_positions_per_second": report["training"].get(
             "warmup_excluded_positions_per_second"
         ),
@@ -1643,13 +2339,21 @@ def report_summary(report: dict[str, Any]) -> dict[str, Any]:
         "paired_training_pooled_speedup": training_pair.get("pooled_speedup"),
         "mixed_precision_median_speedup": precision.get("median_speedup"),
         "mixed_precision_pooled_speedup": precision.get("pooled_speedup"),
-        "mixed_precision_adopted": precision.get("adopt"),
+        "mixed_precision_short_speed_gate_passed": precision.get("adopt"),
+        "mixed_precision_resume_state": bf16_resume.get("state"),
+        "mixed_precision_adopted": bf16_adopted,
         "private_dev_loss_delta": report["private_dev_learning"].get(
             "absolute_loss_delta"
         ),
         "decode_case_count": report["inference"].get("case_count"),
         "decode_exact_parity_case_count": report["inference"].get(
             "exact_parity_case_count"
+        ),
+        "decode_successful_nonempty_case_count": quality.get(
+            "successful_nonempty_case_count"
+        ),
+        "decode_capability_grade_speed_evidence": quality.get(
+            "capability_grade_speed_evidence"
         ),
         "uncached_decode_aggregate_speedup": report["inference"].get(
             "uncached_aggregate_speedup"
@@ -1682,7 +2386,18 @@ def report_summary(report: dict[str, Any]) -> dict[str, Any]:
         "first_decision_speedup_empirically_proven": report[
             "architecture_decision_control"
         ].get("target_speedup_empirically_proven"),
+        "assembly_line_measurement_complete": assembly.get("measurement_complete"),
+        "assembly_line_quality_complete": assembly.get("quality_complete"),
+        "host_swap_used_bytes_start": memory.get("swap_used_bytes_start"),
+        "host_swap_used_bytes_end": memory.get("swap_used_bytes_end"),
+        "host_swapins_delta": memory.get("swapins_delta"),
+        "host_swapouts_delta": memory.get("swapouts_delta"),
+        "no_host_swap_io_observed": memory.get("no_host_swap_io_observed"),
+        "assembly_line_next_measurement_count": len(
+            assembly.get("next_measurements") or []
+        ),
         "hard_gaps": report["hard_gaps"],
+        "performance_shortfalls": report.get("performance_shortfalls") or [],
         "remaining_gaps": report.get("remaining_gaps") or [],
     }
 
@@ -1700,6 +2415,27 @@ def artifact(path: Path) -> dict[str, Any]:
         "path": relative(path),
         "sha256": file_sha256(path) if path.is_file() else "",
         "bytes": path.stat().st_size if path.is_file() else 0,
+    }
+
+
+def directory_artifact(path: Path) -> dict[str, Any]:
+    digest = hashlib.sha256()
+    files = sorted(candidate for candidate in path.rglob("*") if candidate.is_file())
+    total_bytes = 0
+    for candidate in files:
+        relative_path = candidate.relative_to(path).as_posix()
+        digest.update(relative_path.encode())
+        digest.update(b"\0")
+        with candidate.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+                total_bytes += len(chunk)
+    return {
+        "path": relative(path),
+        "sha256": digest.hexdigest(),
+        "bytes": total_bytes,
+        "file_count": len(files),
+        "format": "apple_metal_gputrace_directory",
     }
 
 

@@ -142,7 +142,7 @@ def main() -> int:
             write_json(ROOT / args.out, report)
         summary = {
             "ok": True,
-            "report": str((ROOT / args.out).relative_to(ROOT)).replace("\\", "/") if args.out else "reports/hive_operator_status.json",
+            "report": rel_path(ROOT / args.out) if args.out else "reports/hive_operator_status.json",
             "teacher_governance": report.get("teacher_governance", {}),
         }
         print(json.dumps(summary, indent=2))

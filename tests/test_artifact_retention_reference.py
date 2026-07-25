@@ -310,6 +310,68 @@ def test_replay_records_fail_closed_when_any_check_fails(tmp_path: Path) -> None
     assert records["defeater_records"][0]["current_trigger_state"] == "RED"
 
 
+def test_retention_dry_run_cannot_downgrade_cumulative_manifest_entry() -> None:
+    archived = {
+        "original_path": "reports/snapshot.json",
+        "archive_path": "archive/snapshot.json.gz",
+        "pointer_path": "reports/snapshot.json",
+        "status": "archived",
+        "bytes": 1000,
+        "sha256": "original",
+    }
+    dry_run = {
+        "original_path": "reports/snapshot.json",
+        "path": "reports/snapshot.json",
+        "status": "dry_run",
+        "bytes": 400,
+    }
+
+    assert retention.merge_manifest_entries(
+        [archived], [dry_run], execute=False
+    ) == [archived]
+
+
+def test_existing_pointer_recovery_preserves_original_archive_metadata(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(retention, "ROOT", tmp_path)
+    source = tmp_path / "reports" / "snapshot.json"
+    archive = tmp_path / "archive" / "snapshot.json.gz"
+    archive.parent.mkdir(parents=True)
+    source.parent.mkdir(parents=True)
+    original = b'{"value":"original"}\n'
+    with gzip.open(archive, "wb") as handle:
+        handle.write(original)
+    retention.write_json(
+        source,
+        {
+            "policy": retention.ARCHIVE_POINTER_POLICY,
+            "archive_path": "archive/snapshot.json.gz",
+            "original_path": "reports/snapshot.json",
+            "original_bytes": len(original),
+            "original_sha256": hashlib.sha256(original).hexdigest(),
+            "original_mtime_utc": "2026-07-23T00:00:00Z",
+            "archive_family": "snapshot",
+        },
+    )
+    candidate = retention.candidate_for_path(source)
+
+    recovered = retention.archive_candidate(
+        candidate,
+        tmp_path / "archive",
+        compress=True,
+        allow_non_json_pointer=False,
+        allow_binary_sidecar=False,
+    )
+
+    assert recovered["status"] == "already_archived"
+    assert recovered["bytes"] == len(original)
+    assert recovered["sha256"] == hashlib.sha256(original).hexdigest()
+    assert recovered["family"] == "snapshot"
+    assert recovered["archived_bytes"] == archive.stat().st_size
+
+
 def test_hot_report_compaction_protects_current_citations_and_ledgers(
     tmp_path: Path,
     monkeypatch,
@@ -353,6 +415,7 @@ def test_hot_report_compaction_protects_current_citations_and_ledgers(
             - historical.stat().st_size
             - nested_historical.stat().st_size
         ),
+        target_hot_files=4,
     )
 
     assert by_path["reports/current.json"]["protected"]
@@ -365,9 +428,110 @@ def test_hot_report_compaction_protects_current_citations_and_ledgers(
     }
 
 
+def test_hot_report_compaction_protects_renewable_canonical_views(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    monkeypatch.setattr(reference, "ROOT", tmp_path)
+    monkeypatch.setattr(reference, "REPORTS_ROOT", reports)
+    for name in reference.HOT_REPORT_RETAIN_LIVE_NAMES:
+        (reports / name).write_text('{"generation":2}\n', encoding="utf-8")
+
+    index = reference.build_hot_report_reference_index({}, {})
+
+    assert all(row["protected"] for row in index["file_records"])
+    assert all(
+        "renewable_canonical_live_view" in row["protection_reasons"]
+        for row in index["file_records"]
+    )
+
+
 def test_hot_report_default_threshold_catches_registry_sized_snapshots() -> None:
     assert retention.MIN_BYTES == 256 * 1024 * 1024
     assert retention.hot_report_candidate_min_bytes(None) == 1024 * 1024
     assert retention.hot_report_candidate_min_bytes(None) < 9 * 1024 * 1024
     assert retention.hot_report_candidate_min_bytes(4 * 1024 * 1024) == 4 * 1024 * 1024
     assert retention.HOT_REPORT_MIN_AGE_HOURS == 0.0
+
+
+def test_archive_pointer_probe_treats_small_binary_payload_as_non_pointer(
+    tmp_path: Path,
+) -> None:
+    payload = tmp_path / "binary-report.bin"
+    payload.write_bytes(b"\xac\xed\x00\x05\x00\xff")
+
+    assert reference.archive_pointer_payload(payload) is False
+
+
+def test_hot_report_compaction_satisfies_file_and_byte_targets(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    monkeypatch.setattr(reference, "ROOT", tmp_path)
+    monkeypatch.setattr(reference, "REPORTS_ROOT", reports)
+    for index, size in enumerate((1000, 900, 800, 700)):
+        (reports / f"historical-{index}.json").write_text(
+            json.dumps({"payload": "x" * size}),
+            encoding="utf-8",
+        )
+    index = reference.build_hot_report_reference_index({}, {})
+
+    candidates = reference.hot_report_archive_candidates(
+        index,
+        min_bytes=1,
+        min_age_hours=0,
+        target_hot_bytes=sum(row["bytes"] for row in index["file_records"]),
+        target_hot_files=2,
+    )
+
+    assert len(candidates) == 2
+    assert [row["path"] for row in candidates] == [
+        "reports/historical-0.json",
+        "reports/historical-1.json",
+    ]
+
+
+def test_pointer_manifest_recovery_restores_only_verified_archives(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(retention, "ROOT", tmp_path)
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    original = b'{"payload":"archived"}\n'
+    archive = tmp_path / "archive" / "payload.json.gz"
+    archive.parent.mkdir()
+    with gzip.open(archive, "wb") as handle:
+        handle.write(original)
+    pointer = reports / "payload.json"
+    retention.write_json(
+        pointer,
+        {
+            "policy": retention.ARCHIVE_POINTER_POLICY,
+            "original_path": "reports/payload.json",
+            "archive_path": "archive/payload.json.gz",
+            "original_bytes": len(original),
+            "original_sha256": hashlib.sha256(original).hexdigest(),
+            "original_mtime_utc": "2026-07-23T00:00:00Z",
+            "archive_family": "payload",
+        },
+    )
+
+    recovered = retention.recover_pointer_manifest_entries(
+        [], search_roots=(reports,)
+    )
+
+    assert len(recovered) == 1
+    assert recovered[0]["status"] == "already_archived"
+    assert recovered[0]["sha256"] == hashlib.sha256(original).hexdigest()
+
+
+def test_pointer_reader_rejects_list_shaped_json(tmp_path: Path) -> None:
+    report = tmp_path / "ordinary-list-report.json"
+    report.write_text('["not", "a", "pointer"]\n', encoding="utf-8")
+
+    assert retention.read_pointer(report) == {}

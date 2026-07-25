@@ -15,7 +15,7 @@ if str(SCRIPTS) not in sys.path:
 import roadmap_implementation_gate as gate  # noqa: E402
 
 
-def matrix(required_status: str = "implemented") -> dict:
+def matrix(required_status: str = "qualified") -> dict:
     return {
         "phases": [
             {"phase": 0, "title": "Registry", "status": required_status, "missing_items": [], "required_gates": ["gate"], "current_evidence": ["evidence"], "integration_smoke": ["smoke"]},
@@ -112,6 +112,160 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
 
         self.assertFalse(report["ready"])
         self.assertEqual(report["blockers"][0]["kind"], "unfinished_architecture_prerequisite_phases")
+
+    def test_implemented_or_wired_is_not_qualified(self) -> None:
+        for status in ("implemented", "wired"):
+            report = gate.audit_pre_training_architecture_readiness(
+                matrix=matrix(required_status=status),
+                phase_reports=[],
+                book_contract_report={},
+                current_hard_gap_count=0,
+            )
+
+            self.assertFalse(report["ready"], status)
+            self.assertTrue(
+                any(row["kind"] == "unfinished_architecture_prerequisite_phases" for row in report["blockers"]),
+                status,
+            )
+
+    def test_kerc_mandatory_replacement_ladder_blocks_until_complete(self) -> None:
+        import hashlib
+        import tempfile
+
+        binding = {
+            "mandatory_replacement_qualification": {
+                "policy": "project_theseus_kerc_mandatory_replacement_qualification_v1",
+                "state": "ACTIVE_BLOCKING",
+                "required_ladder": list(gate.REQUIRED_KERC_REPLACEMENT_LADDER),
+                "common_acceptance": list(gate.REQUIRED_KERC_COMMON_ACCEPTANCE),
+                "acceptance_by_ladder": {
+                    step: list(gate.REQUIRED_KERC_REPLACEMENT_ACCEPTANCE[step])
+                    for step in gate.REQUIRED_KERC_REPLACEMENT_LADDER
+                },
+                "completed_ladder": [],
+                "evidence_by_ladder": {},
+                "resource_rule": "RESOURCE_DEFERRED_ON_THIS_HOST is diagnostic evidence, not an exit state; optimize or redesign the implementation.",
+            }
+        }
+        active = gate.audit_kerc_mandatory_replacement_qualification(binding)
+        self.assertFalse(active["ready"])
+        self.assertEqual(active["remaining_ladder"], list(gate.REQUIRED_KERC_REPLACEMENT_LADDER))
+        strengthened_paths = {
+            step: {
+                predicate["path"]
+                for predicate in gate.REQUIRED_KERC_REPLACEMENT_ACCEPTANCE[step]
+            }
+            for step in gate.REQUIRED_KERC_REPLACEMENT_LADDER
+        }
+        self.assertIn(
+            "proposal.denominator_complete",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[3]],
+        )
+        self.assertIn(
+            "lifecycle.contraction_out_of_envelope_expands",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[4]],
+        )
+        self.assertIn(
+            "order_route_regret_reported",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[5]],
+        )
+        self.assertIn(
+            "matched.lower_order_rescue",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[6]],
+        )
+        self.assertIn(
+            "decomposed_objective_predecessor_bound",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[1]],
+        )
+        self.assertIn(
+            "objective_gradient_decomposition",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[1]],
+        )
+        self.assertIn(
+            "memory_execution_policy.token_loss_position_chunk_size",
+            strengthened_paths[gate.REQUIRED_KERC_REPLACEMENT_LADDER[1]],
+        )
+
+        reordered = copy.deepcopy(binding)
+        reordered_contract = reordered["mandatory_replacement_qualification"]
+        reordered_contract["completed_ladder"] = [gate.REQUIRED_KERC_REPLACEMENT_LADDER[2]]
+        reordered_contract["evidence_by_ladder"] = {
+            gate.REQUIRED_KERC_REPLACEMENT_LADDER[2]: {}
+        }
+        reordered_audit = gate.audit_kerc_mandatory_replacement_qualification(reordered)
+        self.assertIn("completed_ladder_not_ordered_prefix", reordered_audit["faults"])
+
+        weakened = copy.deepcopy(binding)
+        weakened_contract = weakened["mandatory_replacement_qualification"]
+        weakened_contract["acceptance_by_ladder"][gate.REQUIRED_KERC_REPLACEMENT_LADDER[0]].pop()
+        weakened_audit = gate.audit_kerc_mandatory_replacement_qualification(weakened)
+        self.assertIn(
+            "acceptance_contract_missing_or_drifted:"
+            + gate.REQUIRED_KERC_REPLACEMENT_LADDER[0],
+            weakened_audit["faults"],
+        )
+
+        contract = binding["mandatory_replacement_qualification"]
+        contract["state"] = "QUALIFIED_NOT_SELECTED"
+        contract["completed_ladder"] = list(gate.REQUIRED_KERC_REPLACEMENT_LADDER)
+        terminal_without_receipts = gate.audit_kerc_mandatory_replacement_qualification(binding)
+        self.assertFalse(terminal_without_receipts["ready"])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source.txt"
+            source.write_text("bound", encoding="utf-8")
+            source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
+            evidence_by_ladder = {}
+            for step in gate.REQUIRED_KERC_REPLACEMENT_LADDER:
+                policy = f"{step}_receipt_v1"
+                report_path = root / f"{step}.json"
+                report = {
+                    "policy": policy,
+                    "trigger_state": "GREEN",
+                    "source_artifacts": {
+                        "source": {"path": str(source), "sha256": source_sha}
+                    },
+                }
+                predicates = (
+                    gate.REQUIRED_KERC_COMMON_ACCEPTANCE
+                    + gate.REQUIRED_KERC_REPLACEMENT_ACCEPTANCE[step]
+                )
+                for predicate in predicates:
+                    parts = predicate["path"].split(".")
+                    owner = report
+                    for part in parts[:-1]:
+                        owner = owner.setdefault(part, {})
+                    operator = predicate["operator"]
+                    expected = predicate["value"]
+                    if operator == "gt":
+                        actual = expected + 1
+                    elif operator == "lt":
+                        actual = expected - 1
+                    elif operator in {"gte", "lte", "equals"}:
+                        actual = expected
+                    elif operator == "in":
+                        actual = (
+                            contract["state"]
+                            if predicate["path"] == "disposition"
+                            else expected[0]
+                        )
+                    else:
+                        self.fail(f"unhandled test predicate operator: {operator}")
+                    owner[parts[-1]] = actual
+                report_path.write_text(
+                    json.dumps(report),
+                    encoding="utf-8",
+                )
+                evidence_by_ladder[step] = {
+                    "path": str(report_path),
+                    "policy": policy,
+                    "required_trigger_state": "GREEN",
+                }
+            contract["evidence_by_ladder"] = evidence_by_ladder
+            complete = gate.audit_kerc_mandatory_replacement_qualification(binding)
+            self.assertTrue(complete["ready"])
+            self.assertEqual(complete["faults"], [])
 
     def test_phase_partition_must_cover_every_phase_once(self) -> None:
         payload = matrix()

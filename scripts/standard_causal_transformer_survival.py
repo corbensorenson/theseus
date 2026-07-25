@@ -64,6 +64,8 @@ from standard_causal_transformer_objectives import (  # noqa: E402
     balanced_binary_class_weights,
     balanced_categorical_class_weights,
     causal_loss,
+    checkpointed_causal_loss,
+    decomposed_checkpointed_causal_loss_and_grad,
     mtp_auxiliary_loss,
     pointer_generator_auxiliary_loss,
     prepare_semantic_plan_labels,
@@ -2773,6 +2775,72 @@ def training_heartbeat_record(
     }
 
 
+def target_frequency_balanced_objective_mass(
+    labels: np.ndarray,
+    objective_mass: np.ndarray,
+    *,
+    power: float,
+) -> np.ndarray:
+    """Reweight active positions within each row by inverse target frequency."""
+
+    if not 0.0 <= float(power) <= 1.0:
+        raise ValueError("target token frequency balance power must be in [0, 1]")
+    result = np.asarray(objective_mass, dtype=np.float32).copy()
+    if not power:
+        return result
+    labels = np.asarray(labels)
+    if labels.shape != result.shape:
+        raise ValueError("target labels and objective mass must be shape-aligned")
+    for row_index in range(len(result)):
+        active = result[row_index] > 0
+        if not bool(np.any(active)):
+            continue
+        values, counts = np.unique(labels[row_index, active], return_counts=True)
+        frequency = {
+            int(value): int(count) for value, count in zip(values, counts)
+        }
+        position_weights = np.asarray(
+            [
+                frequency[int(value)] ** (-float(power))
+                for value in labels[row_index, active]
+            ],
+            dtype=np.float32,
+        )
+        original_mass = float(result[row_index, active].sum())
+        result[row_index, active] *= position_weights
+        balanced_mass = float(result[row_index, active].sum())
+        result[row_index, active] *= original_mass / balanced_mass
+    return result
+
+
+def eager_accumulation_microbatch_weight(
+    objective_mass: np.ndarray,
+    *,
+    micro_start: int,
+    micro_stop: int,
+    micro_width: int,
+    sequence_balanced_token_loss: bool,
+) -> float:
+    """Return the exact full-batch authority of one ragged microbatch."""
+
+    if sequence_balanced_token_loss:
+        return float(micro_stop - micro_start) / float(len(objective_mass))
+    micro_target_mass = float(
+        np.asarray(
+            objective_mass[micro_start:micro_stop, :micro_width],
+            dtype=np.float64,
+        ).sum()
+    )
+    total_target_mass = float(
+        np.asarray(objective_mass, dtype=np.float64).sum()
+    )
+    if micro_target_mass <= 0 or total_target_mass <= 0:
+        raise ValueError(
+            "eager gradient accumulation requires positive target mass"
+        )
+    return micro_target_mass / total_target_mass
+
+
 def train_phase(
     model: Any,
     optimizer: Any,
@@ -2823,6 +2891,7 @@ def train_phase(
     checkpoint_every: int,
     heartbeat: Path,
     global_step_offset: int,
+    resume_data_cursor: dict[str, Any] | None = None,
     heartbeat_position_offset: int = 0,
     heartbeat_position_target_total: int | None = None,
     mx: Any,
@@ -2833,6 +2902,22 @@ def train_phase(
     compiled_microbatch_size: int = 4,
     master_model: Any | None = None,
     compute_dtype_name: str = "float32",
+    step_boundary_callback: Any = None,
+    clear_device_cache_before_step: bool = False,
+    clear_device_cache_after_backward: bool = False,
+    clear_device_cache_after_step: bool = False,
+    transactional_eager_step: bool = False,
+    optimizer_state_offload_path: Path | None = None,
+    optimizer_state_offload_minimum_target_positions: int = 0,
+    sequence_balanced_token_loss: bool = False,
+    target_token_frequency_balance_power: float = 0.0,
+    weighted_sampling_minimum_stratum_coverage: bool = False,
+    eager_gradient_accumulation_microbatch_size: int = 0,
+    eager_execution_width_quantum: int = 0,
+    batch_index_schedule: tuple[tuple[int, ...], ...] = (),
+    resource_stress_prefix: bool = False,
+    prior_coverage_observed_counts: dict[str, int] | None = None,
+    allow_incomplete_required_coverage: bool = False,
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
@@ -3075,16 +3160,133 @@ def train_phase(
     if matrix_unit_class_weights is not None:
         mx.eval(matrix_unit_class_weights)
     order = list(range(len(inputs)))
+    cursor_policy = "project_theseus_training_data_cursor_v1"
+    if resume_data_cursor is not None:
+        if resume_data_cursor.get("policy") != cursor_policy:
+            raise ValueError("training data cursor policy mismatch")
+        cursor_contract = {
+            "row_count": len(inputs),
+            "batch_size": int(batch_size),
+            "seed": int(seed),
+        }
+        for key, expected in cursor_contract.items():
+            if int(resume_data_cursor.get(key, -1)) != expected:
+                raise ValueError(f"training data cursor {key} mismatch")
+        resume_epoch = int(resume_data_cursor.get("epoch", -1))
+        resume_batch_index = int(resume_data_cursor.get("batch_index", -1))
+        if resume_epoch < 0 or resume_batch_index < 0:
+            raise ValueError("training data cursor position is invalid")
+    else:
+        resume_epoch = 0
+        resume_batch_index = 0
     probabilities = normalized_sampling_probabilities(sample_weights, len(inputs))
+    coverage_row_costs = None
+    if coverage_labels is not None:
+        measured_costs = []
+        for index in range(len(inputs)):
+            input_row = np.asarray(inputs[index])
+            mask_row = np.asarray(mask[index])
+            progress_row = np.asarray(progress_mask[index])
+            active = np.flatnonzero(
+                (input_row != 0) | (mask_row != 0) | (progress_row != 0)
+            )
+            measured_costs.append(int(active[-1] + 1) if len(active) else 1)
+        coverage_row_costs = tuple(measured_costs)
+    coverage_planning_capacity = (
+        len(inputs)
+        if allow_incomplete_required_coverage
+        else max_steps * batch_size
+    )
     coverage_receipt = coverage_first_plan(
         coverage_labels,
         required_coverage_labels,
         row_count=len(inputs),
-        capacity=max_steps * batch_size,
+        capacity=coverage_planning_capacity,
+        row_costs=coverage_row_costs,
     )
     coverage_prefix = list(coverage_receipt["selected_indices"])
+    resource_stress_receipt = {
+        "policy": "project_theseus_target_and_width_resource_stress_prefix_v2",
+        "active": False,
+        "selected_index_sha256": "",
+        "selected_indices_sha256": "",
+        "selected_row_count": 0,
+        "rows": [],
+        "target_positions": 0,
+        "active_width": 0,
+        "already_in_coverage_prefix": False,
+    }
+    if resource_stress_prefix:
+        if coverage_labels is None or coverage_row_costs is None:
+            raise ValueError(
+                "resource-stress prefix requires aligned coverage metadata"
+            )
+        target_counts = np.asarray(progress_mask.sum(axis=1), dtype=np.int64)
+        if tuple(target_counts.shape) != (len(inputs),):
+            raise ValueError("resource-stress target counts are misaligned")
+        maximum_target_index = max(
+            range(len(inputs)),
+            key=lambda index: (
+                int(target_counts[index]),
+                int(coverage_row_costs[index]),
+                -int(index),
+            ),
+        )
+        maximum_width_index = max(
+            range(len(inputs)),
+            key=lambda index: (
+                int(coverage_row_costs[index]),
+                int(target_counts[index]),
+                -int(index),
+            ),
+        )
+        if int(target_counts[maximum_target_index]) <= 0:
+            raise ValueError("resource-stress prefix requires a supervised row")
+        stress_roles: dict[int, list[str]] = {}
+        for index, role in (
+            (maximum_target_index, "maximum_target_positions"),
+            (maximum_width_index, "maximum_active_width"),
+        ):
+            stress_roles.setdefault(index, []).append(role)
+        stress_rows = []
+        for stress_index, roles in stress_roles.items():
+            already_selected = stress_index in coverage_prefix
+            if not already_selected and len(coverage_prefix) + 1 > max_steps * batch_size:
+                raise ValueError(
+                    "bounded training capacity cannot include coverage and "
+                    "resource-stress prefixes"
+                )
+            if not already_selected:
+                coverage_prefix.append(stress_index)
+            stress_rows.append(
+                {
+                    "roles": roles,
+                    "selected_index_sha256": hashlib.sha256(
+                        np.asarray([stress_index], dtype=np.int64).tobytes()
+                    ).hexdigest(),
+                    "target_positions": int(target_counts[stress_index]),
+                    "active_width": int(coverage_row_costs[stress_index]),
+                    "already_in_coverage_prefix": already_selected,
+                }
+            )
+        stress_indices = list(stress_roles)
+        primary = stress_rows[stress_indices.index(maximum_target_index)]
+        resource_stress_receipt = {
+            "policy": "project_theseus_target_and_width_resource_stress_prefix_v2",
+            "active": True,
+            "selected_index_sha256": primary["selected_index_sha256"],
+            "selected_indices_sha256": hashlib.sha256(
+                np.asarray(stress_indices, dtype=np.int64).tobytes()
+            ).hexdigest(),
+            "selected_row_count": len(stress_rows),
+            "rows": stress_rows,
+            "target_positions": primary["target_positions"],
+            "active_width": primary["active_width"],
+            "already_in_coverage_prefix": primary["already_in_coverage_prefix"],
+        }
     observed_coverage_counts = {
-        label: 0 for label in coverage_receipt["required_labels"]
+        label: int((prior_coverage_observed_counts or {}).get(label, 0))
+        for label in coverage_receipt["required_labels"]
     }
     consumed = 0
     all_target_consumed = 0
@@ -3098,23 +3300,73 @@ def train_phase(
     unit_allocator_pack_seconds: list[float] = []
     batch_sequence_widths: list[int] = []
     execution_batch_sequence_widths: list[int] = []
+    mlx_active_memory_bytes: list[int] = []
+    mlx_cache_memory_bytes: list[int] = []
+    mlx_peak_memory_bytes: list[int] = []
+    mlx_cache_memory_bytes_after_clear: list[int] = []
+    mlx_cache_memory_bytes_before_step_clear: list[int] = []
+    mlx_cache_memory_bytes_after_step_clear: list[int] = []
+    mlx_cache_memory_bytes_before_backward_clear: list[int] = []
+    mlx_cache_memory_bytes_after_backward_clear: list[int] = []
+    eager_transaction_memory_prefix: list[dict[str, int]] = []
+    optimizer_state_offload_count = 0
     static_sequence_width = int(inputs.shape[1])
     padded_positions_avoided = 0
     started = time.perf_counter()
-    epoch = 0
+    epoch = resume_epoch
+    next_data_cursor = {
+        "policy": cursor_policy,
+        "row_count": len(inputs),
+        "batch_size": int(batch_size),
+        "seed": int(seed),
+        "epoch": resume_epoch,
+        "batch_index": resume_batch_index,
+    }
+    batch_index_sha256_prefix: list[str] = []
+    sampled_indices: set[int] = set()
     model.train()
     if training_step_mode not in {"auto", "compiled", "eager"}:
         raise ValueError(f"unsupported training step mode: {training_step_mode}")
     if compiled_microbatch_size < 1:
         raise ValueError("compiled microbatch size must be positive")
+    if eager_gradient_accumulation_microbatch_size < 0:
+        raise ValueError("eager gradient accumulation microbatch size cannot be negative")
+    if eager_execution_width_quantum < 0:
+        raise ValueError("eager execution width quantum cannot be negative")
+    if optimizer_state_offload_minimum_target_positions < 0:
+        raise ValueError(
+            "optimizer-state offload target-position threshold cannot be negative"
+        )
+    if (
+        optimizer_state_offload_minimum_target_positions
+        and optimizer_state_offload_path is None
+    ):
+        raise ValueError(
+            "optimizer-state offload target-position threshold requires an offload path"
+        )
+    normalized_batch_index_schedule = tuple(
+        tuple(int(index) for index in batch) for batch in batch_index_schedule
+    )
+    if any(not batch for batch in normalized_batch_index_schedule):
+        raise ValueError("scheduled training batches cannot be empty")
+    if any(
+        len(batch) > int(batch_size)
+        or len(set(batch)) != len(batch)
+        or any(index < 0 or index >= len(inputs) for index in batch)
+        for batch in normalized_batch_index_schedule
+    ):
+        raise ValueError(
+            "scheduled training batches require unique in-range rows within batch size"
+        )
+    if not 0.0 <= float(target_token_frequency_balance_power) <= 1.0:
+        raise ValueError("target token frequency balance power must be in [0, 1]")
     if compute_dtype_name not in {"float32", "bfloat16"}:
         raise ValueError(f"unsupported compute dtype: {compute_dtype_name}")
     if master_model is not None and compute_dtype_name != "bfloat16":
         raise ValueError("fp32 master weights require bfloat16 compute weights")
-    if master_model is not None and training_step_mode == "eager":
-        raise ValueError("fp32 master weights require compiled training")
     compiled_step = None
     compile_width_quantum = 64
+    tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
     compile_eligible = training_step_mode != "eager" and source_conditioning is False and all(
         value is None
         for value in (
@@ -3125,8 +3377,6 @@ def train_phase(
             kerc_unit_allocator_rows,
         )
     )
-    if master_model is not None and not compile_eligible:
-        raise ValueError("fp32 master weights require the compiled token-only route")
     if training_step_mode == "compiled" and not compile_eligible:
         raise ValueError("forced compiled training is incompatible with active auxiliary inputs")
     if compile_eligible:
@@ -3137,7 +3387,6 @@ def train_phase(
         compiled_state = [model.state, optimizer.state]
         if master_model is not None:
             compiled_state.insert(1, master_model.state)
-        tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
         tree_flatten = __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten
 
         @partial(
@@ -3189,30 +3438,61 @@ def train_phase(
         compiled_step = compiled_token_step
     while consumed < target_positions and steps < max_steps:
         if hasattr(inputs, "length_bucketed_order"):
-            order = inputs.length_bucketed_order(
-                seed=seed + epoch,
-                probabilities=probabilities,
-            )
+            order_kwargs = {
+                "seed": seed + epoch,
+                "probabilities": probabilities,
+            }
+            if weighted_sampling_minimum_stratum_coverage:
+                order_kwargs["minimum_stratum_coverage"] = True
+            order = inputs.length_bucketed_order(**order_kwargs)
         elif probabilities is None:
             random.Random(seed + epoch).shuffle(order)
         else:
-            order = np.random.default_rng(seed + epoch).choice(
-                len(inputs), size=len(inputs), replace=True, p=probabilities
-            ).tolist()
+            order = stratified_low_variance_sampling_order(
+                probabilities,
+                row_count=len(inputs),
+                seed=seed + epoch,
+                minimum_stratum_coverage=(
+                    weighted_sampling_minimum_stratum_coverage
+                ),
+            )
         if epoch == 0 and coverage_prefix:
-            selected = set(coverage_prefix)
-            order = coverage_prefix + [index for index in order if index not in selected]
-        batches = (
-            inputs.batch_indices(order, maximum_batch_size=batch_size)
-            if hasattr(inputs, "batch_indices")
-            else [
-                order[start : start + batch_size]
-                for start in range(0, len(order), batch_size)
+            order = prepend_coverage_indices(order, coverage_prefix)
+        if normalized_batch_index_schedule:
+            # A finite schedule is a warmup prefix; the final batch is then
+            # repeated for consolidation. Using ``epoch`` makes the policy
+            # deterministic across checkpoint/resume boundaries.
+            batches = [
+                list(
+                    normalized_batch_index_schedule[
+                        min(epoch, len(normalized_batch_index_schedule) - 1)
+                    ]
+                )
             ]
-        )
-        for indices in batches:
+        else:
+            batches = (
+                inputs.batch_indices(order, maximum_batch_size=batch_size)
+                if hasattr(inputs, "batch_indices")
+                else [
+                    order[start : start + batch_size]
+                    for start in range(0, len(order), batch_size)
+                ]
+            )
+        first_batch_index = resume_batch_index if epoch == resume_epoch else 0
+        if first_batch_index > len(batches):
+            raise ValueError("training data cursor batch index exceeds epoch")
+        for batch_index, indices in enumerate(batches):
+            if batch_index < first_batch_index:
+                continue
             if consumed >= target_positions or steps >= max_steps:
                 break
+            if len(batch_index_sha256_prefix) < 16:
+                batch_index_sha256_prefix.append(
+                    hashlib.sha256(
+                        np.asarray(indices, dtype=np.int64).tobytes()
+                    ).hexdigest()
+                )
+            sampled_indices.update(int(index) for index in indices)
             batch_prepare_started = time.perf_counter()
             if coverage_labels is not None:
                 for index in indices:
@@ -3223,6 +3503,17 @@ def train_phase(
             batch_labels = np.asarray(labels[indices])
             batch_mask = np.asarray(mask[indices])
             batch_progress_mask = np.asarray(progress_mask[indices])
+            batch_target_positions_for_offload = int(batch_progress_mask.sum())
+            batch_objective_mass = (
+                batch_progress_mask
+                + float(ordered_plan_loss_weight)
+                * np.maximum(batch_mask - batch_progress_mask, 0.0)
+            )
+            batch_loss_mass = target_frequency_balanced_objective_mass(
+                batch_labels,
+                batch_objective_mass,
+                power=float(target_token_frequency_balance_power),
+            )
             active_columns = np.any(
                 (batch_inputs != 0)
                 | (batch_labels != 0)
@@ -3235,14 +3526,19 @@ def train_phase(
                 int(active_indices[-1] + 1) if len(active_indices) else 1
             )
             batch_sequence_widths.append(batch_width)
-            if compiled_step is not None:
+            execution_width_quantum = (
+                compile_width_quantum
+                if compiled_step is not None
+                else int(eager_execution_width_quantum)
+            )
+            if execution_width_quantum:
                 batch_width = min(
                     static_sequence_width,
                     max(
                         1,
                         int(
-                            math.ceil(batch_width / compile_width_quantum)
-                            * compile_width_quantum
+                            math.ceil(batch_width / execution_width_quantum)
+                            * execution_width_quantum
                         ),
                     ),
                 )
@@ -3259,7 +3555,17 @@ def train_phase(
                 batch_progress_mask[:, :batch_width], dtype=mx.float32
             )
             plan_targets = mx.maximum(all_targets - body_targets, 0.0)
-            m = body_targets + float(ordered_plan_loss_weight) * plan_targets
+            m = mx.array(batch_loss_mass[:, :batch_width], dtype=mx.float32)
+            if sequence_balanced_token_loss:
+                # Give each admitted sequence equal token-objective mass so a
+                # long compiler row cannot erase shorter reasoner/renderer
+                # objectives in a joint multi-stage update.
+                row_mass = mx.sum(m, axis=1, keepdims=True)
+                m = mx.where(
+                    row_mass > 0,
+                    m / mx.maximum(row_mass, mx.array(1.0, dtype=mx.float32)),
+                    m,
+                )
             batch_plan = (
                 mx.array(np.asarray(prepared_plan_labels[indices]), dtype=mx.float32)
                 if prepared_plan_labels is not None
@@ -3335,6 +3641,61 @@ def train_phase(
             host_batch_preparation_seconds.append(
                 time.perf_counter() - batch_prepare_started
             )
+            if clear_device_cache_before_step and hasattr(mx, "clear_cache"):
+                mlx_cache_memory_bytes_before_step_clear.append(
+                    int(mx.get_cache_memory())
+                )
+                mx.clear_cache()
+                mlx_cache_memory_bytes_after_step_clear.append(
+                    int(mx.get_cache_memory())
+                )
+            optimizer_state_offloaded = False
+            optimizer_state_names_path = None
+            if (
+                optimizer_state_offload_path is not None
+                and steps > 0
+                and optimizer.state
+                and (
+                    optimizer_state_offload_minimum_target_positions <= 0
+                    or batch_target_positions_for_offload
+                    >= optimizer_state_offload_minimum_target_positions
+                )
+            ):
+                optimizer_state_offload_path.parent.mkdir(
+                    parents=True, exist_ok=True
+                )
+                tree_flatten = __import__(
+                    "mlx.utils", fromlist=["tree_flatten"]
+                ).tree_flatten
+                flat_optimizer_state = tree_flatten(optimizer.state)
+                mx.savez(
+                    str(optimizer_state_offload_path),
+                    **{
+                        f"a{index}": value
+                        for index, (_name, value) in enumerate(
+                            flat_optimizer_state
+                        )
+                    },
+                )
+                optimizer_state_names_path = optimizer_state_offload_path.with_suffix(
+                    optimizer_state_offload_path.suffix + ".names.json"
+                )
+                optimizer_state_names_path.write_text(
+                    json.dumps(
+                        [name for name, _value in flat_optimizer_state],
+                        separators=(",", ":"),
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+                optimizer.state = {}
+                del flat_optimizer_state
+                if hasattr(mx, "clear_cache"):
+                    mx.clear_cache()
+                optimizer_state_offloaded = True
+                optimizer_state_offload_count += 1
+            if step_boundary_callback is not None:
+                step_boundary_callback("before_device_step", steps + 1)
             step_started = time.perf_counter()
             if compiled_step is not None:
                 accumulated_grads = None
@@ -3379,59 +3740,285 @@ def train_phase(
                     weighted_losses.append(micro_loss)
                 loss = mx.sum(mx.stack(weighted_losses))
             else:
-                loss, grads = loss_and_grad(
-                    model,
-                    x,
-                    y,
-                    m,
-                    mx,
-                    __import__("mlx.nn", fromlist=["nn"]),
-                    batch_plan,
-                    float(plan_auxiliary_weight),
-                    matrix_positive_weights,
-                    plan_loss_mode,
-                    plan_slot_count,
-                    plan_factor_group_sizes,
-                    batch_kerc_residual,
-                    float(kerc_residual_weight),
-                    batch_kerc_verifier,
-                    float(kerc_verifier_weight),
-                    matrix_verifier_positive_weights,
-                    matrix_verifier_negative_weights,
-                    matrix_residual_class_weights,
-                    batch_kerc_residual_mask,
-                    batch_kerc_decision,
-                    float(kerc_decision_weight),
-                    matrix_decision_class_weights,
-                    batch_kerc_decision_mask,
-                    batch_unit_arrays["labels"] if batch_unit_arrays else None,
-                    float(kerc_unit_residual_weight),
-                    batch_unit_arrays["loss_mask"] if batch_unit_arrays else None,
-                    batch_unit_arrays["confidence"] if batch_unit_arrays else None,
-                    batch_unit_arrays["byte_ids"] if batch_unit_arrays else None,
-                    None,
-                    batch_unit_arrays["byte_offsets"] if batch_unit_arrays else None,
-                    batch_unit_arrays["kind_ids"] if batch_unit_arrays else None,
-                    batch_unit_arrays["features"] if batch_unit_arrays else None,
-                    batch_unit_arrays["unit_mask"] if batch_unit_arrays else None,
-                    batch_unit_arrays["hard"] if batch_unit_arrays else None,
-                    matrix_unit_class_weights,
-                    source_conditioning,
-                )
+                accumulation_size = int(eager_gradient_accumulation_microbatch_size)
+                if accumulation_size and len(indices) > accumulation_size:
+                    if any(
+                        value is not None
+                        for value in (
+                            batch_plan,
+                            batch_kerc_residual,
+                            batch_kerc_verifier,
+                            batch_kerc_decision,
+                            batch_unit_arrays,
+                        )
+                    ):
+                        raise ValueError(
+                            "eager gradient accumulation currently requires generator-only rows"
+                        )
+                    accumulated_grads = None
+                    weighted_losses = []
+                    for micro_start in range(0, len(indices), accumulation_size):
+                        micro_stop = min(
+                            len(indices), micro_start + accumulation_size
+                        )
+                        micro_active_columns = np.any(
+                            (
+                                batch_inputs[micro_start:micro_stop] != 0
+                            )
+                            | (
+                                batch_labels[micro_start:micro_stop] != 0
+                            )
+                            | (
+                                batch_mask[micro_start:micro_stop] != 0
+                            )
+                            | (
+                                batch_progress_mask[micro_start:micro_stop] != 0
+                            ),
+                            axis=0,
+                        )
+                        micro_active_indices = np.flatnonzero(
+                            micro_active_columns
+                        )
+                        micro_width = (
+                            int(micro_active_indices[-1] + 1)
+                            if len(micro_active_indices)
+                            else 1
+                        )
+                        micro_loss, micro_grads = loss_and_grad(
+                            model,
+                            x[micro_start:micro_stop, :micro_width],
+                            y[micro_start:micro_stop, :micro_width],
+                            m[micro_start:micro_stop, :micro_width],
+                            mx,
+                            __import__("mlx.nn", fromlist=["nn"]),
+                            source_conditioning=source_conditioning,
+                        )
+                        # ``causal_loss`` returns the mean over active objective
+                        # mass inside each microbatch. Reconstruct the requested
+                        # full-batch mean exactly across ragged microbatches.
+                        micro_weight = eager_accumulation_microbatch_weight(
+                            batch_loss_mass,
+                            micro_start=micro_start,
+                            micro_stop=micro_stop,
+                            micro_width=micro_width,
+                            sequence_balanced_token_loss=(
+                                sequence_balanced_token_loss
+                            ),
+                        )
+                        micro_loss = micro_loss * micro_weight
+                        micro_grads = tree_map(
+                            lambda value: value * micro_weight,
+                            micro_grads,
+                        )
+                        if master_model is not None:
+                            micro_grads = tree_map(
+                                lambda value: value.astype(mx.float32),
+                                micro_grads,
+                            )
+                        mx.eval(micro_loss, micro_grads)
+                        accumulated_grads = (
+                            micro_grads
+                            if accumulated_grads is None
+                            else tree_map(
+                                lambda prior, value: prior + value,
+                                accumulated_grads,
+                                micro_grads,
+                            )
+                        )
+                        mx.eval(accumulated_grads)
+                        del micro_grads
+                        if hasattr(mx, "clear_cache"):
+                            # The evaluated accumulator owns the needed values;
+                            # release superseded per-row gradient buffers before
+                            # materializing the next objective.
+                            mx.clear_cache()
+                        weighted_losses.append(micro_loss)
+                    loss = mx.sum(mx.stack(weighted_losses))
+                    grads = accumulated_grads
+                else:
+                    loss, grads = loss_and_grad(
+                        model,
+                        x,
+                        y,
+                        m,
+                        mx,
+                        __import__("mlx.nn", fromlist=["nn"]),
+                        batch_plan,
+                        float(plan_auxiliary_weight),
+                        matrix_positive_weights,
+                        plan_loss_mode,
+                        plan_slot_count,
+                        plan_factor_group_sizes,
+                        batch_kerc_residual,
+                        float(kerc_residual_weight),
+                        batch_kerc_verifier,
+                        float(kerc_verifier_weight),
+                        matrix_verifier_positive_weights,
+                        matrix_verifier_negative_weights,
+                        matrix_residual_class_weights,
+                        batch_kerc_residual_mask,
+                        batch_kerc_decision,
+                        float(kerc_decision_weight),
+                        matrix_decision_class_weights,
+                        batch_kerc_decision_mask,
+                        batch_unit_arrays["labels"] if batch_unit_arrays else None,
+                        float(kerc_unit_residual_weight),
+                        batch_unit_arrays["loss_mask"] if batch_unit_arrays else None,
+                        batch_unit_arrays["confidence"] if batch_unit_arrays else None,
+                        batch_unit_arrays["byte_ids"] if batch_unit_arrays else None,
+                        None,
+                        batch_unit_arrays["byte_offsets"] if batch_unit_arrays else None,
+                        batch_unit_arrays["kind_ids"] if batch_unit_arrays else None,
+                        batch_unit_arrays["features"] if batch_unit_arrays else None,
+                        batch_unit_arrays["unit_mask"] if batch_unit_arrays else None,
+                        batch_unit_arrays["hard"] if batch_unit_arrays else None,
+                        matrix_unit_class_weights,
+                        source_conditioning,
+                    )
+                if transactional_eager_step:
+                    # MLX is lazy. Materialize the backward pass before constructing
+                    # clipping, optimizer, master-weight, and compute-weight updates so
+                    # exact stations that need not coexist do not share one Metal graph.
+                    mx.eval(loss, grads)
+                    if len(eager_transaction_memory_prefix) < 16:
+                        eager_transaction_memory_prefix.append(
+                            {
+                                "step": steps + 1,
+                                "station": "backward_materialized",
+                                "active_bytes": int(mx.get_active_memory()),
+                                "cache_bytes": int(mx.get_cache_memory()),
+                                "peak_bytes": int(mx.get_peak_memory()),
+                            }
+                        )
+                    if step_boundary_callback is not None:
+                        step_boundary_callback(
+                            "after_backward_materialization", steps + 1
+                        )
+                    if clear_device_cache_after_backward and hasattr(
+                        mx, "clear_cache"
+                    ):
+                        mlx_cache_memory_bytes_before_backward_clear.append(
+                            int(mx.get_cache_memory())
+                        )
+                        mx.clear_cache()
+                        mlx_cache_memory_bytes_after_backward_clear.append(
+                            int(mx.get_cache_memory())
+                        )
+                if master_model is not None:
+                    grads = tree_map(lambda value: value.astype(mx.float32), grads)
                 grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
-                optimizer.update(model, grads)
+                if optimizer_state_offloaded:
+                    if optimizer_state_names_path is None:
+                        raise RuntimeError("optimizer offload names path is missing")
+                    loaded_optimizer_state = mx.load(
+                        str(optimizer_state_offload_path)
+                    )
+                    optimizer_state_names = json.loads(
+                        optimizer_state_names_path.read_text(encoding="utf-8")
+                    )
+                    tree_unflatten = __import__(
+                        "mlx.utils", fromlist=["tree_unflatten"]
+                    ).tree_unflatten
+                    optimizer.state = tree_unflatten(
+                        [
+                            (name, loaded_optimizer_state[f"a{index}"])
+                            for index, name in enumerate(optimizer_state_names)
+                        ]
+                    )
+                    mx.eval(optimizer.state)
+                optimizer.update(
+                    master_model if master_model is not None else model,
+                    grads,
+                )
+                if transactional_eager_step:
+                    mx.eval(
+                        (
+                            master_model.parameters()
+                            if master_model is not None
+                            else model.parameters()
+                        ),
+                        optimizer.state,
+                        grad_norm,
+                    )
+                    if len(eager_transaction_memory_prefix) < 16:
+                        eager_transaction_memory_prefix.append(
+                            {
+                                "step": steps + 1,
+                                "station": "optimizer_materialized",
+                                "active_bytes": int(mx.get_active_memory()),
+                                "cache_bytes": int(mx.get_cache_memory()),
+                                "peak_bytes": int(mx.get_peak_memory()),
+                            }
+                        )
+                    if step_boundary_callback is not None:
+                        step_boundary_callback(
+                            "after_optimizer_materialization", steps + 1
+                        )
+                if master_model is not None:
+                    model.update(
+                        tree_map(
+                            lambda value: value.astype(mx.bfloat16),
+                            master_model.trainable_parameters(),
+                        )
+                    )
             evaluated_parameters = (
                 master_model.parameters() if master_model is not None else model.parameters()
             )
-            mx.eval(model.parameters(), evaluated_parameters, optimizer.state, loss, grad_norm)
+            if compiled_step is None:
+                mx.eval(
+                    model.parameters(),
+                    evaluated_parameters,
+                    optimizer.state,
+                    loss,
+                    grad_norm,
+                )
+            else:
+                # The final compiled microbatch was already synchronized above
+                # with the stateful model/optimizer outputs in its graph.
+                mx.eval(loss)
+            loss_value = float(loss.item())
+            mlx_active_memory_bytes.append(
+                int(mx.get_active_memory()) if hasattr(mx, "get_active_memory") else 0
+            )
+            mlx_cache_memory_bytes.append(
+                int(mx.get_cache_memory()) if hasattr(mx, "get_cache_memory") else 0
+            )
+            mlx_peak_memory_bytes.append(
+                int(mx.get_peak_memory()) if hasattr(mx, "get_peak_memory") else 0
+            )
+            if clear_device_cache_after_step and hasattr(mx, "clear_cache"):
+                mx.clear_cache()
+            mlx_cache_memory_bytes_after_clear.append(
+                int(mx.get_cache_memory()) if hasattr(mx, "get_cache_memory") else 0
+            )
+            if step_boundary_callback is not None:
+                step_boundary_callback("after_device_step", steps + 1)
             optimizer_step_seconds.append(time.perf_counter() - step_started)
             optimizer_step_positions.append(int(progress_mask[indices].sum()))
-            loss_value = float(loss.item())
             losses.append(loss_value)
             consumed += int(progress_mask[indices].sum())
             all_target_consumed += int(mask[indices].sum())
             steps += 1
             global_step = global_step_offset + steps
+            next_batch_index = batch_index + 1
+            if next_batch_index >= len(batches):
+                next_data_cursor = {
+                    "policy": cursor_policy,
+                    "row_count": len(inputs),
+                    "batch_size": int(batch_size),
+                    "seed": int(seed),
+                    "epoch": epoch + 1,
+                    "batch_index": 0,
+                }
+            else:
+                next_data_cursor = {
+                    "policy": cursor_policy,
+                    "row_count": len(inputs),
+                    "batch_size": int(batch_size),
+                    "seed": int(seed),
+                    "epoch": epoch,
+                    "batch_index": next_batch_index,
+                }
             if global_step % 25 == 0:
                 write_json(
                     heartbeat,
@@ -3461,6 +4048,7 @@ def train_phase(
                     "all_target_positions_consumed": all_target_consumed,
                     "latest_loss": round(loss_value, 6),
                     "elapsed_seconds": round(time.perf_counter() - started, 3),
+                    "data_cursor": next_data_cursor,
                 }
                 if checkpoint_callback is None:
                     checkpoint_model = master_model if master_model is not None else model
@@ -3471,7 +4059,7 @@ def train_phase(
     missing_coverage = sorted(
         label for label, count in observed_coverage_counts.items() if count <= 0
     )
-    if missing_coverage:
+    if missing_coverage and not allow_incomplete_required_coverage:
         raise RuntimeError(
             "bounded training did not exercise required coverage: "
             + ",".join(missing_coverage)
@@ -3500,6 +4088,7 @@ def train_phase(
         "ordered_plan_loss_weight": float(ordered_plan_loss_weight),
         "mean_loss": round(sum(losses) / max(1, len(losses)), 6),
         "final_loss": round(losses[-1], 6) if losses else None,
+        "loss_prefix": [round(value, 8) for value in losses[:16]],
         "tokens_per_second": round(consumed / max(1e-9, time.perf_counter() - started), 3),
         "first_optimizer_step_seconds": (
             round(optimizer_step_seconds[0], 6)
@@ -3573,19 +4162,112 @@ def train_phase(
             else None
         ),
         "weighted_sampling": probabilities is not None,
+        "weighted_sampling_policy": (
+            "stratified_smooth_weighted_round_robin_v1"
+            if probabilities is not None
+            else "shuffled_without_replacement_epoch_v1"
+        ),
+        "sampling_with_replacement": False,
+        "weighted_sampling_minimum_stratum_coverage": bool(
+            weighted_sampling_minimum_stratum_coverage
+        ),
+        "sampled_unique_row_count": len(sampled_indices),
+        "sampled_row_coverage_rate": round(
+            len(sampled_indices) / max(1, len(inputs)), 8
+        ),
+        "sampled_indices_sha256": hashlib.sha256(
+            np.asarray(sorted(sampled_indices), dtype=np.int64).tobytes()
+        ).hexdigest(),
         "static_sequence_width": static_sequence_width,
         "maximum_dynamic_batch_width": max(batch_sequence_widths or [0]),
         "mean_dynamic_batch_width": round(
             sum(batch_sequence_widths) / max(1, len(batch_sequence_widths)), 3
         ),
+        "dynamic_batch_width_prefix": batch_sequence_widths[:16],
         "maximum_execution_batch_width": max(
             execution_batch_sequence_widths or [0]
         ),
+        "execution_batch_width_prefix": execution_batch_sequence_widths[:16],
+        "distinct_execution_batch_width_count": len(
+            set(execution_batch_sequence_widths)
+        ),
         "padded_positions_avoided": padded_positions_avoided,
+        "mlx_active_memory_bytes_maximum": max(mlx_active_memory_bytes or [0]),
+        "mlx_cache_memory_bytes_maximum": max(mlx_cache_memory_bytes or [0]),
+        "mlx_peak_memory_bytes_maximum": max(mlx_peak_memory_bytes or [0]),
+        "mlx_active_memory_bytes_prefix": mlx_active_memory_bytes[:16],
+        "mlx_cache_memory_bytes_prefix": mlx_cache_memory_bytes[:16],
+        "mlx_peak_memory_bytes_prefix": mlx_peak_memory_bytes[:16],
+        "mlx_cache_memory_bytes_after_clear_maximum": max(
+            mlx_cache_memory_bytes_after_clear or [0]
+        ),
+        "mlx_cache_memory_bytes_after_clear_prefix": (
+            mlx_cache_memory_bytes_after_clear[:16]
+        ),
+        "clear_device_cache_after_step": bool(clear_device_cache_after_step),
+        "clear_device_cache_before_step": bool(clear_device_cache_before_step),
+        "clear_device_cache_after_backward": bool(
+            clear_device_cache_after_backward
+        ),
+        "mlx_cache_memory_bytes_before_backward_clear_prefix": (
+            mlx_cache_memory_bytes_before_backward_clear[:16]
+        ),
+        "mlx_cache_memory_bytes_after_backward_clear_prefix": (
+            mlx_cache_memory_bytes_after_backward_clear[:16]
+        ),
+        "mlx_cache_memory_bytes_before_step_clear_prefix": (
+            mlx_cache_memory_bytes_before_step_clear[:16]
+        ),
+        "mlx_cache_memory_bytes_after_step_clear_prefix": (
+            mlx_cache_memory_bytes_after_step_clear[:16]
+        ),
+        "transactional_eager_step": bool(transactional_eager_step),
+        "sequence_balanced_token_loss": bool(sequence_balanced_token_loss),
+        "target_token_frequency_balance_power": float(
+            target_token_frequency_balance_power
+        ),
+        "eager_gradient_accumulation_microbatch_size": int(
+            eager_gradient_accumulation_microbatch_size
+        ),
+        "eager_execution_width_quantum": int(eager_execution_width_quantum),
+        "batch_index_schedule_policy": (
+            "finite_warmup_then_repeat_final_batch_v1"
+            if normalized_batch_index_schedule
+            else "ordinary_epoch_batches"
+        ),
+        "batch_index_schedule_length": len(normalized_batch_index_schedule),
+        "batch_index_schedule_sha256": (
+            hashlib.sha256(
+                json.dumps(
+                    normalized_batch_index_schedule,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()
+            if normalized_batch_index_schedule
+            else ""
+        ),
+        "eager_gradient_accumulation_weighting": (
+            "equal_sequence_mass"
+            if eager_gradient_accumulation_microbatch_size
+            and sequence_balanced_token_loss
+            else "target_token_mass"
+            if eager_gradient_accumulation_microbatch_size
+            else "not_applicable"
+        ),
+        "optimizer_state_offload_between_steps": (
+            optimizer_state_offload_path is not None
+        ),
+        "optimizer_state_offload_count": optimizer_state_offload_count,
+        "optimizer_state_offload_minimum_target_positions": int(
+            optimizer_state_offload_minimum_target_positions
+        ),
+        "eager_transaction_memory_prefix": eager_transaction_memory_prefix,
         "dynamic_batch_cropping": True,
         "training_step_execution": (
             "mlx_compiled_shape_bucket_v1"
             if compiled_step is not None
+            else "mlx_eager_shape_bucket_v1"
+            if eager_execution_width_quantum
             else "mlx_eager_auxiliary_objective_v1"
         ),
         "training_step_mode_requested": training_step_mode,
@@ -3679,11 +4361,31 @@ def train_phase(
             "required_labels": coverage_receipt["required_labels"],
             "required_label_count": len(coverage_receipt["required_labels"]),
             "selected_row_count": len(coverage_prefix),
-            "selected_indices_sha256": coverage_receipt["selected_indices_sha256"],
+            "selected_indices_sha256": hashlib.sha256(
+                np.asarray(coverage_prefix, dtype=np.int64).tobytes()
+            ).hexdigest(),
+            "coverage_selected_indices_sha256": coverage_receipt[
+                "selected_indices_sha256"
+            ],
+            "resource_stress": resource_stress_receipt,
             "observed_label_counts": observed_coverage_counts,
             "missing_labels": missing_coverage,
+            "cumulative_across_fresh_process_segments": bool(
+                prior_coverage_observed_counts
+            ),
             "capacity": max_steps * batch_size,
+            "planning_capacity": coverage_planning_capacity,
         },
+        "data_cursor_start": {
+            "policy": cursor_policy,
+            "row_count": len(inputs),
+            "batch_size": int(batch_size),
+            "seed": int(seed),
+            "epoch": resume_epoch,
+            "batch_index": resume_batch_index,
+        },
+        "data_cursor_next": next_data_cursor,
+        "batch_index_sha256_prefix": batch_index_sha256_prefix,
         "external_inference_calls": 0,
     }
 
@@ -3694,6 +4396,7 @@ def coverage_first_plan(
     *,
     row_count: int,
     capacity: int,
+    row_costs: tuple[int, ...] | None = None,
 ) -> dict[str, Any]:
     """Build a deterministic minimum-like set cover for bounded mechanics runs."""
 
@@ -3703,12 +4406,17 @@ def coverage_first_plan(
             "state": "NOT_REQUESTED",
             "required_labels": [],
             "selected_indices": [],
+            "selected_row_costs": [],
             "selected_indices_sha256": "",
         }
     if row_labels is None or len(row_labels) != row_count:
         raise ValueError("coverage labels must align one-to-one with training rows")
     if capacity <= 0:
         raise ValueError("coverage-first sampling requires positive batch capacity")
+    if row_costs is not None and (
+        len(row_costs) != row_count or any(int(value) <= 0 for value in row_costs)
+    ):
+        raise ValueError("coverage row costs must be positive and align with rows")
     normalized = tuple(tuple(dict.fromkeys(labels)) for labels in row_labels)
     available = {label for labels in normalized for label in labels}
     missing = sorted(set(required) - available)
@@ -3723,6 +4431,7 @@ def coverage_first_plan(
             candidates,
             key=lambda index: (
                 -len(uncovered.intersection(normalized[index])),
+                int(row_costs[index]) if row_costs is not None else 0,
                 index,
             ),
         )
@@ -3741,6 +4450,11 @@ def coverage_first_plan(
         "state": "PLANNED",
         "required_labels": list(required),
         "selected_indices": selected,
+        "selected_row_costs": (
+            [int(row_costs[index]) for index in selected]
+            if row_costs is not None
+            else []
+        ),
         "selected_indices_sha256": hashlib.sha256(encoded).hexdigest(),
     }
 
@@ -3756,7 +4470,135 @@ def normalized_sampling_probabilities(
     total = float(weights.sum())
     if total <= 0:
         raise ValueError("sampling weights must contain positive mass")
+    # Equal weights carry no sampling preference. Treating them as weighted
+    # would silently switch an epoch from a shuffled permutation to sampling
+    # with replacement and leave otherwise eligible rows unseen.
+    if np.all(weights == weights[0]):
+        return None
     return weights / total
+
+
+def stratified_low_variance_sampling_order(
+    probabilities: np.ndarray,
+    *,
+    row_count: int,
+    seed: int,
+    minimum_stratum_coverage: bool = False,
+) -> list[int]:
+    """Return a deterministic prefix-balanced weighted epoch.
+
+    Equal-probability rows form a stratum. Smooth weighted round-robin keeps
+    every prefix close to each stratum's aggregate mass, while independently
+    shuffled without-replacement cycles cover rows within each stratum before
+    repeating them. This preserves weighted objectives without the omissions
+    or prefix variance of independent replacement draws.
+    """
+
+    values = np.asarray(probabilities, dtype=np.float64)
+    if (
+        row_count <= 0
+        or len(values) != row_count
+        or np.any(values < 0.0)
+        or not np.isclose(float(values.sum()), 1.0, rtol=0.0, atol=1e-12)
+    ):
+        raise ValueError(
+            "low-variance sampling requires aligned non-negative probabilities summing to one"
+        )
+    grouped: dict[str, list[int]] = {}
+    group_value: dict[str, float] = {}
+    for index, value in enumerate(values):
+        if value <= 0.0:
+            continue
+        key = float(value).hex()
+        grouped.setdefault(key, []).append(index)
+        group_value[key] = float(value)
+    if not grouped:
+        raise ValueError("low-variance sampling requires positive probability mass")
+    keys = sorted(grouped, key=lambda key: grouped[key][0])
+    masses = {
+        key: group_value[key] * len(grouped[key])
+        for key in keys
+    }
+    current = {key: 0.0 for key in keys}
+    tie_order = list(keys)
+    random.Random(seed ^ 0x535452415441).shuffle(tie_order)
+    tie_rank = {key: rank for rank, key in enumerate(tie_order)}
+    cycles: dict[str, list[int]] = {}
+    offsets = {key: 0 for key in keys}
+    cycle_index = {key: 0 for key in keys}
+
+    def refreshed_cycle(key: str) -> list[int]:
+        rows = list(grouped[key])
+        cycle_seed = (
+            seed
+            ^ int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big")
+            ^ cycle_index[key]
+        )
+        random.Random(cycle_seed).shuffle(rows)
+        cycle_index[key] += 1
+        return rows
+
+    for key in keys:
+        cycles[key] = refreshed_cycle(key)
+    sampled: list[int] = []
+    sampled_unique: set[int] = set()
+    total_mass = float(sum(masses.values()))
+    maximum_iterations = (
+        max(
+            row_count,
+            int(
+                math.ceil(
+                    max(
+                        len(grouped[key]) * total_mass / masses[key]
+                        for key in keys
+                    )
+                )
+            )
+            + len(keys),
+        )
+        if minimum_stratum_coverage
+        else row_count
+    )
+    for _ in range(maximum_iterations):
+        for key in keys:
+            current[key] += masses[key]
+        selected = max(
+            keys,
+            key=lambda key: (current[key], -tie_rank[key]),
+        )
+        current[selected] -= total_mass
+        if offsets[selected] >= len(cycles[selected]):
+            cycles[selected] = refreshed_cycle(selected)
+            offsets[selected] = 0
+        sampled_index = cycles[selected][offsets[selected]]
+        sampled.append(sampled_index)
+        sampled_unique.add(sampled_index)
+        offsets[selected] += 1
+        if minimum_stratum_coverage and len(sampled_unique) == row_count:
+            break
+    if minimum_stratum_coverage and len(sampled_unique) != row_count:
+        raise ValueError(
+            "coverage-safe low-variance sampling did not exhaust every positive row"
+        )
+    return sampled
+
+
+def prepend_coverage_indices(
+    order: list[int], coverage_prefix: list[int]
+) -> list[int]:
+    """Move required coverage rows to the front without deleting duplicates."""
+
+    if len(set(coverage_prefix)) != len(coverage_prefix):
+        raise ValueError("coverage prefix indices must be unique")
+    remaining = list(order)
+    for index in coverage_prefix:
+        try:
+            remaining.remove(int(index))
+        except ValueError:
+            if not remaining:
+                raise ValueError("coverage prefix exceeds the sampling order")
+            remaining.pop()
+    return [int(index) for index in coverage_prefix] + remaining
 
 
 def evaluate_loss(
@@ -4909,13 +5751,21 @@ def batched_beam_advance(
         component_count = len(expansion_specs[0]["beam"]["cache"][layer_index])
         batched_cache.append(
             tuple(
-                mx.contiguous(
-                    mx.concatenate(
-                        [
-                            spec["beam"]["cache"][layer_index][component_index]
-                            for spec in expansion_specs
-                        ],
-                        axis=0,
+                (
+                    None
+                    if all(
+                        spec["beam"]["cache"][layer_index][component_index]
+                        is None
+                        for spec in expansion_specs
+                    )
+                    else mx.contiguous(
+                        mx.concatenate(
+                            [
+                                spec["beam"]["cache"][layer_index][component_index]
+                                for spec in expansion_specs
+                            ],
+                            axis=0,
+                        )
                     )
                 )
                 for component_index in range(component_count)
@@ -4926,7 +5776,10 @@ def batched_beam_advance(
     rows = []
     for index, (spec, global_id) in enumerate(zip(expansion_specs, global_ids)):
         branch_cache = [
-            tuple(value[index : index + 1] for value in layer_cache)
+            tuple(
+                value[index : index + 1] if value is not None else None
+                for value in layer_cache
+            )
             for layer_cache in next_cache
         ]
         beam = spec["beam"]
@@ -4983,7 +5836,12 @@ def serial_beam_advance(
 
 
 def cache_arrays(cache: list[tuple[Any, ...]]) -> list[Any]:
-    return [value for layer_cache in cache for value in layer_cache]
+    return [
+        value
+        for layer_cache in cache
+        for value in layer_cache
+        if value is not None
+    ]
 
 
 def completion_pool_target(config: dict[str, Any]) -> int:
