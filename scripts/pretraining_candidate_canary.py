@@ -339,26 +339,27 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 "optimizer_state_offload_minimum_target_positions": 600,
                 "kerc_resource_stress_prefix": False,
                 "continuation_source_report": (
-                    "reports/rdc_kerc_k5_compiler_schema_continuation_loss_"
-                    "population_step32_merged_fp32_seed_20260722.json"
+                    "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_"
+                    "fidelity_loss_retained_generations_v4_planbb9f_regression_"
+                    "search_step27_merged_fp32_seed_20260722.json"
                 ),
                 "continuation_source_report_sha256": (
-                    "7926d5e15437a0a01033cb1e7abc5562e5fc3d4f4447c9386fef613317a4bc1e"
+                    "d52ff92917b5dfa7036ce06b7965208d11ca170fdba4aae082f8fb0afb208d3b"
                 ),
                 "continuation_source_plan_sha256": (
-                    "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d"
+                    "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7"
                 ),
                 "continuation_source_checkpoint_sha256": (
-                    "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09"
+                    "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691"
                 ),
                 "continuation_source_optimizer_state_sha256": (
-                    "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8"
+                    "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf"
                 ),
                 "continuation_source_mlx_rng_state_sha256": (
                     "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9"
                 ),
-                "continuation_source_optimizer_steps": 4630,
-                "continuation_source_optimizer_positions": 447027,
+                "continuation_source_optimizer_steps": 4657,
+                "continuation_source_optimizer_positions": 457027,
                 "large_sequence_route": (
                     "compiler_full_stage_path_qualified_semantic_pointer_fidelity_"
                     "loss4_schema_continuation_loss1_position32_q32_k32_"

@@ -479,7 +479,7 @@
         "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
         "legacy_optimizer_steps": 4657,
         "legacy_optimizer_positions": 457027,
-        "required_current_plan_sha256": "bb1f22f95a8da2dbe9add8dc72b4ff9324e1d69539e87da92d9d08ea43ec9614",
+        "required_current_plan_sha256": "a2ac3a63c510fb1bd6142af7eb4173d0163ce8ab9f6dceceee6a39775314f80a",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
