@@ -1,0 +1,43 @@
+{
+  "policy": "project_theseus_fresh_process_segment_length_boundary_v1",
+  "created_utc": "2026-07-26T14:38:13Z",
+  "trigger_state": "GREEN",
+  "selected_segment_optimizer_steps": 32,
+  "selection_reason": "largest_repeatably_qualified_host_safe_segment",
+  "selected_evidence": {
+    "qualification_report": "reports/fresh_process_pretraining_qualification.json",
+    "qualification_trigger_state": "GREEN",
+    "contiguous_segment_count": 2,
+    "independent_replay_passed": true,
+    "zero_swap_growth": true,
+    "production_segment_report": "reports/neural_seed_training_campaign.json",
+    "production_optimizer_steps_before": 3000,
+    "production_optimizer_steps_after": 3032,
+    "production_optimizer_step_delta": 32,
+    "production_returncode": 0,
+    "production_watchdog_passed": true,
+    "production_maximum_inferred_unified_memory_mib": 3305.953,
+    "production_maximum_swapout_growth_mib": 0.0
+  },
+  "rejected_candidates": [
+    {
+      "segment_optimizer_steps": 48,
+      "disposition": "REJECTED_HOST_MEMORY_RESERVE_BREACHED",
+      "failure_scope": "first guarded scratch child before publication",
+      "production_checkpoint_mutated": false
+    },
+    {
+      "segment_optimizer_steps": 40,
+      "disposition": "REJECTED_NOT_REPEATABLE_UNDER_HOST_RESERVE",
+      "observations": [
+        "One attempt completed three guarded scratch children but its parent comparator environment lacked the CPU safetensors package, so it earned no parity credit.",
+        "The corrected attempt completed the first two guarded children and then the independent replay breached the live-memory reserve before publication."
+      ],
+      "production_checkpoint_mutated": false
+    }
+  ],
+  "claim_boundary": "This selects a repeatable segment length for this M1 host and current exact implementation. It is not a general 32-step optimum, a cross-host limit, or evidence that longer segments cannot fit after a materially different memory implementation.",
+  "external_inference_calls": 0,
+  "public_training_rows": 0,
+  "capability_claim": "NONE_EXECUTION_RESOURCE_BOUNDARY_ONLY"
+}

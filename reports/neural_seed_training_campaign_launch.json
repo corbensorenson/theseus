@@ -1,0 +1,51 @@
+{
+  "policy": "project_theseus_neural_seed_training_campaign_launch_v1",
+  "created_utc": "2026-07-26T14:43:59Z",
+  "trigger_state": "GREEN",
+  "campaign_policy": "project_theseus_fresh_process_training_campaign_v1",
+  "plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+  "target_id": "shared_trunk",
+  "phase": "pretraining",
+  "controller_state": "RUNNING",
+  "controller_execution": "managed_persistent_session",
+  "segment_optimizer_steps": 32,
+  "launch_progress": {
+    "optimizer_steps_before_launch": 3000,
+    "optimizer_steps_after_verified_managed_segment": 3064,
+    "verified_segment_count": 2,
+    "pretrain_optimizer_positions_before_launch": 22999779,
+    "pretrain_optimizer_positions_after_verified_managed_segment": 23487568,
+    "pretrain_optimizer_position_delta": 487789,
+    "target_pretrain_optimizer_positions": 1096734920,
+    "remaining_pretrain_optimizer_positions": 1073247352,
+    "estimated_remaining_device_days_at_qualified_rate": 3.537
+  },
+  "latest_durable_state": {
+    "checkpoint_sha256": "18293d098d1ce383fc8a279b0d5fa5c0b4784cb75d683102067e91ffcc3e57ef",
+    "optimizer_state_sha256": "85f4828c7528201c33d8faf6f2afb0dfadfd1c4b493e7d296468f385b2f54ca8",
+    "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json"
+  },
+  "latest_watchdog": {
+    "passed": true,
+    "returncode": 0,
+    "fault": "",
+    "maximum_inferred_unified_memory_mib": 4368.781,
+    "maximum_swapout_growth_mib": 0.0,
+    "swapout_growth_threshold_exceeded": false,
+    "process_rss_telemetry_state": "AVAILABLE",
+    "wall_seconds": 78.656,
+    "receipt": "reports/training_resource_safety/training-latest.json"
+  },
+  "authority": {
+    "pre_training_architecture_ready": true,
+    "pre_training_architecture_blocker_count": 0,
+    "freeze_trigger_state": "GREEN",
+    "freeze_accelerator_replay_receipt_count": 14,
+    "freeze_cpu_replay_pass_count": 7,
+    "kerc_first_campaign_state": "FIRST_CAMPAIGN_SCOPE_EXCLUDED_INCONCLUSIVE_EXPERIMENT",
+    "kerc_first_campaign_optimizer_exposure": 0
+  },
+  "external_inference_calls": 0,
+  "public_training_rows": 0,
+  "capability_claim": "NOT_EVALUATED"
+}
