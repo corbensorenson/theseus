@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import signal
 import sys
 from pathlib import Path
@@ -257,6 +258,14 @@ def test_guard_can_report_system_wide_swap_growth_without_attributing_it_to_chil
         ]
         == 30
     )
+
+
+def test_cli_exposes_report_only_swap_action() -> None:
+    source = inspect.getsource(safety.main)
+
+    assert '"--swapout-growth-action"' in source
+    assert "choices=sorted(SWAPOUT_GROWTH_ACTIONS)" in source
+    assert "swapout_growth_action=args.swapout_growth_action" in source
 
 
 def test_guard_tolerates_one_transient_reserve_sample() -> None:

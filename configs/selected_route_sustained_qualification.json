@@ -1,0 +1,18 @@
+{
+  "policy": "project_theseus_selected_route_sustained_qualification_v1",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "selector_report": "reports/training_acceleration_final_selector.json",
+  "scratch_root": "runtime/t0a_canaries/selected_route_sustained_v1",
+  "report": "reports/selected_route_sustained_qualification.json",
+  "segment_optimizer_steps": 64,
+  "minimum_contiguous_child_wall_seconds": 7200,
+  "minimum_successful_segments": 3,
+  "maximum_intersegment_wall_seconds": 120,
+  "window_fraction": 0.2,
+  "minimum_last_to_first_joined_throughput_ratio": 0.85,
+  "require_ac_power": true,
+  "require_exact_resume_each_segment": true,
+  "require_canonical_lineage_unchanged": true,
+  "host_resource_policy_source": "training_config.host_resource_safety",
+  "system_swap_growth_is_diagnostic": true
+}

@@ -284,6 +284,7 @@ def test_canonical_heavy_operations_require_the_external_host_guard() -> None:
     assert policy.minimum_available_before_launch_mib == 4096
     assert policy.minimum_available_during_run_mib == 2048
     assert policy.maximum_swapout_growth_mib == 16
+    assert policy.swapout_growth_action == "report_only"
     assert training_operation(SimpleNamespace(execute=True)) == "training"
     assert training_operation(SimpleNamespace(evaluate_progress=True)) == "evaluation"
     assert training_operation(
@@ -2718,6 +2719,35 @@ def test_step3480_receipt_accepts_compiled_state_detachment_migration() -> None:
     assert migration is not None
     assert migration["migration_id"] == (
         "shared_trunk_step3480_compiled_state_detachment_v1"
+    )
+
+
+def test_step3480_receipt_accepts_final_acceleration_disposition_migration() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    receipt = json.loads(
+        (
+            ROOT
+            / "checkpoints"
+            / "moecot_mlx_57m_active_preregistered_v1"
+            / "shared_trunk"
+            / "training_receipt.json"
+        ).read_text()
+    )
+    stage_signature = "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9"
+    migration = accepted_plan_identity_migration(
+        receipt,
+        {
+            "plan_identity": config["plan_identity"],
+            "plan_sha256": "91cfec74ccead883b2e6cc4ccc60ffe969c57c118d9ebe52bba908187ca124fe",
+            "stage": {"stage_signature": stage_signature},
+        },
+        {"target_id": "shared_trunk"},
+    )
+    assert migration is not None
+    assert migration["migration_id"] == (
+        "shared_trunk_step3480_final_acceleration_and_availability_controller_v1"
     )
 
 

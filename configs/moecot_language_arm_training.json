@@ -23,6 +23,7 @@
     "minimum_available_before_launch_mib": 4096,
     "minimum_available_during_run_mib": 2048,
     "maximum_swapout_growth_mib": 16,
+    "swapout_growth_action": "report_only",
     "maximum_wall_seconds": 86400,
     "poll_interval_seconds": 0.25,
     "terminate_grace_seconds": 2.0
@@ -107,6 +108,19 @@
       "scale_preregistration.evaluation_freeze_sha256"
     ],
     "legacy_migrations": [
+      {
+        "migration_id": "shared_trunk_step3480_final_acceleration_and_availability_controller_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_optimizer_positions": 26680656,
+        "required_current_plan_sha256": "91cfec74ccead883b2e6cc4ccc60ffe969c57c118d9ebe52bba908187ca124fe",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/training_acceleration_final_selector.json reports/masked_structural_growth_qualification.json reports/progressive_sequence_length_qualification.json configs/neural_seed_training_availability.json tests/test_masked_structural_growth_qualification.py tests/test_progressive_sequence_length_qualification.py tests/test_host_resource_safety.py tests/test_neural_seed_training_campaign.py",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule after dispositioning the remaining acceleration candidates. The canonical route remains compiled FP32, microbatch four, full depth from step zero, and fixed target width. Masked structural growth is present only behind an explicit zero-by-default mask API and was rejected by the preregistered weak-arm gate; progressive width is isolated to its qualification harness and was rejected by the joined-wall and time-to-quality gates. The host watchdog now treats machine-wide swapout growth as diagnostic while retaining hard process-RSS, launch-reserve, live-reserve, and wall-time enforcement, because guarded replay observed unrelated system swap growth with low child RSS and more than 3.3 GiB reclaimable memory. The outer availability controller makes only between-segment launch decisions from explicit idle, power, disk, memory, competing-process, time-window, and operator-yield gates; it never interrupts an in-flight Metal segment or changes training math. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract changes on the selected route."
+      },
       {
         "migration_id": "shared_trunk_step3480_compiled_state_detachment_v1",
         "target_id": "shared_trunk",
@@ -606,7 +620,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "9373acda44113802015693e2b3f18ab1508527a2f55e64cec9810456ca23fda8",
+        "required_current_plan_sha256": "019522551a05d3e424cdac2b0914dbbc1fbf47a9787f74fc1a27f213d279e29e",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -621,7 +635,7 @@
         "legacy_optimizer_state_sha256": "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197",
         "legacy_optimizer_steps": 4786,
         "legacy_optimizer_positions": 488090,
-        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
+        "required_current_plan_sha256": "99053a1f97b3a2841933df4aa3c32e819cce32cde7e1960c0b00bc308d7b896f",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_generation_rows16_seed_20260722.json",
         "reason": "Continue the exact step-4786 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-2 batch-2 sampler cursor after 128 updates gave every bounded population row two exposures but left the v4 root top-1 at 0/16 and raw admitted-row validity at 0/16. The next rung doubles minimum exposure from two to four using another 128 updates at the unchanged 3e-5 rate, v4 objective, same seed, same admitted rows, and same hard host gates. Preserve the sampler cursor: this migration intentionally has no reset_data_cursor_phase. Require teacher-forced root movement and raw admitted-row validity before any source-disjoint surface. This is an underfit-regime diagnostic, not a capability or architecture-falsification claim."
@@ -634,7 +648,7 @@
         "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
         "legacy_optimizer_steps": 4914,
         "legacy_optimizer_positions": 519165,
-        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
+        "required_current_plan_sha256": "99053a1f97b3a2841933df4aa3c32e819cce32cde7e1960c0b00bc308d7b896f",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
         "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed."

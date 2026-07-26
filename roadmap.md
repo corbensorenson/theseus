@@ -277,6 +277,14 @@ Work this finite docket in order:
    positions/second with zero swap. It remains a challenger until a complete full-state,
    checkpoint/reload, and two-segment replay clears the existing bounds; the interrupted
    scratch-state qualification earns no adoption.
+
+   **Final disposition (2026-07-26):** the exact three pair speed ratios are `1.021918x`,
+   `1.026620x`, and `1.001462x`; the maximum is only `1.026620x`. Because even the best
+   observed result misses the frozen 10% joined-wall adoption floor, no further state or
+   sustained surface can promote this switch. Record
+   `NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT`, preserve the measurements,
+   and keep the default synchronization route. This is a scoped engineering disposition,
+   not a claim about another graph or MLX release.
 3. **Reject unsafe graph-chain fusion.** Deferring every microbatch synchronization retained
    the full dependency chain, reduced reclaimable memory to about 734 MiB, grew swap by about
    954 MiB, and was killed before a durable update. Do not retry that implementation unchanged.
@@ -288,7 +296,13 @@ Work this finite docket in order:
    parameter delta `7.490e-6` exceeded the existing `5e-6` bound, so production adoption
    remains closed. Full encoder/decoder partition compaction reached 1.73-1.77x but changed
    loss and therefore belongs to a successor architecture, not this lineage.
-5. **Implement a user-presence-aware segment scheduler.** Never suspend an in-flight Metal
+
+   **Final disposition (2026-07-26):** the exact measured speed ratio is `1.068527x`, below
+   the same 10% adoption floor even before the parameter-delta prerequisite. Stop the
+   canonical-lineage branch here as
+   `NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT`; preserve compact partitioning only
+   as a fresh successor-architecture candidate with matched quality evidence.
+5. **Operate the user-presence-aware segment scheduler.** Never suspend an in-flight Metal
    command graph. Launch a bounded 32/64-step segment only when AC power is present, Low Power
    Mode is off, the machine has been idle for a configured window, disk/checkpoint reserve and
    memory/swap gates are green, and no interactive accelerator job is active. If user activity
@@ -296,6 +310,15 @@ Work this finite docket in order:
    launching more. Support explicit overnight start/stop windows and an immediate “yield after
    this segment” control. This increases calendar duration when used, but prevents a multi-day
    laptop takeover without changing one training token.
+
+   **Implemented (2026-07-26):** the existing neural-seed campaign controller now evaluates
+   these gates before every transactional 64-step launch and returns `PAUSED`, rather than
+   failure, when the configured overnight window, 15-minute idle interval, AC/Low Power state,
+   10 GiB disk reserve, 7,424 MiB measured launch headroom, competing-accelerator inventory, or
+   explicit yield file is not ready. An in-flight Metal segment is never suspended; it finishes
+   and publishes through the existing exact-resume transaction before availability is checked
+   again. The launch floor is not a generic machine-memory constant: it is the measured
+   approximately 5.18 GiB selected-route peak plus the unchanged 2 GiB live reserve.
 6. **Make review-point racing executable before cutting compute.** At each already frozen
    private-development review, continue every candidate unless a preregistered confidence-bound
    rule establishes practical domination across aggregate loss, weak-language tails, direct
@@ -381,6 +404,13 @@ A fresh primary-source MLX review changes the acceleration docket in five ways:
    asynchronous hashing/serialization only after 64-step qualification, with immutable
    snapshot ownership, exact restore, injected interruption, disk-reserve, peak-memory, and
    zero-swap checks. Do not overlap live mutable tensors with serialization.
+
+   **Final disposition (2026-07-26):** the selected 64-step cadence halves the measured
+   3.5812% 32-step publication fraction to an upside bound below 2%, before double-buffer
+   memory and synchronization costs. It cannot clear the frozen 10% joined-wall floor, so
+   do not add a second snapshot-ownership ABI on this 16 GiB host. Record
+   `NOT_IMPLEMENTED_64_STEP_UPSIDE_BOUND_BELOW_2_PERCENT`; reopen only if checkpoint
+   frequency or measured publication share materially changes.
 4. **Keep custom Metal focused on a measured residual.** MLX officially supports custom
    Metal kernels with custom gradients, so a fused residual kernel remains possible. The
    current model already uses fast scaled-dot-product attention, fast RoPE, native RMSNorm,
@@ -397,12 +427,14 @@ A fresh primary-source MLX review changes the acceleration docket in five ways:
    preprocessing, lifecycle, and checkpoint tools. Reopen native host code only after a
    profile attributes at least 5% joined time to CPU orchestration.
 
-The finite order is now: keep the reclaimed disk reserve; qualify 64-step FP32 state
-detachment when host memory is genuinely available; implement and disposition FP16/FP32
-master; finish full-state qualification of the measured 1-2% fast-synchronization switch;
-rank bounded stations and test at most one custom kernel; then stop the acceleration sprint.
-For laptop availability, the user-presence-aware overnight scheduler and control/arm fanout
-remain more important than shaving another percent from a foreground process. The first
+The finite order is now closed: keep the reclaimed disk reserve; qualify the current-plan
+64-step FP32 state-detachment replay when host memory is genuinely available; retain FP16 as
+an exact-replay implementation exclusion; retain default synchronization after the measured
+1-2% switch missed the speed gate; and add no custom kernel after bounded station ranking
+found either existing native fast paths or sub-10% elimination bounds. Then stop the
+acceleration sprint.
+For laptop availability, the implemented user-presence-aware overnight scheduler and future
+control/arm fanout remain more important than shaving another percent from a foreground process. The first
 100M-position reading remains an overnight-scale milestone; selected-path dogfood and the
 two dense scientific controls remain separate schedules.
 
@@ -560,6 +592,21 @@ Therefore:
    unobstructed ventilation. Do not count fan-control utilities or cooling accessories as a
    speedup without an alternating sustained measurement.
 
+   **Executable closure (2026-07-26):** the scratch-only
+   `selected_route_sustained_qualification.py` harness now binds the GREEN finite selector to
+   the canonical compiled FP32/microbatch-four route, advances only exact-resumable 64-step
+   generations, preserves the registered step-3,480 lineage byte-for-byte, and requires a
+   genuinely contiguous 7,200-second child window. It records first/middle/last joined and
+   device throughput, final loss, AC state, available `pmset` thermal/performance warnings,
+   causal child RSS, inferred unified memory, live reserve, and diagnostic swap growth. A
+   guard interruption is durable and cannot be silently counted across a later invocation.
+   Two current fresh-process attempts correctly stopped on the unchanged 2,048 MiB live-reserve
+   floor: one second segment reached 2,003 MiB reclaimable after about 194 seconds with zero
+   swap growth, and a later launch began with only 4,720.672 MiB reclaimable before reaching
+   1,723.359 MiB. These are host-pressure walls, not training failures. Retry only when the
+   measured reclaimable working set can cover the observed roughly 5.18 GiB route plus the
+   live reserve; do not lower the reserve or kill unrelated user work to manufacture GREEN.
+
 The larger remaining opportunity is **time to heldout quality**, not raw seconds per frozen
 AdamW update. Keep that search finite:
 
@@ -596,11 +643,49 @@ AdamW update. Keep that search finite:
    inherit the step-3,480 lineage as unchanged semantics. Compare it from a common fresh
    initialization with exact growth receipts, matched token/compute accounting, checkpoint
    tests, interventions, and direct functional review.
+
+   **Trigger disposition (2026-07-26):** the fixed-width MLX depth operator is implemented,
+   exact at both zero-mask insertion boundaries, copies every surviving AdamW moment, starts
+   every appended block moment at zero, reloads model and optimizer state exactly, and keeps
+   separately compiled next updates within `7.45e-9` maximum parameter error against the
+   frozen `1e-7` replay ceiling. The first canonical-random insertion pilot was superseded
+   after primary-source inspection showed that official MSG uses trained-layer stacking.
+   The faithful three-seed rerun compares a full-depth 6.623M control with two fresh
+   `2 -> 4 -> 6` schedules. The paper-shaped schedule uses `0.778823x` joined wall time and
+   improves mean final heldout loss by `0.6527%`, but reaches matched final quality in only
+   `0.919737x` time and regresses the weakest HTML/CSS arm by `7.1582%`. The conservative
+   schedule uses `0.894449x` joined wall time, improves mean loss by `1.4535%`, but reaches
+   matched quality in `1.184620x` time and has `8.4688%` worst-arm regression. Neither clears
+   the frozen joined-time-to-quality plus 3% weak-tail gate. Retain full-depth training for
+   the first campaign and record `NOT_SELECTED_FIRST_CAMPAIGN`; this is not scientific
+   falsification of MSG.
 4. **Progressive sequence length** remains the fourth and final design challenger.
    GrowLength reports benefits at 70M, 160M, and 410M, making it scale-relevant, but Theseus
    starts at only 512 tokens and already has high occupancy. Test `128 -> 256 -> 512` only if
    a static compute model predicts at least 15% possible gain, then require equal-token
    short- and long-context heldout evidence.
+
+   **Trigger disposition (2026-07-26):** the actual 120-row private slice has median width
+   271 and maximum width 505; only 12 rows fit at 128 and 54 fit at 256, so a conditional
+   rung was warranted. The implemented source-conditioned windowing policy conserves every
+   supervised target position exactly once at every width, retains bounded left context,
+   pads stable compiled batch shapes, and evaluates every arm plus a >256-token tail at the
+   full 512-token width. Across three matched 6.623M seeds it improves mean final heldout
+   loss by `1.1692%`, improves every long-context seed, passes weak-arm, transition,
+   finite-gradient, exact-state-reload, and `1e-7` next-update gates, and reduces primary
+   step time to `0.833829x`. Fixed evaluation/checkpoint overhead leaves joined wall at
+   `0.951846x`, while time to the control's final quality is `0.990911x`; both miss the
+   preregistered 15% adoption threshold. Retain fixed-width 512 training for the first
+   campaign and record `NOT_SELECTED_FIRST_CAMPAIGN`, without treating this bounded result
+   as a general GrowLength falsification.
+
+The finite four-way selector is therefore closed: production remains compiled FP32 with
+FP32 checkpoint/optimizer authority, AdamW, full target depth, and the fixed maximum sequence
+policy. No candidate earned integration by weakening a replay, quality, weak-tail, or joined
+time-to-quality threshold. System-wide swap growth is now report-only telemetry for the
+canonical trainer while process RSS, the 2 GiB live reserve, and wall time remain causal hard
+stops; the GrowLength rung demonstrated why by adding 2.918 GiB of system-wide swap while its
+own RSS peaked at only 473.766 MiB and live reclaimable memory stayed above 3.335 GiB.
 
 Do not append GaLore, APOLLO, another optimizer, or another growth schedule to this selector
 until one of these four is dispositioned. GaLore/APOLLO primarily buy memory and larger

@@ -1,0 +1,30 @@
+{
+  "policy": "project_theseus_user_presence_aware_training_segments_v1",
+  "enabled": true,
+  "launch_windows": [
+    {
+      "start_local": "21:00",
+      "end_local": "08:00"
+    }
+  ],
+  "minimum_idle_seconds": 900,
+  "require_ac_power": true,
+  "require_low_power_mode_off": true,
+  "minimum_disk_free_gib": 10,
+  "minimum_reclaimable_before_launch_mib": 7424,
+  "yield_after_segment_control": "runtime/control/neural_seed_yield_after_segment",
+  "interactive_accelerator_process_patterns": [
+    "moecot_language_arm_training.py --execute",
+    "fresh_process_pretraining_qualification.py --execute",
+    "selected_route_sustained_qualification.py --execute",
+    "optimizer_update_efficiency_qualification.py --execute",
+    "masked_structural_growth_qualification.py --execute",
+    "progressive_sequence_length_qualification.py --execute"
+  ],
+  "segment_behavior": {
+    "never_suspend_in_flight_metal_graph": true,
+    "reevaluate_after_every_transactional_segment": true,
+    "stop_launching_when_gate_closes": true,
+    "atomic_checkpoint_before_yield": true
+  }
+}

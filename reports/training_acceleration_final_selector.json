@@ -1,0 +1,183 @@
+{
+  "bounded_measurements": {
+    "checkpoint_fraction_at_32_steps": 0.035812,
+    "fast_sync_maximum_speedup": 1.02662,
+    "fast_sync_speedup_ratios": [
+      1.021917,
+      1.02662,
+      1.001462
+    ],
+    "fused_loss_elimination_upper_bound": 0.082474,
+    "packing_padding_fraction_upper_bound": 0.052704,
+    "rust_host_loop_upper_bound": 0.00196,
+    "target_window_projection_speedup": 1.068527
+  },
+  "campaign_disposition": {
+    "kind": "FINITE_ACCELERATION_SELECTOR_CLOSED",
+    "launch_recipe": {
+      "compile_width_quantum": 64,
+      "compiled_microbatch_size": 4,
+      "compute_dtype": "float32",
+      "fp32_master": false,
+      "optimizer_id": "adamw_mlx",
+      "sequence_length_policy": "fixed_target_width",
+      "structural_growth_policy": "full_depth_from_step_zero",
+      "swapout_growth_action": "report_only",
+      "token_loss_compute_dtype": "float32",
+      "training_rope_kernel": "mlx_fast",
+      "training_step_mode": "compiled"
+    },
+    "launch_recipe_changed_by_challenger": false,
+    "next_action": "run the final sustained selected-route qualification, then return to the matched 57M campaign without another elective acceleration search"
+  },
+  "candidate_dispositions": {
+    "adam_mini_mlx": "NOT_SELECTED_FIRST_CAMPAIGN",
+    "ademamix_mlx": "NOT_SELECTED_FIRST_CAMPAIGN",
+    "apple_neural_accelerator_on_m1": "UNAVAILABLE_ON_THIS_HARDWARE",
+    "asynchronous_checkpoint_publication": "NOT_IMPLEMENTED_64_STEP_UPSIDE_BOUND_BELOW_2_PERCENT",
+    "exact_sequence_packing": "NOT_IMPLEMENTED_MEASURED_PADDING_BOUND_5_27_PERCENT",
+    "fp16_fp32_master": "NOT_SELECTED_REPLAY_PREREQUISITE_FAILED",
+    "fused_linear_cross_entropy": "NOT_IMPLEMENTED_ELIMINATION_BOUND_8_25_PERCENT_AND_NO_FASTER_MICROBATCH_TRIGGER",
+    "high_power_mode": "UNAVAILABLE_ON_THIS_HARDWARE",
+    "lazy_inactive_optimizer_state": "NOT_IMPLEMENTED_MEMORY_TO_FASTER_MICROBATCH_TRIGGER_FAILED",
+    "masked_depth_conservative_v1": "NOT_SELECTED_FIRST_CAMPAIGN",
+    "masked_depth_paper_shaped_v1": "NOT_SELECTED_FIRST_CAMPAIGN",
+    "mlx_metal_fast_synch": "NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT",
+    "mlx_sdpa_blocks_on_fp32": "NOT_APPLICABLE_TO_UPSTREAM_FP32_PATH",
+    "new_custom_metal_kernel": "NOT_AUTHORIZED_NATIVE_FAST_PATHS_OR_SUB10_PERCENT_ELIMINATION_BOUNDS_RETAINED",
+    "progressive_128_256_512": "NOT_SELECTED_FIRST_CAMPAIGN",
+    "rust_training_hot_loop": "NOT_IMPLEMENTED_HOST_PREPARATION_BOUND_0_196_PERCENT",
+    "source_target_window_projection": "NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT"
+  },
+  "capability_claim": "NONE_EXECUTION_SELECTION_ONLY",
+  "config": "configs/training_acceleration_final_selector.json",
+  "config_sha256": "c0fdb87d5f777b98649403f7fb7eb7d5ede962f4a4487894461324ee35ffa593",
+  "evidence": {
+    "bounded_dispositions": {
+      "path": "reports/training_acceleration_research_refresh_2026_07_26.json",
+      "sha256": "9e09adab28bb0422f8572d11ef9a13e40e2280bc963cd07151fe84b0763bb4a4"
+    },
+    "fast_sync_candidate_a": {
+      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16.json",
+      "sha256": "f7445a0490058c3ab4c952381ad64add892314877f0b898390179f64ae5d53ec"
+    },
+    "fast_sync_candidate_b": {
+      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair2.json",
+      "sha256": "f38686b0d511b9efde1e355e4e42dda569f23a771e22d6072ac825ecfaea1f2c"
+    },
+    "fast_sync_candidate_c": {
+      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair3.json",
+      "sha256": "b28dea293fb7fff8affb7f049022bdff84228ee584c1e2f4a945704e8e5d8007"
+    },
+    "fast_sync_control_a": {
+      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_replay.json",
+      "sha256": "c51bfe4142e902cfdc45314dcd8903ce61f3186643c97f5b575d08d03b5fba0a"
+    },
+    "fast_sync_control_b": {
+      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair2.json",
+      "sha256": "9949adaa9142c5d81eb824646290855b9e33a289a5087377437a184a2f09ae64"
+    },
+    "fast_sync_control_c": {
+      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair3.json",
+      "sha256": "3ca2af8e95131eb3ee6e64baedc89ebb8689e307f899b698e31ea252682ad7ab"
+    },
+    "fp16_replay": {
+      "path": "reports/resource_acceleration_fp16_repeatability_localized4_2026_07_26.json",
+      "sha256": "92de40ff2dc9d25ace57eebaa369b3d45216f1d6714c0c21060dcbe6a06114a8"
+    },
+    "fp16_stability": {
+      "path": "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
+      "sha256": "85be42fb1fb6871dc1b81e98a5f90c811b316fe4252cd22cfd7071f4662a451b"
+    },
+    "lazy_optimizer_state": {
+      "path": "reports/resource_acceleration_lazy_inactive_optimizer_disposition_2026_07_26.json",
+      "sha256": "555b3c820f77570831fcd591ffc416e4d6396c6f796faca6ca36ec1d40b6cd12"
+    },
+    "optimizer": {
+      "path": "reports/optimizer_update_efficiency_qualification.json",
+      "sha256": "a34ba1bd72f4f372c8fb4c52eae914087a837e7a663e1f5373c341891842e76a"
+    },
+    "production_trainer_config": {
+      "path": "configs/moecot_language_arm_training.json",
+      "sha256": "a0f5c69e093338f6669ddbe1fa2d0aeccb873427010dd5ef2dc4aeb039d12fe2"
+    },
+    "progressive_sequence": {
+      "path": "reports/progressive_sequence_length_qualification.json",
+      "sha256": "ea9cc62699292bac5f3ce03410a537068e10b54cc1409c1f5352e566b1a84b91"
+    },
+    "station_adamw": {
+      "path": "reports/mlx_training_station_adamw_2026_07_26.json",
+      "sha256": "fb7e5473d16ba70dce88726462d92e7d303443b233fa528d9466db58809aeb77"
+    },
+    "station_attention": {
+      "path": "reports/mlx_training_station_attention_2026_07_26.json",
+      "sha256": "ed01f708cd6694090a9544ff566a2bb1d102a249729cbae300492d59ff575568"
+    },
+    "station_clip": {
+      "path": "reports/mlx_training_station_clip_2026_07_26.json",
+      "sha256": "67af903065562710513404bde52d7aab3915414dd8ecfa8c0b73baa0b50ebd26"
+    },
+    "station_rmsnorm": {
+      "path": "reports/mlx_training_station_rmsnorm_2026_07_26.json",
+      "sha256": "bff3138c35674ec1bcb37aab29c1a113ba47ede28584d10c8579af89debfe0a4"
+    },
+    "station_swiglu": {
+      "path": "reports/mlx_training_station_swiglu_2026_07_26.json",
+      "sha256": "dc218623310d478421d26b5d39e0fdcec781036d3cdd74b5ec239b48814743e8"
+    },
+    "structural_growth": {
+      "path": "reports/masked_structural_growth_qualification.json",
+      "sha256": "032ff1eb4778ec688f0315a6c2902392ce0aef370a1ae498c23acbbbda372d8c"
+    },
+    "target_window_candidate": {
+      "path": "reports/resource_acceleration_source_compact_output_eager_m1_steps4_state.json",
+      "sha256": "a5a3653408dc2fb86bfd5420319af193bc65bc7000944bc534f356150038ab7f"
+    },
+    "target_window_control": {
+      "path": "reports/resource_acceleration_source_full_partitions_eager_m1_steps4_state.json",
+      "sha256": "6e315f3bdef9aa86e1138b21e28dc20a9880ec5d2ae769697e587a08f0bce23a"
+    }
+  },
+  "gates": {
+    "ambient_swap_is_diagnostic": true,
+    "asynchronous_checkpoint_bounded_below_adoption_floor": true,
+    "custom_kernel_station_closed": true,
+    "fast_sync_below_adoption_floor": true,
+    "fp16_replay_not_adopted": true,
+    "fp16_stability_measured": true,
+    "fused_loss_bounded_below_adoption_floor": true,
+    "lazy_state_trigger_failed": true,
+    "optimizer_reference_selected": true,
+    "packing_bounded_below_adoption_floor": true,
+    "production_compiled_route_bound": true,
+    "production_fixed_sequence_bound": true,
+    "production_full_depth_bound": true,
+    "production_optimizer_bound": true,
+    "production_precision_bound": true,
+    "rust_host_rewrite_bounded_below_adoption_floor": true,
+    "selected_recipe_matches_config": true,
+    "sequence_control_selected": true,
+    "structural_control_selected": true,
+    "target_window_projection_below_adoption_floor": true
+  },
+  "non_claims": [
+    "Selection is local M1 MLX engineering evidence, not model capability or cross-hardware superiority.",
+    "Candidate exclusions are scoped engineering dispositions, not scientific falsifications."
+  ],
+  "policy": "project_theseus_training_acceleration_final_selector_v1",
+  "selected_recipe": {
+    "compile_width_quantum": 64,
+    "compiled_microbatch_size": 4,
+    "compute_dtype": "float32",
+    "fp32_master": false,
+    "optimizer_id": "adamw_mlx",
+    "sequence_length_policy": "fixed_target_width",
+    "structural_growth_policy": "full_depth_from_step_zero",
+    "swapout_growth_action": "report_only",
+    "token_loss_compute_dtype": "float32",
+    "training_rope_kernel": "mlx_fast",
+    "training_step_mode": "compiled"
+  },
+  "support_state": "SUPPORTED",
+  "trigger_state": "GREEN"
+}

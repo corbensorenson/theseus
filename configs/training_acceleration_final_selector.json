@@ -1,0 +1,40 @@
+{
+  "policy": "project_theseus_training_acceleration_final_selector_v1",
+  "production_trainer_config": "configs/moecot_language_arm_training.json",
+  "report": "reports/training_acceleration_final_selector.json",
+  "reports": {
+    "fp16_stability": "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
+    "fp16_replay": "reports/resource_acceleration_fp16_repeatability_localized4_2026_07_26.json",
+    "optimizer": "reports/optimizer_update_efficiency_qualification.json",
+    "structural_growth": "reports/masked_structural_growth_qualification.json",
+    "progressive_sequence": "reports/progressive_sequence_length_qualification.json",
+    "lazy_optimizer_state": "reports/resource_acceleration_lazy_inactive_optimizer_disposition_2026_07_26.json",
+    "bounded_dispositions": "reports/training_acceleration_research_refresh_2026_07_26.json",
+    "fast_sync_control_a": "reports/resource_acceleration_fp32_materialized_normal_synch16_replay.json",
+    "fast_sync_candidate_a": "reports/resource_acceleration_fp32_materialized_fast_synch16.json",
+    "fast_sync_control_b": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair2.json",
+    "fast_sync_candidate_b": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair2.json",
+    "fast_sync_control_c": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair3.json",
+    "fast_sync_candidate_c": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair3.json",
+    "target_window_control": "reports/resource_acceleration_source_full_partitions_eager_m1_steps4_state.json",
+    "target_window_candidate": "reports/resource_acceleration_source_compact_output_eager_m1_steps4_state.json",
+    "station_attention": "reports/mlx_training_station_attention_2026_07_26.json",
+    "station_swiglu": "reports/mlx_training_station_swiglu_2026_07_26.json",
+    "station_rmsnorm": "reports/mlx_training_station_rmsnorm_2026_07_26.json",
+    "station_clip": "reports/mlx_training_station_clip_2026_07_26.json",
+    "station_adamw": "reports/mlx_training_station_adamw_2026_07_26.json"
+  },
+  "selected_recipe": {
+    "compute_dtype": "float32",
+    "fp32_master": false,
+    "token_loss_compute_dtype": "float32",
+    "training_step_mode": "compiled",
+    "compiled_microbatch_size": 4,
+    "compile_width_quantum": 64,
+    "optimizer_id": "adamw_mlx",
+    "structural_growth_policy": "full_depth_from_step_zero",
+    "sequence_length_policy": "fixed_target_width",
+    "training_rope_kernel": "mlx_fast",
+    "swapout_growth_action": "report_only"
+  }
+}

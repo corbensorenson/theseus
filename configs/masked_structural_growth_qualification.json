@@ -1,0 +1,118 @@
+{
+  "policy": "project_theseus_masked_structural_growth_qualification_v1",
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "stage_metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+  "scratch_root": "runtime/t0a_canaries/masked_structural_growth_6m_v1",
+  "report": "reports/masked_structural_growth_qualification.json",
+  "seeds": [
+    20260722,
+    20260723,
+    20260724
+  ],
+  "scoped_arms": [
+    "english",
+    "python",
+    "javascript_typescript",
+    "html_css",
+    "rust"
+  ],
+  "supervision": {
+    "root": "data/training_data/moecot_language_supervision_v1",
+    "train_split": "private_train",
+    "heldout_split": "private_dev",
+    "train_rows_per_arm": 24,
+    "heldout_rows_per_arm": 8,
+    "maximum_sequence_tokens": 256,
+    "selection_namespace": "t0a_private_masked_structural_growth_source_disjoint_v1"
+  },
+  "model": {
+    "d_model": 256,
+    "num_layers": 6,
+    "num_heads": 8,
+    "num_kv_heads": 2,
+    "ff_dim": 768,
+    "attention_policy": "prefix_lm"
+  },
+  "training": {
+    "steps": 128,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "evaluation_interval_steps": 16
+  },
+  "growth_schedules": [
+    {
+      "id": "masked_depth_conservative_v1",
+      "mask_ramp_steps": 4,
+      "stages": [
+        {
+          "stop_step": 24,
+          "full_layer_slots": [0, 1]
+        },
+        {
+          "stop_step": 56,
+          "full_layer_slots": [0, 1, 2, 3],
+          "new_layer_source_local_indices": {
+            "2": 0,
+            "3": 1
+          }
+        },
+        {
+          "stop_step": 128,
+          "full_layer_slots": [0, 1, 2, 3, 4, 5],
+          "new_layer_source_local_indices": {
+            "4": 2,
+            "5": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "masked_depth_paper_shaped_v1",
+      "mask_ramp_steps": 8,
+      "stages": [
+        {
+          "stop_step": 48,
+          "full_layer_slots": [0, 1]
+        },
+        {
+          "stop_step": 88,
+          "full_layer_slots": [0, 1, 2, 3],
+          "new_layer_source_local_indices": {
+            "2": 0,
+            "3": 1
+          }
+        },
+        {
+          "stop_step": 128,
+          "full_layer_slots": [0, 1, 2, 3, 4, 5],
+          "new_layer_source_local_indices": {
+            "4": 2,
+            "5": 3
+          }
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "maximum_boundary_output_absolute_error": 0.000001,
+    "maximum_boundary_loss_absolute_error": 0.0000001,
+    "maximum_next_update_absolute_error": 0.0000001,
+    "maximum_mean_joined_wall_time_ratio": 0.85,
+    "maximum_mean_time_to_control_final_quality_ratio": 0.85,
+    "maximum_mean_final_loss_relative_regression": 0.01,
+    "maximum_seed_final_loss_relative_regression": 0.02,
+    "minimum_seed_quality_fraction": 0.6666666666666666,
+    "maximum_weak_arm_relative_loss_regression": 0.03
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0,
+    "confirmation_surface_consumption": 0,
+    "production_checkpoint_mutation": false,
+    "heldout_labels_visible_to_candidate": false,
+    "selection_from_throughput_alone": false
+  }
+}

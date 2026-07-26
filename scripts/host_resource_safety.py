@@ -581,6 +581,11 @@ def main() -> int:
     parser.add_argument("--minimum-available-before-launch-mib", type=float)
     parser.add_argument("--minimum-available-during-run-mib", type=float)
     parser.add_argument("--maximum-swapout-growth-mib", type=float)
+    parser.add_argument(
+        "--swapout-growth-action",
+        choices=sorted(SWAPOUT_GROWTH_ACTIONS),
+        default=None,
+    )
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = list(args.command)
@@ -599,6 +604,7 @@ def main() -> int:
                 args.minimum_available_during_run_mib
             ),
             maximum_swapout_growth_mib=args.maximum_swapout_growth_mib,
+            swapout_growth_action=args.swapout_growth_action,
         )
         receipt_path = Path(args.receipt).expanduser()
         if not receipt_path.is_absolute():

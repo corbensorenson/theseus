@@ -1377,6 +1377,11 @@ def build_model(
     class DecoderBlock(nn.Module):
         def __init__(self) -> None:
             super().__init__()
+            # A Python scalar is deliberate: structural-growth masks are
+            # schedule state rather than learned parameters.  A zero mask is
+            # an exact identity at a growth boundary; intermediate values
+            # introduce the newly materialized block continuously.
+            self.structural_growth_mask = 1.0
             self.attention_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
             self.attention = CausalAttention()
             self.ffn_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
@@ -1439,7 +1444,9 @@ def build_model(
             source_access: Any | None = None,
             kerc_stage_weights: Any | None = None,
             attention_mask: Any | None = None,
+            structural_growth_mask: Any | None = None,
         ) -> tuple[Any, tuple[Any, ...]]:
+            growth_input = hidden
             token_cache = (cache[0], cache[1]) if cache is not None else None
             memory = cache[2] if cache is not None and len(cache) >= 3 else None
             pending_sum = cache[3] if cache is not None and len(cache) == 5 else None
@@ -1512,6 +1519,27 @@ def build_model(
                     else mx.ones(hidden.shape[:2], dtype=mx.float32)
                 )
                 hidden = hidden + stage_delta * access[:, :, None]
+            growth_mask = structural_growth_mask
+            if growth_mask is not None:
+                if cache is not None or state_enabled:
+                    raise ValueError(
+                        "masked structural growth is qualified only for "
+                        "cache-free non-recurrent training"
+                    )
+                hidden = growth_input + growth_mask * (hidden - growth_input)
+            elif float(self.structural_growth_mask) != 1.0:
+                if cache is not None or state_enabled:
+                    raise ValueError(
+                        "masked structural growth is qualified only for "
+                        "cache-free non-recurrent training"
+                    )
+                eager_growth_mask = float(self.structural_growth_mask)
+                hidden = (
+                    growth_input
+                    if eager_growth_mask == 0.0
+                    else growth_input
+                    + eager_growth_mask * (hidden - growth_input)
+                )
             if not state_enabled:
                 return hidden, next_cache
             next_memory = memory
@@ -1747,6 +1775,23 @@ def build_model(
                         self.semantic_plan_projection.weight
                     )
             materialize_initialization(self)
+
+        def set_structural_growth_masks(self, masks: tuple[float, ...]) -> None:
+            """Set cache-free decoder residual masks for staged depth growth."""
+
+            if len(masks) != len(self.layers):
+                raise ValueError(
+                    "one structural-growth mask is required per decoder layer"
+                )
+            normalized = tuple(float(value) for value in masks)
+            if any(not 0.0 <= value <= 1.0 for value in normalized):
+                raise ValueError("structural-growth masks must be in [0, 1]")
+            if state_enabled and any(value != 1.0 for value in normalized):
+                raise ValueError(
+                    "masked structural growth is not qualified with recurrent state"
+                )
+            for layer, value in zip(self.layers, normalized):
+                layer.structural_growth_mask = value
 
         def role_weights(self, tokens: Any) -> Any | None:
             if not state_enabled:
@@ -2677,6 +2722,7 @@ def build_model(
             kerc_unit_hard_block_mask: Any | None = None,
             output_position_mask: Any | None = None,
             auxiliary_only: bool = False,
+            structural_growth_masks: Any | None = None,
         ) -> Any:
             if return_training_aux and (return_plan_logits or return_copy_aux):
                 raise ValueError(
@@ -2686,6 +2732,16 @@ def build_model(
                 tokens.shape
             ):
                 raise ValueError("output position mask must match token batch and length")
+            if structural_growth_masks is not None:
+                if tuple(structural_growth_masks.shape) != (config.num_layers,):
+                    raise ValueError(
+                        "structural-growth masks must have one value per decoder layer"
+                    )
+                if cache is not None or state_enabled:
+                    raise ValueError(
+                        "masked structural growth is qualified only for "
+                        "cache-free non-recurrent training"
+                    )
             if input_embeddings is not None:
                 if tuple(input_embeddings.shape) != (
                     int(tokens.shape[0]),
@@ -2952,6 +3008,11 @@ def build_model(
                                     layer_hidden,
                                     kerc_stage_weights=kerc_stage_weights,
                                     attention_mask=attention_mask,
+                                    structural_growth_mask=(
+                                        structural_growth_masks[index]
+                                        if structural_growth_masks is not None
+                                        else None
+                                    ),
                                 )
                                 # This branch is explicitly cache-free training.
                                 # Returning K/V makes each layer cache a checkpoint
@@ -2980,6 +3041,11 @@ def build_model(
                                     source_access=layer_source_access,
                                     kerc_stage_weights=kerc_stage_weights,
                                     attention_mask=attention_mask,
+                                    structural_growth_mask=(
+                                        structural_growth_masks[index]
+                                        if structural_growth_masks is not None
+                                        else None
+                                    ),
                                 )
                                 return layer_output
 
@@ -3004,6 +3070,11 @@ def build_model(
                             source_access=source_access,
                             kerc_stage_weights=kerc_stage_weights,
                             attention_mask=attention_mask,
+                            structural_growth_mask=(
+                                structural_growth_masks[index]
+                                if structural_growth_masks is not None
+                                else None
+                            ),
                         )
                     next_cache.append(layer_next)
                 if source_encoder_enabled and source_memory is not None:

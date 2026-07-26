@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
+import os
+import re
+import shutil
 import subprocess
 import sys
 import time
@@ -18,11 +22,229 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import moecot_language_arm_training as training  # noqa: E402
+import host_resource_safety  # noqa: E402
 
 
 DEFAULT_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
 DEFAULT_OUT = ROOT / "reports/neural_seed_training_campaign.json"
+DEFAULT_AVAILABILITY_CONFIG = (
+    ROOT / "configs" / "neural_seed_training_availability.json"
+)
 POLICY = "project_theseus_fresh_process_training_campaign_v1"
+AVAILABILITY_POLICY = "project_theseus_user_presence_aware_training_segments_v1"
+
+
+def parse_hhmm(value: str) -> int:
+    match = re.fullmatch(r"([01][0-9]|2[0-3]):([0-5][0-9])", value)
+    if match is None:
+        raise ValueError(f"invalid local time: {value}")
+    return int(match.group(1)) * 60 + int(match.group(2))
+
+
+def within_launch_windows(
+    local_minute: int, windows: list[dict[str, Any]]
+) -> bool:
+    for row in windows:
+        start = parse_hhmm(str(row.get("start_local") or ""))
+        end = parse_hhmm(str(row.get("end_local") or ""))
+        if start == end:
+            return True
+        if start < end and start <= local_minute < end:
+            return True
+        if start > end and (local_minute >= start or local_minute < end):
+            return True
+    return False
+
+
+def validate_availability_policy(policy: dict[str, Any]) -> None:
+    if policy.get("policy") != AVAILABILITY_POLICY:
+        raise ValueError("unexpected training availability policy")
+    if policy.get("enabled") is not True:
+        raise ValueError("training availability scheduler must remain enabled")
+    windows = policy.get("launch_windows")
+    if not isinstance(windows, list) or not windows:
+        raise ValueError("at least one explicit launch window is required")
+    for row in windows:
+        if not isinstance(row, dict):
+            raise ValueError("launch window must be an object")
+        parse_hhmm(str(row.get("start_local") or ""))
+        parse_hhmm(str(row.get("end_local") or ""))
+    if int(policy.get("minimum_idle_seconds") or 0) < 60:
+        raise ValueError("minimum idle time must be at least one minute")
+    if float(policy.get("minimum_disk_free_gib") or 0.0) <= 0.0:
+        raise ValueError("positive disk reserve is required")
+    if float(policy.get("minimum_reclaimable_before_launch_mib") or 0.0) < 4096:
+        raise ValueError("launch working-set reserve is too small")
+    behavior = policy.get("segment_behavior") or {}
+    if not all(
+        behavior.get(key) is True
+        for key in (
+            "never_suspend_in_flight_metal_graph",
+            "reevaluate_after_every_transactional_segment",
+            "stop_launching_when_gate_closes",
+            "atomic_checkpoint_before_yield",
+        )
+    ):
+        raise ValueError("transactional segment behavior must remain fail closed")
+
+
+def mac_idle_seconds() -> float | None:
+    result = subprocess.run(
+        ["ioreg", "-c", "IOHIDSystem"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=10,
+    )
+    match = re.search(r'"HIDIdleTime"\s*=\s*([0-9]+)', result.stdout)
+    return float(match.group(1)) / 1_000_000_000.0 if match else None
+
+
+def mac_power_state() -> tuple[bool | None, bool | None, dict[str, str]]:
+    battery = subprocess.run(
+        ["pmset", "-g", "batt"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=10,
+    )
+    custom = subprocess.run(
+        ["pmset", "-g", "custom"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=10,
+    )
+    on_ac = (
+        "Now drawing from 'AC Power'" in battery.stdout
+        if battery.returncode == 0
+        else None
+    )
+    ac_section = custom.stdout.split("AC Power:", 1)[-1]
+    match = re.search(r"\blowpowermode\s+([01])\b", ac_section)
+    low_power = bool(int(match.group(1))) if match else None
+    return on_ac, low_power, {
+        "battery": (battery.stdout + battery.stderr).strip(),
+        "custom": (custom.stdout + custom.stderr).strip(),
+    }
+
+
+def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
+    try:
+        result = subprocess.run(
+            ["ps", "-axo", "pid=,ppid=,command="],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return [
+            {
+                "telemetry_fault": "process_inventory_unavailable",
+                "error_type": type(exc).__name__,
+            }
+        ]
+    if result.returncode != 0:
+        return [{"telemetry_fault": "process_inventory_unavailable"}]
+    own_pid = os.getpid()
+    rows = []
+    for line in result.stdout.splitlines():
+        parts = line.strip().split(maxsplit=2)
+        if len(parts) != 3:
+            continue
+        pid, ppid, command = int(parts[0]), int(parts[1]), parts[2]
+        if pid == own_pid:
+            continue
+        matched = [pattern for pattern in patterns if pattern in command]
+        if matched:
+            rows.append(
+                {
+                    "pid": pid,
+                    "ppid": ppid,
+                    "matched_patterns": matched,
+                    "command": command[:500],
+                }
+            )
+    return rows
+
+
+def evaluate_availability(
+    policy: dict[str, Any], snapshot: dict[str, Any]
+) -> dict[str, Any]:
+    gates = {
+        "inside_launch_window": within_launch_windows(
+            int(snapshot["local_minute"]), list(policy["launch_windows"])
+        ),
+        "machine_idle": (
+            snapshot.get("idle_seconds") is not None
+            and float(snapshot["idle_seconds"])
+            >= float(policy["minimum_idle_seconds"])
+        ),
+        "ac_power": (
+            snapshot.get("on_ac_power") is True
+            if policy["require_ac_power"]
+            else True
+        ),
+        "low_power_mode_off": (
+            snapshot.get("low_power_mode") is False
+            if policy["require_low_power_mode_off"]
+            else True
+        ),
+        "disk_reserve": float(snapshot["disk_free_gib"])
+        >= float(policy["minimum_disk_free_gib"]),
+        "memory_launch_reserve": float(
+            snapshot["reclaimable_available_mib"]
+        )
+        >= float(policy["minimum_reclaimable_before_launch_mib"]),
+        "no_interactive_accelerator_job": not bool(
+            snapshot["active_accelerator_jobs"]
+        ),
+        "yield_control_absent": not bool(snapshot["yield_requested"]),
+    }
+    return {
+        "policy": AVAILABILITY_POLICY,
+        "captured_utc": training.now(),
+        "trigger_state": "GREEN" if all(gates.values()) else "PAUSED",
+        "gates": gates,
+        "failed_gates": [name for name, passed in gates.items() if not passed],
+        "snapshot": snapshot,
+    }
+
+
+def availability_state(policy: dict[str, Any]) -> dict[str, Any]:
+    validate_availability_policy(policy)
+    now = dt.datetime.now().astimezone()
+    idle_seconds = mac_idle_seconds()
+    on_ac, low_power_mode, power_receipt = mac_power_state()
+    memory = host_resource_safety.host_memory_snapshot()
+    disk = shutil.disk_usage(ROOT)
+    yield_path = training.resolve(
+        str(policy["yield_after_segment_control"])
+    )
+    snapshot = {
+        "local_time": now.isoformat(),
+        "local_minute": now.hour * 60 + now.minute,
+        "idle_seconds": idle_seconds,
+        "on_ac_power": on_ac,
+        "low_power_mode": low_power_mode,
+        "power_receipt": power_receipt,
+        "disk_free_gib": round(disk.free / (1024**3), 6),
+        "reclaimable_available_mib": round(
+            memory.reclaimable_available_mib, 3
+        ),
+        "swapouts_mib": round(memory.swapouts_mib, 3),
+        "active_accelerator_jobs": active_accelerator_jobs(
+            list(policy["interactive_accelerator_process_patterns"])
+        ),
+        "yield_requested": yield_path.is_file(),
+        "yield_control": training.relative(yield_path),
+    }
+    return evaluate_availability(policy, snapshot)
 
 
 def campaign_state(
@@ -116,7 +338,13 @@ def run_campaign(
     config_path: Path,
     out: Path,
     max_segments: int,
+    availability_policy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    if availability_policy is None:
+        availability_policy = training.read_json(
+            DEFAULT_AVAILABILITY_CONFIG
+        )
+    validate_availability_policy(availability_policy)
     config, plan, target, receipt = campaign_state(config_path)
     policy = dict(
         config["architecture_training_authority"]["fresh_process_segments"]
@@ -136,6 +364,8 @@ def run_campaign(
             + str(authority.get("reason") or "")
         )
     segment_rows: list[dict[str, Any]] = []
+    availability_rows: list[dict[str, Any]] = []
+    paused_reason = ""
     started = time.perf_counter()
     while True:
         _, _, target, before = campaign_state(config_path)
@@ -147,6 +377,11 @@ def run_campaign(
         if remaining == 0 or (
             max_segments > 0 and len(segment_rows) >= max_segments
         ):
+            break
+        availability = availability_state(availability_policy)
+        availability_rows.append(availability)
+        if availability["trigger_state"] != "GREEN":
+            paused_reason = ",".join(availability["failed_gates"])
             break
         command = [
             str(
@@ -217,6 +452,7 @@ def run_campaign(
             "plan_sha256": plan["plan_sha256"],
             "segment_policy": policy,
             "segments": segment_rows,
+            "availability": availability_rows,
             "progress": estimate(config, target, after),
         }
         training.write_json_atomic(out, interim)
@@ -229,15 +465,19 @@ def run_campaign(
             or segment_rows[-1]["optimizer_step_delta"] > steps
         )
     )
+    trigger_state = "RED" if failed else "PAUSED" if paused_reason else "GREEN"
     return {
         "policy": POLICY,
         "created_utc": training.now(),
-        "trigger_state": "RED" if failed else "GREEN",
+        "trigger_state": trigger_state,
         "plan_sha256": final_plan["plan_sha256"],
         "segment_policy": policy,
         "segment_authority": authority,
         "segments_executed": len(segment_rows),
         "segments": segment_rows,
+        "availability_policy": availability_policy,
+        "availability": availability_rows,
+        "paused_reason": paused_reason,
         "progress": estimate(config, final_target, final_receipt),
         "pretraining_complete": (
             int(final_receipt.get("pretrain_optimizer_positions") or 0)
@@ -262,16 +502,24 @@ def main() -> int:
         default=0,
         help="Zero runs until pretraining completion; positive values bound this invocation.",
     )
+    parser.add_argument(
+        "--availability-config",
+        default=str(DEFAULT_AVAILABILITY_CONFIG),
+    )
     args = parser.parse_args()
     if args.max_segments < 0:
         parser.error("--max-segments cannot be negative")
     config_path = Path(args.config).resolve()
     out = Path(args.out).resolve()
+    availability_path = Path(args.availability_config).resolve()
+    availability_policy = training.read_json(availability_path)
+    validate_availability_policy(availability_policy)
     if args.execute:
         report = run_campaign(
             config_path=config_path,
             out=out,
             max_segments=args.max_segments,
+            availability_policy=availability_policy,
         )
     else:
         config, plan, target, receipt = campaign_state(config_path)
@@ -281,6 +529,7 @@ def main() -> int:
             "trigger_state": "STATUS_ONLY",
             "plan_sha256": plan["plan_sha256"],
             "progress": estimate(config, target, receipt),
+            "availability": availability_state(availability_policy),
             "capability_claim": "NOT_EVALUATED",
         }
     training.write_json_atomic(out, report)

@@ -5972,7 +5972,27 @@
           "tests/test_optimizer_matched_adequacy.py",
           "reports/optimizer_update_efficiency_qualification.json",
           "reports/accelerator_replay/pretraining_optimizers_update_efficiency_guard.json",
-          "reports/accelerator_replay/optimizer_update_efficiency_qualification_width_resume_guard.json"
+          "reports/accelerator_replay/optimizer_update_efficiency_qualification_width_resume_guard.json",
+          "configs/masked_structural_growth_qualification.json",
+          "scripts/masked_structural_growth_qualification.py",
+          "tests/test_masked_structural_growth_qualification.py",
+          "reports/masked_structural_growth_qualification.json",
+          "reports/accelerator_replay/masked_structural_growth_qualification_guard.json",
+          "configs/progressive_sequence_length_qualification.json",
+          "scripts/progressive_sequence_length_qualification.py",
+          "tests/test_progressive_sequence_length_qualification.py",
+          "reports/progressive_sequence_length_qualification.json",
+          "reports/accelerator_replay/progressive_sequence_length_qualification_guard.json",
+          "configs/training_acceleration_final_selector.json",
+          "scripts/training_acceleration_final_selector.py",
+          "tests/test_training_acceleration_final_selector.py",
+          "reports/training_acceleration_final_selector.json",
+          "configs/selected_route_sustained_qualification.json",
+          "scripts/selected_route_sustained_qualification.py",
+          "tests/test_selected_route_sustained_qualification.py",
+          "configs/neural_seed_training_availability.json",
+          "scripts/neural_seed_training_campaign.py",
+          "tests/test_neural_seed_training_campaign.py"
         ]
       },
       "current_non_claims": [
@@ -5982,7 +6002,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve and do not perform a blind second purge. FP16, bounded operator ranking, custom-kernel eligibility, fused loss, packing, lazy inactive optimizer state, AdEMAMix, and correctly grouped Adam-mini are now dispositioned. Adam-mini achieved the intended 0.501582x optimizer-state ratio but missed joined time-to-quality and weak-tail gates; AdEMAMix missed quality, weak-tail, and state-cost gates; AdamW remains selected for the first campaign under an exact-regime engineering disposition rather than universal falsification. Next implement the preregistered function-preserving masked-growth challenger, then run the conditional 128-to-256-to-512 sequence curriculum only if its static compute model predicts at least a 15 percent realizable gain. Adopt only joined time-to-heldout-quality winners. Extend the budget/reference graph to remaining runtime checkpoints separately, qualify MLX fast synchronization, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
+      "smallest_next_patch": "Keep the reclaimed disk reserve and do not perform a blind second purge. The finite acceleration selector is closed. FP16 remains excluded by pre-publication replay drift; fused loss, packing, lazy inactive optimizer state, AdEMAMix, and Adam-mini miss their frozen realization or joined-quality gates. Faithful stacked masked depth growth saves 22.12 percent joined wall and slightly improves mean final loss but misses time-to-quality and reaches 7.16 percent weak-arm regression. Matched-token 128-to-256-to-512 improves mean final loss 1.17 percent and primary step time 16.62 percent, but improves joined wall only 4.82 percent and time-to-control-quality only 0.91 percent. Fast synchronization peaks at only 1.026620x across three pairs, target-window projection reaches only 1.068527x, and asynchronous checkpointing is bounded below 2 percent at the selected cadence; all miss the 10 percent adoption floor. The executable final selector is GREEN for compiled FP32, AdamW, full depth, and fixed target width. The existing campaign controller now gates each exact 64-step segment on the configured overnight window, user idle time, AC and Low Power state, disk reserve, measured route-specific launch headroom, competing accelerator jobs, and an explicit yield-after-segment file without interrupting an in-flight Metal graph. Run the final current-plan fresh-process and sustained selected-route thermal/resource/replay qualifications when those exact gates are green, then return to the matched 57M campaign without another elective acceleration search. Extend the budget/reference graph to remaining runtime checkpoints separately, and fan independent controls/arms to additional local Macs when available.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
