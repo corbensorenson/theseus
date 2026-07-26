@@ -1,0 +1,630 @@
+{
+  "architecture": {
+    "active_parameter_count_per_request": 57340426,
+    "arm_count": 5,
+    "arm_model": {
+      "attention_policy": "encoder_decoder",
+      "d_model": 512,
+      "expert_adapter_dim": 128,
+      "ff_dim": 1536,
+      "mtp_future_offsets": [
+        2,
+        3,
+        4
+      ],
+      "mtp_loss_scale": 0.0,
+      "mtp_loss_weights": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "mtp_low_rank": 1,
+      "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+      "num_heads": 8,
+      "num_kv_heads": 2,
+      "num_layers": 12,
+      "rms_norm_eps": 1e-05,
+      "rope_base": 10000.0,
+      "source_copy_auxiliary_loss_weight": 0.25,
+      "source_copy_mode": "pointer_generator",
+      "source_encoder_layers": 2,
+      "source_expert_adapter_dim": 64,
+      "source_target_separator_token_id": 2
+    },
+    "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+    "dense_active_parameter": {
+      "delta": 8191,
+      "ff_width_parameter_increment": 18432,
+      "model": {
+        "attention_policy": "prefix_lm",
+        "d_model": 512,
+        "ff_dim": 2455,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_target_separator_token_id": 2
+      },
+      "parameter_count": 57348617
+    },
+    "dense_total_parameter": {
+      "delta": -518,
+      "ff_width_parameter_increment": 18432,
+      "model": {
+        "attention_policy": "prefix_lm",
+        "d_model": 512,
+        "ff_dim": 2998,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_target_separator_token_id": 2
+      },
+      "parameter_count": 67357193
+    },
+    "expert_parameter_count_per_arm": 2504193,
+    "matched_active_within_one_ff_increment": true,
+    "matched_total_within_one_ff_increment": true,
+    "router_parameter_count": 0,
+    "router_state": "NOT_TRAINED_OR_CREDITED",
+    "shared_trunk_model": {
+      "attention_policy": "encoder_decoder",
+      "d_model": 512,
+      "ff_dim": 1536,
+      "mtp_future_offsets": [
+        2,
+        3,
+        4
+      ],
+      "mtp_loss_scale": 0.0,
+      "mtp_loss_weights": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "mtp_low_rank": 1,
+      "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+      "num_heads": 8,
+      "num_kv_heads": 2,
+      "num_layers": 12,
+      "rms_norm_eps": 1e-05,
+      "rope_base": 10000.0,
+      "source_copy_auxiliary_loss_weight": 0.25,
+      "source_copy_mode": "pointer_generator",
+      "source_encoder_layers": 2,
+      "source_target_separator_token_id": 2
+    },
+    "shared_trunk_parameter_count": 54836746,
+    "total_parameter_count": 67357711,
+    "vocab_size": 8195
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "falsified_10_8m_rung_restart_allowed": false,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "templates_renderers_routers_tools_generation_credit": 0,
+    "training_authorized_by_preregistration_alone": false
+  },
+  "config": {
+    "bytes": 4754,
+    "path": "configs/neural_seed_50m_scale_preregistration.json",
+    "sha256": "164527919ec1cb94a2f2d6f714f67af2db9d0f811aba147e8291c21a735c7c4e"
+  },
+  "confirmation_surface_spent": false,
+  "contract_state": "GREEN",
+  "created_utc": "2026-07-26T13:55:15.234172+00:00",
+  "data_support": {
+    "canonical_unique_model_visible_positions": 422334331,
+    "maximum_optimizer_repetition_factor": 4.0,
+    "minimum_optimizer_positions_per_active_parameter": 20.0,
+    "minimum_unique_positions_per_active_parameter": 5.0,
+    "optimizer_repetition_ceiling_ready": true,
+    "optimizer_repetition_counted_as_unique_data": false,
+    "planned_optimizer_repetition_factor": 2.71540445,
+    "required_optimizer_positions": 1146808520,
+    "required_unique_positions": 286702130,
+    "specialist_unique_position_floor_ready": true,
+    "specialist_unique_position_support": {
+      "english": {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 63.971298,
+        "shortfall_positions": 0,
+        "unique_model_visible_positions": 160196476
+      },
+      "html_css": {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 7.019036,
+        "shortfall_positions": 0,
+        "unique_model_visible_positions": 17577020
+      },
+      "javascript_typescript": {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 33.052436,
+        "shortfall_positions": 0,
+        "unique_model_visible_positions": 82769680
+      },
+      "python": {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 46.419146,
+        "shortfall_positions": 0,
+        "unique_model_visible_positions": 116242500
+      },
+      "rust": {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 18.188955,
+        "shortfall_positions": 0,
+        "unique_model_visible_positions": 45548655
+      }
+    },
+    "task_complete_contract_ready": true,
+    "task_complete_coverage": {
+      "english": {
+        "checks": {
+          "human_share": true,
+          "multi_turn_share": true,
+          "position_floor": true,
+          "unit_floor": true
+        },
+        "human_contributed_share": 0.544317,
+        "minimum_target_positions": 10000000,
+        "minimum_verified_units": 20000,
+        "multi_turn_share": 0.486662,
+        "ready": true,
+        "required_verification_strength": null,
+        "target_positions": 30740755,
+        "verified_units": 25566
+      },
+      "html_css": {
+        "capabilities": {
+          "css": {
+            "checks": {
+              "position_floor": true,
+              "unit_floor": true
+            },
+            "minimum_target_positions": 50000,
+            "minimum_verified_units": 100,
+            "ready": true,
+            "required_verification_strength": "layout_render_delta",
+            "target_positions": 58178,
+            "verified_units": 173
+          },
+          "html": {
+            "checks": {
+              "position_floor": true,
+              "unit_floor": true
+            },
+            "minimum_target_positions": 400000,
+            "minimum_verified_units": 400,
+            "ready": true,
+            "required_verification_strength": "dom_a11y_layout_render_delta",
+            "target_positions": 1848748,
+            "verified_units": 517
+          }
+        },
+        "checks": {
+          "capability:css:position_floor": true,
+          "capability:css:unit_floor": true,
+          "capability:html:position_floor": true,
+          "capability:html:unit_floor": true,
+          "position_floor": true,
+          "unit_floor": true
+        },
+        "minimum_target_positions": 500000,
+        "minimum_verified_units": 500,
+        "ready": true,
+        "required_verification_strength": null,
+        "target_positions": 1906926,
+        "verified_units": 690
+      },
+      "javascript_typescript": {
+        "checks": {
+          "position_floor": true,
+          "unit_floor": true
+        },
+        "minimum_target_positions": 1000000,
+        "minimum_verified_units": 1000,
+        "ready": true,
+        "required_verification_strength": "executable_target_pass_starter_fail",
+        "target_positions": 1612835,
+        "verified_units": 1180
+      },
+      "python": {
+        "checks": {
+          "position_floor": true,
+          "unit_floor": true
+        },
+        "minimum_target_positions": 1000000,
+        "minimum_verified_units": 1000,
+        "ready": true,
+        "required_verification_strength": "executable_target_pass_starter_fail",
+        "target_positions": 1129825,
+        "verified_units": 2022
+      },
+      "rust": {
+        "checks": {
+          "position_floor": true,
+          "unit_floor": true
+        },
+        "minimum_target_positions": 1000000,
+        "minimum_verified_units": 500,
+        "ready": true,
+        "required_verification_strength": "executable_target_pass_starter_fail",
+        "target_positions": 1162003,
+        "verified_units": 1504
+      }
+    },
+    "task_complete_coverage_ready": true,
+    "training_admission_contract_ready": true,
+    "training_admission_epistemic_tcb_qualified": true,
+    "training_admission_epistemic_tcb_surviving_mutants": 0,
+    "training_data_supported": true,
+    "unique_position_floor_ready": true,
+    "unique_position_shortfall": 0,
+    "unique_positions_per_active_parameter": 7.365385
+  },
+  "falsified_rung_disposition": "FALSIFY_10_8M_ACTIVE_SCALE_RUNG",
+  "generation_architecture": {
+    "aligned": true,
+    "base_mode": "autoregressive",
+    "behavior_or_speed_claim": "NOT_CLAIMED",
+    "checkpoint_shaping_auxiliary": "mtp_compatibility_fixture",
+    "contract_policy": "project_theseus_generation_architecture_contracts_v1",
+    "expected_model_fields": {
+      "mtp_future_offsets": [
+        2,
+        3,
+        4
+      ],
+      "mtp_loss_scale": 0.0,
+      "mtp_loss_weights": [
+        0.3,
+        0.2,
+        0.1
+      ],
+      "mtp_low_rank": 1,
+      "mtp_maximum_head_parameter_overhead_ratio": 0.25
+    },
+    "fixture_optimizer_authority": false,
+    "fixture_selection_state": "compatibility_fixture_not_selectable",
+    "initial_optimizer_exposure": 0,
+    "mismatched_models": [],
+    "observed_model_fields": {
+      "arm_model": {
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25
+      },
+      "shared_trunk_model": {
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25
+      }
+    }
+  },
+  "hard_gaps": [],
+  "heldout_utility_contract": {
+    "accepted_verified_output_per_second_reported": true,
+    "confirmation_untouched_until_candidate_selected": true,
+    "minimum_model_only_passes_per_arm": 1,
+    "model_only_and_assisted_channels_separate": true,
+    "report_every_arm_before_aggregate": true,
+    "source_disjoint": true
+  },
+  "input_artifacts": {
+    "canonical_capacity_report": {
+      "bytes": 6806,
+      "path": "runtime/standard_causal_transformer_scale_v2/canonical_pretrain_capacity_v2.json",
+      "sha256": "b3c4240d578f8437232bfedd8dcd2d597fbb3c29abf5e8596f13a23dbcf89b73"
+    },
+    "falsification_verdict": {
+      "bytes": 12176,
+      "path": "reports/private_functional_utility_qualification.json",
+      "sha256": "6860deeb48e8fa3281a10fbfd0d8b0b3e87148eb57a0c7b9864fbbbd65fbf778"
+    },
+    "generation_architecture_contract": {
+      "bytes": 9376,
+      "path": "configs/generation_architecture_contracts.json",
+      "sha256": "f6932ea09ee9483b3a5660e8caa75950204a63ae70a5fd880f024c15d34b9934"
+    },
+    "task_complete_report": {
+      "bytes": 205115,
+      "path": "reports/task_complete_training_units_v1.json",
+      "sha256": "62f4b8783ac846188669ff9e760b10b42f2570203c6ca32ae5144ca311dcdabf"
+    },
+    "training_admission_epistemic_tcb": {
+      "bytes": 25362,
+      "path": "reports/training_admission_epistemic_tcb.json",
+      "sha256": "c0cfc4a761e072dfdf603f8f9add1c9220e05c7765cf548bd29799f068fe2dd5"
+    },
+    "training_admission_report": {
+      "bytes": 1523662,
+      "path": "reports/training_data_admission_v1.json",
+      "sha256": "333d38f0b64fa2772aa4d69a640ce2020d2a26dd032b5def20120d31aaef4725"
+    },
+    "vocabulary": {
+      "bytes": 186918,
+      "path": "runtime/moecot_language_seed_v1/exact_language_vocab.json",
+      "sha256": "8fb65e245a4340553cb5d16d6e07f57dd1fd857a425ae36594b9c07837f8d75e"
+    }
+  },
+  "non_claims": [
+    "A successful optimizer/checkpoint canary is not evidence that the model can answer a task.",
+    "Canonical bulk positions do not replace per-arm task-complete coverage.",
+    "The 20:1 planning target applies to optimizer positions; unique positions remain separately reported and repetition is capped prospectively.",
+    "A preregistered architecture is not authorized while any data or resource floor is unmet.",
+    "The consumed 10.8M rung remains immutable and is not restarted by this proposal."
+  ],
+  "policy": "project_theseus_neural_seed_50m_scale_preregistration_v1",
+  "proposal_state": "AUTHORIZED_FOR_FROZEN_TRAINING_PLAN",
+  "resource_canaries": {
+    "batch_size": 1,
+    "models": [
+      {
+        "accepted_verified_output_count": 0,
+        "capability_claim": "NOT_EVALUATED",
+        "checkpoint_receipt": {
+          "bytes": 229391155,
+          "path": "/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-50m-canary-167vr8h0/weights.safetensors",
+          "sha256": "cf34a169e1521cc3cfe6f776432079b1f79595153d0c47e9f15f1de23e04e5d6"
+        },
+        "checks": {
+          "checkpoint_and_optimizer_written": true,
+          "checkpoint_reload_equivalent": true,
+          "finite_loss": true,
+          "optimizer_resume_succeeded": true,
+          "parameter_updated": true
+        },
+        "duration_ms": 4462,
+        "losses": {
+          "after_checkpoint_reload": 9.68531704,
+          "after_first_update": 9.68531704,
+          "after_resume_update": 8.00467587,
+          "first_step_before_update": 11.56593609,
+          "resume_step_before_update": 9.68531704
+        },
+        "metal_peak_memory_bytes": 2273795952,
+        "model_config": {
+          "attention_policy": "encoder_decoder",
+          "d_model": 512,
+          "expert_adapter_dim": 128,
+          "ff_dim": 1536,
+          "mtp_future_offsets": [
+            2,
+            3,
+            4
+          ],
+          "mtp_loss_scale": 0.0,
+          "mtp_loss_weights": [
+            0.3,
+            0.2,
+            0.1
+          ],
+          "mtp_low_rank": 1,
+          "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 12,
+          "rms_norm_eps": 1e-05,
+          "rope_base": 10000.0,
+          "source_copy_auxiliary_loss_weight": 0.25,
+          "source_copy_mode": "pointer_generator",
+          "source_encoder_layers": 2,
+          "source_expert_adapter_dim": 64,
+          "source_target_separator_token_id": 2
+        },
+        "model_id": "moecot_active_arm",
+        "optimizer_positions": 142,
+        "optimizer_receipt": {
+          "bytes": 458783933,
+          "path": "/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-50m-canary-167vr8h0/optimizer.safetensors",
+          "sha256": "85432c84b12694a843bd0fa9bce32197894263f6f86a20f5258802b3b51fdbc7"
+        },
+        "optimizer_steps": 2,
+        "parameter_count": 57340426,
+        "temporary_artifacts_deleted_after_replay": true
+      },
+      {
+        "accepted_verified_output_count": 0,
+        "capability_claim": "NOT_EVALUATED",
+        "checkpoint_receipt": {
+          "bytes": 229406251,
+          "path": "/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-50m-canary-_lsef1nh/weights.safetensors",
+          "sha256": "a78a87d57e8b78edf78a1dcfc7e869f902c19e6c9f6198bf9e2034c42d9fdaac"
+        },
+        "checks": {
+          "checkpoint_and_optimizer_written": true,
+          "checkpoint_reload_equivalent": true,
+          "finite_loss": true,
+          "optimizer_resume_succeeded": true,
+          "parameter_updated": true
+        },
+        "duration_ms": 2887,
+        "losses": {
+          "after_checkpoint_reload": 18.21369934,
+          "after_first_update": 18.21369934,
+          "after_resume_update": 15.90864182,
+          "first_step_before_update": 19.79371834,
+          "resume_step_before_update": 18.21369934
+        },
+        "metal_peak_memory_bytes": 2370527100,
+        "model_config": {
+          "attention_policy": "prefix_lm",
+          "d_model": 512,
+          "ff_dim": 2455,
+          "mtp_future_offsets": [
+            2,
+            3,
+            4
+          ],
+          "mtp_loss_scale": 0.0,
+          "mtp_loss_weights": [
+            0.3,
+            0.2,
+            0.1
+          ],
+          "mtp_low_rank": 1,
+          "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 12,
+          "rms_norm_eps": 1e-05,
+          "rope_base": 10000.0,
+          "source_target_separator_token_id": 2
+        },
+        "model_id": "dense_active_parameter",
+        "optimizer_positions": 142,
+        "optimizer_receipt": {
+          "bytes": 458813289,
+          "path": "/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-50m-canary-_lsef1nh/optimizer.safetensors",
+          "sha256": "a18240bd5313a569fd90c716018fd616dad8c29dd9b353fb8cfe23896ed9d14b"
+        },
+        "optimizer_steps": 2,
+        "parameter_count": 57348617,
+        "temporary_artifacts_deleted_after_replay": true
+      },
+      {
+        "accepted_verified_output_count": 0,
+        "capability_claim": "NOT_EVALUATED",
+        "checkpoint_receipt": {
+          "bytes": 269440577,
+          "path": "/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-50m-canary-is7ii5e_/weights.safetensors",
+          "sha256": "cd48f09c284ab5a38842369ca2c106820a7fa7f77dd533c451dd69d873dfcd57"
+        },
+        "checks": {
+          "checkpoint_and_optimizer_written": true,
+          "checkpoint_reload_equivalent": true,
+          "finite_loss": true,
+          "optimizer_resume_succeeded": true,
+          "parameter_updated": true
+        },
+        "duration_ms": 3286,
+        "losses": {
+          "after_checkpoint_reload": 17.96490479,
+          "after_first_update": 17.96490479,
+          "after_resume_update": 15.29612064,
+          "first_step_before_update": 19.83580971,
+          "resume_step_before_update": 17.96490479
+        },
+        "metal_peak_memory_bytes": 2778161020,
+        "model_config": {
+          "attention_policy": "prefix_lm",
+          "d_model": 512,
+          "ff_dim": 2998,
+          "mtp_future_offsets": [
+            2,
+            3,
+            4
+          ],
+          "mtp_loss_scale": 0.0,
+          "mtp_loss_weights": [
+            0.3,
+            0.2,
+            0.1
+          ],
+          "mtp_low_rank": 1,
+          "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 12,
+          "rms_norm_eps": 1e-05,
+          "rope_base": 10000.0,
+          "source_target_separator_token_id": 2
+        },
+        "model_id": "dense_total_parameter",
+        "optimizer_positions": 142,
+        "optimizer_receipt": {
+          "bytes": 538881915,
+          "path": "/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-50m-canary-is7ii5e_/optimizer.safetensors",
+          "sha256": "b796ff2a507b6f76baf5d49a58afc0194f26d39858db9f7648cf3acb77929aa2"
+        },
+        "optimizer_steps": 2,
+        "parameter_count": 67357193,
+        "temporary_artifacts_deleted_after_replay": true
+      }
+    ],
+    "sequence_length": 128,
+    "source_payload_retained_in_report": false,
+    "source_unit_arm": "english",
+    "source_unit_id": "39f056d4c11097c228619b8a",
+    "state": "GREEN",
+    "temporary_artifacts_retained": false
+  },
+  "runtime_ms": 11154,
+  "score_semantics": "This report preregisters scale and proves bounded MLX mechanics. It is not training, model utility, public calibration, architecture promotion, or route authority.",
+  "training_authorized": true,
+  "training_stop_contract": {
+    "maximum_optimizer_positions": 2000000000,
+    "no_architecture_change_during_rung": true,
+    "pilot_optimizer_positions": 100000000,
+    "review_optimizer_positions": [
+      250000000,
+      500000000,
+      1000000000
+    ],
+    "stop_on_heldout_tail_regression": true,
+    "stop_on_no_model_only_functional_gain_at_two_consecutive_reviews": true,
+    "stop_on_nonfinite_loss": true,
+    "stop_on_repeated_checkpoint_or_resume_failure": true
+  },
+  "trigger_state": "GREEN"
+}

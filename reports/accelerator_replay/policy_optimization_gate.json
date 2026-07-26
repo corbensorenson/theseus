@@ -1,0 +1,100 @@
+{
+  "child_started": true,
+  "command": [
+    "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "scripts/policy_optimization_gate.py"
+  ],
+  "dependency_receipts": {},
+  "fault": "",
+  "fault_observation": null,
+  "first_swapout_growth_breach_observation": null,
+  "generated_artifacts": {
+    "reports/policy_optimization_program.json": {
+      "bytes": 24778,
+      "sha256": "8b42a2e021fdf1694d8cdfc8c7d0e2ce584364e8ff3152b02db11714e3e50b06"
+    },
+    "reports/policy_optimization_program.md": {
+      "bytes": 1674,
+      "sha256": "eb1f8679c70589cdcb3b59d9fc035a2f4700e85a9d27ae43cf5b1e678356ba47"
+    }
+  },
+  "implementation_artifacts": {},
+  "initial_reclaimable_available_mib": 6664.672,
+  "limits": {
+    "max_process_memory_mib": 1024.0,
+    "maximum_swapout_growth_mib": 16.0,
+    "maximum_wall_seconds": 300.0,
+    "minimum_available_before_launch_mib": 3072.0,
+    "minimum_available_during_run_mib": 2048.0,
+    "poll_interval_seconds": 0.1,
+    "swapout_growth_action": "hard_stop",
+    "terminate_grace_seconds": 2.0
+  },
+  "maximum_consecutive_reserve_breaches": 0,
+  "maximum_consecutive_telemetry_failures": 0,
+  "maximum_inferred_unified_memory_mib": 74.297,
+  "maximum_process_rss_mib": 74.297,
+  "maximum_swapout_growth_mib": 0.0,
+  "minimum_reclaimable_available_mib": 6617.609,
+  "observation_prefix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 4.484,
+      "process_rss_mib": 4.484,
+      "reclaimable_available_mib": 6663.188,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.128,
+      "inferred_unified_memory_mib": 62.516,
+      "process_rss_mib": 62.516,
+      "reclaimable_available_mib": 6622.844,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.248,
+      "inferred_unified_memory_mib": 74.297,
+      "process_rss_mib": 74.297,
+      "reclaimable_available_mib": 6617.609,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "observation_suffix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 4.484,
+      "process_rss_mib": 4.484,
+      "reclaimable_available_mib": 6663.188,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.128,
+      "inferred_unified_memory_mib": 62.516,
+      "process_rss_mib": 62.516,
+      "reclaimable_available_mib": 6622.844,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.248,
+      "inferred_unified_memory_mib": 74.297,
+      "process_rss_mib": 74.297,
+      "reclaimable_available_mib": 6617.609,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "passed": true,
+  "physical_memory_mib": 16384.0,
+  "policy": "project_theseus_host_resource_safety_v1",
+  "process_rss_telemetry_state": "AVAILABLE",
+  "reserve_breach_observations_required": 3,
+  "returncode": 0,
+  "stderr_tail": "",
+  "stdout_tail": "{\n  \"created_utc\": \"2026-07-26T13:43:44.410408Z\",\n  \"hard_gaps\": [],\n  \"policy\": \"project_theseus_policy_optimization_gate_v1\",\n  \"summary\": {\n    \"config\": \"configs/policy_optimization_program.json\",\n    \"default_allowed_count\": 0,\n    \"default_with_behavior_lift_count\": 0,\n    \"hard_gap_count\": 0,\n    \"mean_reward_probe_coverage\": 1.0,\n    \"objective_mlx_parity\": true,\n    \"objective_mutation_case_count\": 12,\n    \"objective_mutation_passed_count\": 12,\n    \"objective_optimizer_exposure_steps\": 0,\n    \"objective_runtime_authorized\": false,\n    \"offline_objective_adapter_count\": 5,\n    \"record_count\": 4,\n    \"records_with_authority_expansion_risk\": 0,\n    \"records_with_behavior_lift\": 1,\n    \"records_with_loss_only_risk\": 0,\n    \"records_with_missing_evidence_refs\": 0,\n    \"reward_probe_catalog_count\": 9,\n    \"verifier_reward_objective_adapter_count\": 4,\n    \"warning_count\": 0\n  },\n  \"trigger_state\": \"GREEN\",\n  \"warnings\": []\n}\n",
+  "swapout_growth_action": "hard_stop",
+  "swapout_growth_breach_observations": 0,
+  "swapout_growth_threshold_exceeded": false,
+  "telemetry_failure_observations_allowed": 2,
+  "telemetry_failure_prefix": [],
+  "terminated_by_guard": false,
+  "wall_seconds": 0.375
+}

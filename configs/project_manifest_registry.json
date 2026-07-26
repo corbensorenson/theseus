@@ -242,15 +242,15 @@
         },
         "generation_architecture_contract": {
           "path": "configs/generation_architecture_contracts.json",
-          "sha256": "fd7141eb7c63da33ad5d2f31ef7b4ed482cb87127ecbcdf624c04ff7c3c5fe1f"
+          "sha256": "f6932ea09ee9483b3a5660e8caa75950204a63ae70a5fd880f024c15d34b9934"
         },
         "generation_architecture_implementation": {
           "path": "scripts/generation_architecture_contracts.py",
-          "sha256": "67dbde4a8e0f86291f51f490ca04c924b8e1ca259d5a52e081ab06839ae2a943"
+          "sha256": "4b889a018c41810359ab15b322d0f260529186a789e6daaaae6f0517df26539d"
         },
         "generation_architecture_tests": {
           "path": "tests/test_generation_architecture_contracts.py",
-          "sha256": "ac302de1f466ee24e3d490f35d30fbfdb13b2baf4d8edcf8ac79b5f57e44b756"
+          "sha256": "487a8dde1f8ad1d927b8b9bd27f7da6fcf389295839aee76053f2b04a8bc395a"
         },
         "target_authoritative_drafting": {
           "path": "scripts/target_authoritative_drafting.py",
@@ -282,7 +282,7 @@
         },
         "campaign_preregistration_implementation": {
           "path": "scripts/neural_seed_50m_scale_preregistration.py",
-          "sha256": "b585f402a6aa0f95b5ce16da25f92c2cf0fd9a5b0416b6053d62d85c05fa8238"
+          "sha256": "8896a85c95b068cc0041940aef031e4e147af82ecfb7f292d2df0d6a6155fb32"
         },
         "canonical_training_config": {
           "path": "configs/standard_causal_transformer_survival.json",
@@ -314,27 +314,27 @@
         },
       "moecot_training_config": {
         "path": "configs/moecot_language_arm_training.json",
-        "sha256": "9a9529030c8f725bf8b71ecd6e30636dc3db3f014a94bc9039ec9c5e9608fa21"
+        "sha256": "ffa09985f2ece05408a8852915087a252c40b7984326f6346c04cb81d8c1e3ca"
       },
       "moecot_training_implementation": {
         "path": "scripts/moecot_language_arm_training.py",
-        "sha256": "09a2932eec19142126c9366ad4bf38646d559fff3d47c22fb6e475ae35216b1d"
+        "sha256": "4537007c9ae4d03bccb80bbe3a365b5a0ffa43e409e4236f680092c1fb375b24"
       },
       "moecot_training_tests": {
         "path": "tests/test_moecot_language_arm_training.py",
-        "sha256": "ad614573e9ccadc2b4f76e48f7d49eaafc0aa9ae203b92ba0094ce044c637eb1"
+        "sha256": "4dd5bff22175da09e1a7eeb74f863e112593d0807dc96342e1dac6622a8b1715"
       },
       "canonical_pretraining_optimizers": {
         "path": "scripts/pretraining_optimizers.py",
-        "sha256": "a6d6fa90ce22e7ef8a17cd2f89122dd40c9177bb5ef75c1de4b3a6915cfd7952"
+        "sha256": "1307b87d47e06c0201e856c2340bcda2447250396f4281b08d843ec28071fc92"
       },
       "canonical_pretraining_optimizer_tests": {
         "path": "tests/test_pretraining_optimizers.py",
-        "sha256": "0b459351453af3a679fe48541e223d470bc9c7d470546c081c18a897e75fc34e"
+        "sha256": "75f24810412ace2158e5648d6e8f8ff9df25231e797a36fd391b39b5e9529d75"
       },
         "standard_causal_transformer_model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "a1522c0c5e1f4359b148ad7116ba1dcd57c2eb7b1250c710b8de80a61b2fad9a"
+          "sha256": "4305c0b8cb6d0e16572b87c79ccea2f28e056db6cf2b405b690456741b94280a"
         },
         "neural_seed_resident_runtime": {
           "path": "scripts/neural_seed_resident_runtime.py",
@@ -346,7 +346,7 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "fd1a788afa9fe8724880dedf1fffdbf717eebc982ad31dd0cda499a52b705656"
+          "sha256": "f25484f804114c6a111453cd8bf2584d9f04a7fe5603b26618ac19223577a66a"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
@@ -362,7 +362,7 @@
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
-          "sha256": "5f8d4713fe2aca7f7aab38109467523d460f90056511e914d5c975f0c3547be8"
+          "sha256": "d060bdfb794652798413a7808e5d0c3c3d60f34baa1eb128fde1275534d3c4d5"
         },
         "moecot_source_conditioned_tests": {
           "path": "tests/test_moecot_source_conditioned_pretraining.py",
@@ -370,15 +370,15 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "bd2f739f21cdff014e64b1c7ca0dbd3751334aeed617b8e84296990ac4216846"
+          "sha256": "c9edcf118c5bf180e66d32b9f0b5e8325baff6f992eddd5e271853848f11c38a"
         },
         "canonical_training_objectives": {
           "path": "scripts/standard_causal_transformer_objectives.py",
-          "sha256": "88f6215fd687e687f61f61db48b5e87229b2669dd5c0bf09699c34a92d89b748"
+          "sha256": "e6edec767bd77416ea63db1ffde11535ac8def36d5a06769c64a13c6d27d12ec"
         },
         "kernel_english_protocol": {
           "path": "scripts/kernel_english_protocol.py",
-          "sha256": "7ed73bfec9605159ac4f33dd4aca6ac7c1dd350d0c30e044f18265a84b7670c6"
+          "sha256": "ff0d9c2a3e02ce4fa7d86f4ba6521ad4f104298549239062c00807886f89c29d"
         },
         "kerc_concept_registry_config": {
           "path": "configs/kerc_concept_registry.json",
@@ -414,7 +414,7 @@
         },
         "kerc_allocator_qualification": {
           "path": "scripts/kerc_residual_allocator_qualification.py",
-          "sha256": "6f3703b0857dc974ed7047b9a46d9f2872d94d27924b0184d7d3ca5c1ca760cf"
+          "sha256": "1601e4a593ef45436644488c19d0ca7a17679d1b9bb5a171a587aac248259fa7"
         },
         "kerc_allocator_qualification_tests": {
           "path": "tests/test_kerc_residual_allocator_qualification.py",
@@ -550,7 +550,7 @@
         },
         "kerc_adequacy_implementation": {
           "path": "scripts/kerc_adequacy_canary.py",
-          "sha256": "897162cb7cf0ec3709563ea742955f4d44290a4be4dbdfe28a1f32e6687f9c7a"
+          "sha256": "e3560916313843a56ea407091293efae834e607f6b125a09c225620498d5d91a"
         },
         "kerc_autoregressive_qualification": {
           "path": "scripts/kerc_autoregressive_qualification.py",
@@ -566,7 +566,7 @@
         },
         "kernel_english_protocol_tests": {
           "path": "tests/test_kernel_english_protocol.py",
-          "sha256": "f5129a6f7ba332c9a414809e6671f7c4697987ec24c3f0b96baf111fd992e8c9"
+          "sha256": "fc1fcb415b75b6ab4a3fba417c04476522be2e3e80b4c90b297329f16b99c7d5"
         },
         "kerc_concept_registry_tests": {
           "path": "tests/test_kerc_concept_registry.py",
@@ -574,7 +574,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "7828327326bdd03c23154d14048dce50959f5cbd7d3830e09632b2ab763d5c57"
+          "sha256": "225d3450c5bfee1392e74eaf1609bcfd12051605088f1fd9f61f0818555ccdb5"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -634,7 +634,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "a1522c0c5e1f4359b148ad7116ba1dcd57c2eb7b1250c710b8de80a61b2fad9a"
+          "sha256": "4305c0b8cb6d0e16572b87c79ccea2f28e056db6cf2b405b690456741b94280a"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",
@@ -650,11 +650,11 @@
         },
         "policy_gate": {
           "path": "scripts/policy_optimization_gate.py",
-          "sha256": "d4bc31e0ad2207f228748bd4f8f276d3cc40b16713340ba3fde71e0723e6b83f"
+          "sha256": "82c2a13b121dbbc5bd942c2114eaa4fab7c0c379cbe17e266efe5052b11d4bef"
         },
         "generation_mode_gate": {
           "path": "scripts/generation_mode_gate.py",
-          "sha256": "69a5cbd0c5e3b97e1c522cf631592511aa7c85fa594d09b0fcdfb3227ecfccf1"
+          "sha256": "e95350e235ab399e40f63a54bf6402b1e7d380a236f3c5b84635efc52f0e3abf"
         },
         "canonical_report": {
           "path": "reports/standard_causal_transformer_survival.json",

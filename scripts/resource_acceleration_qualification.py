@@ -106,6 +106,14 @@ def main() -> int:
         help="Run only alternating eager/compiled training qualification.",
     )
     parser.add_argument(
+        "--joined-training-only",
+        action="store_true",
+        help="Run one non-mutating joined campaign-path training qualification.",
+    )
+    parser.add_argument("--joined-pretraining-steps", type=int, default=64)
+    parser.add_argument("--joined-source-steps", type=int, default=8)
+    parser.add_argument("--joined-supervision-steps", type=int, default=8)
+    parser.add_argument(
         "--training-phase",
         choices=(
             "pretraining",
@@ -145,10 +153,53 @@ def main() -> int:
             args.precision_resume_only,
             args.precision_pair_only,
             args.training_pair_only,
+            args.joined_training_only,
         )
     )
     if focused_modes > 1:
         parser.error("choose only one focused training qualification")
+    if any(
+        value < 2
+        for value in (
+            args.joined_pretraining_steps,
+            args.joined_source_steps,
+            args.joined_supervision_steps,
+        )
+    ):
+        parser.error("joined phase step counts must each be at least two")
+    if args.joined_training_only:
+        if not args.execute:
+            parser.error("--joined-training-only requires --execute")
+        report = run_joined_training_entry(
+            config_path=resolve(args.config),
+            pretraining_steps=args.joined_pretraining_steps,
+            source_steps=args.joined_source_steps,
+            supervision_steps=args.joined_supervision_steps,
+        )
+        write_json(resolve(args.out), report)
+        print(
+            json.dumps(
+                {
+                    "policy": report.get("policy"),
+                    "created_utc": report.get("created_utc"),
+                    "trigger_state": report.get("trigger_state"),
+                    "phase_steps": report.get("phase_steps"),
+                    "joined_training_positions_per_second": report.get(
+                        "joined_training_positions_per_second"
+                    ),
+                    "joined_end_to_end_positions_per_second": report.get(
+                        "joined_end_to_end_positions_per_second"
+                    ),
+                    "checkpoint_publication_seconds": (
+                        report.get("checkpoint_publication") or {}
+                    ).get("total_seconds"),
+                    "hard_gaps": report.get("hard_gaps") or [],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2 if report.get("trigger_state") == "RED" else 0
     if args.training_pair_only:
         if not args.execute:
             parser.error("--training-pair-only requires --execute")
@@ -514,6 +565,397 @@ def run_training_pair_entry(
             "sha256": file_sha256(config_path),
         },
         "hard_gaps": [],
+    }
+
+
+def run_joined_training_entry(
+    *,
+    config_path: Path,
+    pretraining_steps: int,
+    source_steps: int,
+    supervision_steps: int,
+) -> dict[str, Any]:
+    """Replay the registered joined curriculum in an ephemeral exact lineage."""
+
+    started = time.perf_counter()
+    config = training.bind_scale_preregistration(read_json(config_path))
+    plan = training.build_plan(config, config_path=config_path)
+    target = (plan.get("targets") or {}).get(training.SHARED_TRUNK_ID) or {}
+    receipt_path = resolve(str(target.get("receipt") or ""))
+    receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+    checkpoint = resolve(
+        str(receipt.get("checkpoint") or target.get("checkpoint") or "")
+    )
+    optimizer_path = resolve(
+        str(
+            receipt.get("optimizer_state")
+            or target.get("optimizer_state")
+            or ""
+        )
+    )
+    rng_value = str(receipt.get("mlx_rng_state") or "")
+    rng_path = resolve(rng_value) if rng_value else None
+    gaps: list[str] = []
+    for label, path in (
+        ("shared_trunk_checkpoint", checkpoint),
+        ("shared_trunk_optimizer_state", optimizer_path),
+    ):
+        if not path.is_file():
+            gaps.append(f"{label}_missing")
+    if rng_path is not None and not rng_path.is_file():
+        gaps.append("shared_trunk_mlx_rng_state_missing")
+    if not gaps:
+        try:
+            training.validate_resume(
+                receipt,
+                plan,
+                target,
+                checkpoint,
+                optimizer_path,
+            )
+        except ValueError as exc:
+            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+    execution_policy = dict(plan.get("execution_policy") or {})
+    expected_phase_policy = {
+        "compute_dtype": "float32",
+        "fp32_master": False,
+        "pretraining": ("compiled", 4),
+        "source_conditioned_pretraining": ("eager", 1),
+        "supervision": ("eager", 1),
+    }
+    if (
+        execution_policy.get("compute_dtype")
+        != expected_phase_policy["compute_dtype"]
+        or execution_policy.get("fp32_master")
+        is not expected_phase_policy["fp32_master"]
+    ):
+        gaps.append("registered_joined_precision_policy_mismatch")
+    for phase in (
+        "pretraining",
+        "source_conditioned_pretraining",
+        "supervision",
+    ):
+        row = dict(execution_policy.get(phase) or {})
+        expected_mode, expected_microbatch = expected_phase_policy[phase]
+        if (
+            row.get("training_step_mode") != expected_mode
+            or int(row.get("compiled_microbatch_size") or 0)
+            != expected_microbatch
+        ):
+            gaps.append(f"registered_joined_phase_policy_mismatch:{phase}")
+    if gaps:
+        return {
+            "policy": "project_theseus_joined_training_acceleration_qualification_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": gaps,
+        }
+
+    canonical_before = {
+        "checkpoint_sha256": file_sha256(checkpoint),
+        "optimizer_state_sha256": file_sha256(optimizer_path),
+        "mlx_rng_state_sha256": (
+            file_sha256(rng_path) if rng_path is not None else ""
+        ),
+        "receipt_sha256": file_sha256(receipt_path),
+    }
+    stage_started = time.perf_counter()
+    stage_dir = resolve(str(config["stage_dir"]))
+    metadata = read_json(stage_dir / "stage_metadata_v1.json")
+    base = read_json(resolve(str(config["base_config"])))
+    canonical = metadata["summary"]["canonical_pretrain_stage"]
+    stage = training.canonical_pretraining_execution_stage(
+        stage_dir,
+        canonical,
+        active=True,
+    )
+    cache_prepare_started = time.perf_counter()
+    cache_paths: dict[str, Path] = {}
+    for artifact_field in (
+        "source_conditioned_artifacts",
+        "supervision_artifacts",
+    ):
+        subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "moecot_auxiliary_stage_cache.py"),
+                "--config",
+                str(config_path),
+                "--target",
+                training.SHARED_TRUNK_ID,
+                "--artifact-field",
+                artifact_field,
+            ],
+            cwd=ROOT,
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+        receipt_policy = (
+            "project_theseus_moecot_source_conditioned_arrays_v1"
+            if artifact_field == "source_conditioned_artifacts"
+            else "project_theseus_moecot_exact_supervision_arrays_v1"
+        )
+        cache_paths[artifact_field] = training.auxiliary_stage_cache_path(
+            config,
+            base,
+            target,
+            metadata=metadata,
+            artifact_field=artifact_field,
+            receipt_policy=receipt_policy,
+        )
+    cache_prepare_seconds = time.perf_counter() - cache_prepare_started
+    source_stage = training.defer_target_supervision(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field="source_conditioned_artifacts",
+        receipt_policy="project_theseus_moecot_source_conditioned_arrays_v1",
+        cache_path=cache_paths["source_conditioned_artifacts"],
+    )
+    supervision_stage = training.defer_target_supervision(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        cache_path=cache_paths["supervision_artifacts"],
+    )
+    stage_seconds = time.perf_counter() - stage_started
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+    phase_steps = {
+        "pretraining": int(pretraining_steps),
+        "source_conditioned_pretraining": int(source_steps),
+        "supervision": int(supervision_steps),
+    }
+    training_receipt: dict[str, Any] = {}
+    final_validation: dict[str, Any] | None = None
+    final_validation_completed = False
+    independent_reload: dict[str, Any] = {}
+    clone_seconds = 0.0
+    with tempfile.TemporaryDirectory(
+        prefix="theseus-joined-training-", dir="/private/tmp"
+    ) as temporary_root:
+        scratch_root = Path(temporary_root)
+        scratch_target = training.scratch_target_contract(
+            target, scratch_root
+        )
+        scratch_checkpoint = Path(str(scratch_target["checkpoint"]))
+        scratch_optimizer = Path(str(scratch_target["optimizer_state"]))
+        scratch_receipt_path = Path(str(scratch_target["receipt"]))
+        scratch_rng = training.rng_state_path(scratch_optimizer)
+        scratch_checkpoint.parent.mkdir(parents=True, exist_ok=True)
+
+        def clone_exact(source: Path, destination: Path) -> None:
+            destination.unlink(missing_ok=True)
+            try:
+                os.link(source, destination)
+            except OSError:
+                shutil.copy2(source, destination)
+
+        clone_started = time.perf_counter()
+        clone_exact(checkpoint, scratch_checkpoint)
+        clone_exact(optimizer_path, scratch_optimizer)
+        if rng_path is not None:
+            clone_exact(rng_path, scratch_rng)
+        scratch_receipt = dict(receipt)
+        scratch_receipt.update(
+            {
+                "checkpoint": str(scratch_checkpoint),
+                "optimizer_state": str(scratch_optimizer),
+            }
+        )
+        if rng_path is not None:
+            scratch_receipt["mlx_rng_state"] = str(scratch_rng)
+        else:
+            scratch_receipt.pop("mlx_rng_state", None)
+            scratch_receipt.pop("mlx_rng_state_sha256", None)
+        training.write_json_atomic(scratch_receipt_path, scratch_receipt)
+        clone_seconds = time.perf_counter() - clone_started
+        training_receipt = training.train_target(
+            config,
+            plan,
+            scratch_target,
+            stage=stage,
+            source_conditioned_stage=source_stage,
+            kernel_english_stage=None,
+            supervision_stage=supervision_stage,
+            max_steps=sum(phase_steps.values()),
+            resume=True,
+            training_phase="all",
+            mx=mx,
+            nn=nn,
+            optim=optim,
+            mlx_utils=mlx_utils,
+            qualification_phase_step_limits=phase_steps,
+        )
+        final_checkpoint = Path(str(training_receipt["checkpoint"]))
+        final_optimizer = Path(str(training_receipt["optimizer_state"]))
+        final_plan_migration = training.validate_resume(
+            training_receipt,
+            plan,
+            scratch_target,
+            final_checkpoint,
+            final_optimizer,
+        )
+        final_validation = {
+            "state": "GREEN",
+            "plan_identity_migration": final_plan_migration,
+        }
+        final_validation_completed = True
+        release_accelerator_route_state(mx)
+        reload_started = time.perf_counter()
+        reloaded_model = mx.load(str(final_checkpoint))
+        reloaded_optimizer = mx.load(str(final_optimizer))
+        reloaded_rng = mx.load(str(training_receipt["mlx_rng_state"]))
+        independent_reload = {
+            "seconds": round(time.perf_counter() - reload_started, 6),
+            "model": tree_numeric_receipt(
+                reloaded_model, mx=mx, mlx_utils=mlx_utils
+            ),
+            "optimizer": tree_numeric_receipt(
+                reloaded_optimizer, mx=mx, mlx_utils=mlx_utils
+            ),
+            "rng": tree_numeric_receipt(
+                reloaded_rng, mx=mx, mlx_utils=mlx_utils
+            ),
+            "checkpoint_sha256": file_sha256(final_checkpoint),
+            "optimizer_state_sha256": file_sha256(final_optimizer),
+            "mlx_rng_state_sha256": file_sha256(
+                Path(str(training_receipt["mlx_rng_state"]))
+            ),
+        }
+        del reloaded_model, reloaded_optimizer, reloaded_rng
+        release_accelerator_route_state(mx)
+
+    canonical_after = {
+        "checkpoint_sha256": file_sha256(checkpoint),
+        "optimizer_state_sha256": file_sha256(optimizer_path),
+        "mlx_rng_state_sha256": (
+            file_sha256(rng_path) if rng_path is not None else ""
+        ),
+        "receipt_sha256": file_sha256(receipt_path),
+    }
+    phase_reports = dict(training_receipt.get("phases") or {})
+    selected_phases = {
+        phase: phase_reports[phase]
+        for phase in phase_steps
+    }
+    phase_positions = {
+        phase: int(row.get("target_positions_consumed") or 0)
+        for phase, row in selected_phases.items()
+    }
+    phase_device_seconds = {
+        phase: float(row.get("device_step_seconds_total") or 0.0)
+        for phase, row in selected_phases.items()
+    }
+    total_positions = sum(phase_positions.values())
+    total_device_seconds = sum(phase_device_seconds.values())
+    elapsed_seconds = time.perf_counter() - started
+    publication = dict(
+        training_receipt.get("checkpoint_publication") or {}
+    )
+    phase_counts_exact = all(
+        int(selected_phases[phase].get("optimizer_steps") or 0)
+        == int(expected)
+        for phase, expected in phase_steps.items()
+    )
+    canonical_unchanged = canonical_before == canonical_after
+    reload_exact = bool(
+        independent_reload.get("checkpoint_sha256")
+        == training_receipt.get("checkpoint_sha256")
+        and independent_reload.get("optimizer_state_sha256")
+        == training_receipt.get("optimizer_state_sha256")
+        and independent_reload.get("mlx_rng_state_sha256")
+        == training_receipt.get("mlx_rng_state_sha256")
+        and all(
+            bool((independent_reload.get(key) or {}).get("all_finite"))
+            for key in ("model", "optimizer", "rng")
+        )
+    )
+    hard_gaps = []
+    if not phase_counts_exact:
+        hard_gaps.append("joined_phase_step_count_mismatch")
+    if not canonical_unchanged:
+        hard_gaps.append("canonical_lineage_mutated_by_qualification")
+    if not reload_exact:
+        hard_gaps.append("joined_checkpoint_independent_reload_failed")
+    if not final_validation_completed:
+        hard_gaps.append("joined_checkpoint_resume_validation_missing")
+    return {
+        "policy": "project_theseus_joined_training_acceleration_qualification_v1",
+        "created_utc": now(),
+        "trigger_state": "RED" if hard_gaps else "GREEN",
+        "training_config": {
+            "path": relative(config_path),
+            "sha256": file_sha256(config_path),
+        },
+        "plan_sha256": plan["plan_sha256"],
+        "starting_optimizer_step": int(receipt.get("optimizer_steps") or 0),
+        "starting_optimizer_positions": int(
+            receipt.get("optimizer_positions") or 0
+        ),
+        "starting_rng_policy": (
+            "durable_artifact"
+            if rng_path is not None
+            else "legacy_exact_seed_plus_optimizer_step_reconstruction"
+        ),
+        "execution_policy": execution_policy,
+        "auxiliary_cache_prepare_seconds": round(
+            cache_prepare_seconds, 6
+        ),
+        "auxiliary_cache_paths": {
+            key: relative(path) for key, path in cache_paths.items()
+        },
+        "phase_steps": phase_steps,
+        "phase_positions": phase_positions,
+        "phase_device_seconds": {
+            key: round(value, 6)
+            for key, value in phase_device_seconds.items()
+        },
+        "phase_positions_per_second": {
+            phase: round(
+                phase_positions[phase]
+                / max(1e-12, phase_device_seconds[phase]),
+                3,
+            )
+            for phase in phase_steps
+        },
+        "joined_training_positions": total_positions,
+        "joined_training_device_seconds": round(
+            total_device_seconds, 6
+        ),
+        "joined_training_positions_per_second": round(
+            total_positions / max(1e-12, total_device_seconds), 3
+        ),
+        "joined_end_to_end_seconds": round(elapsed_seconds, 6),
+        "joined_end_to_end_positions_per_second": round(
+            total_positions / max(1e-12, elapsed_seconds), 3
+        ),
+        "stage_materialization_seconds": round(stage_seconds, 6),
+        "exact_lineage_clone_seconds": round(clone_seconds, 6),
+        "checkpoint_publication": publication,
+        "checkpoint_publication_fraction_of_end_to_end": round(
+            float(publication.get("total_seconds") or 0.0)
+            / max(1e-12, elapsed_seconds),
+            8,
+        ),
+        "phase_reports": selected_phases,
+        "phase_step_counts_exact": phase_counts_exact,
+        "final_resume_validation": final_validation,
+        "independent_reload": independent_reload,
+        "canonical_before": canonical_before,
+        "canonical_after": canonical_after,
+        "canonical_lineage_unchanged": canonical_unchanged,
+        "ephemeral_checkpoint_namespace_removed": True,
+        "checkpoint_or_registered_training_state_written": False,
+        "public_training_rows": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "capability_claim": "NONE_ACCELERATION_AND_LIFECYCLE_ONLY",
+        "hard_gaps": hard_gaps,
     }
 
 

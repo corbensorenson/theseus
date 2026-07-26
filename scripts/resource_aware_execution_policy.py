@@ -126,6 +126,7 @@ def main() -> int:
             "accelerator_backend": accelerator.get("backend"),
             "accelerator_available": accelerator.get("available"),
             "accelerator_detail": accelerator.get("detail"),
+            "accelerator_python": accelerator.get("python"),
             "profile": profile,
             "logical_cores": logical_cores,
             "available_memory_gb": free_gb,
@@ -374,6 +375,7 @@ def accelerator_status(*, host: dict[str, Any], gpu: dict[str, Any]) -> dict[str
                 "available": True,
                 "backend": "mlx_apple",
                 "detail": mlx.get("detail") or "mlx.core import ok",
+                "python": mlx.get("python"),
                 "code_lm_backend": "macos_mlx_structural_routes",
                 "code_lm_flag": "",
                 "routing_rule": "route only MLX/Metal-supported bounded work on Apple Silicon; do not emit CUDA flags on macOS",
@@ -382,6 +384,7 @@ def accelerator_status(*, host: dict[str, Any], gpu: dict[str, Any]) -> dict[str
             "available": False,
             "backend": "apple_silicon_cpu",
             "detail": mlx.get("detail") or mlx.get("error") or "mlx unavailable",
+            "python": None,
             "code_lm_backend": "cpu_structural_code_lm",
             "code_lm_flag": "",
             "routing_rule": "Apple Silicon detected but MLX is unavailable; use CPU-safe work until the MLX environment probe is green",
@@ -397,18 +400,52 @@ def accelerator_status(*, host: dict[str, Any], gpu: dict[str, Any]) -> dict[str
 
 
 def mlx_subprocess_probe() -> dict[str, Any]:
-    try:
-        result = subprocess.run(
-            [sys.executable, "-c", "import mlx.core as mx; print('mlx.core ok')"],
-            capture_output=True,
-            text=True,
-            timeout=10,
+    failures: list[str] = []
+    for python in mlx_python_candidates():
+        try:
+            result = subprocess.run(
+                [str(python), "-c", "import mlx.core as mx; print('mlx.core ok')"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except Exception as exc:
+            failures.append(f"{python}:{type(exc).__name__}:{exc}")
+            continue
+        if result.returncode == 0:
+            return {
+                "available": True,
+                "python": str(python),
+                "detail": (result.stdout or "").strip() or "mlx.core ok",
+            }
+        failures.append(
+            f"{python}:{(result.stderr or result.stdout or '').strip()[:240]}"
         )
-    except Exception as exc:
-        return {"available": False, "error": str(exc)}
-    if result.returncode == 0:
-        return {"available": True, "detail": (result.stdout or "").strip() or "mlx.core ok"}
-    return {"available": False, "error": (result.stderr or result.stdout or "").strip()[:400]}
+    return {
+        "available": False,
+        "error": " | ".join(failures)[:800] or "no MLX Python candidate exists",
+    }
+
+
+def mlx_python_candidates() -> list[Path]:
+    values = [
+        os.environ.get("THESEUS_MLX_PYTHON"),
+        str(ROOT / "runtime" / "venvs" / "mlx-0.32.0-py312" / "bin" / "python"),
+        str(ROOT / ".venv-mlx" / "bin" / "python"),
+        sys.executable,
+    ]
+    out: list[Path] = []
+    seen: set[str] = set()
+    for value in values:
+        if not value:
+            continue
+        path = Path(value).expanduser()
+        key = str(path)
+        if key in seen or not path.is_file():
+            continue
+        seen.add(key)
+        out.append(path)
+    return out
 
 
 def macos_memory_status() -> dict[str, Any]:

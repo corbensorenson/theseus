@@ -1,0 +1,123 @@
+{
+  "child_started": true,
+  "command": [
+    "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_standard_causal_transformer_survival.py::test_transactional_eager_step_matches_single_graph_update",
+    "tests/test_standard_causal_transformer_survival.py::test_complete_objective_checkpoint_matches_loss_and_gradients"
+  ],
+  "dependency_receipts": {},
+  "fault": "",
+  "fault_observation": null,
+  "first_swapout_growth_breach_observation": null,
+  "generated_artifacts": {},
+  "implementation_artifacts": {},
+  "initial_reclaimable_available_mib": 6555.484,
+  "limits": {
+    "max_process_memory_mib": 1536.0,
+    "maximum_swapout_growth_mib": 16.0,
+    "maximum_wall_seconds": 180.0,
+    "minimum_available_before_launch_mib": 3584.0,
+    "minimum_available_during_run_mib": 2048.0,
+    "poll_interval_seconds": 0.1,
+    "swapout_growth_action": "hard_stop",
+    "terminate_grace_seconds": 2.0
+  },
+  "maximum_consecutive_reserve_breaches": 0,
+  "maximum_consecutive_telemetry_failures": 0,
+  "maximum_inferred_unified_memory_mib": 161.141,
+  "maximum_process_rss_mib": 72.656,
+  "maximum_swapout_growth_mib": 0.0,
+  "minimum_reclaimable_available_mib": 6394.344,
+  "observation_prefix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 0.844,
+      "process_rss_mib": 0.25,
+      "reclaimable_available_mib": 6554.641,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.123,
+      "inferred_unified_memory_mib": 28.031,
+      "process_rss_mib": 28.031,
+      "reclaimable_available_mib": 6528.922,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.249,
+      "inferred_unified_memory_mib": 47.688,
+      "process_rss_mib": 47.688,
+      "reclaimable_available_mib": 6517.578,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.373,
+      "inferred_unified_memory_mib": 60.047,
+      "process_rss_mib": 60.047,
+      "reclaimable_available_mib": 6509.156,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.49,
+      "inferred_unified_memory_mib": 161.141,
+      "process_rss_mib": 72.656,
+      "reclaimable_available_mib": 6394.344,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "observation_suffix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 0.844,
+      "process_rss_mib": 0.25,
+      "reclaimable_available_mib": 6554.641,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.123,
+      "inferred_unified_memory_mib": 28.031,
+      "process_rss_mib": 28.031,
+      "reclaimable_available_mib": 6528.922,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.249,
+      "inferred_unified_memory_mib": 47.688,
+      "process_rss_mib": 47.688,
+      "reclaimable_available_mib": 6517.578,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.373,
+      "inferred_unified_memory_mib": 60.047,
+      "process_rss_mib": 60.047,
+      "reclaimable_available_mib": 6509.156,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.49,
+      "inferred_unified_memory_mib": 161.141,
+      "process_rss_mib": 72.656,
+      "reclaimable_available_mib": 6394.344,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "passed": true,
+  "physical_memory_mib": 16384.0,
+  "policy": "project_theseus_host_resource_safety_v1",
+  "process_rss_telemetry_state": "AVAILABLE",
+  "reserve_breach_observations_required": 3,
+  "returncode": 0,
+  "stderr_tail": "",
+  "stdout_tail": "..                                                                       [100%]\n=============================== warnings summary ===============================\nruntime/venvs/mlx-0.32.0-py312/lib/python3.12/site-packages/_pytest/config/__init__.py:1464\n  /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/lib/python3.12/site-packages/_pytest/config/__init__.py:1464: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 1 warning in 0.36s\n",
+  "swapout_growth_action": "hard_stop",
+  "swapout_growth_breach_observations": 0,
+  "swapout_growth_threshold_exceeded": false,
+  "telemetry_failure_observations_allowed": 2,
+  "telemetry_failure_prefix": [],
+  "terminated_by_guard": false,
+  "wall_seconds": 0.617
+}

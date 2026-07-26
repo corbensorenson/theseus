@@ -171,6 +171,9 @@ KERC_REPLACEMENT_TERMINAL_STATES = {
     "QUALIFIED_NOT_SELECTED",
     "EXCLUDED_AFTER_ADEQUATE_K8",
 }
+KERC_REPLACEMENT_SCOPE_STATES = {
+    "FIRST_CAMPAIGN_SCOPE_EXCLUDED_INCONCLUSIVE_EXPERIMENT",
+}
 EXTERNAL_FREEZE_TERMS = {"peer", "reachable", "external", "travel", "network", "coordinator_unreachable", "no route to host"}
 DISALLOWED_OUT_OF_SCOPE_TERMS = {
     "public_benchmark_training",
@@ -620,7 +623,11 @@ def audit_kerc_mandatory_replacement_qualification(binding: dict[str, Any]) -> d
     if contract.get("policy") != "project_theseus_kerc_mandatory_replacement_qualification_v1":
         faults.append("wrong_or_missing_policy")
     state = str(contract.get("state") or "")
-    if state not in {"ACTIVE_BLOCKING", *KERC_REPLACEMENT_TERMINAL_STATES}:
+    if state not in {
+        "ACTIVE_BLOCKING",
+        *KERC_REPLACEMENT_TERMINAL_STATES,
+        *KERC_REPLACEMENT_SCOPE_STATES,
+    }:
         faults.append("invalid_state")
     required_ladder = tuple(str(value) for value in list_values(contract.get("required_ladder")))
     if required_ladder != REQUIRED_KERC_REPLACEMENT_LADDER:
@@ -661,9 +668,10 @@ def audit_kerc_mandatory_replacement_qualification(binding: dict[str, Any]) -> d
         for step, receipt in evidence_audits.items()
         if not receipt.get("declared") or not receipt.get("ready")
     )
-    if missing_evidence:
-        faults.append("completed_steps_missing_evidence")
     terminal = state in KERC_REPLACEMENT_TERMINAL_STATES
+    scope_excluded = state in KERC_REPLACEMENT_SCOPE_STATES
+    if missing_evidence and not scope_excluded:
+        faults.append("completed_steps_missing_evidence")
     if terminal and completed_ladder != REQUIRED_KERC_REPLACEMENT_LADDER:
         faults.append("terminal_state_without_complete_ordered_ladder")
     if terminal and set(evidence_by_ladder) != set(REQUIRED_KERC_REPLACEMENT_LADDER):
@@ -672,10 +680,66 @@ def audit_kerc_mandatory_replacement_qualification(binding: dict[str, Any]) -> d
         k8_audit = evidence_audits.get(REQUIRED_KERC_REPLACEMENT_LADDER[-1]) or {}
         if (k8_audit.get("acceptance_observed") or {}).get("disposition") != state:
             faults.append("terminal_state_mismatches_k8_disposition")
+    scope_contract = dict_value(contract.get("first_campaign_scope_disposition"))
+    scope_faults: list[str] = []
+    scope_evidence: dict[str, Any] = {}
+    if scope_excluded:
+        if (
+            scope_contract.get("policy")
+            != "project_theseus_kerc_first_campaign_scope_disposition_v1"
+        ):
+            scope_faults.append("scope_policy_invalid")
+        if scope_contract.get("classification") != "INCONCLUSIVE_EXPERIMENT":
+            scope_faults.append("scope_classification_invalid")
+        if scope_contract.get("scientific_falsification_claimed") is not False:
+            scope_faults.append("scope_must_not_claim_scientific_falsification")
+        if scope_contract.get("incomplete_ladder_preserved") is not True:
+            scope_faults.append("scope_must_preserve_incomplete_ladder")
+        if int_or(scope_contract.get("first_campaign_optimizer_exposure"), -1) != 0:
+            scope_faults.append("scope_optimizer_exposure_must_be_zero")
+        if not str(scope_contract.get("exact_scope") or ""):
+            scope_faults.append("scope_exact_scope_missing")
+        if not str(scope_contract.get("reentry_condition") or ""):
+            scope_faults.append("scope_reentry_condition_missing")
+        evidence = dict_value(scope_contract.get("evidence"))
+        evidence_path = resolve(str(evidence.get("path") or ""))
+        evidence_sha256 = str(evidence.get("sha256") or "")
+        evidence_report = read_json(evidence_path)
+        actual_sha256 = (
+            hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+            if evidence_path.is_file()
+            else ""
+        )
+        scope_evidence = {
+            "path": rel(evidence_path),
+            "expected_sha256": evidence_sha256,
+            "actual_sha256": actual_sha256,
+            "policy": evidence_report.get("policy"),
+            "trigger_state": evidence_report.get("trigger_state"),
+            "qualification_state": evidence_report.get("qualification_state"),
+            "capability_claim": evidence_report.get("capability_claim"),
+            "exact_match_count": evidence_report.get("exact_match_count"),
+        }
+        if not evidence_sha256 or actual_sha256 != evidence_sha256:
+            scope_faults.append("scope_evidence_missing_or_stale")
+        if (
+            evidence_report.get("policy")
+            != "project_theseus_kerc_k5_stage_learnability_probe_v1"
+        ):
+            scope_faults.append("scope_evidence_policy_invalid")
+        if evidence_report.get("trigger_state") != "GREEN":
+            scope_faults.append("scope_evidence_trigger_not_green")
+        if evidence_report.get("qualification_state") != "LEARNABILITY_SANITY_FAILED":
+            scope_faults.append("scope_evidence_not_inconclusive_learnability_failure")
+        if int_or(evidence_report.get("exact_match_count"), -1) != 0:
+            scope_faults.append("scope_evidence_exact_match_count_drifted")
+        if evidence_report.get("capability_claim") != "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY":
+            scope_faults.append("scope_evidence_capability_boundary_invalid")
+        faults.extend(scope_faults)
     resource_rule = str(contract.get("resource_rule") or "")
     if "not an exit state" not in resource_rule or "optimize or redesign" not in resource_rule:
         faults.append("resource_failure_rule_missing")
-    ready = terminal and not faults
+    ready = (terminal or scope_excluded) and not faults
     return {
         "policy": "project_theseus_kerc_mandatory_replacement_qualification_audit_v1",
         "ready": ready,
@@ -687,8 +751,18 @@ def audit_kerc_mandatory_replacement_qualification(binding: dict[str, Any]) -> d
         ],
         "evidence_audits": evidence_audits,
         "missing_evidence": missing_evidence,
+        "first_campaign_scope_disposition": {
+            "declared": bool(scope_contract),
+            "scope_excluded": scope_excluded,
+            "evidence": scope_evidence,
+            "faults": scope_faults,
+        },
         "faults": faults,
-        "block_reason": None if ready else "KERC replacement qualification is incomplete and T0A remains closed.",
+        "block_reason": (
+            None
+            if ready
+            else "KERC replacement qualification lacks either a complete K8 verdict or an evidence-bound, zero-exposure first-campaign scope disposition."
+        ),
     }
 
 

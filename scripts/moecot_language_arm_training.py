@@ -1171,6 +1171,14 @@ def main() -> int:
     )
     parser.add_argument("--max-steps", type=int, default=0)
     parser.add_argument(
+        "--campaign-segment",
+        action="store_true",
+        help=(
+            "Run one qualified fresh-process shared-trunk pretraining segment. "
+            "Requires exact resume and a positive bounded --max-steps."
+        ),
+    )
+    parser.add_argument(
         "--architecture-candidate-id",
         default="",
         help="Candidate-specific T0A canary id; required for bounded pre-freeze optimizer work.",
@@ -1264,6 +1272,20 @@ def main() -> int:
         parser.error("execution or progress evaluation requires at least one explicit --target")
     if args.max_steps < 0:
         parser.error("--max-steps cannot be negative")
+    if args.campaign_segment and (
+        not args.execute
+        or not args.resume
+        or args.max_steps <= 0
+        or args.architecture_candidate_id
+        or args.scratch_checkpoint_root
+        or args.evaluate_progress
+        or args.phase != "pretraining"
+        or set(args.target or []) != {SHARED_TRUNK_ID}
+    ):
+        parser.error(
+            "--campaign-segment requires resumed shared_trunk pretraining "
+            "execution with a positive --max-steps and no candidate scratch"
+        )
     if bool(args.scratch_checkpoint_root) != bool(args.architecture_candidate_id):
         parser.error(
             "--scratch-checkpoint-root and --architecture-candidate-id are required together"
@@ -1347,6 +1369,7 @@ def main() -> int:
             phase=args.phase,
             resume=args.resume,
             candidate_seed=args.candidate_seed,
+            campaign_segment=args.campaign_segment,
         )
         candidate_lease = (preissued_candidate_authority or {}).get(
             "candidate_lease"
@@ -1409,6 +1432,7 @@ def main() -> int:
             phase=args.phase,
             resume=args.resume,
             candidate_seed=args.candidate_seed,
+            campaign_segment=args.campaign_segment,
         )
         if authority["trigger_state"] != "GREEN":
             report = {
@@ -1424,6 +1448,7 @@ def main() -> int:
         report = execute_targets(
             config,
             plan,
+            config_path=resolve(args.config),
             targets=list(dict.fromkeys(args.target or [])),
             max_steps=args.max_steps,
             resume=args.resume,
@@ -1461,6 +1486,7 @@ def architecture_training_authority(
     phase: str = "all",
     resume: bool = False,
     candidate_seed: int = 0,
+    campaign_segment: bool = False,
     runner: Any = subprocess.run,
 ) -> dict[str, Any]:
     """Permit content-bound candidate canaries, but gate long optimizer spend."""
@@ -1477,6 +1503,77 @@ def architecture_training_authority(
         }
     canary_cap = int(cfg.get("pre_training_canary_max_steps") or 0)
     if max_steps > 0:
+        if campaign_segment:
+            segment = dict(cfg.get("fresh_process_segments") or {})
+            report_path = resolve(
+                str(segment.get("qualification_report") or "")
+            )
+            report = (
+                read_json(report_path)
+                if report_path.is_file()
+                else {}
+            )
+            required_segments = int(
+                segment.get("minimum_qualified_contiguous_segments") or 0
+            )
+            segment_valid = bool(
+                segment.get("policy")
+                == "project_theseus_bounded_fresh_process_pretraining_v1"
+                and segment.get("target_id") == SHARED_TRUNK_ID
+                and segment.get("phase") == "pretraining"
+                and int(segment.get("maximum_optimizer_steps") or 0) > 0
+                and segment.get("compute_dtype") == "float32"
+                and segment.get("fp32_master") is False
+                and int(segment.get("compiled_microbatch_size") or 0) == 4
+                and segment.get("resume_required") is True
+                and segment.get("require_external_watchdog") is True
+            )
+            request_valid = bool(
+                not candidate_id
+                and not scratch_checkpoint_root
+                and list(targets or []) == [SHARED_TRUNK_ID]
+                and phase == "pretraining"
+                and resume
+                and 0 < max_steps
+                <= int(segment.get("maximum_optimizer_steps") or 0)
+            )
+            qualification_valid = bool(
+                report.get("policy")
+                == "project_theseus_fresh_process_pretraining_qualification_v1"
+                and report.get("trigger_state") == "GREEN"
+                and int(report.get("contiguous_segment_count") or 0)
+                >= required_segments
+                and report.get("qualified_execution_policy") == segment
+                and report.get("canonical_lineage_unchanged") is True
+                and report.get("exact_resume_validation") is True
+                and report.get(
+                    "independent_segmented_replay_numeric_parity"
+                )
+                is True
+                and report.get("zero_swap_growth") is True
+            )
+            authorized = segment_valid and request_valid and qualification_valid
+            return {
+                "policy": cfg["policy"],
+                "trigger_state": "GREEN" if authorized else "RED",
+                "authority": (
+                    "QUALIFIED_FRESH_PROCESS_CAMPAIGN_SEGMENT"
+                    if authorized
+                    else "DENIED"
+                ),
+                "maximum_steps": max_steps,
+                "long_optimizer_run_authorized": bool(authorized),
+                "fresh_process_segment_policy": segment,
+                "qualification_report": relative(report_path),
+                "qualification_report_sha256": (
+                    sha256_file(report_path) if report_path.is_file() else ""
+                ),
+                "reason": (
+                    ""
+                    if authorized
+                    else "fresh_process_segment_qualification_or_request_invalid"
+                ),
+            }
         if not candidate_id:
             return {
                 "policy": cfg["policy"],
@@ -3740,6 +3837,7 @@ def execute_targets(
     config: dict[str, Any],
     plan: dict[str, Any],
     *,
+    config_path: Path = DEFAULT_CONFIG,
     targets: list[str],
     max_steps: int,
     resume: bool,
@@ -3791,25 +3889,104 @@ def execute_targets(
         canonical,
         active=training_phase in {"all", "pretraining"},
     )
+    defer_ordinary_auxiliary_stages = training_phase == "all"
+    auxiliary_cache_paths: dict[str, dict[str, Path]] = {}
+    if defer_ordinary_auxiliary_stages:
+        for target_id in targets:
+            target = plan["targets"][target_id]
+            if str(target.get("role") or "") == "kerc_english_candidate":
+                continue
+            target_cache_paths: dict[str, Path] = {}
+            for artifact_field in (
+                "source_conditioned_artifacts",
+                "supervision_artifacts",
+            ):
+                if not (target.get(artifact_field) or {}):
+                    continue
+                subprocess.run(
+                    [
+                        sys.executable,
+                        str(ROOT / "scripts" / "moecot_auxiliary_stage_cache.py"),
+                        "--config",
+                        str(config_path),
+                        "--target",
+                        target_id,
+                        "--artifact-field",
+                        artifact_field,
+                    ],
+                    cwd=ROOT,
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                )
+                receipt_policy = (
+                    "project_theseus_moecot_source_conditioned_arrays_v1"
+                    if artifact_field == "source_conditioned_artifacts"
+                    else "project_theseus_moecot_exact_supervision_arrays_v1"
+                )
+                target_cache_paths[artifact_field] = (
+                    auxiliary_stage_cache_path(
+                        config,
+                        base,
+                        target,
+                        metadata=metadata,
+                        artifact_field=artifact_field,
+                        receipt_policy=receipt_policy,
+                    )
+                )
+            auxiliary_cache_paths[target_id] = target_cache_paths
     supervision_stages = {
-        target_id: materialize_target_supervision(
-            config,
-            base,
-            plan["targets"][target_id],
-            metadata=metadata,
+        target_id: (
+            defer_target_supervision(
+                config,
+                base,
+                plan["targets"][target_id],
+                metadata=metadata,
+                cache_path=auxiliary_cache_paths[target_id][
+                    "supervision_artifacts"
+                ],
+            )
+            if defer_ordinary_auxiliary_stages
+            and str(plan["targets"][target_id].get("role") or "")
+            != "kerc_english_candidate"
+            else materialize_target_supervision(
+                config,
+                base,
+                plan["targets"][target_id],
+                metadata=metadata,
+            )
         )
         if training_phase in {"all", "supervision"}
         else None
         for target_id in targets
     }
     source_conditioned_stages = {
-        target_id: materialize_target_supervision(
-            config,
-            base,
-            plan["targets"][target_id],
-            metadata=metadata,
-            artifact_field="source_conditioned_artifacts",
-            receipt_policy="project_theseus_moecot_source_conditioned_arrays_v1",
+        target_id: (
+            defer_target_supervision(
+                config,
+                base,
+                plan["targets"][target_id],
+                metadata=metadata,
+                artifact_field="source_conditioned_artifacts",
+                receipt_policy=(
+                    "project_theseus_moecot_source_conditioned_arrays_v1"
+                ),
+                cache_path=auxiliary_cache_paths[target_id][
+                    "source_conditioned_artifacts"
+                ],
+            )
+            if defer_ordinary_auxiliary_stages
+            and str(plan["targets"][target_id].get("role") or "")
+            != "kerc_english_candidate"
+            else materialize_target_supervision(
+                config,
+                base,
+                plan["targets"][target_id],
+                metadata=metadata,
+                artifact_field="source_conditioned_artifacts",
+                receipt_policy=(
+                    "project_theseus_moecot_source_conditioned_arrays_v1"
+                ),
+            )
         )
         if training_phase in {"all", "source_conditioned_pretraining"}
         and (plan["targets"][target_id].get("source_conditioned_artifacts") or {})
@@ -4609,6 +4786,338 @@ def supervision_row_instance_id(
         raise ValueError("supervision row instance identity requires source custody")
     return (
         f"{row_id or artifact_key}:artifact:{artifact_key}:source_index:{source_index}"
+    )
+
+
+@dataclass(frozen=True)
+class DeferredSupervisionStage:
+    """Carry exact planning mass without retaining auxiliary arrays."""
+
+    planning_row_count: int
+    artifact_field: str
+    receipt_policy: str
+    factory: Callable[[], Any]
+
+    def materialize(self) -> Any:
+        stage = self.factory()
+        if len(stage.inputs) != self.planning_row_count:
+            raise ValueError(
+                "deferred supervision row count changed between planning and "
+                f"materialization: {len(stage.inputs)} != {self.planning_row_count}"
+            )
+        return stage
+
+
+def auxiliary_stage_cache_contract(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    target: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+    artifact_field: str,
+    receipt_policy: str,
+    split: str,
+) -> dict[str, Any]:
+    """Content-bind an ordinary dense auxiliary-array cache."""
+
+    artifacts = target.get(artifact_field) or {}
+    selected = {
+        str(key): artifact
+        for key, artifact in artifacts.items()
+        if key == split or str(key).endswith(f":{split}")
+    }
+    training = config.get("training") or {}
+    return {
+        "policy": "project_theseus_auxiliary_stage_memmap_cache_v1",
+        "implementation_sha256": sha256_file(Path(__file__)),
+        "target_id": str(target["target_id"]),
+        "target_role": str(target.get("role") or ""),
+        "artifact_field": artifact_field,
+        "receipt_policy": receipt_policy,
+        "split": split,
+        "artifacts": selected,
+        "tokenization": base.get("tokenization") or {},
+        "source_vocab_sha256": hashlib.sha256(
+            json.dumps(
+                metadata.get("source_vocab") or {},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest(),
+        "target_vocab_sha256": hashlib.sha256(
+            json.dumps(
+                metadata.get("target_vocab") or {},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest(),
+        "loss_weights": {
+            key: training.get(key)
+            for key in (
+                "termination_loss_weight",
+                "byte_boundary_loss_weight",
+                "kerc_compiler_schema_continuation_loss_weight",
+                "kerc_compiler_semantic_pointer_loss_weight",
+                "kerc_compiler_semantic_pointer_loss_weights_by_kind",
+            )
+        },
+    }
+
+
+def auxiliary_stage_cache_path(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    target: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+    artifact_field: str,
+    receipt_policy: str,
+    split: str = "private_train",
+) -> Path:
+    contract = auxiliary_stage_cache_contract(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field=artifact_field,
+        receipt_policy=receipt_policy,
+        split=split,
+    )
+    digest = hashlib.sha256(
+        json.dumps(contract, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    safe_target = re.sub(r"[^A-Za-z0-9_.-]+", "_", str(target["target_id"]))
+    return (
+        ROOT
+        / "runtime"
+        / "moecot_auxiliary_stage_cache_v1"
+        / safe_target
+        / artifact_field
+        / digest
+    )
+
+
+def load_auxiliary_stage_cache(
+    cache_path: Path,
+    *,
+    expected_contract: dict[str, Any],
+) -> Any:
+    """Validate and open cached arrays as read-only NumPy memmaps."""
+
+    manifest_path = cache_path / "manifest.json"
+    if not manifest_path.is_file():
+        raise ValueError(f"auxiliary stage cache manifest missing: {cache_path}")
+    manifest = read_json(manifest_path)
+    contract_sha256 = hashlib.sha256(
+        json.dumps(
+            expected_contract, sort_keys=True, separators=(",", ":")
+        ).encode()
+    ).hexdigest()
+    if (
+        manifest.get("policy")
+        != "project_theseus_auxiliary_stage_memmap_cache_v1"
+        or manifest.get("contract") != expected_contract
+        or manifest.get("contract_sha256") != contract_sha256
+    ):
+        raise ValueError("auxiliary stage cache contract mismatch")
+    arrays: dict[str, Any] = {}
+    for name in ("inputs", "labels", "mask", "loss_mask", "sample_weights"):
+        artifact = (manifest.get("arrays") or {}).get(name) or {}
+        path = cache_path / str(artifact.get("file") or "")
+        if (
+            not path.is_file()
+            or sha256_file(path) != str(artifact.get("sha256") or "")
+        ):
+            raise ValueError(f"auxiliary stage cache array mismatch: {name}")
+        value = np.load(path, mmap_mode="r", allow_pickle=False)
+        if (
+            list(value.shape) != list(artifact.get("shape") or [])
+            or str(value.dtype) != str(artifact.get("dtype") or "")
+        ):
+            raise ValueError(f"auxiliary stage cache array schema mismatch: {name}")
+        arrays[name] = value
+    return SimpleNamespace(
+        **arrays,
+        kerc_residual_labels=None,
+        kerc_residual_loss_mask=None,
+        kerc_unit_allocator_rows=None,
+        kerc_verifier_labels=None,
+        kerc_decision_labels=None,
+        kerc_decision_loss_mask=None,
+        kerc_coverage_labels=None,
+        training_row_ids=(),
+        receipt=dict(manifest["receipt"]),
+        cache_manifest={
+            "path": relative(manifest_path),
+            "sha256": sha256_file(manifest_path),
+            "contract_sha256": contract_sha256,
+        },
+    )
+
+
+def write_auxiliary_stage_cache(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    target: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+    artifact_field: str,
+    receipt_policy: str,
+    split: str = "private_train",
+) -> Path:
+    """Materialize one cache in a short-lived CPU-only producer process."""
+
+    contract = auxiliary_stage_cache_contract(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field=artifact_field,
+        receipt_policy=receipt_policy,
+        split=split,
+    )
+    cache_path = auxiliary_stage_cache_path(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field=artifact_field,
+        receipt_policy=receipt_policy,
+        split=split,
+    )
+    if cache_path.is_dir():
+        load_auxiliary_stage_cache(
+            cache_path, expected_contract=contract
+        )
+        return cache_path
+    stage = materialize_target_supervision(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field=artifact_field,
+        receipt_policy=receipt_policy,
+        split=split,
+    )
+    temporary = cache_path.with_name(
+        f".{cache_path.name}.partial-{os.getpid()}"
+    )
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    temporary.mkdir(parents=True)
+    array_artifacts: dict[str, Any] = {}
+    try:
+        for name in (
+            "inputs",
+            "labels",
+            "mask",
+            "loss_mask",
+            "sample_weights",
+        ):
+            path = temporary / f"{name}.npy"
+            with path.open("wb") as handle:
+                np.save(handle, np.asarray(getattr(stage, name)), allow_pickle=False)
+            value = np.asarray(getattr(stage, name))
+            array_artifacts[name] = {
+                "file": path.name,
+                "sha256": sha256_file(path),
+                "shape": list(value.shape),
+                "dtype": str(value.dtype),
+                "bytes": int(path.stat().st_size),
+            }
+        manifest = {
+            "policy": "project_theseus_auxiliary_stage_memmap_cache_v1",
+            "created_utc": now(),
+            "contract": contract,
+            "contract_sha256": hashlib.sha256(
+                json.dumps(
+                    contract, sort_keys=True, separators=(",", ":")
+                ).encode()
+            ).hexdigest(),
+            "arrays": array_artifacts,
+            "receipt": stage.receipt,
+            "training_row_ids_sha256": hashlib.sha256(
+                "\n".join(stage.training_row_ids).encode()
+            ).hexdigest(),
+        }
+        write_json(temporary / "manifest.json", manifest)
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.replace(temporary, cache_path)
+        except OSError:
+            if not cache_path.is_dir():
+                raise
+            shutil.rmtree(temporary)
+        load_auxiliary_stage_cache(
+            cache_path, expected_contract=contract
+        )
+        return cache_path
+    except Exception:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        raise
+
+
+def defer_target_supervision(
+    config: dict[str, Any],
+    base: dict[str, Any],
+    target: dict[str, Any],
+    *,
+    metadata: dict[str, Any],
+    artifact_field: str = "supervision_artifacts",
+    receipt_policy: str = "project_theseus_moecot_exact_supervision_arrays_v1",
+    split: str = "private_train",
+    cache_path: Path | None = None,
+) -> DeferredSupervisionStage:
+    """Bind one ordinary auxiliary stage while deferring its dense arrays."""
+
+    if str(target.get("role") or "") == "kerc_english_candidate":
+        raise ValueError("KERC auxiliary stages require eager audited materialization")
+    artifacts = target.get(artifact_field) or {}
+    selected = [
+        (key, artifact)
+        for key, artifact in artifacts.items()
+        if key == split or str(key).endswith(f":{split}")
+    ]
+    if not selected:
+        raise ValueError(
+            f"target has no frozen {artifact_field} train artifact: "
+            f"{target['target_id']}"
+        )
+    planning_row_count = sum(
+        int((artifact or {}).get("row_count") or 0)
+        for _key, artifact in selected
+    )
+    if planning_row_count <= 0:
+        raise ValueError("deferred supervision requires positive frozen row count")
+    cache_contract = auxiliary_stage_cache_contract(
+        config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field=artifact_field,
+        receipt_policy=receipt_policy,
+        split=split,
+    )
+    return DeferredSupervisionStage(
+        planning_row_count=planning_row_count,
+        artifact_field=artifact_field,
+        receipt_policy=receipt_policy,
+        factory=(
+            lambda: load_auxiliary_stage_cache(
+                cache_path, expected_contract=cache_contract
+            )
+            if cache_path is not None
+            else materialize_target_supervision(
+                config,
+                base,
+                target,
+                metadata=metadata,
+                artifact_field=artifact_field,
+                receipt_policy=receipt_policy,
+                split=split,
+            )
+        ),
     )
 
 
@@ -9006,6 +9515,7 @@ def train_target(
     optimizer_id: str = "",
     candidate_seed: int = 0,
     candidate_initialization_state: dict[str, Any] | None = None,
+    qualification_phase_step_limits: dict[str, int] | None = None,
 ) -> dict[str, Any]:
     active_phases = {
         "pretraining",
@@ -9017,6 +9527,25 @@ def train_target(
         if training_phase not in active_phases:
             raise ValueError(f"unknown training phase: {training_phase}")
         active_phases = {training_phase}
+    phase_step_limits = {
+        str(key): int(value)
+        for key, value in (
+            qualification_phase_step_limits or {}
+        ).items()
+    }
+    if (
+        any(key not in active_phases for key in phase_step_limits)
+        or any(value < 0 for value in phase_step_limits.values())
+    ):
+        raise ValueError(
+            "qualification phase step limits require active phases and nonnegative values"
+        )
+
+    def bounded_phase_steps(phase: str, available: int) -> int:
+        return min(
+            int(available),
+            int(phase_step_limits.get(phase, available)),
+        )
     target_id = str(target["target_id"])
     effective_seed = (
         int(candidate_seed)
@@ -9353,11 +9882,41 @@ def train_target(
         if "pretraining" in active_phases
         else 0
     )
-    unique_sft_positions = int(supervision_stage.mask.sum()) if supervision_stage is not None else 0
+    deferred_supervision = isinstance(
+        supervision_stage, DeferredSupervisionStage
+    )
+    deferred_source_conditioned = isinstance(
+        source_conditioned_stage, DeferredSupervisionStage
+    )
+    supervision_planning_rows = (
+        int(supervision_stage.planning_row_count)
+        if deferred_supervision
+        else len(supervision_stage.mask)
+        if supervision_stage is not None
+        else 0
+    )
+    source_planning_rows = (
+        int(source_conditioned_stage.planning_row_count)
+        if deferred_source_conditioned
+        else len(source_conditioned_stage.mask)
+        if source_conditioned_stage is not None
+        else 0
+    )
+    unique_sft_positions = (
+        int(supervision_stage.mask.sum())
+        if supervision_stage is not None and not deferred_supervision
+        else 0
+    )
     sft_repetitions = int(training.get("supervision_optimizer_repetitions") or 1)
     sft_positions = unique_sft_positions * sft_repetitions
     sft_planned_steps = (
-        required_steps(
+        math.ceil(
+            supervision_planning_rows
+            * sft_repetitions
+            / int(training["batch_size"])
+        )
+        if deferred_supervision
+        else required_steps(
             supervision_stage.mask,
             int(training["batch_size"]),
             sft_positions,
@@ -9368,12 +9927,19 @@ def train_target(
     unique_source_positions = (
         int(source_conditioned_stage.mask.sum())
         if source_conditioned_stage is not None
+        and not deferred_source_conditioned
         else 0
     )
     source_repetitions = int(training.get("source_conditioned_optimizer_repetitions") or 1)
     source_positions = unique_source_positions * source_repetitions
     source_planned_steps = (
-        required_steps(
+        math.ceil(
+            source_planning_rows
+            * source_repetitions
+            / int(training["batch_size"])
+        )
+        if deferred_source_conditioned
+        else required_steps(
             source_conditioned_stage.mask,
             int(training["batch_size"]),
             source_positions,
@@ -9713,6 +10279,26 @@ def train_target(
         )
     else:
         continuation_segment_resume = False
+    if deferred_source_conditioned:
+        prior_unique_source_positions = int(
+            prior_receipt.get(
+                "unique_source_conditioned_target_positions", 0
+            )
+            or 0
+        )
+        if prior_unique_source_positions:
+            unique_source_positions = prior_unique_source_positions
+            source_positions = (
+                unique_source_positions * source_repetitions
+            )
+    if deferred_supervision:
+        prior_unique_sft_positions = int(
+            prior_receipt.get("unique_supervision_target_positions", 0)
+            or 0
+        )
+        if prior_unique_sft_positions:
+            unique_sft_positions = prior_unique_sft_positions
+            sft_positions = unique_sft_positions * sft_repetitions
     remaining_positions = (
         max(0, optimizer_target_positions - prior_pretrain_positions)
         if "pretraining" in active_phases
@@ -9967,8 +10553,38 @@ def train_target(
     supervision_execution = dict(
         production_execution_policy.get("supervision") or {}
     )
+    phase_boundary_cache_releases: dict[str, Any] = {}
+
+    def release_phase_boundary_cache(boundary: str) -> None:
+        release_started = time.perf_counter()
+        mx.synchronize()
+        cache_before = (
+            int(mx.get_cache_memory())
+            if hasattr(mx, "get_cache_memory")
+            else None
+        )
+        if hasattr(mx, "clear_cache"):
+            mx.clear_cache()
+        cache_after = (
+            int(mx.get_cache_memory())
+            if hasattr(mx, "get_cache_memory")
+            else None
+        )
+        import gc
+
+        gc.collect()
+        phase_boundary_cache_releases[boundary] = {
+            "policy": "optimizer_safe_synchronized_mlx_cache_release_v1",
+            "seconds": round(time.perf_counter() - release_started, 6),
+            "cache_memory_bytes_before": cache_before,
+            "cache_memory_bytes_after": cache_after,
+        }
+
     pretrain_seed, pretrain_cursor = phase_resume_state(
         "pretraining", effective_seed + prior_steps
+    )
+    pretrain_allowed_steps = bounded_phase_steps(
+        "pretraining", allowed_steps
     )
     pretrain_phase = train_phase(
         model,
@@ -9993,7 +10609,7 @@ def train_target(
         gradient_clip=float(training["gradient_clip_norm"]),
         seed=pretrain_seed,
         resume_data_cursor=pretrain_cursor,
-        max_steps=allowed_steps,
+        max_steps=pretrain_allowed_steps,
         checkpoint=temporary_checkpoint,
         checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
         heartbeat=heartbeat,
@@ -10028,6 +10644,60 @@ def train_target(
         pretrain_phase["target_positions_consumed"]
     )
     used_steps = int(pretrain_phase["optimizer_steps"])
+    if (
+        "source_conditioned_pretraining" in active_phases
+        and used_steps < allowed_steps
+    ):
+        release_phase_boundary_cache(
+            "pretraining_to_source_conditioned_pretraining"
+        )
+    auxiliary_stage_materialization: dict[str, Any] = {}
+    source_conditioned_stage_receipt = (
+        source_conditioned_stage.receipt
+        if source_conditioned_stage is not None
+        and not deferred_source_conditioned
+        else None
+    )
+    supervision_stage_receipt = (
+        supervision_stage.receipt
+        if supervision_stage is not None and not deferred_supervision
+        else None
+    )
+    if (
+        deferred_source_conditioned
+        and "source_conditioned_pretraining" in active_phases
+        and used_steps < allowed_steps
+        and bounded_phase_steps(
+            "source_conditioned_pretraining", allowed_steps - used_steps
+        )
+        > 0
+        and (remaining_source_positions > 0 or source_positions == 0)
+    ):
+        materialize_started = time.perf_counter()
+        source_conditioned_stage = source_conditioned_stage.materialize()
+        auxiliary_stage_materialization[
+            "source_conditioned_pretraining"
+        ] = {
+            "policy": "deferred_until_phase_boundary_v1",
+            "seconds": round(time.perf_counter() - materialize_started, 6),
+            "row_count": len(source_conditioned_stage.inputs),
+            "physical_array_bytes": int(
+                source_conditioned_stage.receipt.get(
+                    "physical_array_bytes", 0
+                )
+                or 0
+            ),
+        }
+        source_conditioned_stage_receipt = (
+            source_conditioned_stage.receipt
+        )
+        unique_source_positions = int(
+            source_conditioned_stage.mask.sum()
+        )
+        source_positions = unique_source_positions * source_repetitions
+        remaining_source_positions = max(
+            0, source_positions - prior_source_positions
+        )
     source_conditioned_phase = {
         "phase": f"moecot_source_conditioned_pretraining:{target_id}",
         "optimizer_steps": 0,
@@ -10068,7 +10738,10 @@ def train_target(
             gradient_clip=float(training["gradient_clip_norm"]),
             seed=source_seed,
             resume_data_cursor=source_cursor,
-            max_steps=allowed_steps - used_steps,
+            max_steps=bounded_phase_steps(
+                "source_conditioned_pretraining",
+                allowed_steps - used_steps,
+            ),
             checkpoint=temporary_checkpoint,
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
@@ -10103,6 +10776,16 @@ def train_target(
         completed_positions["source"] = prior_source_positions + int(
             source_conditioned_phase["target_positions_consumed"]
         )
+    if deferred_source_conditioned and not isinstance(
+        source_conditioned_stage, DeferredSupervisionStage
+    ):
+        source_conditioned_stage = None
+        release_phase_boundary_cache(
+            "source_conditioned_pretraining_to_next_phase"
+        )
+        auxiliary_stage_materialization[
+            "source_conditioned_pretraining"
+        ]["released_before_next_phase"] = True
     kernel_english_phase = {
         "phase": f"moecot_kernel_english:{target_id}",
         "optimizer_steps": 0,
@@ -10423,7 +11106,10 @@ def train_target(
             gradient_clip=float(training["gradient_clip_norm"]),
             seed=kernel_seed,
             resume_data_cursor=kernel_cursor,
-            max_steps=allowed_steps - used_steps,
+            max_steps=bounded_phase_steps(
+                "kernel_english",
+                allowed_steps - used_steps,
+            ),
             checkpoint=temporary_checkpoint,
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
@@ -10445,7 +11131,9 @@ def train_target(
                 )
             ),
             clear_device_cache_after_step=bool(
-                candidate_execution_policy.get("clear_mlx_cache_after_step", False)
+                candidate_execution_policy.get(
+                    "clear_mlx_cache_after_step", False
+                )
             ),
             transactional_eager_step=bool(
                 candidate_execution_policy.get("transactional_eager_step", False)
@@ -10568,6 +11256,30 @@ def train_target(
         completed_positions["kernel"] = prior_kernel_positions + int(
             kernel_english_phase["target_positions_consumed"]
         )
+    if (
+        deferred_supervision
+        and "supervision" in active_phases
+        and used_steps < allowed_steps
+        and bounded_phase_steps("supervision", allowed_steps - used_steps) > 0
+        and (remaining_sft_positions > 0 or sft_positions == 0)
+    ):
+        materialize_started = time.perf_counter()
+        supervision_stage = supervision_stage.materialize()
+        auxiliary_stage_materialization["supervision"] = {
+            "policy": "deferred_until_phase_boundary_v1",
+            "seconds": round(time.perf_counter() - materialize_started, 6),
+            "row_count": len(supervision_stage.inputs),
+            "physical_array_bytes": int(
+                supervision_stage.receipt.get("physical_array_bytes", 0)
+                or 0
+            ),
+        }
+        supervision_stage_receipt = supervision_stage.receipt
+        unique_sft_positions = int(supervision_stage.mask.sum())
+        sft_positions = unique_sft_positions * sft_repetitions
+        remaining_sft_positions = max(
+            0, sft_positions - prior_sft_positions
+        )
     supervision_phase = {
         "phase": f"moecot_supervision:{target_id}",
         "optimizer_steps": 0,
@@ -10604,7 +11316,10 @@ def train_target(
             gradient_clip=float(training["gradient_clip_norm"]),
             seed=supervision_seed,
             resume_data_cursor=supervision_cursor,
-            max_steps=allowed_steps - used_steps,
+            max_steps=bounded_phase_steps(
+                "supervision",
+                allowed_steps - used_steps,
+            ),
             checkpoint=temporary_checkpoint,
             checkpoint_every=max(1, int(training["checkpoint_every_steps"])),
             heartbeat=heartbeat,
@@ -10634,6 +11349,20 @@ def train_target(
             ),
             master_model=master_model,
             compute_dtype_name=compute_dtype_name,
+        )
+    if deferred_supervision and not isinstance(
+        supervision_stage, DeferredSupervisionStage
+    ):
+        supervision_stage = None
+        release_phase_boundary_cache(
+            "supervision_to_checkpoint_publication"
+        )
+        auxiliary_stage_materialization[
+            "supervision"
+        ]["released_before_checkpoint_publication"] = True
+    if active_phases == {"pretraining"}:
+        release_phase_boundary_cache(
+            "pretraining_to_checkpoint_publication"
         )
     total_steps = prior_steps + used_steps + int(supervision_phase["optimizer_steps"])
     final_checkpoint, final_optimizer = checkpoint_generation_paths(
@@ -10756,6 +11485,16 @@ def train_target(
             and total_source_positions >= source_positions
             and kernel_phase_positions >= kernel_positions
             and total_sft_positions >= sft_positions
+            and not (
+                deferred_source_conditioned
+                and source_conditioned_stage_receipt is None
+                and source_planning_rows > 0
+            )
+            and not (
+                deferred_supervision
+                and supervision_stage_receipt is None
+                and supervision_planning_rows > 0
+            )
         ),
         "checkpoint": relative(final_checkpoint),
         "checkpoint_sha256": publication["checkpoint_sha256"],
@@ -10775,7 +11514,17 @@ def train_target(
         "resume_requested": resume,
         "resume": resumed,
         "training_phase_selection": training_phase,
-        "bounded_phase_canary": training_phase != "all",
+        "bounded_phase_canary": (
+            training_phase != "all" or bool(phase_step_limits)
+        ),
+        "qualification_phase_step_limits": phase_step_limits,
+        "auxiliary_stage_residency": {
+            "policy": "deferred_until_phase_boundary_then_released_v1",
+            "source_conditioned_planning_row_count": source_planning_rows,
+            "supervision_planning_row_count": supervision_planning_rows,
+            "materialization": auxiliary_stage_materialization,
+        },
+        "phase_boundary_cache_releases": phase_boundary_cache_releases,
         "resume_base_checkpoint_sha256": prior_checkpoint_hash,
         "resume_plan_identity_migration": resume_plan_identity_migration,
         "phases": {
@@ -10785,15 +11534,13 @@ def train_target(
             "supervision": supervision_phase,
         },
         "source_conditioned_stage": (
-            source_conditioned_stage.receipt
-            if source_conditioned_stage is not None
-            else None
+            source_conditioned_stage_receipt
         ),
         "kernel_english_stage": (
             kernel_english_stage.receipt if kernel_english_stage is not None else None
         ),
         "supervision_stage": (
-            supervision_stage.receipt if supervision_stage is not None else None
+            supervision_stage_receipt
         ),
         "wall_seconds": round(time.perf_counter() - started, 6),
         "energy_joules": None,
@@ -11517,6 +12264,25 @@ def validate_config(config: dict[str, Any]) -> None:
     loaded_canary_contract = pretraining_candidate_canary.load_contract(canary_contract)
     if loaded_canary_contract.get("policy") != authority.get("candidate_canary_policy"):
         raise ValueError("candidate-specific architecture canary policy mismatch")
+    fresh_segments = dict(authority.get("fresh_process_segments") or {})
+    if (
+        fresh_segments.get("policy")
+        != "project_theseus_bounded_fresh_process_pretraining_v1"
+        or fresh_segments.get("target_id") != SHARED_TRUNK_ID
+        or fresh_segments.get("phase") != "pretraining"
+        or int(fresh_segments.get("maximum_optimizer_steps") or 0) != 32
+        or fresh_segments.get("compute_dtype") != "float32"
+        or fresh_segments.get("fp32_master") is not False
+        or int(fresh_segments.get("compiled_microbatch_size") or 0) != 4
+        or fresh_segments.get("resume_required") is not True
+        or fresh_segments.get("require_external_watchdog") is not True
+        or int(
+            fresh_segments.get("minimum_qualified_contiguous_segments") or 0
+        )
+        < 2
+        or not str(fresh_segments.get("qualification_report") or "")
+    ):
+        raise ValueError("fresh-process pretraining segment contract is invalid")
     if [str(value) for value in authority.get("gate_command") or []] != [
         "python3",
         "scripts/roadmap_implementation_gate.py",

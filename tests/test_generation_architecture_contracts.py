@@ -85,7 +85,7 @@ class GenerationArchitectureContractTests(unittest.TestCase):
 
     def test_retired_modes_have_explicit_reentry_conditions(self) -> None:
         retired = [mode for mode in self.contract["modes"].values() if mode["first_campaign_disposition"].startswith("retired")]
-        self.assertEqual(2, len(retired))
+        self.assertEqual(5, len(retired))
         self.assertTrue(all(mode.get("reentry_condition") for mode in retired))
 
     def test_draft_candidates_share_target_authoritative_abi(self) -> None:

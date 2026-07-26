@@ -205,6 +205,56 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             weakened_audit["faults"],
         )
 
+        scoped = copy.deepcopy(binding)
+        scoped_contract = scoped["mandatory_replacement_qualification"]
+        scoped_contract["state"] = (
+            "FIRST_CAMPAIGN_SCOPE_EXCLUDED_INCONCLUSIVE_EXPERIMENT"
+        )
+        scoped_contract["completed_ladder"] = []
+        with tempfile.TemporaryDirectory() as tmp:
+            report_path = Path(tmp) / "kerc_final_exposure.json"
+            report_path.write_text(
+                json.dumps(
+                    {
+                        "policy": "project_theseus_kerc_k5_stage_learnability_probe_v1",
+                        "trigger_state": "GREEN",
+                        "qualification_state": "LEARNABILITY_SANITY_FAILED",
+                        "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY",
+                        "exact_match_count": 0,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            scoped_contract["first_campaign_scope_disposition"] = {
+                "policy": "project_theseus_kerc_first_campaign_scope_disposition_v1",
+                "classification": "INCONCLUSIVE_EXPERIMENT",
+                "scientific_falsification_claimed": False,
+                "incomplete_ladder_preserved": True,
+                "first_campaign_optimizer_exposure": 0,
+                "exact_scope": "first matched 57M campaign only",
+                "reentry_condition": "reopen the preserved K4-K8 ladder prospectively",
+                "evidence": {
+                    "path": str(report_path),
+                    "sha256": hashlib.sha256(report_path.read_bytes()).hexdigest(),
+                },
+            }
+            scoped_ready = gate.audit_kerc_mandatory_replacement_qualification(scoped)
+            self.assertTrue(scoped_ready["ready"])
+            self.assertEqual(
+                scoped_ready["remaining_ladder"],
+                list(gate.REQUIRED_KERC_REPLACEMENT_LADDER),
+            )
+
+            scoped_contract["first_campaign_scope_disposition"][
+                "scientific_falsification_claimed"
+            ] = True
+            scoped_invalid = gate.audit_kerc_mandatory_replacement_qualification(scoped)
+            self.assertFalse(scoped_invalid["ready"])
+            self.assertIn(
+                "scope_must_not_claim_scientific_falsification",
+                scoped_invalid["faults"],
+            )
+
         contract = binding["mandatory_replacement_qualification"]
         contract["state"] = "QUALIFIED_NOT_SELECTED"
         contract["completed_ladder"] = list(gate.REQUIRED_KERC_REPLACEMENT_LADDER)

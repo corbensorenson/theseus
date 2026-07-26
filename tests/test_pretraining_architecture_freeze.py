@@ -16,18 +16,18 @@ if str(SCRIPTS) not in sys.path:
 import pretraining_architecture_freeze as freeze
 
 
-def test_replacement_freeze_refuses_t0a_until_kerc_and_closure_are_qualified() -> None:
+def test_replacement_freeze_accepts_bound_first_campaign_dispositions() -> None:
     config = freeze.load_config()
     manifest = freeze.artifact_manifest(config)
+    dispositions = freeze.architecture_dispositions(config)
 
-    with pytest.raises(
-        freeze.ArchitectureFreezeFault,
-        match="architecture_disposition_incomplete",
-    ) as exc:
-        freeze.architecture_dispositions(config)
-
-    assert "planned.kernel_english_hierarchical_residual_compiler_v1" in str(exc.value)
-    assert "planned.pretraining_architecture_upgrade_closure_v1" in str(exc.value)
+    assert dispositions["required_count"] == dispositions["ready_count"]
+    kerc = dispositions["rows"][
+        "planned.kernel_english_hierarchical_residual_compiler_v1"
+    ]
+    assert kerc["status"] == "retired_by_pretraining_verdict"
+    assert kerc["negative_disposition"]["kind"] == "campaign_scope_only"
+    assert kerc["negative_disposition"]["scientific_falsification_claimed"] is False
     assert len(manifest) >= 100
     assert "scripts/standard_causal_transformer_model.py" in manifest
     assert "scripts/pretraining_factorized_bakeoff.py" in manifest
@@ -79,9 +79,9 @@ def test_cpu_replay_contract_is_externally_guarded_without_accelerator_authority
     policy = freeze.replay_safety_policy(config)
 
     assert config["replay_safety"]["accelerator_authorization_allowed"] is False
-    assert policy.max_process_memory_mib == 2048
-    assert policy.minimum_available_before_launch_mib == 6144
-    assert policy.minimum_available_during_run_mib == 4096
+    assert policy.max_process_memory_mib == 1024
+    assert policy.minimum_available_before_launch_mib == 3072
+    assert policy.minimum_available_during_run_mib == 2048
     assert policy.maximum_swapout_growth_mib == 16
 
 
@@ -170,8 +170,15 @@ def test_cpu_replay_success_uses_replay_only_authority_and_content_receipt(
 
 
 def test_replacement_freeze_waits_for_guarded_accelerator_replay() -> None:
-    with pytest.raises(freeze.ArchitectureFreezeFault, match="accelerator_replay_receipt_missing"):
-        freeze.accelerator_replay_receipts(freeze.load_config())
+    config = copy.deepcopy(freeze.load_config())
+    config["accelerator_replay"]["shards"][0]["receipt"] = (
+        "reports/accelerator_replay/intentionally_missing_test_receipt.json"
+    )
+    with pytest.raises(
+        freeze.ArchitectureFreezeFault,
+        match="accelerator_replay_receipt_(missing|invalid)",
+    ):
+        freeze.accelerator_replay_receipts(config)
 
 
 def test_every_accelerator_shard_has_a_tighter_source_justified_envelope() -> None:
@@ -185,41 +192,15 @@ def test_every_accelerator_shard_has_a_tighter_source_justified_envelope() -> No
             assert shard["generated_artifacts"] == [
                 "reports/neural_seed_50m_scale_preregistration.json"
             ]
-        elif shard["id"] == "kerc_online_kv_representative_preflight":
-            assert shard["maximum_process_memory_mib"] == 5120
-            assert shard["minimum_available_before_launch_mib"] == 5120
-            assert shard["command"][
-                shard["command"].index("--token-loss-position-chunk-size") + 1
-            ] == "128"
-            assert shard["command"][
-                shard["command"].index("--query-chunk-size") + 1
-            ] == "32"
-            assert shard["command"][
-                shard["command"].index("--key-chunk-size") + 1
-            ] == "32"
-            assert shard["generated_artifacts"] == [
-                "reports/kerc_training_memory_preflight.online_kv_full_objective.json"
-            ]
-        elif shard["id"] == "kerc_decomposed_objective_parity":
-            assert shard["maximum_process_memory_mib"] == 1024
-            assert shard["minimum_available_before_launch_mib"] == 3072
-            assert shard["minimum_available_memory_mib"] == 2048
-        elif shard["id"] == "query_chunk_compact_parity":
-            assert shard["maximum_process_memory_mib"] == 1536
-            assert shard["minimum_available_before_launch_mib"] == 3072
-            assert shard["minimum_available_memory_mib"] == 2048
-            assert "160.297 MiB inferred unified memory" in shard["resource_basis"]
         else:
             assert shard["maximum_process_memory_mib"] <= 2048
         assert shard["minimum_available_memory_mib"] >= contract[
             "minimum_available_memory_mib"
         ]
-        if shard["id"] not in {
-            "kerc_online_kv_representative_preflight",
-            "kerc_decomposed_objective_parity",
-            "query_chunk_compact_parity",
-        }:
-            assert shard["minimum_available_memory_mib"] >= 4096
+        assert "minimum_available_before_launch_mib" in shard
+        assert shard["minimum_available_before_launch_mib"] >= shard[
+            "minimum_available_memory_mib"
+        ]
         assert shard["maximum_swapout_growth_mib"] <= 16
         assert shard["poll_interval_seconds"] <= 0.1
         policy = freeze.accelerator_shard_policy(contract, shard)
@@ -253,13 +234,16 @@ def test_aggregate_gates_replace_duplicate_native_canary_shards() -> None:
     shard_ids = {str(shard["id"]) for shard in accelerator["shards"]}
     guarded = set(accelerator["guarded_test_nodeids"])
 
-    assert len(accelerator["shards"]) == 17
+    assert len(accelerator["shards"]) == 14
     assert {
         "generation_mode_gate",
         "optimizer_matched_adequacy",
         "policy_optimization_gate",
     } <= shard_ids
     assert not {
+        "query_chunk_compact_parity",
+        "kerc_decomposed_objective_parity",
+        "kerc_online_kv_representative_preflight",
         "kerc_structured_drafting",
         "generation_mtp_mechanics",
         "generation_mtp_adequacy",
@@ -603,6 +587,11 @@ def test_replay_readiness_is_derived_from_exact_receipts_and_rejects_tampering(
     monkeypatch.setattr(freeze, "resolve", isolated_resolve)
     contract = config["accelerator_replay"]
     for shard in contract["shards"]:
+        for artifact in shard.get("implementation_artifacts") or []:
+            if str(artifact).startswith("reports/"):
+                isolated_resolve(artifact).write_bytes(
+                    original_resolve(artifact).read_bytes()
+                )
         for artifact in shard.get("generated_artifacts") or []:
             artifact_path = isolated_resolve(artifact)
             artifact_path.write_text(

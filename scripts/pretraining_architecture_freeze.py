@@ -238,6 +238,8 @@ def replay_safety_policy(config: dict[str, Any]) -> host_resource_safety.HostSaf
     required = {
         "watchdog_policy",
         "receipt_directory",
+        "risk_class",
+        "resource_basis",
         "maximum_process_memory_mib",
         "minimum_available_before_launch_mib",
         "minimum_available_during_run_mib",
@@ -256,6 +258,8 @@ def replay_safety_policy(config: dict[str, Any]) -> host_resource_safety.HostSaf
     if (
         contract["watchdog_policy"] != host_resource_safety.POLICY
         or contract["accelerator_authorization_allowed"] is not False
+        or not str(contract.get("risk_class") or "")
+        or not str(contract.get("resource_basis") or "")
         or receipt_directory.is_absolute()
         or not receipt_directory.parts
         or receipt_directory.parts[0] != "reports"

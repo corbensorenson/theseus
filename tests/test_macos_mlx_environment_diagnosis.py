@@ -57,3 +57,11 @@ def test_usable_runtime_still_wins_route_selection() -> None:
 
     assert route["action"] == "route_mlx_to_usable_python"
     assert route["recommended_python"] == "usable-python"
+
+
+def test_canonical_qualified_mlx_runtime_is_a_probe_candidate() -> None:
+    candidates = diagnosis.candidate_pythons()
+
+    assert (
+        ROOT / "runtime" / "venvs" / "mlx-0.32.0-py312" / "bin" / "python"
+    ) in candidates

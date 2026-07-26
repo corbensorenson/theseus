@@ -1,0 +1,78 @@
+{
+  "command": [
+    "python3",
+    "scripts/governance_rights_receipt_suite.py"
+  ],
+  "index": 3,
+  "passed": true,
+  "returncode": 0,
+  "runtime_ms": 115,
+  "safety_receipt": {
+    "child_started": true,
+    "command": [
+      "python3",
+      "scripts/governance_rights_receipt_suite.py"
+    ],
+    "fault": "",
+    "fault_observation": null,
+    "first_swapout_growth_breach_observation": null,
+    "initial_reclaimable_available_mib": 5965.859,
+    "limits": {
+      "max_process_memory_mib": 1024.0,
+      "maximum_swapout_growth_mib": 16.0,
+      "maximum_wall_seconds": 300.0,
+      "minimum_available_before_launch_mib": 3072.0,
+      "minimum_available_during_run_mib": 2048.0,
+      "poll_interval_seconds": 0.1,
+      "swapout_growth_action": "hard_stop",
+      "terminate_grace_seconds": 2.0
+    },
+    "maximum_consecutive_reserve_breaches": 0,
+    "maximum_consecutive_telemetry_failures": 1,
+    "maximum_inferred_unified_memory_mib": 1.297,
+    "maximum_process_rss_mib": 0.0,
+    "maximum_swapout_growth_mib": 0.0,
+    "minimum_reclaimable_available_mib": 5964.562,
+    "observation_prefix": [
+      {
+        "elapsed_seconds": 0.003,
+        "inferred_unified_memory_mib": 1.297,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5964.562,
+        "swapout_growth_mib": 0.0
+      }
+    ],
+    "observation_suffix": [
+      {
+        "elapsed_seconds": 0.003,
+        "inferred_unified_memory_mib": 1.297,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5964.562,
+        "swapout_growth_mib": 0.0
+      }
+    ],
+    "passed": true,
+    "physical_memory_mib": 16384.0,
+    "policy": "project_theseus_host_resource_safety_v1",
+    "process_rss_telemetry_state": "AVAILABLE",
+    "reserve_breach_observations_required": 3,
+    "returncode": 0,
+    "swapout_growth_action": "hard_stop",
+    "swapout_growth_breach_observations": 0,
+    "swapout_growth_threshold_exceeded": false,
+    "telemetry_failure_observations_allowed": 2,
+    "telemetry_failure_prefix": [
+      {
+        "elapsed_seconds": 0.003,
+        "fault_type": "PermissionError",
+        "source": "process_group_rss"
+      }
+    ],
+    "terminated_by_guard": false,
+    "wall_seconds": 0.112
+  },
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_tail": "",
+  "stdout_sha256": "34d4d817e1b91946afa0b2bfef2803f11d958be82e417ed89535fa44ca93f572",
+  "stdout_tail": "    \"hard_gap_count\": 0,\n    \"improvement_campaign_generation_count\": 2,\n    \"improvement_campaign_mutation_case_count\": 14,\n    \"improvement_campaign_mutation_passed_count\": 14,\n    \"improvement_campaign_negative_knowledge_count\": 1,\n    \"improvement_campaign_optimizer_exposure_steps\": 0,\n    \"improvement_campaign_promoted_count\": 1,\n    \"improvement_campaign_rejected_count\": 1,\n    \"improvement_campaign_rollback_exact\": true,\n    \"improvement_campaign_runtime_authorized\": false,\n    \"improvement_campaign_runtime_effect_count\": 0,\n    \"inter_stack_exchange_record_count\": 1,\n    \"material_audit_scenario_count\": 2,\n    \"oversight_protocol_record_count\": 1,\n    \"passed_constitutional_fixture_count\": 4,\n    \"passed_fixture_count\": 4,\n    \"policy_update_committed_target_count\": 7,\n    \"policy_update_mutation_case_count\": 7,\n    \"policy_update_mutation_passed_count\": 7,\n    \"policy_update_rollback_canary_exact\": true,\n    \"policy_update_target_count\": 7,\n    \"portable_exit_scenario_count\": 1,\n    \"public_training_rows_written\": 0,\n    \"required_constitutional_scenario_count\": 4,\n    \"required_scenario_count\": 4,\n    \"warning_count\": 0\n  },\n  \"trigger_state\": \"GREEN\",\n  \"warnings\": []\n}\n"
+}

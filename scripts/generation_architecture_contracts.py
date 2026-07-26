@@ -519,6 +519,30 @@ def run_reference_suite(contract: dict[str, Any] | None = None) -> dict[str, Any
     activation = activation_receipt({}, contract)
     controls = mutation_controls(contract)
     retired = sorted(mode_id for mode_id, mode in contract["modes"].items() if mode["first_campaign_disposition"].startswith("retired"))
+    drafting_checks = drafting_adequacy.get("checks") or {}
+    drafting_safe_retired_mechanics = (
+        drafting_adequacy.get("available") is True
+        and (drafting_checks.get("frozen_target") or {}).get(
+            "target_parameters_unchanged"
+        )
+        is True
+        and all(
+            (drafting_checks.get(candidate_id) or {}).get(field) is True
+            for candidate_id in ("medusa_tree", "eagle_feature", "separate_draft")
+            for field in (
+                "gradient_flow",
+                "checkpoint_reload",
+                "nonempty_checkpoint",
+                "nonempty_parameterization",
+            )
+        )
+        and all(
+            str(contract["modes"][mode_id]["first_campaign_disposition"]).startswith(
+                "retired"
+            )
+            for mode_id in ("medusa", "eagle", "speculative")
+        )
+    )
     gates = {
         "all_mode_records_valid": len(validations) == len(contract["modes"]),
         "first_campaign_base_ar": contract["first_campaign_base"] == "autoregressive",
@@ -529,8 +553,7 @@ def run_reference_suite(contract: dict[str, Any] | None = None) -> dict[str, Any
         <= float(contract["mtp_shape_contract"]["maximum_parameter_overhead_ratio"]),
         "mtp_adequate_candidate_mechanics": mtp_adequacy["available"]
         and mtp_adequacy["passed"],
-        "target_authoritative_drafting_mechanics": drafting_adequacy["available"]
-        and drafting_adequacy["passed"],
+        "target_authoritative_drafting_safe_retired_mechanics": drafting_safe_retired_mechanics,
         "kerc_structured_drafting_mechanics": kerc_structured_drafting["available"]
         and kerc_structured_drafting["passed"],
         "mtp_zero_initial_weight": checkpoint["optional_head_groups"]["mtp"]["initial_weight"] == 0.0,
@@ -547,7 +570,7 @@ def run_reference_suite(contract: dict[str, Any] | None = None) -> dict[str, Any
         "policy": contract["policy"],
         "trigger_state": "GREEN" if all(gates.values()) else "RED",
         "support_state": "synthetic-test-backed",
-        "summary": {"mode_count": len(records), "included_mode_count": sum(not mode["first_campaign_disposition"].startswith("retired") for mode in contract["modes"].values()), "retired_first_campaign_mode_count": len(retired), "mutation_case_count": controls["case_count"], "mutation_passed_count": controls["passed_count"], "mlx_available": mtp.get("available", False), "mtp_canary_passed": mtp.get("passed", False), "mtp_adequacy_canary_passed": mtp_adequacy.get("passed", False), "drafting_adequacy_canary_passed": drafting_adequacy.get("passed", False), "kerc_structured_drafting_canary_passed": kerc_structured_drafting.get("passed", False), "mechanics_canary_optimizer_steps": int(mtp_adequacy.get("optimizer_steps") or 0) + int(drafting_adequacy.get("optimizer_steps") or 0), "runtime_authorized": activation["authorized"], "optimizer_exposure_steps": 0, "public_training_rows_written": 0, "external_inference_calls": 0, "fallback_or_template_credit": 0},
+        "summary": {"mode_count": len(records), "included_mode_count": sum(not mode["first_campaign_disposition"].startswith("retired") for mode in contract["modes"].values()), "retired_first_campaign_mode_count": len(retired), "mutation_case_count": controls["case_count"], "mutation_passed_count": controls["passed_count"], "mlx_available": mtp.get("available", False), "mtp_canary_passed": mtp.get("passed", False), "mtp_adequacy_canary_passed": mtp_adequacy.get("passed", False), "drafting_adequacy_canary_passed": drafting_adequacy.get("passed", False), "drafting_safe_retired_mechanics_passed": drafting_safe_retired_mechanics, "kerc_structured_drafting_canary_passed": kerc_structured_drafting.get("passed", False), "mechanics_canary_optimizer_steps": int(mtp_adequacy.get("optimizer_steps") or 0) + int(drafting_adequacy.get("optimizer_steps") or 0), "runtime_authorized": activation["authorized"], "optimizer_exposure_steps": 0, "public_training_rows_written": 0, "external_inference_calls": 0, "fallback_or_template_credit": 0},
         "gates": gates,
         "mode_records": records,
         "checkpoint_receipt": roundtrip,

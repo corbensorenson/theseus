@@ -66,8 +66,8 @@ The current falsifiable question is:
 |---|---|---|
 | `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
 | `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
-| `T0A` Pre-training architecture upgrade closure | open; KERC K4-K8, evaluator hardening, and remaining guarded replay remain | The practical control stack is provisionally fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. Optimizer Policy Cards, the bounded Adafactor comparator, selected-recipe 512-width transfer, explicit full-shape SOAP scope removal, and the resource-safe KERC representative objective are complete. Closure still requires the remaining guarded accelerator replay, dynamic-representation canonical integration, KERC K4-K8 behavior and matched utility, frozen evaluator prompt-injection/taint defenses, a clean reproducible test environment, and a replacement content-addressed package. `RESOURCE_DEFERRED_ON_THIS_HOST` cannot close KERC. |
-| `T1` Selected neural-seed campaign | waits for `T0A` | Preserve the exact 57.340M-active step-3,000 package as an immutable control. After `T0A`, freeze the selected representation, model, optimizer, objective, generation-head, data, checkpoint, and evaluation identities; then train the selected practical lane and matched controls. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
+| `T0A` Pre-training architecture upgrade closure | replacement package independently replayed and frozen | The practical first-campaign stack is fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The qualified runtime is compiled FP32, microbatch four, width quantum 64, in externally watched 32-step fresh processes; source-conditioned and supervision stages use content-bound memmaps plus eager microbatch one. The content-addressed replacement package is GREEN with 14/14 selected accelerator receipts and 7/7 independent CPU/governance replays. |
+| `T1` Selected neural-seed campaign | waits for the broader pre-training architecture-readiness gate | Preserve the exact 57.340M-active step-3,000 package as an immutable control. Once the remaining non-acceleration architecture prerequisites are honestly closed, train the selected practical lane and matched controls from the frozen `T0A` package. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -109,8 +109,11 @@ next long-run launch target:
   optimizer target 1,146,808,520 positions over 2.715 planned passes.
 - Evaluation: one unconsumed, source-disjoint 160-case functional surface with 32 cases
   each for English, Python, JS/TS, HTML/CSS, and Rust.
-- Runtime: native MLX grouped-query attention and compiled width-bucketed microbatches of
-  four, accumulated into one token-mass-weighted batch-16 clip/update. The latest same-state
+- Runtime: native MLX grouped-query attention and compiled width-bucketed FP32
+  microbatches of four, accumulated into one token-mass-weighted batch-16 clip/update.
+  Long pretraining is now bounded to qualified 32-step fresh processes with atomic
+  model/optimizer/RNG/cursor publication; source-conditioned and supervision phases use
+  eager microbatch one and content-bound memory-mapped stage caches. The latest same-state
   three-pair, 24-update qualification preserved bounded full-parameter equivalence. Its
   stable repeated pooled speedup is
   1.88x, below the 2x gate, while peak MLX memory fell from about 8.10 GB to 3.40 GB. A
@@ -123,16 +126,26 @@ next long-run launch target:
   A real-checkpoint bf16-compute/fp32-master rerun was numerically bounded but reached only
   0.955x median/0.957x pooled speed. A later hot-run pair improved to 1.128x median/1.130x
   pooled with lower memory, but still missed the frozen 1.15x adoption floor and contradicted
-  the earlier direction. Mixed precision remains unadopted on this M1.
+  the earlier direction. A later sustained BF16/microbatch-eight run reached 4,417.5
+  positions/second, but MLX active state grew by about 55 MiB per update, a 64-step
+  fresh-process control crossed the swap stop, and independent process restarts diverged
+  by up to `3.60e-4` absolute/about `1.05e-3` relative L2 across model tensors. Mixed
+  precision is therefore rejected for the canonical reproducible long route on this M1.
+  The selected fresh-process FP32 route sustains 3,482-3,495 device positions/second and
+  about 3.3k end-to-end positions/second including publication/startup overhead, with
+  zero swap and independently replayed model/optimizer tolerances of `1.19e-7` and
+  `4.31e-9` maximum absolute delta.
 - Current run: shared trunk checkpoint 3,000, 22,999,779 optimizer positions, exact
   safetensors model SHA `606640cd...5c0e`, and optimizer SHA `62e1b52b...5f96`. Private-development loss
   improved 0.57% from step 2,500 to 3,000; English regressed 0.43% while the four code arms
   improved. Direct beam decoding is about 8.8x faster with 8/8 exact output-and-receipt parity,
   but seven of eight qualification outputs still fail closed on serialization.
 
-At the measured canary rate, the remaining old shared-trunk raw-position budget is about
-four days of ideal continuous compute and the complete old 4.05B-position campaign is about
-14.5 ideal compute-days on this M1. Preserve the resumable step-3,000 lineage, but do not
+At the qualified fresh-process effective rate, the remaining shared-trunk pretraining
+budget is about 3.8 continuous days. A serial 4.05B-position campaign is about 14.2
+pretraining-equivalent compute-days before slower auxiliary phases, review/evaluation,
+thermal interruptions, and lifecycle work; plan roughly 16-19 calendar days on this M1.
+Preserve the resumable step-3,000 lineage, but do not
 continue it while already-planned checkpoint-shaping upgrades remain unresolved. `T0A`
 allows isolated, source-disjoint, prospectively bounded architecture learning curves because
 MTP, learned chunking, optimizers, and KERC cannot be assessed from shape tests alone. These
@@ -140,9 +153,8 @@ runs receive no production checkpoint, capability, or public-calibration authori
 
 ### 2026-07-26 Acceleration-First Launch Gate
 
-Finish the already-running final bounded KERC exposure rung rather than discarding its
-accumulated compute. After its terminal evidence and finite disposition are banked, make
-training acceleration the critical path before the matched 57M launch. This is a sequencing
+The final bounded KERC exposure rung and first-campaign disposition are banked. Training
+acceleration is now the critical path before the matched 57M launch. This is a sequencing
 change inside `T0A`, not permission for another architecture-review loop.
 
 Use a **60-hour acceleration sprint with a 72-hour hard ceiling**. The sprint ends sooner
@@ -164,12 +176,17 @@ not weakening the campaign reserve, reduced final MLX cache to about 0-2 MiB.
 
 Work the following docket in measured bottleneck order:
 
-1. **Qualified and phase-selected:** BF16-compute/FP32-master reload preserves exact
-   checkpoint bytes, optimizer bytes, RNG, cursor, loss, and batch sequence. Independent BF16
-   trajectories remain bounded but not bit-repeatable on Metal (about `1.1e-4` parameter
-   relative L2); preserve this as `YELLOW_TRAJECTORY_REPEATABILITY`, not an exact-determinism
-   claim. Alternating short and sustained comparisons bound the final-loss delta below
-   `1.02e-4` relative and select BF16 microbatch eight for plain pretraining.
+1. **Closed with FP32 selected:** BF16-compute/FP32-master reload preserves checkpoint,
+   optimizer, RNG, cursor, and batch identity, and its sustained microbatch-eight rate is
+   4,417.5 positions/second. It is not safe for the canonical long run: compiled active
+   memory grows about 55 MiB/update, a 64-step control caused swap, and an independently
+   cloned 32-step continuation replay diverged throughout model and optimizer state.
+   Per-step cache clearing, compiled-wrapper reconstruction, and same-process invocation
+   segmentation released no active state and are removed. Compiled FP32/microbatch four
+   is selected instead. Two contiguous 32-step fresh processes reach 3,482-3,495 device
+   positions/second with zero swap; an independent second-segment replay preserves exact
+   names, shapes, RNG, and cursor and stays within `1.19e-7` model and `4.31e-9` optimizer
+   maximum absolute delta. The byte files are not claimed bit-identical.
 2. Sweep compiled microbatch sizes `4, 8, 16` and width quanta `32, 64, 128` on identical
    batches. Attribute graph compilation, accumulation, final update, implicit evaluation,
    padding, cache, peak unified memory, live reserve, swap growth, and thermal drift. Do not
@@ -178,7 +195,7 @@ Work the following docket in measured bottleneck order:
    accumulated gradients after every microbatch versus a safely fused or less frequently
    synchronized update. Any fusion must retain one token-mass-weighted clip/update and pass
    full-parameter, optimizer-state, loss, save/load, and resume checks.
-4. **Mechanically closed; sustained campaign confirmation remains:** source-conditioned
+4. **Closed for the joined campaign path:** source-conditioned
    full-batch-16 execution drove reclaimable memory to 627 MiB and added 1.12 GiB swap before
    the watchdog stopped it. The replacement compiles bounded forward/backward microbatches
    separately and retains one logical batch-16 clip/update. Full-batch token, generator-gate,
@@ -186,9 +203,20 @@ Work the following docket in measured bottleneck order:
    parity pass. On the actual 57M route, BF16 eager split microbatch four is faster than its
    compiled split (596.1 versus 584.4 positions/s) and supervision compilation is neutral
    (457.4 versus 461.8 positions/s within short-run noise). Microbatch two is 2-3% slower;
-   microbatch eight crossed 1 GiB swap growth in both phases. Select eager split microbatch
-   four for source-conditioned and supervision work, subject to a joined sustained replay.
-5. Measure checkpoint cadence, asynchronous-safe publication opportunities, data/cache warmup,
+   microbatch eight crossed 1 GiB swap growth in both phases. The actual joined replay
+   showed that eager microbatch four still left too little headroom; eager microbatch one
+   is selected at about 550 source-conditioned and 502 supervision positions/second.
+   Source and supervision arrays are produced in isolated child processes, stored in
+   content-bound memory-mapped caches, opened only at their phase boundaries, and released
+   before checkpoint publication. The 64/8/8 joined replay completed with exact
+   checkpoint/optimizer/RNG reload and zero swap, while leaving the canonical checkpoint
+   unchanged.
+5. **Closed for launch cadence:** full checkpoint publication costs about 2.5 seconds per
+   32-step FP32 segment. Two qualified segments spend 138.69 seconds in device updates,
+   4.97 seconds publishing checkpoints, and 8.35 seconds total outside device updates.
+   The canonical `neural_seed_training_campaign.py` runner launches one externally watched
+   process per segment and refuses production authority unless the content-bound
+   qualification report is GREEN. Continue to measure asynchronous-safe publication, data/cache warmup,
    Metal graph-cache reuse, and verifier/evaluation overlap without hiding required lifecycle
    work or risking the only durable checkpoint.
 
@@ -199,16 +227,21 @@ and swap-growth watchdogs remain green. Preserve negative and unstable measureme
 the selected performance receipt and bind its exact execution policy into the replacement
 architecture freeze before any 57M optimizer budget is spent.
 
-Current gate state: **EXECUTION_POLICY_BOUND; JOINED SUSTAINED CONFIRMATION OPEN**. The final
+Current gate state: **FRESH_PROCESS_FP32_QUALIFIED; REPLACEMENT FREEZE GREEN**. The final
 bounded KERC population rung, exact merge, teacher-forced panel, and raw panel are complete.
 The shared 57M checkpoint remains immutable at step 3,000. The registered execution policy
-now selects BF16-compute/FP32-master compiled microbatch eight for plain pretraining and
-exact-normalized eager split microbatch four for source-conditioned and supervision phases.
-It captures MLX RNG in the compiled ABI and content-binds the unchanged checkpoint, optimizer,
-cursor, RNG, objective, and position schedule through an explicit migration. Before launch,
-run one joined non-mutating sustained confirmation through the canonical launcher, measure
-checkpoint publication and phase transitions, refresh the stale replacement freeze bindings,
-bank the evidence, and then start the matched campaign without reopening architecture intake.
+now selects compiled FP32 microbatch four in 32-step fresh processes for plain pretraining
+and exact-normalized eager split microbatch one for source-conditioned and supervision
+phases. It captures MLX RNG in the compiled ABI, publishes model/optimizer/RNG/cursor
+atomically after every segment, and content-binds the unchanged checkpoint, objective, and
+position schedule through an explicit migration. The replacement freeze now binds 14/14
+selected accelerator receipts and passes 7/7 independent CPU/governance replays. The exact
+package identity is recorded in `reports/pretraining_architecture_freeze_package.json` rather
+than copied into a bound input and made self-referential.
+Bank the acceleration evidence, then resolve the broader architecture-readiness gate before
+starting the matched campaign. Do not restore BF16 merely for its raw
+1.26x speed advantage unless a new implementation removes both retained-state growth and
+cross-process trajectory divergence under the same parity and host gates.
 
 ### 2026-07-25 Deep Technical And ASI Stack Review Reconciliation
 
@@ -801,9 +834,11 @@ after closure requires a measured station regression or a materially new impleme
    width 512. Its PID is stale and the durable checkpoint is intentionally paused, not running.
    Do not consume the frozen functional surface on that knowingly incomplete predecessor merely
    to manufacture an evaluation number. Preserve it as the immutable control and evaluate the
-   selected successor once after `T0A`. The claim that the factorized bakeoff removed every
-   pre-training blocker is also stale: KERC K4-K8, guarded replacement replay, and package
-   publication still keep `T0A` open. The criticism that the project can remain in preparation
+   selected successor once after `T0A`. The later final-exposure boundary supersedes the review's
+   claim that KERC K4-K8 must block campaign one: KERC is now evidence-bound, zero-exposure, and
+   `INCONCLUSIVE_EXPERIMENT` for finite first-campaign sequencing, with K4-K8 preserved for a
+   prospectively reopened successor campaign. Guarded replacement replay and package publication
+   are the only remaining `T0A` blockers. The criticism that the project can remain in preparation
    without producing a capability number has teeth. Close only those named blockers; once `T0A`
    is green, do not admit another architecture-review cycle ahead of the declared matched
    five-arm plus dense-active/dense-total campaign and the single frozen direct model-only
@@ -820,12 +855,14 @@ after closure requires a measured station regression or a materially new impleme
    semantic K5 chain and its matched/free-generation gates were created on July 25. `mx.compile`
    remains present on the qualified canonical trunk path, and the cited batch-one branch applies
    only above 8,192 tokens; it does not throttle the width-512 trunk or the qualified width-628
-   K5 envelope. The old factorized bakeoff's 18.4 GiB maximum-row deferral does not retire KERC
-   under the current charter: the resource-safe bounded K5 route has re-entered, while 629+ and
-   the maximum positive row remain explicit K7 blockers. Do not start the long 57M campaign while
-   `T0A` is open. Close the named blockers, bank the coherent tested transaction, and then
-   transition directly to matched training and the frozen utility evaluation without another
-   elective preparation cycle.
+   K5 envelope. The old factorized bakeoff's 18.4 GiB maximum-row deferral did not retire KERC;
+   the later bounded K5 sequence tested the resource-safe route through its final same-seed
+   exposure boundary. Its failure to clear learned behavior is not a scientific negative, but it
+   is enough for an explicit zero-exposure first-campaign sequencing decision. Do not start the
+   long 57M campaign while the broader pre-training architecture-readiness gate is red. The
+   replacement freeze is complete; bank the coherent tested transaction, resolve only the
+   remaining named gate prerequisites, and then transition directly to matched training and
+   the frozen utility evaluation without another elective acceleration search.
 8. **Context, routing, and tools.** Profile the joined assistant route rather than isolated
    fixtures. Make VCM indexes persistent and incremental, cache content-bound compiled
    packets and denial decisions, prefetch only from observable plans, avoid repeated JSON
@@ -1988,18 +2025,21 @@ generation service, KERC sidecar, or private evaluator.
    and accepts only content-bound candidate leases with isolated namespaces plus step, position,
    wall, memory, disk, seed, heldout, target, phase, and required-check boundaries. Runtime step
    callbacks enforce host budgets and final receipts enforce optimizer positions. Accelerator
-   canaries now also require an out-of-process watchdog. The obsolete fixed 8 GiB launch floor and
-   allocator-peak kill rule are removed: generic guarded work uses a 6,144 MiB launch reserve and
-   4,096 MiB runtime reserve, while the measured KERC population candidate uses a 2,048 MiB live
-   reserve and 6,144 MiB child-process ceiling. Its non-attributable macOS host-wide swap counter
-   is report-only; live reserve, child memory, wall, and telemetry-loss checks remain hard stops.
-   Other exact shards retain their content-bound swap limits. The watchdog fails closed if
+   canaries now also require an out-of-process watchdog. The obsolete fixed 8 GiB floor, generic
+   6/4 GiB floor, and allocator-peak kill rule are removed. Each selected operation instead binds
+   a measured launch reserve, live reserve, process ceiling, and swap-growth stop. Ordinary
+   CPU/governance replay uses 3,072/2,048/1,024 MiB launch/live/process limits; tiny accelerator
+   fixtures use 3,072-3,584 MiB launch and 2,048 MiB live reserves; the three sequential 57M-class
+   canaries use 4,096/2,048 MiB after measuring 1,704.219 MiB maximum inferred unified memory.
+   Non-attributable macOS host-wide swap totals remain report-only; live reserve, child memory,
+   wall, per-run swap growth, and telemetry-loss checks remain hard stops. The watchdog fails closed if
    telemetry is unavailable, records preflight refusals without starting a child, and generic
    telemetry cannot initialize MLX merely to inspect it. Root-level pytest collection ignores
    top-level MLX modules and skips accelerator-marked tests unless the watchdog launched the test.
-   MTP, dynamic patch, and optimizer three-seed rungs are complete; SOAP has an explicit terminal
-   first-campaign scope decision, while RDC/KERC still has blocking resource-and-evidence
-   obligations. The canonical freeze owner now runs exact qualified shards one at
+   MTP, dynamic patch, and optimizer three-seed rungs are complete; SOAP and RDC/KERC have explicit
+   first-campaign scope decisions. KERC remains `INCONCLUSIVE_EXPERIMENT`, preserves its K4-K8
+   successor obligations, and receives zero first-campaign optimizer exposure. The canonical
+   freeze owner now runs exact qualified shards one at
    a time, reuses exact passing receipts after interruption, resumes at the first missing/invalid
    shard, stops on the first refusal/failure, and derives readiness from complete content-bound
    watchdog receipts; there is no manual `READY` switch. The factorized selection and
@@ -2012,36 +2052,34 @@ generation service, KERC sidecar, or private evaluator.
    inherited floor. A sandbox-only probe correctly sees no Metal device; the host-Metal replay
    passes freshly against the selected compiler-stage implementation with 77.094 MiB inferred
    working set and zero swap, and the exact decomposed-objective successor passes with 79.203 MiB
-   and zero swap. Its refreshed receipt is `d66f3eba...91f6`. The 72M representative successor's
-   prior result is now implementation-stale because the trainer changed; it must be rerun under
-   its evidence-backed 5,120 MiB launch requirement when the host admits it.
-   The schedule is now 17 serial shards: four duplicated native canaries were
+   and zero swap. Those KERC receipts remain archived successor evidence. The 72M representative
+   rerun hit the 16 MiB swap-growth stop; because KERC is explicitly zero-exposure in campaign one,
+   safety is not weakened and that candidate-specific route is not a selected-freeze blocker.
+   The selected schedule is now 14 serial shards: four duplicated native canaries were
    removed because their aggregate generation/policy
    gates already execute them, while the direct pytest node IDs remain explicitly guarded. Those
    aggregate reports are content-bound into their shard receipts, so stale or modified output
    cannot satisfy readiness. The separately justified full-scale preregistration shard runs its
    three sequential 57M-class checkpoint/resume models under a 4,096 MiB process ceiling and binds
    the generated report; direct canary execution without watchdog authority cannot mutate it.
-   A separate 72M KERC full-objective shard is admitted by external live-reserve and swap-growth
-   invariants and may run only
-   after tiny exact output/loss/gradient shards validate checkpointed online-softmax query/KV
-   chunking and serial position-chunked objective parity. Direct selection cannot bypass those
-   predecessors: the runner rejects a missing, stale,
-   reordered, or tampered parity receipt before child launch, and hash-binds the valid predecessor
-   into the representative receipt. Its row, coverage step, chunk sizes, compact-partition mode,
-   and output hash are bound directly into the guarded command and receipt.
+   Tiny selected shards carry explicit 3,072-3,584 MiB launch and 2,048 MiB live envelopes. The
+   full-scale preregistration shard reuses its measured 4,096/2,048 MiB envelope after completing
+   three sequential 57M-class checkpoint/resume canaries at 1,704.219 MiB maximum inferred unified
+   memory with zero swap. These are content-bound operation envelopes, not a global memory floor.
    Generation/policy aggregate gates also run only through their registered shards. Full KERC
    adequacy and allocator entrypoints fail before native imports or report mutation without
    watchdog authority; routine registry verification may read accepted receipts, but the final
-   freeze requires the mandatory parity, representative-objective, K4-K7, and K8 evidence rather
-   than inheriting a resource disposition.
+   freeze requires every selected first-campaign receipt. K4-K8 remain mandatory before KERC may
+   prospectively re-enter a successor campaign.
    A preflight below the operation's declared launch reserve starts no child. That refusal is a
-   safety result, not roadmap completion: Phase 0 reproduction, KERC maximum-row repair and K4-K7,
-   guarded replay, and the replacement freeze remain open.
+   safety result, not roadmap completion. The selected guarded replay and replacement freeze
+   are complete; Phase 0 reproduction remains broader roadmap work, while KERC maximum-row repair
+   and K4-K8 remain successor work.
 
    Ordinary CPU/governance replay is now guarded too: raw subprocess execution is forbidden, each
-   command runs serially under a 2,048 MiB process-group ceiling, 6,144 MiB launch reserve, 4,096 MiB
-   runtime reserve, 16 MiB swap-growth limit, and atomic refusal/completion receipt. Replay children
+   command runs serially under a 1,024 MiB process-group ceiling, 3,072 MiB launch reserve, 2,048 MiB
+   runtime reserve, 16 MiB swap-growth limit, and atomic refusal/completion receipt. Those values are
+   operation-specific measured envelopes, not a machine-wide floor. Replay children
    receive no accelerator authority. Canonical MoECOT training, progress evaluation, and checkpoint
    migration require the script's `--guarded` mode, which launches the qualified MLX child under a
    5,120 MiB process-group RSS ceiling with the 6,144/4,096 MiB launch/runtime reserves. The freeze's
@@ -2314,7 +2352,7 @@ inventory:
 | Contract | State |
 |---|---|
 | Reflexive Router integration | pretraining wired; behavioral qualification pending |
-| Kernel English / RDC / KERC | `T0A` blocking; K0-K3 banked, guarded resource entry plus K4-K8 required before replacement freeze and long training |
+| Kernel English / RDC / KERC | K0-K3 and bounded mechanics banked; first-campaign zero-exposure scope decision frozen `INCONCLUSIVE_EXPERIMENT`; K4-K8 preserved for prospective successor re-entry |
 | Independent token and corpus acceleration | old `T0P` complete; dynamic-patch and successor-representation work active in `T0A` |
 | Private functional utility | 10.8M rung falsified; 57M evaluation pending |
 | Task-complete corpus and scale floor | first-campaign data frozen; behavioral result pending |
@@ -2439,8 +2477,9 @@ Theseus reaches the current roadmap milestone only when:
 8. every critical-path matrix row is exercised through correctness, performance, integration,
    reproduction, and real-use evidence or is removed from the canonical stack through an adequate
    scoped verdict; `deferred`, `wired`, and mechanics-only are not completion states;
-9. KERC K4-K8, VCM, routing, tools, serving, data ingestion, evaluation, checkpointing, and the
-   selected model all pass their canonical end-to-end resource and failure envelopes; and
+9. VCM, routing, tools, serving, data ingestion, evaluation, checkpointing, and the selected model
+   all pass their canonical end-to-end resource and failure envelopes; KERC K4-K8 does the same
+   before KERC may re-enter any successor campaign; and
 10. externally blocked peer/device evidence is the only permitted unfinished class and remains an
     explicit non-claim until the real receipt exists.
 

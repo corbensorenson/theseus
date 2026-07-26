@@ -1,0 +1,4396 @@
+{
+  "architecture_contracts": {
+    "activation_receipt": {
+      "authorized": false,
+      "blockers": [
+        "behavior_positive_generation_evidence_missing",
+        "verified_pass_floor_not_met"
+      ],
+      "evidence_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    "checkpoint_receipt": {
+      "checkpoint_digest": "sha256:6667d5204b44ed67539785314c2227e1525a96a6f2dac9e776f71770d116b101",
+      "cleanup_complete": true,
+      "migration_exact": true,
+      "retired_modes_absent_from_optimizer": true,
+      "roundtrip_exact": true
+    },
+    "drafting_adequacy_canary": {
+      "available": true,
+      "capability_claim": "NOT_EVALUATED",
+      "checks": {
+        "eagle_feature": {
+          "checkpoint_reload": true,
+          "gradient_flow": true,
+          "nonempty_checkpoint": true,
+          "nonempty_parameterization": true,
+          "representative_overfit": true
+        },
+        "frozen_target": {
+          "target_parameters_unchanged": true
+        },
+        "medusa_tree": {
+          "checkpoint_reload": true,
+          "gradient_flow": true,
+          "nonempty_checkpoint": true,
+          "nonempty_parameterization": true,
+          "representative_overfit": false
+        },
+        "separate_draft": {
+          "checkpoint_reload": true,
+          "gradient_flow": true,
+          "nonempty_checkpoint": true,
+          "nonempty_parameterization": true,
+          "representative_overfit": true
+        }
+      },
+      "external_inference_calls": 0,
+      "fallback_template_router_tool_credit": 0,
+      "observed": {
+        "results": {
+          "eagle_feature": {
+            "active_gradient": true,
+            "checkpoint_bytes": 18950,
+            "checkpoint_reload_max_abs_delta": 0.0,
+            "final_loss": 0.010616878047585487,
+            "initial_loss": 4.917936325073242,
+            "parameter_count": 4656
+          },
+          "medusa_tree": {
+            "active_gradient": true,
+            "checkpoint_bytes": 33550,
+            "checkpoint_reload_max_abs_delta": 0.0,
+            "final_loss": 0.9698571562767029,
+            "initial_loss": 4.031259059906006,
+            "parameter_count": 8136
+          },
+          "separate_draft": {
+            "active_gradient": true,
+            "checkpoint_bytes": 13494,
+            "checkpoint_reload_max_abs_delta": 0.0,
+            "final_loss": 0.0002720572811085731,
+            "initial_loss": 4.542973041534424,
+            "parameter_count": 3120
+          }
+        },
+        "target_parameter_max_abs_delta": 0.0
+      },
+      "optimizer_steps": 48,
+      "passed": false,
+      "public_training_rows": 0,
+      "speed_claim": "NOT_EVALUATED"
+    },
+    "gates": {
+      "all_mode_records_valid": true,
+      "checkpoint_roundtrip_migration_cleanup": true,
+      "first_campaign_base_ar": true,
+      "kerc_structured_drafting_mechanics": true,
+      "mtp_adequate_candidate_mechanics": true,
+      "mtp_mlx_shape_canary": true,
+      "mtp_resource_ceiling_passed": true,
+      "mtp_zero_initial_weight": true,
+      "mutation_controls_rejected": true,
+      "no_cheat_counters_clean": true,
+      "post_hoc_speculative_compatible_disabled": true,
+      "retired_modes_absent_from_optimizer": true,
+      "retirements_have_reentry_conditions": true,
+      "runtime_mode_selection_disabled_without_behavior": true,
+      "target_authoritative_drafting_safe_retired_mechanics": true,
+      "zero_optimizer_exposure": true
+    },
+    "kerc_structured_drafting_canary": {
+      "available": true,
+      "capability_claim": "NOT_EVALUATED",
+      "checks": {
+        "bounded_overfit": true,
+        "checkpoint_reload": true,
+        "gradient_flow": true,
+        "hidden_state_causal_use": true,
+        "independent_future_heads": true
+      },
+      "external_inference_calls": 0,
+      "grammar_pointer_renderer_learned_credit": 0,
+      "observed": {
+        "checkpoint_reload_max_abs_delta": 0.0,
+        "final_loss": 8.278422947149977e-10,
+        "gradient_flow": true,
+        "hidden_intervention_max_abs_delta": 45.114139556884766,
+        "initial_loss": 1.4383015632629395,
+        "parameter_count": 8580
+      },
+      "passed": true,
+      "public_training_rows": 0
+    },
+    "mode_records": {
+      "autoregressive": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "causal_kv_cache",
+        "checkpoint_effect": "required",
+        "first_campaign_disposition": "included",
+        "mode_class": "canonical_base",
+        "mode_id": "autoregressive",
+        "objective_effect": "next_token_cross_entropy",
+        "record_digest": "sha256:212991ce03fa7ccba20544903af4c3f04a27ce31c5f7e99c22728199ce84c5a1",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "not_applicable",
+        "topology_effect": "base_causal_lm_head"
+      },
+      "eagle": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "branch_local_draft_cache_target_accepted_prefix_only",
+        "checkpoint_effect": "separate_draft_checkpoint_bound_to_exact_target",
+        "first_campaign_disposition": "retired_from_first_campaign_post_hoc_after_behavior_positive_base",
+        "mode_class": "post_hoc_frozen_backbone_draft_candidate",
+        "mode_id": "eagle",
+        "objective_effect": "next_feature_regression_plus_token_prediction_with_frozen_target",
+        "record_digest": "sha256:43fda4ea16bdaee2cfce871e83f1f287158d3910a45c141ec0a19bc20cf61858",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "A behavior-positive frozen base exists and a prospectively frozen matched accepted-output-throughput campaign can train and tune EAGLE without changing target weights or first-campaign evidence.",
+        "topology_effect": "hidden_state_and_token_conditioned_feature_predictor_outside_target_authority"
+      },
+      "layerskip": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "exit_layer_specific_cache_contract_required",
+        "checkpoint_effect": "checkpoint_shaping",
+        "first_campaign_disposition": "retired_from_first_campaign",
+        "mode_class": "training_time_early_exit",
+        "mode_id": "layerskip",
+        "objective_effect": "intermediate_exit_supervision",
+        "record_digest": "sha256:00ca9846a8a37fb5fd914f073c0d6fed667338af3892f7d12e9d7ade93b63a8c",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "base model clears utility floor and layer-exit quality can be measured on accepted outputs",
+        "topology_effect": "early_exit_logits_and_layer_dropout_schedule"
+      },
+      "medusa": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "branch_local_tree_cache_target_accepted_prefix_only",
+        "checkpoint_effect": "separate_draft_checkpoint_bound_to_exact_target",
+        "first_campaign_disposition": "retired_from_first_campaign_post_hoc_after_behavior_positive_base",
+        "mode_class": "post_hoc_frozen_backbone_draft_candidate",
+        "mode_id": "medusa",
+        "objective_effect": "future_token_head_losses_with_frozen_target",
+        "record_digest": "sha256:60e367b5e04dc8ed6c096beb308bf509d697d3c6f29dc5bc61dedc87eaabf01e",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "A behavior-positive frozen base exists and a prospectively frozen matched accepted-output-throughput campaign can train and tune Medusa without changing target weights or first-campaign evidence.",
+        "topology_effect": "independent_residual_future_token_heads_outside_target_authority"
+      },
+      "mtp": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "training_heads_do_not_mutate_base_ar_decode_cache",
+        "checkpoint_effect": "required_optional_head_group_with_candidate_identity",
+        "first_campaign_disposition": "compatibility_fixture_not_selectable",
+        "mode_class": "training_time_auxiliary",
+        "mode_id": "mtp",
+        "objective_effect": "causally_shifted_future_token_cross_entropy_with_explicit_curriculum",
+        "record_digest": "sha256:a19f7761881eb4af528ceff0f7a5c77f05a4314573b2ab3b2f22126117b5e8e1",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "not_applicable",
+        "topology_effect": "versioned_optional_future_token_head_group"
+      },
+      "sketch_first_llada": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "iterative_full_sequence_state_not_ar_kv_cache",
+        "checkpoint_effect": "incompatible_alternative_checkpoint",
+        "first_campaign_disposition": "retired_from_first_campaign",
+        "mode_class": "alternative_generation_architecture",
+        "mode_id": "sketch_first_llada",
+        "objective_effect": "corruption_schedule_and_iterative_denoising",
+        "record_digest": "sha256:316630291e70ef94a739ef44ba15c7c0125dd6ebc95c487cc1239a55b8977e56",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "AR base clears utility floor and a prospectively frozen matched-total-cost Semantic-IR-localized repair campaign can fund the alternative",
+        "topology_effect": "bidirectional_masked_denoiser_or_sketch_infill_model"
+      },
+      "speculative": {
+        "accepted_output_accounting": {
+          "accepted_tokens_or_spans": 0,
+          "active_parameter_count": 0,
+          "cache_bytes": 0,
+          "decode_flops_estimate": 0,
+          "external_inference_calls": 0,
+          "integrity_mismatch_count": 0,
+          "proposed_tokens_or_spans": 0,
+          "public_training_rows": 0,
+          "repair_or_fallback_count": 0,
+          "task_count": 0,
+          "task_pass_count": 0,
+          "training_flops_estimate": 0,
+          "verifier_wall_time_ms": 0
+        },
+        "active_compute_contract": {
+          "decode_flops_estimate": "required_before_behavioral_comparison",
+          "training_flops_estimate": "required_before_behavioral_comparison",
+          "verifier_cost": "required_before_behavioral_comparison"
+        },
+        "cache_policy": "target_accepted_prefix_only",
+        "checkpoint_effect": "separate_draft_manifest_bound_to_exact_target",
+        "first_campaign_disposition": "retired_from_first_campaign_post_hoc_after_behavior_positive_base",
+        "mode_class": "post_hoc_checkpoint_compatible_control",
+        "mode_id": "speculative",
+        "objective_effect": "none_to_target_model",
+        "record_digest": "sha256:90ef52183e542e775a5b69f5cc765ebe2e7a9f7c2a4391233f4ada90e21ec8d8",
+        "record_type": "generation_mode_record",
+        "reentry_condition": "A behavior-positive frozen base exists and a prospectively frozen matched accepted-output-throughput campaign can train the independent smaller draft while preserving exact target authority.",
+        "topology_effect": "none_to_target_model"
+      }
+    },
+    "mtp_adequacy_canary": {
+      "available": true,
+      "candidate_checks": {
+        "conventional_independent": {
+          "checkpoint_reload_exact": true,
+          "curriculum_warmup_and_ramp": true,
+          "future_alignment_sensitive": true,
+          "future_loss_learned": true,
+          "head_gradient_flow": true,
+          "parameter_inventory_present": true,
+          "shape_contract": true,
+          "zero_scale_head_ablation": true
+        },
+        "register_conditioned": {
+          "checkpoint_reload_exact": true,
+          "curriculum_warmup_and_ramp": true,
+          "future_alignment_sensitive": true,
+          "future_loss_learned": true,
+          "head_gradient_flow": true,
+          "parameter_inventory_present": true,
+          "shape_contract": true,
+          "zero_scale_head_ablation": true
+        }
+      },
+      "candidates": [
+        {
+          "base_shape": [
+            8,
+            12,
+            32
+          ],
+          "candidate_id": "conventional_independent",
+          "checkpoint_bytes": 24756,
+          "checkpoint_reload_max_abs_delta": 0.0,
+          "final_mtp_loss": 0.00011045733117498457,
+          "first_active_mtp_gradient_l1": 0.30530383065342903,
+          "head_mode": "independent_mlp",
+          "initial_mtp_loss": 3.561328411102295,
+          "loss_scales": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.041666666666666664,
+            0.08333333333333333,
+            0.125,
+            0.16666666666666666,
+            0.20833333333333334,
+            0.25,
+            0.2916666666666667,
+            0.3333333333333333,
+            0.375,
+            0.4166666666666667,
+            0.4583333333333333,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "mtp_parameter_count": 2304,
+          "mtp_shapes": [
+            [
+              8,
+              12,
+              32
+            ],
+            [
+              8,
+              12,
+              32
+            ],
+            [
+              8,
+              12,
+              32
+            ]
+          ],
+          "optimizer_steps": 24,
+          "total_parameter_count": 5168,
+          "wrong_alignment_mtp_loss": 83.34918975830078,
+          "zero_scale_mtp_gradient_l1": 0.0
+        },
+        {
+          "base_shape": [
+            8,
+            12,
+            32
+          ],
+          "candidate_id": "register_conditioned",
+          "checkpoint_bytes": 22664,
+          "checkpoint_reload_max_abs_delta": 0.0,
+          "final_mtp_loss": 4.934985190629959e-05,
+          "first_active_mtp_gradient_l1": 0.23351726308465004,
+          "head_mode": "register_conditioned",
+          "initial_mtp_loss": 3.5344810485839844,
+          "loss_scales": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.041666666666666664,
+            0.08333333333333333,
+            0.125,
+            0.16666666666666666,
+            0.20833333333333334,
+            0.25,
+            0.2916666666666667,
+            0.3333333333333333,
+            0.375,
+            0.4166666666666667,
+            0.4583333333333333,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "mtp_parameter_count": 1840,
+          "mtp_shapes": [
+            [
+              8,
+              12,
+              32
+            ],
+            [
+              8,
+              12,
+              32
+            ],
+            [
+              8,
+              12,
+              32
+            ]
+          ],
+          "optimizer_steps": 24,
+          "total_parameter_count": 4704,
+          "wrong_alignment_mtp_loss": 87.56230163574219,
+          "zero_scale_mtp_gradient_l1": 0.0
+        }
+      ],
+      "capability_claim": "NOT_EVALUATED",
+      "claim_boundary": "mechanics canary only; no speed, utility, transfer, or architecture-selection claim",
+      "external_inference_calls": 0,
+      "fallback_or_template_credit": 0,
+      "optimizer_steps": 48,
+      "passed": true,
+      "private_fixture_rows": 8,
+      "public_training_rows": 0
+    },
+    "mtp_mlx_canary": {
+      "available": true,
+      "campaign_initial_loss_weight": 0.0,
+      "canary_loss_scale": 0.5,
+      "mtp_parameter_overhead_ratio": 0.21875,
+      "observed": {
+        "base_shape": [
+          2,
+          8,
+          32
+        ],
+        "checkpoint_bytes": 15512,
+        "checkpoint_reload_max_abs_delta": 0.0,
+        "joint_loss": 5.773106575012207,
+        "mtp_loss": 2.0444931983947754,
+        "mtp_parameter_names": [
+          "mtp_shared_projection.weight",
+          "mtp_output_heads.0.weight",
+          "mtp_output_heads.1.weight",
+          "mtp_output_heads.2.weight"
+        ],
+        "mtp_shapes": [
+          [
+            2,
+            8,
+            32
+          ],
+          [
+            2,
+            8,
+            32
+          ],
+          [
+            2,
+            8,
+            32
+          ]
+        ],
+        "raw_head_parameter_overhead_ratio": 0.21875,
+        "valid_positions": [
+          7,
+          6,
+          5
+        ]
+      },
+      "optimizer_steps": 0,
+      "passed": true,
+      "resource_decision": "canonical_shared_rank1_heads_within_frozen_overhead_ceiling"
+    },
+    "mutation_controls": {
+      "case_count": 12,
+      "passed_count": 12,
+      "results": [
+        {
+          "case_id": "missing_mode",
+          "expected": "generation_mode_coverage_invalid",
+          "observed": "generation_mode_coverage_invalid",
+          "passed": true
+        },
+        {
+          "case_id": "base_substitution",
+          "expected": "first_campaign_base_invalid",
+          "observed": "first_campaign_base_invalid",
+          "passed": true
+        },
+        {
+          "case_id": "retirement_without_reentry",
+          "expected": "retirement_reentry_missing",
+          "observed": "retirement_reentry_missing:layerskip",
+          "passed": true
+        },
+        {
+          "case_id": "mode_record_tamper",
+          "expected": "generation_mode_record_tampered",
+          "observed": "generation_mode_record_tampered",
+          "passed": true
+        },
+        {
+          "case_id": "draft_target_mismatch",
+          "expected": "draft_target_revision_mismatch",
+          "observed": "draft_target_revision_mismatch",
+          "passed": true
+        },
+        {
+          "case_id": "speculative_cache_poison",
+          "expected": "speculative_cache_policy_invalid",
+          "observed": "speculative_cache_policy_invalid",
+          "passed": true
+        },
+        {
+          "case_id": "checkpoint_contract_mismatch",
+          "expected": "checkpoint_contract_digest_mismatch",
+          "observed": "checkpoint_contract_digest_mismatch",
+          "passed": true
+        },
+        {
+          "case_id": "unknown_mode",
+          "expected": "generation_mode_unknown",
+          "observed": "generation_mode_unknown",
+          "passed": true
+        },
+        {
+          "case_id": "legacy_rank1_selection",
+          "expected": "legacy_rank1_candidate_must_not_be_selectable",
+          "observed": "legacy_rank1_candidate_must_not_be_selectable",
+          "passed": true
+        },
+        {
+          "case_id": "mtp_zero_ramp",
+          "expected": "mtp_curriculum_budget_invalid",
+          "observed": "mtp_curriculum_budget_invalid:conventional_independent",
+          "passed": true
+        },
+        {
+          "case_id": "unknown_mtp_candidate",
+          "expected": "mtp_candidate_unknown",
+          "observed": "mtp_candidate_unknown",
+          "passed": true
+        },
+        {
+          "case_id": "draft_abi_cache_poison",
+          "expected": "draft_abi_commit_policy_invalid",
+          "observed": "draft_abi_commit_policy_invalid",
+          "passed": true
+        }
+      ]
+    },
+    "non_claims": [
+      "Proposed-token throughput, auxiliary loss, candidate count, or cache reuse is not useful speed or capability.",
+      "Only verifier-accepted output per second under matched quality, compute, memory, and repair accounting can support a speed claim.",
+      "Draft candidates are post-hoc frozen-target modules, are excluded from campaign one, and remain outside target optimizer state; mechanics do not imply useful acceleration or capability. The current Medusa representative-overfit miss is INCONCLUSIVE_EXPERIMENT and does not falsify Medusa.",
+      "No generation mode may receive learned-generation credit for templates, fallbacks, tools, deterministic renderers, hidden targets, or public benchmark artifacts.",
+      "The legacy shared rank-one MTP route is a checkpoint compatibility fixture and cannot be selected or treated as an adequate negative control."
+    ],
+    "policy": "project_theseus_generation_architecture_contracts_v1",
+    "speculative_loader_receipt": {
+      "compatible": true,
+      "draft_manifest_digest": "sha256:c174f91d04f230954698a6b0c2c23a8b716b6be9c366548842c47dfbff849746",
+      "enabled": false,
+      "target_checkpoint_digest": "sha256:6667d5204b44ed67539785314c2227e1525a96a6f2dac9e776f71770d116b101",
+      "target_topology_changed": false
+    },
+    "summary": {
+      "drafting_adequacy_canary_passed": false,
+      "drafting_safe_retired_mechanics_passed": true,
+      "external_inference_calls": 0,
+      "fallback_or_template_credit": 0,
+      "included_mode_count": 2,
+      "kerc_structured_drafting_canary_passed": true,
+      "mechanics_canary_optimizer_steps": 96,
+      "mlx_available": true,
+      "mode_count": 7,
+      "mtp_adequacy_canary_passed": true,
+      "mtp_canary_passed": true,
+      "mutation_case_count": 12,
+      "mutation_passed_count": 12,
+      "optimizer_exposure_steps": 0,
+      "public_training_rows_written": 0,
+      "retired_first_campaign_mode_count": 5,
+      "runtime_authorized": false
+    },
+    "support_state": "synthetic-test-backed",
+    "trigger_state": "GREEN"
+  },
+  "boundary_gates": [
+    {
+      "evidence": false,
+      "id": "public_benchmark_training_forbidden",
+      "kind": "public_benchmark_training_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "id": "runtime_external_inference_forbidden",
+      "kind": "runtime_external_inference_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "id": "fallback_template_router_tool_credit_forbidden",
+      "kind": "fallback_template_router_tool_credit_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "id": "raw_throughput_only_promotion_forbidden",
+      "kind": "raw_throughput_only_promotion_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "id": "mixed_metric_overclaim_forbidden",
+      "kind": "mixed_metric_overclaim_forbidden",
+      "passed": true,
+      "severity": "hard"
+    }
+  ],
+  "comparisons": [
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.05745,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 10,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 34813.0,
+        "task_count": 10,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "baseline_mlx_ar_beam_strict_generator_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.028422,
+        "accepted_tokens_or_spans": 1,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 9,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 35184.0,
+        "task_count": 9,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "semantic_head_prefix_guided_mlx_decode_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad8_no_plan_vs_semantic_head_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_until_behavior_nonregression_and_speed_lift",
+      "suite": "broad_private_heldout_smoke8",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad8_no_plan_vs_semantic_head_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": true,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.0,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 4,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 27225.0,
+        "task_count": 4,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_aux_clean_no_head_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.08186,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 6,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 24432.0,
+        "task_count": 6,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_aux_clean_semantic_head_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_plan_aux_no_head_vs_semantic_head_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "coverage_lift_observed_but_not_promotable_until_functional_pass_moves_above_zero",
+      "suite": "broad_private_heldout_smoke4_same_checkpoint",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": true,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_plan_aux_no_head_vs_semantic_head_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.08186,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 6,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 24432.0,
+        "task_count": 6,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_aux_clean_semantic_head_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.042786,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 6,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 46744.0,
+        "task_count": 6,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_aux_body_semantics_head_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_plan_aux_head_vs_body_semantics_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_lm_and_plan_loss_improved_but_functional_pass_still_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_plan_aux_head_vs_body_semantics_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.042786,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 6,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 46744.0,
+        "task_count": 6,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_aux_body_semantics_head_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.0,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 4,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 36091.0,
+        "task_count": 4,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_slots_dataflow_mlx_decode_broad4_v5",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_body_semantics_vs_plan_semantic_slots_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_richer_prefix_regressed_to_zero_verified_learned_candidates",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_body_semantics_vs_plan_semantic_slots_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": true,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.0,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 4,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 36091.0,
+        "task_count": 4,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_slots_dataflow_mlx_decode_broad4_v5",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.128771,
+        "accepted_tokens_or_spans": 4,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 8,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 31063.0,
+        "task_count": 8,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_slots_update_contract_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_plan_semantic_slots_vs_update_contract_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_candidate_emission_and_runtime_load_recovered_but_task_pass_count_remains_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": true,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_plan_semantic_slots_vs_update_contract_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": true,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.128771,
+        "accepted_tokens_or_spans": 4,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 8,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 31063.0,
+        "task_count": 8,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_slots_update_contract_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.23737,
+        "accepted_tokens_or_spans": 17,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 25,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 71618.0,
+        "task_count": 25,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_update_contract_vs_plan_subspace_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_plan_prefix_diversity_and_plan_loss_improved_but_functional_pass_remains_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": true,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_update_contract_vs_plan_subspace_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.23737,
+        "accepted_tokens_or_spans": 17,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 25,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 71618.0,
+        "task_count": 25,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.093666,
+        "accepted_tokens_or_spans": 4,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 8,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 42705.0,
+        "task_count": 8,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_slots_body_action_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_plan_subspace_vs_body_action_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_body_action_weighting_improved_plan_accuracy_but_regressed_decode_coverage_and_kept_zero_pass",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_plan_subspace_vs_body_action_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": true,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.23737,
+        "accepted_tokens_or_spans": 17,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 25,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 71618.0,
+        "task_count": 25,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.47221,
+        "accepted_tokens_or_spans": 57,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 65,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 120709.0,
+        "task_count": 65,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_slots_algorithmic_replay_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_plan_subspace_vs_algorithmic_replay_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_private_replay_lowered_lm_loss_but_broad_functional_pass_stayed_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": true,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_plan_subspace_vs_algorithmic_replay_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.47221,
+        "accepted_tokens_or_spans": 57,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 65,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 120709.0,
+        "task_count": 65,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_slots_algorithmic_replay_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.121003,
+        "accepted_tokens_or_spans": 26,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 30,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 214871.0,
+        "task_count": 30,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_slots_algorithmic_escape_replay_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_algorithmic_replay_vs_escape_replay_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_escape_replay_shifted_failure_shape_to_decode_starvation_and_zero_pass",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_algorithmic_replay_vs_escape_replay_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.121003,
+        "accepted_tokens_or_spans": 26,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 30,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 214871.0,
+        "task_count": 30,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_slots_algorithmic_escape_replay_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.099378,
+        "accepted_tokens_or_spans": 11,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 19,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 110688.0,
+        "task_count": 19,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_stmt_slots_algorithmic_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_escape_replay_vs_statement_slots_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_statement_slots_recovered_candidate_coverage_but_broad_functional_pass_stayed_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_escape_replay_vs_statement_slots_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": true,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.099378,
+        "accepted_tokens_or_spans": 11,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 19,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 110688.0,
+        "task_count": 19,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_stmt_slots_algorithmic_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.797497,
+        "accepted_tokens_or_spans": 65,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 69,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 81505.0,
+        "task_count": 69,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_stmt_slots_action_trace_pairwise_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_statement_slots_vs_action_trace_pairwise_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_action_trace_pairwise_reduced_candidate_count_and_kept_broad_functional_pass_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": true,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_statement_slots_vs_action_trace_pairwise_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.797497,
+        "accepted_tokens_or_spans": 65,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 69,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 81505.0,
+        "task_count": 69,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_stmt_slots_action_trace_pairwise_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.063754,
+        "accepted_tokens_or_spans": 23,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 47,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 360761.0,
+        "task_count": 47,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_stmt_slots_source_slot_head_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_action_trace_pairwise_vs_source_slot_head_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_source_slot_head_improved_emitted_loadable_candidate_coverage_but_kept_functional_pass_zero",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_action_trace_pairwise_vs_source_slot_head_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": 0.063754,
+        "accepted_tokens_or_spans": 23,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 47,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 360761.0,
+        "task_count": 47,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "plan_semantic_stmt_slots_source_slot_head_mlx_decode_broad4_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": 0.039802,
+        "accepted_tokens_or_spans": 40,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 96,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 1004971.0,
+        "task_count": 96,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "plan_semantic_stmt_expression_slots_vocab_guard_mlx_decode_broad4_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "broad4_source_slot_head_vs_expression_vocab_guard_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "not_promotable_expression_slot_canonicalization_improved_auxiliary_accuracy_but_kept_functional_pass_zero_and_body_semantics_collapsed",
+      "suite": "broad_private_heldout_smoke4_same_split",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "broad4_source_slot_head_vs_expression_vocab_guard_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "accepted_speed_lift": false,
+      "baseline_metrics": {
+        "accepted_span_per_second": null,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 0,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": null,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": null,
+        "verifier_wall_time_ms": null
+      },
+      "baseline_mode_id": "standard_causal_transformer_serial_beam_v1",
+      "baseline_pass_rate": 0.0,
+      "candidate_manifest_equal": false,
+      "candidate_metrics": {
+        "accepted_span_per_second": null,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 0,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": null,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": null,
+        "verifier_wall_time_ms": null
+      },
+      "candidate_mode_id": "standard_causal_transformer_batched_beam_v1",
+      "candidate_pass_rate": 0.0,
+      "fallback_non_regression": true,
+      "hard_gaps": [],
+      "id": "standard_causal_transformer_serial_vs_batched_beam_v1",
+      "integrity_non_regression": true,
+      "pass_non_regression": true,
+      "promotable": false,
+      "promotion_decision": "batched_default_after_exact_candidate_parity_behavior_integrity_and_useful_verified_output_speed_nonregression",
+      "suite": "standard_causal_transformer_family_disjoint_private_24_same_checkpoint",
+      "useful_speed_lift": false,
+      "warnings": [
+        {
+          "evidence": {
+            "accepted_speed_lift": false,
+            "candidate_manifest_equal": null,
+            "candidate_task_pass_count": 0,
+            "fallback_non_regression": true,
+            "integrity_non_regression": true,
+            "pass_non_regression": true,
+            "useful_speed_lift": false
+          },
+          "id": "standard_causal_transformer_serial_vs_batched_beam_v1",
+          "kind": "comparison_not_promotable",
+          "severity": "warning"
+        }
+      ]
+    }
+  ],
+  "created_utc": "2026-07-26T13:43:44.014054Z",
+  "hard_gaps": [],
+  "mode_records": [
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "baseline_autoregressive_beam",
+      "hard_gaps": [],
+      "id": "baseline_mlx_ar_beam_strict_generator_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.05745,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 10,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 34813.0,
+        "task_count": 10,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Raw decode runtime is not capability.",
+        "Zero-pass output cannot be promoted because it is faster."
+      ],
+      "promotion_rules": [
+        "baseline only",
+        "not a speedup claim",
+        "not a learned-generation promotion claim"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.05745,
+            "accepted_tokens_or_spans": 2.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 10.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 34813.0,
+            "task_count": 10,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_prompt_signature_tags_clean_adapted_no_plan_broad8_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval",
+      "status": "baseline",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "verifier_preserving_prefix_guided_decode",
+      "hard_gaps": [],
+      "id": "semantic_head_prefix_guided_mlx_decode_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.028422,
+        "accepted_tokens_or_spans": 1,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 9,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 35184.0,
+        "task_count": 9,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Semantic prefix guidance is not a public-transfer claim.",
+        "Prefix/ranker constraints carry candidate_generation_credit=0 unless independently learned generation proves behavior."
+      ],
+      "promotion_rules": [
+        "must not reduce task_pass_rate versus baseline on the same suite",
+        "must improve useful_solution_per_second or accepted_span_per_second without increasing fallback burden",
+        "must preserve candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.028422,
+            "accepted_tokens_or_spans": 1.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 9.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 35184.0,
+            "task_count": 9,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_prompt_signature_tags_clean_adapted_semantic_head_broad8_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head",
+      "status": "candidate",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "plan_aux_autoregressive_beam_control",
+      "hard_gaps": [],
+      "id": "plan_aux_clean_no_head_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.0,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 4,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 27225.0,
+        "task_count": 4,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "This no-head control is not a production route.",
+        "A RED no-candidate report is negative evidence, not a capability claim."
+      ],
+      "promotion_rules": [
+        "diagnostic paired-control only",
+        "not promotable without verified task pass",
+        "must remain no-cheat clean"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 27225.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_plan_aux_starvation_conservative_clean_no_head_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval",
+      "status": "diagnostic_baseline",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "learned_plan_head_prefix_guided_decode",
+      "hard_gaps": [],
+      "id": "plan_aux_clean_semantic_head_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.08186,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 6,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 24432.0,
+        "task_count": 6,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Learned plan-head prefix guidance is not a semantic correctness claim by itself.",
+        "Two runtime-loaded wrong-answer candidates do not clear the public-transfer wall."
+      ],
+      "promotion_rules": [
+        "must improve verified task pass before promotion",
+        "candidate coverage lift is diagnostic only until behavior improves",
+        "must preserve candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.08186,
+            "accepted_tokens_or_spans": 2.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 6.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 24432.0,
+            "task_count": 6,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_plan_aux_starvation_conservative_clean_head_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head",
+      "status": "diagnostic_candidate",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "plan_conditioned_body_semantics_decode",
+      "hard_gaps": [],
+      "id": "plan_aux_body_semantics_head_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.042786,
+        "accepted_tokens_or_spans": 2,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 6,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 46744.0,
+        "task_count": 6,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Plan-conditioned body semantic weighting does not render code and grants no candidate-generation credit.",
+        "The current decode matched prior two-candidate coverage but did not improve functional task pass."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "heldout LM or semantic-plan loss improvement is not a behavior claim",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 17160.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_plan_aux_body_semantics_conservative_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.067604,
+            "accepted_tokens_or_spans": 2.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 6.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 29584.0,
+            "task_count": 6,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_plan_aux_body_semantics_conservative_head_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/candidate_integrity_plan_aux_body_semantics_conservative_head_broad4_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "plan_semantic_slots_dataflow_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_slots_dataflow_mlx_decode_broad4_v5",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.0,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 4,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 36091.0,
+        "task_count": 4,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "The richer target mode improved private pretraining loss but did not emit learned candidate rows on this smoke.",
+        "The current wall is learned update-token selection after an incompatible INIT_NUMBER plus UPDATE_CALL prefix."
+      ],
+      "promotion_rules": [
+        "not promotable with zero verified learned candidates",
+        "richer learned prefix dataflow is diagnostic until it emits executable body candidates",
+        "guard hygiene cannot count as learned code generation"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 12174.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_probe_plan_semantic_slots_dataflow_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 23917.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_plan_semantic_slots_dataflow_head_broad4_v5.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/candidate_integrity_plan_semantic_slots_dataflow_head_broad4_v5.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "plan_semantic_slots_update_contract_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_slots_update_contract_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.128771,
+        "accepted_tokens_or_spans": 4,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 8,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 31063.0,
+        "task_count": 8,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "This fixes an incoherent numeric UPDATE_CALL-to-method-mutation path and restores verified candidate emission.",
+        "The generated candidates still collapse to sum-like loops and do not prove broad transfer behavior."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "update-contract guards and weights carry candidate_generation_credit=0",
+        "runtime loadability is not semantic correctness"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 6689.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_update_contract_consistency_private_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.164109,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 24374.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_update_contract_consistency_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/candidate_integrity_update_contract_consistency_broad4_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "plan_semantic_slots_semantic_plan_subspace_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_slots_plan_subspace_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.23737,
+        "accepted_tokens_or_spans": 17,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 25,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 71618.0,
+        "task_count": 25,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Restricting semantic-plan loss/eval to SLOT:PLAN_* classes fixed the label-space mismatch and improved heldout plan metrics.",
+        "Decode recovered diverse learned plan prefixes, but candidates remained shallow sum/list continuations and did not pass the verifier."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "semantic-plan-token subspace loss is training evidence, not behavior evidence",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 18967.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_semantic_plan_subspace_private_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.410038,
+            "accepted_tokens_or_spans": 10.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 14.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 24388.0,
+            "task_count": 14,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.247674,
+            "accepted_tokens_or_spans": 7.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 11.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 28263.0,
+            "task_count": 11,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_block_identity_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/candidate_integrity_semantic_plan_subspace_broad4_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "plan_semantic_slots_body_action_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_slots_body_action_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.093666,
+        "accepted_tokens_or_spans": 4,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 8,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 42705.0,
+        "task_count": 8,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Guard/condition/finalizer weighting improved heldout semantic-plan accuracy but did not produce verifier-passing bodies.",
+        "This checkpoint regressed broad4 learned candidate coverage and introduced repeated shallow body continuations, so it is negative evidence for promotion."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "heldout plan accuracy improvement cannot hide decode coverage regression",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 15450.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_semantic_body_action_private_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.146762,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 27255.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_body_action_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/candidate_integrity_semantic_body_action_broad4_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "private_replay_conditioned_plan_semantic_slots_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_slots_algorithmic_replay_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.47221,
+        "accepted_tokens_or_spans": 57,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 65,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 120709.0,
+        "task_count": 65,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Private algorithmic replay improved heldout LM loss and kept candidate integrity clean, but broad4 functional pass remained zero.",
+        "Identity-update blocking reduced one shallow failure family but exposed weak operand binding such as max(value)/int(value), not semantic task solving."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "private replay training evidence does not count as heldout capability evidence",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 2.654613,
+            "accepted_tokens_or_spans": 37.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 37.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 13938.0,
+            "task_count": 37,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 57578.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_semantic_plan_subspace_algorithmic_replay_private_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.163392,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 24481.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.647459,
+            "accepted_tokens_or_spans": 16.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 20.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 24712.0,
+            "task_count": 20,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_block_identity_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "private_replay_and_starvation_conditioned_plan_semantic_slots_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_slots_algorithmic_escape_replay_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.121003,
+        "accepted_tokens_or_spans": 26,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 30,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 214871.0,
+        "task_count": 30,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Escape replay improved private LM loss again but reduced broad4 completed candidate coverage under the stricter identity guard.",
+        "The current wall is learned body continuation and operand/finalizer binding, not semantic-plan classification or candidate loadability."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "decode-starvation replay is repair pressure only and grants no generation credit",
+        "must preserve independent candidate integrity and no-cheat counters"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.146195,
+            "accepted_tokens_or_spans": 22.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 22.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 150484.0,
+            "task_count": 22,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_block_identity_train_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 34438.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_semantic_plan_subspace_algorithmic_replay_escape_private_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.13356,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 29949.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_plan_subspace_algorithmic_replay_escape_block_identity_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "statement_slot_prefixed_transformer_hybrid_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_stmt_slots_algorithmic_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.099378,
+        "accepted_tokens_or_spans": 11,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 19,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 110688.0,
+        "task_count": 19,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Statement-slot pretraining improved heldout LM loss and produced syntax-valid, integrity-clean candidates, but broad4 functional pass remained zero.",
+        "Algorithmic private adaptation increased loadable candidate coverage from 4 to 7 rows, but the generated bodies still collapsed to generic loop/update patterns and did not clear semantic behavior."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "statement-slot prefixes are target-side private metadata and grant no renderer or learned-generation credit by themselves",
+        "loadable candidate count improvement must convert into verifier pass before any survival-lane promotion"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 42449.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_statement_slots_private_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.15583,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 25669.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_statement_slots_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 16965.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_statement_slots_algorithmic_private_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.273384,
+            "accepted_tokens_or_spans": 7.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 11.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 25605.0,
+            "task_count": 11,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_statement_slots_algorithmic_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "statement_slot_private_action_trace_pairwise_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_stmt_slots_action_trace_pairwise_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.797497,
+        "accepted_tokens_or_spans": 65,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 69,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 81505.0,
+        "task_count": 69,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Private-train replay produced 28 runtime-loaded wrong generated candidates and zero verifier-passed self-generated positives.",
+        "Action-trace pairwise adaptation improved private LM loss and preserved no-cheat counters, but broad4 remained zero-pass and still showed shallow/incorrect update semantics.",
+        "A follow-up simple_return private replay probe also produced zero verifier-passed generated positives and over-routed into WINDOWED_DELTAS-style loop bodies."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "private-train replay labels may shape repair pressure but are not heldout capability evidence",
+        "pairwise accepted-over-failed preference must improve verifier behavior before survival-lane routing"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 2.152356,
+            "accepted_tokens_or_spans": 28.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 28.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 13009.0,
+            "task_count": 28,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_statement_slots_algorithmic_train_replay16_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 29716.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_statement_slots_action_trace_pairwise_private_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.193536,
+            "accepted_tokens_or_spans": 5.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 9.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 25835.0,
+            "task_count": 9,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_statement_slots_action_trace_pairwise_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 2.471997,
+            "accepted_tokens_or_spans": 32.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 32.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 12945.0,
+            "task_count": 32,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_statement_slots_pairwise_simple_replay16_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_head_binding_prefix",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "rust_cpu_fast_sparse_readout",
+      "family": "checkpoint_then_fanout",
+      "hard_gaps": [],
+      "id": "train_once_rust_cpu_sparse_fanout_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 1.308928,
+        "accepted_tokens_or_spans": 186,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 186,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 142101.0,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Fanout candidate count is not verifier success.",
+        "STS conditioning throughput is not public transfer."
+      ],
+      "promotion_rules": [
+        "throughput only affects infrastructure routing",
+        "candidate quality still requires verifier reports",
+        "checkpoint size/load must be reported separately"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 1.308928,
+            "accepted_tokens_or_spans": 186.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 186.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 142101.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/code_lm_train_once_fanout_runtime_compact_sts_baseline_guard_private_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "route": "code_lm_train_once_fanout",
+      "status": "baseline_or_infrastructure",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_core_tensor_prefix_descriptor",
+      "family": "kv_prefix_descriptor_runtime",
+      "hard_gaps": [],
+      "id": "vcm_mlx_tensor_prefix_descriptor_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.0,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 0,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 8924.0,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "This is not vLLM/PagedAttention parity.",
+        "This is not MLX/CUDA/Metal KV-cache parity."
+      ],
+      "promotion_rules": [
+        "do not claim native model KV cache parity",
+        "scheduler route can use descriptor metadata only",
+        "separate semantic cache lifecycle from native model cache"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 8924.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/vcm_native_runtime_probe.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "route": "vcm_native_runtime_probe",
+      "status": "runtime_metadata_ready_not_native_kv_claim",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_serial_cached_beam",
+      "family": "canonical_transformer_cached_beam",
+      "hard_gaps": [],
+      "id": "standard_causal_transformer_serial_beam_v1",
+      "metric_path": "generation_mode_canary.serial",
+      "metrics": {
+        "accepted_span_per_second": null,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 0,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": null,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": null,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Serial cached-beam behavior is a runtime control, not a separate model implementation.",
+        "One private verifier pass is not public transfer or runtime-serving readiness."
+      ],
+      "promotion_rules": [
+        "same checkpoint, split, grammar, fanout, verifier, and candidate ordering as the batched candidate",
+        "candidate manifest must match byte-for-byte",
+        "serves only as the serial control for the canonical route"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "generation_mode_canary.serial",
+          "metric_path_present": false,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": 0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/standard_causal_transformer_survival.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "standard_causal_transformer_survival",
+      "status": "diagnostic_baseline",
+      "warnings": [
+        {
+          "evidence": {
+            "metric_path": "generation_mode_canary.serial",
+            "missing": [
+              "reports/standard_causal_transformer_survival.json"
+            ]
+          },
+          "id": "standard_causal_transformer_serial_beam_v1",
+          "kind": "missing_metric_path",
+          "severity": "warning"
+        },
+        {
+          "evidence": {
+            "refs": [
+              "reports/standard_causal_transformer_survival.json"
+            ]
+          },
+          "id": "standard_causal_transformer_serial_beam_v1",
+          "kind": "runtime_ms_missing",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "execution_backend": "mlx_batched_cached_beam",
+      "family": "canonical_transformer_cached_beam",
+      "hard_gaps": [],
+      "id": "standard_causal_transformer_batched_beam_v1",
+      "metric_path": "generation_mode_canary.batched",
+      "metrics": {
+        "accepted_span_per_second": null,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 0,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": null,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": null,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Beam batching is a runtime optimization, not learned capability.",
+        "The measured private speedup does not establish public transfer, CUDA parity, or production serving readiness."
+      ],
+      "promotion_rules": [
+        "same checkpoint, split, grammar, fanout, verifier, and candidate ordering as serial control",
+        "exact candidate-manifest parity and zero integrity mismatches",
+        "private verifier behavior and useful verified output rate must not regress",
+        "standard_causal_transformer_survival_gate must independently recompute the adoption decision"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "generation_mode_canary.batched",
+          "metric_path_present": false,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": 0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": null,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": null,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/standard_causal_transformer_survival.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "standard_causal_transformer_survival",
+      "status": "shadow_candidate",
+      "warnings": [
+        {
+          "evidence": {
+            "metric_path": "generation_mode_canary.batched",
+            "missing": [
+              "reports/standard_causal_transformer_survival.json"
+            ]
+          },
+          "id": "standard_causal_transformer_batched_beam_v1",
+          "kind": "missing_metric_path",
+          "severity": "warning"
+        },
+        {
+          "evidence": {
+            "refs": [
+              "reports/standard_causal_transformer_survival.json"
+            ]
+          },
+          "id": "standard_causal_transformer_batched_beam_v1",
+          "kind": "runtime_ms_missing",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "execution_backend": "not_implemented",
+      "family": "speculative_draft",
+      "hard_gaps": [],
+      "id": "speculative_draft_decode_research_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": null,
+        "accepted_tokens_or_spans": 0,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 0,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": null,
+        "task_count": 0,
+        "task_pass_count": 0,
+        "useful_solution_per_second": null,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "No speculative speedup is claimed yet."
+      ],
+      "promotion_rules": [
+        "must compare to baseline on same private suite",
+        "must record draft acceptance rate separately from task success",
+        "must not hide verifier regressions behind token throughput"
+      ],
+      "promotion_status": false,
+      "report_refs": [],
+      "route": "none",
+      "status": "planned",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "source_conditioned_slot_head_transformer_hybrid_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_stmt_slots_source_slot_head_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.063754,
+        "accepted_tokens_or_spans": 23,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 47,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 360761.0,
+        "task_count": 47,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Plan-only decode on the same checkpoint starved with zero emitted candidates, while plan-plus-slot decode emitted loadable candidates.",
+        "The full smoke improved heldout source-contrastive gap, semantic-plan accuracy, and semantic-slot accuracy, and emitted seven integrity-clean runtime-loaded candidates on broad4.",
+        "A stronger private body-expression adaptation lowered heldout LM loss but did not improve broad4 functional pass and reduced completed candidate coverage.",
+        "Functional pass remained zero; generated bodies still collapse to generic accumulator loops or malformed nested branch/update continuations, so the current wall is prompt-conditioned semantic expression/body choice.",
+        "The strict_full_body_semantic_construction_v1 profile now composes source-contrastive, semantic-plan, semantic-slot, loop-update, expression-synthesis, plan-conditioned body, update-contract, return-expression, and primary-dataflow losses without renderer/template/tool credit. It passes GREEN on the semantic-slot checkpoint, but the first follow-up broad4 decode scored 0/4 with no accepted strict candidate rows.",
+        "The body-transition guard follow-up removed the zero-candidate starvation on the same broad4 slice: 8/8 generated transformer-hybrid candidates are integrity-clean, 0/4 tasks starve, and verifier labels attach. This remains negative capability evidence because behavior is still 0/4, nontrivial-return rate is 0.0, and the remaining mismatches are loop_without_decision_or_state_update plus missing_semantic_update_value."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "source-conditioned semantic slot heads may guide prefix tokens but grant no renderer/template/tool credit",
+        "slot and plan accuracy improvements must convert into verifier-passing body behavior before survival-lane routing"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 14009.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_semantic_slot_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 34276.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_slot_checkpoint_plan_only_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.153704,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 26024.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_slot_head_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 80369.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_semantic_slot_full_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.26454,
+            "accepted_tokens_or_spans": 7.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 11.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 26461.0,
+            "task_count": 11,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_slot_full_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 55422.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_semantic_slot_body_expression_repair_private_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.12405,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 32245.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_slot_body_expression_repair_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 11564.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_private_adaptation_semantic_construction_profile_semantic_slot_private_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 48515.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_semantic_construction_profile_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.250973,
+            "accepted_tokens_or_spans": 8.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 12.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 31876.0,
+            "task_count": 12,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_body_transition_guard_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_plan_and_slot_head",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    },
+    {
+      "execution_backend": "mlx_high_level_transformer_direct_decode",
+      "family": "expression_slot_prefixed_transformer_hybrid_decode",
+      "hard_gaps": [],
+      "id": "plan_semantic_stmt_expression_slots_vocab_guard_mlx_decode_broad4_v1",
+      "metric_path": "",
+      "metrics": {
+        "accepted_span_per_second": 0.039802,
+        "accepted_tokens_or_spans": 40,
+        "candidate_manifest_equal": null,
+        "external_inference_calls": 0,
+        "integrity_mismatch_count": 0,
+        "proposed_tokens_or_spans": 96,
+        "public_training_rows": 0,
+        "repair_or_fallback_count": 0,
+        "runtime_memory_mib": null,
+        "runtime_ms": 1004971.0,
+        "task_count": 96,
+        "task_pass_count": 0,
+        "useful_solution_per_second": 0.0,
+        "verifier_wall_time_ms": null
+      },
+      "missing_report_refs": [],
+      "non_claims": [
+        "Expression-intent slots are private/licensed target-side auxiliary labels and grant no renderer/template/tool credit.",
+        "The vocab-closure patch eliminated missing semantic-slot labels on the explicit target-mode smoke, but expression-call, expression-update, and expression-return heldout role accuracies remained zero.",
+        "The role-prefix subspace/class-balance smoke improved heldout semantic-slot accuracy from 0.094044 to 0.376176, but broad4 decode emitted zero completed candidates.",
+        "The larger role-prefix subspace run consumed 606261 private/licensed token positions on MLX GPU, improved heldout LM loss from 8.589429 to 4.621592, and moved expression-update to 2/18 and expression-return to 3/18, but expression-call stayed 0/31 and semantic-slot loss worsened.",
+        "The larger broad4 decode emitted six completed candidates with zero verifier passes and zero nontrivial-return rate; candidates still collapse into malformed expression-call/update continuations such as pathological not-runs or builtin/type loop sources.",
+        "The stricter unary-not value guard and the optional model-generated expression-slot soft token bias both emitted only two completed candidates on the same broad4 split, with zero verifier passes and zero nontrivial-return rate.",
+        "The soft expression-token bias is explicitly decode assistance with candidate_generation_credit=0; it did not improve candidate coverage or correctness and is not a promoted route.",
+        "Canonical expression-call slot labeling collapsed the role vocabulary from 635 raw expression-call labels to 32 canonical call families and the total semantic-slot vocabulary from 1472 to 667, improving heldout slot accuracy from 0.081505 to 0.39185 on the smoke; this is auxiliary-label simplification only and grants no renderer/template/tool credit.",
+        "Canonical broad4 decode emitted four integrity-clean runtime-loaded transformer/hybrid candidates, but kept task pass at 0/4 and nontrivial-return rate at 0.0; all generated bodies collapsed to the same invalid additive list loop, items = items + value.",
+        "The canonical soft expression-token-bias A/B produced the same 0/4 pass and 0.0 nontrivial-return outcome, so token-level call-family bias is not enough to repair body semantics.",
+        "The expression-transition target mode inserts stripped TRACE:EXPR_* body markers after SLOT:BODY_START to train statement/expression boundaries without rendering code. The markers are derived only from admitted private/licensed target-body ASTs, are capped by the grammar, stripped before compilation, and grant no learned-generation credit.",
+        "The transition smoke improved heldout semantic-slot accuracy from 0.037618 to 0.432602 but starved decode with zero emitted candidates on broad4.",
+        "The transition medium rung improved heldout LM loss from 8.246911 to 5.521098 and recovered four integrity-clean runtime-loaded candidates, but pass remained 0/4 and nontrivial-return rate remained 0.0; generated bodies still collapse to items = 0 followed by items = items + value.",
+        "The after-body-start source-contrastive span mode compares correct-prompt versus in-batch mismatched-prompt loss only after SLOT:BODY_START, using admitted private/licensed rows. It is training pressure and report evidence only; it does not inspect tests, solutions, public data, or verifier labels.",
+        "The body-span contrast smoke moved the heldout source gap from -0.002314 to 0.000391 and semantic-slot accuracy from 0.037618 to 0.438871, but broad4 decode still scored 0/4 with 0.0 nontrivial-return rate and generated values = values + value loops instead of call updates.",
+        "The body-span contrast medium rung improved heldout LM loss to 5.49157 and training throughput to 4961.895 token positions/second, but the heldout source gap remained tiny at 0.000345 and broad4 decode still scored 0/4 with items = 0 followed by items = items + value.",
+        "The current wall is source-conditioned learned expression-value/call-argument selection, loop update semantics, and body-token transition behavior, not target-vocab closure, guard hygiene, token bias, or auxiliary slot accounting."
+      ],
+      "promotion_rules": [
+        "not promotable while task_pass_count is zero",
+        "semantic slot vocab closure, role-subspace auxiliary loss, and task-blind expression guards do not count as learned body semantics",
+        "expression-call, expression-update, and expression-return roles must improve enough to emit completed verifier-loaded candidates before this route can replace the prior slot-head smoke",
+        "slot-role accuracy movement is diagnostic only until body-token decode produces verifier-passing candidates under the same no-cheat source contract"
+      ],
+      "promotion_status": false,
+      "report_refs": [
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 89154.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_slot_full_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.335053,
+            "accepted_tokens_or_spans": 10.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 14.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 29846.0,
+            "task_count": 14,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_full_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 18696.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_slot_vocab_mode_smoke_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 39981.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_vocab_mode_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 38153.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_vocab_mode_smoke_paren_guard_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 38429.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_vocab_mode_smoke_expression_guard_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 20802.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_slot_subspace_smoke_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 39085.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_subspace_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 165747.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_slot_subspace_full_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.165499,
+            "accepted_tokens_or_spans": 6.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 10.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 36254.0,
+            "task_count": 10,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_subspace_full_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.047379,
+            "accepted_tokens_or_spans": 2.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 6.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 42213.0,
+            "task_count": 6,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_not_guard_full_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.049537,
+            "accepted_tokens_or_spans": 2.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 6.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 40374.0,
+            "task_count": 6,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_token_bias_full_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 20623.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_slot_canonical_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.13586,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 29442.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_canonical_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.120496,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 33196.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_slot_canonical_smoke_token_bias_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 23603.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_transition_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.0,
+            "accepted_tokens_or_spans": 0.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 4.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 47918.0,
+            "task_count": 4,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_transition_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 74523.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_transition_medium_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.109385,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 36568.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_transition_medium_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 27333.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_transition_body_contrast_smoke_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.122108,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 32758.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_transition_body_contrast_smoke_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": null,
+            "accepted_tokens_or_spans": null,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": null,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 48713.0,
+            "task_count": 0,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_pretraining_expression_transition_body_contrast_medium_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "metric_path": "",
+          "metric_path_present": true,
+          "metrics": {
+            "accepted_span_per_second": 0.126743,
+            "accepted_tokens_or_spans": 4.0,
+            "candidate_manifest_equal": null,
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "proposed_tokens_or_spans": 8.0,
+            "public_training_rows": 0,
+            "repair_or_fallback_count": 0,
+            "runtime_memory_mib": null,
+            "runtime_ms": 31560.0,
+            "task_count": 8,
+            "task_pass_count": 0,
+            "useful_solution_per_second": 0.0,
+            "verifier_wall_time_ms": null
+          },
+          "path": "reports/strict_generator_mlx_decode_eval_expression_transition_body_contrast_medium_broad4_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "route": "strict_generator_mlx_decode_eval_semantic_plan_and_slot_head",
+      "status": "negative_evidence_not_promotable",
+      "warnings": []
+    }
+  ],
+  "policy": "project_theseus_generation_mode_gate_v1",
+  "rules": {
+    "first_campaign": "AR is the frozen base; MTP is the sole included checkpoint-shaping auxiliary at zero initial weight; speculative decoding is post-hoc and disabled; Medusa, EAGLE, LayerSkip, and sketch-first/LLaDA are retired from the first campaign with explicit re-entry conditions.",
+    "kv_claim": "VCM descriptor reuse is not native model KV/prefix-cache parity unless a model-runtime lifecycle test passes.",
+    "learned_generation": "Generation-mode acceleration does not bypass candidate-integrity or learned-generation claim rules.",
+    "promotion": "A faster mode is not promotable if verifier pass, integrity, context adequacy, no-cheat counters, or fallback burden regresses.",
+    "speed_claim": "Speed claims must report accepted spans per second and useful verified solutions per second separately."
+  },
+  "runtime_ms": 2277,
+  "summary": {
+    "architecture_included_mode_count": 2,
+    "architecture_mode_count": 7,
+    "architecture_mtp_mlx_canary_passed": true,
+    "architecture_mutation_case_count": 12,
+    "architecture_mutation_passed_count": 12,
+    "architecture_optimizer_exposure_steps": 0,
+    "architecture_retired_first_campaign_mode_count": 5,
+    "comparison_count": 14,
+    "config": "configs/generation_mode_registry.json",
+    "hard_gap_count": 0,
+    "mean_accepted_span_per_second": 0.21017,
+    "mean_useful_solution_per_second": 0.0,
+    "mode_count": 20,
+    "modes_with_fallback_burden": 0,
+    "modes_with_missing_report_refs": 0,
+    "modes_with_task_pass_evidence": 0,
+    "promotable_comparison_count": 0,
+    "warning_count": 18
+  },
+  "trigger_state": "YELLOW",
+  "warnings": [
+    {
+      "evidence": {
+        "metric_path": "generation_mode_canary.serial",
+        "missing": [
+          "reports/standard_causal_transformer_survival.json"
+        ]
+      },
+      "id": "standard_causal_transformer_serial_beam_v1",
+      "kind": "missing_metric_path",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "refs": [
+          "reports/standard_causal_transformer_survival.json"
+        ]
+      },
+      "id": "standard_causal_transformer_serial_beam_v1",
+      "kind": "runtime_ms_missing",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "metric_path": "generation_mode_canary.batched",
+        "missing": [
+          "reports/standard_causal_transformer_survival.json"
+        ]
+      },
+      "id": "standard_causal_transformer_batched_beam_v1",
+      "kind": "missing_metric_path",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "refs": [
+          "reports/standard_causal_transformer_survival.json"
+        ]
+      },
+      "id": "standard_causal_transformer_batched_beam_v1",
+      "kind": "runtime_ms_missing",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad8_no_plan_vs_semantic_head_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": true,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_plan_aux_no_head_vs_semantic_head_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_plan_aux_head_vs_body_semantics_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_body_semantics_vs_plan_semantic_slots_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": true,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_plan_semantic_slots_vs_update_contract_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": true,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_update_contract_vs_plan_subspace_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_plan_subspace_vs_body_action_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": true,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_plan_subspace_vs_algorithmic_replay_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_algorithmic_replay_vs_escape_replay_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_escape_replay_vs_statement_slots_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": true,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_statement_slots_vs_action_trace_pairwise_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_action_trace_pairwise_vs_source_slot_head_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "broad4_source_slot_head_vs_expression_vocab_guard_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    },
+    {
+      "evidence": {
+        "accepted_speed_lift": false,
+        "candidate_manifest_equal": null,
+        "candidate_task_pass_count": 0,
+        "fallback_non_regression": true,
+        "integrity_non_regression": true,
+        "pass_non_regression": true,
+        "useful_speed_lift": false
+      },
+      "id": "standard_causal_transformer_serial_vs_batched_beam_v1",
+      "kind": "comparison_not_promotable",
+      "severity": "warning"
+    }
+  ]
+}

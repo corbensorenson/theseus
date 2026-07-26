@@ -91,6 +91,7 @@ def build_report(args: argparse.Namespace, *, started: float) -> dict[str, Any]:
 def candidate_pythons() -> list[Path]:
     values = [
         os.environ.get("THESEUS_MLX_PYTHON"),
+        str(ROOT / "runtime" / "venvs" / "mlx-0.32.0-py312" / "bin" / "python"),
         str(ROOT / ".venv-mlx" / "bin" / "python"),
         "/opt/homebrew/bin/python3",
         "/usr/local/bin/python3",

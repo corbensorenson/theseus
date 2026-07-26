@@ -1,0 +1,669 @@
+{
+  "boundary_gates": [
+    {
+      "evidence": false,
+      "name": "public_benchmark_training_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "runtime_external_inference_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "authority_expansion_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "fallback_template_router_tool_credit_forbidden",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "loss_only_promotion_forbidden",
+      "passed": true,
+      "severity": "hard"
+    }
+  ],
+  "created_utc": "2026-07-26T13:43:44.410408Z",
+  "hard_boundaries": {
+    "authority_expansion_allowed": false,
+    "fallback_template_router_tool_credit_as_learned_generation": false,
+    "loss_only_promotion_allowed": false,
+    "public_benchmark_training_allowed": false,
+    "runtime_external_inference_allowed": false
+  },
+  "hard_gaps": [],
+  "objective_contracts": {
+    "activation_receipt": {
+      "authorized": false,
+      "blockers": [
+        "objectives_disabled_by_frozen_contract",
+        "behavior_positive_evidence_missing",
+        "independent_behavior_floor_not_met"
+      ],
+      "evidence_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    "checkpoint_receipt": {
+      "checkpoint_digest": "sha256:8af29f2803ef1bd860d33ecac6f2a8ce91602da43912ec55da74b6c346ab8cf6",
+      "cleanup_complete": true,
+      "migration_exact": true,
+      "optimizer_state_present": true,
+      "reference_identity_frozen": true,
+      "roundtrip_exact": true
+    },
+    "gates": {
+      "all_offline_objectives_executable": true,
+      "all_verifier_reward_objectives_executable": true,
+      "checkpoint_migration_and_cleanup": true,
+      "frozen_reference_checkpoint_roundtrip": true,
+      "mlx_numerical_parity": true,
+      "no_cheat_counters_clean": true,
+      "policy_lease_rollback_exact": true,
+      "reward_hacking_mutations_rejected": true,
+      "runtime_objective_selection_disabled": true,
+      "shared_preference_schema_valid": true,
+      "shared_rollout_schema_valid": true,
+      "verifier_capacity_bounded": true,
+      "zero_optimizer_exposure": true
+    },
+    "mlx_parity_receipt": {
+      "absolute_deltas": {
+        "dpo": 6.142547137599763e-09,
+        "ipo": 3.2043457061092795e-06,
+        "kto": 1.1214085882116365e-08,
+        "orpo": 6.032025590130274e-08,
+        "simpo": 5.196656438499758e-09
+      },
+      "available": true,
+      "expected": {
+        "dpo": 0.6635971130761409,
+        "ipo": 19.360000000000003,
+        "kto": 1.356519352682897,
+        "orpo": 1.8226571671959184,
+        "simpo": 0.9010896138659374
+      },
+      "observed": {
+        "dpo": 0.6635971069335938,
+        "ipo": 19.359996795654297,
+        "kto": 1.356519341468811,
+        "orpo": 1.8226572275161743,
+        "simpo": 0.901089608669281
+      },
+      "parity": true,
+      "tolerance": 1e-05
+    },
+    "mutation_controls": {
+      "case_count": 12,
+      "passed_count": 12,
+      "results": [
+        {
+          "case_id": "public_payload",
+          "expected": "preference_pair_forbidden_fields",
+          "observed": "preference_pair_forbidden_fields:public_solution",
+          "passed": true
+        },
+        {
+          "case_id": "fallback_credit",
+          "expected": "preference_pair_integrity_fault",
+          "observed": "preference_pair_integrity_fault",
+          "passed": true
+        },
+        {
+          "case_id": "degenerate_pair",
+          "expected": "preference_pair_degenerate",
+          "observed": "preference_pair_degenerate",
+          "passed": true
+        },
+        {
+          "case_id": "missing_provenance",
+          "expected": "preference_pair_incomplete",
+          "observed": "preference_pair_incomplete:provenance_receipt",
+          "passed": true
+        },
+        {
+          "case_id": "public_verifier_artifact",
+          "expected": "rollout_verifier_provenance_invalid",
+          "observed": "rollout_verifier_provenance_invalid",
+          "passed": true
+        },
+        {
+          "case_id": "rollout_fallback_credit",
+          "expected": "rollout_candidate_integrity_invalid",
+          "observed": "rollout_candidate_integrity_invalid",
+          "passed": true
+        },
+        {
+          "case_id": "undersized_group",
+          "expected": "rollout_group_size_invalid",
+          "observed": "rollout_group_size_invalid",
+          "passed": true
+        },
+        {
+          "case_id": "rollout_shape_mismatch",
+          "expected": "rollout_vector_shape_mismatch",
+          "observed": "rollout_vector_shape_mismatch",
+          "passed": true
+        },
+        {
+          "case_id": "verifier_capacity_overrun",
+          "expected": "verifier_capacity_exceeded",
+          "observed": "verifier_capacity_exceeded:verifier_cases",
+          "passed": true
+        },
+        {
+          "case_id": "unknown_preference_objective",
+          "expected": "offline_objective_unknown",
+          "observed": "offline_objective_unknown",
+          "passed": true
+        },
+        {
+          "case_id": "unknown_reward_objective",
+          "expected": "verifier_reward_objective_unknown",
+          "observed": "verifier_reward_objective_unknown",
+          "passed": true
+        },
+        {
+          "case_id": "unsupported_checkpoint",
+          "expected": "checkpoint_schema_unsupported",
+          "observed": "checkpoint_schema_unsupported",
+          "passed": true
+        }
+      ]
+    },
+    "non_claims": [
+      "Objective loss, margin, reward, or KL movement is not capability or promotion evidence.",
+      "Public benchmark artifacts, templates, fallbacks, routers, tools, and semantic renderers cannot enter objective training rows or receive learned-generation credit.",
+      "All objectives remain disabled until independently verified private behavior-positive candidates exist.",
+      "MLX parity proves bounded numerical execution, not speed, convergence, behavior lift, or CUDA parity."
+    ],
+    "offline_preference_objectives": {
+      "dpo": 0.6635971130761409,
+      "ipo": 19.360000000000003,
+      "kto": 1.356519352682897,
+      "orpo": 1.8226571671959184,
+      "simpo": 0.9010896138659374
+    },
+    "policy": "project_theseus_policy_objective_contracts_v1",
+    "policy_lease_rollback_receipt": {
+      "epoch_sealed": true,
+      "rollback_exact": true,
+      "state": "rolled_back",
+      "target_id": "generator"
+    },
+    "summary": {
+      "external_inference_calls": 0,
+      "fallback_or_template_credit": 0,
+      "mlx_available": true,
+      "mlx_parity": true,
+      "mutation_case_count": 12,
+      "mutation_passed_count": 12,
+      "offline_objective_count": 5,
+      "optimizer_exposure_steps": 0,
+      "public_training_rows_written": 0,
+      "runtime_authorized": false,
+      "verifier_reward_objective_count": 4
+    },
+    "support_state": "synthetic-test-backed",
+    "trigger_state": "GREEN",
+    "verifier_reward_objectives": {
+      "grpo": {
+        "advantages": [
+          1.0,
+          -1.0,
+          1.0,
+          -1.0
+        ],
+        "group_digest": "sha256:dfd4f23973da334ad37425e189ec1d40702ea6ac2aa32d84612d65fb26ca5aae",
+        "loss": -0.10005403892407716,
+        "objective": "grpo",
+        "verifier_capacity_receipt": {
+          "limits": {
+            "maximum_compute_units": 100.0,
+            "maximum_energy_units": 100.0,
+            "maximum_rollouts": 8,
+            "maximum_verifier_cases": 64,
+            "maximum_verifier_seconds": 30.0
+          },
+          "observed": {
+            "compute_units": 4.0,
+            "energy_units": 4.0,
+            "verifier_cases": 32,
+            "verifier_seconds": 1.0
+          },
+          "receipt_digest": "sha256:e3cb3b851e9b687b919e5c80ae24dad9fcbefabd46e36bc37fe377f1addeb8cf",
+          "within_capacity": true
+        }
+      },
+      "remax": {
+        "advantages": [
+          0.75,
+          -0.25,
+          0.75,
+          -0.25
+        ],
+        "group_digest": "sha256:dfd4f23973da334ad37425e189ec1d40702ea6ac2aa32d84612d65fb26ca5aae",
+        "loss": -0.3012217059281061,
+        "objective": "remax",
+        "verifier_capacity_receipt": {
+          "limits": {
+            "maximum_compute_units": 100.0,
+            "maximum_energy_units": 100.0,
+            "maximum_rollouts": 8,
+            "maximum_verifier_cases": 64,
+            "maximum_verifier_seconds": 30.0
+          },
+          "observed": {
+            "compute_units": 4.0,
+            "energy_units": 4.0,
+            "verifier_cases": 32,
+            "verifier_seconds": 1.0
+          },
+          "receipt_digest": "sha256:e3cb3b851e9b687b919e5c80ae24dad9fcbefabd46e36bc37fe377f1addeb8cf",
+          "within_capacity": true
+        }
+      },
+      "rloo": {
+        "advantages": [
+          0.6666666666666667,
+          -0.6666666666666666,
+          0.6666666666666667,
+          -0.6666666666666666
+        ],
+        "group_digest": "sha256:dfd4f23973da334ad37425e189ec1d40702ea6ac2aa32d84612d65fb26ca5aae",
+        "loss": -0.06666512225079596,
+        "objective": "rloo",
+        "verifier_capacity_receipt": {
+          "limits": {
+            "maximum_compute_units": 100.0,
+            "maximum_energy_units": 100.0,
+            "maximum_rollouts": 8,
+            "maximum_verifier_cases": 64,
+            "maximum_verifier_seconds": 30.0
+          },
+          "observed": {
+            "compute_units": 4.0,
+            "energy_units": 4.0,
+            "verifier_cases": 32,
+            "verifier_seconds": 1.0
+          },
+          "receipt_digest": "sha256:e3cb3b851e9b687b919e5c80ae24dad9fcbefabd46e36bc37fe377f1addeb8cf",
+          "within_capacity": true
+        }
+      },
+      "rlvr": {
+        "advantages": [
+          1.0,
+          -1.0,
+          1.0,
+          -1.0
+        ],
+        "group_digest": "sha256:dfd4f23973da334ad37425e189ec1d40702ea6ac2aa32d84612d65fb26ca5aae",
+        "loss": -0.10005403892407716,
+        "objective": "rlvr",
+        "verifier_capacity_receipt": {
+          "limits": {
+            "maximum_compute_units": 100.0,
+            "maximum_energy_units": 100.0,
+            "maximum_rollouts": 8,
+            "maximum_verifier_cases": 64,
+            "maximum_verifier_seconds": 30.0
+          },
+          "observed": {
+            "compute_units": 4.0,
+            "energy_units": 4.0,
+            "verifier_cases": 32,
+            "verifier_seconds": 1.0
+          },
+          "receipt_digest": "sha256:e3cb3b851e9b687b919e5c80ae24dad9fcbefabd46e36bc37fe377f1addeb8cf",
+          "within_capacity": true
+        }
+      }
+    }
+  },
+  "policy": "project_theseus_policy_optimization_gate_v1",
+  "records": [
+    {
+      "authority_expansion_risk": false,
+      "behavior_evidence": {
+        "behavior_regression_refs": [],
+        "has_behavior_lift": false,
+        "has_loss_only_lift": false,
+        "loss_only_refs": [],
+        "no_cheat_failures": [],
+        "positive_behavior_refs": []
+      },
+      "default_allowed": false,
+      "deterministic_renderer_credit_risk": false,
+      "evaluation_refs": [
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0,
+            "fallback_return_candidate_count": 0,
+            "preference_adoption_state": "",
+            "preference_base_pass_count": 0,
+            "preference_control_margin_delta": null,
+            "preference_control_pass_count": 0,
+            "preference_integrity_mismatch_count": 0,
+            "preference_margin_delta": null,
+            "preference_pair_count": 0,
+            "preference_reward_behavior_delta": 0,
+            "preference_reward_improves_behavior": false,
+            "preference_reward_pass_count": 0,
+            "preference_reward_vs_control_delta": 0,
+            "public_training_rows": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/standard_causal_transformer_survival.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/standard_causal_transformer_survival_gate.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0,
+            "integrity_mismatch_count": 0,
+            "integrity_verified_candidate_count": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "hard_gaps": [],
+      "id": "strict_generator_pairwise_replay_preference_v1",
+      "loss_only_risk": false,
+      "missing_evaluation_refs": [],
+      "missing_reward_hacking_probes": [],
+      "non_claims": [
+        "This is not public benchmark transfer.",
+        "This is not learned-code-generation promotion by itself.",
+        "This is not evidence that SymLiquid or the transformer substrate won.",
+        "This does not allow fallback/template/router/tool credit as learned generation.",
+        "The DPO smoke is policy-update evidence only; it is not default routing, verifier behavior lift, public transfer, or learned-generation promotion.",
+        "The DPO replay failure means this checkpoint stays quarantined; do not scale DPO/GRPO from it until direct learned body emission and private verifier behavior improve.",
+        "Preference-margin improvement is not behavior improvement and cannot authorize routing or promotion.",
+        "The current canonical canary is private evidence only and does not establish public transfer."
+      ],
+      "policy_family": "offline_private_preference",
+      "recommendation": "eligible_for_shadow_or_candidate_tracking",
+      "residuals": [
+        "LM loss can improve while verifier pass stays flat",
+        "pairwise negatives may overfit shallow failure signatures",
+        "behavior lift must be measured on private heldout rows, not public calibration",
+        "DPO shadow update now moves private accepted-vs-rejected policy/reference gap, but behavior replay remains unproven until a private decode/verifier report improves.",
+        "DPO shadow replay emitted zero learned candidate rows and 0/16 private heldout behavior passes; preference-gap movement did not translate into decode/verifier behavior.",
+        "Standalone candidate-integrity audit classified all 16 legacy replay JSONL rows as fallback_or_template baseline rows, so no learned-generation promotion evidence exists.",
+        "The canonical standard-transformer canary found only one exact pass-vs-hard-negative pair across 16 private train tasks; DPO moved the length-normalized preference margin by +1.803796 but regressed family-disjoint heldout behavior from 1/24 to 0/24.",
+        "The reward-removed control preserved 1/24 and had exactly zero preference-margin movement, so the reward path is causally active but behavior-negative at this data volume."
+      ],
+      "reward_probe_coverage_ratio": 1.0,
+      "rollback_plan": "The canonical standard-transformer checkpoint remains byte-identical and default. Reward-present and reward-removed checkpoints stay shadow-only; retain the failed update as negative evidence and do not route it until independent heldout verifier behavior beats both the canonical checkpoint and reward-removed control.",
+      "status": "quarantined",
+      "target_layer": "candidate_generator",
+      "warnings": []
+    },
+    {
+      "authority_expansion_risk": false,
+      "behavior_evidence": {
+        "behavior_regression_refs": [],
+        "has_behavior_lift": true,
+        "has_loss_only_lift": false,
+        "loss_only_refs": [],
+        "no_cheat_failures": [],
+        "positive_behavior_refs": [
+          "reports/sts_ranker_policy_v1.json"
+        ]
+      },
+      "default_allowed": false,
+      "deterministic_renderer_credit_risk": false,
+      "evaluation_refs": [
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0,
+            "fallback_return_candidate_count": 0,
+            "non_sts_policy_selected_pass_rate": 0.00641,
+            "selected_pass_delta_sts_policy_minus_non_sts_policy": 0.99359,
+            "sts_policy_selected_pass_rate": 1.0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/sts_ranker_policy_v1.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/post_distillation_public_transfer_readiness_v1.json",
+          "present": true,
+          "trigger_state": "YELLOW"
+        }
+      ],
+      "hard_gaps": [],
+      "id": "sts_ranker_policy_v1",
+      "loss_only_risk": false,
+      "missing_evaluation_refs": [],
+      "missing_reward_hacking_probes": [],
+      "non_claims": [
+        "Selector lift is not generator lift.",
+        "Private heldout selector lift is not public transfer.",
+        "STS features may not include answer-identifying metadata."
+      ],
+      "policy_family": "offline_private_selector",
+      "recommendation": "may_prepare_guarded_default_review",
+      "residuals": [
+        "STS helped some thin slices and regressed others",
+        "selector evidence must stay separate from generator evidence"
+      ],
+      "reward_probe_coverage_ratio": 1.0,
+      "rollback_plan": "Disable THESEUS_ENABLE_STS_RANKER_POLICY_V1 and route to the prior selector if selected-pass rate regresses or leakage/fallback probes fail.",
+      "status": "guarded",
+      "target_layer": "candidate_ranker",
+      "warnings": []
+    },
+    {
+      "authority_expansion_risk": false,
+      "behavior_evidence": {
+        "behavior_regression_refs": [],
+        "has_behavior_lift": false,
+        "has_loss_only_lift": false,
+        "loss_only_refs": [],
+        "no_cheat_failures": [],
+        "positive_behavior_refs": []
+      },
+      "default_allowed": false,
+      "deterministic_renderer_credit_risk": false,
+      "evaluation_refs": [
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/vcm_release_conformance_audit.json",
+          "present": true,
+          "trigger_state": "RED"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/vcm_context_recovery_benchmark.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/vcm_task_context_bridge.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "hard_gaps": [],
+      "id": "vcm_context_policy_v1",
+      "loss_only_risk": false,
+      "missing_evaluation_refs": [],
+      "missing_reward_hacking_probes": [],
+      "non_claims": [
+        "VCM semantic cache success is not native KV-cache parity.",
+        "Context recovery lift is not code-generation lift."
+      ],
+      "policy_family": "context_packet_selection",
+      "recommendation": "eligible_for_shadow_or_candidate_tracking",
+      "residuals": [
+        "LongMemEval exact-answer quality remains weak on failed rows",
+        "VCM runtime cache parity remains a separate non-claim"
+      ],
+      "reward_probe_coverage_ratio": 1.0,
+      "rollback_plan": "Route back to baseline VCM compiler and retain failed packet-selection policy as residual if context adequacy or latency regresses.",
+      "status": "candidate",
+      "target_layer": "context_memory",
+      "warnings": []
+    },
+    {
+      "authority_expansion_risk": false,
+      "behavior_evidence": {
+        "behavior_regression_refs": [],
+        "has_behavior_lift": false,
+        "has_loss_only_lift": false,
+        "loss_only_refs": [],
+        "no_cheat_failures": [],
+        "positive_behavior_refs": []
+      },
+      "default_allowed": false,
+      "deterministic_renderer_credit_risk": false,
+      "evaluation_refs": [
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/theseus_plan_compiler.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/octopus_router_report.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        },
+        {
+          "behavior_metrics": {
+            "external_inference_calls": 0
+          },
+          "gate_passed": null,
+          "kind": "json",
+          "path": "reports/theseus_project_registry.json",
+          "present": true,
+          "trigger_state": "GREEN"
+        }
+      ],
+      "hard_gaps": [],
+      "id": "octopus_router_policy_v1",
+      "loss_only_risk": false,
+      "missing_evaluation_refs": [],
+      "missing_reward_hacking_probes": [],
+      "non_claims": [
+        "Better routing is not a substrate win.",
+        "Tool success is not learned-generation promotion."
+      ],
+      "policy_family": "registry_gated_route_selection",
+      "recommendation": "eligible_for_shadow_or_candidate_tracking",
+      "residuals": [
+        "Router success must not mask weak generator quality",
+        "Tool or renderer success must be reported separately from learned-generation claims"
+      ],
+      "reward_probe_coverage_ratio": 1.0,
+      "rollback_plan": "Pin to canonical plan compiler route if the router expands authority, increases duplicate work, or lowers verified completion.",
+      "status": "candidate",
+      "target_layer": "planning_router",
+      "warnings": []
+    }
+  ],
+  "required_reward_hacking_probes": [
+    "context_ignoring_answer",
+    "early_return_stub",
+    "excessive_reasoning_or_latency",
+    "fallback_template_credit",
+    "inert_stub",
+    "prompt_label_shortcut",
+    "public_payload_leakage",
+    "shallow_identity_loop",
+    "verifier_only_hack"
+  ],
+  "rules": {
+    "claim_boundary": "Policy updates do not support learned-generation, public-transfer, substrate-win, or runtime-serving claims unless those claims have independent evidence.",
+    "default_policy": "A policy update may become default only with clean authority boundaries, full reward-hacking probe coverage, and behavioral verifier/accepted-output lift.",
+    "loss_boundary": "LM loss, selector score, or reward value is not capability evidence unless behavioral verification improves.",
+    "objective_boundary": "DPO, IPO, ORPO, KTO, SimPO, GRPO, RLOO, ReMax, and RLVR share one executable disabled-by-default contract; numerical movement cannot activate or select an objective.",
+    "public_boundary": "Public benchmark artifacts are calibration-only and never become training rows."
+  },
+  "runtime_ms": 290,
+  "summary": {
+    "config": "configs/policy_optimization_program.json",
+    "default_allowed_count": 0,
+    "default_with_behavior_lift_count": 0,
+    "hard_gap_count": 0,
+    "mean_reward_probe_coverage": 1.0,
+    "objective_mlx_parity": true,
+    "objective_mutation_case_count": 12,
+    "objective_mutation_passed_count": 12,
+    "objective_optimizer_exposure_steps": 0,
+    "objective_runtime_authorized": false,
+    "offline_objective_adapter_count": 5,
+    "record_count": 4,
+    "records_with_authority_expansion_risk": 0,
+    "records_with_behavior_lift": 1,
+    "records_with_loss_only_risk": 0,
+    "records_with_missing_evidence_refs": 0,
+    "reward_probe_catalog_count": 9,
+    "verifier_reward_objective_adapter_count": 4,
+    "warning_count": 0
+  },
+  "trigger_state": "GREEN",
+  "warnings": []
+}

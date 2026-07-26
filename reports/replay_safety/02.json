@@ -1,0 +1,216 @@
+{
+  "command": [
+    "python3",
+    "scripts/theseus_assistant_runtime.py",
+    "--prompt",
+    "Execute the bounded local route-authority effect and rollback canary, then report only its governed completion state.",
+    "--surface",
+    "local_assistant",
+    "--intent",
+    "planning",
+    "--session-id",
+    "architecture_freeze_effect_canary",
+    "--fallback-policy",
+    "no_fallback",
+    "--effect-canary",
+    "--effect-target",
+    "runtime/assistant_effects/default_route_authority.json",
+    "--out",
+    "reports/theseus_assistant_effect_complete_canary.json",
+    "--markdown-out",
+    "reports/theseus_assistant_effect_complete_canary.md",
+    "--events-out",
+    "reports/theseus_assistant_effect_complete_canary_events.jsonl",
+    "--viea-trace-out",
+    "reports/theseus_assistant_effect_complete_canary_trace.jsonl",
+    "--print-answer"
+  ],
+  "index": 2,
+  "passed": true,
+  "returncode": 0,
+  "runtime_ms": 763,
+  "safety_receipt": {
+    "child_started": true,
+    "command": [
+      "python3",
+      "scripts/theseus_assistant_runtime.py",
+      "--prompt",
+      "Execute the bounded local route-authority effect and rollback canary, then report only its governed completion state.",
+      "--surface",
+      "local_assistant",
+      "--intent",
+      "planning",
+      "--session-id",
+      "architecture_freeze_effect_canary",
+      "--fallback-policy",
+      "no_fallback",
+      "--effect-canary",
+      "--effect-target",
+      "runtime/assistant_effects/default_route_authority.json",
+      "--out",
+      "reports/theseus_assistant_effect_complete_canary.json",
+      "--markdown-out",
+      "reports/theseus_assistant_effect_complete_canary.md",
+      "--events-out",
+      "reports/theseus_assistant_effect_complete_canary_events.jsonl",
+      "--viea-trace-out",
+      "reports/theseus_assistant_effect_complete_canary_trace.jsonl",
+      "--print-answer"
+    ],
+    "fault": "",
+    "fault_observation": null,
+    "first_swapout_growth_breach_observation": null,
+    "initial_reclaimable_available_mib": 5956.5,
+    "limits": {
+      "max_process_memory_mib": 1024.0,
+      "maximum_swapout_growth_mib": 16.0,
+      "maximum_wall_seconds": 300.0,
+      "minimum_available_before_launch_mib": 3072.0,
+      "minimum_available_during_run_mib": 2048.0,
+      "poll_interval_seconds": 0.1,
+      "swapout_growth_action": "hard_stop",
+      "terminate_grace_seconds": 2.0
+    },
+    "maximum_consecutive_reserve_breaches": 0,
+    "maximum_consecutive_telemetry_failures": 3,
+    "maximum_inferred_unified_memory_mib": 85.562,
+    "maximum_process_rss_mib": 0.0,
+    "maximum_swapout_growth_mib": 0.0,
+    "minimum_reclaimable_available_mib": 5870.938,
+    "observation_prefix": [
+      {
+        "elapsed_seconds": 0.003,
+        "inferred_unified_memory_mib": 0.406,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5956.094,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.112,
+        "inferred_unified_memory_mib": 38.625,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5917.875,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.221,
+        "inferred_unified_memory_mib": 48.156,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5908.344,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.329,
+        "inferred_unified_memory_mib": 55.828,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5900.672,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.437,
+        "inferred_unified_memory_mib": 54.656,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5901.844,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.544,
+        "inferred_unified_memory_mib": 84.188,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5872.312,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.652,
+        "inferred_unified_memory_mib": 85.562,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5870.938,
+        "swapout_growth_mib": 0.0
+      }
+    ],
+    "observation_suffix": [
+      {
+        "elapsed_seconds": 0.003,
+        "inferred_unified_memory_mib": 0.406,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5956.094,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.112,
+        "inferred_unified_memory_mib": 38.625,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5917.875,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.221,
+        "inferred_unified_memory_mib": 48.156,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5908.344,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.329,
+        "inferred_unified_memory_mib": 55.828,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5900.672,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.437,
+        "inferred_unified_memory_mib": 54.656,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5901.844,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.544,
+        "inferred_unified_memory_mib": 84.188,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5872.312,
+        "swapout_growth_mib": 0.0
+      },
+      {
+        "elapsed_seconds": 0.652,
+        "inferred_unified_memory_mib": 85.562,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5870.938,
+        "swapout_growth_mib": 0.0
+      }
+    ],
+    "passed": true,
+    "physical_memory_mib": 16384.0,
+    "policy": "project_theseus_host_resource_safety_v1",
+    "process_rss_telemetry_state": "UNAVAILABLE_PERMISSION_HOST_PRESSURE_ACTIVE",
+    "reserve_breach_observations_required": 3,
+    "returncode": 0,
+    "swapout_growth_action": "hard_stop",
+    "swapout_growth_breach_observations": 0,
+    "swapout_growth_threshold_exceeded": false,
+    "telemetry_failure_observations_allowed": 2,
+    "telemetry_failure_prefix": [
+      {
+        "elapsed_seconds": 0.003,
+        "fault_type": "PermissionError",
+        "source": "process_group_rss"
+      },
+      {
+        "elapsed_seconds": 0.112,
+        "fault_type": "PermissionError",
+        "source": "process_group_rss"
+      },
+      {
+        "elapsed_seconds": 0.221,
+        "fault_type": "PermissionError",
+        "source": "process_group_rss"
+      }
+    ],
+    "terminated_by_guard": false,
+    "wall_seconds": 0.759
+  },
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_tail": "",
+  "stdout_sha256": "8db3cd13616c4ed73c9382eb002ca19123a97dd42facdbef6330e5f1f11584a2",
+  "stdout_tail": "I am carrying this as a multi-turn conversation, not a one-shot status query.\nI can restate the conversation state, preserve corrections, and answer from live reports without pretending this shim is the final learned chat model.\nSession memory: 12 previous turn(s) loaded for `architecture_freeze_effect_canary`.\nVCM context: Operator Chat And Daily Use.\nVCM adequacy: GREEN state=governed_sufficient mission=ready deletion=closed.\nPublic measurement: public_transfer_measurement_partial_diagnostic_seed9_1x64 45/64 = 0.703125 (partial_card_diagnostic; cards=source_bigcodebench). dominant_residual=algorithm_choice:14\nBenchmark boundary: measurement-only, public training rows 0, external inference 0, fallback returns 0.\nTeacher boundary: no external teacher tokens are served at runtime.\n"
+}

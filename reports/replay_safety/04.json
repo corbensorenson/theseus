@@ -1,0 +1,78 @@
+{
+  "command": [
+    "python3",
+    "scripts/onecell_rwm_pretraining_disposition.py"
+  ],
+  "index": 4,
+  "passed": true,
+  "returncode": 0,
+  "runtime_ms": 112,
+  "safety_receipt": {
+    "child_started": true,
+    "command": [
+      "python3",
+      "scripts/onecell_rwm_pretraining_disposition.py"
+    ],
+    "fault": "",
+    "fault_observation": null,
+    "first_swapout_growth_breach_observation": null,
+    "initial_reclaimable_available_mib": 5955.484,
+    "limits": {
+      "max_process_memory_mib": 1024.0,
+      "maximum_swapout_growth_mib": 16.0,
+      "maximum_wall_seconds": 300.0,
+      "minimum_available_before_launch_mib": 3072.0,
+      "minimum_available_during_run_mib": 2048.0,
+      "poll_interval_seconds": 0.1,
+      "swapout_growth_action": "hard_stop",
+      "terminate_grace_seconds": 2.0
+    },
+    "maximum_consecutive_reserve_breaches": 0,
+    "maximum_consecutive_telemetry_failures": 1,
+    "maximum_inferred_unified_memory_mib": 0.0,
+    "maximum_process_rss_mib": 0.0,
+    "maximum_swapout_growth_mib": 0.0,
+    "minimum_reclaimable_available_mib": 5955.484,
+    "observation_prefix": [
+      {
+        "elapsed_seconds": 0.002,
+        "inferred_unified_memory_mib": 0.0,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5956.547,
+        "swapout_growth_mib": 0.0
+      }
+    ],
+    "observation_suffix": [
+      {
+        "elapsed_seconds": 0.002,
+        "inferred_unified_memory_mib": 0.0,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 5956.547,
+        "swapout_growth_mib": 0.0
+      }
+    ],
+    "passed": true,
+    "physical_memory_mib": 16384.0,
+    "policy": "project_theseus_host_resource_safety_v1",
+    "process_rss_telemetry_state": "AVAILABLE",
+    "reserve_breach_observations_required": 3,
+    "returncode": 0,
+    "swapout_growth_action": "hard_stop",
+    "swapout_growth_breach_observations": 0,
+    "swapout_growth_threshold_exceeded": false,
+    "telemetry_failure_observations_allowed": 2,
+    "telemetry_failure_prefix": [
+      {
+        "elapsed_seconds": 0.002,
+        "fault_type": "PermissionError",
+        "source": "process_group_rss"
+      }
+    ],
+    "terminated_by_guard": false,
+    "wall_seconds": 0.11
+  },
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_tail": "",
+  "stdout_sha256": "883b2ee2404378af3b63412008f650acccc277d96a95a8d71dfdbfe9d68900a1",
+  "stdout_tail": "{\n  \"disposition\": \"retired_from_first_language_campaign\",\n  \"summary\": {\n    \"abi_method_count\": 7,\n    \"checkpoint_group_count\": 8,\n    \"checkpoint_member\": false,\n    \"external_inference_calls\": 0,\n    \"mutation_case_count\": 10,\n    \"mutation_passed_count\": 10,\n    \"objective_term_count\": 9,\n    \"optimizer_exposure_steps\": 0,\n    \"public_training_rows\": 0,\n    \"route_authorized\": false,\n    \"successor_prerequisite_count\": 10\n  },\n  \"trigger_state\": \"GREEN\"\n}\n"
+}

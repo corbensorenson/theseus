@@ -1,0 +1,182 @@
+{
+  "child_started": true,
+  "command": [
+    "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_soap_full_shape_resource_preflight.py::SoapFullShapeResourcePreflightTests::test_execution_is_resource_disposition_not_quality_falsification"
+  ],
+  "dependency_receipts": {},
+  "fault": "",
+  "fault_observation": null,
+  "first_swapout_growth_breach_observation": null,
+  "generated_artifacts": {
+    "reports/soap_full_shape_resource_preflight.json": {
+      "bytes": 11624,
+      "sha256": "d16965ed4602db225a10d85900b63ab19897561b2f017695b54195e3007e517a"
+    }
+  },
+  "implementation_artifacts": {
+    "configs/soap_full_shape_resource_preflight.json": {
+      "bytes": 1497,
+      "sha256": "ff6ef4afd73e958c094a259eb50988d79b533f20a4de58ea50bfff6c0a8c8ba0"
+    },
+    "scripts/soap_full_shape_resource_preflight.py": {
+      "bytes": 10950,
+      "sha256": "1b4abcd6ebd5e77f3fd7ae82b65dcbc75e70388972ca0be7857ef69f00c6180c"
+    },
+    "tests/test_soap_full_shape_resource_preflight.py": {
+      "bytes": 2529,
+      "sha256": "147be49168af3e4f5c91d1908b53882bce6746b82c18cc9a0c0234ed65bc1a02"
+    }
+  },
+  "initial_reclaimable_available_mib": 7634.375,
+  "limits": {
+    "max_process_memory_mib": 1536.0,
+    "maximum_swapout_growth_mib": 16.0,
+    "maximum_wall_seconds": 180.0,
+    "minimum_available_before_launch_mib": 5632.0,
+    "minimum_available_during_run_mib": 4096.0,
+    "poll_interval_seconds": 0.1,
+    "swapout_growth_action": "hard_stop",
+    "terminate_grace_seconds": 2.0
+  },
+  "maximum_consecutive_reserve_breaches": 0,
+  "maximum_consecutive_telemetry_failures": 0,
+  "maximum_inferred_unified_memory_mib": 133.859,
+  "maximum_process_rss_mib": 97.078,
+  "maximum_swapout_growth_mib": 0.0,
+  "minimum_reclaimable_available_mib": 7500.516,
+  "observation_prefix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 3.453,
+      "process_rss_mib": 3.453,
+      "reclaimable_available_mib": 7634.219,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.128,
+      "inferred_unified_memory_mib": 32.734,
+      "process_rss_mib": 32.734,
+      "reclaimable_available_mib": 7607.922,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.25,
+      "inferred_unified_memory_mib": 52.453,
+      "process_rss_mib": 52.453,
+      "reclaimable_available_mib": 7596.516,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.375,
+      "inferred_unified_memory_mib": 110.438,
+      "process_rss_mib": 70.203,
+      "reclaimable_available_mib": 7523.938,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.501,
+      "inferred_unified_memory_mib": 131.219,
+      "process_rss_mib": 93.141,
+      "reclaimable_available_mib": 7503.156,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.618,
+      "inferred_unified_memory_mib": 133.859,
+      "process_rss_mib": 97.062,
+      "reclaimable_available_mib": 7500.516,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.745,
+      "inferred_unified_memory_mib": 133.219,
+      "process_rss_mib": 97.078,
+      "reclaimable_available_mib": 7501.156,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.872,
+      "inferred_unified_memory_mib": 30.219,
+      "process_rss_mib": 30.219,
+      "reclaimable_available_mib": 7609.547,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "observation_suffix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 3.453,
+      "process_rss_mib": 3.453,
+      "reclaimable_available_mib": 7634.219,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.128,
+      "inferred_unified_memory_mib": 32.734,
+      "process_rss_mib": 32.734,
+      "reclaimable_available_mib": 7607.922,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.25,
+      "inferred_unified_memory_mib": 52.453,
+      "process_rss_mib": 52.453,
+      "reclaimable_available_mib": 7596.516,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.375,
+      "inferred_unified_memory_mib": 110.438,
+      "process_rss_mib": 70.203,
+      "reclaimable_available_mib": 7523.938,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.501,
+      "inferred_unified_memory_mib": 131.219,
+      "process_rss_mib": 93.141,
+      "reclaimable_available_mib": 7503.156,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.618,
+      "inferred_unified_memory_mib": 133.859,
+      "process_rss_mib": 97.062,
+      "reclaimable_available_mib": 7500.516,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.745,
+      "inferred_unified_memory_mib": 133.219,
+      "process_rss_mib": 97.078,
+      "reclaimable_available_mib": 7501.156,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.872,
+      "inferred_unified_memory_mib": 30.219,
+      "process_rss_mib": 30.219,
+      "reclaimable_available_mib": 7609.547,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "passed": true,
+  "physical_memory_mib": 16384.0,
+  "policy": "project_theseus_host_resource_safety_v1",
+  "process_rss_telemetry_state": "AVAILABLE",
+  "reserve_breach_observations_required": 3,
+  "returncode": 0,
+  "stderr_tail": "",
+  "stdout_tail": ".                                                                        [100%]\n=============================== warnings summary ===============================\nruntime/venvs/mlx-0.32.0-py312/lib/python3.12/site-packages/_pytest/config/__init__.py:1464\n  /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/lib/python3.12/site-packages/_pytest/config/__init__.py:1464: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 passed, 1 warning in 0.75s\n",
+  "swapout_growth_action": "hard_stop",
+  "swapout_growth_breach_observations": 0,
+  "swapout_growth_threshold_exceeded": false,
+  "telemetry_failure_observations_allowed": 2,
+  "telemetry_failure_prefix": [],
+  "terminated_by_guard": false,
+  "wall_seconds": 0.998
+}

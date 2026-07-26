@@ -21,6 +21,7 @@ if str(SCRIPTS) not in sys.path:
 
 import moecot_language_arm_training as training_module  # noqa: E402
 import kerc_merge_compiler_delta_checkpoint as merge_cli  # noqa: E402
+import neural_seed_training_campaign as campaign_module  # noqa: E402
 from moecot_language_arm_training import (  # noqa: E402
     ARM_IDS,
     KERC_UNIT_CANDIDATE_FEATURE_DIM,
@@ -37,6 +38,10 @@ from moecot_language_arm_training import (  # noqa: E402
     bind_scale_preregistration,
     checkpoint_generation_paths,
     cleanup_progress_generation,
+    defer_target_supervision,
+    auxiliary_stage_cache_contract,
+    load_auxiliary_stage_cache,
+    write_auxiliary_stage_cache,
     ensure_shared_trunk_migration,
     evaluation_freeze_semantic_sha256,
     finalize_model_text_generation,
@@ -106,6 +111,121 @@ from neural_seed_50m_scale_preregistration import (  # noqa: E402
 )
 
 
+def test_fresh_process_campaign_estimate_uses_contiguous_device_segments(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    qualification = tmp_path / "qualification.json"
+    qualification.write_text(
+        json.dumps(
+            {
+                "trigger_state": "GREEN",
+                "fresh_process_segments": [
+                    {
+                        "pretrain_optimizer_positions": 100,
+                        "device_step_seconds_total": 0.1,
+                    },
+                    {
+                        "pretrain_optimizer_positions": 300,
+                        "device_step_seconds_total": 0.1,
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        campaign_module.training,
+        "resolve",
+        lambda value: qualification
+        if value == "qualification.json"
+        else Path(value),
+    )
+    monkeypatch.setattr(
+        campaign_module.training,
+        "relative",
+        lambda value: str(value),
+    )
+    config = {
+        "architecture_training_authority": {
+            "fresh_process_segments": {
+                "qualification_report": "qualification.json"
+            }
+        }
+    }
+    progress = campaign_module.estimate(
+        config,
+        {"optimizer_target_positions": 1000},
+        {"pretrain_optimizer_positions": 100},
+    )
+
+    assert progress["measured_device_positions_per_second"] == 2000.0
+    assert progress["remaining_pretrain_optimizer_positions"] == 900
+    assert progress["estimated_remaining_device_seconds"] == 0.45
+
+
+def test_fresh_process_campaign_state_rejects_a_red_canonical_plan(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(campaign_module.training, "read_json", lambda _: {})
+    monkeypatch.setattr(
+        campaign_module.training, "bind_scale_preregistration", lambda value: value
+    )
+    monkeypatch.setattr(
+        campaign_module.training,
+        "build_plan",
+        lambda *_args, **_kwargs: {
+            "trigger_state": "RED",
+            "hard_gaps": ["stale_freeze"],
+        },
+    )
+
+    with pytest.raises(RuntimeError, match="stale_freeze"):
+        campaign_module.campaign_state(tmp_path / "config.json")
+
+
+def test_fresh_process_campaign_does_not_spawn_after_target_completion(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    config = {
+        "architecture_training_authority": {
+            "fresh_process_segments": {
+                "maximum_optimizer_steps": 32,
+                "qualification_report": "qualification.json",
+            }
+        }
+    }
+    plan = {"plan_sha256": "a" * 64}
+    target = {"optimizer_target_positions": 100}
+    receipt = {"pretrain_optimizer_positions": 100}
+    monkeypatch.setattr(
+        campaign_module,
+        "campaign_state",
+        lambda _path: (config, plan, target, receipt),
+    )
+    monkeypatch.setattr(
+        campaign_module.training,
+        "architecture_training_authority",
+        lambda *_args, **_kwargs: {"trigger_state": "GREEN"},
+    )
+    monkeypatch.setattr(
+        campaign_module,
+        "estimate",
+        lambda *_args, **_kwargs: {
+            "remaining_pretrain_optimizer_positions": 0
+        },
+    )
+
+    report = campaign_module.run_campaign(
+        config_path=tmp_path / "config.json",
+        out=tmp_path / "campaign.json",
+        max_segments=1,
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["segments_executed"] == 0
+    assert report["pretraining_complete"] is True
+
+
 def test_canonical_heavy_operations_require_the_external_host_guard() -> None:
     config = training_module.read_json(
         ROOT / "configs" / "moecot_language_arm_training.json"
@@ -113,8 +233,8 @@ def test_canonical_heavy_operations_require_the_external_host_guard() -> None:
     policy = training_host_policy(config)
 
     assert policy.max_process_memory_mib == 5120
-    assert policy.minimum_available_before_launch_mib == 6144
-    assert policy.minimum_available_during_run_mib == 4096
+    assert policy.minimum_available_before_launch_mib == 4096
+    assert policy.minimum_available_during_run_mib == 2048
     assert policy.maximum_swapout_growth_mib == 16
     assert training_operation(SimpleNamespace(execute=True)) == "training"
     assert training_operation(SimpleNamespace(evaluate_progress=True)) == "evaluation"
@@ -1186,6 +1306,21 @@ def tiny_config(tmp_path: Path) -> dict:
             "candidate_canary_contract": "configs/pretraining_architecture_candidates.json",
             "candidate_canary_policy": "project_theseus_pretraining_architecture_candidates_v1",
             "generic_canary_authority": "denied",
+            "fresh_process_segments": {
+                "policy": "project_theseus_bounded_fresh_process_pretraining_v1",
+                "target_id": "shared_trunk",
+                "phase": "pretraining",
+                "maximum_optimizer_steps": 32,
+                "compute_dtype": "float32",
+                "fp32_master": False,
+                "compiled_microbatch_size": 4,
+                "resume_required": True,
+                "require_external_watchdog": True,
+                "minimum_qualified_contiguous_segments": 2,
+                "qualification_report": (
+                    "reports/fresh_process_pretraining_qualification.json"
+                ),
+            },
             "gate_command": [
                 "python3",
                 "scripts/roadmap_implementation_gate.py",
@@ -1365,6 +1500,42 @@ def test_training_authority_requires_candidate_bound_canaries_and_gates_long_run
     generic = architecture_training_authority(cfg, max_steps=8, runner=denied_runner)
     assert generic["trigger_state"] == "RED"
     assert generic["reason"] == "candidate_specific_canary_lease_required"
+
+    segment_policy = cfg["architecture_training_authority"][
+        "fresh_process_segments"
+    ]
+    segment_report = tmp_path / "fresh-process.json"
+    segment_policy["qualification_report"] = str(segment_report)
+    training_module.write_json(
+        segment_report,
+        {
+            "policy": (
+                "project_theseus_fresh_process_pretraining_qualification_v1"
+            ),
+            "trigger_state": "GREEN",
+            "contiguous_segment_count": 2,
+            "qualified_execution_policy": segment_policy,
+            "canonical_lineage_unchanged": True,
+            "exact_resume_validation": True,
+            "independent_segmented_replay_numeric_parity": True,
+            "zero_swap_growth": True,
+        },
+    )
+    campaign_segment = architecture_training_authority(
+        cfg,
+        max_steps=32,
+        targets=["shared_trunk"],
+        phase="pretraining",
+        resume=True,
+        campaign_segment=True,
+        runner=denied_runner,
+    )
+    assert campaign_segment["trigger_state"] == "GREEN"
+    assert (
+        campaign_segment["authority"]
+        == "QUALIFIED_FRESH_PROCESS_CAMPAIGN_SEGMENT"
+    )
+    assert calls == []
 
     scratch = ROOT / "runtime" / "t0a_canaries" / "immutable_control_review" / "unit-test"
     canary = architecture_training_authority(
@@ -2689,6 +2860,7 @@ def test_range_view_coalesces_adjacent_ranges_without_copy() -> None:
 
 def test_exact_supervision_masks_only_target_and_never_truncates(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     source_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3, "Fix": 4}
     target_vocab = {"<pad>": 0, "<unk>": 1, "<bos>": 2, "<eos>": 3, "done": 4}
@@ -2739,6 +2911,49 @@ def test_exact_supervision_masks_only_target_and_never_truncates(
     assert stage.receipt["target_truncation_count"] == 0
     assert stage.receipt["public_training_rows_written"] == 0
     assert stage.receipt["weighted_loss_positions"] > stage.receipt["target_positions"]
+    deferred = defer_target_supervision(
+        training_config,
+        base,
+        target,
+        metadata={"source_vocab": source_vocab, "target_vocab": target_vocab},
+    )
+    assert deferred.planning_row_count == 1
+    deferred_stage = deferred.materialize()
+    assert np.array_equal(deferred_stage.inputs, stage.inputs)
+    assert np.array_equal(deferred_stage.labels, stage.labels)
+    assert np.array_equal(deferred_stage.mask, stage.mask)
+    assert deferred_stage.receipt == stage.receipt
+    monkeypatch.setattr(training_module, "ROOT", tmp_path)
+    metadata = {"source_vocab": source_vocab, "target_vocab": target_vocab}
+    cache_path = write_auxiliary_stage_cache(
+        training_config,
+        base,
+        target,
+        metadata=metadata,
+        artifact_field="supervision_artifacts",
+        receipt_policy="project_theseus_moecot_exact_supervision_arrays_v1",
+    )
+    cached_stage = load_auxiliary_stage_cache(
+        cache_path,
+        expected_contract=auxiliary_stage_cache_contract(
+            training_config,
+            base,
+            target,
+            metadata=metadata,
+            artifact_field="supervision_artifacts",
+            receipt_policy=(
+                "project_theseus_moecot_exact_supervision_arrays_v1"
+            ),
+            split="private_train",
+        ),
+    )
+    assert isinstance(cached_stage.inputs, np.memmap)
+    assert np.array_equal(cached_stage.inputs, stage.inputs)
+    assert cached_stage.receipt["policy"] == stage.receipt["policy"]
+    assert (
+        cached_stage.receipt["target_positions"]
+        == stage.receipt["target_positions"]
+    )
 
     kerc_target = {
         **target,
