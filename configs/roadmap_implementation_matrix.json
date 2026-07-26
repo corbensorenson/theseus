@@ -1571,6 +1571,106 @@
             "fresh_private_surface_consumed": false,
             "capability_claim": "NONE"
           },
+          "source_span_transport_v4_population_final_exposure_boundary": {
+            "training_report": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_seed_20260722.json",
+            "training_report_sha256": "cad7eb121009eee0bc637efa97e451ae8cb59f1ae819a1ef72100dd95c6611c6",
+            "host_resource_safety_report": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_seed_20260722.host_resource_safety.json",
+            "host_resource_safety_sha256": "69aed4407df1e2e73f0bd415b16bfde7e34f47c6567f2337c5d0c297f0d42c29",
+            "merged_evaluation_report": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_merged_fp32_seed_20260722.json",
+            "merged_evaluation_report_sha256": "1abcd3039daff3c85a16204ee21b155a889d504e630281e0b09c6688299048cd",
+            "merge_receipt": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_merge_receipt_seed_20260722.json",
+            "merge_receipt_sha256": "3ba1dda23ec1fafdd81d42a2b197aa97fcc0f24ab4f5ba823ef37a8db13146e6",
+            "merged_checkpoint_sha256": "1c3c3f35254634aa2995e10fade7c0fd97597ed82ba8f129e3f4dbfab085d032",
+            "optimizer_state_sha256": "a10a7cdcadb5e082bc5ff5831954b6a5ff6049c8c4aadabf1e0e58c7ca39de30",
+            "mlx_rng_state_sha256": "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9",
+            "optimizer_step": 5167,
+            "population_updates_this_segment": 253,
+            "target_positions_this_segment": 61108,
+            "data_cursor_start": {
+              "epoch": 4,
+              "batch_index": 4
+            },
+            "data_cursor_next": {
+              "epoch": 8,
+              "batch_index": 5
+            },
+            "first_recorded_loss": 2.1753149,
+            "final_loss": 2.163818,
+            "sampler_replay": {
+              "authoritative_receipt_match": true,
+              "epoch_order_policy": "project_theseus_epoch_independent_order_v1",
+              "stage_row_count": 63,
+              "sampled_unique_row_count": 63,
+              "sampled_row_coverage_rate": 1.0,
+              "minimum_row_exposures_this_segment": 3,
+              "maximum_row_exposures_this_segment": 5,
+              "mean_row_exposures_this_segment": 4.01587302,
+              "optimizer_updates_replayed": 253
+            },
+            "host_resource_safety": {
+              "passed": true,
+              "wall_seconds": 6660.856,
+              "maximum_process_rss_mib": 269.75,
+              "maximum_inferred_unified_memory_mib": 2317.031,
+              "minimum_reclaimable_available_mib": 2254.688,
+              "maximum_swapout_growth_mib": 1510.312,
+              "swapout_growth_action": "report_only",
+              "terminated_by_guard": false
+            },
+            "checkpoint_reload": {
+              "independent_merge_replay": "GREEN",
+              "frozen_source_tensor_count": 234,
+              "compiler_delta_tensor_count": 5,
+              "selected_delta_tensors_exact": true,
+              "frozen_source_tensors_exact": true,
+              "canonical_fp32_tensor_dtype_preserved": true
+            },
+            "teacher_forced_training_panel": {
+              "report": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_teacher_forced_rows16_seed_20260722.json",
+              "report_sha256": "399a779e112fda6636aaf23df92ead62761d621c7eb53ace1402edaa5c8ba801",
+              "row_count": 16,
+              "correct": 3271,
+              "total": 3776,
+              "accuracy": 0.86626059,
+              "eos_correct": 16,
+              "schema_correct": 253,
+              "schema_total": 255,
+              "program_alignment_correct": 304,
+              "program_alignment_total": 449,
+              "protected_character_bound_correct": 0,
+              "protected_character_bound_total": 6,
+              "v4_root_top1_correct": 16,
+              "v4_root_mean_expected_rank": 1.0,
+              "v4_root_mean_expected_minus_v3_margin": 12.24921775
+            },
+            "raw_admitted_training_panel": {
+              "report": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_generation_rows16_seed_20260722.json",
+              "report_sha256": "c208d46f998ebae38a5fbfc3b96d7b15ad8efdea989e6ebdea9a4ed937dca723",
+              "row_count": 16,
+              "syntax_valid_count": 4,
+              "online_transport_valid_count": 4,
+              "independent_semantic_valid_count": 3,
+              "exact_match_count": 0,
+              "compact_transport_invalid_count": 8,
+              "source_span_declaration_invalid_count": 3,
+              "independent_protected_span_invalid_count": 1,
+              "maximum_budget_incomplete_count": 1,
+              "weakest_row_completed": false,
+              "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY"
+            },
+            "preregistered_acceptance": {
+              "requires_at_least_one_online_valid_raw_v4_row": true,
+              "online_valid_requirement_passed": true,
+              "requires_weakest_row_completion": true,
+              "weakest_row_completion_requirement_passed": false,
+              "conjunction_passed": false
+            },
+            "qualification": "INCONCLUSIVE_EXPERIMENT_FIRST_CAMPAIGN_FROZEN",
+            "first_campaign_sequencing": "EXCLUDED_WITHOUT_BROAD_ARCHITECTURE_FALSIFICATION",
+            "fresh_private_surface_consumed": false,
+            "new_seed_authorized": false,
+            "capability_claim": "NONE"
+          },
           "bounded_overfit_plan_sha256": "e7f137494214523fc82f4d365b8bdf2c53f2fcd7f0b0f6049dc1e36a4242f125",
           "bounded_overfit_source_optimizer_step": 4658,
           "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
@@ -1590,7 +1690,7 @@
         "capability_claim": "NONE"
       }
     },
-    "next_owner": "run one final same-seed 256-update compiler-transport-v4 population rung from merged step 4914 with exact AdamW/MLX RNG custody, epoch-4 batch-4 cursor, and the new checkpoint-reconstructible epoch-order policy; the 4-to-5-exposure matched panel learned the v4 root at 16/16 but raw validity remained 0/16, so require at least one online-valid raw v4 row and weakest-row completion at the minimum-eight-exposure boundary; otherwise freeze this exact regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing and start the matched 57M-class campaign without another seed, fresh private surface, or architecture-review loop",
+    "next_owner": "KERC final exposure boundary is complete and this exact regime is frozen INCONCLUSIVE_EXPERIMENT for first-campaign sequencing: raw online validity improved to 4/16 and independent semantic validity to 3/16, but exact match remained 0/16 and the weakest row again exhausted 628 tokens. Do not open another KERC seed, private surface, arbitrary memory threshold, or architecture-review loop. Complete the acceleration-first launch gate, bind the fastest semantics-qualified execution policy, and start the matched 57M-class campaign.",
         "mechanism_vs_selection_boundary": {
           "mechanism_probe_authority": [
             "implementation_fidelity",
@@ -5700,6 +5800,11 @@
         "reports/theseus_corpus_acceleration.json",
         "reports/shared_trunk_checkpoint_format_migration.json",
         "reports/resource_acceleration_fp32_resume_microbatch4_4step.json",
+        "reports/resource_acceleration_fp32_resume_compiled_rng_microbatch4_q64_8step.json",
+        "reports/resource_acceleration_bf16_resume_rng_capture_microbatch8_q64_8step.json",
+        "reports/resource_acceleration_precision_pair_fp32m4_bf16m8_q64_chunked_audit_steps64_reps2.json",
+        "reports/resource_acceleration_source_pair_bf16_split_m4_q64_steps2_reps2.json",
+        "reports/resource_acceleration_supervision_pair_bf16_split_m4_q64_steps2_reps2_retry1.json",
         "reports/macos_mlx_environment_diagnosis.json",
         "reports/macos_mlx_parity_audit.json",
         "reports/resource_mlx_route_readiness_gate.json",
@@ -5734,16 +5839,16 @@
         "scripts/kerc_training_memory_preflight.py"
       ],
       "missing_items": [
-        "The old practical package, candidate authority, dynamic-patch/MTP/optimizer dispositions, and completed T0P corpus/checkpoint/decode/cache/restart/corruption evidence remain banked as controls. Optimizer Policy Cards, the bounded Adafactor comparison, selected AdamW width transfer, and explicit full-shape SOAP scope removal are now complete. The replacement T0A selection is provisional, not complete. Phase 0 reproducibility plus the KERC tiny parity, representative full-objective, 1,005-token mechanics, bounded 648-token, and selected dual-stress 628-token resource receipts are banked. T0A still requires exact serial guarded replay, behavior-positive K4-K7 evidence including separate 629+/maximum-row repair, the K8 matched-cost verdict, and publication plus independent replay of the replacement content-addressed freeze. A host preflight refusal starts no child and preserves safety, but it cannot close any of these obligations."
+        "The final KERC first-campaign boundary is complete and frozen INCONCLUSIVE_EXPERIMENT. Plain 57M pretraining selects BF16 compute, FP32 master weights, compiled microbatch eight, and width quantum 64 after a sustained 1.261x pooled gain with zero swap growth. Source-conditioned and supervision full batches are resource-invalid; exact full-logical-batch-normalized eager split microbatch four is the fastest measured safe route, while microbatch eight exceeds the swap-growth bound and microbatch two is slower. Remaining acceleration closure is one joined sustained canonical-launcher replay including phase transitions and checkpoint publication, then replacement-freeze rebinding and independent replay."
       ],
       "current_non_claims": [
-        "The Phase 8 pretraining implementation is complete for the first frozen campaign; this is not a production-route, behavior-quality, cross-hardware-parity, 2x-training, 10x-decision-time, or model-capability claim.",
+        "The selected M1 MLX execution policy is a measured local training acceleration, not a 2x claim, model-capability gain, production-serving result, cross-hardware parity result, or exact BF16 trajectory-determinism claim.",
         "MLX production routing remains fail-closed because the current broader private replay has 0/10 private passes.",
         "CUDA/MLX/Metal parity remains unclaimed; macos_mlx_parity_audit keeps native hot-loop parity claims blocked.",
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. V4 typed source spans pass exact zero-credit materialization over all 12886 rows / 25772 targets and the same bounded control now reaches 97/97 teacher forcing plus exact, online-valid, independently semantic-valid raw generation with EOS and zero swap growth. Start same-seed admitted-row population exposure from immutable step 4658; require exact sampler accounting, weakest-row teacher forcing, raw admitted-panel validity, checkpoint/reload, and source-disjoint behavior before advancement. Consume no fresh private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
+      "smallest_next_patch": "Run one joined non-mutating sustained replay through the canonical 57M launcher using the registered phase-specific execution policy: BF16/FP32-master compiled microbatch eight for plain pretraining and exact-normalized eager split microbatch four for source-conditioned and supervision work. Include checkpoint publication, phase transitions, live resource telemetry, and exact resume. If the joined receipt preserves the measured direction, refresh and independently replay the replacement freeze, bank the acceleration/KERC evidence, and launch the matched campaign without reopening architecture intake.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",

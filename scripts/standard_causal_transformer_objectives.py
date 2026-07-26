@@ -269,6 +269,11 @@ def causal_loss(
     prune_inactive_auxiliary_outputs: bool = True,
     prune_zero_authority_decoder: bool = True,
     normalization_mask: Any | None = None,
+    token_supervision_active: bool | None = None,
+    token_denominator_override: Any | None = None,
+    copy_alignment_denominator_override: Any | None = None,
+    copy_gate_denominator_override: Any | None = None,
+    token_loss_compute_dtype: str = "model",
 ) -> Any:
     copy_aux = None
     copy_weight = float(getattr(model, "copy_auxiliary_loss_weight", 0.0))
@@ -298,7 +303,14 @@ def causal_loss(
         raise ValueError(
             "KERC generator unit conditioning requires a complete byte layout and unit inputs"
         )
-    token_supervision_active = bool(mx.any(mask > 0.0))
+    # A transformed MLX function cannot materialize an array into a Python
+    # boolean. Compiled callers already know from the host-side batch contract
+    # whether token loss has nonzero authority and must pass that static fact.
+    # Eager auxiliary-objective callers retain the exact value-based fallback.
+    if token_supervision_active is None:
+        token_supervision_active = bool(mx.any(mask > 0.0).item())
+    else:
+        token_supervision_active = bool(token_supervision_active)
     copy_loss_active = (
         token_supervision_active
         and copy_weight > 0.0
@@ -380,10 +392,24 @@ def causal_loss(
         raise ValueError("model output width exceeds label width")
     token_labels = labels[:, output_start:output_stop]
     token_mask = mask[:, output_start:output_stop]
-    token_loss = nn.losses.cross_entropy(logits, token_labels)
+    if token_loss_compute_dtype not in {"model", "float32"}:
+        raise ValueError(
+            f"unsupported token loss compute dtype: {token_loss_compute_dtype}"
+        )
+    token_loss_logits = (
+        logits.astype(mx.float32)
+        if token_loss_compute_dtype == "float32"
+        else logits
+    )
+    token_loss = nn.losses.cross_entropy(token_loss_logits, token_labels)
     denominator_mask = normalization_mask if normalization_mask is not None else mask
     denominator = mx.maximum(
-        mx.sum(denominator_mask), mx.array(1.0, dtype=mx.float32)
+        (
+            token_denominator_override
+            if token_denominator_override is not None
+            else mx.sum(denominator_mask)
+        ),
+        mx.array(1.0, dtype=mx.float32),
     )
     body_loss = mx.sum(token_loss * token_mask) / denominator
     if copy_aux is not None and copy_loss_active:
@@ -394,6 +420,10 @@ def causal_loss(
             mx,
             normalization_labels=labels if normalization_mask is not None else None,
             normalization_mask=normalization_mask,
+            alignment_denominator_override=(
+                copy_alignment_denominator_override
+            ),
+            gate_denominator_override=copy_gate_denominator_override,
         )
     if mtp_loss_active:
         body_loss = body_loss + mtp_weight * mtp_auxiliary_loss(
@@ -859,6 +889,8 @@ def pointer_generator_auxiliary_loss(
     *,
     normalization_labels: Any | None = None,
     normalization_mask: Any | None = None,
+    alignment_denominator_override: Any | None = None,
+    gate_denominator_override: Any | None = None,
 ) -> Any:
     """Train pointer alignment and generation/copy gating on visible train labels."""
 
@@ -903,6 +935,10 @@ def pointer_generator_auxiliary_loss(
             * normalization_copyable.astype(mx.float32)
         )
         gate_denominator = mx.sum(normalization_supervised)
+    if alignment_denominator_override is not None:
+        alignment_denominator = alignment_denominator_override
+    if gate_denominator_override is not None:
+        gate_denominator = gate_denominator_override
     alignment = mx.sum(alignment_loss * copy_mask) / mx.maximum(
         alignment_denominator, 1.0
     )

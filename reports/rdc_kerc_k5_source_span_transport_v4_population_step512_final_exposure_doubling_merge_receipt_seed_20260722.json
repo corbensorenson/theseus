@@ -1,0 +1,27 @@
+{
+  "canonical_fp32_tensor_dtype_preserved": true,
+  "capability_claim": "NONE_CHECKPOINT_CUSTODY_ONLY",
+  "compiler_delta": "runtime/t0a_canaries/rdc_kerc_k5_adequacy/source_span_transport_v4_population_step512_final_exposure_doubling_seed_20260722/english_kerc/weights.step-00005167.safetensors",
+  "compiler_delta_sha256": "7854e48e4a0eefb9629c27d1b35f27349996b54b2a624545db3a183d0dd39bcf",
+  "compiler_delta_tensor_count": 5,
+  "compiler_delta_tensor_names": [
+    "kerc_kernel_output.weight",
+    "kerc_stage_adapters.1.down.weight",
+    "kerc_stage_adapters.1.norm.weight",
+    "kerc_stage_adapters.1.up.weight",
+    "kerc_stage_embedding.weight"
+  ],
+  "delta_checkpoint_mutated": false,
+  "frozen_source_tensor_count": 234,
+  "frozen_source_tensors_exact": true,
+  "independent_merge_replay": "GREEN",
+  "merged_checkpoint": "runtime/t0a_canaries/rdc_kerc_k5_adequacy/source_span_transport_v4_population_step512_final_exposure_doubling_seed_20260722/english_kerc/weights.step-00005167.merged-fp32.safetensors",
+  "merged_checkpoint_sha256": "1c3c3f35254634aa2995e10fade7c0fd97597ed82ba8f129e3f4dbfab085d032",
+  "policy": "project_theseus_kerc_compiler_delta_merge_v1",
+  "selected_delta_tensors_exact": true,
+  "source_checkpoint": "runtime/t0a_canaries/rdc_kerc_k5_adequacy/source_span_transport_v4_population_step256_exposure_doubling_seed_20260722/english_kerc/weights.step-00004914.merged-fp32.safetensors",
+  "source_checkpoint_mutated": false,
+  "source_checkpoint_sha256": "d5b59ec65a41e23ece8399bae0a3d1a12b17256a4158d250a6fe25209040aeed",
+  "source_tensor_count": 239,
+  "stage_embedding_included": true
+}

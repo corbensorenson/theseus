@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last consolidated: 2026-07-25 UTC.
+Last consolidated: 2026-07-26 UTC.
 
 This is the forward-only human execution map. The complete machine-readable obligation
 set is `configs/roadmap_implementation_matrix.json`; implementation identity and route
@@ -152,23 +152,24 @@ execution, precision, batching, checkpoint cadence, caching, and kernel lowering
 change candidate parameters, data order, optimizer-position budgets, objective mass, update
 count, evaluation access, or verifier work.
 
-The current immutable reference points are the real 500-update FP32 continuation at
-2,914.2 optimizer positions/second and the latest repeated compiled microbatch-four canary at
-3,191.8 positions/second. These are not interchangeable with a campaign estimate: regenerate
-one sustained end-to-end baseline through the exact architecture-review launcher, including
-pretraining, source-conditioned pretraining, supervision, checkpoint publication, and resource
-watching. Report useful optimizer positions/second for each phase and for the joined campaign
-path.
+The immutable historical references are the real 500-update FP32 continuation at
+2,914.2 optimizer positions/second and the repeated compiled FP32 microbatch-four canary at
+3,191.8 positions/second. The replacement measurements now use the exact step-3,000 checkpoint:
+the sustained plain-pretraining FP32/microbatch-four route reaches 3,503.3 useful positions/s,
+while BF16 compute with FP32 master weights and microbatch eight reaches 4,417.5 positions/s
+across 256 measured updates, a 1.261x pooled gain. The host observed zero swap growth,
+4,116 MiB maximum inferred unified memory, and 2,789 MiB minimum reclaimable memory. The
+reporting audit itself formerly retained multi-GiB finite-check graphs; chunking that audit,
+not weakening the campaign reserve, reduced final MLX cache to about 0-2 MiB.
 
 Work the following docket in measured bottleneck order:
 
-1. Repair the BF16-compute/FP32-master checkpoint-resume owner. The short full-batch-16
-   compiled route reached 4,059.5 positions/second, about 27% above the repeated
-   microbatch-four canary, with lower device allocation than FP32 full-batch. It remains
-   unadopted because exact same-route resume diverged and later hot-run speed was inconsistent.
-   Require exact RNG/cursor custody, bounded uninterrupted-versus-resumed state, multiple
-   alternating cold/warm trials, and a sustained learning-trajectory comparison before
-   promotion.
+1. **Qualified and phase-selected:** BF16-compute/FP32-master reload preserves exact
+   checkpoint bytes, optimizer bytes, RNG, cursor, loss, and batch sequence. Independent BF16
+   trajectories remain bounded but not bit-repeatable on Metal (about `1.1e-4` parameter
+   relative L2); preserve this as `YELLOW_TRAJECTORY_REPEATABILITY`, not an exact-determinism
+   claim. Alternating short and sustained comparisons bound the final-loss delta below
+   `1.02e-4` relative and select BF16 microbatch eight for plain pretraining.
 2. Sweep compiled microbatch sizes `4, 8, 16` and width quanta `32, 64, 128` on identical
    batches. Attribute graph compilation, accumulation, final update, implicit evaluation,
    padding, cache, peak unified memory, live reserve, swap growth, and thermal drift. Do not
@@ -177,10 +178,16 @@ Work the following docket in measured bottleneck order:
    accumulated gradients after every microbatch versus a safely fused or less frequently
    synchronized update. Any fusion must retain one token-mass-weighted clip/update and pass
    full-parameter, optimizer-state, loss, save/load, and resume checks.
-4. Compile or otherwise accelerate the source-conditioned and supervision objectives where
-   their auxiliary inputs currently force eager execution. A faster plain-pretraining
-   microbenchmark is insufficient when those phases consume a material share of the matched
-   review.
+4. **Mechanically closed; sustained campaign confirmation remains:** source-conditioned
+   full-batch-16 execution drove reclaimable memory to 627 MiB and added 1.12 GiB swap before
+   the watchdog stopped it. The replacement compiles bounded forward/backward microbatches
+   separately and retains one logical batch-16 clip/update. Full-batch token, generator-gate,
+   and pointer-alignment denominators are preserved exactly; small-model loss and parameter
+   parity pass. On the actual 57M route, BF16 eager split microbatch four is faster than its
+   compiled split (596.1 versus 584.4 positions/s) and supervision compilation is neutral
+   (457.4 versus 461.8 positions/s within short-run noise). Microbatch two is 2-3% slower;
+   microbatch eight crossed 1 GiB swap growth in both phases. Select eager split microbatch
+   four for source-conditioned and supervision work, subject to a joined sustained replay.
 5. Measure checkpoint cadence, asynchronous-safe publication opportunities, data/cache warmup,
    Metal graph-cache reuse, and verifier/evaluation overlap without hiding required lifecycle
    work or risking the only durable checkpoint.
@@ -191,6 +198,17 @@ non-regressed heldout learning within the preregistered tolerance, and the live 
 and swap-growth watchdogs remain green. Preserve negative and unstable measurements. Publish
 the selected performance receipt and bind its exact execution policy into the replacement
 architecture freeze before any 57M optimizer budget is spent.
+
+Current gate state: **EXECUTION_POLICY_BOUND; JOINED SUSTAINED CONFIRMATION OPEN**. The final
+bounded KERC population rung, exact merge, teacher-forced panel, and raw panel are complete.
+The shared 57M checkpoint remains immutable at step 3,000. The registered execution policy
+now selects BF16-compute/FP32-master compiled microbatch eight for plain pretraining and
+exact-normalized eager split microbatch four for source-conditioned and supervision phases.
+It captures MLX RNG in the compiled ABI and content-binds the unchanged checkpoint, optimizer,
+cursor, RNG, objective, and position schedule through an explicit migration. Before launch,
+run one joined non-mutating sustained confirmation through the canonical launcher, measure
+checkpoint publication and phase transitions, refresh the stale replacement freeze bindings,
+bank the evidence, and then start the matched campaign without reopening architecture intake.
 
 ### 2026-07-25 Deep Technical And ASI Stack Review Reconciliation
 
@@ -1844,14 +1862,32 @@ generation service, KERC sidecar, or private evaluator.
    plus its seed and is checkpoint-reconstructible. The step-4,914 migration names this policy
    change explicitly and does not pretend path equivalence to the legacy in-place shuffle.
 
-   One final same-seed 256-update rung is authorized from the immutable step-4,914 checkpoint and
-   epoch-4/batch-4 cursor, targeting a minimum eight cumulative exposures per row at the unchanged
-   3e-5 rate. It must produce at least one online-valid raw v4 training-row completion and complete
-   the weakest row before any source-disjoint surface. If it does not, freeze this exact KERC
-   regime as `INCONCLUSIVE_EXPERIMENT` for first-campaign sequencing and proceed to the matched
-   57M-class selection campaign; do not open another seed, arbitrary memory threshold, or
-   architecture-review loop, and do not translate campaign exclusion into broad KERC
-   falsification.
+   The final same-seed exposure rung is complete from the immutable step-4,914 checkpoint and
+   epoch-4/batch-4 cursor. The target-position boundary executes 253 updates and 61,108 positions,
+   samples all 63 rows, advances to step 5,167 and epoch 8 / batch 5, and ends at loss 2.163818.
+   Exact replay reports three to five exposures per row in this segment and authoritative
+   agreement with the recorded sampler. The full-FP32 merge again preserves all 234 frozen
+   tensors and exactly overlays the five compiler tensors at checkpoint `1c3c3f35…d032`.
+
+   Host safety remains green without an arbitrary allocator floor: 2,317.031 MiB maximum inferred
+   memory, 2,254.688 MiB minimum reclaimable memory, 269.750 MiB maximum process RSS, and
+   1,510.312 MiB host-wide swap growth as report-only telemetry over 6,660.856 seconds. No reserve
+   or telemetry stop fired.
+
+   The matched 16-row panel reaches 3,271/3,776 teacher-forced tokens (86.626059%), EOS 16/16,
+   schema 253/255, and required-v4-root rank 1 and top-1 16/16, but program-alignment is only
+   304/449 and protected-character bounds are 0/6. Raw generation improves from zero to four
+   online-transport-valid rows, of which three pass the independent semantic validator, but exact
+   match remains 0/16 and the preregistered weakest row again exhausts 628 tokens without
+   completing. Eight completed rows fail compact transport and three fail source-span
+   declaration.
+
+   The preregistered conjunction therefore fails: a raw valid row now exists, but weakest-row
+   completion does not. Freeze this exact KERC implementation/data/objective/optimizer/scale/seed
+   regime as `INCONCLUSIVE_EXPERIMENT` for first-campaign sequencing. No source-disjoint surface
+   was consumed, no capability or architecture-falsification credit is granted, and no new seed,
+   arbitrary memory threshold, or replacement review loop is authorized. The active owner is now
+   the acceleration-first launch gate and then the matched 57M-class campaign.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

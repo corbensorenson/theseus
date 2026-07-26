@@ -2841,6 +2841,51 @@ def eager_accumulation_microbatch_weight(
     return micro_target_mass / total_target_mass
 
 
+def source_copy_alignment_mass(
+    inputs: np.ndarray,
+    labels: np.ndarray,
+    objective_mass: np.ndarray,
+    *,
+    source_to_target_lookup: np.ndarray,
+    separator_token_id: int = SOURCE_TARGET_SEPARATOR_ID,
+) -> float:
+    """Compute the exact full-batch pointer-alignment denominator on the host."""
+
+    input_rows = np.asarray(inputs, dtype=np.int64)
+    label_rows = np.asarray(labels, dtype=np.int64)
+    mass_rows = np.asarray(objective_mass, dtype=np.float64)
+    lookup = np.asarray(source_to_target_lookup, dtype=np.int64)
+    if (
+        input_rows.shape != label_rows.shape
+        or input_rows.shape != mass_rows.shape
+        or lookup.ndim != 1
+    ):
+        raise ValueError("source-copy alignment accounting shape mismatch")
+    total = 0.0
+    vocabulary_size = len(lookup)
+    for row_inputs, row_labels, row_mass in zip(
+        input_rows, label_rows, mass_rows
+    ):
+        separators = np.flatnonzero(row_inputs == int(separator_token_id))
+        if not len(separators):
+            raise ValueError(
+                "source-conditioned accumulation row is missing its separator"
+            )
+        source_tokens = row_inputs[: int(separators[0])]
+        if bool(
+            np.any(source_tokens < 0)
+            or np.any(source_tokens >= vocabulary_size)
+        ):
+            raise ValueError("source token exceeds copy-lookup vocabulary")
+        mapped = lookup[source_tokens]
+        valid = mapped[(mapped >= 0) & (mapped < vocabulary_size)]
+        if not len(valid):
+            continue
+        copyable = np.isin(row_labels, np.unique(valid))
+        total += float(row_mass[copyable].sum(dtype=np.float64))
+    return total
+
+
 def checkpoint_exact_epoch_order(
     inputs: Any,
     prior_order: list[int],
@@ -2930,6 +2975,7 @@ def train_phase(
     source_conditioning: bool = True,
     training_step_mode: str = "auto",
     compiled_microbatch_size: int = 4,
+    compile_width_quantum: int = 64,
     master_model: Any | None = None,
     compute_dtype_name: str = "float32",
     step_boundary_callback: Any = None,
@@ -2948,6 +2994,7 @@ def train_phase(
     resource_stress_prefix: bool = False,
     prior_coverage_observed_counts: dict[str, int] | None = None,
     allow_incomplete_required_coverage: bool = False,
+    source_to_target_lookup: np.ndarray | None = None,
 ) -> dict[str, Any]:
     if not len(inputs) or max_steps <= 0:
         return {"phase": phase_name, "optimizer_steps": 0, "target_positions_consumed": 0, "losses": []}
@@ -3359,6 +3406,8 @@ def train_phase(
         raise ValueError(f"unsupported training step mode: {training_step_mode}")
     if compiled_microbatch_size < 1:
         raise ValueError("compiled microbatch size must be positive")
+    if compile_width_quantum < 1:
+        raise ValueError("compile width quantum must be positive")
     if eager_gradient_accumulation_microbatch_size < 0:
         raise ValueError("eager gradient accumulation microbatch size cannot be negative")
     if eager_execution_width_quantum < 0:
@@ -3395,9 +3444,15 @@ def train_phase(
     if master_model is not None and compute_dtype_name != "bfloat16":
         raise ValueError("fp32 master weights require bfloat16 compute weights")
     compiled_step = None
-    compile_width_quantum = 64
+    compiled_gradient_step = None
     tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
-    compile_eligible = training_step_mode != "eager" and source_conditioning is False and all(
+    split_compiled_accumulation = bool(
+        source_conditioning is True
+        and compiled_microbatch_size < batch_size
+    )
+    compile_eligible = training_step_mode != "eager" and isinstance(
+        source_conditioning, bool
+    ) and all(
         value is None
         for value in (
             prepared_plan_labels,
@@ -3414,58 +3469,118 @@ def train_phase(
         if not optimizer.state:
             optimizer.init(optimizer_model.trainable_parameters())
             mx.eval(optimizer.state)
-        compiled_state = [model.state, optimizer.state]
-        if master_model is not None:
-            compiled_state.insert(1, master_model.state)
+        # MLX random sampling uses an implicit global PRNG state. Keep that
+        # state inside the compiled training ABI alongside model and optimizer
+        # state so stochastic model/objective additions cannot silently break
+        # checkpoint-resume equivalence. The current plain-token route does
+        # not rely on this alone as proof that a prior BF16 divergence is fixed;
+        # the exact resume qualification remains authoritative.
         tree_flatten = __import__("mlx.utils", fromlist=["tree_flatten"]).tree_flatten
+        if split_compiled_accumulation:
+            # Source-conditioned attention cannot fit the 57M logical batch as
+            # one Metal graph on this host. Compile only each bounded
+            # forward/backward microbatch, then perform the single
+            # token-mass-weighted clip/update eagerly. Keeping optimizer state
+            # out of the per-microbatch graph also avoids MLX state-map faults
+            # when conditional source modules produce a route-specific
+            # gradient tree.
+            compiled_gradient_state = [model.state, mx.random.state]
 
-        @partial(
-            mx.compile,
-            inputs=compiled_state,
-            outputs=compiled_state,
-        )
-        def compiled_token_step(
-            x: Any,
-            y: Any,
-            m: Any,
-            weight: Any,
-            prior_grads: Any,
-            apply_update: bool,
-        ) -> tuple[Any, Any, Any]:
-            loss, grads = loss_and_grad(
-                model,
-                x,
-                y,
-                m,
-                mx,
-                __import__("mlx.nn", fromlist=["nn"]),
-                source_conditioning=source_conditioning,
+            @partial(
+                mx.compile,
+                inputs=compiled_gradient_state,
+                outputs=compiled_gradient_state,
             )
-            loss = loss * weight
-            grads = tree_map(lambda value: value * weight, grads)
-            if master_model is not None:
-                grads = tree_map(lambda value: value.astype(mx.float32), grads)
-            if prior_grads is not None:
-                grads = tree_map(
-                    lambda value, prior: value + prior,
-                    grads,
-                    prior_grads,
+            def compiled_token_gradient(
+                x: Any,
+                y: Any,
+                m: Any,
+                token_denominator: Any,
+                copy_alignment_denominator: Any,
+                copy_gate_denominator: Any,
+            ) -> tuple[Any, Any]:
+                loss, grads = loss_and_grad(
+                    model,
+                    x,
+                    y,
+                    m,
+                    mx,
+                    __import__("mlx.nn", fromlist=["nn"]),
+                    source_conditioning=source_conditioning,
+                    token_supervision_active=True,
+                    token_denominator_override=token_denominator,
+                    copy_alignment_denominator_override=(
+                        copy_alignment_denominator
+                    ),
+                    copy_gate_denominator_override=copy_gate_denominator,
                 )
-            grad_norm = mx.array(0.0, dtype=mx.float32)
-            if apply_update:
-                grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
-                optimizer.update(optimizer_model, grads)
                 if master_model is not None:
-                    model.update(
-                        tree_map(
-                            lambda value: value.astype(mx.bfloat16),
-                            master_model.trainable_parameters(),
-                        )
+                    grads = tree_map(
+                        lambda value: value.astype(mx.float32), grads
                     )
-                grads = None
-            return loss, grad_norm, grads
+                return loss, grads
 
-        compiled_step = compiled_token_step
+            compiled_gradient_step = compiled_token_gradient
+        else:
+            compiled_state = [model.state, optimizer.state, mx.random.state]
+            if master_model is not None:
+                compiled_state.insert(1, master_model.state)
+
+            @partial(
+                mx.compile,
+                inputs=compiled_state,
+                outputs=compiled_state,
+            )
+            def compiled_token_step(
+                x: Any,
+                y: Any,
+                m: Any,
+                weight: Any,
+                prior_grads: Any,
+                apply_update: bool,
+            ) -> tuple[Any, Any, Any]:
+                loss, grads = loss_and_grad(
+                    model,
+                    x,
+                    y,
+                    m,
+                    mx,
+                    __import__("mlx.nn", fromlist=["nn"]),
+                    source_conditioning=source_conditioning,
+                    token_supervision_active=True,
+                )
+                loss = loss * weight
+                grads = tree_map(lambda value: value * weight, grads)
+                if master_model is not None:
+                    grads = tree_map(
+                        lambda value: value.astype(mx.float32), grads
+                    )
+                if prior_grads is not None:
+                    grads = tree_map(
+                        lambda value, prior: value + prior,
+                        grads,
+                        prior_grads,
+                    )
+                grad_norm = mx.array(0.0, dtype=mx.float32)
+                if apply_update:
+                    grads, grad_norm = optim.clip_grad_norm(
+                        grads, gradient_clip
+                    )
+                    optimizer.update(optimizer_model, grads)
+                    if master_model is not None:
+                        model.update(
+                            tree_map(
+                                lambda value: value.astype(mx.bfloat16),
+                                master_model.trainable_parameters(),
+                            )
+                        )
+                    grads = None
+                return loss, grad_norm, grads
+
+            compiled_step = compiled_token_step
+    compiled_training_active = (
+        compiled_step is not None or compiled_gradient_step is not None
+    )
     while consumed < target_positions and steps < max_steps:
         order = checkpoint_exact_epoch_order(
             inputs,
@@ -3548,7 +3663,7 @@ def train_phase(
             batch_sequence_widths.append(batch_width)
             execution_width_quantum = (
                 compile_width_quantum
-                if compiled_step is not None
+                if compiled_training_active
                 else int(eager_execution_width_quantum)
             )
             if execution_width_quantum:
@@ -3717,12 +3832,28 @@ def train_phase(
             if step_boundary_callback is not None:
                 step_boundary_callback("before_device_step", steps + 1)
             step_started = time.perf_counter()
-            if compiled_step is not None:
+            if compiled_training_active:
                 accumulated_grads = None
                 weighted_losses = []
                 total_loss_mass = float(batch_mask[:, :batch_width].sum())
                 if total_loss_mass <= 0.0:
                     raise ValueError("compiled pretraining batch has no loss mass")
+                copy_alignment_mass = total_loss_mass
+                if compiled_gradient_step is not None:
+                    copy_weight = float(
+                        getattr(model, "copy_auxiliary_loss_weight", 0.0)
+                    )
+                    if copy_weight > 0.0:
+                        if source_to_target_lookup is None:
+                            raise ValueError(
+                                "split source compilation requires the exact copy lookup"
+                            )
+                        copy_alignment_mass = source_copy_alignment_mass(
+                            batch_inputs[:, :batch_width],
+                            batch_labels[:, :batch_width],
+                            batch_loss_mass[:, :batch_width],
+                            source_to_target_lookup=source_to_target_lookup,
+                        )
                 for micro_start in range(0, len(indices), compiled_microbatch_size):
                     micro_stop = min(
                         len(indices), micro_start + compiled_microbatch_size
@@ -3733,31 +3864,107 @@ def train_phase(
                             batch_mask[micro_start:micro_stop, :batch_width]
                         ).sum()
                     )
-                    apply_update = micro_stop == len(indices)
-                    micro_loss, grad_norm, accumulated_grads = compiled_step(
-                        x[micro_start:micro_stop],
-                        y[micro_start:micro_stop],
-                        micro_mask,
-                        mx.array(
-                            micro_mass / total_loss_mass,
-                            dtype=mx.float32,
-                        ),
-                        accumulated_grads,
-                        apply_update,
+                    apply_update = (
+                        compiled_gradient_step is None
+                        and micro_stop == len(indices)
                     )
-                    grad_arrays = (
-                        [value for _name, value in tree_flatten(accumulated_grads)]
-                        if accumulated_grads is not None
-                        else []
+                    micro_weight = mx.array(
+                        micro_mass / total_loss_mass,
+                        dtype=mx.float32,
                     )
-                    micro_eval_started = time.perf_counter()
-                    mx.eval(micro_loss, grad_norm, *grad_arrays)
-                    micro_eval_seconds = time.perf_counter() - micro_eval_started
+                    if compiled_gradient_step is not None:
+                        micro_loss, micro_grads = compiled_gradient_step(
+                            x[micro_start:micro_stop],
+                            y[micro_start:micro_stop],
+                            micro_mask,
+                            mx.array(
+                                total_loss_mass, dtype=mx.float32
+                            ),
+                            mx.array(
+                                copy_alignment_mass, dtype=mx.float32
+                            ),
+                            mx.array(
+                                total_loss_mass, dtype=mx.float32
+                            ),
+                        )
+                        grad_arrays = [
+                            value for _name, value in tree_flatten(micro_grads)
+                        ]
+                        micro_eval_started = time.perf_counter()
+                        mx.eval(micro_loss, *grad_arrays)
+                        micro_eval_seconds = (
+                            time.perf_counter() - micro_eval_started
+                        )
+                        accumulated_grads = (
+                            micro_grads
+                            if accumulated_grads is None
+                            else tree_map(
+                                lambda prior, value: prior + value,
+                                accumulated_grads,
+                                micro_grads,
+                            )
+                        )
+                        accumulated_arrays = [
+                            value
+                            for _name, value in tree_flatten(
+                                accumulated_grads
+                            )
+                        ]
+                        mx.eval(*accumulated_arrays)
+                        del micro_grads
+                        if hasattr(mx, "clear_cache"):
+                            mx.clear_cache()
+                    else:
+                        micro_loss, grad_norm, accumulated_grads = compiled_step(
+                            x[micro_start:micro_stop],
+                            y[micro_start:micro_stop],
+                            micro_mask,
+                            micro_weight,
+                            accumulated_grads,
+                            apply_update,
+                        )
+                        grad_arrays = (
+                            [
+                                value
+                                for _name, value in tree_flatten(
+                                    accumulated_grads
+                                )
+                            ]
+                            if accumulated_grads is not None
+                            else []
+                        )
+                        micro_eval_started = time.perf_counter()
+                        mx.eval(micro_loss, grad_norm, *grad_arrays)
+                        micro_eval_seconds = (
+                            time.perf_counter() - micro_eval_started
+                        )
                     if apply_update:
                         compiled_update_seconds.append(micro_eval_seconds)
                     else:
                         compiled_accumulation_seconds.append(micro_eval_seconds)
                     weighted_losses.append(micro_loss)
+                if compiled_gradient_step is not None:
+                    update_started = time.perf_counter()
+                    accumulated_grads, grad_norm = optim.clip_grad_norm(
+                        accumulated_grads, gradient_clip
+                    )
+                    optimizer.update(optimizer_model, accumulated_grads)
+                    if master_model is not None:
+                        model.update(
+                            tree_map(
+                                lambda value: value.astype(mx.bfloat16),
+                                master_model.trainable_parameters(),
+                            )
+                        )
+                    mx.eval(
+                        model.parameters(),
+                        optimizer_model.parameters(),
+                        optimizer.state,
+                        grad_norm,
+                    )
+                    compiled_update_seconds.append(
+                        time.perf_counter() - update_started
+                    )
                 loss = mx.sum(mx.stack(weighted_losses))
             else:
                 accumulation_size = int(eager_gradient_accumulation_microbatch_size)
@@ -3777,6 +3984,26 @@ def train_phase(
                         )
                     accumulated_grads = None
                     weighted_losses = []
+                    exact_source_normalization = source_conditioning is True
+                    eager_total_loss_mass = float(
+                        batch_loss_mass[:, :batch_width].sum(
+                            dtype=np.float64
+                        )
+                    )
+                    eager_copy_alignment_mass = eager_total_loss_mass
+                    if exact_source_normalization and float(
+                        getattr(model, "copy_auxiliary_loss_weight", 0.0)
+                    ) > 0.0:
+                        if source_to_target_lookup is None:
+                            raise ValueError(
+                                "source accumulation requires the exact copy lookup"
+                            )
+                        eager_copy_alignment_mass = source_copy_alignment_mass(
+                            batch_inputs[:, :batch_width],
+                            batch_labels[:, :batch_width],
+                            batch_loss_mass[:, :batch_width],
+                            source_to_target_lookup=source_to_target_lookup,
+                        )
                     for micro_start in range(0, len(indices), accumulation_size):
                         micro_stop = min(
                             len(indices), micro_start + accumulation_size
@@ -3812,18 +4039,47 @@ def train_phase(
                             mx,
                             __import__("mlx.nn", fromlist=["nn"]),
                             source_conditioning=source_conditioning,
+                            token_supervision_active=True,
+                            token_denominator_override=(
+                                mx.array(
+                                    eager_total_loss_mass,
+                                    dtype=mx.float32,
+                                )
+                                if exact_source_normalization
+                                else None
+                            ),
+                            copy_alignment_denominator_override=(
+                                mx.array(
+                                    eager_copy_alignment_mass,
+                                    dtype=mx.float32,
+                                )
+                                if exact_source_normalization
+                                else None
+                            ),
+                            copy_gate_denominator_override=(
+                                mx.array(
+                                    eager_total_loss_mass,
+                                    dtype=mx.float32,
+                                )
+                                if exact_source_normalization
+                                else None
+                            ),
                         )
                         # ``causal_loss`` returns the mean over active objective
                         # mass inside each microbatch. Reconstruct the requested
                         # full-batch mean exactly across ragged microbatches.
-                        micro_weight = eager_accumulation_microbatch_weight(
-                            batch_loss_mass,
-                            micro_start=micro_start,
-                            micro_stop=micro_stop,
-                            micro_width=micro_width,
-                            sequence_balanced_token_loss=(
-                                sequence_balanced_token_loss
-                            ),
+                        micro_weight = (
+                            1.0
+                            if exact_source_normalization
+                            else eager_accumulation_microbatch_weight(
+                                batch_loss_mass,
+                                micro_start=micro_start,
+                                micro_stop=micro_stop,
+                                micro_width=micro_width,
+                                sequence_balanced_token_loss=(
+                                    sequence_balanced_token_loss
+                                ),
+                            )
                         )
                         micro_loss = micro_loss * micro_weight
                         micro_grads = tree_map(
@@ -3984,7 +4240,7 @@ def train_phase(
             evaluated_parameters = (
                 master_model.parameters() if master_model is not None else model.parameters()
             )
-            if compiled_step is None:
+            if not compiled_training_active:
                 mx.eval(
                     model.parameters(),
                     evaluated_parameters,
@@ -4267,7 +4523,10 @@ def train_phase(
             else ""
         ),
         "eager_gradient_accumulation_weighting": (
-            "equal_sequence_mass"
+            "full_logical_batch_token_gate_and_copyable_mass_v1"
+            if eager_gradient_accumulation_microbatch_size
+            and source_conditioning is True
+            else "equal_sequence_mass"
             if eager_gradient_accumulation_microbatch_size
             and sequence_balanced_token_loss
             else "target_token_mass"
@@ -4285,7 +4544,7 @@ def train_phase(
         "dynamic_batch_cropping": True,
         "training_step_execution": (
             "mlx_compiled_shape_bucket_v1"
-            if compiled_step is not None
+            if compiled_training_active
             else "mlx_eager_shape_bucket_v1"
             if eager_execution_width_quantum
             else "mlx_eager_auxiliary_objective_v1"
@@ -4296,10 +4555,19 @@ def train_phase(
             "float32_master" if master_model is not None else compute_dtype_name
         ),
         "compile_width_quantum": (
-            compile_width_quantum if compiled_step is not None else 0
+            compile_width_quantum if compiled_training_active else 0
         ),
         "compiled_microbatch_size": (
-            compiled_microbatch_size if compiled_step is not None else 0
+            compiled_microbatch_size if compiled_training_active else 0
+        ),
+        "compiled_random_state_captured": compiled_training_active,
+        "compiled_split_gradient_accumulation": (
+            compiled_gradient_step is not None
+        ),
+        "compiled_split_objective_normalization": (
+            "full_logical_batch_token_gate_and_copyable_mass_v1"
+            if compiled_gradient_step is not None
+            else "not_applicable"
         ),
         "sampling_effective_size": (
             round(float(1.0 / np.square(probabilities).sum()), 3)

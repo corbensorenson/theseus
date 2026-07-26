@@ -1886,6 +1886,9 @@ def build_plan(
         "specialist_data_scaling": specialist_scaling,
         "checkpoint_inventory": checkpoint_inventory,
         "comparison_contract": config["comparison_contract"],
+        "execution_policy": copy.deepcopy(
+            (config.get("training") or {}).get("execution_policy") or {}
+        ),
         "plan_identity": config.get("plan_identity") or {},
         "candidate_canary_context": {
             "active": candidate_lease is not None,
@@ -9249,12 +9252,22 @@ def train_target(
         model.freeze_to_language_expert(expert_scope)
     authoritative_model = model
     master_model = None
-    compute_dtype_name = str(
-        candidate_execution_policy.get("compute_dtype") or "float32"
+    production_execution_policy = (
+        dict((config.get("training") or {}).get("execution_policy") or {})
+        if candidate_initialization_state is None
+        else {}
     )
-    if candidate_execution_policy.get("fp32_master") is True:
+    compute_execution_policy = (
+        candidate_execution_policy
+        if candidate_initialization_state is not None
+        else production_execution_policy
+    )
+    compute_dtype_name = str(
+        compute_execution_policy.get("compute_dtype") or "float32"
+    )
+    if compute_execution_policy.get("fp32_master") is True:
         if compute_dtype_name != "bfloat16":
-            raise ValueError("candidate FP32 master requires bfloat16 execution")
+            raise ValueError("FP32 master requires bfloat16 execution")
         master_model = authoritative_model
         model = build_model(
             model_config,
@@ -9468,13 +9481,18 @@ def train_target(
         optim=optim,
         mx=mx,
     )
-    # Candidate-specific optimizer mechanics use the stable eager route.  The
-    # production AdamW control keeps its previously qualified compiled path;
-    # compiled Muon/schedule-free qualification is a separate resource gate.
+    # Candidate-specific optimizer mechanics use the stable eager route.
+    # Ordinary campaign targets use the phase-specific execution policy that
+    # was qualified against the immutable trunk.
     optimizer_training_step_mode = (
         "eager"
         if optimizer_id or candidate_execution_policy.get("optimizer_id")
-        else "auto"
+        else str(
+            (
+                production_execution_policy.get("pretraining") or {}
+            ).get("training_step_mode")
+            or "auto"
+        )
     )
     prior_steps = 0
     prior_pretrain_positions = 0
@@ -9912,6 +9930,18 @@ def train_target(
         raise ValueError(
             "token-loss position chunking requires objective gradient decomposition"
         )
+    base_causal_loss = (
+        partial(causal_loss, token_loss_compute_dtype="float32")
+        if (
+            compute_dtype_name == "bfloat16"
+            and str(
+                compute_execution_policy.get("token_loss_compute_dtype")
+                or "model"
+            )
+            == "float32"
+        )
+        else causal_loss
+    )
     loss_and_grad = (
         partial(
             decomposed_checkpointed_causal_loss_and_grad,
@@ -9922,8 +9952,20 @@ def train_target(
             model,
             checkpointed_causal_loss
             if objective_gradient_checkpointing_active
-            else causal_loss,
+            else base_causal_loss,
         )
+    )
+    pretraining_execution = dict(
+        production_execution_policy.get("pretraining") or {}
+    )
+    source_execution = dict(
+        production_execution_policy.get(
+            "source_conditioned_pretraining"
+        )
+        or {}
+    )
+    supervision_execution = dict(
+        production_execution_policy.get("supervision") or {}
     )
     pretrain_seed, pretrain_cursor = phase_resume_state(
         "pretraining", effective_seed + prior_steps
@@ -9963,7 +10005,22 @@ def train_target(
         checkpoint_callback=commit_progress_checkpoint,
         source_conditioning=False,
         step_boundary_callback=step_boundary_callback,
-        training_step_mode=optimizer_training_step_mode,
+        training_step_mode=str(
+            pretraining_execution.get("training_step_mode")
+            or optimizer_training_step_mode
+        ),
+        compiled_microbatch_size=int(
+            pretraining_execution.get("compiled_microbatch_size") or 4
+        ),
+        compile_width_quantum=int(
+            pretraining_execution.get("compile_width_quantum") or 64
+        ),
+        eager_gradient_accumulation_microbatch_size=int(
+            pretraining_execution.get(
+                "eager_gradient_accumulation_microbatch_size"
+            )
+            or 0
+        ),
         master_model=master_model,
         compute_dtype_name=compute_dtype_name,
     )
@@ -10022,7 +10079,23 @@ def train_target(
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
             step_boundary_callback=step_boundary_callback,
-            training_step_mode=optimizer_training_step_mode,
+            source_to_target_lookup=copy_lookup,
+            training_step_mode=str(
+                source_execution.get("training_step_mode")
+                or optimizer_training_step_mode
+            ),
+            compiled_microbatch_size=int(
+                source_execution.get("compiled_microbatch_size") or 4
+            ),
+            compile_width_quantum=int(
+                source_execution.get("compile_width_quantum") or 64
+            ),
+            eager_gradient_accumulation_microbatch_size=int(
+                source_execution.get(
+                    "eager_gradient_accumulation_microbatch_size"
+                )
+                or 0
+            ),
             master_model=master_model,
             compute_dtype_name=compute_dtype_name,
         )
@@ -10361,6 +10434,7 @@ def train_target(
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
             step_boundary_callback=step_boundary_callback,
+            source_to_target_lookup=copy_lookup,
             training_step_mode=optimizer_training_step_mode,
             clear_device_cache_before_step=bool(
                 candidate_execution_policy.get("clear_mlx_cache_before_step", False)
@@ -10541,7 +10615,23 @@ def train_target(
             optim=optim,
             checkpoint_callback=commit_progress_checkpoint,
             step_boundary_callback=step_boundary_callback,
-            training_step_mode=optimizer_training_step_mode,
+            source_to_target_lookup=copy_lookup,
+            training_step_mode=str(
+                supervision_execution.get("training_step_mode")
+                or optimizer_training_step_mode
+            ),
+            compiled_microbatch_size=int(
+                supervision_execution.get("compiled_microbatch_size") or 4
+            ),
+            compile_width_quantum=int(
+                supervision_execution.get("compile_width_quantum") or 64
+            ),
+            eager_gradient_accumulation_microbatch_size=int(
+                supervision_execution.get(
+                    "eager_gradient_accumulation_microbatch_size"
+                )
+                or 0
+            ),
             master_model=master_model,
             compute_dtype_name=compute_dtype_name,
         )

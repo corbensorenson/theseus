@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import hashlib
 import json
 import math
@@ -76,8 +77,48 @@ def main() -> int:
     parser.add_argument("--training-pair-steps", type=int, default=24)
     parser.add_argument("--training-pair-repetitions", type=int, default=3)
     parser.add_argument("--compiled-microbatch-size", type=int, default=4)
+    parser.add_argument("--compile-width-quantum", type=int, default=64)
+    parser.add_argument(
+        "--bf16-clear-device-cache-after-step",
+        action="store_true",
+        help="Clear the MLX allocator cache after each BF16 optimizer update.",
+    )
+    parser.add_argument(
+        "--fp32-clear-device-cache-after-step",
+        action="store_true",
+        help="Clear the MLX allocator cache after each FP32 optimizer update.",
+    )
     parser.add_argument("--precision-pair-steps", type=int, default=8)
     parser.add_argument("--precision-pair-repetitions", type=int, default=2)
+    parser.add_argument(
+        "--precision-resume-only",
+        action="store_true",
+        help="Run only the immutable compiled checkpoint/resume qualification.",
+    )
+    parser.add_argument(
+        "--precision-pair-only",
+        action="store_true",
+        help="Run only alternating FP32/BF16 throughput and loss qualification.",
+    )
+    parser.add_argument(
+        "--training-pair-only",
+        action="store_true",
+        help="Run only alternating eager/compiled training qualification.",
+    )
+    parser.add_argument(
+        "--training-phase",
+        choices=(
+            "pretraining",
+            "source_conditioned_pretraining",
+            "supervision",
+        ),
+        default="pretraining",
+    )
+    parser.add_argument(
+        "--precision-mode",
+        choices=("float32", "bfloat16_fp32_master"),
+        default="bfloat16_fp32_master",
+    )
     parser.add_argument("--metal-trace-out", default="")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
@@ -91,10 +132,126 @@ def main() -> int:
         parser.error("--training-pair-repetitions must be at least two")
     if args.compiled_microbatch_size < 1:
         parser.error("--compiled-microbatch-size must be positive")
+    if args.compile_width_quantum < 1:
+        parser.error("--compile-width-quantum must be positive")
     if args.precision_pair_steps < 2:
         parser.error("--precision-pair-steps must be at least two")
     if args.precision_pair_repetitions < 2:
         parser.error("--precision-pair-repetitions must be at least two")
+
+    focused_modes = sum(
+        bool(value)
+        for value in (
+            args.precision_resume_only,
+            args.precision_pair_only,
+            args.training_pair_only,
+        )
+    )
+    if focused_modes > 1:
+        parser.error("choose only one focused training qualification")
+    if args.training_pair_only:
+        if not args.execute:
+            parser.error("--training-pair-only requires --execute")
+        report = run_training_pair_entry(
+            config_path=resolve(args.config),
+            steps=args.training_pair_steps,
+            repetitions=args.training_pair_repetitions,
+            compiled_microbatch_size=args.compiled_microbatch_size,
+            compile_width_quantum=args.compile_width_quantum,
+            training_phase=args.training_phase,
+            precision_mode=args.precision_mode,
+        )
+        write_json(resolve(args.out), report)
+        print(
+            json.dumps(
+                {
+                    "policy": report.get("policy"),
+                    "created_utc": report.get("created_utc"),
+                    "trigger_state": report.get("trigger_state"),
+                    "training_phase": report.get("training_phase"),
+                    "precision_mode": report.get("precision_mode"),
+                    "compiled_microbatch_size": report.get(
+                        "compiled_microbatch_size"
+                    ),
+                    "median_speedup": report.get("median_speedup"),
+                    "pooled_speedup": report.get("pooled_speedup"),
+                    "hard_gaps": report.get("hard_gaps") or [],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2 if report.get("trigger_state") == "RED" else 0
+
+    if args.precision_pair_only:
+        if not args.execute:
+            parser.error("--precision-pair-only requires --execute")
+        report = run_precision_pair_entry(
+            config_path=resolve(args.config),
+            steps=args.precision_pair_steps,
+            repetitions=args.precision_pair_repetitions,
+            compiled_microbatch_size=args.compiled_microbatch_size,
+            compile_width_quantum=args.compile_width_quantum,
+            bf16_clear_device_cache_after_step=(
+                args.bf16_clear_device_cache_after_step
+            ),
+            fp32_clear_device_cache_after_step=(
+                args.fp32_clear_device_cache_after_step
+            ),
+        )
+        write_json(resolve(args.out), report)
+        print(
+            json.dumps(
+                {
+                    "policy": report.get("policy"),
+                    "created_utc": report.get("created_utc"),
+                    "trigger_state": report.get("trigger_state"),
+                    "compiled_microbatch_size": report.get(
+                        "compiled_microbatch_size"
+                    ),
+                    "compile_width_quantum": report.get("compile_width_quantum"),
+                    "median_speedup": report.get("median_speedup"),
+                    "pooled_speedup": report.get("pooled_speedup"),
+                    "adopt": report.get("adopt"),
+                    "hard_gaps": report.get("hard_gaps") or [],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2 if report.get("trigger_state") == "RED" else 0
+
+    if args.precision_resume_only:
+        if not args.execute:
+            parser.error("--precision-resume-only requires --execute")
+        report = run_precision_resume_entry(
+            config_path=resolve(args.config),
+            steps=args.precision_pair_steps,
+            compiled_microbatch_size=args.compiled_microbatch_size,
+            compile_width_quantum=args.compile_width_quantum,
+            precision_mode=args.precision_mode,
+        )
+        write_json(resolve(args.out), report)
+        print(
+            json.dumps(
+                {
+                    "policy": report.get("policy"),
+                    "created_utc": report.get("created_utc"),
+                    "trigger_state": report.get("trigger_state"),
+                    "precision_mode": report.get("precision_mode"),
+                    "compiled_microbatch_size": report.get(
+                        "compiled_microbatch_size"
+                    ),
+                    "compile_width_quantum": report.get("compile_width_quantum"),
+                    "data_order_exact": report.get("data_order_exact"),
+                    "data_cursor_exact": report.get("data_cursor_exact"),
+                    "hard_gaps": report.get("hard_gaps") or [],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2 if report.get("trigger_state") == "RED" else 0
 
     metal_trace_path = resolve(args.metal_trace_out) if args.metal_trace_out else None
     if metal_trace_path is not None:
@@ -110,6 +267,7 @@ def main() -> int:
         training_pair_steps=args.training_pair_steps,
         training_pair_repetitions=args.training_pair_repetitions,
         compiled_microbatch_size=args.compiled_microbatch_size,
+        compile_width_quantum=args.compile_width_quantum,
         precision_pair_steps=args.precision_pair_steps,
         precision_pair_repetitions=args.precision_pair_repetitions,
         metal_trace_path=metal_trace_path,
@@ -119,6 +277,244 @@ def main() -> int:
     write_text(resolve(args.markdown_out), render_markdown(report))
     print(json.dumps(report_summary(report), indent=2, sort_keys=True))
     return 0 if report["trigger_state"] != "RED" else 2
+
+
+def run_precision_resume_entry(
+    *,
+    config_path: Path,
+    steps: int,
+    compiled_microbatch_size: int,
+    compile_width_quantum: int,
+    precision_mode: str,
+) -> dict[str, Any]:
+    """Bind the focused precision-resume probe to the canonical durable state."""
+
+    config = training.bind_scale_preregistration(read_json(config_path))
+    plan = training.build_plan(config, config_path=config_path)
+    target = (plan.get("targets") or {}).get(training.SHARED_TRUNK_ID) or {}
+    receipt_path = resolve(str(target.get("receipt") or ""))
+    receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+    checkpoint = resolve(str(receipt.get("checkpoint") or target.get("checkpoint") or ""))
+    optimizer_path = resolve(
+        str(receipt.get("optimizer_state") or target.get("optimizer_state") or "")
+    )
+    gaps = []
+    if not checkpoint.is_file():
+        gaps.append("shared_trunk_checkpoint_missing")
+    if not optimizer_path.is_file():
+        gaps.append("shared_trunk_optimizer_state_missing")
+    if not gaps:
+        try:
+            training.validate_resume(
+                receipt,
+                plan,
+                target,
+                checkpoint,
+                optimizer_path,
+            )
+        except ValueError as exc:
+            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+    if gaps:
+        return {
+            "policy": "project_theseus_focused_precision_resume_qualification_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": gaps,
+        }
+    result = run_precision_resume_qualification(
+        config=config,
+        plan=plan,
+        target=target,
+        checkpoint=checkpoint,
+        optimizer_path=optimizer_path,
+        steps=steps,
+        compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
+        precision_mode=precision_mode,
+    )
+    return {
+        **result,
+        "policy": "project_theseus_focused_precision_resume_qualification_v1",
+        "created_utc": now(),
+        "trigger_state": result.get("state"),
+        "source_precision_policy": result.get("policy"),
+        "training_config": {
+            "path": relative(config_path),
+            "sha256": file_sha256(config_path),
+        },
+        "starting_checkpoint_sha256": file_sha256(checkpoint),
+        "starting_optimizer_state_sha256": file_sha256(optimizer_path),
+        "compiled_microbatch_size": compiled_microbatch_size,
+        "compile_width_quantum": compile_width_quantum,
+        "hard_gaps": (
+            ["precision_checkpoint_reload_integrity_fault"]
+            if result.get("state") == "RED"
+            else []
+        ),
+        "open_conditions": (
+            ["precision_trajectory_repeatability_not_exact"]
+            if result.get("state") == "YELLOW"
+            else []
+        ),
+    }
+
+
+def run_precision_pair_entry(
+    *,
+    config_path: Path,
+    steps: int,
+    repetitions: int,
+    compiled_microbatch_size: int,
+    compile_width_quantum: int,
+    bf16_clear_device_cache_after_step: bool = False,
+    fp32_clear_device_cache_after_step: bool = False,
+) -> dict[str, Any]:
+    """Bind a focused FP32/BF16 pair to the canonical immutable checkpoint."""
+
+    config = training.bind_scale_preregistration(read_json(config_path))
+    plan = training.build_plan(config, config_path=config_path)
+    target = (plan.get("targets") or {}).get(training.SHARED_TRUNK_ID) or {}
+    receipt_path = resolve(str(target.get("receipt") or ""))
+    receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+    checkpoint = resolve(str(receipt.get("checkpoint") or target.get("checkpoint") or ""))
+    optimizer_path = resolve(
+        str(receipt.get("optimizer_state") or target.get("optimizer_state") or "")
+    )
+    gaps = []
+    if not checkpoint.is_file():
+        gaps.append("shared_trunk_checkpoint_missing")
+    if not optimizer_path.is_file():
+        gaps.append("shared_trunk_optimizer_state_missing")
+    if not gaps:
+        try:
+            training.validate_resume(
+                receipt,
+                plan,
+                target,
+                checkpoint,
+                optimizer_path,
+            )
+        except ValueError as exc:
+            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+    if gaps:
+        return {
+            "policy": "project_theseus_focused_precision_pair_qualification_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": gaps,
+        }
+    result = run_precision_pair_qualification(
+        config=config,
+        plan=plan,
+        target=target,
+        checkpoint=checkpoint,
+        optimizer_path=optimizer_path,
+        steps=steps,
+        repetitions=repetitions,
+        compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
+        bf16_clear_device_cache_after_step=bf16_clear_device_cache_after_step,
+        fp32_clear_device_cache_after_step=fp32_clear_device_cache_after_step,
+    )
+    return {
+        **result,
+        "policy": "project_theseus_focused_precision_pair_qualification_v1",
+        "created_utc": now(),
+        "trigger_state": result.get("state"),
+        "source_precision_policy": result.get("policy"),
+        "training_config": {
+            "path": relative(config_path),
+            "sha256": file_sha256(config_path),
+        },
+        "starting_checkpoint_sha256": file_sha256(checkpoint),
+        "starting_optimizer_state_sha256": file_sha256(optimizer_path),
+        "compiled_microbatch_size": compiled_microbatch_size,
+        "compile_width_quantum": compile_width_quantum,
+        "bf16_clear_device_cache_after_step": bool(
+            bf16_clear_device_cache_after_step
+        ),
+        "fp32_clear_device_cache_after_step": bool(
+            fp32_clear_device_cache_after_step
+        ),
+        "hard_gaps": (
+            ["mixed_precision_numeric_or_loss_integrity_fault"]
+            if result.get("state") == "RED"
+            else []
+        ),
+    }
+
+
+def run_training_pair_entry(
+    *,
+    config_path: Path,
+    steps: int,
+    repetitions: int,
+    compiled_microbatch_size: int,
+    compile_width_quantum: int,
+    training_phase: str,
+    precision_mode: str,
+) -> dict[str, Any]:
+    """Bind a focused eager/compiled phase pair to the immutable trunk."""
+
+    config = training.bind_scale_preregistration(read_json(config_path))
+    plan = training.build_plan(config, config_path=config_path)
+    target = (plan.get("targets") or {}).get(training.SHARED_TRUNK_ID) or {}
+    receipt_path = resolve(str(target.get("receipt") or ""))
+    receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+    checkpoint = resolve(str(receipt.get("checkpoint") or target.get("checkpoint") or ""))
+    optimizer_path = resolve(
+        str(receipt.get("optimizer_state") or target.get("optimizer_state") or "")
+    )
+    gaps = []
+    if not checkpoint.is_file():
+        gaps.append("shared_trunk_checkpoint_missing")
+    if not optimizer_path.is_file():
+        gaps.append("shared_trunk_optimizer_state_missing")
+    if not gaps:
+        try:
+            training.validate_resume(
+                receipt,
+                plan,
+                target,
+                checkpoint,
+                optimizer_path,
+            )
+        except ValueError as exc:
+            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+    if gaps:
+        return {
+            "policy": "project_theseus_focused_training_pair_qualification_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": gaps,
+        }
+    result = run_training_pair_qualification(
+        config=config,
+        plan=plan,
+        target=target,
+        checkpoint=checkpoint,
+        optimizer_path=optimizer_path,
+        steps=steps,
+        repetitions=repetitions,
+        compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
+        training_phase=training_phase,
+        precision_mode=precision_mode,
+    )
+    return {
+        **result,
+        "policy": "project_theseus_focused_training_pair_qualification_v1",
+        "created_utc": now(),
+        "trigger_state": result.get("state"),
+        "source_training_policy": result.get("policy"),
+        "training_phase": training_phase,
+        "precision_mode": precision_mode,
+        "training_config": {
+            "path": relative(config_path),
+            "sha256": file_sha256(config_path),
+        },
+        "hard_gaps": [],
+    }
 
 
 def qualify(
@@ -133,6 +529,7 @@ def qualify(
     training_pair_steps: int,
     training_pair_repetitions: int,
     compiled_microbatch_size: int,
+    compile_width_quantum: int,
     precision_pair_steps: int,
     precision_pair_repetitions: int,
     metal_trace_path: Path | None,
@@ -214,6 +611,7 @@ def qualify(
             steps=training_pair_steps,
             repetitions=training_pair_repetitions,
             compiled_microbatch_size=compiled_microbatch_size,
+            compile_width_quantum=compile_width_quantum,
         )
         training_evidence["paired_canary"] = training_pair
         pair_acceptance = training_pair.get("acceptance") or {}
@@ -236,6 +634,7 @@ def qualify(
                 checkpoint=checkpoint,
                 optimizer_path=optimizer,
                 compiled_microbatch_size=compiled_microbatch_size,
+                compile_width_quantum=compile_width_quantum,
                 output_path=metal_trace_path,
             )
             if metal_trace.get("state") != "GREEN":
@@ -249,6 +648,7 @@ def qualify(
             steps=precision_pair_steps,
             repetitions=precision_pair_repetitions,
             compiled_microbatch_size=compiled_microbatch_size,
+            compile_width_quantum=compile_width_quantum,
         )
         training_evidence["precision_autotune"] = precision
         if precision.get("state") == "RED":
@@ -261,6 +661,7 @@ def qualify(
             optimizer_path=optimizer,
             steps=precision_pair_steps,
             compiled_microbatch_size=compiled_microbatch_size,
+            compile_width_quantum=compile_width_quantum,
         )
         training_evidence["bf16_checkpoint_resume"] = precision_resume
         fp32_resume = run_precision_resume_qualification(
@@ -271,6 +672,7 @@ def qualify(
             optimizer_path=optimizer,
             steps=precision_pair_steps,
             compiled_microbatch_size=min(4, compiled_microbatch_size),
+            compile_width_quantum=compile_width_quantum,
             precision_mode="float32",
         )
         training_evidence["fp32_checkpoint_resume"] = fp32_resume
@@ -760,6 +1162,9 @@ def run_training_pair_qualification(
     steps: int,
     repetitions: int = 3,
     compiled_microbatch_size: int = 4,
+    compile_width_quantum: int = 64,
+    training_phase: str = "pretraining",
+    precision_mode: str = "float32",
 ) -> dict[str, Any]:
     """Compare repeated eager/compiled updates from identical durable state."""
 
@@ -775,6 +1180,8 @@ def run_training_pair_qualification(
         optimizer_path=optimizer_path,
         steps=steps,
         compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
+        training_phase=training_phase,
     )
     mx = route_context["mx"]
     trials: list[dict[str, Any]] = []
@@ -801,7 +1208,13 @@ def run_training_pair_qualification(
             )
             mode_reports[mode] = run_training_route(
                 mode=mode,
+                precision_mode=precision_mode,
                 capture_parameter_snapshot=True,
+                eager_gradient_accumulation_microbatch_size=(
+                    compiled_microbatch_size
+                    if route_context["source_conditioning"]
+                    else 0
+                ),
                 **kernel_options,
                 **route_context,
             )
@@ -867,6 +1280,9 @@ def run_training_pair_qualification(
         "repetitions": repetitions,
         "route_order_control": "alternating eager-first and compiled-first",
         "compiled_microbatch_size": compiled_microbatch_size,
+        "compile_width_quantum": compile_width_quantum,
+        "training_phase": training_phase,
+        "precision_mode": precision_mode,
         "eager": eager,
         "compiled": compiled,
         "trials": trials,
@@ -896,11 +1312,17 @@ def run_precision_pair_qualification(
     steps: int,
     repetitions: int,
     compiled_microbatch_size: int,
+    compile_width_quantum: int = 64,
+    fp32_compiled_microbatch_size: int = 4,
+    bf16_clear_device_cache_after_step: bool = False,
+    fp32_clear_device_cache_after_step: bool = False,
 ) -> dict[str, Any]:
     """Compare fp32 compiled training with bf16 compute and fp32 master weights."""
 
     if repetitions < 2:
         raise ValueError("precision qualification requires at least two repetitions")
+    if fp32_compiled_microbatch_size < 1:
+        raise ValueError("FP32 compiled microbatch size must be positive")
     route_context = build_training_route_context(
         config=config,
         plan=plan,
@@ -909,6 +1331,7 @@ def run_precision_pair_qualification(
         optimizer_path=optimizer_path,
         steps=steps,
         compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
     )
     mx = route_context["mx"]
     trials: list[dict[str, Any]] = []
@@ -920,13 +1343,26 @@ def run_precision_pair_qualification(
         )
         routes: dict[str, dict[str, Any]] = {}
         for precision_mode in route_order:
-            if hasattr(mx, "clear_cache"):
-                mx.clear_cache()
+            release_accelerator_route_state(mx)
+            route_microbatch_size = (
+                fp32_compiled_microbatch_size
+                if precision_mode == "float32"
+                else compiled_microbatch_size
+            )
             routes[precision_mode] = run_training_route(
                 mode="compiled",
                 precision_mode=precision_mode,
-                **route_context,
+                **{
+                    **route_context,
+                    "compiled_microbatch_size": route_microbatch_size,
+                    "clear_device_cache_after_step": (
+                        bool(bf16_clear_device_cache_after_step)
+                        if precision_mode == "bfloat16_fp32_master"
+                        else bool(fp32_clear_device_cache_after_step)
+                    ),
+                },
             )
+            release_accelerator_route_state(mx)
         baseline = routes["float32"]
         candidate = routes["bfloat16_fp32_master"]
         baseline_rate = float(baseline["warmup_excluded_positions_per_second"])
@@ -994,6 +1430,14 @@ def run_precision_pair_qualification(
         "candidate": "bfloat16_compute_fp32_master_weights_and_optimizer",
         "same_starting_checkpoint_and_optimizer": True,
         "same_data_order_batch_schedule_objective_and_update_count": True,
+        "fp32_compiled_microbatch_size": fp32_compiled_microbatch_size,
+        "bf16_compiled_microbatch_size": compiled_microbatch_size,
+        "bf16_clear_device_cache_after_step": bool(
+            bf16_clear_device_cache_after_step
+        ),
+        "fp32_clear_device_cache_after_step": bool(
+            fp32_clear_device_cache_after_step
+        ),
         "steps_per_route_per_repetition": steps,
         "repetitions": repetitions,
         "route_order_control": "alternating fp32-first and bf16-first",
@@ -1015,6 +1459,14 @@ def run_precision_pair_qualification(
     }
 
 
+def release_accelerator_route_state(mx: Any) -> None:
+    """Release cyclic model objects before the next same-process Metal route."""
+
+    gc.collect()
+    if hasattr(mx, "clear_cache"):
+        mx.clear_cache()
+
+
 def run_precision_resume_qualification(
     *,
     config: dict[str, Any],
@@ -1024,6 +1476,7 @@ def run_precision_resume_qualification(
     optimizer_path: Path,
     steps: int,
     compiled_microbatch_size: int,
+    compile_width_quantum: int = 64,
     precision_mode: str = "bfloat16_fp32_master",
 ) -> dict[str, Any]:
     """Prove selected precision state and data order survive a real reload."""
@@ -1040,10 +1493,10 @@ def run_precision_resume_qualification(
         optimizer_path=optimizer_path,
         steps=steps,
         compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
     )
     mx = context["mx"]
-    if hasattr(mx, "clear_cache"):
-        mx.clear_cache()
+    release_accelerator_route_state(mx)
     uninterrupted = run_training_route(
         mode="compiled",
         precision_mode=precision_mode,
@@ -1057,8 +1510,7 @@ def run_precision_resume_qualification(
     uninterrupted_rng = uninterrupted.pop("_rng_snapshot")
 
     first_context = {**context, "steps": first_steps}
-    if hasattr(mx, "clear_cache"):
-        mx.clear_cache()
+    release_accelerator_route_state(mx)
     first = run_training_route(
         mode="compiled",
         precision_mode=precision_mode,
@@ -1096,8 +1548,7 @@ def run_precision_resume_qualification(
             "optimizer_path": resumed_optimizer,
             "steps": second_steps,
         }
-        if hasattr(mx, "clear_cache"):
-            mx.clear_cache()
+        release_accelerator_route_state(mx)
         reloaded_rng = {
             name: value for name, value in mx.load(str(resumed_rng)).items()
         }
@@ -1150,19 +1601,56 @@ def run_precision_resume_qualification(
     final_loss_delta = abs(
         float(resumed["final_loss"]) - float(uninterrupted["final_loss"])
     )
-    state = "GREEN" if all(
+    uninterrupted_first_losses = [
+        float(value)
+        for value in (uninterrupted.get("loss_prefix") or [])[:first_steps]
+    ]
+    split_first_losses = [
+        float(value) for value in (first.get("loss_prefix") or [])[:first_steps]
+    ]
+    first_segment_max_loss_delta = (
+        max(
+            abs(left - right)
+            for left, right in zip(
+                uninterrupted_first_losses,
+                split_first_losses,
+                strict=True,
+            )
+        )
+        if uninterrupted_first_losses
+        and len(uninterrupted_first_losses) == len(split_first_losses)
+        else float("inf")
+    )
+    reload_boundary_exact = all(
+        comparison.get("within_tolerance") is True
+        for comparison in (
+            reload_parameter_comparison,
+            reload_optimizer_comparison,
+            reload_rng_comparison,
+        )
+    )
+    trajectory_repeatable = all(
         (
             parameter_comparison.get("within_tolerance") is True,
             optimizer_comparison.get("within_tolerance") is True,
-            rng_comparison.get("within_tolerance") is True,
-            reload_parameter_comparison.get("within_tolerance") is True,
-            reload_optimizer_comparison.get("within_tolerance") is True,
-            reload_rng_comparison.get("within_tolerance") is True,
-            exact_data_order,
-            exact_cursor,
             final_loss_delta <= MAX_FINAL_LOSS_ABSOLUTE_DELTA,
         )
-    ) else "RED"
+    )
+    custody_integrity = all(
+        (
+            reload_boundary_exact,
+            rng_comparison.get("within_tolerance") is True,
+            exact_data_order,
+            exact_cursor,
+        )
+    )
+    state = (
+        "RED"
+        if not custody_integrity
+        else "GREEN"
+        if trajectory_repeatable
+        else "YELLOW"
+    )
     return {
         "policy": "project_theseus_mlx_precision_checkpoint_resume_v1",
         "state": state,
@@ -1175,6 +1663,16 @@ def run_precision_resume_qualification(
         "checkpoint_publication": checkpoint_receipt,
         "data_order_exact": exact_data_order,
         "data_cursor_exact": exact_cursor,
+        "checkpoint_reload_state": "GREEN" if reload_boundary_exact else "RED",
+        "trajectory_repeatability_state": (
+            "GREEN" if trajectory_repeatable else "YELLOW"
+        ),
+        "trajectory_divergence_predates_checkpoint": (
+            first_segment_max_loss_delta > MAX_FINAL_LOSS_ABSOLUTE_DELTA
+        ),
+        "first_segment_max_loss_absolute_delta": round(
+            first_segment_max_loss_delta, 12
+        ),
         "batch_index_sha256": hashlib.sha256(
             json.dumps(batch_hashes, separators=(",", ":")).encode()
         ).hexdigest(),
@@ -1220,6 +1718,7 @@ def run_metal_trace_qualification(
     checkpoint: Path,
     optimizer_path: Path,
     compiled_microbatch_size: int,
+    compile_width_quantum: int = 64,
     output_path: Path,
     precision_mode: str = "float32",
 ) -> dict[str, Any]:
@@ -1240,6 +1739,7 @@ def run_metal_trace_qualification(
         optimizer_path=optimizer_path,
         steps=2,
         compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
     )
     mx = context["mx"]
     capture_started = False
@@ -1303,6 +1803,7 @@ def run_metal_trace_qualification(
             "captured_optimizer_steps": [2],
             "compile_and_first_step_excluded": True,
             "compiled_microbatch_size": compiled_microbatch_size,
+            "compile_width_quantum": compile_width_quantum,
             "precision_mode": precision_mode,
             "checkpoint_or_training_state_written": False,
             "public_training_rows": 0,
@@ -1323,6 +1824,7 @@ def run_metal_trace_qualification(
         "captured_optimizer_steps": [2],
         "compile_and_first_step_excluded": True,
         "compiled_microbatch_size": compiled_microbatch_size,
+        "compile_width_quantum": compile_width_quantum,
         "precision_mode": precision_mode,
         "checkpoint_or_training_state_written": False,
         "public_training_rows": 0,
@@ -1341,6 +1843,8 @@ def build_training_route_context(
     optimizer_path: Path,
     steps: int,
     compiled_microbatch_size: int,
+    compile_width_quantum: int = 64,
+    training_phase: str = "pretraining",
 ) -> dict[str, Any]:
     """Materialize one immutable route context shared by acceleration comparisons."""
 
@@ -1368,13 +1872,47 @@ def build_training_route_context(
     )
     memmap_open_seconds = time.perf_counter() - open_started
     view_started = time.perf_counter()
-    inputs = training.range_view(arrays[0], target["row_ranges"])
-    labels = training.range_view(arrays[1], target["row_ranges"])
-    mask = training.range_view(arrays[2], target["row_ranges"])
+    if training_phase == "pretraining":
+        inputs = training.range_view(arrays[0], target["row_ranges"])
+        labels = training.range_view(arrays[1], target["row_ranges"])
+        mask = training.range_view(arrays[2], target["row_ranges"])
+        progress_mask = mask
+        source_conditioning = False
+        phase_receipt = {
+            "policy": "canonical_pretraining_memmap_range_view_v1",
+            "row_count": len(inputs),
+        }
+    elif training_phase in {
+        "source_conditioned_pretraining",
+        "supervision",
+    }:
+        materialize_kwargs = {}
+        if training_phase == "source_conditioned_pretraining":
+            materialize_kwargs = {
+                "artifact_field": "source_conditioned_artifacts",
+                "receipt_policy": (
+                    "project_theseus_moecot_source_conditioned_arrays_v1"
+                ),
+            }
+        phase_stage = training.materialize_target_supervision(
+            config,
+            base,
+            target,
+            metadata=metadata,
+            **materialize_kwargs,
+        )
+        inputs = phase_stage.inputs
+        labels = phase_stage.labels
+        mask = phase_stage.loss_mask
+        progress_mask = phase_stage.mask
+        source_conditioning = True
+        phase_receipt = phase_stage.receipt
+    else:
+        raise ValueError(f"unsupported acceleration training phase: {training_phase}")
     range_view_seconds = time.perf_counter() - view_started
     training_cfg = config["training"]
     total_schedule_steps = training.required_steps(
-        mask,
+        progress_mask,
         int(training_cfg["batch_size"]),
         int(target["optimizer_target_positions"]),
     ) + 128
@@ -1395,9 +1933,14 @@ def build_training_route_context(
         "optimizer_path": optimizer_path,
         "steps": steps,
         "compiled_microbatch_size": compiled_microbatch_size,
+        "compile_width_quantum": compile_width_quantum,
         "inputs": inputs,
         "labels": labels,
         "mask": mask,
+        "progress_mask": progress_mask,
+        "source_conditioning": source_conditioning,
+        "training_phase": training_phase,
+        "phase_receipt": phase_receipt,
         "copy_lookup": copy_lookup,
         "total_schedule_steps": total_schedule_steps,
         "receipt": read_json(resolve(str(target["receipt"]))),
@@ -1425,9 +1968,14 @@ def run_training_route(
     optimizer_path: Path,
     steps: int,
     compiled_microbatch_size: int,
+    compile_width_quantum: int,
     inputs: Any,
     labels: Any,
     mask: Any,
+    progress_mask: Any,
+    source_conditioning: bool,
+    training_phase: str,
+    phase_receipt: dict[str, Any],
     copy_lookup: Any,
     total_schedule_steps: int,
     receipt: dict[str, Any],
@@ -1446,6 +1994,8 @@ def run_training_route(
     step_boundary_callback: Any = None,
     rope_kernel: str = "mlx_fast",
     prune_inactive_auxiliary_outputs: bool = True,
+    clear_device_cache_after_step: bool = False,
+    eager_gradient_accumulation_microbatch_size: int = 0,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
@@ -1522,7 +2072,7 @@ def run_training_route(
             f"state.{index}": np.asarray(value).copy()
             for index, value in enumerate(mx.random.state)
         }
-    if master_model is not None:
+    if master_model is not None and source_conditioning is False:
         loss_function = mixed_precision_token_loss
     elif prune_inactive_auxiliary_outputs:
         def loss_function(*loss_args: Any, **loss_kwargs: Any) -> Any:
@@ -1540,7 +2090,7 @@ def run_training_route(
         inputs,
         labels,
         mask,
-        progress_mask=mask,
+        progress_mask=progress_mask,
         ordered_plan_loss_weight=1.0,
         sample_weights=None,
         plan_labels=None,
@@ -1550,7 +2100,7 @@ def run_training_route(
         plan_loss_mode="binary_multilabel",
         plan_slot_count=0,
         plan_factor_group_sizes=(),
-        phase_name=f"resource_acceleration_{mode}_reference",
+        phase_name=f"resource_acceleration_{training_phase}_{mode}_reference",
         target_positions=10**12,
         batch_size=int(training_cfg["batch_size"]),
         gradient_clip=float(training_cfg["gradient_clip_norm"]),
@@ -1567,14 +2117,20 @@ def run_training_route(
         resume_data_cursor=resume_data_cursor,
         mx=mx,
         optim=optim,
-        source_conditioning=False,
+        source_conditioning=source_conditioning,
+        source_to_target_lookup=copy_lookup,
         training_step_mode=mode,
         compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
+        eager_gradient_accumulation_microbatch_size=(
+            eager_gradient_accumulation_microbatch_size
+        ),
         master_model=master_model,
         compute_dtype_name=(
             "bfloat16" if master_model is not None else "float32"
         ),
         step_boundary_callback=step_boundary_callback,
+        clear_device_cache_after_step=clear_device_cache_after_step,
     )
     authoritative_model = master_model if master_model is not None else model
     observed = {
@@ -1627,6 +2183,9 @@ def run_training_route(
         "data_cursor_next": phase["data_cursor_next"],
         "batch_index_sha256_prefix": phase["batch_index_sha256_prefix"],
         "precision_mode": precision_mode,
+        "training_phase": training_phase,
+        "source_conditioning": source_conditioning,
+        "phase_receipt": phase_receipt,
         "rope_kernel": rope_kernel,
         "prune_inactive_auxiliary_outputs": prune_inactive_auxiliary_outputs,
         "compute_parameters": tree_numeric_receipt(
@@ -1735,9 +2294,12 @@ def mixed_precision_token_loss(
     nn: Any,
     *,
     source_conditioning: bool | None = None,
+    token_supervision_active: bool | None = None,
 ) -> Any:
     """Keep the token loss reduction in fp32 while the model computes in bf16."""
 
+    if token_supervision_active is not True:
+        raise ValueError("mixed-precision token route requires active token supervision")
     logits, _cache = model(inputs, source_conditioning=source_conditioning)
     token_loss = nn.losses.cross_entropy(logits.astype(mx.float32), labels)
     denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
@@ -1748,18 +2310,30 @@ def tree_numeric_receipt(tree: Any, *, mx: Any, mlx_utils: Any) -> dict[str, Any
     """Report dtypes and finite state without copying full tensors to the host."""
 
     rows = list(mlx_utils.tree_flatten(tree))
-    finite_checks = [mx.all(mx.isfinite(value)) for _name, value in rows if value.dtype in {
-        mx.float16,
-        mx.bfloat16,
-        mx.float32,
-    }]
-    if finite_checks:
-        mx.eval(*finite_checks)
+    numeric_dtypes = {mx.float16, mx.bfloat16, mx.float32}
+    finite_check_chunk_size = 32
+    all_finite = True
+    numeric_rows = [
+        (name, value) for name, value in rows if value.dtype in numeric_dtypes
+    ]
+    for start in range(0, len(numeric_rows), finite_check_chunk_size):
+        checks = [
+            mx.all(mx.isfinite(value))
+            for _name, value in numeric_rows[
+                start : start + finite_check_chunk_size
+            ]
+        ]
+        mx.eval(*checks)
+        all_finite = all_finite and all(bool(value.item()) for value in checks)
+        del checks
+        if hasattr(mx, "clear_cache"):
+            mx.clear_cache()
     return {
         "tensor_count": len(rows),
         "element_count": sum(int(value.size) for _name, value in rows),
         "dtypes": sorted({str(value.dtype) for _name, value in rows}),
-        "all_finite": all(bool(value.item()) for value in finite_checks),
+        "all_finite": all_finite,
+        "finite_check_chunk_size": finite_check_chunk_size,
     }
 
 

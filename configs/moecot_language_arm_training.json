@@ -323,6 +323,19 @@
         "reason": "Continue the exact immutable step-3000 model and AdamW bytes after adding an optional cache-offset-aware, grouped-query-mask-aware, NaN-safe online-softmax key/value attention route for resource-bounded candidate qualification. The canonical selected training policy leaves attention key chunking disabled, so model topology, forward math, tensors, optimizer bytes, data order, objective, schedule, evaluation surface, and optimizer position remain unchanged. The optional route has no authority until its exact guarded output/loss/gradient parity shard passes."
       },
       {
+        "migration_id": "shared_trunk_step3000_compiled_rng_width_and_source_split_abi_v2",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_optimizer_positions": 22999779,
+        "required_current_plan_sha256": "036742313ecee18ad721c3c35a16ae95d27ad16d341af04a0e75259a32c2dce6",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch tests/test_standard_causal_transformer_survival.py::test_compiled_source_conditioned_training_matches_eager_full_batch tests/test_standard_causal_transformer_survival.py::test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint scripts/resource_acceleration_qualification.py#run_precision_resume_entry",
+        "reason": "Continue the exact immutable step-3000 model, AdamW bytes, MLX RNG, sampler cursor, and optimizer position after making the compiled state ABI explicitly capture mx.random.state, exposing the existing width-padding quantum as a bounded acceleration autotune parameter, replacing an illegal tensor-to-Python token-authority branch with the identical host-known static fact on compiled nonzero-token batches, and adding source-conditioned split compilation. The source route compiles bounded forward/backward microbatches, accumulates gradients into exactly one logical batch update, and preserves token, generator-gate, and pointer-alignment normalization against full-batch objective mass. The selected default remains quantum 64, the current dense model contains no stochastic training module, and these changes do not modify model topology, objective mass, checkpoint tensors, optimizer bytes, data order, learning-rate schedule, evaluation surface, or current numerical policy. Exact eager/compiled and checkpoint/reload qualifications remain mandatory before promotion."
+      },
+      {
         "migration_id": "english_kerc_step4566_compiler_consolidation_coverage_safe_v1",
         "target_id": "english_kerc",
         "legacy_plan_sha256": "5df9c62f31f6f2ab2d34d2fa7af70e10ad31089369a35377b193996a68b27810",
@@ -534,7 +547,7 @@
         "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
         "legacy_optimizer_steps": 4657,
         "legacy_optimizer_positions": 457027,
-        "required_current_plan_sha256": "4d752e60dccf4faa27c57be3e2e6596431687563f479152d666342779e852d60",
+        "required_current_plan_sha256": "a6e40164ed6aac3a003fc6ea0b131eae8c6f1fea83a61bfd570771dd96abb2f2",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -549,7 +562,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "4d752e60dccf4faa27c57be3e2e6596431687563f479152d666342779e852d60",
+        "required_current_plan_sha256": "a6e40164ed6aac3a003fc6ea0b131eae8c6f1fea83a61bfd570771dd96abb2f2",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -564,7 +577,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "e7f137494214523fc82f4d365b8bdf2c53f2fcd7f0b0f6049dc1e36a4242f125",
+        "required_current_plan_sha256": "1114c8c2cf25036f93f6248d45dc781a4aabf274f5ed4445ce63006c8132f652",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -579,7 +592,7 @@
         "legacy_optimizer_state_sha256": "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197",
         "legacy_optimizer_steps": 4786,
         "legacy_optimizer_positions": 488090,
-        "required_current_plan_sha256": "4d752e60dccf4faa27c57be3e2e6596431687563f479152d666342779e852d60",
+        "required_current_plan_sha256": "a6e40164ed6aac3a003fc6ea0b131eae8c6f1fea83a61bfd570771dd96abb2f2",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_generation_rows16_seed_20260722.json",
         "reason": "Continue the exact step-4786 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-2 batch-2 sampler cursor after 128 updates gave every bounded population row two exposures but left the v4 root top-1 at 0/16 and raw admitted-row validity at 0/16. The next rung doubles minimum exposure from two to four using another 128 updates at the unchanged 3e-5 rate, v4 objective, same seed, same admitted rows, and same hard host gates. Preserve the sampler cursor: this migration intentionally has no reset_data_cursor_phase. Require teacher-forced root movement and raw admitted-row validity before any source-disjoint surface. This is an underfit-regime diagnostic, not a capability or architecture-falsification claim."
@@ -592,7 +605,7 @@
         "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
         "legacy_optimizer_steps": 4914,
         "legacy_optimizer_positions": 519165,
-        "required_current_plan_sha256": "4d752e60dccf4faa27c57be3e2e6596431687563f479152d666342779e852d60",
+        "required_current_plan_sha256": "a6e40164ed6aac3a003fc6ea0b131eae8c6f1fea83a61bfd570771dd96abb2f2",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
         "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed."
@@ -675,6 +688,30 @@
     }
   },
   "training": {
+    "execution_policy": {
+      "policy": "project_theseus_phase_specific_mlx_training_acceleration_v1",
+      "compute_dtype": "bfloat16",
+      "fp32_master": true,
+      "token_loss_compute_dtype": "float32",
+      "pretraining": {
+        "training_step_mode": "compiled",
+        "compiled_microbatch_size": 8,
+        "compile_width_quantum": 64,
+        "eager_gradient_accumulation_microbatch_size": 0
+      },
+      "source_conditioned_pretraining": {
+        "training_step_mode": "eager",
+        "compiled_microbatch_size": 4,
+        "compile_width_quantum": 64,
+        "eager_gradient_accumulation_microbatch_size": 4
+      },
+      "supervision": {
+        "training_step_mode": "eager",
+        "compiled_microbatch_size": 4,
+        "compile_width_quantum": 64,
+        "eager_gradient_accumulation_microbatch_size": 4
+      }
+    },
     "optimizer_id": "adamw_mlx",
     "batch_size": 16,
     "learning_rate": 0.0003,

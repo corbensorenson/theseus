@@ -2541,6 +2541,8 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
     )
     assert compiled_report["training_step_mode_requested"] == "auto"
     assert eager_report["training_step_mode_requested"] == "eager"
+    assert compiled_report["compiled_random_state_captured"] is True
+    assert eager_report["compiled_random_state_captured"] is False
     assert compiled_report["warmup_step_index_zero_based"] == 0
     assert len(compiled_report["compiled_accumulation_seconds_prefix"]) == 1
     assert len(compiled_report["compiled_update_seconds_prefix"]) == 1
@@ -2552,6 +2554,147 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
         eager_report["final_loss"], abs=2e-6
     )
     assert maximum_delta < 5e-6
+
+
+def test_compiled_source_conditioned_training_matches_eager_full_batch(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        source_copy_auxiliary_loss_weight=0.25,
+        expert_adapter_dim=8,
+        source_expert_adapter_dim=4,
+    )
+    lookup = np.arange(64, dtype=np.int32)
+    mx.random.seed(53)
+    compiled_model = build_model(
+        config, mx=mx, nn=nn, source_to_target_lookup=lookup
+    )
+    mx.eval(compiled_model.parameters())
+    eager_model = build_model(
+        config, mx=mx, nn=nn, source_to_target_lookup=lookup
+    )
+    eager_model.load_weights(
+        list(mlx_utils.tree_flatten(compiled_model.parameters()))
+    )
+    eager_split_model = build_model(
+        config, mx=mx, nn=nn, source_to_target_lookup=lookup
+    )
+    eager_split_model.load_weights(
+        list(mlx_utils.tree_flatten(compiled_model.parameters()))
+    )
+    compiled_model.freeze_to_language_expert("low_rank_source_adapters")
+    eager_model.freeze_to_language_expert("low_rank_source_adapters")
+    eager_split_model.freeze_to_language_expert("low_rank_source_adapters")
+    mx.eval(eager_model.parameters(), eager_split_model.parameters())
+    rng = np.random.default_rng(23)
+    inputs = rng.integers(3, 64, size=(8, 16), dtype=np.int32)
+    inputs[:, 5] = 2
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.zeros_like(inputs, dtype=np.float32)
+    mask[:, 5:] = 1.0
+    common = {
+        "inputs": inputs,
+        "labels": labels,
+        "mask": mask,
+        "progress_mask": mask,
+        "ordered_plan_loss_weight": 1.0,
+        "sample_weights": None,
+        "plan_labels": None,
+        "plan_label_mode": "none",
+        "plan_auxiliary_weight": 0.0,
+        "plan_shuffle_seed": 0,
+        "plan_loss_mode": "binary_multilabel",
+        "plan_slot_count": 0,
+        "plan_factor_group_sizes": (),
+        "phase_name": "compiled-source-conditioned-parity",
+        "target_positions": int(mask.sum()),
+        "batch_size": 8,
+        "gradient_clip": 1.0,
+        "seed": 29,
+        "max_steps": 1,
+        "checkpoint": tmp_path / "unused-source-conditioned.npz",
+        "checkpoint_every": 99,
+        "heartbeat": tmp_path / "source-conditioned-heartbeat.json",
+        "global_step_offset": 0,
+        "mx": mx,
+        "optim": optim,
+        "source_conditioning": True,
+        "source_to_target_lookup": lookup,
+        "compiled_microbatch_size": 4,
+    }
+    compiled_report = survival.train_phase(
+        compiled_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(compiled_model, causal_loss),
+        **common,
+    )
+    eager_report = survival.train_phase(
+        eager_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(eager_model, causal_loss),
+        training_step_mode="eager",
+        **common,
+    )
+    eager_split_report = survival.train_phase(
+        eager_split_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(eager_split_model, causal_loss),
+        training_step_mode="eager",
+        eager_gradient_accumulation_microbatch_size=4,
+        **common,
+    )
+    compiled_parameters = dict(mlx_utils.tree_flatten(compiled_model.parameters()))
+    eager_parameters = dict(mlx_utils.tree_flatten(eager_model.parameters()))
+    eager_split_parameters = dict(
+        mlx_utils.tree_flatten(eager_split_model.parameters())
+    )
+    maximum_delta = max(
+        float(mx.max(mx.abs(compiled_parameters[name] - eager_parameters[name])).item())
+        for name in compiled_parameters
+    )
+    maximum_eager_split_delta = max(
+        float(
+            mx.max(
+                mx.abs(
+                    eager_split_parameters[name] - eager_parameters[name]
+                )
+            ).item()
+        )
+        for name in eager_parameters
+    )
+
+    assert compiled_report["training_step_execution"] == (
+        "mlx_compiled_shape_bucket_v1"
+    )
+    assert eager_report["training_step_execution"] == (
+        "mlx_eager_auxiliary_objective_v1"
+    )
+    assert compiled_report["compiled_split_gradient_accumulation"] is True
+    assert compiled_report["compiled_split_objective_normalization"] == (
+        "full_logical_batch_token_gate_and_copyable_mass_v1"
+    )
+    assert compiled_report["final_loss"] == pytest.approx(
+        eager_report["final_loss"], abs=2e-6
+    )
+    assert eager_split_report["final_loss"] == pytest.approx(
+        eager_report["final_loss"], abs=2e-6
+    )
+    assert maximum_delta < 5e-6
+    assert maximum_eager_split_delta < 5e-6
 
 
 def test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint(
@@ -2630,6 +2773,7 @@ def test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint(
 
     assert report["compute_dtype"] == "bfloat16"
     assert report["authoritative_weight_dtype"] == "float32_master"
+    assert report["compiled_random_state_captured"] is True
     assert math.isfinite(float(report["final_loss"]))
     assert compute_dtypes == {"mlx.core.bfloat16"}
     assert master_dtypes == {"mlx.core.float32"}

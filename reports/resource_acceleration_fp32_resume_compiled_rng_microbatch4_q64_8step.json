@@ -1,0 +1,489 @@
+{
+  "after_reload": {
+    "authoritative_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "tensor_count": 197
+    },
+    "batch_index_sha256_prefix": [
+      "6828bda23e627e1917974c5d27812fa2fe9ed8ca46c0eee7e2553dedb4effd5b",
+      "7f2d76b64966eff70fa6c302131086b48173c474f1671e7a8133e8db3f6abe50",
+      "72b2ae615a801c9e51d9548d4e3ee8766a909e97a24a4f93df7c8a7748e0790e",
+      "ff5068c0dfef1f7fbf7618c905b7536d515b087afd1e09e39e8a616b913bdcb2"
+    ],
+    "checkpoint_restore_seconds": 0.056829,
+    "compile_width_quantum": 64,
+    "compiled_accumulation_seconds_prefix": [
+      0.601588,
+      0.548613,
+      0.553722,
+      0.597307,
+      0.563839,
+      0.551215,
+      0.574456,
+      0.551904
+    ],
+    "compiled_accumulation_seconds_total": 6.7747,
+    "compiled_microbatch_size": 4,
+    "compiled_update_seconds_prefix": [
+      0.566533,
+      0.562614,
+      0.567535,
+      0.556427
+    ],
+    "compiled_update_seconds_total": 2.253109,
+    "compute_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "tensor_count": 197
+    },
+    "data_cursor_next": {
+      "batch_index": 8,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823298
+    },
+    "data_cursor_start": {
+      "batch_index": 4,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823298
+    },
+    "device_step_seconds_total": 9.132392,
+    "final_loss": 1.623996,
+    "first_optimizer_step_seconds": 2.353875,
+    "host_batch_preparation_seconds_total": 0.000919,
+    "loss_prefix": [
+      1.78274608,
+      1.58482456,
+      1.67489362,
+      1.6239965
+    ],
+    "maximum_dynamic_batch_width": 512,
+    "maximum_execution_batch_width": 512,
+    "mean_dynamic_batch_width": 512.0,
+    "mean_loss": 1.666615,
+    "median_optimizer_step_seconds": 2.270142,
+    "mlx_memory": {
+      "active_bytes": 658351404,
+      "cache_bytes": 3392141249,
+      "peak_bytes": 3547213288,
+      "scope": "mlx_allocator_only"
+    },
+    "model_construct_seconds": 0.00233,
+    "optimizer_construct_seconds": 0.000127,
+    "optimizer_positions": 30355,
+    "optimizer_state": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32",
+        "mlx.core.uint64"
+      ],
+      "element_count": 109673494,
+      "tensor_count": 396
+    },
+    "optimizer_step_seconds_prefix": [
+      2.353875,
+      2.282203,
+      2.25808,
+      2.238233
+    ],
+    "optimizer_steps": 4,
+    "padded_positions_avoided": 0,
+    "post_first_positions_per_second": 3436.74,
+    "precision_mode": "float32",
+    "prune_inactive_auxiliary_outputs": true,
+    "rope_kernel": "mlx_fast",
+    "setup_timings": {
+      "copy_lookup_seconds": 0.000759,
+      "memmap_open_and_validation_seconds": 2.129774,
+      "metadata_and_base_config_seconds": 0.002254,
+      "range_view_seconds": 2e-05,
+      "total_seconds": 2.24933
+    },
+    "static_sequence_width": 512,
+    "training_step_execution": "mlx_compiled_shape_bucket_v1",
+    "unit_allocator_pack_seconds_total": 1e-06,
+    "warmup_excluded_positions": 23296,
+    "warmup_excluded_positions_per_second": 3436.74,
+    "warmup_excluded_seconds": 6.778517
+  },
+  "batch_index_sha256": "186a10efe0464c2b6ee47156a3a782ed1293f8e16ca1865ae8c084c16eec5ecc",
+  "before_checkpoint": {
+    "authoritative_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "tensor_count": 197
+    },
+    "batch_index_sha256_prefix": [
+      "6c516eb4bb847be8c19cb4033f965e2a20ac6414fe387f5e058e7fef7f51d80f",
+      "56a42180012e856a53be934dfe57686763ad421a11992514295055de24f00505",
+      "459d86122b72f5ca281d6524b87dd2e066439179bb380ab11ea4d50c1bd0b15b",
+      "bd93752891715d82f3af10ea97a910e42e547e76b77b7f30c24b1b7506ea0d11"
+    ],
+    "checkpoint_restore_seconds": 0.216709,
+    "compile_width_quantum": 64,
+    "compiled_accumulation_seconds_prefix": [
+      0.601533,
+      0.554435,
+      0.546885,
+      0.588531,
+      0.569572,
+      0.554088,
+      0.577295,
+      0.547073
+    ],
+    "compiled_accumulation_seconds_total": 6.768077,
+    "compiled_microbatch_size": 4,
+    "compiled_update_seconds_prefix": [
+      0.605771,
+      0.564371,
+      0.567165,
+      0.564883
+    ],
+    "compiled_update_seconds_total": 2.302189,
+    "compute_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "tensor_count": 197
+    },
+    "data_cursor_next": {
+      "batch_index": 4,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823298
+    },
+    "data_cursor_start": {
+      "batch_index": 0,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823298
+    },
+    "device_step_seconds_total": 9.210209,
+    "final_loss": 1.624908,
+    "first_optimizer_step_seconds": 2.388028,
+    "host_batch_preparation_seconds_total": 0.00086,
+    "loss_prefix": [
+      1.6445632,
+      1.80811906,
+      1.56725931,
+      1.62490785
+    ],
+    "maximum_dynamic_batch_width": 512,
+    "maximum_execution_batch_width": 512,
+    "mean_dynamic_batch_width": 512.0,
+    "mean_loss": 1.661212,
+    "median_optimizer_step_seconds": 2.290674,
+    "mlx_memory": {
+      "active_bytes": 658285480,
+      "cache_bytes": 3392190401,
+      "peak_bytes": 3547081828,
+      "scope": "mlx_allocator_only"
+    },
+    "model_construct_seconds": 0.003048,
+    "optimizer_construct_seconds": 7.8e-05,
+    "optimizer_positions": 30467,
+    "optimizer_state": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32",
+        "mlx.core.uint64"
+      ],
+      "element_count": 109673494,
+      "tensor_count": 396
+    },
+    "optimizer_step_seconds_prefix": [
+      2.388028,
+      2.322633,
+      2.258715,
+      2.240833
+    ],
+    "optimizer_steps": 4,
+    "padded_positions_avoided": 0,
+    "post_first_positions_per_second": 3348.196,
+    "precision_mode": "float32",
+    "prune_inactive_auxiliary_outputs": true,
+    "rope_kernel": "mlx_fast",
+    "setup_timings": {
+      "copy_lookup_seconds": 0.000759,
+      "memmap_open_and_validation_seconds": 2.129774,
+      "metadata_and_base_config_seconds": 0.002254,
+      "range_view_seconds": 2e-05,
+      "total_seconds": 2.24933
+    },
+    "static_sequence_width": 512,
+    "training_step_execution": "mlx_compiled_shape_bucket_v1",
+    "unit_allocator_pack_seconds_total": 1e-06,
+    "warmup_excluded_positions": 22842,
+    "warmup_excluded_positions_per_second": 3348.196,
+    "warmup_excluded_seconds": 6.822181
+  },
+  "checkpoint_publication": {
+    "atomic_file_replacement": true,
+    "checkpoint_bytes": 219367937,
+    "checkpoint_sha256": "15609980e8c42ec25c3a148a241e6431f6bfacdb588bfca62562fac5fbf44ecd",
+    "optimizer_state_bytes": 438736924,
+    "optimizer_state_sha256": "af62de939e58334578a67d2ecf967b15a2c5caad1bf0a9b7dd3ff71c6da759ee",
+    "publication_seconds": 1.156072,
+    "rng_state_bytes": 144,
+    "rng_state_sha256": "8fae57bb74ccc15f5a7167bd139912f20f545aeaabe602768a955b5fec814065"
+  },
+  "claim_boundary": "bounded exact-resume mechanics only; not convergence or capability evidence",
+  "compile_width_quantum": 64,
+  "compiled_microbatch_size": 4,
+  "created_utc": "2026-07-26T09:41:55.613119Z",
+  "data_cursor_exact": true,
+  "data_order_exact": true,
+  "durable_training_state_mutated": false,
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "final_loss_absolute_delta": 0.0,
+  "hard_gaps": [],
+  "optimizer_state_comparison": {
+    "all_finite": true,
+    "element_count": 109673494,
+    "maximum_absolute_delta": 3.958e-09,
+    "maximum_absolute_delta_allowed": 5e-06,
+    "maximum_relative_l2_delta_allowed": 1e-06,
+    "names_match": true,
+    "relative_l2_delta": 4.2e-11,
+    "shapes_match": true,
+    "tensor_count": 396,
+    "within_tolerance": true
+  },
+  "parameter_comparison": {
+    "all_finite": true,
+    "element_count": 54836746,
+    "maximum_absolute_delta": 1.19209e-07,
+    "maximum_absolute_delta_allowed": 5e-06,
+    "maximum_relative_l2_delta_allowed": 1e-06,
+    "names_match": true,
+    "relative_l2_delta": 2.1336e-08,
+    "shapes_match": true,
+    "tensor_count": 197,
+    "within_tolerance": true
+  },
+  "policy": "project_theseus_focused_precision_resume_qualification_v1",
+  "precision_mode": "float32",
+  "public_training_rows": 0,
+  "reload_boundary": {
+    "optimizer_state_comparison": {
+      "all_finite": true,
+      "element_count": 109673494,
+      "maximum_absolute_delta": 0.0,
+      "maximum_absolute_delta_allowed": 5e-06,
+      "maximum_relative_l2_delta_allowed": 1e-06,
+      "names_match": true,
+      "relative_l2_delta": 0.0,
+      "shapes_match": true,
+      "tensor_count": 396,
+      "within_tolerance": true
+    },
+    "parameter_comparison": {
+      "all_finite": true,
+      "element_count": 54836746,
+      "maximum_absolute_delta": 0.0,
+      "maximum_absolute_delta_allowed": 5e-06,
+      "maximum_relative_l2_delta_allowed": 1e-06,
+      "names_match": true,
+      "relative_l2_delta": 0.0,
+      "shapes_match": true,
+      "tensor_count": 197,
+      "within_tolerance": true
+    },
+    "rng_state_comparison": {
+      "all_finite": true,
+      "element_count": 2,
+      "maximum_absolute_delta": 0.0,
+      "maximum_absolute_delta_allowed": 5e-06,
+      "maximum_relative_l2_delta_allowed": 1e-06,
+      "names_match": true,
+      "relative_l2_delta": 0.0,
+      "shapes_match": true,
+      "tensor_count": 1,
+      "within_tolerance": true
+    }
+  },
+  "rng_state_comparison": {
+    "all_finite": true,
+    "element_count": 2,
+    "maximum_absolute_delta": 0.0,
+    "maximum_absolute_delta_allowed": 5e-06,
+    "maximum_relative_l2_delta_allowed": 1e-06,
+    "names_match": true,
+    "relative_l2_delta": 0.0,
+    "shapes_match": true,
+    "tensor_count": 1,
+    "within_tolerance": true
+  },
+  "scratch_artifacts_retained": false,
+  "source_precision_policy": "project_theseus_mlx_precision_checkpoint_resume_v1",
+  "starting_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+  "starting_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+  "state": "GREEN",
+  "training_config": {
+    "path": "configs/moecot_language_arm_training.json",
+    "sha256": "b03b4a71cee971ca1fbb6da207dcd2e6f2b33c3383057bbd32b633568e92e1ad"
+  },
+  "trigger_state": "GREEN",
+  "uninterrupted": {
+    "authoritative_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "tensor_count": 197
+    },
+    "batch_index_sha256_prefix": [
+      "6c516eb4bb847be8c19cb4033f965e2a20ac6414fe387f5e058e7fef7f51d80f",
+      "56a42180012e856a53be934dfe57686763ad421a11992514295055de24f00505",
+      "459d86122b72f5ca281d6524b87dd2e066439179bb380ab11ea4d50c1bd0b15b",
+      "bd93752891715d82f3af10ea97a910e42e547e76b77b7f30c24b1b7506ea0d11",
+      "6828bda23e627e1917974c5d27812fa2fe9ed8ca46c0eee7e2553dedb4effd5b",
+      "7f2d76b64966eff70fa6c302131086b48173c474f1671e7a8133e8db3f6abe50",
+      "72b2ae615a801c9e51d9548d4e3ee8766a909e97a24a4f93df7c8a7748e0790e",
+      "ff5068c0dfef1f7fbf7618c905b7536d515b087afd1e09e39e8a616b913bdcb2"
+    ],
+    "checkpoint_restore_seconds": 0.055874,
+    "compile_width_quantum": 64,
+    "compiled_accumulation_seconds_prefix": [
+      1.099103,
+      0.552304,
+      0.559349,
+      0.721805,
+      0.564193,
+      0.617948,
+      0.671102,
+      0.617601
+    ],
+    "compiled_accumulation_seconds_total": 14.425362,
+    "compiled_microbatch_size": 4,
+    "compiled_update_seconds_prefix": [
+      0.569826,
+      0.637822,
+      0.614227,
+      0.560155,
+      0.567274,
+      0.5965,
+      0.558721,
+      0.570579
+    ],
+    "compiled_update_seconds_total": 4.675104,
+    "compute_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "tensor_count": 197
+    },
+    "data_cursor_next": {
+      "batch_index": 8,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823298
+    },
+    "data_cursor_start": {
+      "batch_index": 0,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823298
+    },
+    "device_step_seconds_total": 19.255405,
+    "final_loss": 1.623996,
+    "first_optimizer_step_seconds": 2.872374,
+    "host_batch_preparation_seconds_total": 0.023094,
+    "loss_prefix": [
+      1.6445632,
+      1.80811906,
+      1.56725931,
+      1.62490785,
+      1.78274608,
+      1.58482456,
+      1.67489362,
+      1.6239965
+    ],
+    "maximum_dynamic_batch_width": 512,
+    "maximum_execution_batch_width": 512,
+    "mean_dynamic_batch_width": 512.0,
+    "mean_loss": 1.663914,
+    "median_optimizer_step_seconds": 2.280832,
+    "mlx_memory": {
+      "active_bytes": 658268840,
+      "cache_bytes": 3920756417,
+      "peak_bytes": 3778792332,
+      "scope": "mlx_allocator_only"
+    },
+    "model_construct_seconds": 0.007072,
+    "optimizer_construct_seconds": 7.1e-05,
+    "optimizer_positions": 60822,
+    "optimizer_state": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32",
+        "mlx.core.uint64"
+      ],
+      "element_count": 109673494,
+      "tensor_count": 396
+    },
+    "optimizer_step_seconds_prefix": [
+      2.872374,
+      2.556114,
+      2.490427,
+      2.262689,
+      2.253497,
+      2.272414,
+      2.28925,
+      2.25864
+    ],
+    "optimizer_steps": 8,
+    "padded_positions_avoided": 0,
+    "post_first_positions_per_second": 3247.079,
+    "precision_mode": "float32",
+    "prune_inactive_auxiliary_outputs": true,
+    "rope_kernel": "mlx_fast",
+    "setup_timings": {
+      "copy_lookup_seconds": 0.000759,
+      "memmap_open_and_validation_seconds": 2.129774,
+      "metadata_and_base_config_seconds": 0.002254,
+      "range_view_seconds": 2e-05,
+      "total_seconds": 2.24933
+    },
+    "static_sequence_width": 512,
+    "training_step_execution": "mlx_compiled_shape_bucket_v1",
+    "unit_allocator_pack_seconds_total": 2e-06,
+    "warmup_excluded_positions": 53197,
+    "warmup_excluded_positions_per_second": 3247.079,
+    "warmup_excluded_seconds": 16.383031
+  },
+  "updates": {
+    "after_reload": 4,
+    "before_checkpoint": 4,
+    "uninterrupted": 8
+  }
+}
