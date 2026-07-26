@@ -284,6 +284,33 @@ def test_resource_stress_prefix_replay_preserves_existing_stress_row() -> None:
     assert receipt["already_in_coverage_prefix"] is True
 
 
+def test_overfit_replay_capacity_binds_projected_authoritative_rows() -> None:
+    phase = {"sampled_unique_row_count": 1}
+    assert (
+        probe.replay_coverage_planning_capacity(
+            phase,
+            requested_steps=16,
+            replay_step_limit=16,
+            stage_row_count=1,
+            segmented_contract=None,
+            overfit_stage_active=True,
+        )
+        == 1
+    )
+    with pytest.raises(
+        ValueError,
+        match="overfit replay stage does not match authoritative sampled rows",
+    ):
+        probe.replay_coverage_planning_capacity(
+            phase,
+            requested_steps=16,
+            replay_step_limit=16,
+            stage_row_count=2,
+            segmented_contract=None,
+            overfit_stage_active=True,
+        )
+
+
 def test_resource_stress_prefix_replay_includes_distinct_widest_row() -> None:
     inputs = np.asarray(
         [

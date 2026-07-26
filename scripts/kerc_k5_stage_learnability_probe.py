@@ -888,6 +888,35 @@ def exact_coverage_planning_capacity(
     return capacity
 
 
+def replay_coverage_planning_capacity(
+    authoritative_phase: dict[str, Any],
+    *,
+    requested_steps: int,
+    replay_step_limit: int,
+    stage_row_count: int,
+    segmented_contract: dict[str, Any] | None,
+    overfit_stage_active: bool,
+) -> int:
+    """Bind replay capacity to the projected stage for governed overfit probes."""
+
+    if overfit_stage_active:
+        sampled_unique = int(
+            authoritative_phase.get("sampled_unique_row_count") or 0
+        )
+        if stage_row_count <= 0 or sampled_unique != stage_row_count:
+            raise ValueError(
+                "K5 overfit replay stage does not match authoritative sampled rows"
+            )
+        return int(stage_row_count)
+    return exact_coverage_planning_capacity(
+        authoritative_phase,
+        requested_steps=requested_steps,
+        replay_step_limit=replay_step_limit,
+        stage_row_count=stage_row_count,
+        segmented_contract=segmented_contract,
+    )
+
+
 def align_exact_stage_predictions(
     predictions: Any, authority: np.ndarray
 ) -> np.ndarray:
@@ -1226,12 +1255,13 @@ def selected_training_rows(
         if segmented_contract is not None
         else int(lease["requested_steps"])
     )
-    coverage_planning_capacity = exact_coverage_planning_capacity(
+    coverage_planning_capacity = replay_coverage_planning_capacity(
         authoritative_phase,
         requested_steps=int(lease["requested_steps"]),
         replay_step_limit=replay_step_limit,
         stage_row_count=len(stage.inputs),
         segmented_contract=segmented_contract,
+        overfit_stage_active=bool(overfit_rows_per_objective),
     )
     coverage = survival.coverage_first_plan(
         stage.kerc_coverage_labels,
