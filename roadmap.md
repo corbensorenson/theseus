@@ -1667,13 +1667,22 @@ generation service, KERC sidecar, or private evaluator.
    670.0625 and margin -17.337442. This is an exposure-starved ABI migration, not evidence that
    v3 is unlearnable.
 
-   Next, run the registered one-row compiler-only bounded-overfit control from the exact step-4,658
-   checkpoint and AdamW state under plan `05a0b84f...ecff7`. Measure root rank/margin and complete
-   target recovery at preregistered checkpoints; do not promote the row or extrapolate to
-   population capability. Only after the model reliably emits v3 may alignment/protected raw
-   integers be judged as the remaining wall and conditionally replaced with typed source-position
-   pointers under the same blind, zero-credit materialization rule. Do not consume a new seed or
-   private surface. K5 remains `INCONCLUSIVE_EXPERIMENT`.
+   The bounded control proves v3 is learnable but also exposes a second construct-validity defect.
+   Sixteen exact repeats move the v3 root to rank 1 / +5.472826 logits, reduce loss
+   2.842080→2.241498, and reach 115/120 teacher-forced tokens; 32 fresh repeats reach
+   118/120 and +14.645162. Neither is a pass. Step 16 emits syntactic v3 with 14 root slots and
+   fails compact validation; step 32 loops to the 640-token budget. The remaining step-32 errors
+   are one closing bracket and one fallback byte.
+
+   The existing schema-continuation loss covered fixed-slot commas but not the closing bracket that
+   terminates each fixed-cardinality container. Reporting schema 12/12 while a missed root close
+   causes nontermination is invalid construct coverage. The owner now includes fixed root,
+   protected-row, residual, and hierarchy closing brackets without adding semantic values. In the
+   bounded 128-source stage this raises schema positions 2,640→3,300 while target bytes, selected
+   rows, semantic positions, vocabulary, and checkpoint shapes remain unchanged. Re-run the same
+   one-row control under plan `1629aa3c...5c7e65`; require complete target recovery, raw v3
+   validity, reload exactness, and host safety before population continuation. Do not consume a
+   new seed or private surface. K5 remains `INCONCLUSIVE_EXPERIMENT`.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

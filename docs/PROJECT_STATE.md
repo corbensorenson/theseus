@@ -712,11 +712,17 @@ share toward zero. Public benchmarks are calibration only.
 
    Exact replay shows the update sampled one of 63 compiler rows. The v3 token begins at mean rank
    678.6875 and -17.379203 logits versus v2; one exposure improves it across all 16 matched rows
-   to rank 670.0625 and -17.337442, far from emission. The registered one-row compiler-only
-   bounded-overfit control is now rebound to the exact step-4,658 checkpoint/AdamW state under
-   plan `05a0b84f...ecff7`. It is a training-row learnability test only. Typed source-position
-   pointers remain conditional until v3 itself is learned. No new seed or private surface is
-   authorized.
+   to rank 670.0625 and -17.337442, far from emission.
+
+   The one-row overfit control proves root learnability but fails full recovery. At 16 repeats the
+   root is rank 1 / +5.472826 and teacher forcing is 115/120, but raw v3 has 14 root slots. At 32
+   repeats teacher forcing reaches 118/120 and +14.645162, but generation loops to 640 tokens.
+   The remaining errors include a closing bracket even though the old report says schema 12/12.
+   The schema owner was incomplete: it weighted fixed-slot commas but not fixed-container closing
+   brackets. The corrected owner raises bounded schema positions 2,640→3,300 with no target,
+   vocabulary, row-selection, semantic-position, or tensor-shape change. The same exact control is
+   authorized under plan `1629aa3c...5c7e65`; it remains training-row evidence only. No new seed
+   or private surface is authorized.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+

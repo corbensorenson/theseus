@@ -2251,13 +2251,13 @@ def learned_compiler_transport_shape_signature(payload: Any) -> dict[str, Any]:
 def learned_compiler_transport_required_continuation_token_indices(
     tokens: list[str],
 ) -> list[int]:
-    """Locate learned separators that preserve the compact ABI cardinalities.
+    """Locate learned delimiters that preserve compact ABI cardinalities.
 
-    The returned positions contain no semantic value. They are the commas that
-    separate fixed transport slots: six root fields, five fields in each
-    protected-object row, six residual fields, and three hierarchy fields.
-    Variable-length semantic containers (including program tokens) are not
-    weighted by this helper.
+    The returned positions contain no semantic value. They are the commas and
+    closing brackets that separate and terminate fixed transport slots: six
+    root fields, five fields in each protected-object row, six residual fields,
+    and three hierarchy fields. Variable-length semantic containers (including
+    program tokens) are not weighted by this helper.
     """
 
     text = "".join(str(token) for token in tokens)
@@ -2335,6 +2335,14 @@ def learned_compiler_transport_required_continuation_token_indices(
                     "mismatched container close",
                     path="compiler_output",
                 )
+            frame = stack[-1]
+            frame_path = frame.get("path")
+            if (
+                character == "]"
+                and frame_path is not None
+                and tuple(frame_path) in required_lengths
+            ):
+                required_offsets.append(index)
             stack.pop()
         elif character == "," and stack:
             frame = stack[-1]
@@ -2368,7 +2376,7 @@ def learned_compiler_transport_required_continuation_token_indices(
         for local_index, character in enumerate(value):
             absolute = offset + local_index
             if absolute in required:
-                if character != ",":
+                if character not in {",", "]"}:
                     raise KernelProtocolFault(
                         "KERC_COMPACT_COMPILER_CONTINUATION_TOKENIZATION_INVALID",
                         value,

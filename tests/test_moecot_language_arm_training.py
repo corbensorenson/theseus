@@ -3035,16 +3035,16 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     schema_position_count = stage.receipt[
         "kerc_compiler_schema_continuation_position_count"
     ]
-    assert schema_position_count == 16
+    assert schema_position_count == 20
     assert stage.receipt[
         "kerc_compiler_schema_continuation_preweight_loss_mass"
-    ] == 16.0
+    ] == 20.0
     assert stage.receipt[
         "kerc_compiler_schema_continuation_postweight_loss_mass"
-    ] == 128.0
+    ] == 160.0
     assert stage.receipt[
         "kerc_compiler_schema_continuation_preweight_loss_histogram"
-    ] == {"1.0": 16}
+    ] == {"1.0": 20}
     assert stage.receipt[
         "kerc_compiler_schema_continuation_semantic_values_added"
     ] == 0

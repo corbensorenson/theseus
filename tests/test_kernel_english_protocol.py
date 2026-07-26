@@ -525,20 +525,28 @@ def test_compact_compiler_transport_is_exact_smaller_and_fail_closed() -> None:
         )
     )
     assert continuation_indices
-    assert all(str(compact_tokens[index]) == "," for index in continuation_indices)
-    # The root ABI contributes exactly five fixed continuation decisions.
+    assert all(
+        str(compact_tokens[index]) in {",", "]"}
+        for index in continuation_indices
+    )
+    # The root ABI contributes five separators and one closing decision.
     root_commas = []
+    root_close = []
     depth = 0
     for index, token in enumerate(compact_tokens):
         if str(token) == "[":
             depth += 1
         elif str(token) == "]":
+            if depth == 1:
+                root_close.append(index)
             depth -= 1
         elif str(token) == "," and depth == 1:
             root_commas.append(index)
     assert root_commas == [
         index for index in continuation_indices if index in root_commas
     ]
+    assert len(root_close) == 1
+    assert root_close[0] in continuation_indices
     semantic_indices = (
         kernel.learned_compiler_transport_semantic_pointer_token_indices(
             [str(token) for token in compact_tokens]
