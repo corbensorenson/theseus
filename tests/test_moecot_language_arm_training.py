@@ -3026,6 +3026,15 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     ]
     assert schema_position_count == 16
     assert stage.receipt[
+        "kerc_compiler_schema_continuation_preweight_loss_mass"
+    ] == 16.0
+    assert stage.receipt[
+        "kerc_compiler_schema_continuation_postweight_loss_mass"
+    ] == 128.0
+    assert stage.receipt[
+        "kerc_compiler_schema_continuation_preweight_loss_histogram"
+    ] == {"1.0": 16}
+    assert stage.receipt[
         "kerc_compiler_schema_continuation_semantic_values_added"
     ] == 0
     assert stage.receipt[
@@ -4424,7 +4433,7 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
             row
             for row in candidate_plan["plan_identity"]["legacy_migrations"]
             if row["migration_id"]
-            == "english_kerc_step4657_semantic_target_mass_rebalance_lr_min_v6"
+            == "english_kerc_step4657_schema_protected_mass_neutral_v7"
         )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]

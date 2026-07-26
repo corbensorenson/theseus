@@ -1448,6 +1448,30 @@ def selected_training_rows(
             )
             or {}
         ),
+        "schema_continuation_position_count": int(
+            (stage.receipt or {}).get(
+                "kerc_compiler_schema_continuation_position_count"
+            )
+            or 0
+        ),
+        "schema_continuation_preweight_loss_mass": float(
+            (stage.receipt or {}).get(
+                "kerc_compiler_schema_continuation_preweight_loss_mass"
+            )
+            or 0.0
+        ),
+        "schema_continuation_postweight_loss_mass": float(
+            (stage.receipt or {}).get(
+                "kerc_compiler_schema_continuation_postweight_loss_mass"
+            )
+            or 0.0
+        ),
+        "schema_continuation_preweight_loss_histogram": dict(
+            (stage.receipt or {}).get(
+                "kerc_compiler_schema_continuation_preweight_loss_histogram"
+            )
+            or {}
+        ),
         "resource_stress": resource_stress_receipt,
         "execution_prefix_indices_sha256": expected_prefix_sha256,
         "sampling_prefix": sampling_prefix,

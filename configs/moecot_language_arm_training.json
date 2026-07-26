@@ -500,6 +500,21 @@
         "reset_data_cursor_seed": 20260722,
         "evidence": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_retry1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_matched_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_matched_training_rows16_greedy1_seed_20260722.json",
         "reason": "Reject the 3e-4 one-update semantic-mass branch because it reduced the exact frozen 16-row teacher-forced score from 4194/5976 to 4187/5976 and collapsed independently valid free-generation transport from 12/16 to 1/16: five 9/3/0, four 6/4/2, three 6/3/2, one 6/6/0, two max-token rows, and only one 6/6/3. Restart from the immutable last-valid step-4657 checkpoint and exact AdamW state with the same loss groups, weights, sampler, seed, data, q32 execution math, optimizer, and host gates, while reducing only the continuation learning rate by one geometric rung from 3e-4 to the registered 3e-5 minimum. One update must preserve the 6/6/3 transport boundary and improve or match the frozen diagnostics before any longer rung or new private surface."
+      },
+      {
+        "migration_id": "english_kerc_step4657_schema_protected_mass_neutral_v7",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_optimizer_positions": 457027,
+        "required_current_plan_sha256": "a54c661ae927bf190951b79e0de735b1507bcb689d74b76c926fa29b2eccb903",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step01_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step08_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step07_retained_step4657_row_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step08_merged_fp32_seed_20260722.json",
+        "reason": "Reject the eight-update 3e-5 semantic-mass rung because aggregate teacher-forced accuracy stayed 4194/5976 but independent free-generation transport collapsed from 13/16 valid after one update to 3/16 at step eight. Retained checkpoint bisection keeps the sentinel 6/6/3 through step seven and localizes its 9/3/0 regression to sampler stage index 8, a row with proportionally elevated protected/fidelity pressure. Restore the 8x fixed schema-continuation protection used by the immutable source lineage and transfer its added 18480 units from the semantic groups so the 166148 total specialized postweight loss mass remains constant to float32 rounding: schema 8x, alignment 4.14348981x, protected bounds 7.09582406x, residual fidelity 7.09582406x, and residual unit ids 2.84371314x. Keep the exact source checkpoint, AdamW state, 3e-5 rate, sampler, seed, data, q32 execution, and host gates. No target value, evaluation row, decoder field, runtime repair, or capability credit is added."
       }
     ]
   },
@@ -596,13 +611,13 @@
     "kernel_english_optimizer_repetitions": 0,
     "termination_loss_weight": 4.0,
     "byte_boundary_loss_weight": 2.0,
-    "kerc_compiler_schema_continuation_loss_weight": 1.0,
+    "kerc_compiler_schema_continuation_loss_weight": 8.0,
     "kerc_compiler_semantic_pointer_loss_weight": 4.0,
     "kerc_compiler_semantic_pointer_loss_weights_by_kind": {
-      "program_alignment_span": 4.67146849,
-      "protected_character_bound": 8.0,
-      "residual_unit_id": 3.2060695,
-      "residual_fidelity": 8.0
+      "program_alignment_span": 4.14348981,
+      "protected_character_bound": 7.09582406,
+      "residual_unit_id": 2.84371314,
+      "residual_fidelity": 7.09582406
     },
     "training_rope_kernel": "mlx_fast",
     "inference_rope_kernel": "manual_reference",

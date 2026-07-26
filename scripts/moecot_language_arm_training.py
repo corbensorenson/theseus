@@ -5273,6 +5273,9 @@ def materialize_target_supervision(
         kind: Counter() for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS
     }
     compiler_schema_continuation_position_count = 0
+    compiler_schema_continuation_preweight_loss_mass = 0.0
+    compiler_schema_continuation_postweight_loss_mass = 0.0
+    compiler_schema_continuation_preweight_loss_histogram: Counter[str] = Counter()
     compiler_semantic_pointer_position_count = 0
     for (
         sequence,
@@ -5316,9 +5319,18 @@ def materialize_target_supervision(
                 raise ValueError(
                     "KERC compiler schema continuation loss position is invalid"
                 )
+            compiler_schema_continuation_preweight_loss_mass += float(
+                row_loss[loss_index]
+            )
+            compiler_schema_continuation_preweight_loss_histogram[
+                str(float(row_loss[loss_index]))
+            ] += 1
             row_loss[loss_index] = max(
                 float(row_loss[loss_index]),
                 compiler_schema_continuation_loss_weight,
+            )
+            compiler_schema_continuation_postweight_loss_mass += float(
+                row_loss[loss_index]
             )
             compiler_schema_continuation_position_count += 1
         for kind in KERC_COMPILER_SEMANTIC_TARGET_KINDS:
@@ -5392,6 +5404,17 @@ def materialize_target_supervision(
         ),
         "kerc_compiler_schema_continuation_position_count": (
             compiler_schema_continuation_position_count
+        ),
+        "kerc_compiler_schema_continuation_preweight_loss_mass": (
+            compiler_schema_continuation_preweight_loss_mass
+        ),
+        "kerc_compiler_schema_continuation_postweight_loss_mass": (
+            compiler_schema_continuation_postweight_loss_mass
+        ),
+        "kerc_compiler_schema_continuation_preweight_loss_histogram": dict(
+            sorted(
+                compiler_schema_continuation_preweight_loss_histogram.items()
+            )
         ),
         "kerc_compiler_schema_continuation_semantic_values_added": 0,
         "kerc_compiler_schema_continuation_position_mapping": (
