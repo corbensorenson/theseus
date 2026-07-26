@@ -1741,6 +1741,29 @@ generation service, KERC sidecar, or private evaluator.
    `f9f69bec…b9a6`; rerun the exact 128-update population command from immutable step 4,658, not
    from the terminated scratch attempt. No new seed or private surface is authorized.
 
+   That exact replay is complete. It reaches optimizer step 4,786 after 128 updates and 30,862
+   target positions, samples all 63 bounded positive rows without replacement, gives every row
+   two exposures and two rows a third exposure, and records an authoritative sampler-replay
+   match. Loss begins at 3.781801 and ends at 2.111578. The full-FP32 merge independently
+   preserves all 234 frozen tensors and exactly overlays the five compiler tensors; both the
+   16-row teacher-forced and raw-generation diagnostics reload the merged checkpoint
+   `e123932d…78fb`.
+
+   Host safety is green: 2,079.344 MiB maximum inferred memory, 2,404.500 MiB minimum reclaimable
+   memory, 280.766 MiB maximum process RSS, and 264.250 MiB host-wide swap growth over 3,772.397
+   seconds. The report-only counter never crosses even the retained 320 MiB diagnostic marker.
+   This confirms the first attempt's burst was not a reproducible capacity wall.
+
+   The population checkpoint is still underfit. On the exact 16-row admitted-training panel it
+   reaches 3,206/3,776 teacher-forced tokens (84.904661%), EOS 16/16, schema 253/255, and
+   program-alignment 305/449; the v4 root is rank 6.4375 on average and top-1 on 0/16. The weakest
+   row is 146/253 (57.707510%). Raw generation is 0/16 valid: fifteen rows produce a completed v3
+   root and are rejected for `KERC_COMPILER_TRANSPORT_VERSION_MISMATCH`; the weakest row runs to
+   the 628-token budget without completing. This is `INCONCLUSIVE_EXPERIMENT` for the specified
+   2–3-exposure training regime, not KERC falsification. Continue the same seed, rows, optimizer,
+   sampler cursor, and v4 objective from step 4,786 until a preregistered population diagnostic
+   boundary; do not consume source-disjoint behavior while admitted-row root top-1 remains 0/16.
+
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity
    choices, closure state, and one or more future semantic units. The incremental grammar

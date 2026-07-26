@@ -1163,7 +1163,7 @@
         "capability_claim": "NONE"
       },
       "v8_compiler_allocator_ownership_transport": {
-        "state": "V4_POPULATION_STEP17_HOST_POLICY_FAULT_EXACT_RETRY_AUTHORIZED",
+        "state": "V4_POPULATION_128_UNDERFIT_CONTINUATION_REQUIRED",
         "candidate_execution_plan_sha256": "f9f69bec11f6b83692b3c0eba584514caa6d344a5b257b6b30a581e4b937b9a6",
         "update_execution_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
         "source_optimizer_step": 4657,
@@ -1418,6 +1418,81 @@
             "telemetry_fail_closed": true,
             "reason": "The swapout counter is system-wide and the first attempt crossed its K5-only ceiling while live reserve and child memory remained inside their hard bounds; retain it as telemetry and rerun from the immutable source rather than inventing another scalar ceiling."
           },
+          "source_span_transport_v4_population_attempt_2": {
+            "training_report": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_seed_20260722.json",
+            "training_report_sha256": "d2034f9a0ab15ce75f90970d19371e86406e08fe581c98ab1c47863da42ed26b",
+            "host_resource_safety_sha256": "828c13883e929d7df39385dea7ded0337324dfdb8433989524e02111a68e062d",
+            "merged_evaluation_report_sha256": "0bbecc661c74786df4403a89c5eac67ce41e2885a90a4a2b5b043ba59665246a",
+            "merge_receipt_sha256": "131f9dacb7efe99111c2a52274a6f236171cdc9e21c408cfa0b025183d48464e",
+            "merged_checkpoint_sha256": "e123932dabb31d238bacef16945afca35c14dc6a3aaee49ead9731168d5278fb",
+            "optimizer_state_sha256": "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197",
+            "mlx_rng_state_sha256": "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9",
+            "optimizer_step": 4786,
+            "population_updates": 128,
+            "target_positions": 30862,
+            "initial_loss": 3.78180075,
+            "final_loss": 2.111578,
+            "sampler_replay": {
+              "authoritative_receipt_match": true,
+              "stage_row_count": 63,
+              "sampled_unique_row_count": 63,
+              "sampled_row_coverage_rate": 1.0,
+              "minimum_row_exposures": 2,
+              "maximum_row_exposures": 3,
+              "mean_row_exposures": 2.03174603,
+              "sampled_indices_sha256": "a293e5e16d2bd723e6ad7f8efa904bd258dcfb950585f5adf523799c742fd4e9"
+            },
+            "host_resource_safety": {
+              "passed": true,
+              "wall_seconds": 3772.397,
+              "maximum_process_rss_mib": 280.766,
+              "maximum_inferred_unified_memory_mib": 2079.344,
+              "minimum_reclaimable_available_mib": 2404.5,
+              "maximum_swapout_growth_mib": 264.25,
+              "swapout_growth_action": "report_only",
+              "swapout_growth_threshold_exceeded": false
+            },
+            "checkpoint_reload": {
+              "independent_merge_replay": "GREEN",
+              "frozen_source_tensor_count": 234,
+              "compiler_delta_tensor_count": 5,
+              "selected_delta_tensors_exact": true,
+              "frozen_source_tensors_exact": true,
+              "teacher_forced_reload_bound": true,
+              "raw_generation_reload_bound": true
+            },
+            "teacher_forced_training_panel": {
+              "report_sha256": "b5e3535df19c990fe6f3ce39affee288062ccd51b159eea9053d5b2b8f770ee5",
+              "host_resource_safety_sha256": "7448e57fa6a8112120a7f8d7e2bab9d42682232485c17569ac6e6a80600a3c23",
+              "row_count": 16,
+              "correct": 3206,
+              "total": 3776,
+              "accuracy": 0.84904661,
+              "eos_correct": 16,
+              "schema_correct": 253,
+              "schema_total": 255,
+              "program_alignment_correct": 305,
+              "program_alignment_total": 449,
+              "v4_root_top1_correct": 0,
+              "v4_root_mean_expected_rank": 6.4375,
+              "weakest_row_correct": 146,
+              "weakest_row_total": 253,
+              "weakest_row_accuracy": 0.5770751
+            },
+            "raw_admitted_training_panel": {
+              "report_sha256": "b58b3c3a1bc1325c9c8c017d4f9b242e8624b255df9071749a79e2adb2f387bd",
+              "host_resource_safety_sha256": "b995aea5d339fdddc8b28b98b7d176a8ebefab57a26362a97a62278c0dfbd239",
+              "row_count": 16,
+              "valid_count": 0,
+              "exact_match_count": 0,
+              "transport_version_mismatch_count": 15,
+              "maximum_budget_incomplete_count": 1,
+              "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY"
+            },
+            "qualification": "INCONCLUSIVE_EXPERIMENT_UNDERFIT_2_TO_3_EXPOSURES",
+            "fresh_private_surface_consumed": false,
+            "capability_claim": "NONE"
+          },
           "bounded_overfit_plan_sha256": "6cc1c6d7493b0505075cf7c3381eedbe66b6e03b88f283e4d37e059d938df622",
           "bounded_overfit_source_optimizer_step": 4658,
           "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
@@ -1437,7 +1512,7 @@
         "capability_claim": "NONE"
       }
     },
-    "next_owner": "rerun the exact 128-update compiler-transport-v4 population command from immutable step 4658 under the content-bound report-only system-swap telemetry policy while retaining hard live-reserve, child-memory, wall, and telemetry stops; then require exact sampler/exposure accounting, weakest-row teacher forcing, raw admitted-training-panel transport plus independent semantic validity, checkpoint reload, and only afterward source-disjoint behavior; consume no new seed or private surface before the population diagnostics are positive",
+    "next_owner": "continue the exact seed-20260722 compiler-transport-v4 population from merged step 4786 with its exact AdamW state, MLX RNG, and next sampler cursor; use a preregistered admitted-training diagnostic boundary because 2-to-3 exposures left v4 root top-1 at 0/16 and raw validity at 0/16 while schema was 253/255; require root top-1 movement, weakest-row teacher forcing, raw transport plus independent semantic validity, and checkpoint reload before consuming source-disjoint behavior; no new seed or private surface is authorized",
         "separate_k7_owner": "optimize the measured constrained-decode slow path without changing reference semantics",
         "architecture_negative_authority": false,
         "capability_claim": "NONE"
