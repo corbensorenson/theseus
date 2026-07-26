@@ -202,32 +202,130 @@ The next optimization docket is finite and ordered by possible calendar impact:
 1. Qualify compiled-state detachment and 64-step fresh-process publication. This eliminates
    the leak and roughly halves restart/checkpoint frequency; it does not promise a large
    device-throughput gain.
-2. Capture one warmed FP32 update with `mx.metal.start_capture`, rank kernels by GPU duration,
-   and attribute synchronization, attention, MLP, vocabulary projection, clipping, optimizer,
-   and state materialization. Do not write a custom kernel without this trace.
-3. Reoptimize the source-conditioned and supervision phases. Their roughly 500
-   positions/second rate can dominate time-to-useful-system. The leading challenger computes
-   pointer-generator target-token mixture loss directly from source-position scores instead
-   of materializing and scattering a vocabulary-sized pointer tensor. It must preserve
-   token loss, auxiliary loss, every parameter gradient, checkpoint/replay, and heldout
-   learning before adoption.
+2. Reclaim launch-safe disk through the manifest-backed artifact-retention path. The current
+   filesystem reached 34 MiB available while `runtime/t0a_canaries` retained about 81 GiB,
+   including about 67 GiB under superseded RDC/KERC K5 adequacy and overfit namespaces.
+   This already caused a completed guarded diagnostic to fail receipt publication. Preserve
+   final checkpoints, final receipts, lineage pointers, and negative evidence; archive or
+   delete only independently classified superseded canary payloads after an exact inventory
+   and operator-approved action manifest. Extend the artifact budget gate to cover runtime
+   canary/checkpoint namespaces, not only `reports/` and `checkpoints/`, and require enough
+   free space for two checkpoint transactions plus the watchdog receipt before launch.
+3. Keep source-conditioned and supervision optimization proportional to end-to-end impact.
+   Their frozen caches contain 2,726,861 and 2,246,919 target positions respectively:
+   4,973,780 total, or about 2.8 device-hours at the measured 500 positions/second. This is
+   roughly 0.3% of the selected model's remaining base-position budget, so it cannot dominate
+   a multi-day campaign. Target-window-only vocabulary/pointer projection is still a valid
+   bounded challenger, but it may not delay the base route.
 4. Localize BF16 divergence at the first disagreeing update across attention, normalization,
    clipping, Adam moments, and Metal reduction order. Adopt mixed precision only after
    independent-process state replay, not because a same-process loss looks close.
-5. Measure custom Metal only for the trace-ranked residual. Compare end-to-end wall time,
-   compile time, thermal drift, memory, and publication overhead. A microkernel speedup that
-   does not improve the sustained joined route is rejected.
-6. Keep the experiment budget distinct from implementation speed. If 16-19 days remains
-   unacceptable after the MLX work, preregister staged matched-control racing or move the
-   frozen campaign to faster Apple hardware; do not silently cut controls after seeing
-   outcomes.
+5. Use bounded in-process station timing to rank attention, MLP, vocabulary projection,
+   clipping, optimizer, synchronization, and state materialization. Two attempted Xcode/Metal
+   captures produced 38.6-56.1 GiB traces and were evicted under the evidence cap; do not
+   repeat that unbounded capture. Measure custom Metal only for a trace- or timing-ranked
+   residual and reject any microkernel that does not improve sustained joined wall time.
+6. Separate time-to-usable-Theseus from time-to-complete-scientific-comparison. Run the
+   shared trunk and five arms first, evaluate only at frozen review points, and make that
+   checkpoint available for private dogfood as soon as it earns the daily-use gate. Run
+   dense controls afterward in idle windows or concurrently on independent local Macs.
+   This changes sequencing, not matched budgets or claim standards.
 
 Planning bounds are now explicit: the remaining shared trunk is approximately 3.5-4.0 days
-on the qualified FP32 class of route. The full serial matched campaign remains approximately
-16-19 calendar days. Repairing and qualifying BF16 at the measured 1.257x gain would move
-that to roughly 12-15 days. A substantially shorter result requires auxiliary-path
-acceleration, a qualified custom kernel, less preregistered experimental compute, or faster
-hardware; Rustifying the Python shell will not produce it.
+on the qualified FP32 class of route, with the first frozen 100M-position review only about
+5.8 device-hours away from the current 26,680,656-position checkpoint. Remaining shared plus
+five-arm base training is 1,529,430,640 positions, about 5.0 idealized device-days at the
+measured 3,512 positions/second and conservatively 5-7 end-to-end device-days pending real
+arm throughput. The two dense controls alone add 2,494,116,200 positions, about 8.2 idealized
+device-days at the same rate and about 62% of all remaining base positions. The full serial
+matched campaign remains approximately 16-19 calendar days after lifecycle and slower-route
+allowances. Repairing and qualifying BF16 at the measured 1.257x gain would move that to
+roughly 12-15 days. A substantially shorter result requires evidence-bound early stopping,
+independent-machine fanout, a qualified custom kernel, or faster hardware; Rustifying the
+Python shell will not produce it because measured host batch preparation is about 0.2% of
+device-step time.
+
+#### 2026-07-26 Outside-The-Box Acceleration And Laptop-Availability Docket
+
+The goal is no longer “occupy the laptop until every control finishes.” The two distinct
+milestones are:
+
+- **first trustworthy capability reading:** finish the preregistered 100M-position review;
+  at the current checkpoint and measured rate this is about 5.8 device-hours, so it fits in
+  one overnight window;
+- **first dogfoodable selected system:** finish and frozen-evaluate the shared trunk and arms;
+  estimate 5-7 device-days, not 16-19, with uncertainty carried until real arm throughput is
+  measured;
+- **complete matched scientific result:** finish the two dense controls and frozen comparison;
+  this remains additional work and cannot be silently omitted from architecture claims.
+
+Work this finite docket in order:
+
+1. **Make storage safety a precondition.** Before another material-state diagnostic or campaign
+   segment, publish an exact manifest for the 81 GiB T0A canary tree, classify final/lineage/
+   negative-evidence owners versus regenerable superseded payloads, and reclaim enough space
+   for two atomic checkpoint generations plus 20% headroom. Add runtime namespaces and
+   content-addressed auxiliary-cache generations to retention accounting. Keep at most the
+   current and one previous valid auxiliary cache per exact contract; identical array payloads
+   under changed manifest hashes must be deduplicated or reflinked rather than copied.
+2. **Adopt only the cheap qualified switch.** MLX documents
+   `MLX_METAL_FAST_SYNCH=1` as a generally available faster CPU/GPU synchronization path.
+   Three alternating exact-checkpoint pairs measured +2.19% median and +1.67% mean
+   positions/second with zero swap. It remains a challenger until a complete full-state,
+   checkpoint/reload, and two-segment replay clears the existing bounds; the interrupted
+   scratch-state qualification earns no adoption.
+3. **Reject unsafe graph-chain fusion.** Deferring every microbatch synchronization retained
+   the full dependency chain, reduced reclaimable memory to about 734 MiB, grew swap by about
+   954 MiB, and was killed before a durable update. Do not retry that implementation unchanged.
+4. **Finish target-window projection without overstating it.** Keeping the full decoder and
+   projecting vocabulary/pointer logits only over the supervised target window improved a
+   matched four-update source run from 600.216 to 641.347 positions/second (1.069x), preserving
+   every reported loss, batch, cursor, and RNG receipt. Small-model output/loss/gradient parity
+   passes. The 57M final relative L2 delta was bounded at `1.985e-7`, but maximum absolute
+   parameter delta `7.490e-6` exceeded the existing `5e-6` bound, so production adoption
+   remains closed. Full encoder/decoder partition compaction reached 1.73-1.77x but changed
+   loss and therefore belongs to a successor architecture, not this lineage.
+5. **Implement a user-presence-aware segment scheduler.** Never suspend an in-flight Metal
+   command graph. Launch a bounded 32/64-step segment only when AC power is present, Low Power
+   Mode is off, the machine has been idle for a configured window, disk/checkpoint reserve and
+   memory/swap gates are green, and no interactive accelerator job is active. If user activity
+   returns, finish the current roughly minute-scale segment, atomically publish, and stop
+   launching more. Support explicit overnight start/stop windows and an immediate “yield after
+   this segment” control. This increases calendar duration when used, but prevents a multi-day
+   laptop takeover without changing one training token.
+6. **Make review-point racing executable before cutting compute.** At each already frozen
+   private-development review, continue every candidate unless a preregistered confidence-bound
+   rule establishes practical domination across aggregate loss, weak-language tails, direct
+   model-only utility, total cost, and multiple seeds. Early stopping is an engineering
+   disposition, not broad architectural falsification. Decisions may not use public or
+   confirmation surfaces. Publish the rule before observing the review result.
+7. **Fan out independent work instead of synchronizing this small model.** If one additional
+   local Mac is available, start the dense controls there and keep the selected path on the
+   laptop; after the shared checkpoint freezes, copy it once and run independent arms on
+   separate Macs. Prefer this nearly communication-free schedule over per-step data/tensor
+   parallelism. MLX RING over Ethernet/Thunderbolt is a measured fallback; JACCL requires
+   supported Thunderbolt/RDMA hardware and should not be assumed on this M1.
+8. **Treat dedicated Apple hardware as the only credible multi-x immediate option.** Benchmark
+   the exact 16-step route before purchase or migration. As of this review, Apple's M4 Pro
+   Mac mini exposes 16 GPU cores, 273 GB/s memory bandwidth, 24 GB base unified memory, and a
+   $1,399 US starting configuration. Those specifications make it a plausible dedicated
+   trainer that frees the laptop; they do not establish a Theseus speedup. Require an exact
+   checkpoint/state replay and measured end-to-end positions/second before estimating saved
+   days. A base M4, M4 Pro, M4 Max, or borrowed Mac receives the same evidence gate.
+9. **Keep training-design accelerators prospective.** Variable-sequence curricula,
+   curriculum-guided layer growth, 8-bit optimizer states, low-rank gradient projection, and
+   structured sparsity can change learning or optimizer semantics. Test them as matched
+   5-10M-parameter, source-disjoint A/Bs with a prewritten time-to-heldout-quality threshold.
+   None may mutate or delay the current checkpoint unless it demonstrates at least 15%
+   end-to-end time-to-quality improvement and passes weak-tail, replay, and adequacy gates.
+
+Primary references for this docket are the official
+[MLX distributed communication guide](https://ml-explore.github.io/mlx/build/html/usage/distributed.html),
+[MLX compilation guide](https://ml-explore.github.io/mlx/build/html/usage/compile.html),
+[Apple Mac mini specifications](https://www.apple.com/mac-mini/specs/),
+and the prospective (not current-lineage) research candidates
+[Dataset Decomposition](https://arxiv.org/abs/2405.13226) and
+[Curriculum-Guided Layer Scaling](https://arxiv.org/abs/2506.11389).
 
 ### 2026-07-26 Acceleration-First Launch Gate
 

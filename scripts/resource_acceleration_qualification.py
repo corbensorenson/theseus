@@ -104,6 +104,14 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--compact-encoder-decoder-partitions",
+        action="store_true",
+        help=(
+            "Use the existing exact encoder/decoder partition compaction "
+            "implementation as a non-production training challenger."
+        ),
+    )
+    parser.add_argument(
         "--bf16-clear-device-cache-after-step",
         action="store_true",
         help="Clear the MLX allocator cache after each BF16 optimizer update.",
@@ -137,6 +145,12 @@ def main() -> int:
             "Run one isolated compiled route from the immutable checkpoint. "
             "Use matched separate processes for implementation challengers."
         ),
+    )
+    parser.add_argument(
+        "--isolated-route-mode",
+        choices=("compiled", "eager"),
+        default="compiled",
+        help="Execution mode for the isolated non-mutating route diagnostic.",
     )
     parser.add_argument(
         "--joined-training-only",
@@ -255,6 +269,10 @@ def main() -> int:
                 if args.diagnostic_state_root
                 else None
             ),
+            compact_encoder_decoder_partitions=(
+                args.compact_encoder_decoder_partitions
+            ),
+            route_mode=args.isolated_route_mode,
         )
         write_json(resolve(args.out), report)
         print(
@@ -692,6 +710,8 @@ def run_compiled_route_entry(
     training_phase: str,
     precision_mode: str,
     diagnostic_state_root: Path | None,
+    compact_encoder_decoder_partitions: bool,
+    route_mode: str,
 ) -> dict[str, Any]:
     """Measure one compiled implementation without an eager route in-process."""
 
@@ -754,7 +774,7 @@ def run_compiled_route_entry(
         training_phase=training_phase,
     )
     route = run_training_route(
-        mode="compiled",
+        mode=route_mode,
         precision_mode=precision_mode,
         rope_kernel="mlx_fast",
         prune_inactive_auxiliary_outputs=True,
@@ -762,6 +782,12 @@ def run_compiled_route_entry(
         diagnostic_state_root=diagnostic_state_root,
         materialize_compiled_state_after_update=(
             materialize_compiled_state_after_update
+        ),
+        compact_encoder_decoder_partitions=(
+            compact_encoder_decoder_partitions
+        ),
+        eager_gradient_accumulation_microbatch_size=(
+            1 if route_mode == "eager" and training_phase != "pretraining" else 0
         ),
         **route_context,
     )
@@ -777,6 +803,10 @@ def run_compiled_route_entry(
         "materialize_compiled_state_after_update": bool(
             materialize_compiled_state_after_update
         ),
+        "compact_encoder_decoder_partitions": bool(
+            compact_encoder_decoder_partitions
+        ),
+        "route_mode": route_mode,
         "implementation_authority": (
             "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
             if implementation_plan_mismatch
@@ -2680,6 +2710,7 @@ def run_training_route(
     eager_gradient_accumulation_microbatch_size: int = 0,
     materialize_compiled_state_after_update: bool = False,
     diagnostic_state_root: Path | None = None,
+    compact_encoder_decoder_partitions: bool = False,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
@@ -2698,6 +2729,12 @@ def run_training_route(
         state_role_lookup=None,
         source_to_target_lookup=copy_lookup,
         rope_kernel=rope_kernel,
+        compact_encoder_decoder_partitions=(
+            compact_encoder_decoder_partitions
+        ),
+        compact_partition_width_quantum=(
+            64 if compact_encoder_decoder_partitions else 0
+        ),
     )
     master_model = None
     if precision_mode == "bfloat16_fp32_master":
@@ -2708,6 +2745,12 @@ def run_training_route(
             state_role_lookup=None,
             source_to_target_lookup=copy_lookup,
             rope_kernel=rope_kernel,
+            compact_encoder_decoder_partitions=(
+                compact_encoder_decoder_partitions
+            ),
+            compact_partition_width_quantum=(
+                64 if compact_encoder_decoder_partitions else 0
+            ),
         )
     model_construct_seconds = time.perf_counter() - construct_started
     optimizer_construct_started = time.perf_counter()
@@ -2896,6 +2939,9 @@ def run_training_route(
         "phase_receipt": phase_receipt,
         "rope_kernel": rope_kernel,
         "prune_inactive_auxiliary_outputs": prune_inactive_auxiliary_outputs,
+        "compact_encoder_decoder_partitions": bool(
+            compact_encoder_decoder_partitions
+        ),
         "compute_parameters": tree_numeric_receipt(
             model.trainable_parameters(), mx=mx, mlx_utils=mlx_utils
         ),
