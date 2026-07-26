@@ -521,7 +521,12 @@ def compiler_target_index_groups(
     transport_version: int = (
         kernel_protocol.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
     ),
-) -> tuple[np.ndarray, dict[str, tuple[int, ...]], tuple[int, ...]]:
+) -> tuple[
+    np.ndarray,
+    dict[str, tuple[int, ...]],
+    tuple[int, ...],
+    tuple[int, ...],
+]:
     """Reconstruct exact encoded semantic and schema target positions."""
 
     compact = training.compact_learned_compiler_transport_text(
@@ -537,6 +542,18 @@ def compiler_target_index_groups(
         )
     )
     code_tokens = [str(token) for token in training.kerc_code_tokens(compact)]
+    wire_payload = json.loads(compact)
+    if (
+        not isinstance(wire_payload, list)
+        or not wire_payload
+        or wire_payload[0] != int(transport_version)
+        or len(code_tokens) < 2
+        or code_tokens[0] != "["
+        or code_tokens[1] != str(int(transport_version))
+    ):
+        raise ValueError(
+            "K5 compiler root transport-version position is not canonical"
+        )
 
     def expand(logical_indices: Any) -> tuple[int, ...]:
         return tuple(
@@ -562,10 +579,12 @@ def compiler_target_index_groups(
             code_tokens
         )
     )
+    root_transport_version_indices = expand((1,))
     return (
         np.asarray([*target_ids, int(end_token_id)], dtype=np.int64),
         semantic_by_kind,
         schema_indices,
+        root_transport_version_indices,
     )
 
 
@@ -590,6 +609,67 @@ def indexed_teacher_forced_accuracy(
         "correct": correct,
         "total": total,
         "accuracy": round(correct / max(1, total), 8),
+    }
+
+
+def indexed_teacher_forced_logit_diagnostics(
+    logits: np.ndarray,
+    expected: np.ndarray,
+    indices: tuple[int, ...],
+    *,
+    comparison_token_id: int,
+) -> dict[str, Any]:
+    """Measure expected-token rank and margin at exact bound target positions."""
+
+    scores = np.asarray(logits, dtype=np.float32)
+    targets = np.asarray(expected, dtype=np.int64)
+    if (
+        scores.ndim != 2
+        or len(scores) != len(targets)
+        or not indices
+        or min(indices) < 0
+        or max(indices) >= len(targets)
+        or not 0 <= int(comparison_token_id) < scores.shape[1]
+    ):
+        raise ValueError("K5 indexed logit diagnostic authority is invalid")
+    rows = []
+    for index in indices:
+        target_id = int(targets[index])
+        row = scores[index]
+        expected_logit = float(row[target_id])
+        comparison_logit = float(row[int(comparison_token_id)])
+        rank = 1 + int(np.count_nonzero(row > expected_logit))
+        rows.append(
+            {
+                "target_index": int(index),
+                "expected_token_id": target_id,
+                "comparison_token_id": int(comparison_token_id),
+                "expected_rank": rank,
+                "expected_logit": round(expected_logit, 8),
+                "comparison_logit": round(comparison_logit, 8),
+                "expected_minus_comparison_margin": round(
+                    expected_logit - comparison_logit,
+                    8,
+                ),
+                "top1_correct": int(np.argmax(row)) == target_id,
+            }
+        )
+    margins = [float(row["expected_minus_comparison_margin"]) for row in rows]
+    ranks = [int(row["expected_rank"]) for row in rows]
+    return {
+        "policy": "project_theseus_path_bound_expected_rank_and_margin_v1",
+        "position_count": len(rows),
+        "top1_correct": sum(bool(row["top1_correct"]) for row in rows),
+        "minimum_expected_rank": min(ranks),
+        "maximum_expected_rank": max(ranks),
+        "mean_expected_rank": round(sum(ranks) / len(ranks), 8),
+        "minimum_expected_minus_comparison_margin": round(min(margins), 8),
+        "maximum_expected_minus_comparison_margin": round(max(margins), 8),
+        "mean_expected_minus_comparison_margin": round(
+            sum(margins) / len(margins),
+            8,
+        ),
+        "rows": rows,
     }
 
 
@@ -1814,6 +1894,26 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         }
     )
     token_label_lookup[int(model_contract["kerc_end_token_id"])] = "<KERC_END>"
+    root_transport_comparison_label = (
+        str(kernel_protocol.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION)
+        if compiler_transport_version
+        == kernel_protocol.LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+        else str(
+            kernel_protocol.LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+        )
+    )
+    root_transport_comparison_ids = [
+        token_id
+        for token_id, label in token_label_lookup.items()
+        if label == root_transport_comparison_label
+    ]
+    if len(root_transport_comparison_ids) != 1:
+        raise ValueError(
+            "K5 root transport comparison token is not uniquely bound"
+        )
+    root_transport_comparison_token_id = int(
+        root_transport_comparison_ids[0]
+    )
     gradient_examples: list[dict[str, Any]] = []
     rows_per_objective = int(getattr(args, "rows_per_objective", 1))
     diagnostic_beam_width = int(getattr(args, "beam_width", 1))
@@ -1965,11 +2065,27 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
             )
         )
         teacher_predictions = mx.argmax(teacher_logits[0], axis=-1)
-        mx.eval(teacher_predictions, *training.cache_arrays(teacher_cache))
+        mx.eval(
+            teacher_predictions,
+            teacher_logits,
+            *training.cache_arrays(teacher_cache),
+        )
         predicted_ids = np.asarray(teacher_predictions, dtype=np.int64)
         supervised_predictions = align_exact_stage_predictions(
             predicted_ids, supervised_authority
         )
+        teacher_logit_values = np.asarray(
+            teacher_logits[0],
+            dtype=np.float32,
+        )
+        if len(teacher_logit_values) == len(supervised_authority):
+            supervised_logits = teacher_logit_values[supervised_authority]
+        elif len(teacher_logit_values) == int(supervised_authority.sum()):
+            supervised_logits = teacher_logit_values
+        else:
+            raise ValueError(
+                "K5 teacher-forced logits do not align with exact authority"
+            )
         gradient_mask = np.asarray(
             [row["_stage_loss_mask"]], dtype=np.float32
         )
@@ -2062,11 +2178,13 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
             }
         semantic_accuracy_by_kind: dict[str, dict[str, Any]] = {}
         schema_continuation_accuracy: dict[str, Any] | None = None
+        root_transport_version_diagnostic: dict[str, Any] | None = None
         if objective == "surface_to_kernel_program_v1":
             (
                 reconstructed_target_ids,
                 semantic_indices_by_kind,
                 schema_indices,
+                root_transport_version_indices,
             ) = compiler_target_index_groups(
                 str(row["target"]),
                 code_vocabulary=code_vocabulary,
@@ -2096,7 +2214,21 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 supervised_expected,
                 schema_indices,
             )
-        del teacher_logits, teacher_cache, teacher_predictions
+            root_transport_version_diagnostic = (
+                indexed_teacher_forced_logit_diagnostics(
+                    supervised_logits,
+                    supervised_expected,
+                    root_transport_version_indices,
+                    comparison_token_id=root_transport_comparison_token_id,
+                )
+            )
+        del (
+            teacher_logits,
+            teacher_cache,
+            teacher_predictions,
+            teacher_logit_values,
+            supervised_logits,
+        )
         mx.clear_cache()
         teacher_forced_only = bool(args.teacher_forced_only)
         if teacher_forced_only:
@@ -2250,6 +2382,9 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 "teacher_forced_schema_continuation_accuracy": (
                     schema_continuation_accuracy
                 ),
+                "teacher_forced_root_transport_version_diagnostic": (
+                    root_transport_version_diagnostic
+                ),
                 "generated_character_count": len(generated),
                 "generated_sha256": hashlib.sha256(generated.encode()).hexdigest(),
                 "exact_match": (
@@ -2378,6 +2513,71 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     ]
     schema_total = sum(int(row["total"]) for row in schema_rows)
     schema_correct = sum(int(row["correct"]) for row in schema_rows)
+    root_transport_rows = [
+        row["teacher_forced_root_transport_version_diagnostic"]
+        for row in rows
+        if row["teacher_forced_root_transport_version_diagnostic"] is not None
+    ]
+    root_transport_position_rows = [
+        position
+        for diagnostic in root_transport_rows
+        for position in diagnostic["rows"]
+    ]
+    root_transport_ranks = [
+        int(row["expected_rank"]) for row in root_transport_position_rows
+    ]
+    root_transport_margins = [
+        float(row["expected_minus_comparison_margin"])
+        for row in root_transport_position_rows
+    ]
+    root_transport_summary = {
+        "policy": "project_theseus_path_bound_expected_rank_and_margin_v1",
+        "required_transport_version": compiler_transport_version,
+        "comparison_transport_version": int(
+            root_transport_comparison_label
+        ),
+        "row_count": len(root_transport_rows),
+        "position_count": len(root_transport_position_rows),
+        "top1_correct": sum(
+            bool(row["top1_correct"])
+            for row in root_transport_position_rows
+        ),
+        "minimum_expected_rank": (
+            min(root_transport_ranks) if root_transport_ranks else 0
+        ),
+        "maximum_expected_rank": (
+            max(root_transport_ranks) if root_transport_ranks else 0
+        ),
+        "mean_expected_rank": round(
+            sum(root_transport_ranks) / max(1, len(root_transport_ranks)),
+            8,
+        ),
+        "minimum_expected_minus_comparison_margin": round(
+            min(root_transport_margins) if root_transport_margins else 0.0,
+            8,
+        ),
+        "maximum_expected_minus_comparison_margin": round(
+            max(root_transport_margins) if root_transport_margins else 0.0,
+            8,
+        ),
+        "mean_expected_minus_comparison_margin": round(
+            sum(root_transport_margins)
+            / max(1, len(root_transport_margins)),
+            8,
+        ),
+        "sampled_training_row_count": sum(
+            row["objective"] == "surface_to_kernel_program_v1"
+            and row["sampled_training_row"]
+            for row in rows
+        ),
+        "sampled_optimizer_step_count": sum(
+            int(row["sampled_optimizer_step_count"])
+            for row in rows
+            if row["objective"] == "surface_to_kernel_program_v1"
+        ),
+        "selection_uses_model_outcomes": False,
+        "selection_uses_target_values": False,
+    }
     exact_count = sum(row["exact_match"] is True for row in rows)
     syntax_count = sum(row["syntax_valid"] is True for row in rows)
     teacher_forced_summary = aggregate_teacher_forced_rows(rows)
@@ -2458,6 +2658,9 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
             "total": schema_total,
             "accuracy": round(schema_correct / max(1, schema_total), 8),
         },
+        "teacher_forced_root_transport_version_summary": (
+            root_transport_summary
+        ),
         "teacher_forced_token_diagnostics_by_error": (
             teacher_forced_token_diagnostics
         ),

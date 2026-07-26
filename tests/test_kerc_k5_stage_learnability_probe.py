@@ -68,11 +68,20 @@ def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership()
         separators=(",", ":"),
     )
     code_vocabulary = pretraining.build_kerc_code_vocabulary(
-        [{"objective": "surface_to_kernel_program_v1", "target": target_text}],
+        [
+            {
+                "objective": "surface_to_kernel_program_v1",
+                "target": probe.training.compact_learned_compiler_transport_text(
+                    target_text,
+                    transport_version=version,
+                ),
+            }
+            for version in (2, 3)
+        ],
         {"kernel_max_vocab": 512, "pointer_max_vocab": 512},
     )
 
-    v2_ids, v2_groups, _ = probe.compiler_target_index_groups(
+    v2_ids, v2_groups, _, v2_root = probe.compiler_target_index_groups(
         target_text,
         code_vocabulary=code_vocabulary,
         kernel_offset=600,
@@ -80,7 +89,7 @@ def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership()
         end_token_id=1800,
         transport_version=2,
     )
-    v3_ids, v3_groups, _ = probe.compiler_target_index_groups(
+    v3_ids, v3_groups, _, v3_root = probe.compiler_target_index_groups(
         target_text,
         code_vocabulary=code_vocabulary,
         kernel_offset=600,
@@ -96,6 +105,36 @@ def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership()
     assert v3_groups["residual_fidelity"] == ()
     assert v3_groups["program_alignment_span"]
     assert v3_groups["protected_character_bound"]
+    assert len(v2_root) == 1
+    assert len(v3_root) == 1
+    assert int(v2_ids[v2_root[0]]) != int(v3_ids[v3_root[0]])
+
+
+def test_indexed_logit_diagnostic_reports_expected_rank_and_legacy_margin() -> (
+    None
+):
+    logits = np.asarray(
+        [
+            [0.0, 1.0, 2.0, 3.0],
+            [0.0, 4.0, 3.0, 2.0],
+        ],
+        dtype=np.float32,
+    )
+    expected = np.asarray([3, 2], dtype=np.int64)
+
+    diagnostic = probe.indexed_teacher_forced_logit_diagnostics(
+        logits,
+        expected,
+        (1,),
+        comparison_token_id=1,
+    )
+
+    assert diagnostic["position_count"] == 1
+    assert diagnostic["top1_correct"] == 0
+    assert diagnostic["minimum_expected_rank"] == 2
+    assert diagnostic["mean_expected_minus_comparison_margin"] == -1.0
+    assert diagnostic["rows"][0]["expected_token_id"] == 2
+    assert diagnostic["rows"][0]["comparison_token_id"] == 1
 
 
 def test_probe_checkpoint_counterfactual_is_content_bound_and_explicit(
