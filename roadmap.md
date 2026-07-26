@@ -527,6 +527,20 @@ Therefore:
    model/optimizer state costs about 46 ms per full 2.3-second update. Test this only if the
    memory saving allows a faster sustained microbatch, and prove per-step rounding,
    checkpoint/reload, source/MTP activation, and optimizer-state equivalence.
+
+   **Trigger disposition (2026-07-26):** the removable zero-moment payload is
+   115,617,872 bytes (110.262 MiB), not the entire inactive parameter footprint. Two
+   alternating current-checkpoint measurements put microbatch five at 3,154.274 pooled
+   positions/second versus 3,128.977 for microbatch four, only `1.008085x`; it already fits
+   without lazy state and the difference is not material. Microbatch six breached the live
+   reserve with a 236.656 MiB observed deficit and 1,474.562 MiB swap growth. Even impossible
+   recovery of the full inactive moment payload would leave only 1,153.606 MiB reclaimable,
+   below the measured 1,280 MiB live-reserve requirement; its historical absolute throughput
+   also trails microbatch five. The implementation trigger therefore fails. Do not add a
+   virtual-state/checkpoint ABI for no speed gain. Record
+   `NOT_IMPLEMENTED_MEMORY_TO_FASTER_MICROBATCH_TRIGGER_FAILED`, preserve the candidate rather
+   than falsifying it, and reopen only if a future materially faster configuration misses
+   safe fit by no more than the exact removable payload.
 5. **Bound packing by the observed data rather than folklore.** The measured 16-step slice
    carries 124,164 optimizer positions out of 131,072 dense width-512 slots (`94.73%`
    occupancy). Exact block-diagonal packing can therefore remove at most about 5.27% of this

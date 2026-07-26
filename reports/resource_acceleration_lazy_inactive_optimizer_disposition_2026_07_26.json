@@ -1,0 +1,92 @@
+{
+  "policy": "project_theseus_lazy_inactive_optimizer_state_disposition_v1",
+  "created_utc": "2026-07-26T20:04:00Z",
+  "trigger_state": "GREEN",
+  "capability_claim": "NONE_ACCELERATION_ENGINEERING_DISPOSITION_ONLY",
+  "candidate": "virtual_zero_adam_state_for_plain_pretraining_inactive_modules",
+  "implementation_disposition": "NOT_IMPLEMENTED_MEMORY_TO_FASTER_MICROBATCH_TRIGGER_FAILED",
+  "scientific_falsification_claimed": false,
+  "inactive_state": {
+    "inactive_parameter_count": 14452234,
+    "inactive_parameter_fraction": 0.263551,
+    "inactive_adam_moment_element_count": 28904468,
+    "inactive_adam_moment_payload_bytes": 115617872,
+    "inactive_adam_moment_payload_mib": 110.262,
+    "all_moments_exactly_zero_at_source_checkpoint": true,
+    "source": "reports/training_acceleration_research_refresh_2026_07_26.json"
+  },
+  "preregistered_trigger": {
+    "requirement": "Implement virtual-zero custody only if the memory saving enables a genuinely faster sustained microbatch; direct state-materialization time is not a material speed claim.",
+    "passed": false
+  },
+  "current_checkpoint_alternating_microbatch_measurement": {
+    "common": {
+      "precision": "float32",
+      "optimizer_steps_per_process": 8,
+      "logical_batch_size": 16,
+      "sequence_width": 512,
+      "compiled_state_materialized_after_each_update": true,
+      "same_checkpoint_data_objective_optimizer_and_width_quantum": true,
+      "production_authority": false
+    },
+    "microbatch_4": {
+      "process_positions_per_second": [
+        3160.618,
+        3097.964
+      ],
+      "warmup_excluded_positions_total": 108972,
+      "warmup_excluded_seconds_total": 34.826714,
+      "pooled_positions_per_second": 3128.977,
+      "maximum_mlx_peak_bytes": 3373408824,
+      "reports": [
+        "reports/resource_acceleration_fp32_m4_current8_2026_07_26.json",
+        "reports/resource_acceleration_fp32_m4_current8_reverse_2026_07_26.json"
+      ]
+    },
+    "microbatch_5": {
+      "process_positions_per_second": [
+        3226.983,
+        3084.769
+      ],
+      "warmup_excluded_positions_total": 108972,
+      "warmup_excluded_seconds_total": 34.547413,
+      "pooled_positions_per_second": 3154.273,
+      "pooled_speedup_over_microbatch_4": 1.008085,
+      "maximum_mlx_peak_bytes": 3760247588,
+      "already_fits_without_lazy_state": true,
+      "material_speedup": false,
+      "reports": [
+        "reports/resource_acceleration_fp32_m5_current8_2026_07_26.json",
+        "reports/resource_acceleration_fp32_m5_current8_reverse_2026_07_26.json"
+      ]
+    },
+    "microbatch_6": {
+      "completed": false,
+      "fault": "host_memory_reserve_breached",
+      "minimum_reclaimable_available_mib": 1043.344,
+      "required_live_reserve_mib": 1280.0,
+      "observed_reserve_deficit_mib": 236.656,
+      "maximum_swapout_growth_mib": 1474.562,
+      "best_case_reserve_after_full_inactive_moment_saving_mib": 1153.606,
+      "best_case_still_below_required_live_reserve_mib": true,
+      "historical_pooled_positions_per_second": 3494.148,
+      "historical_microbatch_5_pooled_positions_per_second": 3527.777,
+      "report": "reports/resource_acceleration_fp32_m6_current8_2026_07_26.host_resource_safety.json",
+      "historical_source": "reports/runtime/acceleration/candidates/microbatch6.json"
+    }
+  },
+  "direct_step_time_bound": {
+    "all_state_materialization_fraction_of_full_update": 0.02,
+    "inactive_state_fraction_is_lower": true,
+    "material_speedup_possible_without_batch_change": false
+  },
+  "decision": {
+    "reason": "The approximately 110.3 MiB saving cannot make microbatch six host-safe, microbatch five already fits and improves pooled throughput by only 0.81 percent, and the candidate has no material direct step-time path. Adding a second optimizer/checkpoint ABI would therefore add correctness risk without a realizable speedup.",
+    "production_route_changed": false,
+    "reentry_condition": "A future route may reopen this candidate only if a measured batch or sequence configuration is both materially faster and misses the live-reserve requirement by no more than the exact removable moment payload. It must then pass per-step decay rounding, activation-boundary, publication/reload, and independent replay parity."
+  },
+  "canonical_checkpoint_mutated": false,
+  "public_benchmark_rows_read": 0,
+  "public_training_rows_written": 0,
+  "external_inference_calls": 0
+}

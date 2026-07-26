@@ -1,0 +1,211 @@
+{
+  "authoritative_parameters": {
+    "all_finite": true,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "element_count": 54836746,
+    "finite_check_chunk_size": 32,
+    "tensor_count": 197
+  },
+  "batch_index_sha256_prefix": [
+    "cb985ccb376ba31c897b3303eef266f09cb6937009edd02135f30ed9df73bc17",
+    "20f57ad6bfb4f24b14638299a2a335374c8e4d575836df89b6a72e0d864442b4",
+    "933e3cd568ec10313a8430a3756e9e6642a7274e386ac1fb19ecde89d4b444fd",
+    "ddf26c6a48fc56a3080faaf72ee3ed7863b5bafdaa9343daeccec0a60b2bf1df",
+    "2007e7534d45e61605aa9d1501d629b85adf66cd8e5be56c990f12636f7e6404",
+    "34e83d4fe1808f2fdfd098670840716ef5e08780e2e94e1cd2962978f63358e8",
+    "093e75a06c5fe3bfe124b458a9672f533cf433313812533cc0ec553d10759e74",
+    "633182a189b4568be78866e2205c07a9a39531c9c21455a9602d2075de18243f"
+  ],
+  "checkpoint_restore_seconds": 0.055114,
+  "compact_encoder_decoder_partitions": false,
+  "compile_width_quantum": 64,
+  "compiled_accumulation_seconds_prefix": [
+    0.86599,
+    0.745579,
+    0.739514,
+    0.729411,
+    0.727105,
+    0.740751,
+    0.72779,
+    0.743162
+  ],
+  "compiled_accumulation_seconds_total": 18.099605,
+  "compiled_microbatch_size": 5,
+  "compiled_state_materialization_seconds_prefix": [
+    0.117597,
+    0.062412,
+    0.036687,
+    0.038866,
+    0.06853,
+    0.191167,
+    0.072434,
+    0.0403
+  ],
+  "compiled_state_materialization_seconds_total": 0.627994,
+  "compiled_update_seconds_prefix": [
+    0.205,
+    0.188188,
+    0.18509,
+    0.184154,
+    0.184907,
+    0.216938,
+    0.18414,
+    0.180533
+  ],
+  "compiled_update_seconds_total": 1.528951,
+  "compute_dtype": "float32",
+  "compute_parameters": {
+    "all_finite": true,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "element_count": 54836746,
+    "finite_check_chunk_size": 32,
+    "tensor_count": 197
+  },
+  "created_utc": "2026-07-26T20:01:03.043965Z",
+  "data_cursor_next": {
+    "batch_index": 8,
+    "batch_size": 16,
+    "epoch": 0,
+    "policy": "project_theseus_training_data_cursor_v1",
+    "row_count": 881592,
+    "seed": 2749823778
+  },
+  "data_cursor_start": {
+    "batch_index": 0,
+    "batch_size": 16,
+    "epoch": 0,
+    "policy": "project_theseus_training_data_cursor_v1",
+    "row_count": 881592,
+    "seed": 2749823778
+  },
+  "device_step_seconds_total": 20.452594,
+  "final_loss": 1.659178,
+  "first_optimizer_step_seconds": 2.789681,
+  "gradient_loss_scale": 1.0,
+  "hard_gaps": [],
+  "host_batch_preparation_seconds_total": 0.033332,
+  "implementation_authority": "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER",
+  "loss_prefix": [
+    1.6323545,
+    1.62956381,
+    1.79167128,
+    1.38720322,
+    1.56719661,
+    1.77368033,
+    1.73811483,
+    1.65917778
+  ],
+  "materialize_compiled_state_after_update": true,
+  "maximum_dynamic_batch_width": 512,
+  "maximum_execution_batch_width": 512,
+  "mean_dynamic_batch_width": 512.0,
+  "mean_loss": 1.64737,
+  "median_optimizer_step_seconds": 2.509705,
+  "mlx_active_memory_bytes_maximum": 658563896,
+  "mlx_active_memory_bytes_prefix": [
+    658563896,
+    658498360,
+    658563896,
+    658481976,
+    658563896,
+    658481976,
+    658563896,
+    658481976
+  ],
+  "mlx_cache_memory_bytes_maximum": 4184155608,
+  "mlx_memory": {
+    "active_bytes": 658301600,
+    "cache_bytes": 1576495,
+    "peak_bytes": 3760247588,
+    "scope": "mlx_allocator_only"
+  },
+  "mlx_peak_memory_bytes_maximum": 3760247588,
+  "model_construct_seconds": 0.004373,
+  "open_conditions": [
+    "matched route parity and resume qualification pending",
+    "current implementation plan migration is not authorized",
+    "production route remains unchanged"
+  ],
+  "optimizer_construct_seconds": 6.1e-05,
+  "optimizer_content": {
+    "element_count": 109673494,
+    "host_copy_policy": "one_tensor_at_a_time_after_timed_training",
+    "payload_bytes": 438693980,
+    "sha256": "a3b4a15586d0a5146268fa3d99f568b577fe20e1755971720cb9fe857ffb756d",
+    "tensor_count": 396
+  },
+  "optimizer_positions": 62467,
+  "optimizer_state": {
+    "all_finite": true,
+    "dtypes": [
+      "mlx.core.float32",
+      "mlx.core.uint64"
+    ],
+    "element_count": 109673494,
+    "finite_check_chunk_size": 32,
+    "tensor_count": 396
+  },
+  "optimizer_step_seconds_prefix": [
+    2.789681,
+    2.457212,
+    2.434528,
+    2.580011,
+    2.447679,
+    2.724071,
+    2.528212,
+    2.491198
+  ],
+  "optimizer_steps": 8,
+  "padded_positions_avoided": 0,
+  "parameter_content": {
+    "element_count": 54836746,
+    "host_copy_policy": "one_tensor_at_a_time_after_timed_training",
+    "payload_bytes": 219346984,
+    "sha256": "e091dae90a1c27701f2596c67bd391d99ee0d9abd3294f9153afe5b0771fd3cc",
+    "tensor_count": 197
+  },
+  "phase_receipt": {
+    "policy": "canonical_pretraining_memmap_range_view_v1",
+    "row_count": 881592
+  },
+  "policy": "project_theseus_isolated_compiled_route_diagnostic_v1",
+  "post_first_positions_per_second": 3084.769,
+  "precision_mode": "float32",
+  "prune_inactive_auxiliary_outputs": true,
+  "reject_nonfinite_gradients": false,
+  "rng_content": {
+    "element_count": 2,
+    "host_copy_policy": "one_tensor_at_a_time_after_timed_training",
+    "payload_bytes": 8,
+    "sha256": "bf5351ba4e1e20e6c1fb093fe36a6fbf00e3a20bea813943e73dbd5686516326",
+    "tensor_count": 1
+  },
+  "rope_kernel": "mlx_fast",
+  "route_mode": "compiled",
+  "setup_timings": {
+    "copy_lookup_seconds": 0.000619,
+    "memmap_open_and_validation_seconds": 2.015715,
+    "metadata_and_base_config_seconds": 0.002484,
+    "range_view_seconds": 2.2e-05,
+    "total_seconds": 2.13448
+  },
+  "source_conditioning": false,
+  "starting_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+  "starting_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+  "static_sequence_width": 512,
+  "training_config": {
+    "path": "configs/moecot_language_arm_training.json",
+    "sha256": "3a5b4147d3c04e2ab8426760e91ec2385a1948d621fdca87d641ed7be700caf5"
+  },
+  "training_phase": "pretraining",
+  "training_step_execution": "mlx_compiled_shape_bucket_v1",
+  "trigger_state": "YELLOW",
+  "unit_allocator_pack_seconds_total": 2e-06,
+  "warmup_excluded_positions": 54486,
+  "warmup_excluded_positions_per_second": 3084.769,
+  "warmup_excluded_seconds": 17.662912
+}
