@@ -171,7 +171,11 @@ def main() -> int:
     )
     parser.add_argument(
         "--precision-mode",
-        choices=("float32", "bfloat16_fp32_master"),
+        choices=(
+            "float32",
+            "float16_fp32_master",
+            "bfloat16_fp32_master",
+        ),
         default="bfloat16_fp32_master",
     )
     parser.add_argument("--metal-trace-out", default="")
@@ -206,6 +210,10 @@ def main() -> int:
     )
     if focused_modes > 1:
         parser.error("choose only one focused training qualification")
+    if args.precision_pair_only and args.precision_mode == "float32":
+        parser.error(
+            "--precision-pair-only requires a mixed --precision-mode candidate"
+        )
     if any(
         value < 2
         for value in (
@@ -350,6 +358,10 @@ def main() -> int:
             fp32_clear_device_cache_after_step=(
                 args.fp32_clear_device_cache_after_step
             ),
+            precision_mode=args.precision_mode,
+            unmigrated_implementation_challenger=(
+                args.unmigrated_implementation_challenger
+            ),
         )
         write_json(resolve(args.out), report)
         print(
@@ -382,6 +394,9 @@ def main() -> int:
             compiled_microbatch_size=args.compiled_microbatch_size,
             compile_width_quantum=args.compile_width_quantum,
             precision_mode=args.precision_mode,
+            unmigrated_implementation_challenger=(
+                args.unmigrated_implementation_challenger
+            ),
         )
         write_json(resolve(args.out), report)
         print(
@@ -438,6 +453,7 @@ def run_precision_resume_entry(
     compiled_microbatch_size: int,
     compile_width_quantum: int,
     precision_mode: str,
+    unmigrated_implementation_challenger: bool = False,
 ) -> dict[str, Any]:
     """Bind the focused precision-resume probe to the canonical durable state."""
 
@@ -455,6 +471,7 @@ def run_precision_resume_entry(
         gaps.append("shared_trunk_checkpoint_missing")
     if not optimizer_path.is_file():
         gaps.append("shared_trunk_optimizer_state_missing")
+    implementation_plan_mismatch = False
     if not gaps:
         try:
             training.validate_resume(
@@ -465,7 +482,13 @@ def run_precision_resume_entry(
                 optimizer_path,
             )
         except ValueError as exc:
-            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+            if (
+                unmigrated_implementation_challenger
+                and str(exc) == "resume denied: plan_identity_mismatch"
+            ):
+                implementation_plan_mismatch = True
+            else:
+                gaps.append(f"checkpoint_lineage_invalid:{exc}")
     if gaps:
         return {
             "policy": "project_theseus_focused_precision_resume_qualification_v1",
@@ -488,7 +511,13 @@ def run_precision_resume_entry(
         **result,
         "policy": "project_theseus_focused_precision_resume_qualification_v1",
         "created_utc": now(),
-        "trigger_state": result.get("state"),
+        "trigger_state": (
+            "RED"
+            if result.get("state") == "RED"
+            else "YELLOW"
+            if implementation_plan_mismatch
+            else result.get("state")
+        ),
         "source_precision_policy": result.get("policy"),
         "training_config": {
             "path": relative(config_path),
@@ -498,16 +527,31 @@ def run_precision_resume_entry(
         "starting_optimizer_state_sha256": file_sha256(optimizer_path),
         "compiled_microbatch_size": compiled_microbatch_size,
         "compile_width_quantum": compile_width_quantum,
+        "implementation_authority": (
+            "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
+            if implementation_plan_mismatch
+            else "PLAN_BOUND_QUALIFICATION"
+        ),
         "hard_gaps": (
             ["precision_checkpoint_reload_integrity_fault"]
             if result.get("state") == "RED"
             else []
         ),
-        "open_conditions": (
-            ["precision_trajectory_repeatability_not_exact"]
-            if result.get("state") == "YELLOW"
-            else []
-        ),
+        "open_conditions": [
+            *(
+                ["precision_trajectory_repeatability_not_exact"]
+                if result.get("state") == "YELLOW"
+                else []
+            ),
+            *(
+                [
+                    "current implementation plan migration is not authorized",
+                    "production route remains unchanged",
+                ]
+                if implementation_plan_mismatch
+                else []
+            ),
+        ],
     }
 
 
@@ -520,8 +564,10 @@ def run_precision_pair_entry(
     compile_width_quantum: int,
     bf16_clear_device_cache_after_step: bool = False,
     fp32_clear_device_cache_after_step: bool = False,
+    precision_mode: str = "bfloat16_fp32_master",
+    unmigrated_implementation_challenger: bool = False,
 ) -> dict[str, Any]:
-    """Bind a focused FP32/BF16 pair to the canonical immutable checkpoint."""
+    """Bind a focused FP32/mixed pair to the canonical immutable checkpoint."""
 
     config = training.bind_scale_preregistration(read_json(config_path))
     plan = training.build_plan(config, config_path=config_path)
@@ -537,6 +583,7 @@ def run_precision_pair_entry(
         gaps.append("shared_trunk_checkpoint_missing")
     if not optimizer_path.is_file():
         gaps.append("shared_trunk_optimizer_state_missing")
+    implementation_plan_mismatch = False
     if not gaps:
         try:
             training.validate_resume(
@@ -547,7 +594,13 @@ def run_precision_pair_entry(
                 optimizer_path,
             )
         except ValueError as exc:
-            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+            if (
+                unmigrated_implementation_challenger
+                and str(exc) == "resume denied: plan_identity_mismatch"
+            ):
+                implementation_plan_mismatch = True
+            else:
+                gaps.append(f"checkpoint_lineage_invalid:{exc}")
     if gaps:
         return {
             "policy": "project_theseus_focused_precision_pair_qualification_v1",
@@ -567,12 +620,19 @@ def run_precision_pair_entry(
         compile_width_quantum=compile_width_quantum,
         bf16_clear_device_cache_after_step=bf16_clear_device_cache_after_step,
         fp32_clear_device_cache_after_step=fp32_clear_device_cache_after_step,
+        candidate_precision_mode=precision_mode,
     )
     return {
         **result,
         "policy": "project_theseus_focused_precision_pair_qualification_v1",
         "created_utc": now(),
-        "trigger_state": result.get("state"),
+        "trigger_state": (
+            "RED"
+            if result.get("state") == "RED"
+            else "YELLOW"
+            if implementation_plan_mismatch
+            else result.get("state")
+        ),
         "source_precision_policy": result.get("policy"),
         "training_config": {
             "path": relative(config_path),
@@ -582,6 +642,11 @@ def run_precision_pair_entry(
         "starting_optimizer_state_sha256": file_sha256(optimizer_path),
         "compiled_microbatch_size": compiled_microbatch_size,
         "compile_width_quantum": compile_width_quantum,
+        "implementation_authority": (
+            "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
+            if implementation_plan_mismatch
+            else "PLAN_BOUND_QUALIFICATION"
+        ),
         "bf16_clear_device_cache_after_step": bool(
             bf16_clear_device_cache_after_step
         ),
@@ -591,6 +656,14 @@ def run_precision_pair_entry(
         "hard_gaps": (
             ["mixed_precision_numeric_or_loss_integrity_fault"]
             if result.get("state") == "RED"
+            else []
+        ),
+        "open_conditions": (
+            [
+                "current implementation plan migration is not authorized",
+                "production route remains unchanged",
+            ]
+            if implementation_plan_mismatch
             else []
         ),
     }
@@ -2027,13 +2100,24 @@ def run_precision_pair_qualification(
     fp32_compiled_microbatch_size: int = 4,
     bf16_clear_device_cache_after_step: bool = False,
     fp32_clear_device_cache_after_step: bool = False,
+    candidate_precision_mode: str = "bfloat16_fp32_master",
 ) -> dict[str, Any]:
-    """Compare fp32 compiled training with bf16 compute and fp32 master weights."""
+    """Compare FP32 compiled training with mixed compute and FP32 master weights."""
 
     if repetitions < 2:
         raise ValueError("precision qualification requires at least two repetitions")
     if fp32_compiled_microbatch_size < 1:
         raise ValueError("FP32 compiled microbatch size must be positive")
+    if candidate_precision_mode not in {
+        "float16_fp32_master",
+        "bfloat16_fp32_master",
+    }:
+        raise ValueError(
+            f"unsupported mixed precision candidate: {candidate_precision_mode}"
+        )
+    candidate_compute_dtype = candidate_precision_mode.removesuffix(
+        "_fp32_master"
+    )
     route_context = build_training_route_context(
         config=config,
         plan=plan,
@@ -2048,9 +2132,9 @@ def run_precision_pair_qualification(
     trials: list[dict[str, Any]] = []
     for repetition in range(repetitions):
         route_order = (
-            ("float32", "bfloat16_fp32_master")
+            ("float32", candidate_precision_mode)
             if repetition % 2 == 0
-            else ("bfloat16_fp32_master", "float32")
+            else (candidate_precision_mode, "float32")
         )
         routes: dict[str, dict[str, Any]] = {}
         for precision_mode in route_order:
@@ -2068,14 +2152,14 @@ def run_precision_pair_qualification(
                     "compiled_microbatch_size": route_microbatch_size,
                     "clear_device_cache_after_step": (
                         bool(bf16_clear_device_cache_after_step)
-                        if precision_mode == "bfloat16_fp32_master"
+                        if precision_mode == candidate_precision_mode
                         else bool(fp32_clear_device_cache_after_step)
                     ),
                 },
             )
             release_accelerator_route_state(mx)
         baseline = routes["float32"]
-        candidate = routes["bfloat16_fp32_master"]
+        candidate = routes[candidate_precision_mode]
         baseline_rate = float(baseline["warmup_excluded_positions_per_second"])
         candidate_rate = float(candidate["warmup_excluded_positions_per_second"])
         loss_delta = float(candidate["final_loss"]) - float(baseline["final_loss"])
@@ -2085,7 +2169,7 @@ def run_precision_pair_qualification(
                 "repetition": repetition + 1,
                 "route_order": list(route_order),
                 "float32": baseline,
-                "bfloat16_fp32_master": candidate,
+                candidate_precision_mode: candidate,
                 "speedup": round(candidate_rate / max(1e-12, baseline_rate), 6),
                 "final_loss_delta": round(loss_delta, 8),
                 "relative_final_loss_delta": round(relative_loss_delta, 8),
@@ -2093,7 +2177,7 @@ def run_precision_pair_qualification(
         )
     baseline = aggregate_training_routes([row["float32"] for row in trials])
     candidate = aggregate_training_routes(
-        [row["bfloat16_fp32_master"] for row in trials]
+        [row[candidate_precision_mode] for row in trials]
     )
     speedups = [float(row["speedup"]) for row in trials]
     median_speedup = float(statistics.median(speedups))
@@ -2106,7 +2190,7 @@ def run_precision_pair_qualification(
     numeric_integrity = all(
         route[section]["all_finite"]
         for row in trials
-        for route in (row["float32"], row["bfloat16_fp32_master"])
+        for route in (row["float32"], row[candidate_precision_mode])
         for section in (
             "compute_parameters",
             "authoritative_parameters",
@@ -2114,9 +2198,9 @@ def run_precision_pair_qualification(
         )
     )
     dtype_integrity = all(
-        row["bfloat16_fp32_master"]["compute_parameters"]["dtypes"]
-        == ["mlx.core.bfloat16"]
-        and row["bfloat16_fp32_master"]["authoritative_parameters"]["dtypes"]
+        row[candidate_precision_mode]["compute_parameters"]["dtypes"]
+        == [f"mlx.core.{candidate_compute_dtype}"]
+        and row[candidate_precision_mode]["authoritative_parameters"]["dtypes"]
         == ["mlx.core.float32"]
         for row in trials
     )
@@ -2138,11 +2222,24 @@ def run_precision_pair_qualification(
         "policy": "project_theseus_mlx_mixed_precision_master_pair_v1",
         "state": "RED" if fault else "GREEN" if adopt else "YELLOW",
         "adopt": adopt,
-        "candidate": "bfloat16_compute_fp32_master_weights_and_optimizer",
+        "candidate": (
+            f"{candidate_compute_dtype}_compute_fp32_master_weights_and_optimizer"
+        ),
+        "candidate_precision_mode": candidate_precision_mode,
         "same_starting_checkpoint_and_optimizer": True,
         "same_data_order_batch_schedule_objective_and_update_count": True,
         "fp32_compiled_microbatch_size": fp32_compiled_microbatch_size,
-        "bf16_compiled_microbatch_size": compiled_microbatch_size,
+        "candidate_compiled_microbatch_size": compiled_microbatch_size,
+        "bf16_compiled_microbatch_size": (
+            compiled_microbatch_size
+            if candidate_precision_mode == "bfloat16_fp32_master"
+            else 0
+        ),
+        "float16_compiled_microbatch_size": (
+            compiled_microbatch_size
+            if candidate_precision_mode == "float16_fp32_master"
+            else 0
+        ),
         "bf16_clear_device_cache_after_step": bool(
             bf16_clear_device_cache_after_step
         ),
@@ -2151,16 +2248,18 @@ def run_precision_pair_qualification(
         ),
         "steps_per_route_per_repetition": steps,
         "repetitions": repetitions,
-        "route_order_control": "alternating fp32-first and bf16-first",
+        "route_order_control": (
+            f"alternating fp32-first and {candidate_compute_dtype}-first"
+        ),
         "float32": baseline,
-        "bfloat16_fp32_master": candidate,
+        candidate_precision_mode: candidate,
         "trials": trials,
         "median_speedup": round(median_speedup, 6),
         "pooled_speedup": round(pooled_speedup, 6),
         "maximum_relative_final_loss_delta": round(maximum_relative_loss_delta, 8),
         "acceptance": {
             "all_numeric_state_finite": numeric_integrity,
-            "bf16_compute_fp32_authority_dtypes_exact": dtype_integrity,
+            "mixed_compute_fp32_authority_dtypes_exact": dtype_integrity,
             "relative_final_loss_delta_at_most_0_02": loss_integrity,
             "peak_mlx_memory_nonregressed": memory_nonregressed,
             "median_speedup_at_least_1_15x": median_speedup >= 1.15,
@@ -2714,8 +2813,25 @@ def run_training_route(
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
-    if precision_mode not in {"float32", "bfloat16_fp32_master"}:
+    if precision_mode not in {
+        "float32",
+        "float16_fp32_master",
+        "bfloat16_fp32_master",
+    }:
         raise ValueError(f"unsupported precision mode: {precision_mode}")
+    compute_dtype_name = (
+        precision_mode.removesuffix("_fp32_master")
+        if precision_mode != "float32"
+        else "float32"
+    )
+    compute_dtype = {
+        "float16": mx.float16,
+        "bfloat16": mx.bfloat16,
+        "float32": mx.float32,
+    }[compute_dtype_name]
+    gradient_loss_scale = (
+        128.0 if precision_mode == "float16_fp32_master" else 1.0
+    )
     training_cfg = config["training"]
     vocab_size = int(target.get("vocab_size") or plan["models"]["vocab_size"])
     if hasattr(mx, "reset_peak_memory"):
@@ -2737,7 +2853,7 @@ def run_training_route(
         ),
     )
     master_model = None
-    if precision_mode == "bfloat16_fp32_master":
+    if precision_mode != "float32":
         master_model = training.build_model(
             training.CausalTransformerConfig(vocab_size=vocab_size, **target["model"]),
             mx=mx,
@@ -2764,7 +2880,7 @@ def run_training_route(
     model.load_weights(str(checkpoint))
     if master_model is not None:
         master_model.load_weights(str(checkpoint))
-        model.set_dtype(mx.bfloat16)
+        model.set_dtype(compute_dtype)
     optimizer.state = mlx_utils.tree_unflatten(list(mx.load(str(optimizer_path)).items()))
     mx.eval(
         model.parameters(),
@@ -2810,6 +2926,16 @@ def run_training_route(
             )
     else:
         loss_function = training.causal_loss
+    if gradient_loss_scale != 1.0:
+        unscaled_loss_function = loss_function
+
+        def scaled_loss_function(*loss_args: Any, **loss_kwargs: Any) -> Any:
+            return (
+                unscaled_loss_function(*loss_args, **loss_kwargs)
+                * gradient_loss_scale
+            )
+
+        loss_function = scaled_loss_function
     phase = training.train_phase(
         model,
         optimizer,
@@ -2856,8 +2982,10 @@ def run_training_route(
             eager_gradient_accumulation_microbatch_size
         ),
         master_model=master_model,
-        compute_dtype_name=(
-            "bfloat16" if master_model is not None else "float32"
+        compute_dtype_name=compute_dtype_name,
+        gradient_loss_scale=gradient_loss_scale,
+        reject_nonfinite_gradients=(
+            precision_mode == "float16_fp32_master"
         ),
         step_boundary_callback=step_boundary_callback,
         clear_device_cache_after_step=clear_device_cache_after_step,
@@ -2934,6 +3062,11 @@ def run_training_route(
         "data_cursor_next": phase["data_cursor_next"],
         "batch_index_sha256_prefix": phase["batch_index_sha256_prefix"],
         "precision_mode": precision_mode,
+        "compute_dtype": compute_dtype_name,
+        "gradient_loss_scale": gradient_loss_scale,
+        "reject_nonfinite_gradients": (
+            precision_mode == "float16_fp32_master"
+        ),
         "training_phase": training_phase,
         "source_conditioning": source_conditioning,
         "phase_receipt": phase_receipt,
@@ -3100,14 +3233,31 @@ def mixed_precision_token_loss(
     *,
     source_conditioning: bool | None = None,
     token_supervision_active: bool | None = None,
+    token_denominator_override: Any | None = None,
+    copy_alignment_denominator_override: Any | None = None,
+    copy_gate_denominator_override: Any | None = None,
 ) -> Any:
-    """Keep the token loss reduction in fp32 while the model computes in bf16."""
+    """Keep token-loss reduction in FP32 while the model uses a lower precision."""
 
     if token_supervision_active is not True:
         raise ValueError("mixed-precision token route requires active token supervision")
+    if (
+        source_conditioning is not True
+        and (
+            copy_alignment_denominator_override is not None
+            or copy_gate_denominator_override is not None
+        )
+    ):
+        raise ValueError(
+            "plain-token mixed precision cannot receive copy-loss denominators"
+        )
     logits, _cache = model(inputs, source_conditioning=source_conditioning)
     token_loss = nn.losses.cross_entropy(logits.astype(mx.float32), labels)
-    denominator = mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
+    denominator = (
+        token_denominator_override
+        if token_denominator_override is not None
+        else mx.maximum(mx.sum(mask), mx.array(1.0, dtype=mx.float32))
+    )
     return mx.sum(token_loss * mask) / denominator
 
 

@@ -2835,6 +2835,198 @@ def test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint(
     assert checkpoint_dtypes == {"mlx.core.float32"}
 
 
+def test_compiled_float16_scaled_compute_preserves_fp32_master_and_finite_state(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(59)
+    master_model = build_model(config, mx=mx, nn=nn)
+    mx.eval(master_model.parameters())
+    compute_model = build_model(config, mx=mx, nn=nn)
+    compute_model.load_weights(
+        list(mlx_utils.tree_flatten(master_model.parameters()))
+    )
+    compute_model.set_dtype(mx.float16)
+    mx.eval(compute_model.parameters())
+    rng = np.random.default_rng(31)
+    inputs = rng.integers(3, 64, size=(4, 16), dtype=np.int32)
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.ones_like(inputs, dtype=np.float32)
+    checkpoint = tmp_path / "float16-master.safetensors"
+    loss_scale = 128.0
+
+    def scaled_loss(*args: object, **kwargs: object) -> object:
+        return causal_loss(*args, **kwargs) * loss_scale
+
+    report = survival.train_phase(
+        compute_model,
+        optim.AdamW(learning_rate=1e-3),
+        nn.value_and_grad(compute_model, scaled_loss),
+        inputs,
+        labels,
+        mask,
+        progress_mask=mask,
+        ordered_plan_loss_weight=1.0,
+        sample_weights=None,
+        plan_labels=None,
+        plan_label_mode="none",
+        plan_auxiliary_weight=0.0,
+        plan_shuffle_seed=0,
+        plan_loss_mode="binary_multilabel",
+        plan_slot_count=0,
+        plan_factor_group_sizes=(),
+        phase_name="float16-scaled-mixed-precision-master",
+        target_positions=int(mask.sum()),
+        batch_size=4,
+        gradient_clip=1.0,
+        seed=41,
+        max_steps=1,
+        checkpoint=checkpoint,
+        checkpoint_every=1,
+        heartbeat=tmp_path / "heartbeat.json",
+        global_step_offset=0,
+        mx=mx,
+        optim=optim,
+        source_conditioning=False,
+        training_step_mode="compiled",
+        compiled_microbatch_size=2,
+        master_model=master_model,
+        compute_dtype_name="float16",
+        gradient_loss_scale=loss_scale,
+        reject_nonfinite_gradients=True,
+    )
+    compute_values = [
+        value
+        for _name, value in mlx_utils.tree_flatten(
+            compute_model.trainable_parameters()
+        )
+    ]
+    master_values = [
+        value
+        for _name, value in mlx_utils.tree_flatten(
+            master_model.trainable_parameters()
+        )
+    ]
+    mx.eval(
+        *[mx.all(mx.isfinite(value)) for value in master_values],
+        *[mx.all(mx.isfinite(value)) for value in compute_values],
+    )
+
+    assert report["compute_dtype"] == "float16"
+    assert report["authoritative_weight_dtype"] == "float32_master"
+    assert report["gradient_loss_scale"] == loss_scale
+    assert report["reject_nonfinite_gradients"] is True
+    assert report["compiled_split_gradient_accumulation"] is True
+    assert math.isfinite(float(report["final_loss"]))
+    assert {str(value.dtype) for value in compute_values} == {
+        "mlx.core.float16"
+    }
+    assert {str(value.dtype) for value in master_values} == {
+        "mlx.core.float32"
+    }
+    assert {str(value.dtype) for value in mx.load(str(checkpoint)).values()} == {
+        "mlx.core.float32"
+    }
+
+
+def test_compiled_float16_rejects_nonfinite_gradient_before_master_update(
+    tmp_path: Path,
+) -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.optimizers as optim
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=32,
+        d_model=16,
+        num_layers=1,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=32,
+    )
+    mx.random.seed(63)
+    master_model = build_model(config, mx=mx, nn=nn)
+    compute_model = build_model(config, mx=mx, nn=nn)
+    compute_model.load_weights(
+        list(mlx_utils.tree_flatten(master_model.parameters()))
+    )
+    compute_model.set_dtype(mx.float16)
+    mx.eval(master_model.parameters(), compute_model.parameters())
+    before = {
+        name: np.asarray(value).copy()
+        for name, value in mlx_utils.tree_flatten(
+            master_model.trainable_parameters()
+        )
+    }
+    inputs = np.arange(3, 3 + 32, dtype=np.int32).reshape(4, 8) % 32
+    labels = np.roll(inputs, -1, axis=1)
+    mask = np.ones_like(inputs, dtype=np.float32)
+
+    def nonfinite_loss(*args: object, **kwargs: object) -> object:
+        return causal_loss(*args, **kwargs) * mx.array(
+            float("nan"), dtype=mx.float32
+        )
+
+    with pytest.raises(FloatingPointError, match="non-finite gradient rejected"):
+        survival.train_phase(
+            compute_model,
+            optim.AdamW(learning_rate=1e-3),
+            nn.value_and_grad(compute_model, nonfinite_loss),
+            inputs,
+            labels,
+            mask,
+            progress_mask=mask,
+            ordered_plan_loss_weight=1.0,
+            sample_weights=None,
+            plan_labels=None,
+            plan_label_mode="none",
+            plan_auxiliary_weight=0.0,
+            plan_shuffle_seed=0,
+            plan_loss_mode="binary_multilabel",
+            plan_slot_count=0,
+            plan_factor_group_sizes=(),
+            phase_name="float16-nonfinite-stop",
+            target_positions=int(mask.sum()),
+            batch_size=4,
+            gradient_clip=1.0,
+            seed=43,
+            max_steps=1,
+            checkpoint=tmp_path / "must-not-exist.safetensors",
+            checkpoint_every=1,
+            heartbeat=tmp_path / "heartbeat.json",
+            global_step_offset=0,
+            mx=mx,
+            optim=optim,
+            source_conditioning=False,
+            training_step_mode="compiled",
+            compiled_microbatch_size=2,
+            master_model=master_model,
+            compute_dtype_name="float16",
+            gradient_loss_scale=128.0,
+            reject_nonfinite_gradients=True,
+        )
+
+    after = dict(mlx_utils.tree_flatten(master_model.trainable_parameters()))
+    assert all(
+        np.array_equal(before[name], np.asarray(after[name]))
+        for name in before
+    )
+    assert not (tmp_path / "must-not-exist.safetensors").exists()
+
+
 def test_eager_bfloat16_auxiliary_route_updates_fp32_master_checkpoint(
     tmp_path: Path,
 ) -> None:

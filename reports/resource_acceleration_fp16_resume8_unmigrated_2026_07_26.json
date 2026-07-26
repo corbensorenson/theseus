@@ -1,0 +1,578 @@
+{
+  "after_reload": {
+    "authoritative_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 197
+    },
+    "batch_index_sha256_prefix": [
+      "2007e7534d45e61605aa9d1501d629b85adf66cd8e5be56c990f12636f7e6404",
+      "34e83d4fe1808f2fdfd098670840716ef5e08780e2e94e1cd2962978f63358e8",
+      "093e75a06c5fe3bfe124b458a9672f533cf433313812533cc0ec553d10759e74",
+      "633182a189b4568be78866e2205c07a9a39531c9c21455a9602d2075de18243f"
+    ],
+    "checkpoint_restore_seconds": 0.105305,
+    "compact_encoder_decoder_partitions": false,
+    "compile_width_quantum": 64,
+    "compiled_accumulation_seconds_prefix": [
+      0.538871,
+      0.485907,
+      0.485573,
+      0.485526,
+      0.441754,
+      0.434253,
+      0.451655,
+      0.418769
+    ],
+    "compiled_accumulation_seconds_total": 7.161496,
+    "compiled_microbatch_size": 4,
+    "compiled_state_materialization_seconds_prefix": [],
+    "compiled_state_materialization_seconds_total": 0,
+    "compiled_update_seconds_prefix": [
+      0.323328,
+      0.225984,
+      0.218226,
+      0.227094
+    ],
+    "compiled_update_seconds_total": 0.994633,
+    "compute_dtype": "float16",
+    "compute_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float16"
+      ],
+      "element_count": 54836746,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 197
+    },
+    "data_cursor_next": {
+      "batch_index": 8,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823778
+    },
+    "data_cursor_start": {
+      "batch_index": 4,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823778
+    },
+    "device_step_seconds_total": 8.65186,
+    "final_loss": 1.659217,
+    "first_optimizer_step_seconds": 2.446276,
+    "gradient_loss_scale": 128.0,
+    "host_batch_preparation_seconds_total": 0.030774,
+    "loss_prefix": [
+      1.5672096,
+      1.77376688,
+      1.73809898,
+      1.65921712
+    ],
+    "materialize_compiled_state_after_update": false,
+    "maximum_dynamic_batch_width": 512,
+    "maximum_execution_batch_width": 512,
+    "mean_dynamic_batch_width": 512.0,
+    "mean_loss": 1.684573,
+    "median_optimizer_step_seconds": 2.083009,
+    "mlx_active_memory_bytes_maximum": 1426584280,
+    "mlx_active_memory_bytes_prefix": [
+      1426535128,
+      1426567896,
+      1426584280,
+      1426567896
+    ],
+    "mlx_cache_memory_bytes_maximum": 430880716,
+    "mlx_memory": {
+      "active_bytes": 768103062,
+      "cache_bytes": 1838639,
+      "peak_bytes": 2404747963,
+      "scope": "mlx_allocator_only"
+    },
+    "mlx_peak_memory_bytes_maximum": 2404747963,
+    "model_construct_seconds": 0.004628,
+    "optimizer_construct_seconds": 5.3e-05,
+    "optimizer_positions": 31436,
+    "optimizer_state": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32",
+        "mlx.core.uint64"
+      ],
+      "element_count": 109673494,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 396
+    },
+    "optimizer_step_seconds_prefix": [
+      2.446276,
+      2.087233,
+      2.078784,
+      2.039567
+    ],
+    "optimizer_steps": 4,
+    "padded_positions_avoided": 0,
+    "phase_receipt": {
+      "policy": "canonical_pretraining_memmap_range_view_v1",
+      "row_count": 881592
+    },
+    "post_first_positions_per_second": 3805.927,
+    "precision_mode": "float16_fp32_master",
+    "prune_inactive_auxiliary_outputs": true,
+    "reject_nonfinite_gradients": true,
+    "rope_kernel": "mlx_fast",
+    "setup_timings": {
+      "copy_lookup_seconds": 0.00063,
+      "memmap_open_and_validation_seconds": 2.359623,
+      "metadata_and_base_config_seconds": 0.002177,
+      "range_view_seconds": 2.5e-05,
+      "total_seconds": 2.479432
+    },
+    "source_conditioning": false,
+    "static_sequence_width": 512,
+    "training_phase": "pretraining",
+    "training_step_execution": "mlx_compiled_shape_bucket_v1",
+    "unit_allocator_pack_seconds_total": 1e-06,
+    "warmup_excluded_positions": 23618,
+    "warmup_excluded_positions_per_second": 3805.927,
+    "warmup_excluded_seconds": 6.205584
+  },
+  "batch_index_sha256": "87a813818b9df0830255a2e6459b6c920f68a54cf451a4e3f09f7c649e9893e7",
+  "before_checkpoint": {
+    "authoritative_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 197
+    },
+    "batch_index_sha256_prefix": [
+      "cb985ccb376ba31c897b3303eef266f09cb6937009edd02135f30ed9df73bc17",
+      "20f57ad6bfb4f24b14638299a2a335374c8e4d575836df89b6a72e0d864442b4",
+      "933e3cd568ec10313a8430a3756e9e6642a7274e386ac1fb19ecde89d4b444fd",
+      "ddf26c6a48fc56a3080faaf72ee3ed7863b5bafdaa9343daeccec0a60b2bf1df"
+    ],
+    "checkpoint_restore_seconds": 0.216299,
+    "compact_encoder_decoder_partitions": false,
+    "compile_width_quantum": 64,
+    "compiled_accumulation_seconds_prefix": [
+      0.475414,
+      0.483025,
+      0.458861,
+      0.418867,
+      0.430287,
+      0.426116,
+      0.440098,
+      0.438754
+    ],
+    "compiled_accumulation_seconds_total": 6.972739,
+    "compiled_microbatch_size": 4,
+    "compiled_state_materialization_seconds_prefix": [],
+    "compiled_state_materialization_seconds_total": 0,
+    "compiled_update_seconds_prefix": [
+      0.24113,
+      0.219039,
+      0.222238,
+      0.220572
+    ],
+    "compiled_update_seconds_total": 0.902979,
+    "compute_dtype": "float16",
+    "compute_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float16"
+      ],
+      "element_count": 54836746,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 197
+    },
+    "data_cursor_next": {
+      "batch_index": 4,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823778
+    },
+    "data_cursor_start": {
+      "batch_index": 0,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823778
+    },
+    "device_step_seconds_total": 8.279186,
+    "final_loss": 1.387213,
+    "first_optimizer_step_seconds": 2.177558,
+    "gradient_loss_scale": 128.0,
+    "host_batch_preparation_seconds_total": 0.001948,
+    "loss_prefix": [
+      1.63235688,
+      1.62955761,
+      1.79166973,
+      1.38721251
+    ],
+    "materialize_compiled_state_after_update": false,
+    "maximum_dynamic_batch_width": 512,
+    "maximum_execution_batch_width": 512,
+    "mean_dynamic_batch_width": 512.0,
+    "mean_loss": 1.610199,
+    "median_optimizer_step_seconds": 2.051512,
+    "mlx_active_memory_bytes_maximum": 1426584090,
+    "mlx_active_memory_bytes_prefix": [
+      1426534938,
+      1426567706,
+      1426584090,
+      1426567706
+    ],
+    "mlx_cache_memory_bytes_maximum": 430880716,
+    "mlx_memory": {
+      "active_bytes": 768102872,
+      "cache_bytes": 1838639,
+      "peak_bytes": 2404747773,
+      "scope": "mlx_allocator_only"
+    },
+    "mlx_peak_memory_bytes_maximum": 2404747773,
+    "model_construct_seconds": 0.004419,
+    "optimizer_construct_seconds": 6.2e-05,
+    "optimizer_positions": 31031,
+    "optimizer_state": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32",
+        "mlx.core.uint64"
+      ],
+      "element_count": 109673494,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 396
+    },
+    "optimizer_step_seconds_prefix": [
+      2.177558,
+      2.044941,
+      1.998605,
+      2.058083
+    ],
+    "optimizer_steps": 4,
+    "padded_positions_avoided": 0,
+    "phase_receipt": {
+      "policy": "canonical_pretraining_memmap_range_view_v1",
+      "row_count": 881592
+    },
+    "post_first_positions_per_second": 3777.68,
+    "precision_mode": "float16_fp32_master",
+    "prune_inactive_auxiliary_outputs": true,
+    "reject_nonfinite_gradients": true,
+    "rope_kernel": "mlx_fast",
+    "setup_timings": {
+      "copy_lookup_seconds": 0.00063,
+      "memmap_open_and_validation_seconds": 2.359623,
+      "metadata_and_base_config_seconds": 0.002177,
+      "range_view_seconds": 2.5e-05,
+      "total_seconds": 2.479432
+    },
+    "source_conditioning": false,
+    "static_sequence_width": 512,
+    "training_phase": "pretraining",
+    "training_step_execution": "mlx_compiled_shape_bucket_v1",
+    "unit_allocator_pack_seconds_total": 1e-06,
+    "warmup_excluded_positions": 23050,
+    "warmup_excluded_positions_per_second": 3777.68,
+    "warmup_excluded_seconds": 6.101628
+  },
+  "checkpoint_publication": {
+    "atomic_file_replacement": true,
+    "checkpoint_bytes": 219367937,
+    "checkpoint_sha256": "cf91043ccd25552fa31c3c2d37e327e13bbfdd4a198fa8b64475990e0d0af896",
+    "optimizer_state_bytes": 438736924,
+    "optimizer_state_sha256": "9f76664921f8c30714ba381438fcb128a47bc7a427646b9ac904c239d7b1977c",
+    "publication_seconds": 1.24926,
+    "rng_state_bytes": 144,
+    "rng_state_sha256": "0ef39349f05c5403f7ffa88730feaf357d4193eb735ecd1ebe574aa74da9ffe3"
+  },
+  "checkpoint_reload_state": "GREEN",
+  "claim_boundary": "bounded exact-resume mechanics only; not convergence or capability evidence",
+  "compile_width_quantum": 64,
+  "compiled_microbatch_size": 4,
+  "created_utc": "2026-07-26T19:07:18.271569Z",
+  "data_cursor_exact": true,
+  "data_order_exact": true,
+  "durable_training_state_mutated": false,
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "final_loss_absolute_delta": 1e-06,
+  "first_segment_max_loss_absolute_delta": 2.17e-05,
+  "hard_gaps": [],
+  "implementation_authority": "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER",
+  "open_conditions": [
+    "precision_trajectory_repeatability_not_exact",
+    "current implementation plan migration is not authorized",
+    "production route remains unchanged"
+  ],
+  "optimizer_state_comparison": {
+    "all_finite": true,
+    "element_count": 109673494,
+    "maximum_absolute_delta": 4.632922e-06,
+    "maximum_absolute_delta_allowed": 5e-06,
+    "maximum_relative_l2_delta_allowed": 1e-06,
+    "names_match": true,
+    "relative_l2_delta": 6.4485e-08,
+    "shapes_match": true,
+    "tensor_count": 396,
+    "within_tolerance": true
+  },
+  "parameter_comparison": {
+    "all_finite": true,
+    "element_count": 54836746,
+    "maximum_absolute_delta": 1.7976388e-05,
+    "maximum_absolute_delta_allowed": 5e-06,
+    "maximum_relative_l2_delta_allowed": 1e-06,
+    "names_match": true,
+    "relative_l2_delta": 1.4843361e-05,
+    "shapes_match": true,
+    "tensor_count": 197,
+    "within_tolerance": false
+  },
+  "policy": "project_theseus_focused_precision_resume_qualification_v1",
+  "precision_mode": "float16_fp32_master",
+  "public_training_rows": 0,
+  "reload_boundary": {
+    "optimizer_state_comparison": {
+      "all_finite": true,
+      "element_count": 109673494,
+      "maximum_absolute_delta": 0.0,
+      "maximum_absolute_delta_allowed": 5e-06,
+      "maximum_relative_l2_delta_allowed": 1e-06,
+      "names_match": true,
+      "relative_l2_delta": 0.0,
+      "shapes_match": true,
+      "tensor_count": 396,
+      "within_tolerance": true
+    },
+    "parameter_comparison": {
+      "all_finite": true,
+      "element_count": 54836746,
+      "maximum_absolute_delta": 0.0,
+      "maximum_absolute_delta_allowed": 5e-06,
+      "maximum_relative_l2_delta_allowed": 1e-06,
+      "names_match": true,
+      "relative_l2_delta": 0.0,
+      "shapes_match": true,
+      "tensor_count": 197,
+      "within_tolerance": true
+    },
+    "rng_state_comparison": {
+      "all_finite": true,
+      "element_count": 2,
+      "maximum_absolute_delta": 0.0,
+      "maximum_absolute_delta_allowed": 5e-06,
+      "maximum_relative_l2_delta_allowed": 1e-06,
+      "names_match": true,
+      "relative_l2_delta": 0.0,
+      "shapes_match": true,
+      "tensor_count": 1,
+      "within_tolerance": true
+    }
+  },
+  "rng_state_comparison": {
+    "all_finite": true,
+    "element_count": 2,
+    "maximum_absolute_delta": 0.0,
+    "maximum_absolute_delta_allowed": 5e-06,
+    "maximum_relative_l2_delta_allowed": 1e-06,
+    "names_match": true,
+    "relative_l2_delta": 0.0,
+    "shapes_match": true,
+    "tensor_count": 1,
+    "within_tolerance": true
+  },
+  "scratch_artifacts_retained": false,
+  "source_precision_policy": "project_theseus_mlx_precision_checkpoint_resume_v1",
+  "starting_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+  "starting_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+  "state": "YELLOW",
+  "training_config": {
+    "path": "configs/moecot_language_arm_training.json",
+    "sha256": "3a5b4147d3c04e2ab8426760e91ec2385a1948d621fdca87d641ed7be700caf5"
+  },
+  "trajectory_divergence_predates_checkpoint": true,
+  "trajectory_repeatability_state": "YELLOW",
+  "trigger_state": "YELLOW",
+  "uninterrupted": {
+    "authoritative_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32"
+      ],
+      "element_count": 54836746,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 197
+    },
+    "batch_index_sha256_prefix": [
+      "cb985ccb376ba31c897b3303eef266f09cb6937009edd02135f30ed9df73bc17",
+      "20f57ad6bfb4f24b14638299a2a335374c8e4d575836df89b6a72e0d864442b4",
+      "933e3cd568ec10313a8430a3756e9e6642a7274e386ac1fb19ecde89d4b444fd",
+      "ddf26c6a48fc56a3080faaf72ee3ed7863b5bafdaa9343daeccec0a60b2bf1df",
+      "2007e7534d45e61605aa9d1501d629b85adf66cd8e5be56c990f12636f7e6404",
+      "34e83d4fe1808f2fdfd098670840716ef5e08780e2e94e1cd2962978f63358e8",
+      "093e75a06c5fe3bfe124b458a9672f533cf433313812533cc0ec553d10759e74",
+      "633182a189b4568be78866e2205c07a9a39531c9c21455a9602d2075de18243f"
+    ],
+    "checkpoint_restore_seconds": 0.365554,
+    "compact_encoder_decoder_partitions": false,
+    "compile_width_quantum": 64,
+    "compiled_accumulation_seconds_prefix": [
+      0.45254,
+      0.417311,
+      0.412468,
+      0.427724,
+      0.437868,
+      0.413619,
+      0.411742,
+      0.42755
+    ],
+    "compiled_accumulation_seconds_total": 13.538881,
+    "compiled_microbatch_size": 4,
+    "compiled_state_materialization_seconds_prefix": [],
+    "compiled_state_materialization_seconds_total": 0,
+    "compiled_update_seconds_prefix": [
+      0.269786,
+      0.217769,
+      0.234218,
+      0.220872,
+      0.233792,
+      0.22552,
+      0.241835,
+      0.354817
+    ],
+    "compiled_update_seconds_total": 1.998611,
+    "compute_dtype": "float16",
+    "compute_parameters": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float16"
+      ],
+      "element_count": 54836746,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 197
+    },
+    "data_cursor_next": {
+      "batch_index": 8,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823778
+    },
+    "data_cursor_start": {
+      "batch_index": 0,
+      "batch_size": 16,
+      "epoch": 0,
+      "policy": "project_theseus_training_data_cursor_v1",
+      "row_count": 881592,
+      "seed": 2749823778
+    },
+    "device_step_seconds_total": 16.604207,
+    "final_loss": 1.659216,
+    "first_optimizer_step_seconds": 2.108919,
+    "gradient_loss_scale": 128.0,
+    "host_batch_preparation_seconds_total": 0.056129,
+    "loss_prefix": [
+      1.63235688,
+      1.62954378,
+      1.79164803,
+      1.38721156,
+      1.56720483,
+      1.77374172,
+      1.73812926,
+      1.65921557
+    ],
+    "materialize_compiled_state_after_update": false,
+    "maximum_dynamic_batch_width": 512,
+    "maximum_execution_batch_width": 512,
+    "mean_dynamic_batch_width": 512.0,
+    "mean_loss": 1.647381,
+    "median_optimizer_step_seconds": 2.045443,
+    "mlx_active_memory_bytes_maximum": 1426583932,
+    "mlx_active_memory_bytes_prefix": [
+      1426534780,
+      1426567548,
+      1426583932,
+      1426567548,
+      1426551164,
+      1426534780,
+      1426534780,
+      1426534764
+    ],
+    "mlx_cache_memory_bytes_maximum": 430634956,
+    "mlx_memory": {
+      "active_bytes": 768102690,
+      "cache_bytes": 1838639,
+      "peak_bytes": 2404747615,
+      "scope": "mlx_allocator_only"
+    },
+    "mlx_peak_memory_bytes_maximum": 2404747615,
+    "model_construct_seconds": 0.009474,
+    "optimizer_construct_seconds": 0.000728,
+    "optimizer_positions": 62467,
+    "optimizer_state": {
+      "all_finite": true,
+      "dtypes": [
+        "mlx.core.float32",
+        "mlx.core.uint64"
+      ],
+      "element_count": 109673494,
+      "finite_check_chunk_size": 32,
+      "tensor_count": 396
+    },
+    "optimizer_step_seconds_prefix": [
+      2.108919,
+      2.024994,
+      2.031202,
+      2.031352,
+      2.040938,
+      2.049949,
+      2.053231,
+      2.263623
+    ],
+    "optimizer_steps": 8,
+    "padded_positions_avoided": 0,
+    "phase_receipt": {
+      "policy": "canonical_pretraining_memmap_range_view_v1",
+      "row_count": 881592
+    },
+    "post_first_positions_per_second": 3758.877,
+    "precision_mode": "float16_fp32_master",
+    "prune_inactive_auxiliary_outputs": true,
+    "reject_nonfinite_gradients": true,
+    "rope_kernel": "mlx_fast",
+    "setup_timings": {
+      "copy_lookup_seconds": 0.00063,
+      "memmap_open_and_validation_seconds": 2.359623,
+      "metadata_and_base_config_seconds": 0.002177,
+      "range_view_seconds": 2.5e-05,
+      "total_seconds": 2.479432
+    },
+    "source_conditioning": false,
+    "static_sequence_width": 512,
+    "training_phase": "pretraining",
+    "training_step_execution": "mlx_compiled_shape_bucket_v1",
+    "unit_allocator_pack_seconds_total": 2e-06,
+    "warmup_excluded_positions": 54486,
+    "warmup_excluded_positions_per_second": 3758.877,
+    "warmup_excluded_seconds": 14.495288
+  },
+  "updates": {
+    "after_reload": 4,
+    "before_checkpoint": 4,
+    "uninterrupted": 8
+  }
+}

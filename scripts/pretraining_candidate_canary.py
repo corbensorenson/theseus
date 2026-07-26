@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import resource
 import sys
 import time
@@ -227,8 +228,25 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                     and execution.get("compact_encoder_decoder_partitions")
                     is not True
                 )
-            or execution.get("compute_dtype") not in {"float32", "bfloat16"}
+            or execution.get("compute_dtype")
+            not in {"float32", "float16", "bfloat16"}
             or not isinstance(execution.get("fp32_master"), bool)
+            or (
+                "gradient_loss_scale" in execution
+                and (
+                    not math.isfinite(
+                        float(execution.get("gradient_loss_scale") or 0.0)
+                    )
+                    or float(execution.get("gradient_loss_scale") or 0.0)
+                    < 1.0
+                )
+            )
+            or (
+                "reject_nonfinite_gradients" in execution
+                and not isinstance(
+                    execution.get("reject_nonfinite_gradients"), bool
+                )
+            )
             or (
                 "selective_fp32_trainables" in execution
                 and not isinstance(
@@ -269,7 +287,7 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 != "registered_shared_trunk_progress_checkpoint_common_subspace_v1"
             )
             or (
-                execution.get("compute_dtype") == "bfloat16"
+                execution.get("compute_dtype") in {"float16", "bfloat16"}
                 and execution.get("fp32_master") is not True
                 and not selective_fp32_policy
             )

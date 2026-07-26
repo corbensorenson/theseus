@@ -9795,8 +9795,14 @@ def train_target(
         compute_execution_policy.get("compute_dtype") or "float32"
     )
     if compute_execution_policy.get("fp32_master") is True:
-        if compute_dtype_name != "bfloat16":
-            raise ValueError("FP32 master requires bfloat16 execution")
+        if compute_dtype_name not in {"float16", "bfloat16"}:
+            raise ValueError(
+                "FP32 master requires float16 or bfloat16 execution"
+            )
+        compute_dtype = {
+            "float16": mx.float16,
+            "bfloat16": mx.bfloat16,
+        }[compute_dtype_name]
         master_model = authoritative_model
         model = build_model(
             model_config,
@@ -9839,7 +9845,7 @@ def train_target(
             model.freeze_to_kerc_delta(
                 include_source_conditioned_bridge=kerc_source_bridge
             )
-        model.set_dtype(mx.bfloat16)
+        model.set_dtype(compute_dtype)
         mx.eval(model.parameters(), master_model.parameters())
     observed_parameters = int(parameter_count(authoritative_model, mlx_utils))
     if observed_parameters != int(target["parameter_count"]):
@@ -10156,9 +10162,13 @@ def train_target(
                 str(resume_checkpoint), strict=not expert_mode
             )
         if master_model is not None:
+            compute_dtype = {
+                "float16": mx.float16,
+                "bfloat16": mx.bfloat16,
+            }[compute_dtype_name]
             model.update(
                 mlx_utils.tree_map(
-                    lambda value: value.astype(mx.bfloat16),
+                    lambda value: value.astype(compute_dtype),
                     master_model.trainable_parameters(),
                 )
             )
@@ -10519,7 +10529,7 @@ def train_target(
     base_causal_loss = (
         partial(causal_loss, token_loss_compute_dtype="float32")
         if (
-            compute_dtype_name == "bfloat16"
+            compute_dtype_name in {"float16", "bfloat16"}
             and str(
                 compute_execution_policy.get("token_loss_compute_dtype")
                 or "model"
@@ -10528,6 +10538,26 @@ def train_target(
         )
         else causal_loss
     )
+    gradient_loss_scale = float(
+        compute_execution_policy.get("gradient_loss_scale") or 1.0
+    )
+    reject_nonfinite_gradients = bool(
+        compute_execution_policy.get("reject_nonfinite_gradients", False)
+    )
+    if gradient_loss_scale != 1.0:
+        if objective_gradient_decomposition_active:
+            raise ValueError(
+                "gradient loss scaling is not implemented for decomposed objectives"
+            )
+        unscaled_causal_loss = base_causal_loss
+
+        def scaled_causal_loss(*args: Any, **kwargs: Any) -> Any:
+            return (
+                unscaled_causal_loss(*args, **kwargs)
+                * gradient_loss_scale
+            )
+
+        base_causal_loss = scaled_causal_loss
     loss_and_grad = (
         partial(
             decomposed_checkpointed_causal_loss_and_grad,
@@ -10644,6 +10674,8 @@ def train_target(
         ),
         master_model=master_model,
         compute_dtype_name=compute_dtype_name,
+        gradient_loss_scale=gradient_loss_scale,
+        reject_nonfinite_gradients=reject_nonfinite_gradients,
     )
     completed_positions["pretrain"] = prior_pretrain_positions + int(
         pretrain_phase["target_positions_consumed"]
@@ -10776,6 +10808,8 @@ def train_target(
             ),
             master_model=master_model,
             compute_dtype_name=compute_dtype_name,
+            gradient_loss_scale=gradient_loss_scale,
+            reject_nonfinite_gradients=reject_nonfinite_gradients,
         )
         used_steps += int(source_conditioned_phase["optimizer_steps"])
         completed_positions["source"] = prior_source_positions + int(
@@ -11159,6 +11193,8 @@ def train_target(
             ),
             master_model=master_model,
             compute_dtype_name=compute_dtype_name,
+            gradient_loss_scale=gradient_loss_scale,
+            reject_nonfinite_gradients=reject_nonfinite_gradients,
             sequence_balanced_token_loss=bool(
                 candidate_execution_policy.get(
                     "sequence_balanced_token_loss", False
@@ -11354,6 +11390,8 @@ def train_target(
             ),
             master_model=master_model,
             compute_dtype_name=compute_dtype_name,
+            gradient_loss_scale=gradient_loss_scale,
+            reject_nonfinite_gradients=reject_nonfinite_gradients,
         )
     if deferred_supervision and not isinstance(
         supervision_stage, DeferredSupervisionStage

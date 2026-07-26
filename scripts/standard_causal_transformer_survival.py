@@ -2979,6 +2979,8 @@ def train_phase(
     materialize_compiled_state_after_update: bool = False,
     master_model: Any | None = None,
     compute_dtype_name: str = "float32",
+    gradient_loss_scale: float = 1.0,
+    reject_nonfinite_gradients: bool = False,
     step_boundary_callback: Any = None,
     clear_device_cache_before_step: bool = False,
     clear_device_cache_after_backward: bool = False,
@@ -3441,16 +3443,59 @@ def train_phase(
         )
     if not 0.0 <= float(target_token_frequency_balance_power) <= 1.0:
         raise ValueError("target token frequency balance power must be in [0, 1]")
-    if compute_dtype_name not in {"float32", "bfloat16"}:
+    if compute_dtype_name not in {"float32", "float16", "bfloat16"}:
         raise ValueError(f"unsupported compute dtype: {compute_dtype_name}")
-    if master_model is not None and compute_dtype_name != "bfloat16":
-        raise ValueError("fp32 master weights require bfloat16 compute weights")
+    if master_model is not None and compute_dtype_name not in {
+        "float16",
+        "bfloat16",
+    }:
+        raise ValueError("fp32 master weights require mixed-precision compute weights")
+    if (
+        not math.isfinite(float(gradient_loss_scale))
+        or float(gradient_loss_scale) < 1.0
+    ):
+        raise ValueError("gradient loss scale must be finite and at least one")
+    compute_dtype = {
+        "float16": mx.float16,
+        "bfloat16": mx.bfloat16,
+    }.get(compute_dtype_name, mx.float32)
     compiled_step = None
     compiled_gradient_step = None
     tree_map = __import__("mlx.utils", fromlist=["tree_map"]).tree_map
+
+    def unscale_loss_and_grad(loss: Any, grads: Any) -> tuple[Any, Any]:
+        if float(gradient_loss_scale) == 1.0:
+            return loss, grads
+        inverse_scale = mx.array(
+            1.0 / float(gradient_loss_scale), dtype=mx.float32
+        )
+        return (
+            loss * inverse_scale,
+            tree_map(lambda value: value * inverse_scale, grads),
+        )
+
+    def require_finite_gradients(grads: Any) -> None:
+        if not reject_nonfinite_gradients:
+            return
+        tree_flatten = __import__(
+            "mlx.utils", fromlist=["tree_flatten"]
+        ).tree_flatten
+        checks = [
+            mx.all(mx.isfinite(value))
+            for _name, value in tree_flatten(grads)
+        ]
+        mx.eval(*checks)
+        if not all(bool(value.item()) for value in checks):
+            raise FloatingPointError(
+                f"non-finite gradient rejected in {compute_dtype_name} training"
+            )
+
     split_compiled_accumulation = bool(
-        source_conditioning is True
-        and compiled_microbatch_size < batch_size
+        compiled_microbatch_size < batch_size
+        and (
+            source_conditioning is True
+            or (master_model is not None and reject_nonfinite_gradients)
+        )
     )
     compile_eligible = training_step_mode != "eager" and isinstance(
         source_conditioning, bool
@@ -3513,9 +3558,16 @@ def train_phase(
                     token_denominator_override=token_denominator,
                     copy_alignment_denominator_override=(
                         copy_alignment_denominator
+                        if source_conditioning is True
+                        else None
                     ),
-                    copy_gate_denominator_override=copy_gate_denominator,
+                    copy_gate_denominator_override=(
+                        copy_gate_denominator
+                        if source_conditioning is True
+                        else None
+                    ),
                 )
+                loss, grads = unscale_loss_and_grad(loss, grads)
                 if master_model is not None:
                     grads = tree_map(
                         lambda value: value.astype(mx.float32), grads
@@ -3551,6 +3603,7 @@ def train_phase(
                     source_conditioning=source_conditioning,
                     token_supervision_active=True,
                 )
+                loss, grads = unscale_loss_and_grad(loss, grads)
                 loss = loss * weight
                 grads = tree_map(lambda value: value * weight, grads)
                 if master_model is not None:
@@ -3572,7 +3625,7 @@ def train_phase(
                     if master_model is not None:
                         model.update(
                             tree_map(
-                                lambda value: value.astype(mx.bfloat16),
+                                lambda value: value.astype(compute_dtype),
                                 master_model.trainable_parameters(),
                             )
                         )
@@ -3845,7 +3898,7 @@ def train_phase(
                     copy_weight = float(
                         getattr(model, "copy_auxiliary_loss_weight", 0.0)
                     )
-                    if copy_weight > 0.0:
+                    if source_conditioning is True and copy_weight > 0.0:
                         if source_to_target_lookup is None:
                             raise ValueError(
                                 "split source compilation requires the exact copy lookup"
@@ -3947,6 +4000,7 @@ def train_phase(
                     weighted_losses.append(micro_loss)
                 if compiled_gradient_step is not None:
                     update_started = time.perf_counter()
+                    require_finite_gradients(accumulated_grads)
                     accumulated_grads, grad_norm = optim.clip_grad_norm(
                         accumulated_grads, gradient_clip
                     )
@@ -3954,7 +4008,7 @@ def train_phase(
                     if master_model is not None:
                         model.update(
                             tree_map(
-                                lambda value: value.astype(mx.bfloat16),
+                                lambda value: value.astype(compute_dtype),
                                 master_model.trainable_parameters(),
                             )
                         )
@@ -4080,6 +4134,9 @@ def train_phase(
                                 else None
                             ),
                         )
+                        micro_loss, micro_grads = unscale_loss_and_grad(
+                            micro_loss, micro_grads
+                        )
                         # ``causal_loss`` returns the mean over active objective
                         # mass inside each microbatch. Reconstruct the requested
                         # full-batch mean exactly across ragged microbatches.
@@ -4166,6 +4223,7 @@ def train_phase(
                         matrix_unit_class_weights,
                         source_conditioning,
                     )
+                    loss, grads = unscale_loss_and_grad(loss, grads)
                 if transactional_eager_step:
                     # MLX is lazy. Materialize the backward pass before constructing
                     # clipping, optimizer, master-weight, and compute-weight updates so
@@ -4197,6 +4255,7 @@ def train_phase(
                         )
                 if master_model is not None:
                     grads = tree_map(lambda value: value.astype(mx.float32), grads)
+                require_finite_gradients(grads)
                 grads, grad_norm = optim.clip_grad_norm(grads, gradient_clip)
                 if optimizer_state_offloaded:
                     if optimizer_state_names_path is None:
@@ -4248,7 +4307,7 @@ def train_phase(
                 if master_model is not None:
                     model.update(
                         tree_map(
-                            lambda value: value.astype(mx.bfloat16),
+                            lambda value: value.astype(compute_dtype),
                             master_model.trainable_parameters(),
                         )
                     )
@@ -4573,6 +4632,8 @@ def train_phase(
         ),
         "training_step_mode_requested": training_step_mode,
         "compute_dtype": compute_dtype_name,
+        "gradient_loss_scale": float(gradient_loss_scale),
+        "reject_nonfinite_gradients": bool(reject_nonfinite_gradients),
         "authoritative_weight_dtype": (
             "float32_master" if master_model is not None else compute_dtype_name
         ),

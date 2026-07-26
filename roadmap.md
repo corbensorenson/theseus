@@ -454,6 +454,23 @@ Therefore:
    exact checkpoint custody. Require alternating full-checkpoint pairs, a 64-update watchdog
    run, independent-process full-state replay, save/reload continuity, and source-disjoint
    weak-tail learning before adoption.
+
+   **Implementation checkpoint (2026-07-26):** the trainer and focused qualification harness
+   now support FP16 compute over FP32 master parameters and optimizer state, FP32 token-loss
+   reduction, static loss scaling, dtype-general master-to-compute recasting, and a
+   fail-closed finite-gradient check before any master update or checkpoint publication.
+   Guarded Metal tests cover finite updates, non-finite rejection, FP32 checkpoint custody,
+   and the existing BF16 route. Two four-update alternating production-checkpoint pairs
+   produced 1.182x and 1.239x pooled speedups; the durable pair is GREEN inside its diagnostic
+   scope with 1.239x pooled speedup, 0.00173% maximum relative final-loss delta, finite
+   compute/master/optimizer state, and lower peak MLX memory. The exact eight-update
+   save/reload probe proves byte-exact parameter, optimizer, and RNG reload custody plus exact
+   data order/cursor, but remains YELLOW because independently reconstructed trajectories
+   diverge before the checkpoint boundary (`1.7976e-5` maximum parameter delta,
+   `1.4843e-5` relative L2 after eight updates). This is not a checkpoint fault and it is not
+   permission to relax the tolerance. Diagnose the pre-boundary compiled FP16 reduction
+   repeatability, then rerun independent-process replay and the 64-update/weak-tail gates.
+   Production remains FP32 until all of those gates pass.
 3. **Time the remaining operators without another unbounded trace.** Add bounded exclusive
    timings for one-layer attention projections/core, SwiGLU MLP, norms, clipping, AdamW, and
    state materialization. The model already uses fast SDPA, fast RoPE, native RMSNorm,
