@@ -2479,7 +2479,11 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
     eager_model.load_weights(
         list(mlx_utils.tree_flatten(compiled_model.parameters()))
     )
-    mx.eval(eager_model.parameters())
+    materialized_model = build_model(config, mx=mx, nn=nn)
+    materialized_model.load_weights(
+        list(mlx_utils.tree_flatten(compiled_model.parameters()))
+    )
+    mx.eval(eager_model.parameters(), materialized_model.parameters())
     rng = np.random.default_rng(19)
     inputs = rng.integers(3, 64, size=(8, 16), dtype=np.int32)
     labels = np.roll(inputs, -1, axis=1)
@@ -2511,11 +2515,21 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
         "mx": mx,
         "optim": optim,
     }
+    compiled_optimizer = optim.AdamW(learning_rate=1e-3)
+    materialized_optimizer = optim.AdamW(learning_rate=1e-3)
     compiled_report = survival.train_phase(
         compiled_model,
-        optim.AdamW(learning_rate=1e-3),
+        compiled_optimizer,
         nn.value_and_grad(compiled_model, causal_loss),
         source_conditioning=False,
+        **common,
+    )
+    materialized_report = survival.train_phase(
+        materialized_model,
+        materialized_optimizer,
+        nn.value_and_grad(materialized_model, causal_loss),
+        source_conditioning=False,
+        materialize_compiled_state_after_update=True,
         **common,
     )
     eager_report = survival.train_phase(
@@ -2528,9 +2542,40 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
     )
     compiled_parameters = dict(mlx_utils.tree_flatten(compiled_model.parameters()))
     eager_parameters = dict(mlx_utils.tree_flatten(eager_model.parameters()))
+    materialized_parameters = dict(
+        mlx_utils.tree_flatten(materialized_model.parameters())
+    )
     maximum_delta = max(
         float(mx.max(mx.abs(compiled_parameters[name] - eager_parameters[name])).item())
         for name in compiled_parameters
+    )
+    maximum_materialized_delta = max(
+        float(
+            mx.max(
+                mx.abs(
+                    compiled_parameters[name]
+                    - materialized_parameters[name]
+                )
+            ).item()
+        )
+        for name in compiled_parameters
+    )
+    compiled_optimizer_state = dict(
+        mlx_utils.tree_flatten(compiled_optimizer.state)
+    )
+    materialized_optimizer_state = dict(
+        mlx_utils.tree_flatten(materialized_optimizer.state)
+    )
+    maximum_optimizer_delta = max(
+        float(
+            mx.max(
+                mx.abs(
+                    compiled_optimizer_state[name].astype(mx.float32)
+                    - materialized_optimizer_state[name].astype(mx.float32)
+                )
+            ).item()
+        )
+        for name in compiled_optimizer_state
     )
 
     assert compiled_report["training_step_execution"] == (
@@ -2542,6 +2587,14 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
     assert compiled_report["training_step_mode_requested"] == "auto"
     assert eager_report["training_step_mode_requested"] == "eager"
     assert compiled_report["compiled_random_state_captured"] is True
+    assert (
+        materialized_report["materialize_compiled_state_after_update"]
+        is True
+    )
+    assert (
+        materialized_report["compiled_state_materialization_seconds_total"]
+        >= 0.0
+    )
     assert eager_report["compiled_random_state_captured"] is False
     assert compiled_report["warmup_step_index_zero_based"] == 0
     assert len(compiled_report["compiled_accumulation_seconds_prefix"]) == 1
@@ -2554,6 +2607,8 @@ def test_compiled_microbatch_pretraining_matches_eager_full_batch(
         eager_report["final_loss"], abs=2e-6
     )
     assert maximum_delta < 5e-6
+    assert maximum_materialized_delta < 5e-6
+    assert maximum_optimizer_delta < 5e-6
 
 
 def test_compiled_source_conditioned_training_matches_eager_full_batch(

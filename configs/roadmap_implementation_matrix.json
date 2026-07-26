@@ -5835,6 +5835,10 @@
       "current_evidence": [
         "reports/resource_aware_execution_policy.json",
         "reports/resource_acceleration_qualification.json",
+        "reports/training_acceleration_audit_2026_07_26.json",
+        "reports/resource_acceleration_compiled_route_materialized64.json",
+        "reports/resource_acceleration_bf16_materialized64.json",
+        "reports/fresh_process_pretraining_qualification.host_resource_safety.json",
         "reports/theseus_corpus_acceleration.json",
         "reports/shared_trunk_checkpoint_format_migration.json",
         "reports/resource_acceleration_fp32_resume_microbatch4_4step.json",
@@ -5886,8 +5890,8 @@
         "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
       ],
       "pre_training_readiness": {
-        "state": "READY_FOR_FROZEN_CAMPAIGN",
-        "acceptance_boundary": "The selected M1 policy is fixed to compiled FP32 microbatch four, width quantum 64, externally watched 32-step fresh processes, and eager microbatch-one auxiliary phases backed by content-bound child-produced memmaps. Two contiguous production-path segments, an independent replay, the joined 64/8/8 path, 14/14 accelerator receipts, and 7/7 freeze replays are GREEN with zero swap growth.",
+        "state": "REQUALIFICATION_REQUIRED_FOR_COMPILED_STATE_AMENDMENT",
+        "acceptance_boundary": "The historical selected M1 policy remains qualified at compiled FP32 microbatch four, width quantum 64, externally watched 32-step fresh processes, and eager microbatch-one auxiliary phases. A production campaign exposed linear compiled-state graph retention. Explicit post-update model/optimizer materialization holds isolated 64-step active MLX memory flat near 659 MB with zero swap and preserves FP32 state inside the prior fresh-process envelope, but its proposed 64-step production cadence is not authorized until two contiguous fresh processes plus an independent replay pass under the external watchdog and the replacement freeze is regenerated.",
         "nonblocking_residuals": [
           "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
         ],
@@ -5912,7 +5916,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Bank the coherent tested acceleration transaction. Then close only the named non-acceleration blockers in the broader pre-training architecture-readiness gate and launch the matched campaign through scripts/neural_seed_training_campaign.py without reopening acceleration or architecture intake.",
+      "smallest_next_patch": "When the host again has adequate reclaimable memory, complete the 64-step fresh-process state/cursor/publication replay without weakening the live reserve, regenerate the replacement freeze, and resume the exact step-3480 FP32 lineage. In parallel, capture one warmed Metal update and build the matched target-only pointer-generator training-loss challenger because auxiliary phases, not Python batch preparation, are the largest remaining calendar-time opportunity.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",

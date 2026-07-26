@@ -1,0 +1,190 @@
+{
+  "policy": "project_theseus_training_acceleration_audit_v1",
+  "created_utc": "2026-07-26T16:58:34Z",
+  "trigger_state": "YELLOW",
+  "capability_claim": "NONE_ACCELERATION_AND_LIFECYCLE_ONLY",
+  "canonical_checkpoint_mutated": false,
+  "campaign_observation": {
+    "running": false,
+    "durable_optimizer_steps": 3480,
+    "durable_optimizer_positions": 26680656,
+    "checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+    "optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+    "last_segment_fault": "host_memory_reserve_breached",
+    "unpublished_optimizer_steps_discarded": 20
+  },
+  "profile": {
+    "production_sequence_width": 512,
+    "logical_batch_size": 16,
+    "compiled_microbatch_size": 4,
+    "host_batch_preparation_fraction_of_device_time": 0.00196,
+    "finding": "The production hot loop is Metal-bound. Python prepares a fixed-width batch in about 0.2% of measured device time, so a Rust rewrite of the optimizer loop cannot materially shorten this route.",
+    "rust_disposition": {
+      "training_hot_loop": "NOT_JUSTIFIED",
+      "corpus_materialization": "ALREADY_ADOPTED_WHERE_MEASURED",
+      "kerc_preprocessing": "ALREADY_ADOPTED_WHERE_MEASURED",
+      "custom_kernel_boundary": "A Rust/C++ host wrapper is eligible only after an MLX Metal trace identifies a residual operator and the custom Metal kernel passes output, loss, gradient, checkpoint, and sustained wall-time parity."
+    }
+  },
+  "compiled_state_detachment": {
+    "implementation": "Explicitly evaluate model parameters, authoritative optimizer parameters, and optimizer state after each compiled update.",
+    "current_route_16_steps": {
+      "post_first_positions_per_second": 3290.994,
+      "maximum_mlx_active_memory_bytes": 1746446932,
+      "final_loss": 1.502065
+    },
+    "materialized_route_16_steps": {
+      "post_first_positions_per_second": 3251.414,
+      "maximum_mlx_active_memory_bytes": 658563844,
+      "final_loss": 1.502065
+    },
+    "materialized_route_64_steps": {
+      "post_first_positions_per_second": 3203.456,
+      "maximum_mlx_active_memory_bytes": 658563628,
+      "final_loss": 1.610214,
+      "compiled_state_materialization_seconds_total": 2.967623,
+      "watchdog_passed": true,
+      "swapout_growth_mib": 0.0
+    },
+    "active_memory_reduction_fraction_at_16_steps": 0.6229,
+    "state_growth_disposition": "FIXED_IN_ISOLATED_SUSTAINED_ROUTE",
+    "production_adoption_state": "PENDING_FRESH_PROCESS_SEGMENT_QUALIFICATION"
+  },
+  "fp32_repeatability": {
+    "matched_current_vs_materialized_8_steps": {
+      "loss_exact": true,
+      "batch_cursor_rng_exact": true,
+      "model_maximum_absolute_delta": 1.1920928955078125e-07,
+      "model_relative_l2_delta": 2.15996e-08,
+      "optimizer_maximum_absolute_delta": 4.0745362639427185e-09,
+      "optimizer_relative_l2_delta": 1.20498e-06
+    },
+    "independent_materialized_processes_8_steps": {
+      "loss_exact": true,
+      "batch_cursor_rng_exact": true,
+      "model_maximum_absolute_delta": 1.1920928955078125e-07,
+      "model_relative_l2_delta": 2.158085e-08,
+      "optimizer_maximum_absolute_delta": 2.9685907065868378e-09,
+      "optimizer_relative_l2_delta": 1.2068844e-06,
+      "within_existing_fresh_process_envelope": true
+    }
+  },
+  "mixed_precision": {
+    "materialized_bfloat16_fp32_master_64_steps": {
+      "post_first_positions_per_second": 4026.028,
+      "speedup_over_materialized_fp32_64_steps": 1.2568,
+      "maximum_mlx_active_memory_bytes": 768348756,
+      "watchdog_passed": true,
+      "swapout_growth_mib": 0.0
+    },
+    "independent_process_repeatability_8_steps": {
+      "batch_cursor_rng_exact": true,
+      "final_losses": [
+        1.659473,
+        1.659596
+      ],
+      "model_maximum_absolute_delta": 0.000142619,
+      "model_relative_l2_delta": 0.000112865,
+      "optimizer_maximum_absolute_delta": 0.0000543327,
+      "optimizer_relative_l2_delta": 0.016119
+    },
+    "adoption_state": "REJECTED_PENDING_REPEATABILITY_REPAIR"
+  },
+  "mlx_audit": {
+    "version": "0.32.0",
+    "already_selected": [
+      "mx.compile with captured model, optimizer, and random state",
+      "mx.fast.scaled_dot_product_attention",
+      "native grouped-query attention",
+      "mx.fast.rope",
+      "native RMSNorm",
+      "tied input-output embeddings",
+      "fixed 512-token production width",
+      "atomic safetensors model, optimizer, RNG, and cursor publication"
+    ],
+    "rejected_or_pending": [
+      "shapeless compilation is unsupported by the current Slice graph and is unnecessary for the fixed-width production path",
+      "BF16 remains faster but is not cross-process repeatable",
+      "a native Metal capture and operator-level time attribution remain required before claiming the MLX path is maximally optimized",
+      "the source-conditioned pointer-generator still materializes a vocabulary-sized pointer tensor and requires a matched target-only training-loss challenger"
+    ]
+  },
+  "fresh_process_qualification": {
+    "candidate_segment_optimizer_steps": 64,
+    "state": "BLOCKED_BY_CURRENT_HOST_PRESSURE",
+    "last_attempt": {
+      "initial_reclaimable_available_mib": 4711.641,
+      "minimum_reclaimable_available_mib": 1867.234,
+      "maximum_inferred_unified_memory_mib": 2844.406,
+      "maximum_process_rss_mib": 738.406,
+      "maximum_swapout_growth_mib": 0.0,
+      "fault": "host_memory_reserve_breached",
+      "fault_elapsed_seconds": 13.662
+    },
+    "decision": "Do not lower the live reserve from this single attempt. Repeat when the host has enough reclaimable memory, retain every watchdog receipt, and adopt only after two contiguous segments plus an independent replay pass numeric, cursor, checkpoint, and zero-swap gates."
+  },
+  "critical_path": [
+    "Qualify compiled-state detachment in 64-step fresh processes when host pressure permits.",
+    "Capture one post-compile FP32 optimizer update with MLX Metal capture and rank operators by GPU duration.",
+    "Build a target-only pointer-generator training-loss challenger that avoids the vocabulary-sized pointer scatter while preserving exact mixture loss and gradients.",
+    "Reprofile source-conditioned and supervision phases because their roughly 500 positions/second rate can dominate useful-system completion time.",
+    "Investigate BF16 cross-process divergence at the first disagreeing update; retain FP32 until the full-state repeatability gate passes.",
+    "Use Rust for CPU preprocessing and orchestration only where a profile proves host work is material; use custom Metal only for a traced residual kernel."
+  ],
+  "estimate": {
+    "remaining_shared_trunk_device_days_at_last_qualified_rate": 3.526,
+    "full_serial_matched_campaign_calendar_days_current_route": [
+      16,
+      19
+    ],
+    "full_serial_matched_campaign_calendar_days_if_bf16_repeatability_is_repaired": [
+      12,
+      15
+    ],
+    "claim": "The compiled-state fix removes a failure mode and permits longer segments, but it is not a multi-fold throughput gain. A materially sub-16-day campaign requires either a qualified mixed-precision/custom-kernel gain, acceleration of the auxiliary pointer-generator phases, a preregistered staged-comparison design that spends less matched-control compute, or faster Apple hardware."
+  },
+  "evidence": [
+    {
+      "path": "reports/resource_acceleration_compiled_route_current16_v2.json",
+      "sha256": "bd975c57ef5c63c335ce6f50b6842f248ac03e9fe946b33b2ef47b9a7922ff8c"
+    },
+    {
+      "path": "reports/resource_acceleration_compiled_route_materialized16.json",
+      "sha256": "15294e73c357fccd2d36c92307b6a7b322d2f30443aa6d8281a67fb997edfcf5"
+    },
+    {
+      "path": "reports/resource_acceleration_compiled_route_materialized64.json",
+      "sha256": "006634e8da8f19b31690db8bc9e933a38da2275216752b53cc9725cd64570091"
+    },
+    {
+      "path": "reports/resource_acceleration_compiled_route_materialized64.host_resource_safety.json",
+      "sha256": "2e9b91e049d4ecdd56df0fcecbf850f303d14b67eba59d5e41708cdc06337180"
+    },
+    {
+      "path": "reports/resource_acceleration_bf16_materialized64.json",
+      "sha256": "21b7bfb5b9b2dbf10702a1c91de6226a97ae4aba494c2b09075bf4433ce44c46"
+    },
+    {
+      "path": "reports/resource_acceleration_bf16_materialized64.host_resource_safety.json",
+      "sha256": "af65846d768862d24aedabed68380f9f8e496e51da332c47dd0a3d58430f3e64"
+    },
+    {
+      "path": "reports/resource_acceleration_bf16_materialized8_replay_a.json",
+      "sha256": "e1a0c7764b9462df53089574a64be7196cf62989e7261897ce816470939dcdf6"
+    },
+    {
+      "path": "reports/resource_acceleration_bf16_materialized8_replay_b.json",
+      "sha256": "aa3bce7e43bed84a91cd77c45f4b95c47f0247d35f4d2c890042c734cf3a711f"
+    },
+    {
+      "path": "reports/fresh_process_pretraining_qualification.host_resource_safety.json",
+      "sha256": "b44b586352ae057389a803cb1215432ef5544ca7d331f9d2d8bcea429bf58c11"
+    }
+  ],
+  "hard_gaps": [
+    "fresh_process_segment_qualification_pending",
+    "native_metal_operator_profile_pending",
+    "source_conditioned_pointer_training_path_not_yet_reoptimized",
+    "bfloat16_cross_process_repeatability_failed"
+  ]
+}

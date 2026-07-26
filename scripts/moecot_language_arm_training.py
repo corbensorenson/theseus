@@ -10631,6 +10631,11 @@ def train_target(
         compile_width_quantum=int(
             pretraining_execution.get("compile_width_quantum") or 64
         ),
+        materialize_compiled_state_after_update=bool(
+            pretraining_execution.get(
+                "materialize_compiled_state_after_update", False
+            )
+        ),
         eager_gradient_accumulation_microbatch_size=int(
             pretraining_execution.get(
                 "eager_gradient_accumulation_microbatch_size"
@@ -12270,7 +12275,7 @@ def validate_config(config: dict[str, Any]) -> None:
         != "project_theseus_bounded_fresh_process_pretraining_v1"
         or fresh_segments.get("target_id") != SHARED_TRUNK_ID
         or fresh_segments.get("phase") != "pretraining"
-        or int(fresh_segments.get("maximum_optimizer_steps") or 0) != 32
+        or int(fresh_segments.get("maximum_optimizer_steps") or 0) != 64
         or fresh_segments.get("compute_dtype") != "float32"
         or fresh_segments.get("fp32_master") is not False
         or int(fresh_segments.get("compiled_microbatch_size") or 0) != 4

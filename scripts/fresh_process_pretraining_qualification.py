@@ -329,6 +329,8 @@ def guarded_child(
     scratch_root: Path,
     steps: int,
     out: Path,
+    durable_host_receipt: Path,
+    stage_id: str,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     command = [
         str(
@@ -347,13 +349,37 @@ def guarded_child(
         "--out",
         str(out),
     ]
-    result = host_resource_safety.run_guarded(
-        command,
-        cwd=ROOT,
-        policy=training.training_host_policy(config),
-        env={
-            "THESEUS_GUARDED_ACCELERATOR_CHILD": "1",
-            "THESEUS_GUARDED_TRAINING_CHILD": "1",
+    try:
+        result = host_resource_safety.run_guarded(
+            command,
+            cwd=ROOT,
+            policy=training.training_host_policy(config),
+            env={
+                "THESEUS_GUARDED_ACCELERATOR_CHILD": "1",
+                "THESEUS_GUARDED_TRAINING_CHILD": "1",
+            },
+        )
+    except host_resource_safety.HostResourceSafetyFault as exc:
+        failure = {
+            "policy": POLICY,
+            "stage_id": stage_id,
+            "passed": False,
+            "fault": str(exc),
+            "child_started": False,
+            "command": command,
+        }
+        training.write_json_atomic(durable_host_receipt, failure)
+        raise RuntimeError(
+            "fresh-process child failed before launch: " + str(exc)
+        ) from exc
+    training.write_json_atomic(
+        durable_host_receipt,
+        {
+            "policy": POLICY,
+            "stage_id": stage_id,
+            "passed": bool(result.receipt.get("passed")),
+            "fault": result.receipt.get("fault"),
+            "host_resource_safety": result.receipt,
         },
     )
     if not result.receipt.get("passed") or not out.is_file():
@@ -364,7 +390,9 @@ def guarded_child(
     return training.read_json(out), result.receipt
 
 
-def qualify(config_path: Path) -> dict[str, Any]:
+def qualify(
+    config_path: Path, *, durable_host_receipt: Path
+) -> dict[str, Any]:
     config, plan, target = canonical_contract(config_path)
     segment_policy = dict(
         config["architecture_training_authority"]["fresh_process_segments"]
@@ -386,6 +414,8 @@ def qualify(config_path: Path) -> dict[str, Any]:
             scratch_root=segmented_root,
             steps=segment_steps,
             out=root / "segment-1.json",
+            durable_host_receipt=durable_host_receipt,
+            stage_id="segment_1",
         )
         clone_scratch_lineage(
             training.scratch_target_contract(target, segmented_root),
@@ -398,6 +428,8 @@ def qualify(config_path: Path) -> dict[str, Any]:
             scratch_root=segmented_root,
             steps=segment_steps,
             out=root / "segment-2.json",
+            durable_host_receipt=durable_host_receipt,
+            stage_id="segment_2",
         )
         replay, replay_host = guarded_child(
             config=config,
@@ -405,6 +437,8 @@ def qualify(config_path: Path) -> dict[str, Any]:
             scratch_root=replay_root,
             steps=segment_steps,
             out=root / "segment-2-replay.json",
+            durable_host_receipt=durable_host_receipt,
+            stage_id="segment_2_independent_replay",
         )
         segment_rows = [first, second]
         host_rows = [first_host, second_host, replay_host]
@@ -545,7 +579,10 @@ def main() -> int:
         )
     if not args.execute:
         parser.error("qualification requires --execute")
-    report = qualify(config_path)
+    report = qualify(
+        config_path,
+        durable_host_receipt=out.with_suffix(".host_resource_safety.json"),
+    )
     training.write_json_atomic(out, report)
     print(
         json.dumps(

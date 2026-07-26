@@ -1,0 +1,209 @@
+{
+  "authoritative_parameters": {
+    "all_finite": true,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "element_count": 54836746,
+    "finite_check_chunk_size": 32,
+    "tensor_count": 197
+  },
+  "batch_index_sha256_prefix": [
+    "cb985ccb376ba31c897b3303eef266f09cb6937009edd02135f30ed9df73bc17",
+    "20f57ad6bfb4f24b14638299a2a335374c8e4d575836df89b6a72e0d864442b4",
+    "933e3cd568ec10313a8430a3756e9e6642a7274e386ac1fb19ecde89d4b444fd",
+    "ddf26c6a48fc56a3080faaf72ee3ed7863b5bafdaa9343daeccec0a60b2bf1df",
+    "2007e7534d45e61605aa9d1501d629b85adf66cd8e5be56c990f12636f7e6404",
+    "34e83d4fe1808f2fdfd098670840716ef5e08780e2e94e1cd2962978f63358e8",
+    "093e75a06c5fe3bfe124b458a9672f533cf433313812533cc0ec553d10759e74",
+    "633182a189b4568be78866e2205c07a9a39531c9c21455a9602d2075de18243f",
+    "ab32ffcbbb5e0acda38c4d27f6fe349ce393a053f8c155d27df034f974e094e4",
+    "86c5285b0b6802d30eb42ab528442dd76b88f523959f2ddea82375fcf904c262",
+    "160678e037e1b628a1e76f027c5b66e23b45d394976553f5192ffe703bfbd68b",
+    "7481e8ed6a9b55b02dca990d970d9ebf9d3be0091350c3fc9dd3a02f59b99d12",
+    "e9e1107c07665d7dd78f7a932a19f9fe18129e67803312e21fcaa30dd69d7abd",
+    "f2324f9834389b1a30b742abd33227a8d6f288a42ea6d01f196194d3f970322c",
+    "45b53918aa0c3b5094e31747d96e531993e54d4959017977e21ffbecf1ec32af",
+    "604e0c786bf721197bf1d478832ffc7da32fb3d37e4138d7fec7689df0a7670c"
+  ],
+  "checkpoint_restore_seconds": 0.061855,
+  "compile_width_quantum": 64,
+  "compiled_accumulation_seconds_prefix": [
+    0.697185,
+    0.602333,
+    0.592601,
+    0.600177,
+    0.614399,
+    0.602246,
+    0.634453,
+    0.608294
+  ],
+  "compiled_accumulation_seconds_total": 111.2521,
+  "compiled_microbatch_size": 4,
+  "compiled_state_materialization_seconds_prefix": [
+    0.133172,
+    0.072415,
+    0.038502,
+    0.047867,
+    0.045566,
+    0.041708,
+    0.043585,
+    0.038281
+  ],
+  "compiled_state_materialization_seconds_total": 2.967623,
+  "compiled_update_seconds_prefix": [
+    0.604418,
+    0.623799,
+    0.596707,
+    0.591523,
+    0.591794,
+    0.598792,
+    0.582104,
+    0.596738
+  ],
+  "compiled_update_seconds_total": 37.940746,
+  "compute_parameters": {
+    "all_finite": true,
+    "dtypes": [
+      "mlx.core.float32"
+    ],
+    "element_count": 54836746,
+    "finite_check_chunk_size": 32,
+    "tensor_count": 197
+  },
+  "created_utc": "2026-07-26T16:00:37.831518Z",
+  "data_cursor_next": {
+    "batch_index": 64,
+    "batch_size": 16,
+    "epoch": 0,
+    "policy": "project_theseus_training_data_cursor_v1",
+    "row_count": 881592,
+    "seed": 2749823778
+  },
+  "data_cursor_start": {
+    "batch_index": 0,
+    "batch_size": 16,
+    "epoch": 0,
+    "policy": "project_theseus_training_data_cursor_v1",
+    "row_count": 881592,
+    "seed": 2749823778
+  },
+  "device_step_seconds_total": 153.25485,
+  "final_loss": 1.610214,
+  "first_optimizer_step_seconds": 2.723035,
+  "hard_gaps": [],
+  "host_batch_preparation_seconds_total": 0.300369,
+  "implementation_authority": "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER",
+  "loss_prefix": [
+    1.63235462,
+    1.62956381,
+    1.79167128,
+    1.38720322,
+    1.56719685,
+    1.77368045,
+    1.73811495,
+    1.6591779,
+    1.6591289,
+    1.64547586,
+    1.69382882,
+    1.76326036,
+    1.59356689,
+    1.46078539,
+    1.67366433,
+    1.5020653
+  ],
+  "materialize_compiled_state_after_update": true,
+  "maximum_dynamic_batch_width": 512,
+  "maximum_execution_batch_width": 512,
+  "mean_dynamic_batch_width": 512.0,
+  "mean_loss": 1.623462,
+  "median_optimizer_step_seconds": 2.370203,
+  "mlx_active_memory_bytes_maximum": 658563628,
+  "mlx_active_memory_bytes_prefix": [
+    658563612,
+    658498092,
+    658563628,
+    658481708,
+    658563612,
+    658481708,
+    658563628,
+    658481708,
+    658563628,
+    658481708,
+    658563628,
+    658481708,
+    658563628,
+    658481708,
+    658563628,
+    658481708
+  ],
+  "mlx_cache_memory_bytes_maximum": 3343068444,
+  "mlx_memory": {
+    "active_bytes": 658301316,
+    "cache_bytes": 1575979,
+    "peak_bytes": 3373408792,
+    "scope": "mlx_allocator_only"
+  },
+  "mlx_peak_memory_bytes_maximum": 3373408792,
+  "model_construct_seconds": 0.003153,
+  "open_conditions": [
+    "matched route parity and resume qualification pending",
+    "current implementation plan migration is not authorized",
+    "production route remains unchanged"
+  ],
+  "optimizer_construct_seconds": 7.4e-05,
+  "optimizer_positions": 490203,
+  "optimizer_state": {
+    "all_finite": true,
+    "dtypes": [
+      "mlx.core.float32",
+      "mlx.core.uint64"
+    ],
+    "element_count": 109673494,
+    "finite_check_chunk_size": 32,
+    "tensor_count": 396
+  },
+  "optimizer_step_seconds_prefix": [
+    2.723035,
+    2.521325,
+    2.475471,
+    2.459509,
+    2.390846,
+    2.474807,
+    2.354377,
+    2.361015
+  ],
+  "optimizer_steps": 64,
+  "padded_positions_avoided": 0,
+  "phase_receipt": {
+    "policy": "canonical_pretraining_memmap_range_view_v1",
+    "row_count": 881592
+  },
+  "policy": "project_theseus_isolated_compiled_route_diagnostic_v1",
+  "post_first_positions_per_second": 3203.456,
+  "precision_mode": "float32",
+  "prune_inactive_auxiliary_outputs": true,
+  "rope_kernel": "mlx_fast",
+  "setup_timings": {
+    "copy_lookup_seconds": 0.000526,
+    "memmap_open_and_validation_seconds": 2.078072,
+    "metadata_and_base_config_seconds": 0.002054,
+    "range_view_seconds": 2.2e-05,
+    "total_seconds": 2.196845
+  },
+  "source_conditioning": false,
+  "starting_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+  "starting_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+  "static_sequence_width": 512,
+  "training_config": {
+    "path": "configs/moecot_language_arm_training.json",
+    "sha256": "ffa09985f2ece05408a8852915087a252c40b7984326f6346c04cb81d8c1e3ca"
+  },
+  "training_phase": "pretraining",
+  "training_step_execution": "mlx_compiled_shape_bucket_v1",
+  "trigger_state": "YELLOW",
+  "unit_allocator_pack_seconds_total": 1.9e-05,
+  "warmup_excluded_positions": 482222,
+  "warmup_excluded_positions_per_second": 3203.456,
+  "warmup_excluded_seconds": 150.531815
+}

@@ -20,6 +20,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import moecot_language_arm_training as training_module  # noqa: E402
+import fresh_process_pretraining_qualification as fresh_qualification  # noqa: E402
 import kerc_merge_compiler_delta_checkpoint as merge_cli  # noqa: E402
 import neural_seed_training_campaign as campaign_module  # noqa: E402
 from moecot_language_arm_training import (  # noqa: E402
@@ -181,6 +182,53 @@ def test_fresh_process_campaign_state_rejects_a_red_canonical_plan(
 
     with pytest.raises(RuntimeError, match="stale_freeze"):
         campaign_module.campaign_state(tmp_path / "config.json")
+
+
+def test_fresh_process_qualification_preserves_failed_watchdog_receipt(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    host_receipt = {
+        "passed": False,
+        "fault": "host_memory_reserve_breached",
+        "maximum_swapout_growth_mib": 0.0,
+    }
+    monkeypatch.setattr(
+        fresh_qualification.training,
+        "training_host_policy",
+        lambda _config: SimpleNamespace(),
+    )
+    monkeypatch.setattr(
+        fresh_qualification.host_resource_safety,
+        "run_guarded",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            receipt=host_receipt,
+            stderr="",
+        ),
+    )
+    durable = tmp_path / "qualification.host_resource_safety.json"
+
+    with pytest.raises(
+        RuntimeError, match="host_memory_reserve_breached"
+    ):
+        fresh_qualification.guarded_child(
+            config={
+                "host_resource_safety": {
+                    "qualified_python": str(Path(sys.executable))
+                }
+            },
+            config_path=tmp_path / "config.json",
+            scratch_root=tmp_path / "scratch",
+            steps=64,
+            out=tmp_path / "child.json",
+            durable_host_receipt=durable,
+            stage_id="segment_1",
+        )
+
+    saved = json.loads(durable.read_text())
+    assert saved["stage_id"] == "segment_1"
+    assert saved["passed"] is False
+    assert saved["fault"] == "host_memory_reserve_breached"
+    assert saved["host_resource_safety"] == host_receipt
 
 
 def test_fresh_process_campaign_does_not_spawn_after_target_completion(
@@ -1310,7 +1358,7 @@ def tiny_config(tmp_path: Path) -> dict:
                 "policy": "project_theseus_bounded_fresh_process_pretraining_v1",
                 "target_id": "shared_trunk",
                 "phase": "pretraining",
-                "maximum_optimizer_steps": 32,
+                "maximum_optimizer_steps": 64,
                 "compute_dtype": "float32",
                 "fp32_master": False,
                 "compiled_microbatch_size": 4,
@@ -1523,7 +1571,7 @@ def test_training_authority_requires_candidate_bound_canaries_and_gates_long_run
     )
     campaign_segment = architecture_training_authority(
         cfg,
-        max_steps=32,
+        max_steps=64,
         targets=["shared_trunk"],
         phase="pretraining",
         resume=True,
@@ -2644,7 +2692,7 @@ def test_planning_parameter_accounting_never_imports_mlx(
     assert models["moecot_system"]["active_parameter_count_per_request"] == 57_340_426
 
 
-def test_step3000_receipt_accepts_optional_online_kv_attention_migration() -> None:
+def test_step3480_receipt_accepts_compiled_state_detachment_migration() -> None:
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
@@ -2662,14 +2710,14 @@ def test_step3000_receipt_accepts_optional_online_kv_attention_migration() -> No
         receipt,
         {
             "plan_identity": config["plan_identity"],
-            "plan_sha256": "237064d3cbc38c04211b6d2f1cbe2bba5257b545d5cf3e508e3c98b891ec3f35",
+            "plan_sha256": "8a6eb82d1cffb863b353633cce744818a744b040d81e75a3d3f1ddc9d9f57ebe",
             "stage": {"stage_signature": stage_signature},
         },
         {"target_id": "shared_trunk"},
     )
     assert migration is not None
     assert migration["migration_id"] == (
-        "shared_trunk_step3000_optional_online_kv_attention_v1"
+        "shared_trunk_step3480_compiled_state_detachment_v1"
     )
 
 

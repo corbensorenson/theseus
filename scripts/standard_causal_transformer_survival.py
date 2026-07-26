@@ -2976,6 +2976,7 @@ def train_phase(
     training_step_mode: str = "auto",
     compiled_microbatch_size: int = 4,
     compile_width_quantum: int = 64,
+    materialize_compiled_state_after_update: bool = False,
     master_model: Any | None = None,
     compute_dtype_name: str = "float32",
     step_boundary_callback: Any = None,
@@ -3373,6 +3374,7 @@ def train_phase(
     optimizer_step_positions: list[int] = []
     compiled_accumulation_seconds: list[float] = []
     compiled_update_seconds: list[float] = []
+    compiled_state_materialization_seconds: list[float] = []
     host_batch_preparation_seconds: list[float] = []
     unit_allocator_pack_seconds: list[float] = []
     batch_sequence_widths: list[int] = []
@@ -3966,6 +3968,19 @@ def train_phase(
                         time.perf_counter() - update_started
                     )
                 loss = mx.sum(mx.stack(weighted_losses))
+                if (
+                    compiled_step is not None
+                    and materialize_compiled_state_after_update
+                ):
+                    materialization_started = time.perf_counter()
+                    mx.eval(
+                        model.parameters(),
+                        optimizer_model.parameters(),
+                        optimizer.state,
+                    )
+                    compiled_state_materialization_seconds.append(
+                        time.perf_counter() - materialization_started
+                    )
             else:
                 accumulation_size = int(eager_gradient_accumulation_microbatch_size)
                 if accumulation_size and len(indices) > accumulation_size:
@@ -4409,11 +4424,18 @@ def train_phase(
             sum(compiled_accumulation_seconds), 6
         ),
         "compiled_update_seconds_total": round(sum(compiled_update_seconds), 6),
+        "compiled_state_materialization_seconds_total": round(
+            sum(compiled_state_materialization_seconds), 6
+        ),
         "compiled_accumulation_seconds_prefix": [
             round(value, 6) for value in compiled_accumulation_seconds[:8]
         ],
         "compiled_update_seconds_prefix": [
             round(value, 6) for value in compiled_update_seconds[:8]
+        ],
+        "compiled_state_materialization_seconds_prefix": [
+            round(value, 6)
+            for value in compiled_state_materialization_seconds[:8]
         ],
         "maximum_optimizer_step_seconds": (
             round(max(optimizer_step_seconds), 6)
@@ -4561,6 +4583,10 @@ def train_phase(
             compiled_microbatch_size if compiled_training_active else 0
         ),
         "compiled_random_state_captured": compiled_training_active,
+        "materialize_compiled_state_after_update": bool(
+            compiled_training_active
+            and materialize_compiled_state_after_update
+        ),
         "compiled_split_gradient_accumulation": (
             compiled_gradient_step is not None
         ),

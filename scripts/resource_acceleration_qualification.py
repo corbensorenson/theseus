@@ -79,6 +79,31 @@ def main() -> int:
     parser.add_argument("--compiled-microbatch-size", type=int, default=4)
     parser.add_argument("--compile-width-quantum", type=int, default=64)
     parser.add_argument(
+        "--materialize-compiled-state-after-update",
+        action="store_true",
+        help=(
+            "Explicitly materialize model and optimizer state after each "
+            "compiled update to test graph-chain detachment."
+        ),
+    )
+    parser.add_argument(
+        "--unmigrated-implementation-challenger",
+        action="store_true",
+        help=(
+            "Permit a non-mutating acceleration diagnostic when the only "
+            "resume fault is the expected current implementation-plan mismatch. "
+            "The report receives no production authority."
+        ),
+    )
+    parser.add_argument(
+        "--diagnostic-state-root",
+        default="",
+        help=(
+            "Optional scratch-only directory for post-timing model, optimizer, "
+            "and RNG tensors from --compiled-route-only."
+        ),
+    )
+    parser.add_argument(
         "--bf16-clear-device-cache-after-step",
         action="store_true",
         help="Clear the MLX allocator cache after each BF16 optimizer update.",
@@ -104,6 +129,14 @@ def main() -> int:
         "--training-pair-only",
         action="store_true",
         help="Run only alternating eager/compiled training qualification.",
+    )
+    parser.add_argument(
+        "--compiled-route-only",
+        action="store_true",
+        help=(
+            "Run one isolated compiled route from the immutable checkpoint. "
+            "Use matched separate processes for implementation challengers."
+        ),
     )
     parser.add_argument(
         "--joined-training-only",
@@ -153,6 +186,7 @@ def main() -> int:
             args.precision_resume_only,
             args.precision_pair_only,
             args.training_pair_only,
+            args.compiled_route_only,
             args.joined_training_only,
         )
     )
@@ -200,6 +234,49 @@ def main() -> int:
             )
         )
         return 2 if report.get("trigger_state") == "RED" else 0
+    if args.compiled_route_only:
+        if not args.execute:
+            parser.error("--compiled-route-only requires --execute")
+        report = run_compiled_route_entry(
+            config_path=resolve(args.config),
+            steps=args.training_pair_steps,
+            compiled_microbatch_size=args.compiled_microbatch_size,
+            compile_width_quantum=args.compile_width_quantum,
+            materialize_compiled_state_after_update=(
+                args.materialize_compiled_state_after_update
+            ),
+            unmigrated_implementation_challenger=(
+                args.unmigrated_implementation_challenger
+            ),
+            training_phase=args.training_phase,
+            precision_mode=args.precision_mode,
+            diagnostic_state_root=(
+                resolve(args.diagnostic_state_root)
+                if args.diagnostic_state_root
+                else None
+            ),
+        )
+        write_json(resolve(args.out), report)
+        print(
+            json.dumps(
+                {
+                    "policy": report.get("policy"),
+                    "created_utc": report.get("created_utc"),
+                    "trigger_state": report.get("trigger_state"),
+                    "optimizer_steps": report.get("optimizer_steps"),
+                    "warmup_excluded_positions_per_second": report.get(
+                        "warmup_excluded_positions_per_second"
+                    ),
+                    "mlx_active_memory_bytes_maximum": report.get(
+                        "mlx_active_memory_bytes_maximum"
+                    ),
+                    "hard_gaps": report.get("hard_gaps") or [],
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 2 if report.get("trigger_state") == "RED" else 0
     if args.training_pair_only:
         if not args.execute:
             parser.error("--training-pair-only requires --execute")
@@ -209,6 +286,12 @@ def main() -> int:
             repetitions=args.training_pair_repetitions,
             compiled_microbatch_size=args.compiled_microbatch_size,
             compile_width_quantum=args.compile_width_quantum,
+            materialize_compiled_state_after_update=(
+                args.materialize_compiled_state_after_update
+            ),
+            unmigrated_implementation_challenger=(
+                args.unmigrated_implementation_challenger
+            ),
             training_phase=args.training_phase,
             precision_mode=args.precision_mode,
         )
@@ -502,6 +585,8 @@ def run_training_pair_entry(
     repetitions: int,
     compiled_microbatch_size: int,
     compile_width_quantum: int,
+    materialize_compiled_state_after_update: bool,
+    unmigrated_implementation_challenger: bool,
     training_phase: str,
     precision_mode: str,
 ) -> dict[str, Any]:
@@ -521,6 +606,7 @@ def run_training_pair_entry(
         gaps.append("shared_trunk_checkpoint_missing")
     if not optimizer_path.is_file():
         gaps.append("shared_trunk_optimizer_state_missing")
+    implementation_plan_mismatch = False
     if not gaps:
         try:
             training.validate_resume(
@@ -531,7 +617,13 @@ def run_training_pair_entry(
                 optimizer_path,
             )
         except ValueError as exc:
-            gaps.append(f"checkpoint_lineage_invalid:{exc}")
+            if (
+                unmigrated_implementation_challenger
+                and str(exc) == "resume denied: plan_identity_mismatch"
+            ):
+                implementation_plan_mismatch = True
+            else:
+                gaps.append(f"checkpoint_lineage_invalid:{exc}")
     if gaps:
         return {
             "policy": "project_theseus_focused_training_pair_qualification_v1",
@@ -549,6 +641,9 @@ def run_training_pair_entry(
         repetitions=repetitions,
         compiled_microbatch_size=compiled_microbatch_size,
         compile_width_quantum=compile_width_quantum,
+        materialize_compiled_state_after_update=(
+            materialize_compiled_state_after_update
+        ),
         training_phase=training_phase,
         precision_mode=precision_mode,
     )
@@ -556,14 +651,152 @@ def run_training_pair_entry(
         **result,
         "policy": "project_theseus_focused_training_pair_qualification_v1",
         "created_utc": now(),
-        "trigger_state": result.get("state"),
+        "trigger_state": (
+            "YELLOW" if implementation_plan_mismatch else result.get("state")
+        ),
         "source_training_policy": result.get("policy"),
         "training_phase": training_phase,
         "precision_mode": precision_mode,
+        "materialize_compiled_state_after_update": bool(
+            materialize_compiled_state_after_update
+        ),
+        "implementation_authority": (
+            "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
+            if implementation_plan_mismatch
+            else "PLAN_BOUND_QUALIFICATION"
+        ),
+        "open_conditions": (
+            [
+                "current implementation plan migration is not authorized",
+                "production route remains unchanged",
+            ]
+            if implementation_plan_mismatch
+            else []
+        ),
         "training_config": {
             "path": relative(config_path),
             "sha256": file_sha256(config_path),
         },
+        "hard_gaps": [],
+    }
+
+
+def run_compiled_route_entry(
+    *,
+    config_path: Path,
+    steps: int,
+    compiled_microbatch_size: int,
+    compile_width_quantum: int,
+    materialize_compiled_state_after_update: bool,
+    unmigrated_implementation_challenger: bool,
+    training_phase: str,
+    precision_mode: str,
+    diagnostic_state_root: Path | None,
+) -> dict[str, Any]:
+    """Measure one compiled implementation without an eager route in-process."""
+
+    config = training.bind_scale_preregistration(read_json(config_path))
+    plan = training.build_plan(config, config_path=config_path)
+    target = (plan.get("targets") or {}).get(training.SHARED_TRUNK_ID) or {}
+    receipt_path = resolve(str(target.get("receipt") or ""))
+    receipt = read_json(receipt_path) if receipt_path.is_file() else {}
+    checkpoint = resolve(
+        str(receipt.get("checkpoint") or target.get("checkpoint") or "")
+    )
+    optimizer_path = resolve(
+        str(
+            receipt.get("optimizer_state")
+            or target.get("optimizer_state")
+            or ""
+        )
+    )
+    gaps: list[str] = []
+    for label, path in (
+        ("shared_trunk_checkpoint", checkpoint),
+        ("shared_trunk_optimizer_state", optimizer_path),
+    ):
+        if not path.is_file():
+            gaps.append(f"{label}_missing")
+    implementation_plan_mismatch = False
+    if not gaps:
+        try:
+            training.validate_resume(
+                receipt,
+                plan,
+                target,
+                checkpoint,
+                optimizer_path,
+            )
+        except ValueError as exc:
+            if (
+                unmigrated_implementation_challenger
+                and str(exc) == "resume denied: plan_identity_mismatch"
+            ):
+                implementation_plan_mismatch = True
+            else:
+                gaps.append(f"checkpoint_lineage_invalid:{exc}")
+    if gaps:
+        return {
+            "policy": "project_theseus_isolated_compiled_route_diagnostic_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": gaps,
+        }
+    route_context = build_training_route_context(
+        config=config,
+        plan=plan,
+        target=target,
+        checkpoint=checkpoint,
+        optimizer_path=optimizer_path,
+        steps=steps,
+        compiled_microbatch_size=compiled_microbatch_size,
+        compile_width_quantum=compile_width_quantum,
+        training_phase=training_phase,
+    )
+    route = run_training_route(
+        mode="compiled",
+        precision_mode=precision_mode,
+        rope_kernel="mlx_fast",
+        prune_inactive_auxiliary_outputs=True,
+        capture_content_digest=True,
+        diagnostic_state_root=diagnostic_state_root,
+        materialize_compiled_state_after_update=(
+            materialize_compiled_state_after_update
+        ),
+        **route_context,
+    )
+    return {
+        **route,
+        "policy": "project_theseus_isolated_compiled_route_diagnostic_v1",
+        "created_utc": now(),
+        "trigger_state": (
+            "YELLOW" if implementation_plan_mismatch else "GREEN"
+        ),
+        "training_phase": training_phase,
+        "precision_mode": precision_mode,
+        "materialize_compiled_state_after_update": bool(
+            materialize_compiled_state_after_update
+        ),
+        "implementation_authority": (
+            "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
+            if implementation_plan_mismatch
+            else "PLAN_BOUND_QUALIFICATION"
+        ),
+        "starting_checkpoint_sha256": file_sha256(checkpoint),
+        "starting_optimizer_state_sha256": file_sha256(optimizer_path),
+        "training_config": {
+            "path": relative(config_path),
+            "sha256": file_sha256(config_path),
+        },
+        "open_conditions": (
+            [
+                "matched route parity and resume qualification pending",
+                "current implementation plan migration is not authorized",
+                "production route remains unchanged",
+            ]
+            if implementation_plan_mismatch
+            else ["matched route parity and resume qualification pending"]
+        ),
         "hard_gaps": [],
     }
 
@@ -1605,6 +1838,7 @@ def run_training_pair_qualification(
     repetitions: int = 3,
     compiled_microbatch_size: int = 4,
     compile_width_quantum: int = 64,
+    materialize_compiled_state_after_update: bool = False,
     training_phase: str = "pretraining",
     precision_mode: str = "float32",
 ) -> dict[str, Any]:
@@ -1652,6 +1886,11 @@ def run_training_pair_qualification(
                 mode=mode,
                 precision_mode=precision_mode,
                 capture_parameter_snapshot=True,
+                materialize_compiled_state_after_update=(
+                    bool(materialize_compiled_state_after_update)
+                    if mode == "compiled"
+                    else False
+                ),
                 eager_gradient_accumulation_microbatch_size=(
                     compiled_microbatch_size
                     if route_context["source_conditioning"]
@@ -2430,6 +2669,7 @@ def run_training_route(
     capture_parameter_snapshot: bool = False,
     capture_optimizer_snapshot: bool = False,
     capture_rng_snapshot: bool = False,
+    capture_content_digest: bool = False,
     capture_starting_snapshot: bool = False,
     resume_data_cursor: dict[str, Any] | None = None,
     resume_rng_state: dict[str, Any] | None = None,
@@ -2438,6 +2678,8 @@ def run_training_route(
     prune_inactive_auxiliary_outputs: bool = True,
     clear_device_cache_after_step: bool = False,
     eager_gradient_accumulation_microbatch_size: int = 0,
+    materialize_compiled_state_after_update: bool = False,
+    diagnostic_state_root: Path | None = None,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
@@ -2564,6 +2806,9 @@ def run_training_route(
         training_step_mode=mode,
         compiled_microbatch_size=compiled_microbatch_size,
         compile_width_quantum=compile_width_quantum,
+        materialize_compiled_state_after_update=(
+            materialize_compiled_state_after_update
+        ),
         eager_gradient_accumulation_microbatch_size=(
             eager_gradient_accumulation_microbatch_size
         ),
@@ -2601,6 +2846,9 @@ def run_training_route(
             "compiled_accumulation_seconds_total"
         ],
         "compiled_update_seconds_total": phase["compiled_update_seconds_total"],
+        "compiled_state_materialization_seconds_total": phase[
+            "compiled_state_materialization_seconds_total"
+        ],
         "host_batch_preparation_seconds_total": phase[
             "host_batch_preparation_seconds_total"
         ],
@@ -2620,6 +2868,24 @@ def run_training_route(
         ],
         "compiled_update_seconds_prefix": phase[
             "compiled_update_seconds_prefix"
+        ],
+        "compiled_state_materialization_seconds_prefix": phase[
+            "compiled_state_materialization_seconds_prefix"
+        ],
+        "mlx_active_memory_bytes_maximum": phase[
+            "mlx_active_memory_bytes_maximum"
+        ],
+        "mlx_active_memory_bytes_prefix": phase[
+            "mlx_active_memory_bytes_prefix"
+        ],
+        "mlx_cache_memory_bytes_maximum": phase[
+            "mlx_cache_memory_bytes_maximum"
+        ],
+        "mlx_peak_memory_bytes_maximum": phase[
+            "mlx_peak_memory_bytes_maximum"
+        ],
+        "materialize_compiled_state_after_update": phase[
+            "materialize_compiled_state_after_update"
         ],
         "data_cursor_start": phase["data_cursor_start"],
         "data_cursor_next": phase["data_cursor_next"],
@@ -2641,6 +2907,57 @@ def run_training_route(
         ),
         "mlx_memory": mlx_memory_receipt(mx),
     }
+    if capture_content_digest:
+        observed["parameter_content"] = tree_content_receipt(
+            authoritative_model.trainable_parameters(),
+            mlx_utils=mlx_utils,
+        )
+        observed["optimizer_content"] = tree_content_receipt(
+            optimizer.state,
+            mlx_utils=mlx_utils,
+        )
+        observed["rng_content"] = tree_content_receipt(
+            {
+                f"state.{index}": value
+                for index, value in enumerate(mx.random.state)
+            },
+            mlx_utils=mlx_utils,
+        )
+    if diagnostic_state_root is not None:
+        diagnostic_state_root.mkdir(parents=True, exist_ok=True)
+        model_state_path = diagnostic_state_root / "model.safetensors"
+        optimizer_state_path = diagnostic_state_root / "optimizer.safetensors"
+        rng_state_path = diagnostic_state_root / "rng.safetensors"
+        mx.save_safetensors(
+            str(model_state_path),
+            dict(mlx_utils.tree_flatten(
+                authoritative_model.trainable_parameters()
+            )),
+            metadata={"policy": "project_theseus_scratch_state_diagnostic_v1"},
+        )
+        mx.save_safetensors(
+            str(optimizer_state_path),
+            dict(mlx_utils.tree_flatten(optimizer.state)),
+            metadata={"policy": "project_theseus_scratch_state_diagnostic_v1"},
+        )
+        mx.save_safetensors(
+            str(rng_state_path),
+            {
+                f"state.{index}": value
+                for index, value in enumerate(mx.random.state)
+            },
+            metadata={"policy": "project_theseus_scratch_state_diagnostic_v1"},
+        )
+        observed["diagnostic_state"] = {
+            "policy": "project_theseus_scratch_state_diagnostic_v1",
+            "production_authority": False,
+            "model": str(model_state_path),
+            "model_sha256": file_sha256(model_state_path),
+            "optimizer": str(optimizer_state_path),
+            "optimizer_sha256": file_sha256(optimizer_state_path),
+            "rng": str(rng_state_path),
+            "rng_sha256": file_sha256(rng_state_path),
+        }
     if capture_parameter_snapshot:
         observed["_parameter_snapshot"] = {
             name: np.asarray(value).copy()
@@ -2776,6 +3093,40 @@ def tree_numeric_receipt(tree: Any, *, mx: Any, mlx_utils: Any) -> dict[str, Any
         "dtypes": sorted({str(value.dtype) for _name, value in rows}),
         "all_finite": all_finite,
         "finite_check_chunk_size": finite_check_chunk_size,
+    }
+
+
+def tree_content_receipt(tree: Any, *, mlx_utils: Any) -> dict[str, Any]:
+    """Hash one materialized tensor at a time without retaining host copies."""
+
+    digest = hashlib.sha256()
+    tensor_count = 0
+    element_count = 0
+    payload_bytes = 0
+    for name, value in sorted(mlx_utils.tree_flatten(tree)):
+        array = np.ascontiguousarray(np.asarray(value))
+        descriptor = json.dumps(
+            {
+                "name": name,
+                "shape": list(array.shape),
+                "dtype": str(array.dtype),
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        digest.update(len(descriptor).to_bytes(8, "big"))
+        digest.update(descriptor)
+        digest.update(memoryview(array).cast("B"))
+        tensor_count += 1
+        element_count += int(array.size)
+        payload_bytes += int(array.nbytes)
+        del array
+    return {
+        "sha256": digest.hexdigest(),
+        "tensor_count": tensor_count,
+        "element_count": element_count,
+        "payload_bytes": payload_bytes,
+        "host_copy_policy": "one_tensor_at_a_time_after_timed_training",
     }
 
 

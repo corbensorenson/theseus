@@ -111,7 +111,7 @@ next long-run launch target:
   each for English, Python, JS/TS, HTML/CSS, and Rust.
 - Runtime: native MLX grouped-query attention and compiled width-bucketed FP32
   microbatches of four, accumulated into one token-mass-weighted batch-16 clip/update.
-  Long pretraining is now bounded to qualified 32-step fresh processes with atomic
+  The last frozen production route is bounded to qualified 32-step fresh processes with atomic
   model/optimizer/RNG/cursor publication; source-conditioned and supervision phases use
   eager microbatch one and content-bound memory-mapped stage caches. The latest same-state
   three-pair, 24-update qualification preserved bounded full-parameter equivalence. Its
@@ -135,21 +135,99 @@ next long-run launch target:
   about 3.3k end-to-end positions/second including publication/startup overhead, with
   zero swap and independently replayed model/optimizer tolerances of `1.19e-7` and
   `4.31e-9` maximum absolute delta.
-- Current run: shared trunk checkpoint 3,000, 22,999,779 optimizer positions, exact
-  safetensors model SHA `606640cd...5c0e`, and optimizer SHA `62e1b52b...5f96`. Private-development loss
-  improved 0.57% from step 2,500 to 3,000; English regressed 0.43% while the four code arms
-  improved. Direct beam decoding is about 8.8x faster with 8/8 exact output-and-receipt parity,
-  but seven of eight qualification outputs still fail closed on serialization.
+- Current run: shared-trunk checkpoint 3,480, 26,680,656 optimizer positions, exact
+  safetensors model SHA `af4b5524...9247`, and optimizer SHA `29bcb5f8...a2f7`.
+  Fourteen 32-step campaign segments published successfully. Segment 15 computed 20 updates,
+  then the external watchdog stopped it on the live-memory reserve before publication, so
+  those updates were correctly discarded and the durable lineage remains step 3,480.
+  The campaign is not running while the corrected MLX state boundary is requalified.
 
-At the qualified fresh-process effective rate, the remaining shared-trunk pretraining
-budget is about 3.8 continuous days. A serial 4.05B-position campaign is about 14.2
+At the last qualified fresh-process effective rate, the remaining shared-trunk pretraining
+budget is about 3.53 continuous device-days. A serial 4.05B-position campaign is about 14.2
 pretraining-equivalent compute-days before slower auxiliary phases, review/evaluation,
 thermal interruptions, and lifecycle work; plan roughly 16-19 calendar days on this M1.
-Preserve the resumable step-3,000 lineage, but do not
+Preserve the resumable step-3,480 lineage, but do not
 continue it while already-planned checkpoint-shaping upgrades remain unresolved. `T0A`
 allows isolated, source-disjoint, prospectively bounded architecture learning curves because
 MTP, learned chunking, optimizers, and KERC cannot be assessed from shape tests alone. These
 runs receive no production checkpoint, capability, or public-calibration authority.
+
+### 2026-07-26 Production Training Hot-Path Audit
+
+The system is **not yet entitled to claim that training is as fast as possible**. It is
+entitled to a narrower and useful claim: the plain FP32 pretraining route is already
+GPU-bound and uses the right high-level MLX primitives, and one major lifecycle defect has
+now been isolated and repaired. The consolidated evidence is
+`reports/training_acceleration_audit_2026_07_26.json`.
+
+The production route always executes width 512, logical batch 16, compiled microbatch four.
+Host batch preparation is about 0.2% of measured device time. Rewriting the Python optimizer
+loop in Rust would therefore recover at most noise on this route: Rust cannot replace MLX's
+Metal kernels or make the GPU complete matrix operations faster. Retain Rust for measured
+CPU-heavy corpus materialization, KERC preprocessing, checkpoint tooling, and orchestration.
+A Rust/C++ extension becomes eligible only when a native MLX Metal trace identifies a
+specific residual operator that needs a custom Metal kernel.
+
+The production failure was an unevaluated compiled-state chain. Evaluating only the scalar
+loss left model and optimizer updates captured across iterations, growing MLX active memory
+each step. The repaired route explicitly materializes model parameters, authoritative
+optimizer parameters, and optimizer state after every compiled update:
+
+- the old 16-update diagnostic reached 1.746 GB active MLX memory;
+- the repaired 16-update diagnostic reached 659 MB with identical terminal loss;
+- the repaired 64-update diagnostic remained flat at 659 MB, passed the watchdog with zero
+  swap growth, and spent 2.97 seconds total on state materialization;
+- matched old/new eight-update states preserved exact batches, cursor, RNG, and loss, with
+  `1.19e-7` maximum model and `4.08e-9` maximum optimizer delta;
+- two independent repaired FP32 processes remained inside the already-qualified
+  fresh-process envelope.
+
+This is a 62.3% active-memory reduction and removes the campaign's linear graph-retention
+failure mode. It is not a multi-fold speedup: the isolated 64-update route measured about
+3,203 positions/second. BF16 with the same state detachment is 1.257x faster at 4,026
+positions/second and also holds memory flat, but two independent processes still diverge
+(`1.43e-4` model and `5.43e-5` optimizer maximum absolute delta). BF16 remains rejected
+until the first disagreeing update is localized and the full-state repeatability gate passes.
+
+The first 64-step fresh-process adoption attempt was blocked by current host pressure before
+an optimizer update: reclaimable memory began at 4,712 MiB, the MLX compile/load transient
+reduced it to 1,867 MiB, zero swap grew, and the existing 2,048 MiB live-reserve rule stopped
+the child. Do not weaken that reserve from one observation. Repeat when the host has adequate
+headroom and preserve every failure receipt. The production route remains stopped and the
+64-step policy remains unqualified until two contiguous segments and an independent replay
+pass state, cursor, numeric, publication, and zero-swap checks.
+
+The next optimization docket is finite and ordered by possible calendar impact:
+
+1. Qualify compiled-state detachment and 64-step fresh-process publication. This eliminates
+   the leak and roughly halves restart/checkpoint frequency; it does not promise a large
+   device-throughput gain.
+2. Capture one warmed FP32 update with `mx.metal.start_capture`, rank kernels by GPU duration,
+   and attribute synchronization, attention, MLP, vocabulary projection, clipping, optimizer,
+   and state materialization. Do not write a custom kernel without this trace.
+3. Reoptimize the source-conditioned and supervision phases. Their roughly 500
+   positions/second rate can dominate time-to-useful-system. The leading challenger computes
+   pointer-generator target-token mixture loss directly from source-position scores instead
+   of materializing and scattering a vocabulary-sized pointer tensor. It must preserve
+   token loss, auxiliary loss, every parameter gradient, checkpoint/replay, and heldout
+   learning before adoption.
+4. Localize BF16 divergence at the first disagreeing update across attention, normalization,
+   clipping, Adam moments, and Metal reduction order. Adopt mixed precision only after
+   independent-process state replay, not because a same-process loss looks close.
+5. Measure custom Metal only for the trace-ranked residual. Compare end-to-end wall time,
+   compile time, thermal drift, memory, and publication overhead. A microkernel speedup that
+   does not improve the sustained joined route is rejected.
+6. Keep the experiment budget distinct from implementation speed. If 16-19 days remains
+   unacceptable after the MLX work, preregister staged matched-control racing or move the
+   frozen campaign to faster Apple hardware; do not silently cut controls after seeing
+   outcomes.
+
+Planning bounds are now explicit: the remaining shared trunk is approximately 3.5-4.0 days
+on the qualified FP32 class of route. The full serial matched campaign remains approximately
+16-19 calendar days. Repairing and qualifying BF16 at the measured 1.257x gain would move
+that to roughly 12-15 days. A substantially shorter result requires auxiliary-path
+acceleration, a qualified custom kernel, less preregistered experimental compute, or faster
+hardware; Rustifying the Python shell will not produce it.
 
 ### 2026-07-26 Acceleration-First Launch Gate
 
@@ -227,19 +305,15 @@ and swap-growth watchdogs remain green. Preserve negative and unstable measureme
 the selected performance receipt and bind its exact execution policy into the replacement
 architecture freeze before any 57M optimizer budget is spent.
 
-Current gate state: **FRESH_PROCESS_FP32_QUALIFIED; REPLACEMENT FREEZE GREEN**. The final
-bounded KERC population rung, exact merge, teacher-forced panel, and raw panel are complete.
-The shared 57M checkpoint remains immutable at step 3,000. The registered execution policy
-now selects compiled FP32 microbatch four in 32-step fresh processes for plain pretraining
-and exact-normalized eager split microbatch one for source-conditioned and supervision
-phases. It captures MLX RNG in the compiled ABI, publishes model/optimizer/RNG/cursor
-atomically after every segment, and content-binds the unchanged checkpoint, objective, and
-position schedule through an explicit migration. The replacement freeze now binds 14/14
-selected accelerator receipts and passes 7/7 independent CPU/governance replays. The exact
-package identity is recorded in `reports/pretraining_architecture_freeze_package.json` rather
-than copied into a bound input and made self-referential.
-Bank the acceleration evidence, then resolve the broader architecture-readiness gate before
-starting the matched campaign. Do not restore BF16 merely for its raw
+Current gate state: **HISTORICAL 32-STEP FP32 FREEZE GREEN; COMPILED-STATE AMENDMENT
+REQUALIFICATION REQUIRED**. The final bounded KERC population rung, exact merge,
+teacher-forced panel, and raw panel remain complete. The durable 57M checkpoint is step
+3,480. The old freeze still proves the prior 32-step route; it does not authorize the new
+state-detachment implementation or 64-step cadence. The amendment captures MLX RNG in the
+compiled ABI, explicitly materializes model and optimizer state after each update, and must
+republish model/optimizer/RNG/cursor atomically after every segment. Its exact step-3,480
+migration is bound, but production authority stays RED until the fresh-process report and
+replacement freeze are regenerated and independently replayed. Do not restore BF16 merely for its raw
 1.26x speed advantage unless a new implementation removes both retained-state growth and
 cross-process trajectory divergence under the same parity and host gates.
 

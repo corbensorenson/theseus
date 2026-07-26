@@ -1,6 +1,6 @@
 # Roadmap Implementation Gate
 
-- Trigger state: `YELLOW`
+- Trigger state: `RED`
 - Matrix: `configs/roadmap_implementation_matrix.json`
 - Phases: `20/20`
 - Implemented/wired: `12`
@@ -10,8 +10,8 @@
 - Frozen: `1`
 - Book crosswalk items: `20`
 - AI_book authored source files: `4155`
-- Stale book-linked phases: `0`
-- Unresolved book-to-roadmap backlog items: `336`
+- Stale book-linked phases: `6`
+- Unresolved book-to-roadmap backlog items: `342`
 - Public-safe Theseus-to-book evidence pointers: `86`
 - Source-sync smoke passed: `True`
 - Public-safe evidence smoke passed: `True`
@@ -36,11 +36,11 @@
 - Active core slice support states: `{'C1_correctness_rl_and_generator_survival_lane': 'synthetic-test-backed'}`
 - Core slice support states: `{'A1_claim_ledger_trace_kernel': 'synthetic-test-backed', 'A2_replacement_transaction_kernel': 'replayable-reference-backed', 'E1_authority_scif_runtime_adapter_kernel': 'replayable-reference-backed', 'B1_assisted_verified_assistant_product_lane': 'synthetic-test-backed', 'C1_correctness_rl_and_generator_survival_lane': 'synthetic-test-backed'}`
 - Support-state ladder ready: `True`
-- Pre-training architecture ready: `True`
-- Pre-training architecture blockers: `0`
+- Pre-training architecture ready: `False`
+- Pre-training architecture blockers: `2`
 - Book crosswalk missing fields: `0`
 - Book crosswalk invalid phase refs: `0`
-- Hard gaps: `0`
+- Hard gaps: `1`
 - Warnings: `1`
 - Phases 13-19 preserved: `True`
 
@@ -69,11 +69,17 @@
 | 18 Governance Rights, Constitutional Predicates, And Failure Boundaries | wired | critical | `core_control_plane` | 0 | 0 |
 | 19 Book-To-Theseus Backlog And Evidence Synchronization | implemented | high | `active_docs` | 0 | 0 |
 
+## Hard Gaps
+
+- `pre_training_architecture_readiness`: architecture_not_ready_for_training {"blocker_count": 2, "ready": false, "rule": "complete book-derived architecture slices before training, public calibration, or score-chasing"}
+
 ## Pre-Training Architecture Readiness
 
-- Ready: `True`
-- Blockers: `0`
+- Ready: `False`
+- Blockers: `2`
+- architecture_freeze_package_not_ready: {"evidence": {"acceptance_observed": {}, "declared": true, "disposition": "architecture_frozen_training_not_started", "faults": ["source_artifacts_stale:ROADMAP.md,configs/moecot_language_arm_training.json,configs/roadmap_implementation_matrix.json,scripts/fresh_process_pretraining_qualification.py,scripts/moecot_language_arm_training.py,scripts/standard_causal_transformer_survival.py,tests/test_moecot_language_arm_training.py,tests/test_standard_causal_transformer_survival.py"], "path": "reports/pretraining_architecture_freeze_package.json", "policy": "project_theseus_pretraining_architecture_freeze_v1", "ready": false, "source_artifact_count": 123, "trigger_state": "GREEN"}, "kind": "architecture_freeze_package_not_ready", "required_action": "Build and independently replay the exact content-addressed architecture package before authorizing long training."}
+- unfinished_architecture_prerequisite_phases: {"count": 2, "kind": "unfinished_architecture_prerequisite_phases", "phases": [{"missing_item_count": 2, "missing_source_artifact_paths": [], "phase": 0, "smallest_next_patch": "Bank the independently replayed T0A acceleration transaction as a coherent reviewed checkpoint with bound source/config/report/replay identities, leaving unrelated user changes outside it; committing is custody, not qualification. Then complete Phase 0 reproduction and audit and retire the superseded strict-generator/code_lm_closure family, extract live mechanisms into canonical owners, remove retired imports from active gates, archive reports through verified retention pointers, and compact roadmap evidence prose. Real signed release/custody evidence remains a separate post-checkpoint task.", "status": "partial", "title": "Repository Self-Model And Registry Discipline"}, {"missing_item_count": 1, "missing_source_artifact_paths": [], "phase": 8, "smallest_next_patch": "When the host again has adequate reclaimable memory, complete the 64-step fresh-process state/cursor/publication replay without weakening the live reserve, regenerate the replacement freeze, and resume the exact step-3480 FP32 lineage. In parallel, capture one warmed Metal update and build the matched target-only pointer-generator training-loss challenger because auxiliary phases, not Python batch preparation, are the largest remaining calendar-time opportunity.", "status": "partial", "title": "Resource, Cost, And Mac Acceleration Routing"}], "required_action": "Complete or explicitly external-freeze every architecture prerequisite before making training the primary roadmap focus."}
 
 ## Warnings
 
-- `book_chapter_implementation_crosswalk`: live_book_worktree_differs_from_pinned_snapshot {"book_commit": "32635eb94ded42a5f54e528302685cab343993b7", "live_manifest_sha256": "cd53837df39a3b2a9ccbf583708f7826d2773b41878ee96c710487265dfe2cfd", "pinned_manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e", "rule": "Live book edits are intake work, not an architecture-readiness regression. Reconcile and advance the pin in a separate reviewed change."}
+- `book_chapter_implementation_crosswalk`: live_book_worktree_differs_from_pinned_snapshot {"book_commit": "32635eb94ded42a5f54e528302685cab343993b7", "live_manifest_sha256": "3a1065380a76692a7a8e4884e7137b471a26d7276a723b8621f9ac615b189d19", "pinned_manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e", "rule": "Live book edits are intake work, not an architecture-readiness regression. Reconcile and advance the pin in a separate reviewed change."}

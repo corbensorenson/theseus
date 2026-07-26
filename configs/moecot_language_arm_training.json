@@ -64,7 +64,7 @@
       "policy": "project_theseus_bounded_fresh_process_pretraining_v1",
       "target_id": "shared_trunk",
       "phase": "pretraining",
-      "maximum_optimizer_steps": 32,
+      "maximum_optimizer_steps": 64,
       "compute_dtype": "float32",
       "fp32_master": false,
       "compiled_microbatch_size": 4,
@@ -107,6 +107,19 @@
       "scale_preregistration.evaluation_freeze_sha256"
     ],
     "legacy_migrations": [
+      {
+        "migration_id": "shared_trunk_step3480_compiled_state_detachment_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_optimizer_positions": 26680656,
+        "required_current_plan_sha256": "8a6eb82d1cffb863b353633cce744818a744b040d81e75a3d3f1ddc9d9f57ebe",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/resource_acceleration_compiled_route_current8_state.json reports/resource_acceleration_compiled_route_materialized8_state.json reports/resource_acceleration_fp32_materialized8_replay_b.json reports/resource_acceleration_compiled_route_materialized64.json reports/resource_acceleration_bf16_materialized64.json reports/resource_acceleration_bf16_materialized8_replay_a.json reports/resource_acceleration_bf16_materialized8_replay_b.json reports/compiled_state_materialization_unit_parity.host_resource_safety.json tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while explicitly materializing the captured model and optimizer state after each compiled update. The prior route retained an unevaluated state chain, grew active MLX memory every update, and eventually tripped the campaign watchdog. Matched eight-update full-state diagnostics preserved exact loss, batch identities, cursor, and RNG; model and optimizer differences remained within the already-qualified fresh-process envelope at 1.19e-7 and 4.08e-9 maximum absolute delta. Two independent materialized FP32 processes remained within 1.19e-7 and 2.97e-9, while a 64-update run held active MLX memory flat near 659 MB. BF16 retained its speed advantage but remained cross-process divergent and is still rejected."
+      },
       {
         "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
         "target_id": "shared_trunk",
@@ -563,7 +576,7 @@
         "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
         "legacy_optimizer_steps": 4657,
         "legacy_optimizer_positions": 457027,
-        "required_current_plan_sha256": "5ad850d469c8aad79c9e6a3dc13b360c29b4e4964df1c69288f2fd3c2b007179",
+        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -578,7 +591,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "5ad850d469c8aad79c9e6a3dc13b360c29b4e4964df1c69288f2fd3c2b007179",
+        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -593,7 +606,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "7ed6351670cb9391954e02ce15dd7b5d06d59091b85bb5659d3b492102d4a763",
+        "required_current_plan_sha256": "9373acda44113802015693e2b3f18ab1508527a2f55e64cec9810456ca23fda8",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -608,7 +621,7 @@
         "legacy_optimizer_state_sha256": "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197",
         "legacy_optimizer_steps": 4786,
         "legacy_optimizer_positions": 488090,
-        "required_current_plan_sha256": "5ad850d469c8aad79c9e6a3dc13b360c29b4e4964df1c69288f2fd3c2b007179",
+        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_generation_rows16_seed_20260722.json",
         "reason": "Continue the exact step-4786 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-2 batch-2 sampler cursor after 128 updates gave every bounded population row two exposures but left the v4 root top-1 at 0/16 and raw admitted-row validity at 0/16. The next rung doubles minimum exposure from two to four using another 128 updates at the unchanged 3e-5 rate, v4 objective, same seed, same admitted rows, and same hard host gates. Preserve the sampler cursor: this migration intentionally has no reset_data_cursor_phase. Require teacher-forced root movement and raw admitted-row validity before any source-disjoint surface. This is an underfit-regime diagnostic, not a capability or architecture-falsification claim."
@@ -621,7 +634,7 @@
         "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
         "legacy_optimizer_steps": 4914,
         "legacy_optimizer_positions": 519165,
-        "required_current_plan_sha256": "5ad850d469c8aad79c9e6a3dc13b360c29b4e4964df1c69288f2fd3c2b007179",
+        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
         "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed."
@@ -713,6 +726,7 @@
         "training_step_mode": "compiled",
         "compiled_microbatch_size": 4,
         "compile_width_quantum": 64,
+        "materialize_compiled_state_after_update": true,
         "eager_gradient_accumulation_microbatch_size": 0
       },
       "source_conditioned_pretraining": {
