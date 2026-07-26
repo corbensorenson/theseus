@@ -343,31 +343,31 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 "kerc_resource_stress_prefix": False,
                     "continuation_source_report": (
                         "reports/rdc_kerc_k5_source_span_transport_v4_population_"
-                        "steps128_merged_fp32_seed_20260722.json"
+                        "step256_exposure_doubling_merged_fp32_seed_20260722.json"
                     ),
                     "continuation_source_report_sha256": (
-                        "0bbecc661c74786df4403a89c5eac67ce41e2885a90a4a2b5b043ba59665246a"
+                        "587627e30e19910a26437c8b24490eab9f36461da1130afad54f0de65b656e43"
                     ),
                     "continuation_source_plan_sha256": (
-                        "f9f69bec11f6b83692b3c0eba584514caa6d344a5b257b6b30a581e4b937b9a6"
+                        "0d02519689796aa32d1eb32aaa69b31f314fe7a88f67bf54b6e52c7a414e04e7"
                     ),
                     "continuation_source_checkpoint_sha256": (
-                        "e123932dabb31d238bacef16945afca35c14dc6a3aaee49ead9731168d5278fb"
+                        "d5b59ec65a41e23ece8399bae0a3d1a12b17256a4158d250a6fe25209040aeed"
                     ),
                     "continuation_source_optimizer_state_sha256": (
-                        "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197"
+                        "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9"
                 ),
                 "continuation_source_mlx_rng_state_sha256": (
                     "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9"
                 ),
-                    "continuation_source_optimizer_steps": 4786,
-                    "continuation_source_optimizer_positions": 488090,
+                    "continuation_source_optimizer_steps": 4914,
+                    "continuation_source_optimizer_positions": 519165,
                 "continuation_learning_rate": 0.00003,
                 "continuation_min_learning_rate": 0.00003,
                     "large_sequence_route": (
-                        "compiler_population_source_span_transport_v4_exact_cursor_"
-                        "exposure_doubling_schema8_semantic4_lr_min_position32_"
-                        "q32_k32_v23"
+                        "compiler_population_source_span_transport_v4_checkpoint_"
+                        "exact_final_exposure_doubling_schema8_semantic4_lr_min_"
+                        "position32_q32_k32_v24"
                     ),
                     "kerc_compiler_transport": {
                         "policy": (

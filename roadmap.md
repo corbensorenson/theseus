@@ -1764,6 +1764,41 @@ generation service, KERC sidecar, or private evaluator.
    sampler cursor, and v4 objective from step 4,786 until a preregistered population diagnostic
    boundary; do not consume source-disjoint behavior while admitted-row root top-1 remains 0/16.
 
+   The exact-cursor continuation is now complete at optimizer step 4,914. Its additional 128
+   updates consume 31,075 positions, cover all 63 rows, and move the cursor from epoch 2 / batch 2
+   to epoch 4 / batch 4. The matched 16-row panel therefore reaches four or five cumulative
+   exposures per row. Loss is 3.107433 on the first update and 2.176322 on the last. The full-FP32
+   merge independently preserves all 234 frozen tensors and exactly overlays the five compiler
+   tensors at checkpoint `d5b59ec6…aeed`.
+
+   The preregistered root boundary passes decisively without closing learnability. On the same
+   16 rows, teacher-forced accuracy moves 3,206/3,776→3,228/3,776 (84.904661%→85.487288%);
+   schema remains 253/255 and EOS remains 16/16. The required v4 root moves from mean rank 6.4375
+   and 0/16 top-1 to rank 1 and 16/16 top-1. Raw generation remains 0/16 valid: fifteen complete
+   candidates now choose v4 but are rejected by the online validator (11 compact-schema invalid,
+   three compact-transport invalid, one source-span declaration invalid), while the weakest row
+   again exhausts 628 tokens. This localizes the remaining owner beyond the root token but remains
+   `INCONCLUSIVE_EXPERIMENT`; no source-disjoint or public surface was consumed and no capability
+   or architecture-selection credit is granted.
+
+   Independent replay also found that the dense unweighted sampler historically shuffled the
+   prior epoch permutation. A fresh-process continuation could therefore preserve the numerical
+   epoch/batch cursor while diverging from uninterrupted row order. The replay now validates the
+   recorded nonzero start and end cursors, mirrors the trainer's dense projection, and reports
+   explicit expected/observed batch identities. Future training uses
+   `project_theseus_epoch_independent_order_v1`, which derives each epoch from canonical row order
+   plus its seed and is checkpoint-reconstructible. The step-4,914 migration names this policy
+   change explicitly and does not pretend path equivalence to the legacy in-place shuffle.
+
+   One final same-seed 256-update rung is authorized from the immutable step-4,914 checkpoint and
+   epoch-4/batch-4 cursor, targeting a minimum eight cumulative exposures per row at the unchanged
+   3e-5 rate. It must produce at least one online-valid raw v4 training-row completion and complete
+   the weakest row before any source-disjoint surface. If it does not, freeze this exact KERC
+   regime as `INCONCLUSIVE_EXPERIMENT` for first-campaign sequencing and proceed to the matched
+   57M-class selection campaign; do not open another seed, arbitrary memory threshold, or
+   architecture-review loop, and do not translate campaign exclusion into broad KERC
+   falsification.
+
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity
    choices, closure state, and one or more future semantic units. The incremental grammar

@@ -537,6 +537,61 @@ def test_kernel_phase_replay_seed_includes_exact_prior_optimizer_steps() -> None
     ) == 20260722
 
 
+def test_exact_training_cursor_start_recovers_nonzero_continuation() -> None:
+    assert probe.exact_training_cursor_start(
+        {
+            "data_cursor_start": {
+                "policy": "project_theseus_training_data_cursor_v1",
+                "row_count": 63,
+                "batch_size": 1,
+                "seed": 20260722,
+                "epoch": 2,
+                "batch_index": 2,
+            }
+        },
+        row_count=63,
+        batch_size=1,
+        replay_seed=20260722,
+    ) == (2, 2)
+
+
+def test_exact_training_cursor_start_rejects_seed_drift() -> None:
+    with pytest.raises(
+        ValueError, match="K5 phase replay data-cursor seed mismatch"
+    ):
+        probe.exact_training_cursor_start(
+            {
+                "data_cursor_start": {
+                    "policy": "project_theseus_training_data_cursor_v1",
+                    "row_count": 63,
+                    "batch_size": 1,
+                    "seed": 20260723,
+                    "epoch": 2,
+                    "batch_index": 2,
+                }
+            },
+            row_count=63,
+            batch_size=1,
+            replay_seed=20260722,
+        )
+
+
+def test_exact_sampler_replay_inputs_mirrors_trainer_dense_projection() -> None:
+    inputs = probe.training.RaggedRows(
+        [
+            np.arange(3, dtype=np.int32),
+            np.arange(12, dtype=np.int32),
+            np.arange(5, dtype=np.int32),
+        ],
+        dtype=np.int32,
+        standard_width=8,
+    )
+    projected = probe.exact_sampler_replay_inputs(inputs)
+    assert isinstance(projected, np.ndarray)
+    assert projected.shape == (3, 12)
+    assert projected[0].tolist() == [0, 1, 2] + [0] * 9
+
+
 def test_segmented_sampler_replay_contract_recovers_cumulative_authority() -> None:
     assert probe.segmented_sampler_replay_contract(
         {

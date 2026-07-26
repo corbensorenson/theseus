@@ -6364,3 +6364,23 @@ def test_generation_registry_reads_nested_same_report_modes_and_requires_parity(
         {"id": "no-parity", "baseline_mode_id": "serial", "candidate_mode_id": "batched"},
         modes,
     )["promotable"] is False
+
+
+def test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation() -> None:
+    inputs = np.zeros((7, 3), dtype=np.int32)
+    canonical = survival.checkpoint_exact_epoch_order(
+        inputs,
+        list(range(7)),
+        seed=20260724,
+        probabilities=None,
+        minimum_stratum_coverage=False,
+    )
+    resumed = survival.checkpoint_exact_epoch_order(
+        inputs,
+        list(reversed(range(7))),
+        seed=20260724,
+        probabilities=None,
+        minimum_stratum_coverage=False,
+    )
+    assert resumed == canonical
+    assert sorted(resumed) == list(range(7))

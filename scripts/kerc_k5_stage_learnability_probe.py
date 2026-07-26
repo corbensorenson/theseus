@@ -762,6 +762,34 @@ def kernel_phase_replay_seed(
     return effective_seed + cumulative_steps - phase_steps
 
 
+def exact_training_cursor_start(
+    phase: dict[str, Any],
+    *,
+    row_count: int,
+    batch_size: int,
+    replay_seed: int,
+) -> tuple[int, int]:
+    """Validate and recover the exact phase-segment sampler start."""
+
+    cursor = phase.get("data_cursor_start") or {}
+    if not cursor:
+        return 0, 0
+    expected = {
+        "policy": "project_theseus_training_data_cursor_v1",
+        "row_count": int(row_count),
+        "batch_size": int(batch_size),
+        "seed": int(replay_seed),
+    }
+    for key, value in expected.items():
+        if cursor.get(key) != value:
+            raise ValueError(f"K5 phase replay data-cursor {key} mismatch")
+    epoch = int(cursor.get("epoch", -1))
+    batch_index = int(cursor.get("batch_index", -1))
+    if epoch < 0 or batch_index < 0:
+        raise ValueError("K5 phase replay data-cursor position is invalid")
+    return epoch, batch_index
+
+
 def segmented_sampler_replay_contract(
     result: dict[str, Any],
     phase: dict[str, Any],
@@ -877,6 +905,14 @@ def dense_training_epoch_order(
         seed=seed,
         minimum_stratum_coverage=minimum_stratum_coverage,
     )
+
+
+def exact_sampler_replay_inputs(inputs: Any) -> Any:
+    """Mirror the trainer's full indexed row projection before train_phase."""
+
+    if isinstance(inputs, training.RaggedRows):
+        return inputs[np.arange(len(inputs), dtype=np.int64)]
+    return inputs
 
 
 def exact_stage_teacher_forced_arrays(
@@ -1357,19 +1393,41 @@ def selected_training_rows(
     }
     consumed = 0
     steps = 0
-    epoch = 0
     replay_seed = kernel_phase_replay_seed(
         authoritative_result,
         authoritative_phase,
         int(lease["selected_seed"]),
     )
-    persistent_order = list(range(len(stage.inputs)))
     batch_size = int(execution_policy.get("batch_size") or 1)
+    resume_epoch, resume_batch_index = (
+        (0, 0)
+        if segmented_contract is not None
+        else exact_training_cursor_start(
+            authoritative_phase,
+            row_count=len(stage.inputs),
+            batch_size=batch_size,
+            replay_seed=replay_seed,
+        )
+    )
+    sampler_inputs = exact_sampler_replay_inputs(stage.inputs)
+    persistent_order = list(range(len(stage.inputs)))
+    epoch_order_policy = str(
+        authoritative_phase.get("epoch_order_policy")
+        or "legacy_prior_epoch_permutation_v0"
+    )
+    if epoch_order_policy not in {
+        "legacy_prior_epoch_permutation_v0",
+        "project_theseus_epoch_independent_order_v1",
+    }:
+        raise ValueError("K5 sampler epoch-order policy is unsupported")
+    epoch = resume_epoch
     while consumed < target_positions and steps < replay_step_limit:
         order = dense_training_epoch_order(
             (
                 list(range(len(stage.inputs)))
                 if segmented_contract is not None
+                or epoch_order_policy
+                == "project_theseus_epoch_independent_order_v1"
                 else persistent_order
             ),
             seed=replay_seed + epoch,
@@ -1383,8 +1441,19 @@ def selected_training_rows(
         if epoch == 0:
             order = survival.prepend_coverage_indices(order, coverage_prefix)
         persistent_order = list(order)
-        for start in range(0, len(order), batch_size):
-            indices = order[start : start + batch_size]
+        batches = [
+            order[start : start + batch_size]
+            for start in range(0, len(sampler_inputs), batch_size)
+        ]
+        first_batch_index = (
+            resume_batch_index if epoch == resume_epoch else 0
+        )
+        batch_count = len(batches)
+        if first_batch_index > batch_count:
+            raise ValueError("K5 phase replay data-cursor batch index exceeds epoch")
+        for batch_index, indices in enumerate(batches):
+            if batch_index < first_batch_index:
+                continue
             if consumed >= target_positions or steps >= replay_step_limit:
                 break
             batch_sha256 = hashlib.sha256(
@@ -1400,11 +1469,11 @@ def selected_training_rows(
                     "batch_size": batch_size,
                     "seed": replay_seed,
                     "epoch": epoch,
-                    "batch_index": start // batch_size,
+                    "batch_index": batch_index,
                 }
             )
-            next_batch_index = start // batch_size + 1
-            if next_batch_index >= math.ceil(len(order) / batch_size):
+            next_batch_index = batch_index + 1
+            if next_batch_index >= batch_count:
                 replay_data_cursor_next.append(
                     {
                         "policy": "project_theseus_training_data_cursor_v1",
@@ -1529,7 +1598,9 @@ def selected_training_rows(
         else:
             if batch_index_sha256_prefix != authoritative_batch_prefix:
                 raise ValueError(
-                    "K5 sampler batch prefix does not match independent replay"
+                    "K5 sampler batch prefix does not match independent replay: "
+                    f"expected={authoritative_batch_prefix} "
+                    f"observed={batch_index_sha256_prefix}"
                 )
             replay_contract = {
                 "optimizer_steps": int(
@@ -1541,11 +1612,17 @@ def selected_training_rows(
                 "sampled_unique_row_count": int(
                     authoritative_phase.get("sampled_unique_row_count") or 0
                 ),
+                "data_cursor_start": authoritative_phase.get(
+                    "data_cursor_start"
+                ),
+                "data_cursor_next": authoritative_phase.get("data_cursor_next"),
             }
             replay_observed = {
                 "optimizer_steps": steps,
                 "optimizer_positions": consumed,
                 "sampled_unique_row_count": len(sampled_indices),
+                "data_cursor_start": replay_data_cursor_starts[0],
+                "data_cursor_next": replay_data_cursor_next[-1],
             }
         if replay_observed != replay_contract:
             raise ValueError(
@@ -1716,6 +1793,7 @@ def selected_training_rows(
         "optimizer_steps": steps,
         "optimizer_positions": consumed,
         "replay_seed": replay_seed,
+        "epoch_order_policy": epoch_order_policy,
         "epochs_touched": epoch,
         "objective_sampling": objective_sampling_receipt,
         "semantic_target_position_counts_by_kind": dict(

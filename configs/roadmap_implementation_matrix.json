@@ -1163,8 +1163,8 @@
         "capability_claim": "NONE"
       },
       "v8_compiler_allocator_ownership_transport": {
-        "state": "V4_POPULATION_128_UNDERFIT_CONTINUATION_REQUIRED",
-        "candidate_execution_plan_sha256": "0d02519689796aa32d1eb32aaa69b31f314fe7a88f67bf54b6e52c7a414e04e7",
+        "state": "V4_POPULATION_256_ROOT_LEARNED_RAW_INVALID_FINAL_RUNG_REQUIRED",
+        "candidate_execution_plan_sha256": "4d752e60dccf4faa27c57be3e2e6596431687563f479152d666342779e852d60",
         "update_execution_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
         "source_optimizer_step": 4657,
         "source_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
@@ -1493,7 +1493,85 @@
             "fresh_private_surface_consumed": false,
             "capability_claim": "NONE"
           },
-          "bounded_overfit_plan_sha256": "6cc1c6d7493b0505075cf7c3381eedbe66b6e03b88f283e4d37e059d938df622",
+          "source_span_transport_v4_population_exposure_doubling": {
+            "training_report": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_seed_20260722.json",
+            "training_report_sha256": "4fbd9bdc0ed06dd2d6df5b56bbe0eedbb6888f0290bde81720aeaef07134d50a",
+            "host_resource_safety_sha256": "7e8449f1fcc15522a9b26979dce203fc2a5058d249cc7e5a1546e6d9b18f7f0f",
+            "merged_evaluation_report_sha256": "587627e30e19910a26437c8b24490eab9f36461da1130afad54f0de65b656e43",
+            "merge_receipt_sha256": "6147e952049b89114caa657761e1737eb6ab176699eb1f0fcf86c2db3f85b94d",
+            "merged_checkpoint_sha256": "d5b59ec65a41e23ece8399bae0a3d1a12b17256a4158d250a6fe25209040aeed",
+            "optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
+            "mlx_rng_state_sha256": "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9",
+            "optimizer_step": 4914,
+            "population_updates_this_segment": 128,
+            "target_positions_this_segment": 31075,
+            "data_cursor_start": {"epoch": 2, "batch_index": 2},
+            "data_cursor_next": {"epoch": 4, "batch_index": 4},
+            "initial_loss": 3.1074326,
+            "final_loss": 2.176322,
+            "sampler_replay": {
+              "authoritative_receipt_match": true,
+              "stage_row_count": 63,
+              "sampled_unique_row_count": 63,
+              "sampled_row_coverage_rate": 1.0,
+              "matched_panel_cumulative_minimum_row_exposures": 4,
+              "matched_panel_cumulative_maximum_row_exposures": 5,
+              "sampled_indices_sha256": "a293e5e16d2bd723e6ad7f8efa904bd258dcfb950585f5adf523799c742fd4e9"
+            },
+            "host_resource_safety": {
+              "passed": true,
+              "wall_seconds": 3701.257,
+              "maximum_process_rss_mib": 286.141,
+              "maximum_inferred_unified_memory_mib": 2558.094,
+              "minimum_reclaimable_available_mib": 2392.969,
+              "maximum_swapout_growth_mib": 1692.062,
+              "swapout_growth_action": "report_only"
+            },
+            "checkpoint_reload": {
+              "independent_merge_replay": "GREEN",
+              "frozen_source_tensor_count": 234,
+              "compiler_delta_tensor_count": 5,
+              "selected_delta_tensors_exact": true,
+              "frozen_source_tensors_exact": true
+            },
+            "teacher_forced_training_panel": {
+              "report_sha256": "d2f5b5865ab4adc72f649fb233918b898419e4e27081f95e10a4760fb6548944",
+              "host_resource_safety_sha256": "a9a24d63849119a15dd1fba7b3230c6a9629a10fc17eca70d4cbc2f8e705a8dc",
+              "row_count": 16,
+              "correct": 3228,
+              "total": 3776,
+              "accuracy": 0.85487288,
+              "eos_correct": 16,
+              "schema_correct": 253,
+              "schema_total": 255,
+              "program_alignment_correct": 304,
+              "program_alignment_total": 449,
+              "v4_root_top1_correct": 16,
+              "v4_root_mean_expected_rank": 1.0
+            },
+            "raw_admitted_training_panel": {
+              "report_sha256": "b34225b465a142baabcc2fddaec2881d74ec97a9357011cd4b42d0ae79d1d4fc",
+              "host_resource_safety_sha256": "b4a78a35e2addc395ab99d2489055d5996cbefca550f41bc2dfcfdaf3ca3541c",
+              "row_count": 16,
+              "valid_count": 0,
+              "exact_match_count": 0,
+              "compact_schema_invalid_count": 11,
+              "compact_transport_invalid_count": 3,
+              "source_span_declaration_invalid_count": 1,
+              "maximum_budget_incomplete_count": 1,
+              "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY"
+            },
+            "sampler_replay_defect_and_repair": {
+              "legacy_fault": "dense_unweighted_epoch_order_depended_on_prior_epoch_permutation",
+              "new_policy": "project_theseus_epoch_independent_order_v1",
+              "current_checkpoint_path_equivalence_claim": false,
+              "future_checkpoint_cursor_reconstructible": true
+            },
+            "qualification": "INCONCLUSIVE_EXPERIMENT_ROOT_LEARNED_RAW_TRANSPORT_INVALID",
+            "fresh_private_surface_consumed": false,
+            "capability_claim": "NONE"
+          },
+          "bounded_overfit_plan_sha256": "e7f137494214523fc82f4d365b8bdf2c53f2fcd7f0b0f6049dc1e36a4242f125",
           "bounded_overfit_source_optimizer_step": 4658,
           "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
           "required_diagnostics": [
@@ -1512,7 +1590,7 @@
         "capability_claim": "NONE"
       }
     },
-    "next_owner": "continue the exact seed-20260722 compiler-transport-v4 population from merged step 4786 with its exact AdamW state, MLX RNG, and next sampler cursor; use a preregistered admitted-training diagnostic boundary because 2-to-3 exposures left v4 root top-1 at 0/16 and raw validity at 0/16 while schema was 253/255; require root top-1 movement, weakest-row teacher forcing, raw transport plus independent semantic validity, and checkpoint reload before consuming source-disjoint behavior; no new seed or private surface is authorized",
+    "next_owner": "run one final same-seed 256-update compiler-transport-v4 population rung from merged step 4914 with exact AdamW/MLX RNG custody, epoch-4 batch-4 cursor, and the new checkpoint-reconstructible epoch-order policy; the 4-to-5-exposure matched panel learned the v4 root at 16/16 but raw validity remained 0/16, so require at least one online-valid raw v4 row and weakest-row completion at the minimum-eight-exposure boundary; otherwise freeze this exact regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing and start the matched 57M-class campaign without another seed, fresh private surface, or architecture-review loop",
         "mechanism_vs_selection_boundary": {
           "mechanism_probe_authority": [
             "implementation_fidelity",

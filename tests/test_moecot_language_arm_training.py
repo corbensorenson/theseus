@@ -3914,8 +3914,8 @@ def test_same_objective_continuation_preserves_exact_kernel_cursor() -> None:
     kernel_cursor = {
         "policy": "project_theseus_training_data_cursor_v1",
         "seed": 20260722,
-        "epoch": 2,
-        "batch_index": 2,
+        "epoch": 4,
+        "batch_index": 4,
         "batch_size": 1,
         "row_count": 63,
     }
@@ -3926,8 +3926,8 @@ def test_same_objective_continuation_preserves_exact_kernel_cursor() -> None:
     }
     migration = {
         "migration_id": (
-            "english_kerc_step4786_transport_v4_exact_cursor_"
-            "exposure_doubling_v1"
+            "english_kerc_step4914_transport_v4_checkpoint_exact_"
+            "final_exposure_doubling_v1"
         ),
     }
 
@@ -4493,8 +4493,8 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
                 for row in candidate_plan["plan_identity"]["legacy_migrations"]
                 if row["migration_id"]
                 == (
-                    "english_kerc_step4786_transport_v4_exact_cursor_"
-                    "exposure_doubling_v1"
+                    "english_kerc_step4914_transport_v4_checkpoint_exact_"
+                    "final_exposure_doubling_v1"
                 )
         )
         assert migration["required_current_plan_sha256"] == (
@@ -4509,12 +4509,12 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
             "materializer_generation_credit": 0,
             "materializer_capability_credit": 0,
         }
-        assert lease["execution_policy"]["continuation_source_optimizer_steps"] == 4786
+        assert lease["execution_policy"]["continuation_source_optimizer_steps"] == 4914
         assert lease["execution_policy"]["continuation_source_checkpoint_sha256"] == (
-            "e123932dabb31d238bacef16945afca35c14dc6a3aaee49ead9731168d5278fb"
+            "d5b59ec65a41e23ece8399bae0a3d1a12b17256a4158d250a6fe25209040aeed"
         )
         assert migration.get("reset_data_cursor_phase") is None
-        assert migration["legacy_optimizer_steps"] == 4786
+        assert migration["legacy_optimizer_steps"] == 4914
         candidate_plan_hashes.add(candidate_plan["plan_sha256"])
 
     assert len(candidate_plan_hashes) == 1

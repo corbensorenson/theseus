@@ -2841,6 +2841,36 @@ def eager_accumulation_microbatch_weight(
     return micro_target_mass / total_target_mass
 
 
+def checkpoint_exact_epoch_order(
+    inputs: Any,
+    prior_order: list[int],
+    *,
+    seed: int,
+    probabilities: np.ndarray | None,
+    minimum_stratum_coverage: bool,
+) -> list[int]:
+    """Construct an epoch order reproducible from its cursor alone."""
+
+    if hasattr(inputs, "length_bucketed_order"):
+        order_kwargs = {
+            "seed": seed,
+            "probabilities": probabilities,
+        }
+        if minimum_stratum_coverage:
+            order_kwargs["minimum_stratum_coverage"] = True
+        return inputs.length_bucketed_order(**order_kwargs)
+    if probabilities is None:
+        order = list(range(len(inputs)))
+        random.Random(seed).shuffle(order)
+        return order
+    return stratified_low_variance_sampling_order(
+        probabilities,
+        row_count=len(prior_order),
+        seed=seed,
+        minimum_stratum_coverage=minimum_stratum_coverage,
+    )
+
+
 def train_phase(
     model: Any,
     optimizer: Any,
@@ -3437,25 +3467,15 @@ def train_phase(
 
         compiled_step = compiled_token_step
     while consumed < target_positions and steps < max_steps:
-        if hasattr(inputs, "length_bucketed_order"):
-            order_kwargs = {
-                "seed": seed + epoch,
-                "probabilities": probabilities,
-            }
-            if weighted_sampling_minimum_stratum_coverage:
-                order_kwargs["minimum_stratum_coverage"] = True
-            order = inputs.length_bucketed_order(**order_kwargs)
-        elif probabilities is None:
-            random.Random(seed + epoch).shuffle(order)
-        else:
-            order = stratified_low_variance_sampling_order(
-                probabilities,
-                row_count=len(inputs),
-                seed=seed + epoch,
-                minimum_stratum_coverage=(
-                    weighted_sampling_minimum_stratum_coverage
-                ),
-            )
+        order = checkpoint_exact_epoch_order(
+            inputs,
+            order,
+            seed=seed + epoch,
+            probabilities=probabilities,
+            minimum_stratum_coverage=(
+                weighted_sampling_minimum_stratum_coverage
+            ),
+        )
         if epoch == 0 and coverage_prefix:
             order = prepend_coverage_indices(order, coverage_prefix)
         if normalized_batch_index_schedule:
@@ -4386,6 +4406,7 @@ def train_phase(
         },
         "data_cursor_next": next_data_cursor,
         "batch_index_sha256_prefix": batch_index_sha256_prefix,
+        "epoch_order_policy": "project_theseus_epoch_independent_order_v1",
         "external_inference_calls": 0,
     }
 
