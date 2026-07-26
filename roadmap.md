@@ -138,6 +138,60 @@ allows isolated, source-disjoint, prospectively bounded architecture learning cu
 MTP, learned chunking, optimizers, and KERC cannot be assessed from shape tests alone. These
 runs receive no production checkpoint, capability, or public-calibration authority.
 
+### 2026-07-26 Acceleration-First Launch Gate
+
+Finish the already-running final bounded KERC exposure rung rather than discarding its
+accumulated compute. After its terminal evidence and finite disposition are banked, make
+training acceleration the critical path before the matched 57M launch. This is a sequencing
+change inside `T0A`, not permission for another architecture-review loop.
+
+Use a **60-hour acceleration sprint with a 72-hour hard ceiling**. The sprint ends sooner
+when its finite candidate docket is dispositioned. At the ceiling, launch the fastest
+semantics-qualified route even if the 2x stretch target remains unmet. The sprint may change
+execution, precision, batching, checkpoint cadence, caching, and kernel lowering; it may not
+change candidate parameters, data order, optimizer-position budgets, objective mass, update
+count, evaluation access, or verifier work.
+
+The current immutable reference points are the real 500-update FP32 continuation at
+2,914.2 optimizer positions/second and the latest repeated compiled microbatch-four canary at
+3,191.8 positions/second. These are not interchangeable with a campaign estimate: regenerate
+one sustained end-to-end baseline through the exact architecture-review launcher, including
+pretraining, source-conditioned pretraining, supervision, checkpoint publication, and resource
+watching. Report useful optimizer positions/second for each phase and for the joined campaign
+path.
+
+Work the following docket in measured bottleneck order:
+
+1. Repair the BF16-compute/FP32-master checkpoint-resume owner. The short full-batch-16
+   compiled route reached 4,059.5 positions/second, about 27% above the repeated
+   microbatch-four canary, with lower device allocation than FP32 full-batch. It remains
+   unadopted because exact same-route resume diverged and later hot-run speed was inconsistent.
+   Require exact RNG/cursor custody, bounded uninterrupted-versus-resumed state, multiple
+   alternating cold/warm trials, and a sustained learning-trajectory comparison before
+   promotion.
+2. Sweep compiled microbatch sizes `4, 8, 16` and width quanta `32, 64, 128` on identical
+   batches. Attribute graph compilation, accumulation, final update, implicit evaluation,
+   padding, cache, peak unified memory, live reserve, swap growth, and thermal drift. Do not
+   reject a route solely because an allocator high-water mark crosses an arbitrary byte floor.
+3. Profile the synchronization boundary. In particular, measure the cost of materializing
+   accumulated gradients after every microbatch versus a safely fused or less frequently
+   synchronized update. Any fusion must retain one token-mass-weighted clip/update and pass
+   full-parameter, optimizer-state, loss, save/load, and resume checks.
+4. Compile or otherwise accelerate the source-conditioned and supervision objectives where
+   their auxiliary inputs currently force eager execution. A faster plain-pretraining
+   microbenchmark is insufficient when those phases consume a material share of the matched
+   review.
+5. Measure checkpoint cadence, asynchronous-safe publication opportunities, data/cache warmup,
+   Metal graph-cache reuse, and verifier/evaluation overlap without hiding required lifecycle
+   work or risking the only durable checkpoint.
+
+Adopt a route only when three alternating trials and a representative sustained run show at
+least 10% joined wall-time improvement, finite state, correct update and resume semantics,
+non-regressed heldout learning within the preregistered tolerance, and the live host reserve
+and swap-growth watchdogs remain green. Preserve negative and unstable measurements. Publish
+the selected performance receipt and bind its exact execution policy into the replacement
+architecture freeze before any 57M optimizer budget is spent.
+
 ### 2026-07-25 Deep Technical And ASI Stack Review Reconciliation
 
 Two external reviews were checked against the live source, the committed 84-chapter ASI
