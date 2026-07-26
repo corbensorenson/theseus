@@ -6,7 +6,7 @@
   "index": 3,
   "passed": true,
   "returncode": 0,
-  "runtime_ms": 115,
+  "runtime_ms": 107,
   "safety_receipt": {
     "child_started": true,
     "command": [
@@ -16,7 +16,7 @@
     "fault": "",
     "fault_observation": null,
     "first_swapout_growth_breach_observation": null,
-    "initial_reclaimable_available_mib": 5965.859,
+    "initial_reclaimable_available_mib": 6107.344,
     "limits": {
       "max_process_memory_mib": 1024.0,
       "maximum_swapout_growth_mib": 16.0,
@@ -29,25 +29,25 @@
     },
     "maximum_consecutive_reserve_breaches": 0,
     "maximum_consecutive_telemetry_failures": 1,
-    "maximum_inferred_unified_memory_mib": 1.297,
+    "maximum_inferred_unified_memory_mib": 1.328,
     "maximum_process_rss_mib": 0.0,
     "maximum_swapout_growth_mib": 0.0,
-    "minimum_reclaimable_available_mib": 5964.562,
+    "minimum_reclaimable_available_mib": 6106.016,
     "observation_prefix": [
       {
-        "elapsed_seconds": 0.003,
-        "inferred_unified_memory_mib": 1.297,
+        "elapsed_seconds": 0.002,
+        "inferred_unified_memory_mib": 1.328,
         "process_rss_mib": 0.0,
-        "reclaimable_available_mib": 5964.562,
+        "reclaimable_available_mib": 6106.016,
         "swapout_growth_mib": 0.0
       }
     ],
     "observation_suffix": [
       {
-        "elapsed_seconds": 0.003,
-        "inferred_unified_memory_mib": 1.297,
+        "elapsed_seconds": 0.002,
+        "inferred_unified_memory_mib": 1.328,
         "process_rss_mib": 0.0,
-        "reclaimable_available_mib": 5964.562,
+        "reclaimable_available_mib": 6106.016,
         "swapout_growth_mib": 0.0
       }
     ],
@@ -63,13 +63,13 @@
     "telemetry_failure_observations_allowed": 2,
     "telemetry_failure_prefix": [
       {
-        "elapsed_seconds": 0.003,
+        "elapsed_seconds": 0.002,
         "fault_type": "PermissionError",
         "source": "process_group_rss"
       }
     ],
     "terminated_by_guard": false,
-    "wall_seconds": 0.112
+    "wall_seconds": 0.105
   },
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "stderr_tail": "",

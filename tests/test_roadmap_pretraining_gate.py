@@ -26,6 +26,7 @@ def matrix(required_status: str = "qualified") -> dict:
             "required_phase_ids": [0],
             "training_or_behavior_qualification_phase_ids": [10],
             "external_environment_phase_ids": [9],
+            "ready_phase_statuses": ["wired", "implemented", "qualified"],
         },
         "claim_support_ladder": [],
         "book_reference_core_before_training": {"required_slices": []},
@@ -113,7 +114,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         self.assertFalse(report["ready"])
         self.assertEqual(report["blockers"][0]["kind"], "unfinished_architecture_prerequisite_phases")
 
-    def test_implemented_or_wired_is_not_qualified(self) -> None:
+    def test_implemented_or_wired_zero_gap_phase_is_pretraining_ready(self) -> None:
         for status in ("implemented", "wired"):
             report = gate.audit_pre_training_architecture_readiness(
                 matrix=matrix(required_status=status),
@@ -122,11 +123,95 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
                 current_hard_gap_count=0,
             )
 
-            self.assertFalse(report["ready"], status)
+            self.assertTrue(report["ready"], status)
             self.assertTrue(
-                any(row["kind"] == "unfinished_architecture_prerequisite_phases" for row in report["blockers"]),
+                report["required_architecture_phases"][0][
+                    "ordinary_zero_gap_ready"
+                ],
                 status,
             )
+
+    def test_wired_phase_with_unresolved_pretraining_item_still_blocks(self) -> None:
+        payload = matrix(required_status="wired")
+        payload["phases"][0]["missing_items"] = ["checkpoint migration missing"]
+
+        report = gate.audit_pre_training_architecture_readiness(
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
+        )
+
+        self.assertFalse(report["ready"])
+        self.assertEqual(
+            "unfinished_architecture_prerequisite_phases",
+            report["blockers"][0]["kind"],
+        )
+
+    def test_partial_phase_requires_bound_evidence_and_exact_residuals(self) -> None:
+        import hashlib
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "bound-source.json"
+            source.write_text('{"bound":true}\n', encoding="utf-8")
+            receipt = Path(tmp) / "freeze.json"
+            receipt.write_text(
+                json.dumps(
+                    {
+                        "policy": "freeze-policy",
+                        "trigger_state": "GREEN",
+                        "disposition": "frozen",
+                        "source_artifacts": {
+                            "source": {
+                                "path": str(source),
+                                "sha256": hashlib.sha256(
+                                    source.read_bytes()
+                                ).hexdigest(),
+                            }
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            payload = matrix(required_status="partial")
+            payload["phases"][0]["missing_items"] = ["cleanup after launch"]
+            payload["phases"][0]["pre_training_readiness"] = {
+                "state": "READY_FOR_FROZEN_CAMPAIGN",
+                "acceptance_boundary": "Checkpoint-shaping state is frozen.",
+                "nonblocking_residuals": ["cleanup after launch"],
+                "evidence": {
+                    "path": str(receipt),
+                    "policy": "freeze-policy",
+                    "required_trigger_state": "GREEN",
+                    "required_disposition": "frozen",
+                },
+                "required_source_artifact_paths": [str(source)],
+            }
+
+            ready = gate.audit_pre_training_architecture_readiness(
+                matrix=payload,
+                phase_reports=[],
+                book_contract_report={},
+                current_hard_gap_count=0,
+            )
+            self.assertTrue(ready["ready"])
+            self.assertTrue(
+                ready["required_architecture_phases"][0][
+                    "scoped_readiness_ready"
+                ]
+            )
+
+            payload["phases"][0]["pre_training_readiness"][
+                "required_source_artifact_paths"
+            ] = [str(Path(tmp) / "not-bound.json")]
+            tampered = gate.audit_pre_training_architecture_readiness(
+                matrix=payload,
+                phase_reports=[],
+                book_contract_report={},
+                current_hard_gap_count=0,
+            )
+            self.assertFalse(tampered["ready"])
 
     def test_kerc_mandatory_replacement_ladder_blocks_until_complete(self) -> None:
         import hashlib

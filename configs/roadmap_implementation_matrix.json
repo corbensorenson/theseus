@@ -1805,6 +1805,11 @@
       "falsified_pretraining",
       "retired_by_pretraining_verdict"
     ],
+    "ready_phase_statuses": [
+      "wired",
+      "implemented",
+      "qualified"
+    ],
     "long_optimizer_machine_enforcement": {
       "owner": "scripts/moecot_language_arm_training.py",
       "policy": "project_theseus_pre_training_architecture_authority_v1",
@@ -5008,6 +5013,26 @@
         "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
         "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
       ],
+      "pre_training_readiness": {
+        "state": "READY_FOR_FROZEN_CAMPAIGN",
+        "acceptance_boundary": "The registry, roadmap matrix, exact training implementation, and replacement freeze are content-bound and independently replayed. Fresh-environment refresh and superseded-family retirement remain repository maintenance; they do not change the selected checkpoint, optimizer, data, objective, evaluator, or runtime policy.",
+        "nonblocking_residuals": [
+          "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
+          "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
+        ],
+        "evidence": {
+          "path": "reports/pretraining_architecture_freeze_package.json",
+          "policy": "project_theseus_pretraining_architecture_freeze_v1",
+          "required_trigger_state": "GREEN",
+          "required_disposition": "architecture_frozen_training_not_started"
+        },
+        "required_source_artifact_paths": [
+          "configs/project_manifest_registry.json",
+          "configs/roadmap_implementation_matrix.json",
+          "scripts/pretraining_architecture_freeze.py",
+          "tests/test_pretraining_architecture_freeze.py"
+        ]
+      },
       "maintenance_items": [
         "formal strict-generator/code_lm_closure retirement proof: active imports and gate dependencies removed or extracted into canonical owners, retained comparators non-routeable, superseded reports archived with verified replay pointers, and reference-only source deleted or moved under deprecated with git history as recovery",
         "roadmap entropy enforcement: keep forward requirements in roadmap.md, move run narratives and inventories to matrix/registry/state/history, and hold the live roadmap below 1100 lines without dropping unresolved obligations"
@@ -5858,8 +5883,28 @@
         "scripts/kerc_training_memory_preflight.py"
       ],
       "missing_items": [
-        "The final KERC first-campaign boundary is complete and frozen INCONCLUSIVE_EXPERIMENT. Sustained BF16/FP32-master microbatch eight reaches 4,417.5 positions/second, but compiled active state grows about 55 MiB/update, a 64-step fresh-process control crosses the swap stop, and independent continuation replay diverges by up to 3.60e-4 absolute/about 1.05e-3 relative L2 across model tensors. Cache clearing and in-process compiled/invocation segmentation do not release the retained state and are rejected. Canonical long pretraining therefore selects compiled FP32 microbatch four, width quantum 64, and externally watched 32-step fresh processes. Two contiguous segments sustain 3,482-3,495 device positions/second with zero swap; the cloned second-segment replay passes exact names/shapes/RNG/cursor and 1.19e-7 model/4.31e-9 optimizer maximum absolute tolerances. Source-conditioned and supervision full batches are resource-invalid; content-bound child-produced memmaps plus eager microbatch one complete a joined 64/8/8 replay with exact checkpoint/optimizer/RNG reload and zero swap. Acceleration closure is complete: the replacement package binds 14/14 selected accelerator receipts and passes 7/7 independent CPU/governance replays. Its exact identity is authoritative only in the generated package report so bound inputs do not become self-referential."
+        "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
       ],
+      "pre_training_readiness": {
+        "state": "READY_FOR_FROZEN_CAMPAIGN",
+        "acceptance_boundary": "The selected M1 policy is fixed to compiled FP32 microbatch four, width quantum 64, externally watched 32-step fresh processes, and eager microbatch-one auxiliary phases backed by content-bound child-produced memmaps. Two contiguous production-path segments, an independent replay, the joined 64/8/8 path, 14/14 accelerator receipts, and 7/7 freeze replays are GREEN with zero swap growth.",
+        "nonblocking_residuals": [
+          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
+        ],
+        "evidence": {
+          "path": "reports/pretraining_architecture_freeze_package.json",
+          "policy": "project_theseus_pretraining_architecture_freeze_v1",
+          "required_trigger_state": "GREEN",
+          "required_disposition": "architecture_frozen_training_not_started"
+        },
+        "required_source_artifact_paths": [
+          "configs/moecot_language_arm_training.json",
+          "reports/fresh_process_pretraining_qualification.json",
+          "scripts/fresh_process_pretraining_qualification.py",
+          "scripts/moecot_language_arm_training.py",
+          "tests/test_moecot_language_arm_training.py"
+        ]
+      },
       "current_non_claims": [
         "The selected M1 MLX execution policy is a measured local sustainable-training route, not a 2x claim, model-capability gain, production-serving result, cross-hardware parity result, byte-identical cross-process claim, or evidence that BF16 is generally unsuitable.",
         "MLX production routing remains fail-closed because the current broader private replay has 0/10 private passes.",

@@ -1,0 +1,3070 @@
+{
+  "policy": "project_theseus_roadmap_implementation_gate_v1",
+  "created_utc": "2026-07-26T14:17:34.059774+00:00",
+  "trigger_state": "YELLOW",
+  "summary": {
+    "matrix": "configs/roadmap_implementation_matrix.json",
+    "registry": "configs/project_manifest_registry.json",
+    "phase_count": 20,
+    "required_phase_count": 20,
+    "implemented_or_wired_count": 12,
+    "qualified_count": 0,
+    "partial_count": 7,
+    "missing_count": 0,
+    "frozen_count": 1,
+    "hard_gap_count": 0,
+    "warning_count": 1,
+    "phase_13_to_19_preserved": true,
+    "hive_artifact_citation_report_count": 4,
+    "hive_artifact_citation_ready_count": 4,
+    "book_implementation_track_count": 6,
+    "book_chapter_implementation_crosswalk_count": 54,
+    "book_manifest_chapter_count": 54,
+    "book_manifest_order_match": true,
+    "book_manifest_digest_match": true,
+    "book_manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e",
+    "book_manifest_source": "pinned_git_commit",
+    "book_manifest_commit": "32635eb94ded42a5f54e528302685cab343993b7",
+    "live_book_manifest_sha256": "cd53837df39a3b2a9ccbf583708f7826d2773b41878ee96c710487265dfe2cfd",
+    "live_book_manifest_differs_from_pin": true,
+    "book_manifest_source_field_drift_chapter_count": 0,
+    "book_manifest_source_field_drift_count": 0,
+    "book_codex_test_count": 511,
+    "book_pending_or_partial_codex_test_count": 109,
+    "book_chapter_crosswalk_missing_required_field_count": 0,
+    "book_chapter_invalid_phase_ref_count": 0,
+    "book_active_flagship_lane_id": "C1_correctness_rl_and_generator_survival_lane",
+    "book_active_core_slice_count": 1,
+    "book_active_core_slice_support_states": {
+      "C1_correctness_rl_and_generator_survival_lane": "synthetic-test-backed"
+    },
+    "book_core_slice_support_states": {
+      "A1_claim_ledger_trace_kernel": "synthetic-test-backed",
+      "A2_replacement_transaction_kernel": "replayable-reference-backed",
+      "E1_authority_scif_runtime_adapter_kernel": "replayable-reference-backed",
+      "B1_assisted_verified_assistant_product_lane": "synthetic-test-backed",
+      "C1_correctness_rl_and_generator_survival_lane": "synthetic-test-backed"
+    },
+    "book_support_state_ladder_ready": true,
+    "book_future_candidate_count": 14,
+    "book_future_candidate_chapter_count": 10,
+    "book_future_cross_cutting_section_count": 4,
+    "book_future_candidate_missing_required_field_count": 0,
+    "book_future_candidate_invalid_ref_count": 0,
+    "book_future_candidate_disposition_counts": {
+      "route_into_existing_owners": 1,
+      "provisional_source_gated": 8,
+      "source_contingent": 1,
+      "prior_art_and_foundations_first": 1,
+      "source_available_manifest_pending_theseus_disposition_complete": 1,
+      "source_available_manifest_pending": 2
+    },
+    "planned_codex_test_backlog_count": 30,
+    "planned_codex_test_backlog_missing_required_field_count": 0,
+    "planned_codex_test_backlog_invalid_ref_count": 0,
+    "planned_codex_test_backlog_status_counts": {
+      "pretraining_wired_behavior_qualification_pending": 11,
+      "retired_by_pretraining_verdict": 3,
+      "implemented_negative_result_rung_falsified": 1,
+      "partial": 1,
+      "implemented": 3,
+      "wired": 7,
+      "protected_discovery_lane": 1,
+      "planned": 2,
+      "queued_after_nonfallback_candidate_quality": 1
+    },
+    "planned_codex_test_backlog_technique_family_counts": {
+      "qualification_first_pre_deliberative_dispatch_and_reflex_compilation": 1,
+      "dual_vocabulary_cognitive_compiler_and_hierarchical_residual_state": 1,
+      "functional_model_qualification": 1,
+      "data_supported_scale_decision": 1,
+      "cognitive_kernel_discovery_and_verified_abstraction_scaling": 1,
+      "offline_preference_optimization": 1,
+      "verifier_reward_policy_optimization": 1,
+      "policy_update_lease": 1,
+      "generate_verify_repair": 1,
+      "generation_mode": 2,
+      "sketch_first_generation": 1,
+      "context_memory_abi": 1,
+      "verification_resource_routing": 1,
+      "claim_ledger_revision": 1,
+      "procedural_memory": 1,
+      "substrate_adoption": 1,
+      "data_lifecycle_governance": 1,
+      "durable_semantic_memory": 1,
+      "governed_effect_transaction": 1,
+      "routing_and_deliberation": 1,
+      "scalable_oversight": 1,
+      "evaluation_integrity": 1,
+      "capability_commitment_and_assurance": 1,
+      "supply_chain_and_weight_custody": 1,
+      "inter_stack_protocol": 1,
+      "open_ended_improvement_campaign": 1,
+      "question_compiled_semantic_addressing": 1,
+      "independent_token_corpus_and_kerc_acceleration": 1,
+      "finite_pretraining_architecture_and_efficiency_closure": 1
+    },
+    "planned_codex_test_backlog_blocked_or_queued_count": 1,
+    "pre_training_architecture_ready": true,
+    "pre_training_architecture_blocker_count": 0,
+    "pre_training_architecture_warning_count": 0,
+    "kerc_fidelity_gate_state": "GREEN",
+    "kerc_fidelity_fault_count": 0,
+    "kerc_faithful_mechanism_count": 5,
+    "kerc_hypothesis_evidence_active_count": 0,
+    "kerc_replacement_qualification_ready": true,
+    "kerc_replacement_qualification_state": "FIRST_CAMPAIGN_SCOPE_EXCLUDED_INCONCLUSIVE_EXPERIMENT",
+    "kerc_replacement_remaining_step_count": 6,
+    "runtime_ms": 11364,
+    "book_to_theseus_crosswalk_item_count": 20,
+    "book_to_theseus_ai_book_source_file_count": 4155,
+    "book_to_theseus_ai_book_source_manifest_hash": "72c599050a5cb34b9857939e5860249d98d10efa879a48bbefc52b76c38959cf",
+    "book_to_theseus_stale_phase_count": 0,
+    "book_to_theseus_roadmap_backlog_item_count": 336,
+    "theseus_to_book_evidence_count": 86,
+    "book_to_theseus_source_sync_smoke_passed": true,
+    "public_safe_evidence_smoke_passed": true
+  },
+  "rules": {
+    "registry_binding": "Every phase must bind to an existing registry surface and abstraction.",
+    "completion": "Implemented/wired records implementation progress. Only qualified closes a prerequisite, after correctness, state, sustained performance, canonical integration, reproduction, and applicable functional or real-use evidence pass.",
+    "source_of_truth": "The matrix is the machine-readable roadmap state; roadmap.md remains the human narrative.",
+    "no_cheat": "Benchmarks stay calibration-only; routers/templates/tools/fallbacks do not count as learned generation.",
+    "scope": "This gate does not authorize long training, public benchmark spends, or new strict-generator target-mode experiments."
+  },
+  "phase_reports": [
+    {
+      "phase": 0,
+      "title": "Repository Self-Model And Registry Discipline",
+      "status": "partial",
+      "priority": "critical",
+      "registry_surface_id": "project_manifest_registry",
+      "abstraction_id": "project_self_model_registry",
+      "implementation_ids": [
+        "impl.project_manifest_registry.v1"
+      ],
+      "execution_spine_hooks": [
+        "registry_snapshot",
+        "surface_resolution",
+        "cleanup_queue"
+      ],
+      "required_records": [
+        "abstraction_record",
+        "implementation_record",
+        "surface_record",
+        "module_dod_card",
+        "steward_decision",
+        "ai_bill_of_materials",
+        "supply_chain_attestation",
+        "derivative_invalidation_record"
+      ],
+      "required_gates": [
+        "python3 scripts/python_environment_gate.py --profile cpu --gate",
+        "python3 scripts/phase0_reproducibility_gate.py --gate",
+        "python3 scripts/theseus_project_registry.py --gate",
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/module_definition_of_done_gate.py",
+        "python3 -m pytest -q -m 'not accelerator'",
+        "cargo test --workspace"
+      ],
+      "current_evidence_count": 22,
+      "missing_item_count": 2,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 1,
+      "title": "VIEA Execution Spine",
+      "status": "wired",
+      "priority": "critical",
+      "registry_surface_id": "theseus_plan_compiler",
+      "abstraction_id": "planning_execution_spine",
+      "implementation_ids": [
+        "impl.theseus_plan_compiler.v1",
+        "impl.octopus_registry_gated_router.v1"
+      ],
+      "execution_spine_hooks": [
+        "intent_contract",
+        "plan_dag",
+        "vcm_packet",
+        "workboard_execution",
+        "verifier_receipt",
+        "residual_trace"
+      ],
+      "required_records": [
+        "typed_job",
+        "artifact_graph",
+        "claim_ledger_entry",
+        "authority_receipt",
+        "resource_route",
+        "effect_inventory",
+        "effect_observation_record",
+        "rollback_completeness_record"
+      ],
+      "required_gates": [
+        "python3 scripts/theseus_plan_compiler.py",
+        "python3 scripts/viea_autonomy_spine.py"
+      ],
+      "current_evidence_count": 16,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 2,
+      "title": "Stable Capability Fields And Route Authority",
+      "status": "wired",
+      "priority": "critical",
+      "registry_surface_id": "project_manifest_registry",
+      "abstraction_id": "project_self_model_registry",
+      "implementation_ids": [
+        "impl.project_manifest_registry.v1"
+      ],
+      "execution_spine_hooks": [
+        "route_validator",
+        "authority_lease",
+        "adapter_receipt",
+        "typed_failure"
+      ],
+      "required_records": [
+        "authority_transition",
+        "lease_receipt",
+        "adapter_receipt",
+        "failure_boundary",
+        "weight_custody_record",
+        "attestation_receipt",
+        "key_release_record"
+      ],
+      "required_gates": [
+        "python3 scripts/scf_reference_kernel_v1.py --gate",
+        "python3 scripts/roadmap_implementation_gate.py --gate"
+      ],
+      "current_evidence_count": 18,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 3,
+      "title": "Virtual Context Memory As Default Context Substrate",
+      "status": "wired",
+      "priority": "critical",
+      "registry_surface_id": "vcm_memory",
+      "abstraction_id": "context_memory_contract",
+      "implementation_ids": [
+        "impl.vcm_memory.v1"
+      ],
+      "execution_spine_hooks": [
+        "vcm_context_packet",
+        "memory_transaction",
+        "adequacy_score",
+        "evidence_recall"
+      ],
+      "required_records": [
+        "context_abi_record",
+        "context_transaction",
+        "context_adequacy",
+        "memory_read_set",
+        "memory_write_set",
+        "typed_context_fault",
+        "context_lease_receipt",
+        "semantic_object_record",
+        "ontology_migration_record",
+        "memory_consolidation_record"
+      ],
+      "required_gates": [
+        "python3 scripts/virtual_context_memory.py",
+        "python3 -m pytest -q tests/test_vcm_semantic_memory.py tests/test_kernel_english_protocol.py",
+        "python3 tests/test_vcm_consumer_abi.py",
+        "python3 scripts/vcm_task_context_bridge.py",
+        "python3 scripts/vcm_context_governor_gate.py",
+        "python3 scripts/vcm_runtime_claim_readiness.py",
+        "python3 scripts/vcm_runtime_cache_lifecycle.py",
+        "python3 scripts/vcm_native_runtime_probe.py",
+        "python3 scripts/vcm_consumer_integration_gate.py",
+        "python3 scripts/theseus_plan_compiler.py",
+        "python3 scripts/code_lm_train_once_fanout.py",
+        "python3 scripts/neural_seed_token_decoder_comparator.py",
+        "python3 scripts/code_lm_private_verifier.py --spine-smoke",
+        "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation",
+        "python3 scripts/training_data_admission_v1.py --out reports/training_data_admission_v1.json --markdown-out reports/training_data_admission_v1.md --manifest-out data/training_sources/training_data_admission_v1.json",
+        "python3 scripts/viea_spine_record_gate.py",
+        "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize how VCM context adequacy is enforced in the current Theseus roadmap implementation path.\" --intent planning --feedback completed --session-id vcm_governor_phase3_smoke --out reports/theseus_assistant_vcm_governor_smoke.json --markdown-out reports/theseus_assistant_vcm_governor_smoke.md --events-out reports/theseus_assistant_vcm_governor_events.jsonl --viea-trace-out reports/theseus_assistant_vcm_governor_trace.jsonl"
+      ],
+      "current_evidence_count": 33,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 4,
+      "title": "Candidate Integrity And Learned Generation Accounting",
+      "status": "wired",
+      "priority": "critical",
+      "registry_surface_id": "candidate_integrity_harness",
+      "abstraction_id": "candidate_integrity_contract",
+      "implementation_ids": [
+        "impl.candidate_integrity_harness.v1"
+      ],
+      "execution_spine_hooks": [
+        "candidate_audit",
+        "generation_mode_accounting",
+        "replay_contract",
+        "promotion_guard"
+      ],
+      "required_records": [
+        "candidate_integrity_receipt",
+        "blind_input_read_set",
+        "generation_mode_accounting",
+        "replay_result",
+        "strict_generator_replay_receipt",
+        "candidate_integrity_recomputed_family_counts",
+        "no_cheat_generation_mode_accounting"
+      ],
+      "required_gates": [
+        "python3 scripts/candidate_integrity.py",
+        "python3 scripts/candidate_promotion_gate.py --allow-blocked",
+        "python3 scripts/maturity_integrity_audit.py",
+        "python3 scripts/public_transfer_readiness_refresh_v1.py",
+        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
+        "python3 scripts/candidate_integrity.py --candidates reports/neural_seed_token_decoder_candidates_strict_body_tokens.jsonl --out reports/candidate_integrity_strict_body_tokens.json --markdown-out reports/candidate_integrity_strict_body_tokens.md"
+      ],
+      "current_evidence_count": 7,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 5,
+      "title": "Daily-Use Assistant Runtime And Dogfood Trace Loop",
+      "status": "partial",
+      "priority": "critical",
+      "registry_surface_id": "theseus_assistant_runtime",
+      "abstraction_id": "assistant_runtime_contract",
+      "implementation_ids": [
+        "impl.theseus_assistant_runtime.v1"
+      ],
+      "execution_spine_hooks": [
+        "assistant_command",
+        "vcm_packet",
+        "tool_route",
+        "verifier_receipt",
+        "dogfood_event"
+      ],
+      "required_records": [
+        "assistant_trace",
+        "dogfood_event",
+        "accepted_missed_ignored_outcome",
+        "redaction_receipt"
+      ],
+      "required_gates": [
+        "python3 scripts/theseus_assistant_runtime.py",
+        "python3 scripts/personality_runtime_audit.py",
+        "python3 scripts/theseus_assistant_e2e.py",
+        "python3 scripts/theseus_assistant_product_lane_gate.py --gate"
+      ],
+      "current_evidence_count": 16,
+      "missing_item_count": 1,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 6,
+      "title": "Deterministic Tool And Search Substrate",
+      "status": "wired",
+      "priority": "high",
+      "registry_surface_id": "deterministic_tool_substrate",
+      "abstraction_id": "deterministic_tool_contract",
+      "implementation_ids": [
+        "impl.deterministic_tool_substrate.v1"
+      ],
+      "execution_spine_hooks": [
+        "tool_card_resolution",
+        "schema_checked_call",
+        "evidence_tool_result",
+        "trace_replay",
+        "verifier_guided_search_contract",
+        "budgeted_propose_verify_repair",
+        "semantic_ir_localized_repair_search",
+        "proof_contract_receipt",
+        "substrate_adoption"
+      ],
+      "required_records": [
+        "tool_card",
+        "tool_call_receipt",
+        "tool_result_evidence",
+        "tool_failure",
+        "verifier_guided_search_receipt",
+        "verifier_feedback_boundary_receipt",
+        "search_budget_and_stop_receipt",
+        "proof_contract_receipt",
+        "substrate_adoption"
+      ],
+      "required_gates": [
+        "python3 scripts/theseus_deterministic_tool_substrate.py --run-smoke --run-ablation",
+        "python3 scripts/theseus_plan_compiler.py",
+        "python3 -m pytest -q tests/test_verifier_guided_search.py",
+        "python3 scripts/proof_carrying_contract_gate.py",
+        "python3 scripts/viea_spine_record_gate.py --gate"
+      ],
+      "current_evidence_count": 17,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 7,
+      "title": "Teacher And Data Governance",
+      "status": "partial",
+      "priority": "critical",
+      "registry_surface_id": "teacher_and_data_governance",
+      "abstraction_id": "teacher_data_governance_contract",
+      "implementation_ids": [
+        "impl.teacher_and_data_governance.v1"
+      ],
+      "execution_spine_hooks": [
+        "teacher_proposal",
+        "distillation_gate",
+        "provenance_check",
+        "leakage_audit",
+        "teacher_share_ledger_summary",
+        "assistant_teacher_policy_packet",
+        "control_plane_teacher_gate",
+        "governance_right_receipt",
+        "data_admission_receipt",
+        "candidate_receipt_hash_filter",
+        "continual_learning_policy_decision",
+        "descendant_deletion_closure",
+        "recursive_synthetic_distribution_diagnostics"
+      ],
+      "required_records": [
+        "teacher_row_receipt",
+        "license_receipt",
+        "verifier_acceptance",
+        "leakage_audit_receipt",
+        "teacher_share_ledger_summary",
+        "teacher_share_daily_trend",
+        "governance_right",
+        "failure_boundary",
+        "data_admission_receipt",
+        "task_complete_training_unit",
+        "task_complete_verifier_receipt",
+        "product_task_coverage_ledger",
+        "data_lineage_edge",
+        "data_lifecycle_policy_decision",
+        "continual_learning_comparison",
+        "descendant_deletion_closure_receipt",
+        "full_state_inventory",
+        "checkpoint_authority_record",
+        "unlearning_evidence_record"
+      ],
+      "required_gates": [
+        "python3 scripts/teacher_distillation_gate.py",
+        "python3 scripts/task_complete_training_units.py --prepare-javascript",
+        "python3 scripts/training_admission_epistemic_tcb.py",
+        "python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json --admission-epistemic-tcb reports/training_admission_epistemic_tcb.json",
+        "python3 scripts/training_data_lineage_audit.py",
+        "python3 scripts/standard_causal_transformer_survival.py --out /tmp/standard_causal_transformer_scaling_plan.json --candidates-out /tmp/standard_causal_transformer_scaling_candidates.jsonl",
+        "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+        "python3 scripts/broad_capability_curriculum_v1.py",
+        "python3 scripts/broad_capability_survival_lane_run_v1.py",
+        "python3 tests/test_training_data_lineage_audit.py",
+        "python3 scripts/governance_rights_receipt_suite.py",
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/theseus_project_registry.py --gate",
+        "python3 scripts/theseus_control_plane.py --no-ingest",
+        "python3 scripts/hive_node.py operator-status --out reports/hive_operator_status.json",
+        "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the teacher-share governance state and no-runtime-external-token boundary.\" --intent planning --feedback completed --session-id teacher_share_phase7_smoke --out reports/theseus_assistant_teacher_share_smoke.json --markdown-out reports/theseus_assistant_teacher_share_smoke.md --events-out reports/theseus_assistant_teacher_share_events.jsonl --viea-trace-out reports/theseus_assistant_teacher_share_trace.jsonl --skip-context-refresh"
+      ],
+      "current_evidence_count": 24,
+      "missing_item_count": 2,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 8,
+      "title": "Resource, Cost, And Mac Acceleration Routing",
+      "status": "partial",
+      "priority": "critical",
+      "registry_surface_id": "resource_and_acceleration",
+      "abstraction_id": "resource_acceleration_contract",
+      "implementation_ids": [
+        "impl.resource_and_acceleration.v1"
+      ],
+      "execution_spine_hooks": [
+        "resource_probe",
+        "corpus_ingestion",
+        "tokenization_and_packing",
+        "costed_route",
+        "backend_selection",
+        "thermal_battery_policy",
+        "constrained_decode"
+      ],
+      "required_records": [
+        "resource_route",
+        "backend_receipt",
+        "cost_estimate",
+        "acceleration_parity_record",
+        "performance_station_record",
+        "performance_candidate_disposition",
+        "token_corpus_parity_record"
+      ],
+      "required_gates": [
+        "python3 scripts/resource_aware_execution_policy.py",
+        "python3 scripts/macos_mlx_environment_diagnosis.py --out reports/macos_mlx_environment_diagnosis.json --markdown-out reports/macos_mlx_environment_diagnosis.md",
+        "python3 scripts/resource_mlx_route_readiness_gate.py --gate"
+      ],
+      "current_evidence_count": 48,
+      "missing_item_count": 1,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 9,
+      "title": "Hive Policy-First Distributed Operation",
+      "status": "frozen",
+      "priority": "medium",
+      "registry_surface_id": "hive_install_and_apps",
+      "abstraction_id": "hive_operations_contract",
+      "implementation_ids": [
+        "impl.hive_install_and_apps.v1"
+      ],
+      "execution_spine_hooks": [
+        "node_registry",
+        "policy_scheduler",
+        "artifact_sync",
+        "roaming_profile"
+      ],
+      "required_records": [
+        "node_identity",
+        "capability_refresh",
+        "policy_route",
+        "artifact_manifest"
+      ],
+      "required_gates": [
+        "python3 scripts/hive_node.py probe",
+        "python3 scripts/hive_network_doctor.py"
+      ],
+      "current_evidence_count": 4,
+      "missing_item_count": 1,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 10,
+      "title": "Practical Neural Seed Survival Lane",
+      "status": "partial",
+      "priority": "critical",
+      "registry_surface_id": "neural_seed_and_decoder",
+      "abstraction_id": "candidate_generation_contract",
+      "implementation_ids": [
+        "impl.standard_causal_transformer_survival.v1",
+        "impl.neural_seed_strict_token_decoder.v1"
+      ],
+      "execution_spine_hooks": [
+        "prompt_signature_input",
+        "direct_body_token_generation",
+        "grammar_constrained_decode",
+        "verifier_fanout",
+        "private_preference_pair_builder",
+        "policy_optimization_update",
+        "policy_update_lease",
+        "multi_target_policy_update",
+        "reward_hacking_probe_suite",
+        "generation_mode_selection",
+        "semantic_ir_localized_repair"
+      ],
+      "required_records": [
+        "model_checkpoint_receipt",
+        "training_data_provenance",
+        "policy_optimization_record",
+        "behavior_change_lease_record",
+        "substrate_adoption_record",
+        "reward_hacking_probe_record",
+        "verification_budget_record",
+        "generation_mode_accounting",
+        "generation_mode_record",
+        "semantic_ir_patch_record",
+        "fanout_result",
+        "strict_generator_replay_receipt",
+        "candidate_integrity_receipt",
+        "private_runtime_load_receipt",
+        "functional_utility_manifest",
+        "functional_utility_result",
+        "scale_rung_falsification_record"
+      ],
+      "required_gates": [
+        "python3 scripts/neural_seed_token_decoder_comparator.py",
+        "python3 scripts/code_lm_train_once_fanout.py",
+        "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
+        "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
+        "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
+        "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+        "python3 scripts/standard_causal_transformer_survival.py --out /tmp/standard_causal_transformer_scaling_plan.json --candidates-out /tmp/standard_causal_transformer_scaling_candidates.jsonl",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate",
+        "python3 scripts/policy_optimization_gate.py",
+        "python3 scripts/generation_mode_gate.py"
+      ],
+      "current_evidence_count": 118,
+      "missing_item_count": 7,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 11,
+      "title": "Cognitive Kernel Discovery Lane Verdicts",
+      "status": "wired",
+      "priority": "high",
+      "registry_surface_id": "neural_seed_and_decoder",
+      "abstraction_id": "candidate_generation_contract",
+      "implementation_ids": [
+        "impl.neural_seed_strict_token_decoder.v1"
+      ],
+      "execution_spine_hooks": [
+        "matched_compute_experiment",
+        "residual_breakdown",
+        "survival_lane_decision",
+        "substrate_adoption_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_records": [
+        "matched_compute_run",
+        "substrate_cost_record",
+        "residual_category",
+        "verdict_record",
+        "substrate_adoption_record",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_gates": [
+        "python3 scripts/theseus_substrate_verdict.py",
+        "python3 scripts/viea_spine_record_gate.py --gate"
+      ],
+      "current_evidence_count": 6,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 12,
+      "title": "Public Calibration And Residual Mining Discipline",
+      "status": "wired",
+      "priority": "critical",
+      "registry_surface_id": "public_calibration_registry",
+      "abstraction_id": "teacher_data_governance_contract",
+      "implementation_ids": [
+        "impl.teacher_and_data_governance.v1"
+      ],
+      "execution_spine_hooks": [
+        "governed_run_registry",
+        "calibration_trace",
+        "failure_mining",
+        "private_residual_plan"
+      ],
+      "required_records": [
+        "public_run_registry_row",
+        "contamination_check",
+        "failure_taxonomy",
+        "private_repair_manifest"
+      ],
+      "required_gates": [
+        "python3 scripts/public_calibration_proposal_gate.py",
+        "python3 scripts/operator_bounded_public_calibration.py",
+        "python3 scripts/theseus_benchmark_measurement.py",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate"
+      ],
+      "current_evidence_count": 5,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 13,
+      "title": "Semantic IR And Substrate-Neutral Reasoning Atoms",
+      "status": "partial",
+      "priority": "critical",
+      "registry_surface_id": "theseus_plan_compiler",
+      "abstraction_id": "planning_execution_spine",
+      "implementation_ids": [
+        "impl.theseus_plan_compiler.v1",
+        "impl.simulation_fidelity_receipt_suite.v1",
+        "impl.standard_causal_transformer_survival.v1"
+      ],
+      "execution_spine_hooks": [
+        "semantic_ir_node",
+        "typed_python_ast_program",
+        "model_candidate_ir_receipt",
+        "artifact_graph",
+        "verifier_obligation",
+        "tool_binding",
+        "localized_dependent_atom_replay",
+        "learned_semantic_plan_prefix",
+        "direct_plan_body_token_trace",
+        "learned_semantic_plan_obligation_head",
+        "semantic_plan_shuffled_label_control",
+        "ordered_alpha_renamed_semantic_plan",
+        "hierarchical_plan_then_body_beam",
+        "low_rank_latent_ordered_plan_field",
+        "per_layer_slot_addressable_plan_attention",
+        "factorized_complete_statement_plan_field",
+        "versioned_kernel_packet",
+        "surface_to_kernel_compiler",
+        "hierarchical_residual_ledger",
+        "structured_kernel_answer_packet",
+        "roundtrip_kernel_verifier"
+      ],
+      "required_records": [
+        "semantic_ir_atom",
+        "obligation_node",
+        "dependency_edge",
+        "evidence_binding",
+        "typed_semantic_ir_candidate_receipt",
+        "semantic_ir_source_repair_ablation",
+        "matched_target_mode_ablation",
+        "direct_plan_body_trace_receipt",
+        "semantic_plan_head_ablation_receipt",
+        "ordered_plan_four_arm_ablation_receipt",
+        "content_bound_evaluation_replay_receipt",
+        "latent_ordered_plan_four_arm_ablation_receipt",
+        "slot_ordered_plan_four_arm_ablation_receipt",
+        "kernel_packet_and_migration_receipt",
+        "kernel_residual_state_replay_receipt",
+        "kernel_rate_compute_fidelity_ablation_receipt",
+        "kernel_security_and_falsification_receipt"
+      ],
+      "required_gates": [
+        "python3 scripts/semantic_ir_obligation_gate.py",
+        "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
+        "python3 -m pytest -q tests/test_semantic_ir.py tests/test_kernel_english_protocol.py tests/test_standard_causal_transformer_survival.py",
+        "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
+        "python3 scripts/roadmap_implementation_gate.py --gate"
+      ],
+      "current_evidence_count": 44,
+      "missing_item_count": 3,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 14,
+      "title": "Compression, Proof, And Claim Evidence Records",
+      "status": "wired",
+      "priority": "high",
+      "registry_surface_id": "evidence_store",
+      "abstraction_id": "project_self_model_registry",
+      "implementation_ids": [
+        "impl.project_manifest_registry.v1"
+      ],
+      "execution_spine_hooks": [
+        "claim_ledger",
+        "proof_record",
+        "proof_contract_receipt_record",
+        "compression_record",
+        "compressed_artifact_record",
+        "compression_receipt",
+        "compact_generative_record",
+        "evidence_store_ingest",
+        "archive_pointer_replay_gate"
+      ],
+      "required_records": [
+        "claim_ledger_entry",
+        "proof_record",
+        "proof_contract_receipt_record",
+        "compression_record",
+        "compressed_artifact_record",
+        "compression_receipt",
+        "compact_generative_record",
+        "defeater_record",
+        "assurance_case_record",
+        "evaluation_integrity_record"
+      ],
+      "required_gates": [
+        "python3 scripts/report_evidence_store.py",
+        "python3 scripts/theseus_artifact_retention_replay_gate.py",
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/theseus_artifact_retention.py --budget-gate"
+      ],
+      "current_evidence_count": 22,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 15,
+      "title": "Procedural Memory And Toolification",
+      "status": "implemented",
+      "priority": "high",
+      "registry_surface_id": "theseus_plan_compiler",
+      "abstraction_id": "planning_execution_spine",
+      "implementation_ids": [
+        "impl.theseus_plan_compiler.v1",
+        "impl.deterministic_tool_substrate.v1"
+      ],
+      "execution_spine_hooks": [
+        "trace_cluster",
+        "tool_candidate",
+        "verification_replay",
+        "registry_tool_card",
+        "canary_execution_receipt",
+        "default_route_adoption_transaction"
+      ],
+      "required_records": [
+        "procedural_memory_trace",
+        "toolification_candidate",
+        "verification_replay",
+        "tool_card",
+        "procedural_tool_record",
+        "authority_use_receipt",
+        "runtime_adapter_invocation",
+        "costed_route",
+        "resource_budget",
+        "evidence_transition_record"
+      ],
+      "required_gates": [
+        "python3 scripts/loop_closure_harvester.py",
+        "python3 scripts/viea_verified_procedural_tools.py",
+        "python3 scripts/procedural_memory_toolification_gate.py",
+        "python3 scripts/procedural_memory_canary_executor.py",
+        "python3 scripts/procedural_memory_route_adoption_gate.py",
+        "python3 scripts/viea_spine_record_gate.py --gate"
+      ],
+      "current_evidence_count": 19,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 16,
+      "title": "MoECOT And Octopus Router Integration",
+      "status": "partial",
+      "priority": "high",
+      "registry_surface_id": "theseus_plan_compiler",
+      "abstraction_id": "planning_execution_spine",
+      "implementation_ids": [
+        "impl.octopus_registry_gated_router.v1",
+        "impl.octopus_sparse_router_head.v1",
+        "impl.theseus_plan_compiler.v1"
+      ],
+      "execution_spine_hooks": [
+        "octopus_arm_selection",
+        "registry_route_validation",
+        "vcm_route_context",
+        "resource_costed_route",
+        "generation_mode_boundary",
+        "specialist_trace",
+        "residual_feedback"
+      ],
+      "required_records": [
+        "routing_decision",
+        "semantic_node",
+        "authority_use_receipt",
+        "context_transaction",
+        "context_adequacy",
+        "runtime_adapter_invocation",
+        "resource_budget",
+        "costed_route",
+        "generation_mode",
+        "failure_boundary",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "residual_record"
+      ],
+      "required_gates": [
+        "python3 scripts/train_octopus_router_head.py",
+        "python3 scripts/octopus_router_head_gate.py --gate",
+        "python3 scripts/octopus_router.py --router-head-report reports/octopus_router_head_report.json --router-head-eval reports/octopus_router_head_eval.json",
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/theseus_plan_compiler.py"
+      ],
+      "current_evidence_count": 20,
+      "missing_item_count": 2,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 17,
+      "title": "Simulation, Fidelity, And World-Model Contracts",
+      "status": "wired",
+      "priority": "medium",
+      "registry_surface_id": "theseus_plan_compiler",
+      "abstraction_id": "planning_execution_spine",
+      "implementation_ids": [
+        "impl.theseus_plan_compiler.v1",
+        "impl.simulation_fidelity_receipt_suite.v1"
+      ],
+      "execution_spine_hooks": [
+        "simulation_contract",
+        "fidelity_receipt",
+        "counterfactual_trace",
+        "verifier_binding"
+      ],
+      "required_records": [
+        "simulation_contract",
+        "fidelity_record",
+        "counterfactual_trace",
+        "world_adapter_receipt",
+        "failure_boundary",
+        "claim_record",
+        "evidence_transition_record"
+      ],
+      "required_gates": [
+        "python3 scripts/simulation_fidelity_receipt_suite.py",
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/roadmap_implementation_gate.py --gate"
+      ],
+      "current_evidence_count": 4,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 18,
+      "title": "Governance Rights, Constitutional Predicates, And Failure Boundaries",
+      "status": "wired",
+      "priority": "critical",
+      "registry_surface_id": "core_control_plane",
+      "abstraction_id": "control_plane_decision_owner",
+      "implementation_ids": [
+        "impl.core_control_plane.v1",
+        "impl.governance_rights_receipt_suite.v1"
+      ],
+      "execution_spine_hooks": [
+        "constitutional_predicate",
+        "rights_check",
+        "governance_right_receipt",
+        "failure_boundary",
+        "incident_record"
+      ],
+      "required_records": [
+        "constitutional_predicate",
+        "governance_right",
+        "failure_boundary",
+        "incident_or_abstention",
+        "artifact_graph_record",
+        "claim_record",
+        "evidence_transition_record",
+        "oversight_protocol_record",
+        "capability_commitment_record",
+        "inter_stack_exchange_record"
+      ],
+      "required_gates": [
+        "python3 scripts/governance_rights_receipt_suite.py",
+        "python3 scripts/viea_spine_record_gate.py --gate",
+        "python3 scripts/theseus_control_plane.py",
+        "python3 scripts/roadmap_implementation_gate.py --gate"
+      ],
+      "current_evidence_count": 15,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    },
+    {
+      "phase": 19,
+      "title": "Book-To-Theseus Backlog And Evidence Synchronization",
+      "status": "implemented",
+      "priority": "high",
+      "registry_surface_id": "active_docs",
+      "abstraction_id": "project_self_model_registry",
+      "implementation_ids": [
+        "impl.project_manifest_registry.v1"
+      ],
+      "execution_spine_hooks": [
+        "book_source_crosswalk",
+        "roadmap_phase_update",
+        "implementation_evidence_sync",
+        "steward_decision"
+      ],
+      "required_records": [
+        "book_source_crosswalk",
+        "roadmap_backlog_item",
+        "implementation_evidence_link",
+        "steward_decision"
+      ],
+      "required_gates": [
+        "python3 scripts/module_definition_of_done_gate.py",
+        "python3 scripts/roadmap_implementation_gate.py --gate",
+        "python3 scripts/training_inference_execution_plan_gate.py --gate"
+      ],
+      "current_evidence_count": 17,
+      "missing_item_count": 0,
+      "hard_gap_count": 0,
+      "warning_count": 0,
+      "hard_gaps": [],
+      "warnings": []
+    }
+  ],
+  "book_implementation_contract": {
+    "policy": "project_theseus_book_implementation_contract_audit_v1",
+    "summary": {
+      "track_count": 6,
+      "chapter_crosswalk_count": 54,
+      "book_manifest_chapter_count": 54,
+      "book_manifest_order_match": true,
+      "book_manifest_digest_match": true,
+      "book_manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e",
+      "book_manifest_source": "pinned_git_commit",
+      "book_manifest_commit": "32635eb94ded42a5f54e528302685cab343993b7",
+      "live_book_manifest_sha256": "cd53837df39a3b2a9ccbf583708f7826d2773b41878ee96c710487265dfe2cfd",
+      "live_book_manifest_differs_from_pin": true,
+      "book_manifest_source_field_drift_chapter_count": 0,
+      "book_manifest_source_field_drift_count": 0,
+      "book_codex_test_count": 511,
+      "book_pending_or_partial_codex_test_count": 109,
+      "active_flagship_lane_id": "C1_correctness_rl_and_generator_survival_lane",
+      "active_track_id": "C_capability_research_survival_lane",
+      "shared_book_flagship_id": "ASI-THESEUS-FLAGSHIP-01",
+      "shared_flagship_critical_path_ids": [
+        "T0",
+        "T0A",
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6"
+      ],
+      "active_core_slice_count": 1,
+      "support_state_ladder_ready": true,
+      "support_state_count": 5,
+      "active_core_slice_support_states": {
+        "C1_correctness_rl_and_generator_survival_lane": "synthetic-test-backed"
+      },
+      "core_slice_support_states": {
+        "A1_claim_ledger_trace_kernel": "synthetic-test-backed",
+        "A2_replacement_transaction_kernel": "replayable-reference-backed",
+        "E1_authority_scif_runtime_adapter_kernel": "replayable-reference-backed",
+        "B1_assisted_verified_assistant_product_lane": "synthetic-test-backed",
+        "C1_correctness_rl_and_generator_survival_lane": "synthetic-test-backed"
+      },
+      "missing_required_field_count": 0,
+      "invalid_phase_ref_count": 0,
+      "invalid_track_count": 0,
+      "invalid_support_target_count": 0,
+      "missing_no_claim_count": 0,
+      "duplicate_chapter_id_count": 0,
+      "future_candidate_count": 14,
+      "future_candidate_chapter_count": 10,
+      "future_cross_cutting_section_count": 4,
+      "future_cross_cutting_obligation_count": 9,
+      "future_candidate_missing_required_field_count": 0,
+      "future_candidate_invalid_ref_count": 0,
+      "future_candidate_duplicate_id_count": 0,
+      "future_candidate_disposition_counts": {
+        "route_into_existing_owners": 1,
+        "provisional_source_gated": 8,
+        "source_contingent": 1,
+        "prior_art_and_foundations_first": 1,
+        "source_available_manifest_pending_theseus_disposition_complete": 1,
+        "source_available_manifest_pending": 2
+      },
+      "planned_codex_test_backlog_count": 30,
+      "planned_codex_test_backlog_missing_required_field_count": 0,
+      "planned_codex_test_backlog_invalid_ref_count": 0,
+      "planned_codex_test_backlog_duplicate_id_count": 0,
+      "planned_codex_test_backlog_status_counts": {
+        "pretraining_wired_behavior_qualification_pending": 11,
+        "retired_by_pretraining_verdict": 3,
+        "implemented_negative_result_rung_falsified": 1,
+        "partial": 1,
+        "implemented": 3,
+        "wired": 7,
+        "protected_discovery_lane": 1,
+        "planned": 2,
+        "queued_after_nonfallback_candidate_quality": 1
+      },
+      "planned_codex_test_backlog_technique_family_counts": {
+        "qualification_first_pre_deliberative_dispatch_and_reflex_compilation": 1,
+        "dual_vocabulary_cognitive_compiler_and_hierarchical_residual_state": 1,
+        "functional_model_qualification": 1,
+        "data_supported_scale_decision": 1,
+        "cognitive_kernel_discovery_and_verified_abstraction_scaling": 1,
+        "offline_preference_optimization": 1,
+        "verifier_reward_policy_optimization": 1,
+        "policy_update_lease": 1,
+        "generate_verify_repair": 1,
+        "generation_mode": 2,
+        "sketch_first_generation": 1,
+        "context_memory_abi": 1,
+        "verification_resource_routing": 1,
+        "claim_ledger_revision": 1,
+        "procedural_memory": 1,
+        "substrate_adoption": 1,
+        "data_lifecycle_governance": 1,
+        "durable_semantic_memory": 1,
+        "governed_effect_transaction": 1,
+        "routing_and_deliberation": 1,
+        "scalable_oversight": 1,
+        "evaluation_integrity": 1,
+        "capability_commitment_and_assurance": 1,
+        "supply_chain_and_weight_custody": 1,
+        "inter_stack_protocol": 1,
+        "open_ended_improvement_campaign": 1,
+        "question_compiled_semantic_addressing": 1,
+        "independent_token_corpus_and_kerc_acceleration": 1,
+        "finite_pretraining_architecture_and_efficiency_closure": 1
+      },
+      "planned_codex_test_backlog_blocked_or_queued_count": 1
+    },
+    "hard_gaps": [],
+    "warnings": [
+      {
+        "id": "book_chapter_implementation_crosswalk",
+        "kind": "live_book_worktree_differs_from_pinned_snapshot",
+        "severity": "warning",
+        "evidence": {
+          "book_commit": "32635eb94ded42a5f54e528302685cab343993b7",
+          "pinned_manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e",
+          "live_manifest_sha256": "cd53837df39a3b2a9ccbf583708f7826d2773b41878ee96c710487265dfe2cfd",
+          "rule": "Live book edits are intake work, not an architecture-readiness regression. Reconcile and advance the pin in a separate reviewed change."
+        }
+      }
+    ]
+  },
+  "kerc_implementation_fidelity": {
+    "policy": "project_theseus_kerc_implementation_fidelity_gate_v1",
+    "trigger_state": "GREEN",
+    "contract": {
+      "path": "configs/kerc_implementation_fidelity.json",
+      "sha256": "2b3aa084e807be846375805fafe6fcb9d61711b86abdfb4c01e64973968272f9",
+      "policy": "project_theseus_kerc_implementation_fidelity_v1"
+    },
+    "claim_state": {
+      "mechanics": "GREEN_BOUNDED_MECHANICS_EVIDENCE",
+      "construct_validity": "RED",
+      "learned_kerc": "NOT_CLAIMED",
+      "utility": "NOT_CLAIMED",
+      "efficiency": "NOT_CLAIMED",
+      "scientific_negative": "NOT_CLAIMED",
+      "required_failure_label_before_k7": "INCONCLUSIVE_IMPLEMENTATION"
+    },
+    "summary": {
+      "source_artifact_count": 49,
+      "source_artifact_valid_count": 49,
+      "record_count": 27941,
+      "mechanism_count": 17,
+      "faithful_mechanism_count": 5,
+      "approximate_or_fixture_mechanism_count": 10,
+      "inactive_or_absent_mechanism_count": 2,
+      "hypothesis_evidence_active_count": 0,
+      "byte_literal_mutation_rejected": false,
+      "interaction_label_depends_on_global_dictionary": false,
+      "fault_count": 0,
+      "warning_count": 0
+    },
+    "source_audit": {
+      "source_artifact_count": 49,
+      "source_artifact_valid_count": 49,
+      "sources": [
+        {
+          "path": "/Users/corbensorenson/Documents/AI_book/sources/raw/kernel_english_residual_compiler/kernel_english_hierarchical_residuals.md",
+          "kind": "paper",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "f560c61196cb2a114475ebd455f8643536e78c82dbbf6ec8dd712d993f2b6519",
+          "observed_sha256": "f560c61196cb2a114475ebd455f8643536e78c82dbbf6ec8dd712d993f2b6519",
+          "valid": true
+        },
+        {
+          "path": "scripts/kernel_english_protocol.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "7ed73bfec9605159ac4f33dd4aca6ac7c1dd350d0c30e044f18265a84b7670c6",
+          "observed_sha256": "7ed73bfec9605159ac4f33dd4aca6ac7c1dd350d0c30e044f18265a84b7670c6",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_autoregressive_qualification.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "4157367b55184ab371e4a92d7a232b0be109f67f9d9d870b01181a14ad5bdab6",
+          "observed_sha256": "4157367b55184ab371e4a92d7a232b0be109f67f9d9d870b01181a14ad5bdab6",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_scoped_semantics.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "07974b5e71db030ba9da3eb66b9b13cd1817c33b57ee3945b5cfeb0bee3bf4d2",
+          "observed_sha256": "07974b5e71db030ba9da3eb66b9b13cd1817c33b57ee3945b5cfeb0bee3bf4d2",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_scoped_semantics_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "56b39d2ce43da51b8e05d04ec43bb49e064f0b10179718f13a3cebc6a9fae051",
+          "observed_sha256": "56b39d2ce43da51b8e05d04ec43bb49e064f0b10179718f13a3cebc6a9fae051",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_scoped_semantics_gate.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "3a87bace6bdb5d9a179fa11a26929ea2593663fc7dd1b1b23a9bc9d285429d1a",
+          "observed_sha256": "3a87bace6bdb5d9a179fa11a26929ea2593663fc7dd1b1b23a9bc9d285429d1a",
+          "valid": true
+        },
+        {
+          "path": "tests/test_kerc_scoped_semantics.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "b0bb6404355636246cd6753cb255e3694e2c9750b7c1d685c6a796d3edd04321",
+          "observed_sha256": "b0bb6404355636246cd6753cb255e3694e2c9750b7c1d685c6a796d3edd04321",
+          "valid": true
+        },
+        {
+          "path": "reports/kerc_scoped_semantics_k1k.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "5c1172965dea50cce996322fede79d611b92f790bff8eb98d076256998d5975c",
+          "observed_sha256": "5c1172965dea50cce996322fede79d611b92f790bff8eb98d076256998d5975c",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_semantic_corpus.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "bf26ac9c82cbe5a3ca65304eac82c72d4009392bd8b727aa7e766cb966a02af2",
+          "observed_sha256": "bf26ac9c82cbe5a3ca65304eac82c72d4009392bd8b727aa7e766cb966a02af2",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_semantic_corpus_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "5e4703a61756205bb0010863cf78e2a41c1d8218fc1108fc9d910a6068001299",
+          "observed_sha256": "5e4703a61756205bb0010863cf78e2a41c1d8218fc1108fc9d910a6068001299",
+          "valid": true
+        },
+        {
+          "path": "configs/kerc_semantic_verifier_runtime.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "ac9d813e7fa2495d9f1088d0e409148d3413543ad09a1f88be04da7d47556124",
+          "observed_sha256": "ac9d813e7fa2495d9f1088d0e409148d3413543ad09a1f88be04da7d47556124",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_source_family_identity.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "73e336616e96a8cc4dc04481d497d00b9c2cc017be7df0b330d6a23b6d1fc81a",
+          "observed_sha256": "73e336616e96a8cc4dc04481d497d00b9c2cc017be7df0b330d6a23b6d1fc81a",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_gum_discourse_relations.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "66c1b897daca4901dcf32182118a79088bdc5b20f8ec29a6f44265d7266fce09",
+          "observed_sha256": "66c1b897daca4901dcf32182118a79088bdc5b20f8ec29a6f44265d7266fce09",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_gum_discourse_relations_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "28a1b25dd226246bcbf702871fc63abd601009b7bf20b0db51ff1c6895917d1f",
+          "observed_sha256": "28a1b25dd226246bcbf702871fc63abd601009b7bf20b0db51ff1c6895917d1f",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_gum_entity_coreference.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "d8f96ccaf3b7498bbb3790c433aa8901d13c773c759ea740cd7dc51c9e0a0b50",
+          "observed_sha256": "d8f96ccaf3b7498bbb3790c433aa8901d13c773c759ea740cd7dc51c9e0a0b50",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_gum_entity_coreference_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "c64a6144ffc2e7eb7999806f11dfb03a2feee36c4004a7db635458205403bc48",
+          "observed_sha256": "c64a6144ffc2e7eb7999806f11dfb03a2feee36c4004a7db635458205403bc48",
+          "valid": true
+        },
+        {
+          "path": "scripts/moecot_source_conditioned_pretraining.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "f5645f468d196933fc720c894cd2e178900fee01abe64efcbd892364376b4d3c",
+          "observed_sha256": "f5645f468d196933fc720c894cd2e178900fee01abe64efcbd892364376b4d3c",
+          "valid": true
+        },
+        {
+          "path": "configs/moecot_language_arm_training.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "7aa2c3fb2681a9d4b15012fd8935d6bfd1ae18d5f061035aa300c7f5aeabcfc0",
+          "observed_sha256": "7aa2c3fb2681a9d4b15012fd8935d6bfd1ae18d5f061035aa300c7f5aeabcfc0",
+          "valid": true
+        },
+        {
+          "path": "configs/kerc_concept_registry.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "50258c8282e7e756dfc8f3d7a002b355fe1b8ca940c08d6deca1fdaff0ae90f8",
+          "observed_sha256": "50258c8282e7e756dfc8f3d7a002b355fe1b8ca940c08d6deca1fdaff0ae90f8",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_concept_registry.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "2e2a2fff4dc63af35840e8f3b7bec56eb78957c5c20a0df7de7772b68d08e4f6",
+          "observed_sha256": "2e2a2fff4dc63af35840e8f3b7bec56eb78957c5c20a0df7de7772b68d08e4f6",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_concept_registry_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "c364e3ec17fe127e3208176e201465a9e84fb4cb932a4379007c3e8842258ee3",
+          "observed_sha256": "c364e3ec17fe127e3208176e201465a9e84fb4cb932a4379007c3e8842258ee3",
+          "valid": true
+        },
+        {
+          "path": "resource_pantry/kerc/conceptnet-assertions-5.7.0.csv.gz",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "accd65fe94038584295574ddc26e1500c1919c8c4532bf771811cafd0948af7e",
+          "observed_sha256": "accd65fe94038584295574ddc26e1500c1919c8c4532bf771811cafd0948af7e",
+          "valid": true
+        },
+        {
+          "path": "resource_pantry/kerc/gum-v12.1.0/LICENSE.md",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "54ce03d1784ed081d6e829d811d41d3f25e35041df1afec14417590b18a70257",
+          "observed_sha256": "54ce03d1784ed081d6e829d811d41d3f25e35041df1afec14417590b18a70257",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_masc_event_coreference.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "7d531232887b2edad03403c3808cdac1e6eeaf9ff1d55faef92079587305e067",
+          "observed_sha256": "7d531232887b2edad03403c3808cdac1e6eeaf9ff1d55faef92079587305e067",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_masc_event_coreference_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "9915747e4f4451a828131a84d82b962e963e77212dc5d13b816b4d73357b1822",
+          "observed_sha256": "9915747e4f4451a828131a84d82b962e963e77212dc5d13b816b4d73357b1822",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_masc_mpqa_relations.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "e001bfc52126915fdffb17c5867796dd9c55b8e0f4d6a8efe33c853af76a7d1a",
+          "observed_sha256": "e001bfc52126915fdffb17c5867796dd9c55b8e0f4d6a8efe33c853af76a7d1a",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_masc_mpqa_relations_verify.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "ecb56f1a6f6ea01e985787d4e073b3112f262ddc475546a082d2bdc0658a1e7d",
+          "observed_sha256": "ecb56f1a6f6ea01e985787d4e073b3112f262ddc475546a082d2bdc0658a1e7d",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_content_cache.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "a6c981363a38ef03494df1ece8324dd71233dcba45b16c0944e0a8cf10eff1b2",
+          "observed_sha256": "a6c981363a38ef03494df1ece8324dd71233dcba45b16c0944e0a8cf10eff1b2",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_residual_economics.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "728ab03e67f974afb438053bf5cd2021612671cee70978b96330b5aedd65d8e3",
+          "observed_sha256": "728ab03e67f974afb438053bf5cd2021612671cee70978b96330b5aedd65d8e3",
+          "valid": true
+        },
+        {
+          "path": "scripts/standard_causal_transformer_model.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "0cb480e73a0037bdb35a0932bb7bb9372efaba27218bc20aa74931726293814f",
+          "observed_sha256": "0cb480e73a0037bdb35a0932bb7bb9372efaba27218bc20aa74931726293814f",
+          "valid": true
+        },
+        {
+          "path": "configs/kerc_residual_allocator_qualification.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "0f38702e6fefc3b5b0d8cf932db1920558a334683b83d80e05e93160754e31dd",
+          "observed_sha256": "0f38702e6fefc3b5b0d8cf932db1920558a334683b83d80e05e93160754e31dd",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_residual_interventions.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "c1808e6f6a37294b4f10a988ac77f9e71b741059937411351105c98f06a44253",
+          "observed_sha256": "c1808e6f6a37294b4f10a988ac77f9e71b741059937411351105c98f06a44253",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_residual_allocator_evaluator.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "48552ab91e06f002e5b4d9a27231bb842a3941cd30adf4439d5f858419b8b014",
+          "observed_sha256": "48552ab91e06f002e5b4d9a27231bb842a3941cd30adf4439d5f858419b8b014",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_residual_allocator_qualification.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "6f3703b0857dc974ed7047b9a46d9f2872d94d27924b0184d7d3ca5c1ca760cf",
+          "observed_sha256": "6f3703b0857dc974ed7047b9a46d9f2872d94d27924b0184d7d3ca5c1ca760cf",
+          "valid": true
+        },
+        {
+          "path": "scripts/moecot_language_arm_training.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "d424bdd4b2ad79abe778bbc8416e5f2b5bedc2fb74acbd41bea3958f0d34b85a",
+          "observed_sha256": "d424bdd4b2ad79abe778bbc8416e5f2b5bedc2fb74acbd41bea3958f0d34b85a",
+          "valid": true
+        },
+        {
+          "path": "scripts/standard_causal_transformer_survival.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "058f0e09b2490e896aeb00aa6a4b1a670ec44b30d8cf0e1ed7df462798cec4cf",
+          "observed_sha256": "058f0e09b2490e896aeb00aa6a4b1a670ec44b30d8cf0e1ed7df462798cec4cf",
+          "valid": true
+        },
+        {
+          "path": "tests/test_kerc_residual_allocator_qualification.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "5c47dbb6f6c924d341d04eda8c6e96ea6b2d1892e4b699d4e5a56880d135f253",
+          "observed_sha256": "5c47dbb6f6c924d341d04eda8c6e96ea6b2d1892e4b699d4e5a56880d135f253",
+          "valid": true
+        },
+        {
+          "path": "scripts/kerc_implementation_fidelity_gate.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "f842b05498bcca91578285b803c0154d65574506c9b663dc6429d918a70881ff",
+          "observed_sha256": "f842b05498bcca91578285b803c0154d65574506c9b663dc6429d918a70881ff",
+          "valid": true
+        },
+        {
+          "path": "tests/test_kerc_implementation_fidelity.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "8732e36192cc03a2d735d59b046f9bf5684d0056d82577adee9b7df1f4a42e8c",
+          "observed_sha256": "8732e36192cc03a2d735d59b046f9bf5684d0056d82577adee9b7df1f4a42e8c",
+          "valid": true
+        },
+        {
+          "path": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "fb99f22f12aa1a0b2eae7168f0ffe6ac97deb35ee5f4327578a17d8d06d185b8",
+          "observed_sha256": "fb99f22f12aa1a0b2eae7168f0ffe6ac97deb35ee5f4327578a17d8d06d185b8",
+          "valid": true
+        },
+        {
+          "path": "runtime/kerc_semantic_corpus/producer_manifest.json",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "9a9334f32d97ef500bf29e3b1d46e4ad94c1a174c16513702191d2ba94627021",
+          "observed_sha256": "9a9334f32d97ef500bf29e3b1d46e4ad94c1a174c16513702191d2ba94627021",
+          "valid": true
+        },
+        {
+          "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "f9cbd0ee81d5c8d6663c8580e575148ad225fbc600e585b5b0969a2c34a27802",
+          "observed_sha256": "f9cbd0ee81d5c8d6663c8580e575148ad225fbc600e585b5b0969a2c34a27802",
+          "valid": true
+        },
+        {
+          "path": "reports/runtime/kerc_semantic_corpus_verification.json",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "d15a3cef75796bccdd82ca6edf3f602e7bae84d402f920fb82d1c8318acc6022",
+          "observed_sha256": "d15a3cef75796bccdd82ca6edf3f602e7bae84d402f920fb82d1c8318acc6022",
+          "valid": true
+        },
+        {
+          "path": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1k.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "aa0a5adb1a3a6ee1ec5d09a8bf3540eff615193690082b26c9ee03f4b702a9de",
+          "observed_sha256": "aa0a5adb1a3a6ee1ec5d09a8bf3540eff615193690082b26c9ee03f4b702a9de",
+          "valid": true
+        },
+        {
+          "path": "reports/runtime/kerc_semantic_corpus_verification_parallel_cold_k1l.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "08cfcd54d0b745fb690459ef41c3bc0233c3b96a56fbdcc7944697fab99f6f3d",
+          "observed_sha256": "08cfcd54d0b745fb690459ef41c3bc0233c3b96a56fbdcc7944697fab99f6f3d",
+          "valid": true
+        },
+        {
+          "path": "tests/test_kerc_gum_discourse_relations.py",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "24c8a783920a641a74b2e6de12f3b623a4abbc361769bbaa0fe64b1f5816a5d5",
+          "observed_sha256": "24c8a783920a641a74b2e6de12f3b623a4abbc361769bbaa0fe64b1f5816a5d5",
+          "valid": true
+        },
+        {
+          "path": "reports/kerc_selective_replay_k1g.json",
+          "kind": "implementation_or_evidence",
+          "authority": "git_snapshot",
+          "snapshot_commit": "b15dfa5d0c7e7638a857183a2a5fd715eabf21ab",
+          "exists": true,
+          "expected_sha256": "9f2b2f54bd23b242db37f393199869daf6a56fcb23e5de561c2fa795fcab12db",
+          "observed_sha256": "9f2b2f54bd23b242db37f393199869daf6a56fcb23e5de561c2fa795fcab12db",
+          "valid": true
+        },
+        {
+          "path": "data/training_data/kernel_english_governed_v1/records.jsonl",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "6a6113d7c94ba0c4dd4189faeacbdf92dceb2bc558d3cdf3fb96355e21d4d956",
+          "observed_sha256": "6a6113d7c94ba0c4dd4189faeacbdf92dceb2bc558d3cdf3fb96355e21d4d956",
+          "valid": true
+        },
+        {
+          "path": "data/training_data/kernel_english_governed_v1/verification_ledger.jsonl",
+          "kind": "implementation_or_evidence",
+          "authority": "live_content_addressed_artifact",
+          "snapshot_commit": null,
+          "exists": true,
+          "expected_sha256": "34a103b2013c9ae9f4c2e711391dab0920fb6d6f5cda33a4f33417e0b41086b2",
+          "observed_sha256": "34a103b2013c9ae9f4c2e711391dab0920fb6d6f5cda33a4f33417e0b41086b2",
+          "valid": true
+        }
+      ],
+      "faults": []
+    },
+    "corpus_audit": {
+      "path": "runtime/kerc_semantic_corpus/candidate_records.jsonl",
+      "sha256": "f9cbd0ee81d5c8d6663c8580e575148ad225fbc600e585b5b0969a2c34a27802",
+      "observed": {
+        "record_count": 27941,
+        "multi_node_program_count": 16517,
+        "multi_root_program_count": 6202,
+        "non_preserved_derivation_count": 0,
+        "multi_claim_answer_count": 7061,
+        "byte_literal_value_count": 18759,
+        "correction_alternative_count": 0,
+        "concept_capsule_count": 7180,
+        "nonempty_macro_registry_count": 0,
+        "nonempty_interaction_global_dictionary_count": 0,
+        "partial_disposition_count": 0,
+        "per_unit_allocation_receipt_count": 229852,
+        "per_unit_intervention_target_count": 160139,
+        "per_unit_authoritative_target_count": 69979,
+        "interaction_presence_label_with_empty_global_count": 6809
+      },
+      "disposition_counts": {
+        "ABSTAIN": 12,
+        "ANSWER": 96,
+        "CLARIFY": 12,
+        "MISSING": 27821
+      },
+      "faults": []
+    },
+    "allocator_stage_audit": {
+      "path": "data/training_data/moecot_kernel_english_v1/manifest.json",
+      "expected_sha256": "641f71986130d825e8cab2679506025ddb9e8f92a5e369b5c085fb221c20ffad",
+      "observed_sha256": "641f71986130d825e8cab2679506025ddb9e8f92a5e369b5c085fb221c20ffad",
+      "state": "GREEN",
+      "observed": {
+        "per_unit_intervention_target_count": 160139,
+        "per_unit_authoritative_target_count": 69979
+      },
+      "target_summary": {
+        "allocator_authority_unit_count": 69979,
+        "authoritative_class_0_count": 0,
+        "authoritative_class_1_count": 34717,
+        "authoritative_class_2_count": 9667,
+        "authoritative_class_3_count": 25595,
+        "candidate_intervention_count": 640556,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_or_hidden_target_used": false,
+        "receipt_ledger_sha256": "sha256:45c929e834a313dbb0a4fa8ff1294a25210dd898a98d595594032ba62dc927e3",
+        "record_count": 21209,
+        "source_dependent_decision_count": 14395,
+        "surface_target_visible_to_model": false,
+        "target_producer": "kerc_typed_semantic_consequence_target_producer_v2",
+        "target_producer_is_final_evaluator": false,
+        "unit_count": 160139,
+        "withheld_uncertain_unit_count": 90160
+      },
+      "faults": []
+    },
+    "mechanism_audit": {
+      "mechanism_count": 17,
+      "required_mechanism_count": 17,
+      "status_counts": {
+        "absent": 1,
+        "approximate": 9,
+        "faithful": 5,
+        "fixture_only": 1,
+        "inactive": 1
+      },
+      "mechanisms": [
+        {
+          "id": "kerc.immutable_source_and_protected_objects",
+          "paper_sections": [
+            "5.2",
+            "5.3",
+            "10.6"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py"
+          ],
+          "current_finding": "Immutable source and typed protected-object storage exist, but protected-span extraction is a deterministic regex baseline rather than a trained calibrated detector.",
+          "claim_ceiling": "Exact source/object protocol mechanics only; no learned protected-span recall, domain robustness, or abstention claim.",
+          "next_evidence": "Source-disjoint learned detector with span recall, weak tails, calibration, adversarial identifiers/quotes/code, abstention, and exact-object intervention tests."
+        },
+        {
+          "id": "kerc.uncertainty_preserving_lexical_hygiene",
+          "paper_sections": [
+            "5.4",
+            "10.5"
+          ],
+          "status": "fixture_only",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py"
+          ],
+          "current_finding": "The correction-lattice schema preserves uncertainty, but the canonical corpus contains zero correction alternatives and does not train lexical correction or abstention.",
+          "claim_ceiling": "Schema and transaction behavior only.",
+          "next_evidence": "Licensed noisy/dialect/transcription/code-switch data with reviewed alternatives, calibrated preserve/correct/hypothesize/abstain targets, and overcorrection attacks."
+        },
+        {
+          "id": "kerc.surface_to_kernel_compiler",
+          "paper_sections": [
+            "5.5",
+            "10.4"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/kerc_semantic_corpus.py",
+            "scripts/kerc_masc_event_coreference.py",
+            "scripts/kerc_masc_event_coreference_verify.py",
+            "scripts/kerc_masc_mpqa_relations.py",
+            "scripts/kerc_masc_mpqa_relations_verify.py",
+            "scripts/kerc_gum_discourse_relations.py",
+            "scripts/kerc_gum_discourse_relations_verify.py",
+            "scripts/kerc_gum_entity_coreference.py",
+            "scripts/kerc_gum_entity_coreference_verify.py",
+            "scripts/kerc_scoped_semantics.py",
+            "scripts/kerc_scoped_semantics_verify.py",
+            "scripts/standard_causal_transformer_model.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_masc_event_coreference.py",
+            "tests/test_kerc_masc_mpqa_relations.py",
+            "tests/test_kerc_gum_discourse_relations.py",
+            "tests/test_kerc_gum_entity_coreference.py",
+            "tests/test_kerc_scoped_semantics.py",
+            "reports/kerc_scoped_semantics_k1k.json",
+            "tests/test_kerc_semantic_corpus.py",
+            "tests/test_moecot_source_conditioned_pretraining.py"
+          ],
+          "current_finding": "A trainable stage route, separate typed code vocabulary, and exact compact inverse transport now cover the selected canonical corpus without truncation. The compiler target is learned iteratively in bounded eight-node chunks from visible source, the previous compact generated program, and integrity-bound accumulated state; final merged programs are exactly revalidated. The source corpus includes independently replayed MASC frame/decision/event families, complete MPQA attribution graphs, 9,785 human GUM eRST neighborhoods, 5,361 GUM entity/coreference records, 7,180 concept capsules, the 14-operator scoped ABI, and 1,525 source-grounded two-proposition programs. Quota-aware raw-source-disjoint selection retains every frozen objective floor and all 96 grounded question records while hiding answers and model outcomes. This is architecture/data-path readiness, not complete proposition semantics, truth, learned scope compilation, or learned competence; unsupported source fields remain opaque bytes.",
+          "claim_ceiling": "Trainable serialization-path mechanics; no semantic compilation, compositionality, paraphrase convergence, or learned Kernel competence claim.",
+          "next_evidence": "Human/replayed multi-proposition graphs with scope, modality, coreference, temporal/causal relations, ambiguity, minimal pairs, paraphrase convergence, cycle, and entailment/question-preservation objectives."
+        },
+        {
+          "id": "kerc.concept_identity_and_binding",
+          "paper_sections": [
+            "5.6",
+            "6.3",
+            "6.10"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py",
+            "scripts/kerc_gum_entity_coreference.py",
+            "scripts/kerc_gum_entity_coreference_verify.py",
+            "scripts/kerc_concept_registry.py",
+            "scripts/kerc_concept_registry_verify.py",
+            "scripts/moecot_language_arm_training.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py",
+            "tests/test_kerc_gum_entity_coreference.py",
+            "tests/test_kerc_concept_registry.py",
+            "reports/runtime/kerc_concept_registry_verification.json"
+          ],
+          "current_finding": "The canonical corpus exercises 7,180 provenance-bound document-local capsules across 5,361 GUM entity/coreference records. K1j adds a deterministic cross-document registry over the pinned English WordNet-derived ConceptNet 5.7 graph: 218,061 source-declared edges, 174,480 stable URI-derived identities, and 410,638 normalized aliases. A separate parser independently replays every admitted edge, concept, alias, digest, license, and SQLite constraint. Learned compiler output may emit only a bounded surface request with optional non-authoritative POS/sense hints; it cannot mint or select stable identity or provenance. Deterministic resolution attaches identity only when the normalized surface maps to one global registry identity. Hints never collapse ambiguity, all ambiguous/unknown states remain explicit, registry faults fail closed, and the route writes zero model-training rows.",
+          "claim_ceiling": "Exact document-local coreference binding plus deterministic cross-document WordNet-derived relation lookup and ambiguity preservation. No assertion-truth, graph-completeness, open-world definition quality, learned linking, migration success, utility, or KERC promotion claim.",
+          "next_evidence": "Source-disjoint model-generated resolution requests in natural contexts; ambiguity clarification, unseen definitions, capsule reuse, alias and sense interventions, version migration, collision/stale-definition/wrong-identity attacks, and causal utility compared with registry-withheld and shuffled controls."
+        },
+        {
+          "id": "kerc.grammar_aware_macros",
+          "paper_sections": [
+            "5.8",
+            "6.12",
+            "10.8"
+          ],
+          "status": "absent",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py"
+          ],
+          "evidence_refs": [],
+          "current_finding": "A compatibility hash exists, but no learned grammar-aware macro inventory is present or exercised by the canonical corpus.",
+          "claim_ceiling": "No macro-fusion, shortening, or compute claim.",
+          "next_evidence": "Train-only grammar-valid macro induction with deterministic expansion, heldout undertraining statistics, collision/migration tests, and equal-budget no-macro control."
+        },
+        {
+          "id": "kerc.hierarchical_residual_ledger",
+          "paper_sections": [
+            "7.1",
+            "7.2",
+            "7.10",
+            "7.11",
+            "7.12"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py",
+            "scripts/kerc_residual_economics.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py",
+            "tests/test_kerc_residual_economics.py"
+          ],
+          "current_finding": "Four typed residual channels, VCM lifecycle, replay, synchronization, and privacy fields exist; current supervision predicts channel presence and the corpus does not populate an interaction-global residual dictionary.",
+          "claim_ceiling": "Residual packet/lifecycle/codec mechanics only; no learned hierarchy value or interaction amortization claim.",
+          "next_evidence": "Per-unit source-bound residual decisions and real multi-turn shared dictionaries with context-present/withheld/shuffled/wrong-user causal controls."
+        },
+        {
+          "id": "kerc.structured_answer_packet",
+          "paper_sections": [
+            "5.10",
+            "6.6",
+            "6.8"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py",
+            "scripts/kerc_semantic_corpus.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py"
+          ],
+          "current_finding": "Typed claims and decisions exist. Independently replayed MASC composite, decision-semantic, event-coreference, complete MPQA-relation, GUM eRST, and GUM entity/coreference strata produce 7,061 multi-claim packets and 16,517 multi-node programs. K1l gives 1,525 GUM rows bounded two-proposition scope and typed answer roles across six operators while preserving 90 ambiguous multi-edge neighborhoods as exclusions. The entity/coreference stratum preserves 3,542 complete non-singleton source-declared components plus 1,819 bridge relations with complete endpoint components and 7,180 document-local capsules. These are annotation-preservation and bounded scope targets, not truth or learned reasoning. There are still no derivation proofs, contradictions, general quantities, complete proposition semantics, broad quantification or compositional negation supervision, unresolved ambiguity, or PARTIAL decisions, and unsupported source content remains opaque byte literals.",
+          "claim_ceiling": "Answer schema and validation mechanics only; no structured reasoning or exact-answer semantic quality claim.",
+          "next_evidence": "Multi-claim derivations, quantities/units/ranges, evidence links, alternatives, contradictions, unresolved ambiguity, PARTIAL, and compositional answer supervision."
+        },
+        {
+          "id": "kerc.copy_aware_renderer",
+          "paper_sections": [
+            "5.11",
+            "8.2.3",
+            "10.12"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/standard_causal_transformer_model.py"
+          ],
+          "evidence_refs": [
+            "tests/test_moecot_language_arm_training.py"
+          ],
+          "current_finding": "A trainable renderer route, surface vocabulary, and copy path exist, but no behavior-positive source-disjoint renderer evidence exists.",
+          "claim_ceiling": "Trainable route, shape, and checkpoint mechanics only; deterministic/literal rendering receives zero learned credit.",
+          "next_evidence": "Model-only paraphrase and faithful/lossless rendering with copy interventions, rare identifiers, quotations, style controls, and independent functional/human evaluation."
+        },
+        {
+          "id": "kerc.independent_roundtrip_verifier",
+          "paper_sections": [
+            "5.12",
+            "10.13"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py",
+            "scripts/kerc_scoped_semantics_verify.py",
+            "scripts/standard_causal_transformer_model.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py",
+            "tests/test_kerc_scoped_semantics.py",
+            "reports/kerc_scoped_semantics_k1k.json",
+            "tests/test_standard_causal_transformer_survival.py"
+          ],
+          "current_finding": "KE-SERIALIZATION-2.0 and the compact learned transport exactly decode and compare roots, typed arguments, confidence, derivation, alignments, claims, and decisions. Verifier negatives corrupt the actual compact learned ABI and receive zero generator loss. The source-independent scoped-semantic verifier reconstructs all 14 ABI operators, while a separate raw-source path reconstructs 1,525 admitted human eRST programs and rejects direction, role, span, authority, and shared-edge mutations. The answer hard projection still ignores opaque byte-literal content and the learned verifier has not been calibrated on broad semantic corruptions.",
+          "claim_ceiling": "Listed structured-dimension mutation detection and verifier-head mechanics only; no semantic equivalence, truth, or verification-value claim.",
+          "next_evidence": "Reject byte-literal substitution plus independently produced hard negatives for scope, time, causality, attribution, quantity, caveat, ambiguity, and correlated compiler/recompiler error."
+        },
+        {
+          "id": "kerc.exact_conditional_codec",
+          "paper_sections": [
+            "7.7",
+            "9.3"
+          ],
+          "status": "faithful",
+          "implementation_refs": [
+            "scripts/kerc_residual_economics.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_residual_economics.py"
+          ],
+          "current_finding": "The adaptive order-1 arithmetic codec has exact encode/decode replay and explicit encoded/uncompressed bit receipts.",
+          "claim_ceiling": "Faithful finite-state codec mechanics and measured bit cost only; not a learned entropy model, compression win, or total-system efficiency result.",
+          "next_evidence": "Retain as the strong exact baseline; any learned challenger must include parameters, latency, memory, energy, synchronization, and recovery cost."
+        },
+        {
+          "id": "kerc.packet_level_structural_allocation",
+          "paper_sections": [
+            "7.6",
+            "9.7"
+          ],
+          "status": "faithful",
+          "implementation_refs": [
+            "scripts/kerc_residual_economics.py",
+            "scripts/kerc_importance_policy.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_residual_economics.py",
+            "tests/test_kerc_semantic_corpus.py"
+          ],
+          "current_finding": "Four packet-level fidelity candidates are selected using measured encoded bits, omitted packet-owned residual mass, calibrated source-visible structural importance, and protected minima.",
+          "claim_ceiling": "Faithful implementation of this narrow packet-level structural controller only; its distortion is not semantic utility and it is not the paper's learned per-unit allocator.",
+          "next_evidence": "Keep as a matched baseline for the per-unit learned constrained policy."
+        },
+        {
+          "id": "kerc.per_unit_structural_packet",
+          "paper_sections": [
+            "7.6",
+            "9.7",
+            "10.11"
+          ],
+          "status": "faithful",
+          "implementation_refs": [
+            "scripts/kerc_residual_economics.py",
+            "scripts/kernel_english_protocol.py",
+            "scripts/kerc_semantic_corpus.py",
+            "scripts/kerc_semantic_corpus_verify.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_residual_economics.py",
+            "tests/test_kernel_english_protocol.py",
+            "tests/test_kerc_semantic_corpus.py",
+            "reports/runtime/kerc_semantic_corpus_verification.json"
+          ],
+          "current_finding": "KPP-1.2 materializes 229,852 stable residual units across 27,941 independently replayed records: 27,941 interaction entries, 49,478 segment/frame units, 115,180 token residues, 7,180 concept realizations, and 30,073 exact objects. Every unit has four real typed payload candidates, exact dictionary-conditioned codec receipts, a compact 13-dimension structural-distortion vector, a per-unit hard minimum and ceiling, a separately typed source residual and render plan, and an independently recomputed selection. Causal conditioning excludes the priced unit while preserving strictly higher residual state. KPP-1.1 migration preserves every legacy payload field and rejects tampering or unknown versions. The cold producer is GREEN in 3,585.081 seconds, exact warm replay is 3.78 seconds, the four-worker independent verifier is GREEN in 1,974.212 seconds, and exact verifier replay is 12.14 seconds.",
+          "claim_ceiling": "Faithful K2 unit identity, payload, codec-cost, structural-constraint, selection, migration, cache-invalidation, and replay mechanics only. Structural distortion is not semantic or downstream utility; the selector is not learned or intervention-sensitive; no compression, efficiency, capability, or KERC-thesis win is claimed.",
+          "next_evidence": "K3 must derive source-disjoint intervention-sensitive targets with independent semantic and downstream evaluators, then train and calibrate the per-unit policy against structural, packet-wide, token-only, global-only, and oracle controls."
+        },
+        {
+          "id": "kerc.learned_per_unit_allocator",
+          "paper_sections": [
+            "7.6",
+            "10.11",
+            "10.14"
+          ],
+          "status": "faithful",
+          "implementation_refs": [
+            "scripts/kerc_residual_interventions.py",
+            "scripts/kerc_residual_allocator_evaluator.py",
+            "scripts/kerc_residual_allocator_qualification.py",
+            "scripts/moecot_language_arm_training.py",
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/standard_causal_transformer_survival.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_residual_allocator_qualification.py",
+            "tests/test_moecot_language_arm_training.py",
+            "tests/test_standard_causal_transformer_survival.py",
+            "reports/runtime/kerc_residual_allocator_qualification_v1.json"
+          ],
+          "current_finding": "K3 materializes 160,139 per-unit interventions over 21,209 governed records, with 69,979 source-dependent or hard-safety authoritative decisions and 90,160 uncertainty-withheld units. The source-only MLX allocator consumes exact ragged unit bytes, K2 codec features, unit kind, hard masks, and a 64-dimensional unit-to-task relation representation; answer text and evaluator effects remain hidden. Five source-family-disjoint seeds pass gradient, exact representative overfit, hard constraints, strict checkpoint reload, and stable heldout performance: 0.969656-0.971005 contested accuracy versus 0.863790 for the strongest source-blind schedule control. Five matched retrained source-relation-zero controls lose 0.009440-0.102495 contested accuracy, with a 0.032637 mean loss. The separately implemented human-annotation panel covers 3,061 adjudicated units across ten policies, reaches 0.997060 decision agreement and 0.998318 fact recall, records 0.002940 semantic violations, zero hard violations, and zero adjudicated rate regret. Canonical allocator loss is authorized; public data, external inference, fallback, and template credit remain zero.",
+          "claim_ceiling": "Faithful bounded K3 learned per-unit allocator under the governed private source/evaluator contract. No end-to-end KERC utility, compression, interaction amortization, public transfer, architecture advantage, or KERC-thesis win is claimed.",
+          "next_evidence": "Complete K4 interaction amortization and codec challengers, K5 renderer/verifier calibration, K6 full lifecycle and security stress, K7 total-cost instrumentation, then run the prospectively frozen matched K8 architecture campaign."
+        },
+        {
+          "id": "kerc.interaction_amortization",
+          "paper_sections": [
+            "7.4",
+            "7.5",
+            "9.8",
+            "9.9",
+            "10.11.1"
+          ],
+          "status": "inactive",
+          "implementation_refs": [
+            "scripts/kernel_english_protocol.py",
+            "scripts/kerc_semantic_corpus.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kernel_english_protocol.py"
+          ],
+          "current_finding": "Promotion economics and VCM state transitions exist, but the corpus uses independent records and has no nonempty coded interaction-global dictionary. The interaction target is currently derived from segment presence.",
+          "claim_ceiling": "Promotion transaction and break-even arithmetic mechanics only; no learned reuse, declining per-turn overhead, consistency, or causal utility claim.",
+          "next_evidence": "Coherent multi-turn episodes with repeated terminology, learned promote/local decisions, per-turn rate curves, expiry/deletion, wrong-user isolation, and context causal ablations."
+        },
+        {
+          "id": "kerc.coordinated_learned_architecture",
+          "paper_sections": [
+            "8.2",
+            "8.3",
+            "10.1",
+            "10.14"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/moecot_source_conditioned_pretraining.py",
+            "scripts/kerc_autoregressive_qualification.py"
+          ],
+          "evidence_refs": [
+            "tests/test_standard_causal_transformer_survival.py",
+            "tests/test_moecot_source_conditioned_pretraining.py",
+            "tests/test_kerc_adequacy_canary.py"
+          ],
+          "current_finding": "A shared trunk with stage adapters, typed code-space masks, auxiliary heads, joint-loss plumbing, and a no-fallback causal compiler/core/renderer execution route exists. Compiler chunks consume only visible source plus prior generated compiler state; reasoner chunks are topologically scheduled and consume direct predecessor stubs plus exact prior generated claims; answer assembly restores canonical claim order before the renderer and independent recompile-and-compare route. All 53,414 canonical views are materializable. Two source-bound MLX profiles now pass stage gradients, exact representative-subset overfit, real autoregressive execution, learned protected-span declarations followed by independent byte reconstruction, causal use of generated prior compiler/core state, exact checkpoint reload, and the enclosing bounded mechanics canary. The protected-single profile reaches exact token recovery in 936 updates and the two-chunk hierarchical profile reaches exact recovery in 1,536 updates while executing all nine expected stages without fallback. Fresh-process checkpoint branching passes two calibration and two untouched validation seeds with identical discrete outcomes inside independently derived numerical envelopes. Plain 80-update joint training retains observed ANSWER/CLARIFY/ABSTAIN mechanics at 0.9333 macro balanced accuracy. A matched class-balanced rehearsal candidate reaches 1.0 decision macro accuracy but is not adopted because it regresses token accuracy by 0.1806. No source-disjoint learned competence is claimed.",
+          "claim_ceiling": "Shared-trunk route, gradient, shape, and objective compatibility mechanics only.",
+          "next_evidence": "Representative-subset overfit and interventions for protected spans, compiler, core, per-unit allocator, answer head, renderer, and verifier under one versioned objective ledger."
+        },
+        {
+          "id": "kerc.checkpoint_migration_mlx",
+          "paper_sections": [
+            "10.16"
+          ],
+          "status": "faithful",
+          "implementation_refs": [
+            "scripts/kerc_checkpoint_schema.py",
+            "scripts/standard_causal_transformer_model.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_adequacy_canary.py",
+            "tests/test_standard_causal_transformer_survival.py"
+          ],
+          "current_finding": "KERC tensors, optimizer state, schema identity, migration, rollback, and bounded Apple-MLX execution replay are integrated. Checkpoint and optimizer reload are exact. A causal branch now publishes one content-addressed step-48 checkpoint, then compares uninterrupted continuation with a fresh process that loads that exact state. Two calibration seeds derive envelopes with a frozen 4x safety factor and absolute hard ceilings; two untouched validation seeds preserve every discrete outcome. Validation maxima are 2.8313e-7 for parameters, 9.8226e-9 for optimizer state, 1.0968e-5 for token logits, and 5.9605e-8 for verifier logits, all inside the derived envelopes and hard ceilings.",
+          "claim_ceiling": "Exact checkpoint/optimizer reload plus bounded fresh-process float32 MLX restart mechanics only; no sustained throughput, energy, CUDA parity, source-disjoint competence, or learned utility claim.",
+          "next_evidence": "Run multi-seed full-shape resource replay with memory/energy telemetry and cropped/uncropped equivalence before the campaign."
+        },
+        {
+          "id": "kerc.calibrated_answer_decision",
+          "paper_sections": [
+            "5.10",
+            "10.14"
+          ],
+          "status": "approximate",
+          "implementation_refs": [
+            "scripts/standard_causal_transformer_model.py",
+            "scripts/kerc_semantic_corpus.py"
+          ],
+          "evidence_refs": [
+            "tests/test_kerc_adequacy_canary.py"
+          ],
+          "current_finding": "The decision head can overfit observed ANSWER/CLARIFY/ABSTAIN mechanics. Under a matched 80-optimizer-update joint objective, the plain route retains 0.9333 macro balanced accuracy and passes the frozen 0.75 floor. A deterministic class-balanced rehearsal schedule reaches 1.0 decision macro accuracy under the same update budget, but is rejected because token accuracy regresses by 0.1806 and therefore fails the preregistered nondecision-preservation rule. PARTIAL remains absent and the result is not source-disjoint calibration or selective-risk evidence.",
+          "claim_ceiling": "Observed-class learnability mechanics only.",
+          "next_evidence": "Source-disjoint PARTIAL, ambiguity, insufficient/conflicting evidence, calibration, selective-risk, class-balance, and decision-intervention evidence."
+        }
+      ],
+      "faults": []
+    },
+    "hypothesis_audit": {
+      "hypothesis_count": 8,
+      "active_count": 0,
+      "hypotheses": [
+        {
+          "id": "H1",
+          "status": "inactive",
+          "claim": "Core sequence reduction",
+          "claim_ceiling": "No evidence until the frozen matched campaign measures expanded/compact lengths and all residual/object/macro overhead."
+        },
+        {
+          "id": "H2",
+          "status": "inactive",
+          "claim": "Compute efficiency",
+          "claim_ceiling": "No evidence until matched end-to-end quality and full FLOP/latency/energy/KV/lifecycle cost are measured."
+        },
+        {
+          "id": "H3",
+          "status": "inactive",
+          "claim": "Canonical learning efficiency",
+          "claim_ceiling": "No evidence until matched raw bytes, FLOPs, tuning, seeds, source-disjoint utility, and uncertainty are measured."
+        },
+        {
+          "id": "H4",
+          "status": "inactive",
+          "claim": "Entity fidelity",
+          "claim_ceiling": "Exact-object mechanics are not a learned fidelity win; no evidence until equal-budget rare-name/identifier/number/quotation comparisons run."
+        },
+        {
+          "id": "H5",
+          "status": "inactive",
+          "claim": "Residual hierarchy",
+          "claim_ceiling": "No evidence until per-unit learned hierarchy beats token-only, global-only, and no-residual controls on rate and fidelity."
+        },
+        {
+          "id": "H6",
+          "status": "inactive",
+          "claim": "Interaction amortization",
+          "claim_ceiling": "No evidence while the coded global dictionary is empty and no coherent multi-turn rate curve exists."
+        },
+        {
+          "id": "H7",
+          "status": "inactive",
+          "claim": "Verification value",
+          "claim_ceiling": "No evidence until independent semantic verification reduces accepted errors under matched retry and total cost."
+        },
+        {
+          "id": "H8",
+          "status": "inactive",
+          "claim": "Robustness and transfer",
+          "claim_ceiling": "No evidence until spelling/domain/OOD transfer is source-disjoint and compared against strong byte/dynamic-chunking controls without aggressive-correction hiding."
+        }
+      ],
+      "faults": []
+    },
+    "behavioral_claim_probes": {
+      "interaction_label_empty_segments": 0,
+      "interaction_label_segment_state_only": 1,
+      "interaction_label_depends_on_global_dictionary": false,
+      "byte_literal_mutation_rejected": false,
+      "faults": []
+    },
+    "faults": [],
+    "warnings": [],
+    "non_claims": [
+      "This GREEN gate means the K0 fidelity map is honest and source-bound, not that KERC is faithful or useful.",
+      "The current presence-label head is not a learned per-unit residual allocator.",
+      "Packet-level structural allocation does not establish semantic rate-distortion utility.",
+      "No H1-H8 hypothesis is active before the preregistered matched campaign.",
+      "The current corpus and verifier cannot support a scientific KERC failure verdict."
+    ],
+    "first_practical_campaign_exclusion": {
+      "policy": "project_theseus_kerc_first_campaign_exclusion_audit_v1",
+      "ready": true,
+      "config": "configs/moecot_language_arm_training.json",
+      "config_sha256": "ffa09985f2ece05408a8852915087a252c40b7984326f6346c04cb81d8c1e3ca",
+      "candidate_ids": [
+        "dense_active_parameter",
+        "dense_total_parameter",
+        "english",
+        "html_css",
+        "javascript_typescript",
+        "python",
+        "rust",
+        "shared_trunk"
+      ],
+      "forbidden_candidate_ids": [
+        "kerc",
+        "kerc_english",
+        "kernel_english"
+      ],
+      "zero_values": {
+        "kernel_english_training.disposition.first_campaign_topology_exposure": 0,
+        "kernel_english_training.disposition.first_campaign_optimizer_repetitions": 0,
+        "training.kernel_english_optimizer_repetitions": 0
+      },
+      "faults": [],
+      "claim_boundary": "This permits only the separately frozen practical campaign. It grants no current KERC fidelity, capability, utility, efficiency, or negative claim."
+    },
+    "mandatory_replacement_qualification": {
+      "policy": "project_theseus_kerc_mandatory_replacement_qualification_audit_v1",
+      "ready": true,
+      "state": "FIRST_CAMPAIGN_SCOPE_EXCLUDED_INCONCLUSIVE_EXPERIMENT",
+      "required_ladder": [
+        "guarded_online_attention_output_loss_gradient_parity",
+        "guarded_representative_full_objective_inside_watchdog_safety_envelope",
+        "k4_source_disjoint_multi_turn_interaction_causality",
+        "k5_learned_compiler_reasoner_renderer_and_structured_drafting",
+        "k6_lifecycle_security_checkpoint_migration_rollback_and_poisoning",
+        "k7_end_to_end_performance_and_total_lifecycle_cost",
+        "k8_multi_seed_matched_total_cost_verdict"
+      ],
+      "completed_ladder": [
+        "guarded_online_attention_output_loss_gradient_parity"
+      ],
+      "remaining_ladder": [
+        "guarded_representative_full_objective_inside_watchdog_safety_envelope",
+        "k4_source_disjoint_multi_turn_interaction_causality",
+        "k5_learned_compiler_reasoner_renderer_and_structured_drafting",
+        "k6_lifecycle_security_checkpoint_migration_rollback_and_poisoning",
+        "k7_end_to_end_performance_and_total_lifecycle_cost",
+        "k8_multi_seed_matched_total_cost_verdict"
+      ],
+      "evidence_audits": {
+        "guarded_online_attention_output_loss_gradient_parity": {
+          "declared": true,
+          "ready": false,
+          "path": "reports/kerc_online_attention_parity.json",
+          "policy": "project_theseus_kerc_online_attention_parity_v1",
+          "trigger_state": "GREEN",
+          "disposition": null,
+          "source_artifact_count": 6,
+          "acceptance_observed": {
+            "independent_audit.passed": true,
+            "independent_audit.producer_evaluator_separated": true,
+            "independent_audit.candidate_flags_recomputed": true,
+            "anti_cheating.answer_identifying_metadata_exposed": false,
+            "public_benchmark_prompts_used_for_training": 0,
+            "runtime_external_inference_calls": 0,
+            "parity.output": true,
+            "parity.loss": true,
+            "parity.gradients": true,
+            "parity.cached_decode": true,
+            "independent_reference": true,
+            "host_resource_safety.passed": true,
+            "host_resource_safety.child_started": true,
+            "host_resource_safety.terminated_by_guard": false,
+            "public_training_rows": 0,
+            "external_inference_calls": 0
+          },
+          "faults": [
+            "source_artifacts_stale:attention_implementation,freeze_contract,guard_receipt,independent_parity_test,watchdog_implementation"
+          ]
+        }
+      },
+      "missing_evidence": [
+        "guarded_online_attention_output_loss_gradient_parity"
+      ],
+      "first_campaign_scope_disposition": {
+        "declared": true,
+        "scope_excluded": true,
+        "evidence": {
+          "path": "reports/rdc_kerc_k5_source_span_transport_v4_population_step512_final_exposure_doubling_generation_rows16_seed_20260722.json",
+          "expected_sha256": "c208d46f998ebae38a5fbfc3b96d7b15ad8efdea989e6ebdea9a4ed937dca723",
+          "actual_sha256": "c208d46f998ebae38a5fbfc3b96d7b15ad8efdea989e6ebdea9a4ed937dca723",
+          "policy": "project_theseus_kerc_k5_stage_learnability_probe_v1",
+          "trigger_state": "GREEN",
+          "qualification_state": "LEARNABILITY_SANITY_FAILED",
+          "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY",
+          "exact_match_count": 0
+        },
+        "faults": []
+      },
+      "faults": [],
+      "block_reason": null
+    },
+    "roadmap_warnings": []
+  },
+  "pre_training_architecture_readiness": {
+    "policy": "project_theseus_pre_training_architecture_readiness_v1",
+    "ready": true,
+    "blocker_count": 0,
+    "warning_count": 0,
+    "phase_status_counts": {
+      "partial": 7,
+      "wired": 10,
+      "frozen": 1,
+      "implemented": 2
+    },
+    "externally_frozen_phase_count": 1,
+    "externally_frozen_phases": [
+      {
+        "phase": 9,
+        "title": "Hive Policy-First Distributed Operation",
+        "status": "frozen",
+        "reason": "When peers are reachable, run one bounded registered Hive task submission and verify the live execution receipt records against the scheduler's route-local VIEA authority/resource/failure contract. Hive policy-first scheduler now consumes the shared governance/failure/authority/resource view; current travel state prevents live multi-node proof, the remote CUDA job has no eligible reachable device, and mobile/watch/spatial product work remains breadth-frozen"
+      }
+    ],
+    "required_architecture_phase_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      11,
+      14,
+      15,
+      18,
+      19
+    ],
+    "ready_phase_statuses": [
+      "implemented",
+      "qualified",
+      "wired"
+    ],
+    "required_architecture_phases": [
+      {
+        "phase": 0,
+        "title": "Repository Self-Model And Registry Discipline",
+        "status": "partial",
+        "ready": true,
+        "ordinary_zero_gap_ready": false,
+        "scoped_readiness_declared": true,
+        "scoped_readiness_ready": true,
+        "missing_items": [
+          "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
+          "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
+        ],
+        "nonblocking_residuals": [
+          "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
+          "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
+        ],
+        "required_source_artifact_paths": [
+          "configs/project_manifest_registry.json",
+          "configs/roadmap_implementation_matrix.json",
+          "scripts/pretraining_architecture_freeze.py",
+          "tests/test_pretraining_architecture_freeze.py"
+        ],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": true,
+          "ready": true,
+          "path": "reports/pretraining_architecture_freeze_package.json",
+          "policy": "project_theseus_pretraining_architecture_freeze_v1",
+          "trigger_state": "GREEN",
+          "disposition": "architecture_frozen_training_not_started",
+          "source_artifact_count": 123,
+          "acceptance_observed": {},
+          "faults": []
+        },
+        "smallest_next_patch": "Bank the independently replayed T0A acceleration transaction as a coherent reviewed checkpoint with bound source/config/report/replay identities, leaving unrelated user changes outside it; committing is custody, not qualification. Then complete Phase 0 reproduction and audit and retire the superseded strict-generator/code_lm_closure family, extract live mechanisms into canonical owners, remove retired imports from active gates, archive reports through verified retention pointers, and compact roadmap evidence prose. Real signed release/custody evidence remains a separate post-checkpoint task."
+      },
+      {
+        "phase": 1,
+        "title": "VIEA Execution Spine",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Maintain the effect-complete assistant profile as a required VIEA contract and repeat the same independent observation/rollback discipline for every new side-effect class."
+      },
+      {
+        "phase": 2,
+        "title": "Stable Capability Fields And Route Authority",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Keep attestation-gated loaders and effect-complete route replacement under regression coverage; new routable implementations must provide equivalent exact content, authority, observation, and rollback receipts."
+      },
+      {
+        "phase": 3,
+        "title": "Virtual Context Memory As Default Context Substrate",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Consume the wired semantic lifecycle records in Phase 7 continual-update/deletion campaigns and Phase 10 model context paths; keep dense embedding, parametric unlearning, and public-memory capability claims separately evidence-gated."
+      },
+      {
+        "phase": 4,
+        "title": "Candidate Integrity And Learned Generation Accounting",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Keep direct learned full-body quality receipts flowing through independent candidate integrity, and keep semantic behavior repair tracked under Phase 10 rather than weakening learned-generation accounting."
+      },
+      {
+        "phase": 6,
+        "title": "Deterministic Tool And Search Substrate",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "After the Phase 10 proposer achieves a nonzero family-disjoint model-only floor, route learned repair proposals through the existing bounded search kernel and measure the pass-rate-versus-search-budget curve. Keep hidden public/evaluation tests out of model-only claims and deterministic repairs in assisted-only accounting."
+      },
+      {
+        "phase": 8,
+        "title": "Resource, Cost, And Mac Acceleration Routing",
+        "status": "partial",
+        "ready": true,
+        "ordinary_zero_gap_ready": false,
+        "scoped_readiness_declared": true,
+        "scoped_readiness_ready": true,
+        "missing_items": [
+          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
+        ],
+        "nonblocking_residuals": [
+          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
+        ],
+        "required_source_artifact_paths": [
+          "configs/moecot_language_arm_training.json",
+          "reports/fresh_process_pretraining_qualification.json",
+          "scripts/fresh_process_pretraining_qualification.py",
+          "scripts/moecot_language_arm_training.py",
+          "tests/test_moecot_language_arm_training.py"
+        ],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": true,
+          "ready": true,
+          "path": "reports/pretraining_architecture_freeze_package.json",
+          "policy": "project_theseus_pretraining_architecture_freeze_v1",
+          "trigger_state": "GREEN",
+          "disposition": "architecture_frozen_training_not_started",
+          "source_artifact_count": 123,
+          "acceptance_observed": {},
+          "faults": []
+        },
+        "smallest_next_patch": "Bank the coherent tested acceleration transaction. Then close only the named non-acceleration blockers in the broader pre-training architecture-readiness gate and launch the matched campaign through scripts/neural_seed_training_campaign.py without reopening acceleration or architecture intake."
+      },
+      {
+        "phase": 11,
+        "title": "Cognitive Kernel Discovery Lane Verdicts",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "The vendored OneCell handoff is content-bound in the active-docs registry, so architecture/exact-substrate work may proceed without relying on the external share or delaying the practical data-and-scale decision. OneCell remains non-routeable until its matched total-cost verdict. Refresh SymLiquid only through a new preregistered matched-compute comparator."
+      },
+      {
+        "phase": 14,
+        "title": "Compression, Proof, And Claim Evidence Records",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Qualify the Phase 7 admission subset of the EpistemicTCBManifest before 57.315M training authorization. Then complete strict-lane retirement and roadmap compaction after the data campaign while maintaining assurance compilation in the canonical evidence store; no green report self-authorizes trust."
+      },
+      {
+        "phase": 15,
+        "title": "Procedural Memory And Toolification",
+        "status": "implemented",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "After a behavior-positive selected local model produces real governed traces, extend the canonical Loop-Closure owner from exact procedural lookup through negative-space guard synthesis, differential plus live-shadow qualification, canary SCF replacement, route-regret monitoring, and decompilation. Preserve the three current exact assets and do not create a second procedural-memory or router lane."
+      },
+      {
+        "phase": 18,
+        "title": "Governance Rights, Constitutional Predicates, And Failure Boundaries",
+        "status": "wired",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Close ASI-31 on the existing local authority surfaces before routine exposure: request-local false-by-default teacher/network authority, mutation auth, Origin/CSRF/JSON/body/rate/concurrency controls, tokened non-wildcard-CORS OpenAI defaults, loopback signed-discovery header-only Hive credentials, worker and untrusted-code isolation, fixed safety-grade floors, attempted-transmission accounting, and adversarial denials. This security repair may run beside KERC and does not create a product lane."
+      },
+      {
+        "phase": 19,
+        "title": "Book-To-Theseus Backlog And Evidence Synchronization",
+        "status": "implemented",
+        "ready": true,
+        "ordinary_zero_gap_ready": true,
+        "scoped_readiness_declared": false,
+        "scoped_readiness_ready": false,
+        "missing_items": [],
+        "nonblocking_residuals": [],
+        "required_source_artifact_paths": [],
+        "missing_source_artifact_paths": [],
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "smallest_next_patch": "Keep the historical 54-row pin authoritative while ASI-00 reconciles committed book revision df0b675230c73e1a749f7d48f3263d126023f692 and its 84 chapters in one reviewed transaction. Map the 30 missing IDs into existing capability fields with one disposition, maturity/evidence/route state, activation gate, tests, residuals, and non-claims; create no new registry or automatic runtime/support-state effect. This intake is nonblocking unless it exposes a concrete campaign correctness or evaluator-integrity defect."
+      }
+    ],
+    "training_or_behavior_qualification_phase_ids": [
+      5,
+      7,
+      10,
+      12,
+      13,
+      16,
+      17
+    ],
+    "external_environment_phase_ids": [
+      9
+    ],
+    "required_backlog_ids": [
+      "planned.data_engine_continual_learning_unlearning_v1",
+      "planned.diffusion_llada_sketch_first_repair_v1",
+      "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
+      "planned.grpo_rloo_remax_rlvr_private_verifier_reward_v1",
+      "planned.gvr_state_machine_and_localized_repair_v1",
+      "planned.independent_token_corpus_acceleration_v1",
+      "planned.kernel_english_hierarchical_residual_compiler_v1",
+      "planned.medusa_eagle_speculative_layerskip_registry_v1",
+      "planned.mtp_generation_mode_matched_control_v1",
+      "planned.multi_target_policy_updates_v1",
+      "planned.onecell_rwm_candidate_kernel_v1",
+      "planned.open_ended_improvement_campaign_v1",
+      "planned.pretraining_architecture_upgrade_closure_v1",
+      "planned.question_compiled_semantic_addressing_v1",
+      "planned.reflexive_router_integration_v1"
+    ],
+    "ready_backlog_statuses": [
+      "falsified_pretraining",
+      "implemented",
+      "pretraining_wired_behavior_qualification_pending",
+      "qualified",
+      "retired_by_pretraining_verdict"
+    ],
+    "required_backlog_contracts": [
+      {
+        "backlog_id": "planned.data_engine_continual_learning_unlearning_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.diffusion_llada_sketch_first_repair_v1",
+        "status": "retired_by_pretraining_verdict",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": true,
+          "ready": true,
+          "kind": "campaign_scope_only",
+          "scientific_falsification_claimed": false,
+          "scope_only_ready": true,
+          "decision_grade_ready": false
+        }
+      },
+      {
+        "backlog_id": "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.grpo_rloo_remax_rlvr_private_verifier_reward_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.gvr_state_machine_and_localized_repair_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.independent_token_corpus_acceleration_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.kernel_english_hierarchical_residual_compiler_v1",
+        "status": "retired_by_pretraining_verdict",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": true,
+          "ready": true,
+          "kind": "campaign_scope_only",
+          "scientific_falsification_claimed": false,
+          "scope_only_ready": true,
+          "decision_grade_ready": false
+        }
+      },
+      {
+        "backlog_id": "planned.medusa_eagle_speculative_layerskip_registry_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.mtp_generation_mode_matched_control_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.multi_target_policy_updates_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.onecell_rwm_candidate_kernel_v1",
+        "status": "retired_by_pretraining_verdict",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": true,
+          "ready": true,
+          "path": "reports/onecell_rwm_pretraining_disposition.json",
+          "policy": "project_theseus_onecell_rwm_pretraining_disposition_v1",
+          "trigger_state": "GREEN",
+          "disposition": "retired_from_first_language_campaign",
+          "source_artifact_count": 2,
+          "acceptance_observed": {},
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": true,
+          "ready": true,
+          "kind": "campaign_scope_only",
+          "scientific_falsification_claimed": false,
+          "scope_only_ready": true,
+          "decision_grade_ready": false
+        }
+      },
+      {
+        "backlog_id": "planned.open_ended_improvement_campaign_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.pretraining_architecture_upgrade_closure_v1",
+        "status": "implemented",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.question_compiled_semantic_addressing_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      },
+      {
+        "backlog_id": "planned.reflexive_router_integration_v1",
+        "status": "pretraining_wired_behavior_qualification_pending",
+        "ready": true,
+        "pre_training_acceptance_boundary_present": true,
+        "evidence": {
+          "declared": false,
+          "ready": true,
+          "faults": []
+        },
+        "negative_disposition": {
+          "required": false,
+          "ready": true,
+          "kind": "",
+          "scientific_falsification_claimed": null
+        }
+      }
+    ],
+    "strict_architecture_first_enforcement": true,
+    "architecture_dependency_order": [
+      "planned.reflexive_router_integration_v1",
+      "planned.data_engine_continual_learning_unlearning_v1",
+      "planned.multi_target_policy_updates_v1",
+      "planned.gvr_state_machine_and_localized_repair_v1",
+      "planned.open_ended_improvement_campaign_v1",
+      "planned.dpo_ipo_orpo_kto_simpo_private_preference_v1",
+      "planned.grpo_rloo_remax_rlvr_private_verifier_reward_v1",
+      "planned.mtp_generation_mode_matched_control_v1",
+      "planned.medusa_eagle_speculative_layerskip_registry_v1",
+      "planned.diffusion_llada_sketch_first_repair_v1",
+      "planned.onecell_rwm_candidate_kernel_v1",
+      "planned.kernel_english_hierarchical_residual_compiler_v1",
+      "planned.independent_token_corpus_acceleration_v1",
+      "planned.pretraining_architecture_upgrade_closure_v1",
+      "final_cross_owner_replay_and_architecture_freeze_package",
+      "unchanged_final_mlx_mechanics_canaries_and_joint_campaign_preregistration"
+    ],
+    "training_authority_state": "denied_until_finite_docket_and_freeze_package_are_green",
+    "architecture_freeze_package": {
+      "declared": true,
+      "ready": true,
+      "path": "reports/pretraining_architecture_freeze_package.json",
+      "policy": "project_theseus_pretraining_architecture_freeze_v1",
+      "trigger_state": "GREEN",
+      "disposition": "architecture_frozen_training_not_started",
+      "source_artifact_count": 123,
+      "acceptance_observed": {},
+      "faults": []
+    },
+    "deferred_unfinished_phases": [
+      {
+        "phase": 5,
+        "title": "Daily-Use Assistant Runtime And Dogfood Trace Loop",
+        "status": "partial",
+        "reason": "training_or_behavior_qualification_follow_through"
+      },
+      {
+        "phase": 7,
+        "title": "Teacher And Data Governance",
+        "status": "partial",
+        "reason": "training_or_behavior_qualification_follow_through"
+      },
+      {
+        "phase": 10,
+        "title": "Practical Neural Seed Survival Lane",
+        "status": "partial",
+        "reason": "training_or_behavior_qualification_follow_through"
+      },
+      {
+        "phase": 12,
+        "title": "Public Calibration And Residual Mining Discipline",
+        "status": "wired",
+        "reason": "training_or_behavior_qualification_follow_through"
+      },
+      {
+        "phase": 13,
+        "title": "Semantic IR And Substrate-Neutral Reasoning Atoms",
+        "status": "partial",
+        "reason": "training_or_behavior_qualification_follow_through"
+      },
+      {
+        "phase": 16,
+        "title": "MoECOT And Octopus Router Integration",
+        "status": "partial",
+        "reason": "training_or_behavior_qualification_follow_through"
+      },
+      {
+        "phase": 17,
+        "title": "Simulation, Fidelity, And World-Model Contracts",
+        "status": "wired",
+        "reason": "training_or_behavior_qualification_follow_through"
+      }
+    ],
+    "core_slice_count": 5,
+    "support_rank": {
+      "argument": 0,
+      "prototype-backed": 1,
+      "synthetic-test-backed": 2,
+      "empirical-test-backed": 3,
+      "replayable-reference-backed": 4
+    },
+    "rules": {
+      "scope": "This gate decides whether architecture is ready for training/public calibration focus; it does not run training.",
+      "training_boundary": "No long training, public calibration, or score chasing should be primary while a required architecture phase is neither qualified nor wired/implemented with zero pre-training gaps nor covered by an evidence-bound frozen-campaign disposition. Global phase qualification and post-training behavior cannot circularly block architecture readiness.",
+      "external_frozen_exception": "A frozen item can remain only when it names a concrete external-environment blocker such as unreachable trusted peers.",
+      "claim_boundary": "Tools, routers, templates, deterministic solvers, and assisted product traces stay separate from learned-generation claims."
+    },
+    "blockers": [],
+    "warnings": []
+  },
+  "hive_artifact_citations": [
+    {
+      "path": "reports/hive_installer_artifacts.json",
+      "exists": true,
+      "policy": "project_theseus_hive_installer_artifacts_v1",
+      "citation_ready": true,
+      "citation_id": "viea_artifact_citation-8fc3454cb2c794b3",
+      "claim_ledger_ref_count": 8,
+      "artifact_record_ref_count": 8,
+      "evidence_transition_ref_count": 8,
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    },
+    {
+      "path": "reports/hive_artifact_index_smoke.json",
+      "exists": true,
+      "policy": "project_theseus_hive_artifact_index_v0",
+      "citation_ready": true,
+      "citation_id": "viea_artifact_citation-c2b7f4b6fc221d9e",
+      "claim_ledger_ref_count": 8,
+      "artifact_record_ref_count": 8,
+      "evidence_transition_ref_count": 8,
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    },
+    {
+      "path": "reports/hive_artifact_sync.json",
+      "exists": true,
+      "policy": "project_theseus_hive_artifact_sync_v0",
+      "citation_ready": true,
+      "citation_id": "viea_artifact_citation-0a674ad48c0bd6d7",
+      "claim_ledger_ref_count": 8,
+      "artifact_record_ref_count": 8,
+      "evidence_transition_ref_count": 8,
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    },
+    {
+      "path": "reports/hive_artifact_merge_summary.json",
+      "exists": true,
+      "policy": "project_theseus_hive_artifact_merge_summary_v0",
+      "citation_ready": true,
+      "citation_id": "viea_artifact_citation-7194e7a71099384c",
+      "claim_ledger_ref_count": 8,
+      "artifact_record_ref_count": 8,
+      "evidence_transition_ref_count": 8,
+      "public_training_rows_written": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0
+    }
+  ],
+  "hard_gaps": [],
+  "warnings": [
+    {
+      "id": "book_chapter_implementation_crosswalk",
+      "kind": "live_book_worktree_differs_from_pinned_snapshot",
+      "severity": "warning",
+      "evidence": {
+        "book_commit": "32635eb94ded42a5f54e528302685cab343993b7",
+        "pinned_manifest_sha256": "8ed8864d7a14673d75d81620f81a4f3740bf826fbb3862ee41e0e20ad56c485e",
+        "live_manifest_sha256": "cd53837df39a3b2a9ccbf583708f7826d2773b41878ee96c710487265dfe2cfd",
+        "rule": "Live book edits are intake work, not an architecture-readiness regression. Reconcile and advance the pin in a separate reviewed change."
+      }
+    }
+  ],
+  "outputs": {
+    "book_to_theseus_crosswalk": "reports/book_to_theseus_crosswalk.json"
+  }
+}

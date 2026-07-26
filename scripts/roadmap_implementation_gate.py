@@ -40,8 +40,10 @@ DEFAULT_AI_BOOK_ROOT = ROOT.parent / "AI_book"
 DEFAULT_KERC_FIDELITY_OUT = ROOT / "reports" / "kerc_implementation_fidelity_gate.json"
 REQUIRED_PHASES = set(range(20))
 ALLOWED_PHASE_STATES = {"qualified", "implemented", "wired", "partial", "missing", "frozen"}
-# DONE_STATES means implementation evidence exists. Architecture readiness is
-# deliberately stricter: only QUALIFIED_PHASE_STATES may close a prerequisite.
+# DONE_STATES means implementation evidence exists. Global roadmap completion
+# remains deliberately stricter; the separate pre-training gate may accept
+# configured wired/implemented zero-gap states without claiming that the whole
+# phase has completed its post-training empirical obligations.
 DONE_STATES = {"qualified", "implemented", "wired"}
 QUALIFIED_PHASE_STATES = {"qualified"}
 REQUIRED_KERC_REPLACEMENT_LADDER = (
@@ -1555,6 +1557,11 @@ def audit_pre_training_architecture_readiness(
         for value in list_values(architecture_contract.get("ready_backlog_statuses"))
         if str(value)
     }
+    ready_phase_statuses = {
+        str(value)
+        for value in list_values(architecture_contract.get("ready_phase_statuses"))
+        if str(value)
+    }
     strict_architecture_first = architecture_contract.get("strict_architecture_first_enforcement") is True
     planned_backlog = list_dicts(matrix.get("planned_codex_test_backlog"))
     backlog_by_id = {
@@ -1574,6 +1581,18 @@ def audit_pre_training_architecture_readiness(
             {
                 "kind": "pre_training_architecture_contract_missing_required_phases",
                 "required_action": "Declare architecture prerequisites separately from training and behavior qualification phases.",
+            }
+        )
+    invalid_ready_phase_statuses = sorted(
+        ready_phase_statuses - {"wired", "implemented", "qualified"}
+    )
+    if not ready_phase_statuses or invalid_ready_phase_statuses:
+        blockers.append(
+            {
+                "kind": "pre_training_architecture_contract_invalid_ready_phase_statuses",
+                "ready_phase_statuses": sorted(ready_phase_statuses),
+                "invalid_statuses": invalid_ready_phase_statuses,
+                "required_action": "Declare only wired, implemented, or qualified as ordinary zero-gap pre-training-ready states; partial phases require an explicit evidence-bound frozen-campaign disposition.",
             }
         )
     if contract_phase_ids != declared_phase_ids or overlap_phase_ids:
@@ -1780,18 +1799,79 @@ def audit_pre_training_architecture_readiness(
         for row in phases
         if phase_is_external_frozen(row)
     ]
+    required_phase_rows = []
+    for row in phases:
+        phase_id = int_or(row.get("phase"), -1)
+        if phase_id not in required_architecture_phase_ids:
+            continue
+        status = str(row.get("status") or "")
+        missing_items = [str(value) for value in list_values(row.get("missing_items"))]
+        scoped = dict_value(row.get("pre_training_readiness"))
+        evidence_contract = dict_value(scoped.get("evidence"))
+        scoped_evidence = audit_pre_training_backlog_evidence(evidence_contract)
+        nonblocking_residuals = [
+            str(value) for value in list_values(scoped.get("nonblocking_residuals"))
+        ]
+        required_source_paths = {
+            str(value)
+            for value in list_values(scoped.get("required_source_artifact_paths"))
+            if str(value)
+        }
+        observed_source_paths: set[str] = set()
+        if evidence_contract:
+            evidence_report = read_json(
+                resolve(str(evidence_contract.get("path") or ""))
+            )
+            observed_source_paths = {
+                str(dict_value(ref).get("path") or "")
+                for ref in dict_value(
+                    evidence_report.get("source_artifacts")
+                ).values()
+            }
+        missing_source_paths = sorted(
+            required_source_paths - observed_source_paths
+        )
+        ordinary_ready = status in ready_phase_statuses and not missing_items
+        scoped_ready = (
+            scoped.get("state") == "READY_FOR_FROZEN_CAMPAIGN"
+            and bool(str(scoped.get("acceptance_boundary") or ""))
+            and sorted(nonblocking_residuals) == sorted(missing_items)
+            and scoped_evidence["declared"]
+            and scoped_evidence["ready"]
+            and bool(required_source_paths)
+            and not missing_source_paths
+        )
+        required_phase_rows.append(
+            {
+                "phase": phase_id,
+                "title": str(row.get("title") or ""),
+                "status": status,
+                "ready": ordinary_ready or scoped_ready,
+                "ordinary_zero_gap_ready": ordinary_ready,
+                "scoped_readiness_declared": bool(scoped),
+                "scoped_readiness_ready": scoped_ready,
+                "missing_items": missing_items,
+                "nonblocking_residuals": nonblocking_residuals,
+                "required_source_artifact_paths": sorted(required_source_paths),
+                "missing_source_artifact_paths": missing_source_paths,
+                "evidence": scoped_evidence,
+                "smallest_next_patch": str(row.get("smallest_next_patch") or ""),
+            }
+        )
     unfinished = [
         {
-            "phase": int_or(row.get("phase"), -1),
-            "title": str(row.get("title") or ""),
-            "status": str(row.get("status") or ""),
-            "missing_item_count": len(list_values(row.get("missing_items"))),
-            "smallest_next_patch": str(row.get("smallest_next_patch") or ""),
+            "phase": row["phase"],
+            "title": row["title"],
+            "status": row["status"],
+            "missing_item_count": len(row["missing_items"]),
+            "missing_source_artifact_paths": row[
+                "missing_source_artifact_paths"
+            ],
+            "smallest_next_patch": row["smallest_next_patch"],
         }
-        for row in phases
-        if int_or(row.get("phase"), -1) in required_architecture_phase_ids
-        and str(row.get("status") or "") not in QUALIFIED_PHASE_STATES
-        and not phase_is_external_frozen(row)
+        for row in required_phase_rows
+        if not row["ready"]
+        and not phase_is_external_frozen(phase_by_id[row["phase"]])
     ]
     if unfinished:
         blockers.append(
@@ -1917,6 +1997,8 @@ def audit_pre_training_architecture_readiness(
         "externally_frozen_phase_count": len(externally_frozen),
         "externally_frozen_phases": externally_frozen,
         "required_architecture_phase_ids": sorted(required_architecture_phase_ids),
+        "ready_phase_statuses": sorted(ready_phase_statuses),
+        "required_architecture_phases": required_phase_rows,
         "training_or_behavior_qualification_phase_ids": sorted(deferred_phase_ids),
         "external_environment_phase_ids": sorted(external_environment_phase_ids),
         "required_backlog_ids": sorted(required_backlog_ids),
@@ -1931,7 +2013,7 @@ def audit_pre_training_architecture_readiness(
         "support_rank": support_rank,
         "rules": {
             "scope": "This gate decides whether architecture is ready for training/public calibration focus; it does not run training.",
-            "training_boundary": "No long training, public calibration, or score chasing should be primary while required architecture phases are below qualified or declared cross-phase pre-training contracts remain unfinished; training and behavior qualification phases cannot circularly block architecture readiness.",
+            "training_boundary": "No long training, public calibration, or score chasing should be primary while a required architecture phase is neither qualified nor wired/implemented with zero pre-training gaps nor covered by an evidence-bound frozen-campaign disposition. Global phase qualification and post-training behavior cannot circularly block architecture readiness.",
             "external_frozen_exception": "A frozen item can remain only when it names a concrete external-environment blocker such as unreachable trusted peers.",
             "claim_boundary": "Tools, routers, templates, deterministic solvers, and assisted product traces stay separate from learned-generation claims.",
         },
