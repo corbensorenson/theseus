@@ -123,6 +123,9 @@ def training_host_policy(
         maximum_wall_seconds=float(contract["maximum_wall_seconds"]),
         poll_interval_seconds=float(contract["poll_interval_seconds"]),
         terminate_grace_seconds=float(contract["terminate_grace_seconds"]),
+        swapout_growth_action=str(
+            contract.get("swapout_growth_action") or "hard_stop"
+        ),
     )
     policy.validate(physical_memory_mib=host_resource_safety.physical_memory_mib())
     return policy

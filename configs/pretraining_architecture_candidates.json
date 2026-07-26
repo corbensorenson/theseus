@@ -127,7 +127,8 @@
   },
   "host_safety_policy_overrides": {
     "rdc_kerc_k5_adequacy": {
-      "maximum_swapout_growth_mib": 320
+      "maximum_swapout_growth_mib": 320,
+      "swapout_growth_action": "report_only"
     }
   },
   "measured_preflight_overrides": {

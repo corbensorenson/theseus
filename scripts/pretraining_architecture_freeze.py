@@ -470,7 +470,11 @@ def accelerator_receipt_valid(
         == expected_implementation
         and (receipt.get("dependency_receipts") or {}) == expected_dependencies
         and all(
-            float(limits.get(key) or 0) == float(expected)
+            (
+                limits.get(key) == expected
+                if isinstance(expected, str)
+                else float(limits.get(key) or 0) == float(expected)
+            )
             for key, expected in expected_limits.items()
         )
     )

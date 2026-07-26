@@ -1163,8 +1163,8 @@
         "capability_claim": "NONE"
       },
       "v8_compiler_allocator_ownership_transport": {
-        "state": "V4_BOUNDED_OVERFIT_GREEN_POPULATION_CONTINUATION_AUTHORIZED",
-        "candidate_execution_plan_sha256": "bd392be52d0b1b917cff275dd040e207b14d9b3e9cc920a26244b6c3bbe07f8d",
+        "state": "V4_POPULATION_STEP17_HOST_POLICY_FAULT_EXACT_RETRY_AUTHORIZED",
+        "candidate_execution_plan_sha256": "f9f69bec11f6b83692b3c0eba584514caa6d344a5b257b6b30a581e4b937b9a6",
         "update_execution_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
         "source_optimizer_step": 4657,
         "source_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
@@ -1376,6 +1376,48 @@
             "qualification": "LEARNABILITY_SANITY_GREEN",
             "capability_claim": "NONE_TRAINING_ROW_LEARNABILITY_ONLY"
           },
+          "source_span_transport_v4_population_attempt_1": {
+            "host_resource_safety_report": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_swap_policy_fault_seed_20260722.host_resource_safety.json",
+            "host_resource_safety_sha256": "80014281542302f0d6514e93bfda20f63e2238168822d4fd70658d3e39462fb1",
+            "source_optimizer_step": 4658,
+            "last_heartbeat_optimizer_step": 4675,
+            "last_heartbeat_population_update": 17,
+            "last_heartbeat_phase_positions": 3839,
+            "last_heartbeat_phase_position_budget": 60940,
+            "last_heartbeat_loss": 4.141647,
+            "terminal_training_report_written": false,
+            "checkpoint_promoted": false,
+            "fault": "swap_growth_limit_exceeded",
+            "wall_seconds": 858.947,
+            "maximum_process_rss_mib": 275.547,
+            "maximum_inferred_unified_memory_mib": 2146.797,
+            "minimum_reclaimable_available_mib": 2533.484,
+            "maximum_swapout_growth_mib": 340.125,
+            "configured_maximum_swapout_growth_mib": 320,
+            "fault_observation": {
+              "elapsed_seconds": 858.89,
+              "process_rss_mib": 63.578,
+              "inferred_unified_memory_mib": 1444.906,
+              "reclaimable_available_mib": 3235.375,
+              "swapout_growth_mib": 340.125
+            },
+            "swap_growth_trace": {
+              "flat_until_elapsed_seconds": 857.231,
+              "burst_duration_seconds": 1.534,
+              "counter_scope": "macos_host_wide_not_child_attributable"
+            },
+            "disposition": "HOST_POLICY_FAULT_NO_MODEL_OR_RESOURCE_INADEQUACY_CREDIT"
+          },
+          "population_retry_host_policy": {
+            "swapout_growth_action": "report_only",
+            "minimum_available_before_launch_mib": 2048,
+            "minimum_available_during_run_mib": 2048,
+            "maximum_process_memory_mib": 6144,
+            "maximum_wall_seconds": 43200,
+            "reserve_breach_observations_required": 3,
+            "telemetry_fail_closed": true,
+            "reason": "The swapout counter is system-wide and the first attempt crossed its K5-only ceiling while live reserve and child memory remained inside their hard bounds; retain it as telemetry and rerun from the immutable source rather than inventing another scalar ceiling."
+          },
           "bounded_overfit_plan_sha256": "6cc1c6d7493b0505075cf7c3381eedbe66b6e03b88f283e4d37e059d938df622",
           "bounded_overfit_source_optimizer_step": 4658,
           "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
@@ -1395,7 +1437,7 @@
         "capability_claim": "NONE"
       }
     },
-    "next_owner": "run exactly one guarded compiler-transport-v3 continuation update from immutable step 4657, then require frozen admitted-row teacher-forced, transport, and independent zero-credit semantic diagnostics before extending the rung; if raw alignment/protected integers remain the measured wall, implement typed source-position pointers with blind zero-credit materialization and compare against the retained raw-value source; consume no new seed or private surface before positive independent semantic validity without transport regression",
+    "next_owner": "rerun the exact 128-update compiler-transport-v4 population command from immutable step 4658 under the content-bound report-only system-swap telemetry policy while retaining hard live-reserve, child-memory, wall, and telemetry stops; then require exact sampler/exposure accounting, weakest-row teacher forcing, raw admitted-training-panel transport plus independent semantic validity, checkpoint reload, and only afterward source-disjoint behavior; consume no new seed or private surface before the population diagnostics are positive",
         "separate_k7_owner": "optimize the measured constrained-decode slow path without changing reference semantics",
         "architecture_negative_authority": false,
         "capability_claim": "NONE"

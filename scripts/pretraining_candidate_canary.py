@@ -304,7 +304,10 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
         not isinstance(host_overrides, dict)
         or set(host_overrides) != {"rdc_kerc_k5_adequacy"}
         or host_overrides["rdc_kerc_k5_adequacy"]
-        != {"maximum_swapout_growth_mib": 320}
+        != {
+            "maximum_swapout_growth_mib": 320,
+            "swapout_growth_action": "report_only",
+        }
     ):
         raise CandidateCanaryFault("host_safety_policy_overrides_invalid")
     for candidate_id, override in overrides.items():
@@ -616,7 +619,9 @@ def candidate_host_safety_mapping(
             ),
             "launch_gate": "configured_live_reserve_only",
             "runtime_enforcement": (
-                "external_live_reserve_and_swap_growth_watchdog"
+                "external_live_reserve_watchdog_with_swap_growth_telemetry"
+                if mapping.get("swapout_growth_action") == "report_only"
+                else "external_live_reserve_and_swap_growth_watchdog"
             ),
         }
     host_resource_safety.policy_from_mapping(

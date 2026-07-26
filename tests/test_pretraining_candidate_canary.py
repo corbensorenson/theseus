@@ -75,6 +75,7 @@ def test_kerc_lease_binds_matched_control_and_behavior_panel() -> None:
 def test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate() -> None:
     mapping = canary.candidate_host_safety_mapping("rdc_kerc_k5_adequacy")
     assert mapping["maximum_swapout_growth_mib"] == 320
+    assert mapping["swapout_growth_action"] == "report_only"
     preflight = mapping["measured_launch_preflight"]
     assert preflight["maximum_inferred_unified_memory_mib"] == 6268.875
     assert preflight["required_live_reserve_mib"] == 2048
@@ -86,7 +87,7 @@ def test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate() -> N
     )
     assert preflight["launch_gate"] == "configured_live_reserve_only"
     assert preflight["runtime_enforcement"] == (
-        "external_live_reserve_and_swap_growth_watchdog"
+        "external_live_reserve_watchdog_with_swap_growth_telemetry"
     )
     assert preflight["qualified_maximum_training_sequence_tokens"] == 1005
     assert preflight["current_maximum_training_sequence_tokens"] == 628

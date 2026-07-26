@@ -1724,6 +1724,23 @@ generation service, KERC sidecar, or private evaluator.
    source-disjoint behavior before K5 can advance. No fresh private surface is authorized yet.
    K5 remains `INCONCLUSIVE_EXPERIMENT`, not a capability result.
 
+   The first 128-update population attempt passed the explicit checkpoint-plan migration and
+   reached optimizer step 4,675 / population update 17 before the external guard stopped it. Swap
+   was flat for 857 seconds, then the macOS host-wide counter rose 340.125 MiB over 1.534 seconds
+   and crossed the K5-only 320 MiB ceiling. At the terminating observation the child process RSS
+   was 63.578 MiB, inferred host pressure was 1,444.906 MiB, and 3,235.375 MiB remained
+   reclaimable; across the run the minimum reclaimable amount was 2,533.484 MiB and the maximum
+   inferred amount was 2,146.797 MiB. The counter cannot attribute system-wide paging to the
+   child, so this is a host-policy fault, not a model result, resource inadequacy verdict, or
+   checkpoint.
+
+   For this population lane only, swap growth is now report-only telemetry. The 2,048 MiB live
+   reserve, 6,144 MiB child-process limit, 12-hour wall limit, three-sample reserve hysteresis,
+   and fail-closed telemetry checks remain hard stops. This removes the non-attributable scalar
+   stop without creating a new numerical ceiling. The governed execution plan is rebound to
+   `f9f69bec…b9a6`; rerun the exact 128-update population command from immutable step 4,658, not
+   from the terminated scratch attempt. No new seed or private surface is authorized.
+
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity
    choices, closure state, and one or more future semantic units. The incremental grammar

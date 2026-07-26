@@ -219,6 +219,46 @@ def test_guard_retains_terminal_swap_observation_after_prefix_is_full() -> None:
     assert receipt["fault_observation"] == receipt["observation_suffix"][-1]
 
 
+def test_guard_can_report_system_wide_swap_growth_without_attributing_it_to_child() -> None:
+    calls = 0
+
+    def snapshot() -> safety.HostMemorySnapshot:
+        nonlocal calls
+        calls += 1
+        swapouts = 10 if calls < 3 else 40
+        return safety.HostMemorySnapshot(16384, 9000, swapouts, 16384)
+
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=6000,
+        minimum_available_during_run_mib=2000,
+        maximum_swapout_growth_mib=16,
+        maximum_wall_seconds=10,
+        poll_interval_seconds=0.001,
+        terminate_grace_seconds=1,
+        swapout_growth_action="report_only",
+    )
+    result = safety.run_guarded(
+        [sys.executable, "-c", "import time; time.sleep(0.03)"],
+        cwd=ROOT,
+        policy=policy,
+        snapshot_fn=snapshot,
+        rss_fn=lambda _pid: 64.0,
+    )
+    receipt = result.receipt
+    assert receipt["passed"] is True
+    assert receipt["fault"] == ""
+    assert receipt["swapout_growth_action"] == "report_only"
+    assert receipt["swapout_growth_threshold_exceeded"] is True
+    assert receipt["swapout_growth_breach_observations"] >= 1
+    assert (
+        receipt["first_swapout_growth_breach_observation"][
+            "swapout_growth_mib"
+        ]
+        == 30
+    )
+
+
 def test_guard_tolerates_one_transient_reserve_sample() -> None:
     calls = 0
 

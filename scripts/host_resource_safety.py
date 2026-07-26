@@ -26,6 +26,7 @@ POLICY = "project_theseus_host_resource_safety_v1"
 MIB = 1024 * 1024
 MINIMUM_CONSECUTIVE_RESERVE_BREACHES = 3
 MAXIMUM_CONSECUTIVE_TELEMETRY_FAILURES = 3
+SWAPOUT_GROWTH_ACTIONS = frozenset({"hard_stop", "report_only"})
 VM_STAT_PATTERN = re.compile(r'^\"?([^\"]+?)\"?:\s+([0-9]+)\.?$')
 
 
@@ -48,11 +49,22 @@ class HostSafetyPolicy:
     maximum_wall_seconds: float
     poll_interval_seconds: float = 0.25
     terminate_grace_seconds: float = 2.0
+    swapout_growth_action: str = "hard_stop"
 
     def validate(self, *, physical_memory_mib: float) -> None:
-        values = asdict(self)
-        if any(float(value) <= 0 for value in values.values()):
+        numeric_values = (
+            self.max_process_memory_mib,
+            self.minimum_available_before_launch_mib,
+            self.minimum_available_during_run_mib,
+            self.maximum_swapout_growth_mib,
+            self.maximum_wall_seconds,
+            self.poll_interval_seconds,
+            self.terminate_grace_seconds,
+        )
+        if any(float(value) <= 0 for value in numeric_values):
             raise HostResourceSafetyFault("host_safety_policy_nonpositive")
+        if self.swapout_growth_action not in SWAPOUT_GROWTH_ACTIONS:
+            raise HostResourceSafetyFault("swapout_growth_action_invalid")
         if self.max_process_memory_mib > physical_memory_mib * 0.5:
             raise HostResourceSafetyFault("process_limit_exceeds_half_physical_memory")
         if self.minimum_available_before_launch_mib < self.minimum_available_during_run_mib:
@@ -153,6 +165,7 @@ def policy_with_overrides(
     minimum_available_before_launch_mib: float | None = None,
     minimum_available_during_run_mib: float | None = None,
     maximum_swapout_growth_mib: float | None = None,
+    swapout_growth_action: str | None = None,
 ) -> HostSafetyPolicy:
     """Apply explicit workload-sized limits without weakening validation."""
 
@@ -180,6 +193,11 @@ def policy_with_overrides(
         maximum_wall_seconds=policy.maximum_wall_seconds,
         poll_interval_seconds=policy.poll_interval_seconds,
         terminate_grace_seconds=policy.terminate_grace_seconds,
+        swapout_growth_action=(
+            policy.swapout_growth_action
+            if swapout_growth_action is None
+            else str(swapout_growth_action)
+        ),
     )
     overridden.validate(physical_memory_mib=physical_memory_mib())
     return overridden
@@ -205,6 +223,9 @@ def policy_from_mapping(
         maximum_wall_seconds=float(maximum_wall_seconds),
         poll_interval_seconds=float(value.get("poll_interval_seconds") or 0.25),
         terminate_grace_seconds=float(value.get("terminate_grace_seconds") or 2.0),
+        swapout_growth_action=str(
+            value.get("swapout_growth_action") or "hard_stop"
+        ),
     )
     policy.validate(physical_memory_mib=physical)
     return policy
@@ -318,6 +339,8 @@ def run_guarded(
     maximum_inferred_unified_memory = 0.0
     minimum_available = initial.reclaimable_available_mib
     maximum_swap_growth = 0.0
+    swap_growth_breach_observations = 0
+    first_swap_growth_breach_observation: dict[str, Any] | None = None
     reserve_breach_streak = 0
     maximum_reserve_breach_streak = 0
     telemetry_failure_streak = 0
@@ -459,9 +482,16 @@ def run_guarded(
             if len(observation_prefix) < 64:
                 observation_prefix.append(observation)
             observation_suffix.append(observation)
+            if swap_growth > policy.maximum_swapout_growth_mib:
+                swap_growth_breach_observations += 1
+                if first_swap_growth_breach_observation is None:
+                    first_swap_growth_breach_observation = observation
             if rss > policy.max_process_memory_mib:
                 fault = "process_memory_limit_exceeded"
-            elif swap_growth > policy.maximum_swapout_growth_mib:
+            elif (
+                swap_growth > policy.maximum_swapout_growth_mib
+                and policy.swapout_growth_action == "hard_stop"
+            ):
                 fault = "swap_growth_limit_exceeded"
             elif elapsed > policy.maximum_wall_seconds:
                 fault = "wall_limit_exceeded"
@@ -512,6 +542,16 @@ def run_guarded(
             maximum_inferred_unified_memory, 3
         ),
         "maximum_swapout_growth_mib": round(maximum_swap_growth, 3),
+        "swapout_growth_action": policy.swapout_growth_action,
+        "swapout_growth_threshold_exceeded": bool(
+            swap_growth_breach_observations
+        ),
+        "swapout_growth_breach_observations": (
+            swap_growth_breach_observations
+        ),
+        "first_swapout_growth_breach_observation": (
+            first_swap_growth_breach_observation
+        ),
         "reserve_breach_observations_required": MINIMUM_CONSECUTIVE_RESERVE_BREACHES,
         "maximum_consecutive_reserve_breaches": maximum_reserve_breach_streak,
         "telemetry_failure_observations_allowed": (
