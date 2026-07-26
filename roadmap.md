@@ -499,6 +499,24 @@ Therefore:
    custom Metal forward/backward kernel, and only when its measured realizable joined-wall
    bound is at least 10%. A Rust/C++ wrapper without a faster Metal operator remains
    ineligible.
+
+   **Measured disposition (2026-07-26):** fresh guarded processes now time every remaining
+   station at the exact FP32 production shape. Median one-layer self-attention
+   forward/VJP is 20.525 ms and one-layer SwiGLU is 23.356 ms; multiplying each by the
+   twelve decoder layers gives deliberately optimistic elimination bounds of 43.98% and
+   50.05% of the 560 ms reference microbatch. Two RMSNorms per layer total only a 5.17%
+   elimination bound, full-active-state gradient clipping 3.25%, active-state AdamW 3.85%,
+   and the already measured classifier/loss 8.25%. These isolated bounds are not additive:
+   compilation, allocator behavior, and whole-graph scheduling overlap, while any
+   replacement must still perform the matrix math and memory traffic. Attention already
+   uses MLX fast RoPE plus native grouped-query SDPA, and the MLP's elementwise gate is
+   compiled around native GEMMs. The only credible cross-operator fusion—parameter-preserving
+   combined QKV/SwiGLU projections—was already implemented and measured below the retained
+   whole-model route. Therefore no new custom Metal kernel is authorized by this ranking.
+   Norm, clipping, AdamW, and classifier/loss cannot clear the 10% threshold even under
+   impossible total elimination; fused linear cross-entropy and exact packing remain
+   memory-enablers only. This closes the kernel-search station without another multi-GiB
+   trace or a host-language wrapper.
 4. **Treat disconnected optimizer state as a memory candidate, not a 26% speed claim.**
    Plain-token pretraining executes 40,384,512 of the 54,836,746 trunk parameters.
    Source encoder, decoder cross-attention, pointer generator, and inactive MTP account for

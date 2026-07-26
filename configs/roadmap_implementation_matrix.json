@@ -5854,6 +5854,18 @@
         "reports/resource_acceleration_fp16_repeatability_forced_command_buffers4_2026_07_26.json",
         "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
         "reports/resource_acceleration_fp16_guarded64_2026_07_26.host_resource_safety.json",
+        "scripts/mlx_training_operator_station_probe.py",
+        "tests/test_mlx_training_operator_station_probe.py",
+        "reports/mlx_training_station_attention_2026_07_26.json",
+        "reports/mlx_training_station_attention_2026_07_26.host_resource_safety.json",
+        "reports/mlx_training_station_swiglu_2026_07_26.json",
+        "reports/mlx_training_station_swiglu_2026_07_26.host_resource_safety.json",
+        "reports/mlx_training_station_rmsnorm_2026_07_26.json",
+        "reports/mlx_training_station_rmsnorm_2026_07_26.host_resource_safety.json",
+        "reports/mlx_training_station_clip_2026_07_26.json",
+        "reports/mlx_training_station_clip_2026_07_26.host_resource_safety.json",
+        "reports/mlx_training_station_adamw_2026_07_26.json",
+        "reports/mlx_training_station_adamw_2026_07_26.host_resource_safety.json",
         "reports/resource_acceleration_source_pair_bf16_split_m4_q64_steps2_reps2.json",
         "reports/resource_acceleration_supervision_pair_bf16_split_m4_q64_steps2_reps2_retry1.json",
         "reports/resource_acceleration_joined_campaign_path_bf16_m8_aux_m1_steps64_8_8_retry6.json",
@@ -5939,7 +5951,14 @@
           "reports/resource_acceleration_fp16_repeatability_localized4_2026_07_26.json",
           "reports/resource_acceleration_fp16_repeatability_forced_command_buffers4_2026_07_26.json",
           "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
-          "reports/resource_acceleration_fp16_guarded64_2026_07_26.host_resource_safety.json"
+          "reports/resource_acceleration_fp16_guarded64_2026_07_26.host_resource_safety.json",
+          "scripts/mlx_training_operator_station_probe.py",
+          "tests/test_mlx_training_operator_station_probe.py",
+          "reports/mlx_training_station_attention_2026_07_26.json",
+          "reports/mlx_training_station_swiglu_2026_07_26.json",
+          "reports/mlx_training_station_rmsnorm_2026_07_26.json",
+          "reports/mlx_training_station_clip_2026_07_26.json",
+          "reports/mlx_training_station_adamw_2026_07_26.json"
         ]
       },
       "current_non_claims": [
@@ -5949,7 +5968,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve and do not perform a blind second purge. FP16 causality, custody, and 64-update finite/resource qualification are complete; the exact implementation is excluded from production as INCONCLUSIVE_IMPLEMENTATION because its trajectory is not replay-stable, and the weak-tail surface is intentionally unconsumed after that prerequisite failure. Keep FP32 authoritative. Next complete bounded attention, MLP, norm, clipping, AdamW, and state-materialization timing; implement a custom kernel only if its realizable joined-wall bound reaches 10%. Then test virtual-zero lazy inactive optimizer state only as a sustained-microbatch enabler and run the preregistered AdEMAMix, Adam-mini, masked-growth, and 128-to-256-to-512 time-to-quality selector. Extend the budget/reference graph to remaining runtime checkpoints separately, qualify MLX fast synchronization, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
+      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve and do not perform a blind second purge. FP16 causality, custody, and 64-update finite/resource qualification are complete; the exact implementation is excluded from production as INCONCLUSIVE_IMPLEMENTATION because its trajectory is not replay-stable. The bounded operator ranking is also complete: only attention and MLP exceed the 10% elimination bound, both already use MLX-native fast primitives, and the previously implemented combined QKV/SwiGLU whole-model challenger was slower than the retained route. Do not write another custom kernel, fused loss, or packing path without a demonstrated memory-to-faster-microbatch trigger. Next implement virtual-zero lazy inactive optimizer state and test whether its approximately 110.3 MiB moment-state saving enables a faster sustained microbatch with exact decay, activation, checkpoint, and replay custody. Then run the preregistered AdEMAMix, Adam-mini, masked-growth, and 128-to-256-to-512 time-to-quality selector. Extend the budget/reference graph to remaining runtime checkpoints separately, qualify MLX fast synchronization, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",

@@ -1,0 +1,60 @@
+{
+  "canonical_checkpoint_mutated": false,
+  "claim_scope": "Synthetic production-shape operator timing only; no checkpoint, corpus row, heldout, convergence, utility, capability, or custom-kernel speed claim.",
+  "created_utc": "2026-07-26T19:48:53.407352+00:00",
+  "execution": {
+    "compiled": true,
+    "compute_dtype": "float32",
+    "fresh_process_per_station_required": true,
+    "repetitions": 12,
+    "warmup": 3
+  },
+  "external_inference_calls": 0,
+  "hardware": {
+    "machine": "arm64",
+    "mlx_version": "0.32.0",
+    "processor": "arm"
+  },
+  "integrity": {
+    "all_gradients_finite": true,
+    "gradient_tensor_count": 5,
+    "scalar_finite": true,
+    "uses_mlx_fast_grouped_query_sdpa": true,
+    "uses_mlx_fast_rope": true
+  },
+  "mlx_memory": {
+    "active_bytes": 16,
+    "cache_bytes": 187634565,
+    "peak_bytes": 186978864
+  },
+  "policy": "project_theseus_mlx_training_operator_station_probe_v1",
+  "public_benchmark_rows_read": 0,
+  "reference": {
+    "custom_kernel_10_percent_bound_possible": true,
+    "elimination_fraction_of_reference_microbatch": 0.439817,
+    "elimination_percent_of_reference_microbatch": 43.9817,
+    "interpretation": "The fraction is an elimination upper bound, not a forecast. Any replacement still performs the station's required math and memory traffic.",
+    "observed_full_forward_backward_microbatch_seconds": 0.56,
+    "repeated_station_seconds_upper_bound": 0.246297,
+    "station_instances_per_optimizer_microbatch": 12
+  },
+  "shape": {
+    "active_parameter_count": 40384512,
+    "batch_size": 4,
+    "ff_size": 1536,
+    "head_count": 8,
+    "hidden_size": 512,
+    "kv_head_count": 2,
+    "layer_count": 12,
+    "sequence_length": 512
+  },
+  "station": "decoder_self_attention",
+  "timing_seconds": {
+    "maximum": 0.023019,
+    "mean": 0.020923,
+    "median": 0.020525,
+    "minimum": 0.019742,
+    "p95": 0.022009
+  },
+  "trigger_state": "GREEN"
+}
