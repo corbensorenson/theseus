@@ -514,6 +514,7 @@ def require_compiler_wire_transport_version(
 def compiler_target_index_groups(
     target_text: str,
     *,
+    source: str | None = None,
     code_vocabulary: dict[str, Any],
     kernel_offset: int,
     pointer_offset: int,
@@ -532,6 +533,7 @@ def compiler_target_index_groups(
     compact = training.compact_learned_compiler_transport_text(
         target_text,
         transport_version=transport_version,
+        source=source,
     )
     target_ids, _receipt, logical_ranges = (
         training.encode_kerc_global_target_with_logical_ranges(
@@ -567,7 +569,8 @@ def compiler_target_index_groups(
 
     logical_by_kind = (
         training.learned_compiler_transport_semantic_pointer_token_indices_by_kind(
-            code_tokens
+            code_tokens,
+            source=source,
         )
     )
     semantic_by_kind = {
@@ -576,7 +579,8 @@ def compiler_target_index_groups(
     }
     schema_indices = expand(
         training.learned_compiler_transport_required_continuation_token_indices(
-            code_tokens
+            code_tokens,
+            source=source,
         )
     )
     root_transport_version_indices = expand((1,))
@@ -2245,6 +2249,8 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         schema_continuation_accuracy: dict[str, Any] | None = None
         root_transport_version_diagnostic: dict[str, Any] | None = None
         if objective == "surface_to_kernel_program_v1":
+            compiler_prompt = json.loads(str(row["prompt"]))
+            compiler_source = str(compiler_prompt.get("source_surface") or "")
             (
                 reconstructed_target_ids,
                 semantic_indices_by_kind,
@@ -2252,6 +2258,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 root_transport_version_indices,
             ) = compiler_target_index_groups(
                 str(row["target"]),
+                source=compiler_source,
                 code_vocabulary=code_vocabulary,
                 kernel_offset=int(model_contract["kerc_kernel_token_start"]),
                 pointer_offset=int(model_contract["kerc_pointer_token_start"]),
@@ -2391,7 +2398,8 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                     )
                 )
                 kernel_protocol.materialize_learned_compiler_transport(
-                    decoded_transport
+                    decoded_transport,
+                    source=compiler_source,
                 )
                 compiler_transport_valid = True
             except kernel_protocol.KernelProtocolFault as exc:

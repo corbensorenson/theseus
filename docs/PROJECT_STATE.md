@@ -725,10 +725,17 @@ share toward zero. Public benchmarks are calibration only.
    The rerun improves root cardinality from 14 slots to 9 at 16 repeats; at 32, schema is 15/15
    and teacher forcing is 119/120, but raw generation still loops. The last error is precisely
    target index 75 inside a `PBYTE:` token: one base64 fallback byte copied from source is wrong.
-   This isolates the next owner. Source-derived `PBYTE` payloads must use a typed source-span
-   program token with exact, tamper-checked, zero-credit materialization. Full admitted-population
-   compatibility comes before another overfit or population continuation. No new seed or private
-   surface is authorized.
+   This isolates the next owner. Compiler transport v4 now replaces exact prompt-source copies
+   with typed `PSOURCE_BYTES:<start>:<end>` program tokens. Materialization is source-bound,
+   fail-closed, and explicitly receives zero generation, repair, or capability credit; non-source
+   literals remain learned `PBYTE` targets.
+
+   The full 12,886-row audit covers 25,772 positive and verifier-negative targets, converts
+   7,790/9,716 byte literals, retains 1,926, preserves v3 semantics exactly on 25,772/25,772, and
+   has zero failures. Exact frozen-vocabulary accounting falls 15,604,850→15,412,318 encoded
+   tokens (1.233796%). No evaluation surface or new row was consumed. The audit authorizes only
+   the same one-row v4 overfit control; complete target recovery and raw v4 validity are required
+   before population continuation. No new seed or private surface is authorized.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+

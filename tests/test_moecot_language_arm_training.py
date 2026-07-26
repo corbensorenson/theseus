@@ -4473,7 +4473,7 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
     assert candidate_plan_hashes != {base_plan["plan_sha256"]}
 
 
-def test_kerc_v3_root_overfit_migration_binds_overfit_execution_plan() -> None:
+def test_kerc_v4_source_span_overfit_migration_binds_execution_plan() -> None:
     config_path = ROOT / "configs" / "moecot_language_arm_training.json"
     config = bind_scale_preregistration(training_module.read_json(config_path))
     authority = architecture_training_authority(
@@ -4510,6 +4510,13 @@ def test_kerc_v3_root_overfit_migration_binds_overfit_execution_plan() -> None:
     assert migration["required_current_plan_sha256"] == (
         candidate_plan["plan_sha256"]
     )
+    assert candidate_plan["targets"]["english_kerc"]["kerc_compiler_transport"] == {
+        "policy": "project_theseus_kerc_compiler_source_span_transport_v4",
+        "version": 4,
+        "source_authority": "generator_visible_prompt.source_surface_only",
+        "materializer_generation_credit": 0,
+        "materializer_capability_credit": 0,
+    }
     assert migration["legacy_optimizer_steps"] == 4658
     assert migration["legacy_checkpoint_sha256"] == (
         "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"

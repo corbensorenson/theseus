@@ -1,0 +1,63 @@
+{
+  "artifact": {
+    "path": "data/training_data/moecot_kernel_english_v1/private_train.jsonl",
+    "sha256": "6203a676954e119d9acd487861440db23cca2fc3ce4826f02597b1fa1fcf3d98"
+  },
+  "candidate_generation_credit": 0,
+  "capability_claim": "NONE",
+  "code_vocabulary": {
+    "contract_sha256": "sha256:0d2b69f12e1a5fb32b35947da98d621f532c4269b4d726639090eae6b5876236",
+    "path": "data/training_data/moecot_kernel_english_v1/code_vocabulary_v1.json",
+    "sha256": "983028e3c05b5cfed0aca1b97da426a5f347008956b5a0080c0f94b7fa209db3"
+  },
+  "counts": {
+    "artifact_rows": 37048,
+    "compiler_rows": 12886,
+    "context_counterfactual_targets": 0,
+    "exact_v3_semantic_equivalence_targets": 25772,
+    "legacy_byte_literal_tokens": 9716,
+    "positive_targets": 12886,
+    "retained_non_pointer_byte_literal_tokens": 1926,
+    "roundtrip_failures": 0,
+    "source_span_pointer_tokens": 7790,
+    "target_variants": 25772,
+    "v3_encoded_target_tokens": 15604850,
+    "v3_fallback_target_tokens": 632506,
+    "v3_logical_code_tokens": 9548770,
+    "v3_wire_bytes": 58403417,
+    "v4_encoded_target_tokens": 15412318,
+    "v4_fallback_target_tokens": 632448,
+    "v4_logical_code_tokens": 9548712,
+    "v4_wire_bytes": 58137655,
+    "verifier_negative_targets": 12886
+  },
+  "deterministic_materialization_capability_credit": 0,
+  "deterministic_materialization_generation_credit": 0,
+  "failures": [],
+  "full_population": true,
+  "learned_generation_claim": "NONE",
+  "maximum_compiler_rows": 0,
+  "negative_evidence_scope": "transport_reversibility_and_population_compatibility_only",
+  "new_training_rows_created": 0,
+  "policy": "project_theseus_kerc_source_span_transport_population_audit_v1",
+  "private_evaluation_rows_consumed": 0,
+  "public_evaluation_rows_consumed": 0,
+  "qualification": "GREEN_FOR_BOUNDED_OVERFIT_CONTROL_ONLY",
+  "rates": {
+    "code_token_reduction_share": 0.01233796,
+    "exact_v3_semantic_equivalence_share": 1.0,
+    "source_pointer_share_of_byte_literals": 0.80177028,
+    "wire_byte_reduction_share": 0.00455045
+  },
+  "report_sha256": "sha256:7ad41368728920a66c90e6117144ecec1994d3f4750eabda41ffb6bd5e09d95b",
+  "row_id_sha256": "sha256:9fdaa6df9e7039a345c49676ac9f674c5fbe358404545dd6ccbd03761d74a79d",
+  "transport": {
+    "ambiguous_unaligned_source_slices_rejected": true,
+    "non_source_byte_literals_retained": true,
+    "out_of_bounds_rejected": true,
+    "pointer_contract": "model_emits_typed_character_span_runtime_materializes_exact_utf8_bytes",
+    "policy": "project_theseus_kerc_compiler_source_span_transport_v4",
+    "source_authority": "generator_visible_prompt.source_surface_only",
+    "version": 4
+  }
+}

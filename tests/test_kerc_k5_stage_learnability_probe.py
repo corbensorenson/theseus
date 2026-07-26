@@ -74,9 +74,10 @@ def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership()
                 "target": probe.training.compact_learned_compiler_transport_text(
                     target_text,
                     transport_version=version,
+                    source="012345678901234567890123456789",
                 ),
             }
-            for version in (2, 3)
+            for version in (2, 3, 4)
         ],
         {"kernel_max_vocab": 512, "pointer_max_vocab": 512},
     )
@@ -97,6 +98,15 @@ def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership()
         end_token_id=1800,
         transport_version=3,
     )
+    v4_ids, v4_groups, _, v4_root = probe.compiler_target_index_groups(
+        target_text,
+        source="012345678901234567890123456789",
+        code_vocabulary=code_vocabulary,
+        kernel_offset=600,
+        pointer_offset=1200,
+        end_token_id=1800,
+        transport_version=4,
+    )
 
     assert len(v3_ids) < len(v2_ids)
     assert v2_groups["residual_unit_id"]
@@ -107,7 +117,11 @@ def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership()
     assert v3_groups["protected_character_bound"]
     assert len(v2_root) == 1
     assert len(v3_root) == 1
+    assert len(v4_root) == 1
     assert int(v2_ids[v2_root[0]]) != int(v3_ids[v3_root[0]])
+    assert int(v3_ids[v3_root[0]]) != int(v4_ids[v4_root[0]])
+    assert v4_groups["residual_unit_id"] == ()
+    assert v4_groups["residual_fidelity"] == ()
 
 
 def test_indexed_logit_diagnostic_reports_expected_rank_and_legacy_margin() -> (

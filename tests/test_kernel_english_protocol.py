@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import base64
 import json
 import sys
 from pathlib import Path
@@ -654,6 +655,102 @@ def test_semantic_pointer_compiler_transport_removes_hidden_unit_hash_targets() 
             source=record["source_text"],
             hrl_state=record["hrl_state"],
         )
+
+
+def test_source_span_compiler_transport_materializes_prompt_bytes_and_rejects_tampering() -> None:
+    source = "What if the south won the civil war?"
+    canonical_program = kernel.validate_kernel_program(
+        {
+            "roots": ["k0"],
+            "nodes": [
+                {
+                    "node_id": "k0",
+                    "operator": "DIALOGUE_RESPOND",
+                    "modality": "REQUIRED",
+                    "polarity": "AFFIRMED",
+                    "quantifier": "NONE",
+                    "confidence": 1.0,
+                    "derivation": "preserved",
+                    "source_spans": [[0, len(source)]],
+                    "arguments": [
+                        {
+                            "role": "USER_UTTERANCE",
+                            "value": {
+                                "type": "byte_literal",
+                                "value": base64.b64encode(source.encode()).decode(),
+                            },
+                        }
+                    ],
+                }
+            ],
+        },
+        protected_objects={},
+        concept_capsules={},
+        source_character_length=len(source),
+    )["canonical_program"]
+    legacy = {
+        "kernel_version": kernel.KERNEL_VERSION,
+        "protected_objects": [],
+        "concept_capsules": {},
+        "program": kernel.learned_kernel_program_view_from_program(canonical_program),
+        "residual": {
+            "mode": "SOURCE_RECONSTRUCTION",
+            "unit_fidelity": [],
+            "interaction": [],
+            "segment": [],
+            "tokens": [],
+            "exact_handles": [],
+        },
+        "hierarchical_compiler": {
+            "policy": kernel.KERC_HIERARCHICAL_COMPILER_POLICY,
+            "chunk_index": 0,
+            "continuation": False,
+            "root_node_ids": ["k0"],
+        },
+    }
+
+    compact = kernel.compact_learned_compiler_transport(
+        legacy,
+        transport_version=kernel.LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+        source=source,
+    )
+    assert compact[0] == kernel.LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION
+    assert f"PSOURCE_BYTES:0:{len(source)}" in compact[3]
+    assert not any(token.startswith("PBYTE:") for token in compact[3])
+    assert (
+        kernel.materialize_learned_compiler_transport(compact, source=source)
+        == legacy
+    )
+
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_COMPILER_SOURCE_SPAN_SOURCE_REQUIRED",
+    ):
+        kernel.materialize_learned_compiler_transport(compact)
+    tampered = copy.deepcopy(compact)
+    pointer_index = tampered[3].index(f"PSOURCE_BYTES:0:{len(source)}")
+    tampered[3][pointer_index] = f"PSOURCE_BYTES:0:{len(source) + 1}"
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_COMPILER_SOURCE_SPAN_POINTER_UNAUTHORIZED",
+    ):
+        kernel.materialize_learned_compiler_transport(tampered, source=source)
+
+    non_source = copy.deepcopy(legacy)
+    byte_index = next(
+        index
+        for index, token in enumerate(non_source["program"]["tokens"])
+        if token.startswith("PBYTE:")
+    )
+    non_source["program"]["tokens"][byte_index] = (
+        "PBYTE:" + base64.b64encode(b"not prompt-owned").decode()
+    )
+    retained = kernel.compact_learned_compiler_transport(
+        non_source,
+        transport_version=kernel.LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+        source=source,
+    )
+    assert retained[3][byte_index].startswith("PBYTE:")
 
 
 def test_hierarchical_core_partitions_dependencies_and_merges_exact_answer() -> None:

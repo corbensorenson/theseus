@@ -506,6 +506,8 @@ from kernel_english_protocol import (
     LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
     LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY,
     LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+    LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_POLICY,
+    LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
     LEARNED_ANSWER_TRANSPORT_POLICY,
     LEARNED_PROGRAM_TRANSPORT_POLICY,
     KernelProtocolFault,
@@ -1647,6 +1649,23 @@ def bind_candidate_canary_overlay(
         "non_claims": list(prior.get("non_claims") or []),
     }
     execution_policy = dict(candidate_lease.get("execution_policy") or {})
+    compiler_transport_override = execution_policy.get("kerc_compiler_transport")
+    if compiler_transport_override is not None:
+        if (
+            candidate_lease.get("candidate_id") != "rdc_kerc_k5_overfit"
+            or compiler_transport_override
+            != {
+                "policy": LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_POLICY,
+                "version": LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+                "source_authority": "generator_visible_prompt.source_surface_only",
+                "materializer_generation_credit": 0,
+                "materializer_capability_credit": 0,
+            }
+        ):
+            raise ValueError("candidate compiler transport override is invalid")
+        bound["kerc_compiler_transport"] = copy.deepcopy(
+            compiler_transport_override
+        )
     kernel_repetitions = int(
         execution_policy.get("kernel_optimizer_repetitions") or 1
     )
@@ -4699,6 +4718,7 @@ def materialize_target_supervision(
     if kerc_mode and compiler_transport_version not in {
         LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
         LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+        LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
     }:
         raise ValueError(
             f"unsupported KERC compiler transport version: {compiler_transport_version}"
@@ -4798,10 +4818,35 @@ def materialize_target_supervision(
                     kerc_mode
                     and str(row.get("objective") or "") in KERC_KERNEL_OBJECTIVES
                 )
+                compiler_source_surface: str | None = None
+                if (
+                    kerc_mode
+                    and objective == "surface_to_kernel_program_v1"
+                    and compiler_transport_version
+                    == LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION
+                ):
+                    try:
+                        compiler_prompt = json.loads(prompt)
+                    except json.JSONDecodeError as exc:
+                        raise ValueError(
+                            f"invalid KERC compiler prompt: {key}:{source_index}"
+                        ) from exc
+                    compiler_source_surface = str(
+                        compiler_prompt.get("source_surface") or ""
+                    )
+                    if (
+                        not compiler_source_surface
+                        or compiler_prompt.get("source_character_length")
+                        != len(compiler_source_surface)
+                    ):
+                        raise ValueError(
+                            f"invalid KERC compiler source contract: {key}:{source_index}"
+                        )
                 encoded_answer = (
                     compact_learned_compiler_transport_text(
                         answer,
                         transport_version=compiler_transport_version,
+                        source=compiler_source_surface,
                     )
                     if kerc_mode and objective == "surface_to_kernel_program_v1"
                     else answer
@@ -4827,7 +4872,8 @@ def materialize_target_supervision(
                         ]
                         logical_continuation_indices = (
                             learned_compiler_transport_required_continuation_token_indices(
-                                code_tokens
+                                code_tokens,
+                                source=compiler_source_surface,
                             )
                         )
                         compiler_continuation_indices = tuple(
@@ -4840,7 +4886,8 @@ def materialize_target_supervision(
                         )
                         logical_semantic_pointer_indices_by_kind = (
                             learned_compiler_transport_semantic_pointer_token_indices_by_kind(
-                                code_tokens
+                                code_tokens,
+                                source=compiler_source_surface,
                             )
                         )
                         semantic_indices_by_kind = {
@@ -4887,7 +4934,10 @@ def materialize_target_supervision(
                         )
                         if (
                             compiler_transport_version
-                            == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                            in {
+                                LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+                                LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+                            }
                         ):
                             compact_compiler_transport_allocator_values_removed += len(
                                 (
@@ -4978,6 +5028,7 @@ def materialize_target_supervision(
                         compact_learned_compiler_transport_text(
                             negative_answer,
                             transport_version=compiler_transport_version,
+                            source=compiler_source_surface,
                         )
                         if objective == "surface_to_kernel_program_v1"
                         else negative_answer
@@ -5151,6 +5202,22 @@ def materialize_target_supervision(
                                 compact_learned_compiler_transport_text(
                                     counter_answer,
                                     transport_version=compiler_transport_version,
+                                    source=(
+                                        str(
+                                            (
+                                                json.loads(counter_prompt)
+                                                if objective
+                                                == "surface_to_kernel_program_v1"
+                                                else {}
+                                            ).get("source_surface")
+                                            or ""
+                                        )
+                                        if objective
+                                        == "surface_to_kernel_program_v1"
+                                        and compiler_transport_version
+                                        == LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION
+                                        else None
+                                    ),
                                 )
                                 if objective == "surface_to_kernel_program_v1"
                                 else counter_answer
@@ -5550,10 +5617,15 @@ def materialize_target_supervision(
         "compact_compiler_transport": (
             {
                 "policy": (
-                    LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY
+                    LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_POLICY
                     if compiler_transport_version
-                    == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
-                    else LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY
+                    == LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION
+                    else (
+                        LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY
+                        if compiler_transport_version
+                        == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                        else LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY
+                    )
                 ),
                 "version": compiler_transport_version,
                 "migration_boundary": (
@@ -5578,7 +5650,16 @@ def materialize_target_supervision(
                 "allocator_attachment_generation_credit": 0,
                 "compiler_allocator_ownership_enforced": (
                     compiler_transport_version
-                    == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                    in {
+                        LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+                        LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+                    }
+                ),
+                "source_span_materialization_generation_credit": 0,
+                "source_span_materialization_capability_credit": 0,
+                "source_span_pointer_requires_prompt_source_and_declared_node_span": (
+                    compiler_transport_version
+                    == LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION
                 ),
                 "target_metadata_visible_to_generator": False,
                 "deterministic_generation_credit": 0,
@@ -6345,6 +6426,7 @@ def generate_kerc_pipeline_text(
     if required_compiler_transport_version not in {
         LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
         LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+        LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
     }:
         return "", generation_fault("kerc_compiler_transport_version_invalid")
     hrl_state = vcm_semantic_memory.create_hierarchical_residual_state(

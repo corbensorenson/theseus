@@ -198,9 +198,14 @@ LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION = 3
 LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY = (
     "project_theseus_kerc_compiler_semantic_pointer_transport_v3"
 )
+LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION = 4
+LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_POLICY = (
+    "project_theseus_kerc_compiler_source_span_transport_v4"
+)
 LEARNED_COMPILER_SUPPORTED_TRANSPORT_VERSIONS = {
     LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
     LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+    LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
 }
 KERC_HIERARCHICAL_CORE_POLICY = "project_theseus_kerc_hierarchical_core_v1"
 KERC_CORE_CHUNK_MAX_NODES = 8
@@ -1966,10 +1971,158 @@ def learned_kernel_program_view_from_program(
     }
 
 
+_LEARNED_SOURCE_BYTES_PATTERN = re.compile(r"PSOURCE_BYTES:([0-9]+):([0-9]+)")
+
+
+def _source_span_program_tokens(
+    program_tokens: list[Any],
+    *,
+    source: str | None,
+    materialize: bool,
+) -> list[Any]:
+    """Project or materialize prompt-owned bytes through declared node spans."""
+
+    if not isinstance(source, str):
+        raise KernelProtocolFault(
+            "KERC_COMPILER_SOURCE_SPAN_SOURCE_REQUIRED",
+            str(type(source)),
+            path="compiler_output.program.tokens",
+        )
+    projected: list[Any] = []
+    active_spans: list[list[int]] | None = None
+    in_node = False
+    for index, raw in enumerate(program_tokens):
+        if not isinstance(raw, str):
+            raise KernelProtocolFault(
+                "KERC_COMPILER_SOURCE_SPAN_TOKEN_INVALID",
+                canonical_json(raw),
+                path=f"compiler_output.program.tokens[{index}]",
+            )
+        token_value = raw
+        if raw == "PNODE_BEGIN":
+            if in_node:
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_NODE_NESTED",
+                    str(index),
+                    path=f"compiler_output.program.tokens[{index}]",
+                )
+            in_node = True
+            active_spans = None
+        elif raw == "PNODE_END":
+            if not in_node:
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_NODE_END_UNBOUND",
+                    str(index),
+                    path=f"compiler_output.program.tokens[{index}]",
+                )
+            in_node = False
+            active_spans = None
+        elif raw.startswith("PSPANS:") and in_node:
+            try:
+                decoded_spans = json.loads(raw.removeprefix("PSPANS:"))
+            except json.JSONDecodeError as exc:
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_DECLARATION_INVALID",
+                    str(exc),
+                    path=f"compiler_output.program.tokens[{index}]",
+                ) from exc
+            if not isinstance(decoded_spans, list) or any(
+                not isinstance(span, list)
+                or len(span) != 2
+                or isinstance(span[0], bool)
+                or isinstance(span[1], bool)
+                or not isinstance(span[0], int)
+                or not isinstance(span[1], int)
+                or not 0 <= span[0] < span[1] <= len(source)
+                for span in decoded_spans
+            ):
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_DECLARATION_INVALID",
+                    canonical_json(decoded_spans),
+                    path=f"compiler_output.program.tokens[{index}]",
+                )
+            active_spans = copy.deepcopy(decoded_spans)
+        elif materialize and raw.startswith("PSOURCE_BYTES:"):
+            match = _LEARNED_SOURCE_BYTES_PATTERN.fullmatch(raw)
+            if match is None or not in_node or active_spans is None:
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_POINTER_INVALID",
+                    raw,
+                    path=f"compiler_output.program.tokens[{index}]",
+                )
+            start, end = int(match.group(1)), int(match.group(2))
+            if not 0 <= start < end <= len(source):
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_POINTER_UNAUTHORIZED",
+                    raw,
+                    path=f"compiler_output.program.tokens[{index}]",
+                )
+            source_slice = source[start:end]
+            source_occurrences = [
+                offset
+                for offset in range(len(source))
+                if source.startswith(source_slice, offset)
+            ]
+            if len(source_occurrences) != 1 and [start, end] not in active_spans:
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_SOURCE_SPAN_POINTER_AMBIGUOUS",
+                    raw,
+                    path=f"compiler_output.program.tokens[{index}]",
+                )
+            token_value = (
+                "PBYTE:"
+                + base64.b64encode(source_slice.encode("utf-8")).decode("ascii")
+            )
+        elif not materialize and raw.startswith("PBYTE:"):
+            if in_node and active_spans:
+                try:
+                    literal = base64.b64decode(
+                        raw.removeprefix("PBYTE:"), validate=True
+                    )
+                except Exception as exc:
+                    raise KernelProtocolFault(
+                        "KERC_COMPILER_SOURCE_SPAN_BYTE_INVALID",
+                        raw,
+                        path=f"compiler_output.program.tokens[{index}]",
+                    ) from exc
+                matches: list[tuple[int, int]] = []
+                try:
+                    literal_text = literal.decode("utf-8")
+                except UnicodeDecodeError:
+                    literal_text = ""
+                if literal_text:
+                    cursor = 0
+                    while True:
+                        start = source.find(literal_text, cursor)
+                        if start < 0:
+                            break
+                        matches.append((start, start + len(literal_text)))
+                        cursor = start + 1
+                if len(matches) == 1:
+                    start, end = matches[0]
+                    token_value = f"PSOURCE_BYTES:{start}:{end}"
+                elif len(matches) > 1:
+                    aligned_matches = [
+                        span for span in matches if list(span) in active_spans
+                    ]
+                    if len(aligned_matches) == 1:
+                        start, end = aligned_matches[0]
+                        token_value = f"PSOURCE_BYTES:{start}:{end}"
+        projected.append(token_value)
+    if in_node:
+        raise KernelProtocolFault(
+            "KERC_COMPILER_SOURCE_SPAN_NODE_UNCLOSED",
+            str(len(program_tokens)),
+            path="compiler_output.program.tokens",
+        )
+    return projected
+
+
 def compact_learned_compiler_transport(
     payload: Any,
     *,
     transport_version: int = LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+    source: str | None = None,
 ) -> list[Any]:
     """Encode the learned compiler object as a reversible low-overhead JSON ABI.
 
@@ -2069,7 +2222,10 @@ def compact_learned_compiler_transport(
             path="compiler_output",
         )
     unit_fidelity = copy.deepcopy(residual["unit_fidelity"])
-    if transport_version == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION:
+    if transport_version in {
+        LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+        LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+    }:
         if (
             not isinstance(unit_fidelity, list)
             or any(
@@ -2101,17 +2257,28 @@ def compact_learned_compiler_transport(
         )
         for field in residual_fields
     ]
+    program_tokens = copy.deepcopy(program["tokens"])
+    if transport_version == LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION:
+        program_tokens = _source_span_program_tokens(
+            program_tokens,
+            source=source,
+            materialize=False,
+        )
     return [
         int(transport_version),
         [[copy.deepcopy(row[field]) for field in protected_fields] for row in protected],
         copy.deepcopy(concepts),
-        copy.deepcopy(program["tokens"]),
+        program_tokens,
         residual_values,
         [copy.deepcopy(hierarchy[field]) for field in hierarchy_fields],
     ]
 
 
-def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
+def materialize_learned_compiler_transport(
+    payload: Any,
+    *,
+    source: str | None = None,
+) -> dict[str, Any]:
     """Expand compact compiler transport, while accepting the legacy object ABI."""
 
     if isinstance(payload, dict):
@@ -2163,6 +2330,13 @@ def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
             canonical_json(payload),
             path="compiler_output",
         )
+    canonical_program_tokens = copy.deepcopy(program_tokens)
+    if version == LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION:
+        canonical_program_tokens = _source_span_program_tokens(
+            canonical_program_tokens,
+            source=source,
+            materialize=True,
+        )
     materialized = {
         "kernel_version": KERNEL_VERSION,
         "protected_objects": [
@@ -2171,7 +2345,7 @@ def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
         "concept_capsules": copy.deepcopy(concepts),
         "program": {
             "policy": LEARNED_PROGRAM_TRANSPORT_POLICY,
-            "tokens": copy.deepcopy(program_tokens),
+            "tokens": canonical_program_tokens,
         },
         "residual": dict(zip(residual_fields, copy.deepcopy(residual_values))),
         "hierarchical_compiler": {
@@ -2184,6 +2358,7 @@ def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
         compact_learned_compiler_transport(
             materialized,
             transport_version=int(version),
+            source=source,
         )
         != payload
     ):
@@ -2250,6 +2425,8 @@ def learned_compiler_transport_shape_signature(payload: Any) -> dict[str, Any]:
 
 def learned_compiler_transport_required_continuation_token_indices(
     tokens: list[str],
+    *,
+    source: str | None = None,
 ) -> list[int]:
     """Locate learned delimiters that preserve compact ABI cardinalities.
 
@@ -2262,7 +2439,7 @@ def learned_compiler_transport_required_continuation_token_indices(
 
     text = "".join(str(token) for token in tokens)
     try:
-        materialize_learned_compiler_transport(json.loads(text))
+        materialize_learned_compiler_transport(json.loads(text), source=source)
     except (TypeError, json.JSONDecodeError) as exc:
         raise KernelProtocolFault(
             "KERC_COMPACT_COMPILER_CONTINUATION_SOURCE_INVALID",
@@ -2403,6 +2580,8 @@ KERC_COMPILER_SEMANTIC_TARGET_KINDS = (
 
 def learned_compiler_transport_semantic_pointer_token_indices_by_kind(
     tokens: list[str],
+    *,
+    source: str | None = None,
 ) -> dict[str, list[int]]:
     """Locate path-qualified semantic target atoms by causal fault owner.
 
@@ -2416,7 +2595,7 @@ def learned_compiler_transport_semantic_pointer_token_indices_by_kind(
     text = "".join(str(token) for token in tokens)
     try:
         compact = json.loads(text)
-        materialize_learned_compiler_transport(compact)
+        materialize_learned_compiler_transport(compact, source=source)
     except (TypeError, json.JSONDecodeError) as exc:
         raise KernelProtocolFault(
             "KERC_COMPACT_COMPILER_SEMANTIC_POINTER_SOURCE_INVALID",
@@ -2592,12 +2771,15 @@ def learned_compiler_transport_semantic_pointer_token_indices_by_kind(
 
 def learned_compiler_transport_semantic_pointer_token_indices(
     tokens: list[str],
+    *,
+    source: str | None = None,
 ) -> list[int]:
     """Return the exact union of path-qualified semantic target atoms."""
 
     indices_by_kind = (
         learned_compiler_transport_semantic_pointer_token_indices_by_kind(
-            tokens
+            tokens,
+            source=source,
         )
     )
     return sorted(
@@ -2613,6 +2795,7 @@ def compact_learned_compiler_transport_text(
     output: str,
     *,
     transport_version: int = LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+    source: str | None = None,
 ) -> str:
     """Migrate one canonical legacy/compact target to compact transport."""
 
@@ -2622,16 +2805,21 @@ def compact_learned_compiler_transport_text(
         raise KernelProtocolFault(
             "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
         ) from exc
-    materialized = materialize_learned_compiler_transport(decoded)
+    materialized = materialize_learned_compiler_transport(decoded, source=source)
     return canonical_json(
         compact_learned_compiler_transport(
             materialized,
             transport_version=int(transport_version),
+            source=source,
         )
     )
 
 
-def decode_learned_compiler_transport(output: str) -> dict[str, Any]:
+def decode_learned_compiler_transport(
+    output: str,
+    *,
+    source: str | None = None,
+) -> dict[str, Any]:
     """Decode a legacy or compact learned compiler target into the canonical ABI."""
 
     try:
@@ -2640,7 +2828,7 @@ def decode_learned_compiler_transport(output: str) -> dict[str, Any]:
         raise KernelProtocolFault(
             "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
         ) from exc
-    return materialize_learned_compiler_transport(decoded)
+    return materialize_learned_compiler_transport(decoded, source=source)
 
 
 def materialize_learned_kernel_program(
@@ -4714,7 +4902,10 @@ def parse_learned_compiler_output(
         and not isinstance(wire_payload[0], bool)
         else 0
     )
-    decoded = materialize_learned_compiler_transport(wire_payload)
+    decoded = materialize_learned_compiler_transport(
+        wire_payload,
+        source=source,
+    )
     if not isinstance(decoded, dict) or decoded.get("kernel_version") != KERNEL_VERSION:
         raise KernelProtocolFault(
             "KERC_LEARNED_COMPILER_VERSION_INVALID",
@@ -4797,7 +4988,10 @@ def parse_learned_compiler_output(
         residual_view = copy.deepcopy(decoded["residual"])
         if (
             transport_version
-            == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+            in {
+                LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+                LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_VERSION,
+            }
             and (
                 not isinstance(residual_view, dict)
                 or residual_view.get("unit_fidelity") != []

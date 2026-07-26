@@ -1689,12 +1689,23 @@ generation service, KERC sidecar, or private evaluator.
    prompt. Requiring the compiler to regenerate every copied source byte is the remaining
    isolated ownership defect.
 
-   Next, add a typed source-span program token for source-derived `PBYTE` payloads, prove exact
-   source-bound materialization and tamper rejection, and assign materialization zero generation,
-   repair, or capability credit. Audit the full admitted compiler population before another
-   control; no learned semantic value may be elided. Then rerun the same one-row canary and require
-   complete target recovery plus raw v3 validity before population continuation. Do not consume a
-   new seed or private surface. K5 remains `INCONCLUSIVE_EXPERIMENT`.
+   Compiler transport v4 now implements that owner as a typed
+   `PSOURCE_BYTES:<character_start>:<character_end>` token. It is accepted only inside a node
+   after a valid generated span declaration, reads exclusively from generator-visible
+   `prompt.source_surface`, rejects missing/out-of-range and ambiguous unaligned pointers, and
+   deterministically reconstructs the canonical `PBYTE` token with zero generation, repair, or
+   capability credit. Non-source or normalization-derived byte literals remain learned `PBYTE`
+   targets.
+
+   The full admitted-population audit covers all 12,886 compiler rows and all 25,772 positive plus
+   verifier-negative targets. It converts 7,790/9,716 byte literals (80.177028%) to source
+   pointers, retains 1,926 non-pointer literals, produces zero round-trip failures, and preserves
+   v3 semantics for 25,772/25,772 targets. Against the frozen dual-code vocabulary it reduces the
+   actual encoded compiler stream 15,604,850→15,412,318 tokens (1.233796%), with no evaluation
+   consumption, new rows, or capability claim. This qualifies only the same bounded one-row
+   overfit control under v4. Require complete target recovery plus raw v4 validity before any
+   population continuation. Do not consume a new seed or private surface. K5 remains
+   `INCONCLUSIVE_EXPERIMENT`.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity
