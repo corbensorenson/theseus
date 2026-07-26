@@ -1513,6 +1513,29 @@
       }
     },
     "next_owner": "continue the exact seed-20260722 compiler-transport-v4 population from merged step 4786 with its exact AdamW state, MLX RNG, and next sampler cursor; use a preregistered admitted-training diagnostic boundary because 2-to-3 exposures left v4 root top-1 at 0/16 and raw validity at 0/16 while schema was 253/255; require root top-1 movement, weakest-row teacher forcing, raw transport plus independent semantic validity, and checkpoint reload before consuming source-disjoint behavior; no new seed or private surface is authorized",
+        "mechanism_vs_selection_boundary": {
+          "mechanism_probe_authority": [
+            "implementation_fidelity",
+            "gradient_flow",
+            "bounded_learnability",
+            "checkpoint_reload",
+            "resource_safety",
+            "construct_validity_on_admitted_training_rows"
+          ],
+          "mechanism_probe_selection_credit": 0,
+          "mechanism_probe_architecture_falsification_credit": 0,
+          "selection_requires": [
+            "preregistered_matched_raw_data_and_source_groups",
+            "matched_unique_token_and_optimizer_opportunity",
+            "matched_active_and_total_parameter_accounting",
+            "matched_tuning_evaluator_inference_verifier_and_lifecycle_cost",
+            "heldout_metric_and_useful_effect_threshold",
+            "uncertainty_and_weak_tail_rule",
+            "prewritten_include_or_exclude_disposition"
+          ],
+          "elective_midscale_lane_authorized": false,
+          "reason": "The completed 10.8M comparison was non-discriminating at 0/160 and does not transfer to 57M; close the finite mechanism docket, then execute the matched 57M-class selection campaign rather than converting training-row probes into selection evidence."
+        },
         "separate_k7_owner": "optimize the measured constrained-decode slow path without changing reference semantics",
         "architecture_negative_authority": false,
         "capability_claim": "NONE"

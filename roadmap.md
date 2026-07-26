@@ -1865,8 +1865,10 @@ generation service, KERC sidecar, or private evaluator.
    callbacks enforce host budgets and final receipts enforce optimizer positions. Accelerator
    canaries now also require an out-of-process watchdog. The obsolete fixed 8 GiB launch floor and
    allocator-peak kill rule are removed: generic guarded work uses a 6,144 MiB launch reserve and
-   4,096 MiB runtime reserve, while the measured KERC candidate uses a 2,048 MiB live reserve and
-   16 MiB swap-growth limit. The watchdog fails closed if
+   4,096 MiB runtime reserve, while the measured KERC population candidate uses a 2,048 MiB live
+   reserve and 6,144 MiB child-process ceiling. Its non-attributable macOS host-wide swap counter
+   is report-only; live reserve, child memory, wall, and telemetry-loss checks remain hard stops.
+   Other exact shards retain their content-bound swap limits. The watchdog fails closed if
    telemetry is unavailable, records preflight refusals without starting a child, and generic
    telemetry cannot initialize MLX merely to inspect it. Root-level pytest collection ignores
    top-level MLX modules and skips accelerator-marked tests unless the watchdog launched the test.
@@ -1936,11 +1938,30 @@ generation service, KERC sidecar, or private evaluator.
    functional outcomes. Freeze exactly one practical configuration plus the necessary controls;
    preserve discovery candidates only with precise re-entry conditions.
 
+   Keep mechanism validation and architecture selection separate. A bounded overfit, gradient,
+   parity, serializer, resource, or admitted-training-row probe may close only its named mechanism
+   gate. Architecture selection requires a preregistered matched comparison with identical raw
+   data, source groups, unique token budget, optimizer opportunity, active/total parameter
+   accounting, tuning opportunity, evaluator access, inference/verifier budget, and lifecycle
+   cost; it must name the held-out metric, uncertainty method, useful-effect threshold, weak-tail
+   rule, and include/exclude disposition before execution. The completed 10.8M comparison was
+   non-discriminating at 0/160 and does not transfer to 57M, so do not create another elective
+   midscale lane to postpone the finite `T0A` docket. Once the named mechanism gates close, run
+   the matched 57M-class candidates and frozen direct model-only evaluation without admitting
+   another architecture-review cycle.
+
    Current state: the factorized control selection is provisionally GREEN, but the replacement
    architecture selection remains open. MTP and dynamic patches have scoped evidence, and AdamW
    is selected; full-shape SOAP is explicitly scope-removed from the first campaign on measured
    M1/MLX resource-and-cost grounds, while RDC/KERC requires the mandatory parity,
    representative-objective, K4-K7, and matched K8 ladder.
+   The retired 18.4 GiB factorized KERC implementation remains retired. It did not re-enter by
+   relabeling or by weakening host safety: the successor uses checkpointed memory-bounded
+   attention and decomposed objectives, passed exact output/loss/gradient parity plus guarded
+   preflight, and completed its first 128-update population rung at 2,079.344 MiB maximum inferred
+   memory with 2,404.500 MiB minimum reclaimable memory. These population rungs establish only
+   mechanism adequacy, learnability, checkpoint custody, and resource safety. They cannot select
+   KERC for the 57M campaign, and a failed 2–3-exposure rung cannot exclude it.
    The replacement freeze must not replay the monolithic MLX test
    suite in the ambient Python environment. Accelerator replays must be split into externally
    watched, bounded child processes using the qualified MLX environment; CPU/governance replays
