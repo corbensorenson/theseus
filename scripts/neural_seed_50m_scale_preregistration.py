@@ -884,6 +884,10 @@ def generation_architecture_alignment(
 ) -> dict[str, Any]:
     mtp = dict((contract.get("modes") or {}).get("mtp") or {})
     shape = dict(contract.get("mtp_shape_contract") or {})
+    legacy_fixture = dict(
+        (contract.get("mtp_candidates") or {}).get("legacy_shared_rank1") or {}
+    )
+    fixture_curriculum = dict(legacy_fixture.get("curriculum") or {})
     expected = {
         "mtp_future_offsets": list(shape.get("future_offsets") or []),
         "mtp_low_rank": int(mtp.get("low_rank") or 0),
@@ -906,14 +910,21 @@ def generation_architecture_alignment(
     policy_valid = (
         contract.get("policy") == "project_theseus_generation_architecture_contracts_v1"
         and contract.get("first_campaign_base") == "autoregressive"
+        and mtp.get("class") == "training_time_auxiliary"
         and mtp.get("first_campaign_disposition")
-        == "included_disabled_weight_zero_until_preregistered_schedule"
+        == "compatibility_fixture_not_selectable"
+        and legacy_fixture.get("selection_state")
+        == "compatibility_fixture_not_selectable"
+        and legacy_fixture.get("head_mode") == "shared_low_rank"
+        and float(fixture_curriculum.get("maximum_loss_scale") or 0.0) == 0.0
     )
     return {
         "aligned": policy_valid and not mismatches,
         "contract_policy": contract.get("policy"),
         "base_mode": contract.get("first_campaign_base"),
-        "checkpoint_shaping_auxiliary": "mtp",
+        "checkpoint_shaping_auxiliary": "mtp_compatibility_fixture",
+        "fixture_selection_state": legacy_fixture.get("selection_state"),
+        "fixture_optimizer_authority": False,
         "expected_model_fields": expected,
         "observed_model_fields": observed,
         "mismatched_models": mismatches,

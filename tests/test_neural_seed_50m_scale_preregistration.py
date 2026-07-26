@@ -3,6 +3,7 @@ from __future__ import annotations
 import gzip
 import json
 import builtins
+import copy
 import sys
 from pathlib import Path
 
@@ -19,6 +20,31 @@ from standard_causal_transformer_model import (  # noqa: E402
     CausalTransformerConfig,
     build_model,
 )
+
+
+def test_generation_architecture_alignment_accepts_only_disabled_mtp_fixture() -> None:
+    config = scale.read_json(
+        ROOT / "configs" / "neural_seed_50m_scale_preregistration.json"
+    )
+    contract = scale.read_json(
+        ROOT / "configs" / "generation_architecture_contracts.json"
+    )
+    observed = scale.generation_architecture_alignment(config, contract)
+    assert observed["aligned"] is True
+    assert observed["checkpoint_shaping_auxiliary"] == "mtp_compatibility_fixture"
+    assert observed["fixture_selection_state"] == "compatibility_fixture_not_selectable"
+    assert observed["fixture_optimizer_authority"] is False
+    assert observed["initial_optimizer_exposure"] == 0
+
+    selectable = copy.deepcopy(contract)
+    selectable["modes"]["mtp"]["first_campaign_disposition"] = "included"
+    assert scale.generation_architecture_alignment(config, selectable)["aligned"] is False
+
+    exposed = copy.deepcopy(config)
+    exposed["candidate"]["arm_model"]["mtp_loss_scale"] = 0.1
+    drift = scale.generation_architecture_alignment(exposed, contract)
+    assert drift["aligned"] is False
+    assert drift["mismatched_models"] == ["arm_model"]
 
 
 def test_preregistered_candidate_and_controls_are_mechanically_matched() -> None:
