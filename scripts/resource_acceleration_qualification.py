@@ -178,6 +178,20 @@ def main() -> int:
         ),
         default="bfloat16_fp32_master",
     )
+    parser.add_argument(
+        "--precision-repeatability-variant",
+        choices=(
+            "guarded_compiled",
+            "integrated_compiled_diagnostic",
+            "guarded_eager",
+        ),
+        default="guarded_compiled",
+        help=(
+            "Execution boundary for --precision-resume-only. The integrated "
+            "variant disables the pre-update host finite-gradient stop only "
+            "as a non-production causality diagnostic."
+        ),
+    )
     parser.add_argument("--metal-trace-out", default="")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
@@ -397,6 +411,7 @@ def main() -> int:
             unmigrated_implementation_challenger=(
                 args.unmigrated_implementation_challenger
             ),
+            repeatability_variant=args.precision_repeatability_variant,
         )
         write_json(resolve(args.out), report)
         print(
@@ -454,6 +469,7 @@ def run_precision_resume_entry(
     compile_width_quantum: int,
     precision_mode: str,
     unmigrated_implementation_challenger: bool = False,
+    repeatability_variant: str = "guarded_compiled",
 ) -> dict[str, Any]:
     """Bind the focused precision-resume probe to the canonical durable state."""
 
@@ -506,6 +522,7 @@ def run_precision_resume_entry(
         compiled_microbatch_size=compiled_microbatch_size,
         compile_width_quantum=compile_width_quantum,
         precision_mode=precision_mode,
+        repeatability_variant=repeatability_variant,
     )
     return {
         **result,
@@ -515,7 +532,11 @@ def run_precision_resume_entry(
             "RED"
             if result.get("state") == "RED"
             else "YELLOW"
-            if implementation_plan_mismatch
+            if (
+                implementation_plan_mismatch
+                or repeatability_variant
+                == "integrated_compiled_diagnostic"
+            )
             else result.get("state")
         ),
         "source_precision_policy": result.get("policy"),
@@ -527,9 +548,13 @@ def run_precision_resume_entry(
         "starting_optimizer_state_sha256": file_sha256(optimizer_path),
         "compiled_microbatch_size": compiled_microbatch_size,
         "compile_width_quantum": compile_width_quantum,
+        "repeatability_variant": repeatability_variant,
         "implementation_authority": (
             "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
             if implementation_plan_mismatch
+            else "DIAGNOSTIC_ONLY_FINITE_STOP_ABLATION"
+            if repeatability_variant
+            == "integrated_compiled_diagnostic"
             else "PLAN_BOUND_QUALIFICATION"
         ),
         "hard_gaps": (
@@ -549,6 +574,15 @@ def run_precision_resume_entry(
                     "production route remains unchanged",
                 ]
                 if implementation_plan_mismatch
+                else []
+            ),
+            *(
+                [
+                    "pre-update finite-gradient stop disabled for causality diagnosis",
+                    "variant cannot receive production authority",
+                ]
+                if repeatability_variant
+                == "integrated_compiled_diagnostic"
                 else []
             ),
         ],
@@ -2288,11 +2322,43 @@ def run_precision_resume_qualification(
     compiled_microbatch_size: int,
     compile_width_quantum: int = 64,
     precision_mode: str = "bfloat16_fp32_master",
+    repeatability_variant: str = "guarded_compiled",
 ) -> dict[str, Any]:
     """Prove selected precision state and data order survive a real reload."""
 
     if steps < 4:
         raise ValueError("resume qualification requires at least four updates")
+    variant_contract = {
+        "guarded_compiled": {
+            "mode": "compiled",
+            "reject_nonfinite_gradients": True,
+            "eager_gradient_accumulation_microbatch_size": 0,
+        },
+        "integrated_compiled_diagnostic": {
+            "mode": "compiled",
+            "reject_nonfinite_gradients": False,
+            "eager_gradient_accumulation_microbatch_size": 0,
+        },
+        "guarded_eager": {
+            "mode": "eager",
+            "reject_nonfinite_gradients": True,
+            "eager_gradient_accumulation_microbatch_size": (
+                compiled_microbatch_size
+            ),
+        },
+    }
+    if repeatability_variant not in variant_contract:
+        raise ValueError(
+            f"unsupported precision repeatability variant: {repeatability_variant}"
+        )
+    variant = variant_contract[repeatability_variant]
+    if (
+        precision_mode != "float16_fp32_master"
+        and repeatability_variant != "guarded_compiled"
+    ):
+        raise ValueError(
+            "alternate repeatability variants are restricted to FP16 diagnosis"
+        )
     first_steps = steps // 2
     second_steps = steps - first_steps
     context = build_training_route_context(
@@ -2308,8 +2374,14 @@ def run_precision_resume_qualification(
     mx = context["mx"]
     release_accelerator_route_state(mx)
     uninterrupted = run_training_route(
-        mode="compiled",
+        mode=str(variant["mode"]),
         precision_mode=precision_mode,
+        reject_nonfinite_gradients_override=bool(
+            variant["reject_nonfinite_gradients"]
+        ),
+        eager_gradient_accumulation_microbatch_size=int(
+            variant["eager_gradient_accumulation_microbatch_size"]
+        ),
         capture_parameter_snapshot=True,
         capture_optimizer_snapshot=True,
         capture_rng_snapshot=True,
@@ -2322,8 +2394,14 @@ def run_precision_resume_qualification(
     first_context = {**context, "steps": first_steps}
     release_accelerator_route_state(mx)
     first = run_training_route(
-        mode="compiled",
+        mode=str(variant["mode"]),
         precision_mode=precision_mode,
+        reject_nonfinite_gradients_override=bool(
+            variant["reject_nonfinite_gradients"]
+        ),
+        eager_gradient_accumulation_microbatch_size=int(
+            variant["eager_gradient_accumulation_microbatch_size"]
+        ),
         capture_parameter_snapshot=True,
         capture_optimizer_snapshot=True,
         capture_rng_snapshot=True,
@@ -2363,8 +2441,14 @@ def run_precision_resume_qualification(
             name: value for name, value in mx.load(str(resumed_rng)).items()
         }
         resumed = run_training_route(
-            mode="compiled",
+            mode=str(variant["mode"]),
             precision_mode=precision_mode,
+            reject_nonfinite_gradients_override=bool(
+                variant["reject_nonfinite_gradients"]
+            ),
+            eager_gradient_accumulation_microbatch_size=int(
+                variant["eager_gradient_accumulation_microbatch_size"]
+            ),
             resume_data_cursor=first["data_cursor_next"],
             resume_rng_state=reloaded_rng,
             capture_parameter_snapshot=True,
@@ -2465,6 +2549,14 @@ def run_precision_resume_qualification(
         "policy": "project_theseus_mlx_precision_checkpoint_resume_v1",
         "state": state,
         "precision_mode": precision_mode,
+        "repeatability_variant": repeatability_variant,
+        "execution_mode": variant["mode"],
+        "preupdate_finite_gradient_stop": bool(
+            variant["reject_nonfinite_gradients"]
+        ),
+        "eager_gradient_accumulation_microbatch_size": int(
+            variant["eager_gradient_accumulation_microbatch_size"]
+        ),
         "updates": {
             "uninterrupted": steps,
             "before_checkpoint": first_steps,
@@ -2810,6 +2902,7 @@ def run_training_route(
     materialize_compiled_state_after_update: bool = False,
     diagnostic_state_root: Path | None = None,
     compact_encoder_decoder_partitions: bool = False,
+    reject_nonfinite_gradients_override: bool | None = None,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
 
@@ -2831,6 +2924,11 @@ def run_training_route(
     }[compute_dtype_name]
     gradient_loss_scale = (
         128.0 if precision_mode == "float16_fp32_master" else 1.0
+    )
+    reject_nonfinite_gradients = (
+        precision_mode == "float16_fp32_master"
+        if reject_nonfinite_gradients_override is None
+        else bool(reject_nonfinite_gradients_override)
     )
     training_cfg = config["training"]
     vocab_size = int(target.get("vocab_size") or plan["models"]["vocab_size"])
@@ -2984,9 +3082,7 @@ def run_training_route(
         master_model=master_model,
         compute_dtype_name=compute_dtype_name,
         gradient_loss_scale=gradient_loss_scale,
-        reject_nonfinite_gradients=(
-            precision_mode == "float16_fp32_master"
-        ),
+        reject_nonfinite_gradients=reject_nonfinite_gradients,
         step_boundary_callback=step_boundary_callback,
         clear_device_cache_after_step=clear_device_cache_after_step,
     )
@@ -3064,9 +3160,7 @@ def run_training_route(
         "precision_mode": precision_mode,
         "compute_dtype": compute_dtype_name,
         "gradient_loss_scale": gradient_loss_scale,
-        "reject_nonfinite_gradients": (
-            precision_mode == "float16_fp32_master"
-        ),
+        "reject_nonfinite_gradients": reject_nonfinite_gradients,
         "training_phase": training_phase,
         "source_conditioning": source_conditioning,
         "phase_receipt": phase_receipt,
@@ -3182,6 +3276,7 @@ def compare_parameter_snapshots(
     squared_reference = 0.0
     element_count = 0
     all_finite = True
+    tensor_deltas: list[dict[str, Any]] = []
     for name in sorted(reference):
         reference_array = np.asarray(reference[name])
         candidate_array = np.asarray(candidate[name])
@@ -3192,15 +3287,39 @@ def compare_parameter_snapshots(
             and np.isfinite(candidate_array).all()
             and np.isfinite(delta).all()
         )
-        maximum_absolute_delta = max(
-            maximum_absolute_delta,
-            float(np.max(np.abs(delta), initial=0.0)),
+        tensor_maximum_absolute_delta = float(
+            np.max(np.abs(delta), initial=0.0)
         )
-        squared_delta += float(np.sum(np.square(delta), dtype=np.float64))
-        squared_reference += float(
+        tensor_squared_delta = float(
+            np.sum(np.square(delta), dtype=np.float64)
+        )
+        tensor_squared_reference = float(
             np.sum(np.square(reference_array), dtype=np.float64)
         )
+        tensor_relative_l2_delta = math.sqrt(
+            tensor_squared_delta
+        ) / max(1e-30, math.sqrt(tensor_squared_reference))
+        maximum_absolute_delta = max(
+            maximum_absolute_delta, tensor_maximum_absolute_delta
+        )
+        squared_delta += tensor_squared_delta
+        squared_reference += tensor_squared_reference
         element_count += int(reference_array.size)
+        tensor_deltas.append(
+            {
+                "name": name,
+                "shape": list(reference_array.shape),
+                "dtype": str(reference_array.dtype),
+                "element_count": int(reference_array.size),
+                "changed_element_count": int(np.count_nonzero(delta)),
+                "maximum_absolute_delta": round(
+                    tensor_maximum_absolute_delta, 12
+                ),
+                "relative_l2_delta": round(
+                    tensor_relative_l2_delta, 12
+                ),
+            }
+        )
     relative_l2_delta = math.sqrt(squared_delta) / max(
         1e-30, math.sqrt(squared_reference)
     )
@@ -3220,6 +3339,32 @@ def compare_parameter_snapshots(
         "relative_l2_delta": round(relative_l2_delta, 12),
         "maximum_absolute_delta_allowed": MAX_PARAMETER_ABSOLUTE_DELTA,
         "maximum_relative_l2_delta_allowed": MAX_PARAMETER_RELATIVE_L2_DELTA,
+        "tensor_count_exceeding_absolute_tolerance": sum(
+            row["maximum_absolute_delta"] > MAX_PARAMETER_ABSOLUTE_DELTA
+            for row in tensor_deltas
+        ),
+        "tensor_count_exceeding_relative_l2_tolerance": sum(
+            row["relative_l2_delta"] > MAX_PARAMETER_RELATIVE_L2_DELTA
+            for row in tensor_deltas
+        ),
+        "top_tensors_by_maximum_absolute_delta": sorted(
+            tensor_deltas,
+            key=lambda row: (
+                row["maximum_absolute_delta"],
+                row["relative_l2_delta"],
+                row["name"],
+            ),
+            reverse=True,
+        )[:10],
+        "top_tensors_by_relative_l2_delta": sorted(
+            tensor_deltas,
+            key=lambda row: (
+                row["relative_l2_delta"],
+                row["maximum_absolute_delta"],
+                row["name"],
+            ),
+            reverse=True,
+        )[:10],
     }
 
 

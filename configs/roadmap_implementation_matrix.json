@@ -5845,6 +5845,15 @@
         "reports/resource_acceleration_fp32_resume_compiled_rng_microbatch4_q64_8step.json",
         "reports/resource_acceleration_bf16_resume_rng_capture_microbatch8_q64_8step.json",
         "reports/resource_acceleration_precision_pair_fp32m4_bf16m8_q64_chunked_audit_steps64_reps2.json",
+        "reports/resource_acceleration_fp16_pair4x2_unmigrated_2026_07_26.json",
+        "reports/resource_acceleration_fp16_resume8_unmigrated_2026_07_26.json",
+        "reports/resource_acceleration_fp32_repeatability_control4_2026_07_26.json",
+        "reports/resource_acceleration_fp16_repeatability_integrated4_2026_07_26.json",
+        "reports/resource_acceleration_fp16_repeatability_eager4_2026_07_26.json",
+        "reports/resource_acceleration_fp16_repeatability_localized4_2026_07_26.json",
+        "reports/resource_acceleration_fp16_repeatability_forced_command_buffers4_2026_07_26.json",
+        "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
+        "reports/resource_acceleration_fp16_guarded64_2026_07_26.host_resource_safety.json",
         "reports/resource_acceleration_source_pair_bf16_split_m4_q64_steps2_reps2.json",
         "reports/resource_acceleration_supervision_pair_bf16_split_m4_q64_steps2_reps2_retry1.json",
         "reports/resource_acceleration_joined_campaign_path_bf16_m8_aux_m1_steps64_8_8_retry6.json",
@@ -5895,7 +5904,7 @@
       "missing_items": [
         "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign.",
         "The first runtime-canary cleanup removed 31.791 GiB of stale process-local candidate-initialization arrays and preserved the active production tree exactly, but runtime canary checkpoints remain outside the artifact budget gate. Extend reference accounting to the remaining approximately 49 GiB, classify unprotected final/intermediate payloads independently, and require two checkpoint transactions plus headroom before launch.",
-        "FP16 compute with FP32 master state is now implemented as a diagnostic-only M1 challenger with FP32 token-loss reduction, static loss scaling, dtype-general master recasting, pre-update non-finite rejection, and FP32 checkpoint custody. Two alternating production-checkpoint pairs measured 1.182x and 1.239x pooled speedups with finite state and lower peak MLX memory. Exact save/reload custody, RNG, data order, and cursor are GREEN, but the eight-update reconstruction is YELLOW because trajectory divergence predates the checkpoint boundary. Diagnose compiled FP16 reduction repeatability without weakening tolerance, then complete independent-process replay, 64-update watchdog, and weak-tail gates before any production migration."
+        "FP16 compute with FP32 master state is implemented and sustained-finite but excluded from production by its prerequisite exact-replay gate. Two alternating production-checkpoint pairs measured 1.182x and 1.239x pooled speedups. A guarded 64-update run sustained 3,725.279 optimizer positions/second with all compute/master/optimizer tensors finite, 2.240 GiB peak MLX allocation, zero swap growth, and 2,583.594 MiB minimum reclaimable memory. Exact publication/reload, RNG, data order, cursor, and optimizer accounting are GREEN. A matched FP32 reconstruction has zero loss divergence and 1.19209e-7 maximum parameter drift, while FP16 diverges before publication across guarded compiled, integrated compiled diagnostic, matched eager, and forced-small-command-buffer variants; localization finds small widespread drift across 85 tensors. This exact route is INCONCLUSIVE_IMPLEMENTATION, not a general FP16 falsification. Do not consume a weak-tail surface after the failed replay prerequisite, and do not weaken tolerance; reopen only for a concrete MLX precision fix or an explicitly qualified alternative replay contract."
       ],
       "pre_training_readiness": {
         "state": "REQUALIFICATION_REQUIRED_FOR_COMPILED_STATE_AMENDMENT",
@@ -5923,7 +5932,14 @@
           "scripts/resource_acceleration_qualification.py",
           "tests/test_standard_causal_transformer_survival.py",
           "reports/resource_acceleration_fp16_pair4x2_unmigrated_2026_07_26.json",
-          "reports/resource_acceleration_fp16_resume8_unmigrated_2026_07_26.json"
+          "reports/resource_acceleration_fp16_resume8_unmigrated_2026_07_26.json",
+          "reports/resource_acceleration_fp32_repeatability_control4_2026_07_26.json",
+          "reports/resource_acceleration_fp16_repeatability_integrated4_2026_07_26.json",
+          "reports/resource_acceleration_fp16_repeatability_eager4_2026_07_26.json",
+          "reports/resource_acceleration_fp16_repeatability_localized4_2026_07_26.json",
+          "reports/resource_acceleration_fp16_repeatability_forced_command_buffers4_2026_07_26.json",
+          "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
+          "reports/resource_acceleration_fp16_guarded64_2026_07_26.host_resource_safety.json"
         ]
       },
       "current_non_claims": [
@@ -5933,7 +5949,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve, extend the budget/reference graph to the remaining runtime canary checkpoints, and do not perform a blind second purge. Diagnose the measured pre-checkpoint FP16 compiled-trajectory divergence without weakening tolerance, then run independent-process replay and the 64-step stability/weak-tail gates; only a GREEN result may replace production FP32. In parallel, complete the FP32 64-step fresh-process state/cursor/publication replay under the live-reserve guard and regenerate the replacement freeze. Qualify MLX fast synchronization, use bounded station timing for at most one custom kernel, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
+      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve and do not perform a blind second purge. FP16 causality, custody, and 64-update finite/resource qualification are complete; the exact implementation is excluded from production as INCONCLUSIVE_IMPLEMENTATION because its trajectory is not replay-stable, and the weak-tail surface is intentionally unconsumed after that prerequisite failure. Keep FP32 authoritative. Next complete bounded attention, MLP, norm, clipping, AdamW, and state-materialization timing; implement a custom kernel only if its realizable joined-wall bound reaches 10%. Then test virtual-zero lazy inactive optimizer state only as a sustained-microbatch enabler and run the preregistered AdEMAMix, Adam-mini, masked-growth, and 128-to-256-to-512 time-to-quality selector. Extend the budget/reference graph to remaining runtime checkpoints separately, qualify MLX fast synchronization, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",

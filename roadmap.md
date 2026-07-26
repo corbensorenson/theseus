@@ -467,10 +467,31 @@ Therefore:
    save/reload probe proves byte-exact parameter, optimizer, and RNG reload custody plus exact
    data order/cursor, but remains YELLOW because independently reconstructed trajectories
    diverge before the checkpoint boundary (`1.7976e-5` maximum parameter delta,
-   `1.4843e-5` relative L2 after eight updates). This is not a checkpoint fault and it is not
-   permission to relax the tolerance. Diagnose the pre-boundary compiled FP16 reduction
-   repeatability, then rerun independent-process replay and the 64-update/weak-tail gates.
-   Production remains FP32 until all of those gates pass.
+   `1.4843e-5` relative L2 after eight updates). The follow-up causality matrix now closes
+   the obvious software explanations. A matched FP32 reconstruction is GREEN with zero loss
+   divergence, `1.19209e-7` maximum parameter delta, and `1.191e-8` relative L2. FP16 still
+   diverges before publication when run compiled with the finite-gradient guard, compiled
+   without that host guard, eagerly with matched microbatch accumulation, and with the
+   official MLX command-buffer thresholds forced to one operation/one MiB. Exact RNG,
+   sampler, cursor, optimizer-step accounting, publication, and reload custody remain GREEN.
+   Tensor localization finds widespread small drift across 85 parameter tensors rather than
+   one defective layer; the largest absolute delta is `6.733462e-6` in the token embedding
+   and aggregate relative L2 is `5.30184e-6`. Installed MLX `0.32.0` is the current release
+   and already includes the general Metal WAR-hazard correction; its cited LayerNorm race
+   does not explain this RMSNorm model. The evidence therefore localizes the remaining wall
+   to lower-precision GPU numerical repeatability rather than Python, `mx.compile`,
+   checkpointing, data order, the finite-gradient read, or command-buffer scheduling.
+
+   The guarded 64-update FP16 route nevertheless completes with all compute, FP32 master,
+   and optimizer tensors finite at 3,725.279 warmup-excluded optimizer positions/second,
+   2.240 GiB peak MLX allocation, 140.02 seconds joined wall time, zero swap growth, and
+   2,583.594 MiB minimum reclaimable memory. This proves sustained finite mechanics and a
+   safe measured host envelope; it does not repair replay. Classify this exact FP16
+   implementation `INCONCLUSIVE_IMPLEMENTATION` for production adoption, keep FP32
+   authoritative, and do not spend a source-disjoint weak-tail surface on a route that has
+   already failed its prerequisite replay gate. Reopen only for a concrete MLX precision
+   fix or a separately specified stochastic-replay contract that preserves honest
+   checkpoint continuity; never relax the tolerance merely to promote the speedup.
 3. **Time the remaining operators without another unbounded trace.** Add bounded exclusive
    timings for one-layer attention projections/core, SwiGLU MLP, norms, clipping, AdamW, and
    state materialization. The model already uses fast SDPA, fast RoPE, native RMSNorm,
