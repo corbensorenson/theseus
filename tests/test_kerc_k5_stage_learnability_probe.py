@@ -18,6 +18,17 @@ import kerc_k5_stage_learnability_probe as probe  # noqa: E402
 import moecot_source_conditioned_pretraining as pretraining  # noqa: E402
 
 
+def test_probe_transport_diagnostics_reject_valid_legacy_wire_for_v3_target() -> (
+    None
+):
+    probe.require_compiler_wire_transport_version([3], required_version=3)
+    with pytest.raises(
+        probe.kernel_protocol.KernelProtocolFault,
+        match="KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+    ):
+        probe.require_compiler_wire_transport_version([2], required_version=3)
+
+
 def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership() -> (
     None
 ):

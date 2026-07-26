@@ -451,6 +451,7 @@ def independent_compiler_semantic_diagnostic(
     *,
     row_id: str,
     concept_resolver: Any = None,
+    required_transport_version: int | None = None,
 ) -> tuple[bool | None, str]:
     """Validate a completed compiler output after generation, without repair."""
 
@@ -468,7 +469,7 @@ def independent_compiler_semantic_diagnostic(
                 "privacy": "private_local",
             },
         )
-        kernel_protocol.parse_learned_compiler_output(
+        parsed = kernel_protocol.parse_learned_compiler_output(
             generated,
             protected_objects={},
             concept_capsules={},
@@ -477,11 +478,37 @@ def independent_compiler_semantic_diagnostic(
             hrl_state=hrl_state,
             concept_resolver=concept_resolver,
         )
+        if required_transport_version is not None:
+            training.validate_required_compiler_transport_version(
+                parsed,
+                required_version=int(required_transport_version),
+            )
         return True, ""
     except kernel_protocol.KernelProtocolFault as exc:
         return False, exc.code
     except (TypeError, ValueError, json.JSONDecodeError):
         return False, "KERC_LEARNED_COMPILER_OUTPUT_INVALID"
+
+
+def require_compiler_wire_transport_version(
+    wire_payload: Any,
+    *,
+    required_version: int,
+) -> None:
+    """Bind offline and optional online transport checks to the target ABI."""
+
+    observed_version = (
+        int(wire_payload[0])
+        if isinstance(wire_payload, list)
+        and wire_payload
+        and isinstance(wire_payload[0], int)
+        and not isinstance(wire_payload[0], bool)
+        else 0
+    )
+    training.validate_required_compiler_transport_version(
+        {"compiler_transport_version": observed_version},
+        required_version=int(required_version),
+    )
 
 
 def compiler_target_index_groups(
@@ -2101,10 +2128,12 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 structured_source=objective in training.KERC_STRUCTURED_SOURCE_OBJECTIVES,
                 completion_validator=(
                     lambda text: (
-                        kernel_protocol.decode_learned_compiler_transport(
-                            text
-                        )
-                    )
+                        require_compiler_wire_transport_version(
+                            json.loads(text),
+                            required_version=compiler_transport_version,
+                        ),
+                        kernel_protocol.decode_learned_compiler_transport(text),
+                    )[-1]
                     if online_transport_validator
                     and objective == "surface_to_kernel_program_v1"
                     else None
@@ -2155,6 +2184,10 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         ):
             try:
                 decoded_transport = json.loads(generated)
+                require_compiler_wire_transport_version(
+                    decoded_transport,
+                    required_version=compiler_transport_version,
+                )
                 compiler_transport_shape = (
                     kernel_protocol.learned_compiler_transport_shape_signature(
                         decoded_transport
@@ -2187,6 +2220,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                         str(row["prompt"]),
                         row_id=str(row["row_id"]),
                         concept_resolver=concept_registry.resolve,
+                        required_transport_version=compiler_transport_version,
                     )
         rows.append(
             {
