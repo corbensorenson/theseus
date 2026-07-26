@@ -15,6 +15,7 @@ from typing import Any
 
 import fresh_process_pretraining_qualification as fresh
 import moecot_language_arm_training as training
+import neural_seed_training_campaign as campaign
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -103,6 +104,18 @@ def selected_recipe_from_training(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def prepare_scratch_paths(
+    target: dict[str, Any],
+    scratch_root: Path,
+    *,
+    initialize: bool,
+) -> dict[str, Path]:
+    scratch_target = training.scratch_target_contract(target, scratch_root)
+    if initialize:
+        fresh.initialize_scratch(target, scratch_root)
+    return fresh.target_paths(scratch_target)
+
+
 def validate_config(config: dict[str, Any]) -> None:
     if config.get("policy") != POLICY:
         raise ValueError("unexpected sustained qualification policy")
@@ -120,6 +133,7 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("invalid sustained throughput retention gate")
     for key in (
         "require_ac_power",
+        "require_user_presence_availability",
         "require_exact_resume_each_segment",
         "require_canonical_lineage_unchanged",
         "system_swap_growth_is_diagnostic",
@@ -194,6 +208,7 @@ def report_for(
     canonical_before: dict[str, Any],
     canonical_after: dict[str, Any],
     rows: list[dict[str, Any]],
+    availability_checks: list[dict[str, Any]],
     interruption: dict[str, Any] | None,
 ) -> dict[str, Any]:
     joined_wall = sum(float(row["child_wall_seconds"]) for row in rows)
@@ -219,10 +234,14 @@ def report_for(
         if windows
         else 0.0
     )
+    availability_paused = bool(
+        interruption
+        and interruption.get("fault") == "availability_paused"
+    )
     hard_gaps: list[str] = []
-    if interruption is not None:
+    if interruption is not None and not availability_paused:
         hard_gaps.append("sustained_window_interrupted")
-    if not completed:
+    if not completed and not availability_paused:
         hard_gaps.append("two_hour_contiguous_window_incomplete")
     if selector.get("trigger_state") != "GREEN" or selector_recipe != recipe:
         hard_gaps.append("selected_recipe_identity_mismatch")
@@ -236,11 +255,18 @@ def report_for(
         config["minimum_last_to_first_joined_throughput_ratio"]
     ):
         hard_gaps.append("sustained_throughput_retention_failed")
+    trigger_state = (
+        "PAUSED"
+        if availability_paused and not hard_gaps
+        else "GREEN"
+        if not hard_gaps
+        else "RED"
+    )
     return {
         "policy": POLICY,
         "created_utc": training.now(),
-        "trigger_state": "GREEN" if not hard_gaps else "RED",
-        "support_state": "SUPPORTED" if not hard_gaps else "INCOMPLETE",
+        "trigger_state": trigger_state,
+        "support_state": "SUPPORTED" if trigger_state == "GREEN" else "INCOMPLETE",
         "hard_gaps": sorted(set(hard_gaps)),
         "config": training.relative(config_path),
         "config_sha256": sha256_file(config_path),
@@ -266,6 +292,7 @@ def report_for(
         "all_segments_on_ac_power": all_ac,
         "first_middle_last": windows,
         "last_to_first_joined_throughput_ratio": round(retention, 6),
+        "availability_checks": availability_checks,
         "interruption": interruption,
         "segments": rows,
         "system_swap_growth_treatment": "DIAGNOSTIC_ONLY",
@@ -278,17 +305,47 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
     validate_config(config)
     training_config_path = training.resolve(str(config["training_config"]))
     selector_path = training.resolve(str(config["selector_report"]))
+    availability_path = training.resolve(str(config["availability_config"]))
     selector = read_json(selector_path)
+    availability_policy = read_json(availability_path)
+    campaign.validate_availability_policy(availability_policy)
     training_config, plan, target = fresh.canonical_contract(training_config_path)
     scratch_root = training.resolve(str(config["scratch_root"]))
-    scratch_paths = fresh.target_paths(
-        training.scratch_target_contract(target, scratch_root)
-    )
     progress_path = scratch_root / "sustained_progress.json"
     segment_dir = scratch_root / "segments"
-    segment_dir.mkdir(parents=True, exist_ok=True)
     canonical_paths = fresh.target_paths(target)
+    availability_checks: list[dict[str, Any]] = []
+    initial_availability = campaign.availability_state(availability_policy)
+    availability_checks.append(initial_availability)
+    if initial_availability["trigger_state"] != "GREEN":
+        canonical_before = fresh.identities(canonical_paths)
+        interruption = {
+            "fault": "availability_paused",
+            "segment_index": 1,
+            "failed_gates": initial_availability["failed_gates"],
+        }
+        report = report_for(
+            config_path=config_path,
+            config=config,
+            selector_path=selector_path,
+            selector=selector,
+            training_config_path=training_config_path,
+            training_config=training_config,
+            plan=plan,
+            canonical_before=canonical_before,
+            canonical_after=fresh.identities(canonical_paths),
+            rows=[],
+            availability_checks=availability_checks,
+            interruption=interruption,
+        )
+        training.write_json_atomic(out, report)
+        return report
     if progress_path.is_file():
+        scratch_paths = prepare_scratch_paths(
+            target,
+            scratch_root,
+            initialize=False,
+        )
         progress = read_json(progress_path)
         rows = list(progress.get("segments") or [])
         canonical_before = dict(progress["canonical_before"])
@@ -320,7 +377,11 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
             progress["prior_windows"] = attempts
             rows = []
     else:
-        fresh.initialize_scratch(target, scratch_root)
+        scratch_paths = prepare_scratch_paths(
+            target,
+            scratch_root,
+            initialize=True,
+        )
         canonical_before = fresh.identities(canonical_paths)
         rows = []
         progress = {
@@ -329,6 +390,7 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
             "segments": rows,
             "prior_windows": [],
         }
+    segment_dir.mkdir(parents=True, exist_ok=True)
     last_finished = time.time()
     interruption: dict[str, Any] | None = None
     while (
@@ -336,6 +398,23 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
         < float(config["minimum_contiguous_child_wall_seconds"])
         or len(rows) < int(config["minimum_successful_segments"])
     ):
+        availability = campaign.availability_state(availability_policy)
+        availability_checks.append(availability)
+        if availability["trigger_state"] != "GREEN":
+            interruption = {
+                "fault": "availability_paused",
+                "segment_index": len(rows) + 1,
+                "failed_gates": availability["failed_gates"],
+            }
+            progress.update(
+                {
+                    "segments": rows,
+                    "last_segment_finished_epoch": last_finished,
+                    "interruption": interruption,
+                }
+            )
+            training.write_json_atomic(progress_path, progress)
+            break
         if rows:
             gap = time.time() - last_finished
             if gap > float(config["maximum_intersegment_wall_seconds"]):
@@ -433,6 +512,7 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
         canonical_before=canonical_before,
         canonical_after=canonical_after,
         rows=rows,
+        availability_checks=availability_checks,
         interruption=interruption,
     )
     training.write_json_atomic(out, report)
@@ -474,7 +554,7 @@ def main() -> int:
             sort_keys=True,
         )
     )
-    return 0 if report["trigger_state"] == "GREEN" else 2
+    return 0 if report["trigger_state"] in {"GREEN", "PAUSED"} else 2
 
 
 if __name__ == "__main__":

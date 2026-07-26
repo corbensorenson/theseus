@@ -5990,6 +5990,7 @@
           "configs/selected_route_sustained_qualification.json",
           "scripts/selected_route_sustained_qualification.py",
           "tests/test_selected_route_sustained_qualification.py",
+          "reports/selected_route_sustained_qualification.json",
           "configs/neural_seed_training_availability.json",
           "scripts/neural_seed_training_campaign.py",
           "tests/test_neural_seed_training_campaign.py"

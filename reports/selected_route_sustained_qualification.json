@@ -1,0 +1,102 @@
+{
+  "all_segments_on_ac_power": true,
+  "availability_checks": [
+    {
+      "captured_utc": "2026-07-26T22:22:21.604378Z",
+      "failed_gates": [
+        "inside_launch_window",
+        "memory_launch_reserve"
+      ],
+      "gates": {
+        "ac_power": true,
+        "disk_reserve": true,
+        "inside_launch_window": false,
+        "low_power_mode_off": true,
+        "machine_idle": true,
+        "memory_launch_reserve": false,
+        "no_interactive_accelerator_job": true,
+        "yield_control_absent": true
+      },
+      "policy": "project_theseus_user_presence_aware_training_segments_v1",
+      "snapshot": {
+        "active_accelerator_jobs": [],
+        "disk_free_gib": 13.777576,
+        "idle_seconds": 5190.819505791,
+        "local_minute": 1042,
+        "local_time": "2026-07-26T17:22:21.529006-05:00",
+        "low_power_mode": false,
+        "on_ac_power": true,
+        "power_receipt": {
+          "battery": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=43516003)\t100%; charged; 0:00 remaining present: true",
+          "custom": "Battery Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         60\n womp                 0\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n lessbright           1\n disksleep            10\nAC Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         0\n womp                 1\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n disksleep            10"
+        },
+        "reclaimable_available_mib": 4528.516,
+        "swapouts_mib": 66129.312,
+        "yield_control": "runtime/control/neural_seed_yield_after_segment",
+        "yield_requested": false
+      },
+      "trigger_state": "PAUSED"
+    }
+  ],
+  "canonical_after": {
+    "checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+    "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+    "optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+    "receipt_sha256": "3f4c4ced2c610f08dc62b9cc3c02e2f3a22222a1c467e5264c75546b451e007a"
+  },
+  "canonical_before": {
+    "checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+    "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+    "optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+    "receipt_sha256": "3f4c4ced2c610f08dc62b9cc3c02e2f3a22222a1c467e5264c75546b451e007a"
+  },
+  "canonical_lineage_unchanged": true,
+  "capability_claim": "NONE_SUSTAINED_EXECUTION_QUALIFICATION_ONLY",
+  "config": "configs/selected_route_sustained_qualification.json",
+  "config_sha256": "69e6e1fe09ea2ede5655fbfeb2679eba5748da6003c95baa14c8cea4ea3f6bf2",
+  "contiguous_child_wall_seconds": 0,
+  "created_utc": "2026-07-26T22:22:22.247959Z",
+  "exact_resume_each_segment": true,
+  "first_middle_last": {},
+  "hard_gaps": [],
+  "interruption": {
+    "failed_gates": [
+      "inside_launch_window",
+      "memory_launch_reserve"
+    ],
+    "fault": "availability_paused",
+    "segment_index": 1
+  },
+  "last_to_first_joined_throughput_ratio": 0.0,
+  "minimum_contiguous_child_wall_seconds": 7200.0,
+  "plan_sha256": "91cfec74ccead883b2e6cc4ccc60ffe969c57c118d9ebe52bba908187ca124fe",
+  "policy": "project_theseus_selected_route_sustained_qualification_v1",
+  "segment_optimizer_steps": 64,
+  "segments": [],
+  "selected_recipe": {
+    "compile_width_quantum": 64,
+    "compiled_microbatch_size": 4,
+    "compute_dtype": "float32",
+    "fp32_master": false,
+    "optimizer_id": "adamw_mlx",
+    "sequence_length_policy": "fixed_target_width",
+    "structural_growth_policy": "full_depth_from_step_zero",
+    "swapout_growth_action": "report_only",
+    "token_loss_compute_dtype": "float32",
+    "training_rope_kernel": "mlx_fast",
+    "training_step_mode": "compiled"
+  },
+  "selector": {
+    "path": "reports/training_acceleration_final_selector.json",
+    "sha256": "4c8ea31a6e2ddcfa48dbff0877a83304a226253f62b04cc7f67eb08a48dfb54a",
+    "trigger_state": "GREEN"
+  },
+  "successful_segment_count": 0,
+  "support_state": "INCOMPLETE",
+  "system_swap_growth_treatment": "DIAGNOSTIC_ONLY",
+  "training_config": {
+    "path": "configs/moecot_language_arm_training.json",
+    "sha256": "a0f5c69e093338f6669ddbe1fa2d0aeccb873427010dd5ef2dc4aeb039d12fe2"
+  },
+  "trigger_state": "PAUSED"
+}

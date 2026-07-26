@@ -600,6 +600,14 @@ Therefore:
    device throughput, final loss, AC state, available `pmset` thermal/performance warnings,
    causal child RSS, inferred unified memory, live reserve, and diagnostic swap growth. A
    guard interruption is durable and cannot be silently counted across a later invocation.
+   The same user-presence policy used by the production campaign is now evaluated before any
+   scratch lineage is allocated and again between every 64-step segment. A closed overnight,
+   idle, AC, Low Power, disk, measured-memory, competing-job, or yield gate returns `PAUSED`
+   with incomplete evidence rather than a false training failure; it never interrupts an
+   in-flight Metal graph. Real closed-gate execution produced zero segments, no scratch
+   directory, no hard gap, and an unchanged canonical lineage. The initial implementation
+   also exposed and fixed a scratch initialization-order defect that would have prevented a
+   brand-new sustained run from starting.
    Two current fresh-process attempts correctly stopped on the unchanged 2,048 MiB live-reserve
    floor: one second segment reached 2,003 MiB reclaimable after about 194 seconds with zero
    swap growth, and a later launch began with only 4,720.672 MiB reclaimable before reaching
