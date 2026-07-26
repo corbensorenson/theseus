@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import datetime as dt
 import json
 import os
 import re
@@ -31,29 +30,7 @@ DEFAULT_AVAILABILITY_CONFIG = (
     ROOT / "configs" / "neural_seed_training_availability.json"
 )
 POLICY = "project_theseus_fresh_process_training_campaign_v1"
-AVAILABILITY_POLICY = "project_theseus_user_presence_aware_training_segments_v1"
-
-
-def parse_hhmm(value: str) -> int:
-    match = re.fullmatch(r"([01][0-9]|2[0-3]):([0-5][0-9])", value)
-    if match is None:
-        raise ValueError(f"invalid local time: {value}")
-    return int(match.group(1)) * 60 + int(match.group(2))
-
-
-def within_launch_windows(
-    local_minute: int, windows: list[dict[str, Any]]
-) -> bool:
-    for row in windows:
-        start = parse_hhmm(str(row.get("start_local") or ""))
-        end = parse_hhmm(str(row.get("end_local") or ""))
-        if start == end:
-            return True
-        if start < end and start <= local_minute < end:
-            return True
-        if start > end and (local_minute >= start or local_minute < end):
-            return True
-    return False
+AVAILABILITY_POLICY = "project_theseus_resource_aware_training_segments_v2"
 
 
 def validate_availability_policy(policy: dict[str, Any]) -> None:
@@ -61,20 +38,10 @@ def validate_availability_policy(policy: dict[str, Any]) -> None:
         raise ValueError("unexpected training availability policy")
     if policy.get("enabled") is not True:
         raise ValueError("training availability scheduler must remain enabled")
-    windows = policy.get("launch_windows")
-    if not isinstance(windows, list) or not windows:
-        raise ValueError("at least one explicit launch window is required")
-    for row in windows:
-        if not isinstance(row, dict):
-            raise ValueError("launch window must be an object")
-        parse_hhmm(str(row.get("start_local") or ""))
-        parse_hhmm(str(row.get("end_local") or ""))
-    if int(policy.get("minimum_idle_seconds") or 0) < 60:
-        raise ValueError("minimum idle time must be at least one minute")
+    if "launch_windows" in policy:
+        raise ValueError("clock-based launch windows are forbidden")
     if float(policy.get("minimum_disk_free_gib") or 0.0) <= 0.0:
         raise ValueError("positive disk reserve is required")
-    if float(policy.get("minimum_reclaimable_before_launch_mib") or 0.0) < 4096:
-        raise ValueError("launch working-set reserve is too small")
     behavior = policy.get("segment_behavior") or {}
     if not all(
         behavior.get(key) is True
@@ -86,19 +53,6 @@ def validate_availability_policy(policy: dict[str, Any]) -> None:
         )
     ):
         raise ValueError("transactional segment behavior must remain fail closed")
-
-
-def mac_idle_seconds() -> float | None:
-    result = subprocess.run(
-        ["ioreg", "-c", "IOHIDSystem"],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
-        timeout=10,
-    )
-    match = re.search(r'"HIDIdleTime"\s*=\s*([0-9]+)', result.stdout)
-    return float(match.group(1)) / 1_000_000_000.0 if match else None
 
 
 def mac_power_state() -> tuple[bool | None, bool | None, dict[str, str]]:
@@ -177,14 +131,6 @@ def evaluate_availability(
     policy: dict[str, Any], snapshot: dict[str, Any]
 ) -> dict[str, Any]:
     gates = {
-        "inside_launch_window": within_launch_windows(
-            int(snapshot["local_minute"]), list(policy["launch_windows"])
-        ),
-        "machine_idle": (
-            snapshot.get("idle_seconds") is not None
-            and float(snapshot["idle_seconds"])
-            >= float(policy["minimum_idle_seconds"])
-        ),
         "ac_power": (
             snapshot.get("on_ac_power") is True
             if policy["require_ac_power"]
@@ -197,10 +143,6 @@ def evaluate_availability(
         ),
         "disk_reserve": float(snapshot["disk_free_gib"])
         >= float(policy["minimum_disk_free_gib"]),
-        "memory_launch_reserve": float(
-            snapshot["reclaimable_available_mib"]
-        )
-        >= float(policy["minimum_reclaimable_before_launch_mib"]),
         "no_interactive_accelerator_job": not bool(
             snapshot["active_accelerator_jobs"]
         ),
@@ -218,8 +160,6 @@ def evaluate_availability(
 
 def availability_state(policy: dict[str, Any]) -> dict[str, Any]:
     validate_availability_policy(policy)
-    now = dt.datetime.now().astimezone()
-    idle_seconds = mac_idle_seconds()
     on_ac, low_power_mode, power_receipt = mac_power_state()
     memory = host_resource_safety.host_memory_snapshot()
     disk = shutil.disk_usage(ROOT)
@@ -227,9 +167,6 @@ def availability_state(policy: dict[str, Any]) -> dict[str, Any]:
         str(policy["yield_after_segment_control"])
     )
     snapshot = {
-        "local_time": now.isoformat(),
-        "local_minute": now.hour * 60 + now.minute,
-        "idle_seconds": idle_seconds,
         "on_ac_power": on_ac,
         "low_power_mode": low_power_mode,
         "power_receipt": power_receipt,

@@ -99,7 +99,7 @@
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "a0f5c69e093338f6669ddbe1fa2d0aeccb873427010dd5ef2dc4aeb039d12fe2"
+      "sha256": "0777b2f577251fbdbb2bc0f31267f67c84be821ceb7c9639fa183734304a0526"
     },
     "progressive_sequence": {
       "path": "reports/progressive_sequence_length_qualification.json",

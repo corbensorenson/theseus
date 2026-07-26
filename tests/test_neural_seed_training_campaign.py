@@ -24,8 +24,6 @@ def policy() -> dict:
 
 def green_snapshot() -> dict:
     return {
-        "local_minute": 22 * 60,
-        "idle_seconds": 1200,
         "on_ac_power": True,
         "low_power_mode": False,
         "disk_free_gib": 20.0,
@@ -35,11 +33,18 @@ def green_snapshot() -> dict:
     }
 
 
-def test_overnight_window_wraps_midnight() -> None:
-    windows = [{"start_local": "21:00", "end_local": "08:00"}]
-    assert campaign.within_launch_windows(22 * 60, windows)
-    assert campaign.within_launch_windows(7 * 60 + 59, windows)
-    assert not campaign.within_launch_windows(12 * 60, windows)
+def test_availability_policy_forbids_clock_based_launch_windows() -> None:
+    config = policy()
+    assert "launch_windows" not in config
+    config["launch_windows"] = [
+        {"start_local": "21:00", "end_local": "08:00"}
+    ]
+    try:
+        campaign.validate_availability_policy(config)
+    except ValueError as exc:
+        assert "clock-based launch windows are forbidden" in str(exc)
+    else:
+        raise AssertionError("clock-based launch restriction was accepted")
 
 
 def test_availability_gate_requires_every_laptop_safety_condition() -> None:
@@ -50,15 +55,9 @@ def test_availability_gate_requires_every_laptop_safety_condition() -> None:
     assert all(report["gates"].values())
 
     for key, value, failed_gate in (
-        ("idle_seconds", 1, "machine_idle"),
         ("on_ac_power", False, "ac_power"),
         ("low_power_mode", True, "low_power_mode_off"),
         ("disk_free_gib", 1.0, "disk_reserve"),
-        (
-            "reclaimable_available_mib",
-            4096.0,
-            "memory_launch_reserve",
-        ),
         (
             "active_accelerator_jobs",
             [{"pid": 7}],

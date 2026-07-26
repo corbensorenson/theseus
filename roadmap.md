@@ -302,23 +302,23 @@ Work this finite docket in order:
    canonical-lineage branch here as
    `NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT`; preserve compact partitioning only
    as a fresh successor-architecture candidate with matched quality evidence.
-5. **Operate the user-presence-aware segment scheduler.** Never suspend an in-flight Metal
-   command graph. Launch a bounded 32/64-step segment only when AC power is present, Low Power
-   Mode is off, the machine has been idle for a configured window, disk/checkpoint reserve and
-   memory/swap gates are green, and no interactive accelerator job is active. If user activity
-   returns, finish the current roughly minute-scale segment, atomically publish, and stop
-   launching more. Support explicit overnight start/stop windows and an immediate “yield after
-   this segment” control. This increases calendar duration when used, but prevents a multi-day
+5. **Operate the resource-aware segment scheduler.** Never suspend an in-flight Metal
+   command graph. Launch a bounded 32/64-step segment at any hour when AC power is present, Low Power
+   Mode is off, disk/checkpoint reserve is green, and no interactive accelerator job is active.
+   The child watchdog—not a second outer memory floor—owns live memory and swap safety. If user activity
+   requires the machine, the explicit yield control finishes the current roughly minute-scale
+   segment, atomically publishes, and stops launching more. Never impose
+   a clock-based launch window. This can increase calendar duration when used, but prevents a multi-day
    laptop takeover without changing one training token.
 
    **Implemented (2026-07-26):** the existing neural-seed campaign controller now evaluates
    these gates before every transactional 64-step launch and returns `PAUSED`, rather than
-   failure, when the configured overnight window, 15-minute idle interval, AC/Low Power state,
-   10 GiB disk reserve, 7,424 MiB measured launch headroom, competing-accelerator inventory, or
+   failure, when AC/Low Power state,
+   10 GiB disk reserve, competing-accelerator inventory, or
    explicit yield file is not ready. An in-flight Metal segment is never suspended; it finishes
    and publishes through the existing exact-resume transaction before availability is checked
-   again. The launch floor is not a generic machine-memory constant: it is the measured
-   approximately 5.18 GiB selected-route peak plus the unchanged 2 GiB live reserve.
+   again. There is no outer launch-memory floor; the external child watchdog continuously
+   enforces the unchanged 2 GiB live reserve, process ceiling, swap treatment, and wall bound.
 6. **Make review-point racing executable before cutting compute.** At each already frozen
    private-development review, continue every candidate unless a preregistered confidence-bound
    rule establishes practical domination across aggregate loss, weak-language tails, direct
@@ -433,7 +433,7 @@ an exact-replay implementation exclusion; retain default synchronization after t
 1-2% switch missed the speed gate; and add no custom kernel after bounded station ranking
 found either existing native fast paths or sub-10% elimination bounds. Then stop the
 acceleration sprint.
-For laptop availability, the implemented user-presence-aware overnight scheduler and future
+For laptop availability, the implemented resource-aware scheduler and future
 control/arm fanout remain more important than shaving another percent from a foreground process. The first
 100M-position reading remains an overnight-scale milestone; selected-path dogfood and the
 two dense scientific controls remain separate schedules.
@@ -600,9 +600,9 @@ Therefore:
    device throughput, final loss, AC state, available `pmset` thermal/performance warnings,
    causal child RSS, inferred unified memory, live reserve, and diagnostic swap growth. A
    guard interruption is durable and cannot be silently counted across a later invocation.
-   The same user-presence policy used by the production campaign is now evaluated before any
-   scratch lineage is allocated and again between every 64-step segment. A closed overnight,
-   idle, AC, Low Power, disk, measured-memory, competing-job, or yield gate returns `PAUSED`
+   The same resource policy used by the production campaign is now evaluated before any
+   scratch lineage is allocated and again between every 64-step segment. A closed AC, Low
+   Power, disk, competing-job, or yield gate returns `PAUSED`
    with incomplete evidence rather than a false training failure; it never interrupts an
    in-flight Metal graph. Real closed-gate execution produced zero segments, no scratch
    directory, no hard gap, and an unchanged canonical lineage. The initial implementation

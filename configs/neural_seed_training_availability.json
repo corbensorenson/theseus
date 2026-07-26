@@ -1,17 +1,9 @@
 {
-  "policy": "project_theseus_user_presence_aware_training_segments_v1",
+  "policy": "project_theseus_resource_aware_training_segments_v2",
   "enabled": true,
-  "launch_windows": [
-    {
-      "start_local": "21:00",
-      "end_local": "08:00"
-    }
-  ],
-  "minimum_idle_seconds": 900,
   "require_ac_power": true,
   "require_low_power_mode_off": true,
   "minimum_disk_free_gib": 10,
-  "minimum_reclaimable_before_launch_mib": 7424,
   "yield_after_segment_control": "runtime/control/neural_seed_yield_after_segment",
   "interactive_accelerator_process_patterns": [
     "moecot_language_arm_training.py --execute",

@@ -133,7 +133,7 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("invalid sustained throughput retention gate")
     for key in (
         "require_ac_power",
-        "require_user_presence_availability",
+        "require_resource_availability",
         "require_exact_resume_each_segment",
         "require_canonical_lineage_unchanged",
         "system_swap_growth_is_diagnostic",

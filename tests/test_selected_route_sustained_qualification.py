@@ -20,7 +20,7 @@ def test_sustained_config_requires_real_two_hour_window() -> None:
         (ROOT / "configs" / "selected_route_sustained_qualification.json").read_text()
     )
     sustained.validate_config(config)
-    assert config["require_user_presence_availability"] is True
+    assert config["require_resource_availability"] is True
     assert config["availability_config"] == (
         "configs/neural_seed_training_availability.json"
     )
@@ -90,7 +90,7 @@ def test_availability_pause_is_incomplete_not_training_failure(
     }
     availability = {
         "trigger_state": "PAUSED",
-        "failed_gates": ["inside_launch_window"],
+        "failed_gates": ["ac_power"],
     }
     report = sustained.report_for(
         config_path=config_path,
@@ -107,7 +107,7 @@ def test_availability_pause_is_incomplete_not_training_failure(
         interruption={
             "fault": "availability_paused",
             "segment_index": 1,
-            "failed_gates": ["inside_launch_window"],
+            "failed_gates": ["ac_power"],
         },
     )
     assert report["trigger_state"] == "PAUSED"

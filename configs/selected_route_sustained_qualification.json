@@ -12,7 +12,7 @@
   "window_fraction": 0.2,
   "minimum_last_to_first_joined_throughput_ratio": 0.85,
   "require_ac_power": true,
-  "require_user_presence_availability": true,
+  "require_resource_availability": true,
   "require_exact_resume_each_segment": true,
   "require_canonical_lineage_unchanged": true,
   "host_resource_policy_source": "training_config.host_resource_safety",

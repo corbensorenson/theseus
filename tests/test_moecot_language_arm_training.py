@@ -2740,7 +2740,7 @@ def test_step3480_receipt_accepts_final_acceleration_disposition_migration() -> 
         receipt,
         {
             "plan_identity": config["plan_identity"],
-            "plan_sha256": "91cfec74ccead883b2e6cc4ccc60ffe969c57c118d9ebe52bba908187ca124fe",
+            "plan_sha256": "9be51efc6bb8dca93ed85db5f788610ea42c12f313af4e5b51c8fd563f193e72",
             "stage": {"stage_signature": stage_signature},
         },
         {"target_id": "shared_trunk"},

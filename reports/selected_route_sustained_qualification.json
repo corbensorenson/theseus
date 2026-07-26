@@ -2,36 +2,29 @@
   "all_segments_on_ac_power": true,
   "availability_checks": [
     {
-      "captured_utc": "2026-07-26T22:22:21.604378Z",
+      "captured_utc": "2026-07-26T22:45:37.469112Z",
       "failed_gates": [
-        "inside_launch_window",
-        "memory_launch_reserve"
+        "ac_power"
       ],
       "gates": {
-        "ac_power": true,
+        "ac_power": false,
         "disk_reserve": true,
-        "inside_launch_window": false,
         "low_power_mode_off": true,
-        "machine_idle": true,
-        "memory_launch_reserve": false,
         "no_interactive_accelerator_job": true,
         "yield_control_absent": true
       },
-      "policy": "project_theseus_user_presence_aware_training_segments_v1",
+      "policy": "project_theseus_resource_aware_training_segments_v2",
       "snapshot": {
         "active_accelerator_jobs": [],
-        "disk_free_gib": 13.777576,
-        "idle_seconds": 5190.819505791,
-        "local_minute": 1042,
-        "local_time": "2026-07-26T17:22:21.529006-05:00",
+        "disk_free_gib": 14.699738,
         "low_power_mode": false,
-        "on_ac_power": true,
+        "on_ac_power": false,
         "power_receipt": {
-          "battery": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=43516003)\t100%; charged; 0:00 remaining present: true",
+          "battery": "Now drawing from 'Battery Power'\n -InternalBattery-0 (id=43516003)\t100%; discharging; 2:42 remaining present: true",
           "custom": "Battery Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         60\n womp                 0\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n lessbright           1\n disksleep            10\nAC Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         0\n womp                 1\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n disksleep            10"
         },
-        "reclaimable_available_mib": 4528.516,
-        "swapouts_mib": 66129.312,
+        "reclaimable_available_mib": 2986.75,
+        "swapouts_mib": 66414.938,
         "yield_control": "runtime/control/neural_seed_yield_after_segment",
         "yield_requested": false
       },
@@ -53,23 +46,22 @@
   "canonical_lineage_unchanged": true,
   "capability_claim": "NONE_SUSTAINED_EXECUTION_QUALIFICATION_ONLY",
   "config": "configs/selected_route_sustained_qualification.json",
-  "config_sha256": "69e6e1fe09ea2ede5655fbfeb2679eba5748da6003c95baa14c8cea4ea3f6bf2",
+  "config_sha256": "1f2a215b459a78039513ac2c619e5da3b6cdb9a30908c8e027c7785afd2ae993",
   "contiguous_child_wall_seconds": 0,
-  "created_utc": "2026-07-26T22:22:22.247959Z",
+  "created_utc": "2026-07-26T22:45:38.668308Z",
   "exact_resume_each_segment": true,
   "first_middle_last": {},
   "hard_gaps": [],
   "interruption": {
     "failed_gates": [
-      "inside_launch_window",
-      "memory_launch_reserve"
+      "ac_power"
     ],
     "fault": "availability_paused",
     "segment_index": 1
   },
   "last_to_first_joined_throughput_ratio": 0.0,
   "minimum_contiguous_child_wall_seconds": 7200.0,
-  "plan_sha256": "91cfec74ccead883b2e6cc4ccc60ffe969c57c118d9ebe52bba908187ca124fe",
+  "plan_sha256": "9be51efc6bb8dca93ed85db5f788610ea42c12f313af4e5b51c8fd563f193e72",
   "policy": "project_theseus_selected_route_sustained_qualification_v1",
   "segment_optimizer_steps": 64,
   "segments": [],
@@ -88,7 +80,7 @@
   },
   "selector": {
     "path": "reports/training_acceleration_final_selector.json",
-    "sha256": "4c8ea31a6e2ddcfa48dbff0877a83304a226253f62b04cc7f67eb08a48dfb54a",
+    "sha256": "3a347abe77866a8f9e9665bdb4b2fed26c34445561497102ea313145add1b1b2",
     "trigger_state": "GREEN"
   },
   "successful_segment_count": 0,
@@ -96,7 +88,7 @@
   "system_swap_growth_treatment": "DIAGNOSTIC_ONLY",
   "training_config": {
     "path": "configs/moecot_language_arm_training.json",
-    "sha256": "a0f5c69e093338f6669ddbe1fa2d0aeccb873427010dd5ef2dc4aeb039d12fe2"
+    "sha256": "0777b2f577251fbdbb2bc0f31267f67c84be821ceb7c9639fa183734304a0526"
   },
   "trigger_state": "PAUSED"
 }
