@@ -1660,13 +1660,20 @@ generation service, KERC sidecar, or private evaluator.
    promotion, and the old v2 semantic-fault distribution is not evidence about a successfully
    learned v3 compiler.
 
-   Next, replay the exact admitted sampler and add checkpoint-specific rank/margin diagnostics for
-   the root transport-version position. Establish that v3 is learnable under a bounded overfit
-   control before authorizing another continuation segment. Only after the model reliably emits
-   v3 may alignment/protected raw integers be judged as the remaining wall and conditionally
-   replaced with typed source-position pointers under the same blind, zero-credit materialization
-   rule. Do not consume a new seed or private surface. K5 remains
-   `INCONCLUSIVE_EXPERIMENT`.
+   Exact sampler replay and path-qualified rank/margin diagnostics now explain that result. The
+   one-update segment sampled only one of 63 admitted compiler rows (1.5873% coverage). At step
+   4,657, the required v3 root token averages rank 678.6875 and trails legacy v2 by 17.379203
+   logits; one exposure moves every matched row in the correct direction but only to mean rank
+   670.0625 and margin -17.337442. This is an exposure-starved ABI migration, not evidence that
+   v3 is unlearnable.
+
+   Next, run the registered one-row compiler-only bounded-overfit control from the exact step-4,658
+   checkpoint and AdamW state under plan `05a0b84f...ecff7`. Measure root rank/margin and complete
+   target recovery at preregistered checkpoints; do not promote the row or extrapolate to
+   population capability. Only after the model reliably emits v3 may alignment/protected raw
+   integers be judged as the remaining wall and conditionally replaced with typed source-position
+   pointers under the same blind, zero-credit materialization rule. Do not consume a new seed or
+   private surface. K5 remains `INCONCLUSIVE_EXPERIMENT`.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

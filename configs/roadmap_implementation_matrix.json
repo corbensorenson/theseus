@@ -1164,7 +1164,7 @@
       },
       "v8_compiler_allocator_ownership_transport": {
         "state": "ONE_GUARDED_UPDATE_COMPLETE_LEARNABILITY_SANITY_FAILED",
-        "candidate_execution_plan_sha256": "a8e0b0f007928c562e657eb235a72ce1cf0428561bf648be61af08efc650fdf0",
+        "candidate_execution_plan_sha256": "743f1088468fce270c672c5ff692ec942db711c17a422469e1eeb55d0a912932",
         "update_execution_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
         "source_optimizer_step": 4657,
         "source_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
@@ -1245,12 +1245,32 @@
           "fresh_private_surface_consumed": false
         },
         "next_gate": {
-          "owner": "exact_sampler_replay_and_checkpoint_specific_root_transport_learnability",
+          "owner": "bounded_one_row_root_transport_overfit",
+          "exact_sampler_replay": {
+            "stage_row_count": 63,
+            "sampled_unique_row_count": 1,
+            "unsampled_row_count": 62,
+            "sampled_row_coverage_rate": 0.01587302,
+            "optimizer_steps": 1,
+            "optimizer_positions": 201,
+            "authoritative_receipt_match": true
+          },
+          "root_transport_rank_margin": {
+            "source_mean_expected_rank": 678.6875,
+            "updated_mean_expected_rank": 670.0625,
+            "source_mean_expected_minus_v2_margin": -17.37920296,
+            "updated_mean_expected_minus_v2_margin": -17.33744192,
+            "all_matched_rows_moved_in_correct_direction": true,
+            "source_report_sha256": "2c1682a8a20bc6c72a8d9859e60ccfdd31b61198fa9a45982393723bd5e4438a",
+            "updated_report_sha256": "913c8460defb2be1ff1aa0b4139d7891dbd4b006e1e5bcd2cbb8d581dc92d97f"
+          },
+          "bounded_overfit_plan_sha256": "05a0b84f7546dd2debcbccaafa23f82e8c020da91be8aa393d66b268b99ecff7",
+          "bounded_overfit_source_optimizer_step": 4658,
+          "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
           "required_diagnostics": [
-            "root_v3_expected_token_rank",
-            "root_v3_logit_margin_vs_legacy_v2",
-            "exact_sampled_row_exposure_replay",
-            "bounded_overfit_learnability"
+            "bounded_overfit_root_rank_margin_trajectory",
+            "bounded_overfit_complete_target_recovery",
+            "bounded_overfit_checkpoint_reload"
           ],
           "typed_source_position_pointers_authorized": false,
           "reason": "The immediate measured wall is failure to adopt the required v3 root ABI, so alignment/protected integer encoding is not yet isolated as the causal blocker.",
@@ -5391,7 +5411,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. The one guarded v3 update is complete and failed learnability sanity because every one of 13 completed rows still emitted v2 while the v3 root token remained 0/16 top-1. Replay the exact admitted sampler and add checkpoint-specific expected-rank/logit-margin plus bounded-overfit diagnostics for the root transport position before another continuation segment. Do not implement typed source-position pointers until v3 itself is learned and alignment/protected integers are isolated as the remaining wall. Consume no new seed or private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
+      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. The one guarded v3 update sampled only one of 63 compiler rows; it moved required-v3 mean rank 678.6875 to 670.0625 and mean margin versus v2 -17.379203 to -17.337442 but every completed generation remained v2. Run the registered one-row compiler-only bounded-overfit control from the exact step-4658 checkpoint and AdamW state, and measure root rank/margin plus complete target recovery before another population continuation segment. Do not implement typed source-position pointers until v3 itself is learned and alignment/protected integers are isolated as the remaining wall. Consume no new seed or private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -6171,7 +6191,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, and shrinks the bounded target stream. Its one guarded update is complete but fails learnability sanity: 13 completed admitted rows all emit v2, the v3 root token is 0/16 top-1, and no v3 transport is valid. Replay the exact admitted sampler and measure root-token expected rank/logit margin under bounded overfit before extending; add typed source-position pointers only after v3 is learned and raw alignment/protected integers are isolated as the wall. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
+      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, and shrinks the bounded target stream. Its one guarded update sampled only one of 63 compiler rows and moved v3 rank/margin in the correct direction while every completed generation remained v2. Run the registered one-row compiler-only bounded-overfit control from exact step 4658 and require root-rank/margin trajectory, complete target recovery, and checkpoint reload before any population extension; add typed source-position pointers only after v3 is learned and raw alignment/protected integers are isolated as the wall. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

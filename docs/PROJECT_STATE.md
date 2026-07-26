@@ -708,9 +708,15 @@ share toward zero. Public benchmarks are calibration only.
    alignment 309/401, protected bounds 3/6, and the v3 root token remains 0/16. On the frozen
    admitted-row free-generation panel, 13/16 rows terminate but all 13 emit legacy v2 and fail the
    required v3 ABI; three hit the token budget. This is `LEARNABILITY_SANITY_FAILED`, not semantic
-   promotion. The next K5 owner is exact sampler replay plus checkpoint-specific rank/margin and
-   bounded-overfit diagnosis for the root transport token. Typed source-position pointers remain
-   conditional until v3 itself is learned. No new seed or private surface is authorized.
+   promotion.
+
+   Exact replay shows the update sampled one of 63 compiler rows. The v3 token begins at mean rank
+   678.6875 and -17.379203 logits versus v2; one exposure improves it across all 16 matched rows
+   to rank 670.0625 and -17.337442, far from emission. The registered one-row compiler-only
+   bounded-overfit control is now rebound to the exact step-4,658 checkpoint/AdamW state under
+   plan `05a0b84f...ecff7`. It is a training-row learnability test only. Typed source-position
+   pointers remain conditional until v3 itself is learned. No new seed or private surface is
+   authorized.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+
