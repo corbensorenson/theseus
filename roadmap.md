@@ -1645,13 +1645,28 @@ generation service, KERC sidecar, or private evaluator.
    materialization, and unchanged legacy-v2 compatibility tests pass. Evidence is bound in
    `reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json`.
 
-   Next, run exactly one guarded v3 continuation update from immutable step 4,657 and require the
-   frozen admitted-row teacher-forced, transport, and independent semantic diagnostics before
-   extending the rung. If alignment/protected raw integers remain the measured wall, replace them
-   with typed source-position pointers under the same blind, zero-credit materialization rule and
-   compare against the retained raw-value source. Do not consume a new seed or private surface
-   until admitted post-generation semantic validity is positive without transport regression.
-   K5 remains `INCONCLUSIVE_EXPERIMENT`.
+   The authorized update is now complete at optimizer step 4,658 / position 457,228. It passed the
+   live 2,048 MiB reserve and 320 MiB swap-growth gates with 270.156 MiB process RSS, 1,413.641 MiB
+   inferred unified memory, 3,791.297 MiB minimum reclaimable memory, and zero swap growth. Exact
+   selective merge preserves five learned tensors and all 234 frozen tensors; the merged FP32
+   checkpoint is `77e96f57...e330b0b3`.
+
+   Matched teacher forcing through the same v3 stage improves only three singleton tokens:
+   3,120→3,123/3,640. EOS remains 16/16, schema continuation 203/204, alignment 309/401, and
+   protected bounds 3/6. The v3 root token remains 0/16 top-1. The frozen admitted-row
+   free-generation panel then terminates 13/16 rows, but every completed candidate emits legacy
+   v2 and is rejected as `KERC_COMPILER_TRANSPORT_VERSION_MISMATCH`; three rows hit the token
+   budget. Therefore the update is `LEARNABILITY_SANITY_FAILED`, not a transport or semantic
+   promotion, and the old v2 semantic-fault distribution is not evidence about a successfully
+   learned v3 compiler.
+
+   Next, replay the exact admitted sampler and add checkpoint-specific rank/margin diagnostics for
+   the root transport-version position. Establish that v3 is learnable under a bounded overfit
+   control before authorizing another continuation segment. Only after the model reliably emits
+   v3 may alignment/protected raw integers be judged as the remaining wall and conditionally
+   replaced with typed source-position pointers under the same blind, zero-credit materialization
+   rule. Do not consume a new seed or private surface. K5 remains
+   `INCONCLUSIVE_EXPERIMENT`.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

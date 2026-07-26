@@ -1163,8 +1163,9 @@
         "capability_claim": "NONE"
       },
       "v8_compiler_allocator_ownership_transport": {
-        "state": "IMPLEMENTED_AND_QUALIFIED_FOR_ONE_GUARDED_UPDATE",
+        "state": "ONE_GUARDED_UPDATE_COMPLETE_LEARNABILITY_SANITY_FAILED",
         "candidate_execution_plan_sha256": "a8e0b0f007928c562e657eb235a72ce1cf0428561bf648be61af08efc650fdf0",
+        "update_execution_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
         "source_optimizer_step": 4657,
         "source_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
         "transport_version": 3,
@@ -1198,6 +1199,62 @@
           "schema_continuation_weight": 8.0,
           "program_alignment_span_weight": 4.0,
           "protected_character_bound_weight": 4.0
+        },
+        "one_guarded_update": {
+          "optimizer_step": 4658,
+          "optimizer_positions": 457228,
+          "merged_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
+          "learned_tensors_merged": 5,
+          "frozen_tensors_preserved": 234,
+          "maximum_process_rss_mib": 270.156,
+          "maximum_inferred_unified_memory_mib": 1413.641,
+          "minimum_reclaimable_available_mib": 3791.297,
+          "maximum_swapout_growth_mib": 0.0,
+          "host_resource_safety_passed": true
+        },
+        "matched_v3_teacher_forcing": {
+          "source_correct": 3120,
+          "updated_correct": 3123,
+          "total": 3640,
+          "source_singleton_correct": 464,
+          "updated_singleton_correct": 467,
+          "singleton_total": 637,
+          "eos_correct": 16,
+          "eos_total": 16,
+          "schema_continuation_correct": 203,
+          "schema_continuation_total": 204,
+          "program_alignment_correct": 309,
+          "program_alignment_total": 401,
+          "protected_character_bound_correct": 3,
+          "protected_character_bound_total": 6,
+          "v3_root_token_top1_correct": 0,
+          "v3_root_token_total": 16,
+          "source_report_sha256": "3f25ee8f4b93bfb70adccede4740e1859648a91fb744f71b8e2e3798e54ef3c7",
+          "updated_report_sha256": "6e26015485ccfd4ce1c74a247573f6d5d003283d37d10defc270d9dba4a7d19e"
+        },
+        "frozen_admitted_row_generation": {
+          "row_count": 16,
+          "completed_count": 13,
+          "maximum_token_count": 3,
+          "required_v3_transport_valid_count": 0,
+          "legacy_v2_version_mismatch_count": 13,
+          "independent_v3_semantic_valid_count": 0,
+          "qualification_state": "LEARNABILITY_SANITY_FAILED",
+          "report_sha256": "f6556ad8f7e2f3568989487c1b1094553ee6e33edd332ce8eda3048ec0bb2397",
+          "host_resource_safety_sha256": "c388f1ab32ed843a7b174299941cc93d5638f24ad9f91126dc4525503e546edc",
+          "fresh_private_surface_consumed": false
+        },
+        "next_gate": {
+          "owner": "exact_sampler_replay_and_checkpoint_specific_root_transport_learnability",
+          "required_diagnostics": [
+            "root_v3_expected_token_rank",
+            "root_v3_logit_margin_vs_legacy_v2",
+            "exact_sampled_row_exposure_replay",
+            "bounded_overfit_learnability"
+          ],
+          "typed_source_position_pointers_authorized": false,
+          "reason": "The immediate measured wall is failure to adopt the required v3 root ABI, so alignment/protected integer encoding is not yet isolated as the causal blocker.",
+          "new_seed_or_private_surface_authorized": false
         },
         "qualification_report": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json",
         "fresh_private_surface_consumed": false,
@@ -5334,7 +5391,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. Run one guarded v3 update from immutable step 4657 and require the frozen admitted-row teacher-forced, transport, and independent semantic diagnostics before extending it. If alignment/protected raw integers remain the measured wall, implement typed source-position pointers with blind zero-credit materialization and compare against the retained raw-value source. Consume no new seed or private surface until admitted post-generation semantic validity is positive without transport regression. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
+      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. The one guarded v3 update is complete and failed learnability sanity because every one of 13 completed rows still emitted v2 while the v3 root token remained 0/16 top-1. Replay the exact admitted sampler and add checkpoint-specific expected-rank/logit-margin plus bounded-overfit diagnostics for the root transport position before another continuation segment. Do not implement typed source-position pointers until v3 itself is learned and alignment/protected integers are isolated as the remaining wall. Consume no new seed or private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -6114,7 +6171,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, shrinks the bounded target stream, and is qualified for one guarded update. Run that update from immutable step 4657 and require frozen admitted-row teacher-forced, transport, and independent semantic diagnostics before extension; add typed source-position pointers only if raw alignment/protected integers remain the measured wall. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
+      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, and shrinks the bounded target stream. Its one guarded update is complete but fails learnability sanity: 13 completed admitted rows all emit v2, the v3 root token is 0/16 top-1, and no v3 transport is valid. Replay the exact admitted sampler and measure root-token expected rank/logit margin under bounded overfit before extending; add typed source-position pointers only after v3 is learned and raw alignment/protected integers are isolated as the wall. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

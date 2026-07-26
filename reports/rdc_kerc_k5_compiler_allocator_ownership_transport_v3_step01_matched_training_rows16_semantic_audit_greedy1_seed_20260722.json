@@ -1,0 +1,4337 @@
+{
+  "candidate_id": "rdc_kerc_k5_adequacy",
+  "candidate_supervised_sequence_envelope": 628,
+  "capability_claim": "NONE_TRAINING_ROW_OVERFIT_DIAGNOSTIC_ONLY",
+  "checkpoint": {
+    "path": "runtime/t0a_canaries/rdc_kerc_k5_adequacy/compiler_allocator_ownership_transport_v3_canary_seed_20260722/english_kerc/weights.step-00004658.merged-fp32.safetensors",
+    "sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"
+  },
+  "checkpoint_selection": {
+    "authoritative_training_checkpoint": {
+      "path": "runtime/t0a_canaries/rdc_kerc_k5_adequacy/compiler_allocator_ownership_transport_v3_canary_seed_20260722/english_kerc/weights.step-00004658.merged-fp32.safetensors",
+      "sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"
+    },
+    "counterfactual_checkpoint": false,
+    "matched_row_selection_source": "explicit_admitted_training_row_panel_report",
+    "policy": "project_theseus_kerc_probe_receipt_checkpoint_v1",
+    "training_row_panel_member_id": ""
+  },
+  "compiler_transport_diagnostic": {
+    "assisted_output_credit_required": false,
+    "evaluated_row_count": 13,
+    "fault_counts": {
+      "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH": 13
+    },
+    "online_transport_validator": false,
+    "raw_generated_text_retained": false,
+    "shape_signatures_retain_semantic_values": false,
+    "valid_row_count": 0
+  },
+  "created_utc": "2026-07-26T02:37:17.525181+00:00",
+  "evaluation_compute_dtype": "authoritative_fp32",
+  "evaluation_execution_policy": {
+    "attention_key_chunk_size": 32,
+    "attention_query_chunk_size": 32,
+    "beam_width": 1,
+    "branching_factor": 1,
+    "compact_encoder_decoder_partitions": true,
+    "concept_registry_fault": "",
+    "independent_semantic_validator": true,
+    "independent_semantic_validator_credit": "NONE_POST_GENERATION_AUDIT",
+    "online_transport_validator": false,
+    "online_transport_validator_credit": "NONE"
+  },
+  "exact_match_count": 0,
+  "external_inference_calls": 0,
+  "fallback_template_router_tool_credit": 0,
+  "free_generation_evaluated": true,
+  "generator_visible_fields": [
+    "trusted_source_prefix_tokens",
+    "prompt"
+  ],
+  "gradient_interference": null,
+  "gradient_interference_evaluated": false,
+  "independent_semantic_diagnostic": {
+    "assisted_output_credit_required": false,
+    "candidate_repair_or_rewrite": false,
+    "evaluated_row_count": 13,
+    "fault_counts": {
+      "KERC_ALIGNMENT_SPAN_INVALID": 5,
+      "KERC_LEARNED_PROTECTED_SPAN_REPLAY_MISMATCH": 1,
+      "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID": 7
+    },
+    "post_generation_only": true,
+    "valid_row_count": 0
+  },
+  "matched_row_report": null,
+  "objective_count": 1,
+  "policy": "project_theseus_kerc_k5_stage_learnability_probe_v1",
+  "public_benchmark_prompts_used": 0,
+  "qualification_state": "LEARNABILITY_SANITY_FAILED",
+  "retained_row_report": null,
+  "row_count": 16,
+  "rows": [
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1489,
+      "generated_sha256": "c54d1afbfbf0833419f817cbd6eef9e47879031fa6ea48fce65f751981bd949e",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:1e7eb1d96d835bdb9f4b85d2:artifact:private_train:source_index:25647",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 448,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.88349515,
+          "correct": 182,
+          "total": 206
+        },
+        "singleton": {
+          "accuracy": 0.78787879,
+          "correct": 26,
+          "total": 33
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.77142857,
+          "correct": 27,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.88669951,
+          "correct": 180,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.70967742,
+          "correct": 22,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.87029289,
+      "teacher_forced_top1_correct": 208,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 77
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1507,
+      "generated_sha256": "abcd58913daec6ec77b54f633d19867106ac10faaa8e98d8acd759fe7805c376",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_ALIGNMENT_SPAN_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:45cc7ca2633b8cb6fee85680:artifact:private_train:source_index:11242",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 442,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 237,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.905,
+          "correct": 181,
+          "total": 200
+        },
+        "singleton": {
+          "accuracy": 0.7027027,
+          "correct": 26,
+          "total": 37
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.74285714,
+          "correct": 26,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.89552239,
+          "correct": 180,
+          "total": 201
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.75862069,
+          "correct": 22,
+          "total": 29
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.87341772,
+      "teacher_forced_top1_correct": 207,
+      "teacher_forced_top1_total": 237,
+      "teacher_forced_unique_expected_token_count": 79
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": null,
+      "exact_match": false,
+      "fault_reason": "kerc_code_incomplete_at_budget",
+      "generated_character_count": 0,
+      "generated_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "generated_token_count": 628,
+      "generation_semantic_selection": null,
+      "generation_state": "FAULT",
+      "independent_semantic_fault": "",
+      "independent_semantic_valid": null,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:79a93a2e089bde543a712e86:artifact:private_train:source_index:15944",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 463,
+      "stop_reason": "max_tokens",
+      "syntax_valid": false,
+      "target_tokens": 195,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.73426573,
+          "correct": 105,
+          "total": 143
+        },
+        "singleton": {
+          "accuracy": 0.63461538,
+          "correct": 33,
+          "total": 52
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.42857143,
+          "correct": 12,
+          "total": 28
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.75301205,
+          "correct": 125,
+          "total": 166
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 16,
+        "total": 16
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.6,
+          "correct": 6,
+          "total": 10
+        },
+        "protected_character_bound": {
+          "accuracy": 0.5,
+          "correct": 1,
+          "total": 2
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.70769231,
+      "teacher_forced_top1_correct": 138,
+      "teacher_forced_top1_total": 195,
+      "teacher_forced_unique_expected_token_count": 74
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1491,
+      "generated_sha256": "42e16796c6ab81bc31cef68c9d9c51220ff1469de48c43935d0270dc5457529a",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_ALIGNMENT_SPAN_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:8ce79384f6db22963757bad9:artifact:private_train:source_index:23447",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 310,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 120,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.86567164,
+          "correct": 58,
+          "total": 67
+        },
+        "singleton": {
+          "accuracy": 0.49056604,
+          "correct": 26,
+          "total": 53
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.75,
+          "correct": 6,
+          "total": 8
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.69369369,
+          "correct": 77,
+          "total": 111
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.875,
+          "correct": 7,
+          "total": 8
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.7,
+      "teacher_forced_top1_correct": 84,
+      "teacher_forced_top1_total": 120,
+      "teacher_forced_unique_expected_token_count": 65
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1490,
+      "generated_sha256": "67483f19c531c9d7a7500bf9ba4a216068770f930c83d439d8914f770fcc9728",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_ALIGNMENT_SPAN_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:9f24f45f06bcca81caf330c2:artifact:private_train:source_index:7470",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 445,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 237,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.88349515,
+          "correct": 182,
+          "total": 206
+        },
+        "singleton": {
+          "accuracy": 0.74193548,
+          "correct": 23,
+          "total": 31
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.74285714,
+          "correct": 26,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.88557214,
+          "correct": 178,
+          "total": 201
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.77419355,
+          "correct": 24,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.8649789,
+      "teacher_forced_top1_correct": 205,
+      "teacher_forced_top1_total": 237,
+      "teacher_forced_unique_expected_token_count": 73
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": null,
+      "exact_match": false,
+      "fault_reason": "kerc_code_incomplete_at_budget",
+      "generated_character_count": 0,
+      "generated_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "generated_token_count": 628,
+      "generation_semantic_selection": null,
+      "generation_state": "FAULT",
+      "independent_semantic_fault": "",
+      "independent_semantic_valid": null,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:9f9b42549695c30113fb6831:artifact:private_train:source_index:20874",
+      "sampled_optimizer_step_count": 1,
+      "sampled_training_row": true,
+      "sequence_tokens": 446,
+      "stop_reason": "max_tokens",
+      "syntax_valid": false,
+      "target_tokens": 201,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.82142857,
+          "correct": 115,
+          "total": 140
+        },
+        "singleton": {
+          "accuracy": 0.7704918,
+          "correct": 47,
+          "total": 61
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.79069767,
+          "correct": 34,
+          "total": 43
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.8089172,
+          "correct": 127,
+          "total": 157
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 16,
+        "total": 16
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.63636364,
+          "correct": 7,
+          "total": 11
+        },
+        "protected_character_bound": {
+          "accuracy": 1.0,
+          "correct": 2,
+          "total": 2
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.80597015,
+      "teacher_forced_top1_correct": 162,
+      "teacher_forced_top1_total": 201,
+      "teacher_forced_unique_expected_token_count": 84
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1504,
+      "generated_sha256": "94feb0d22bc0ba2c7372b3683800a8c64a6a6aac74dc482591a7cd3f77903846",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:aa627436c8dddd7cd7ee46a1:artifact:private_train:source_index:30320",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 456,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.90821256,
+          "correct": 188,
+          "total": 207
+        },
+        "singleton": {
+          "accuracy": 0.78125,
+          "correct": 25,
+          "total": 32
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.8,
+          "correct": 28,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.90640394,
+          "correct": 184,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.80645161,
+          "correct": 25,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.89121339,
+      "teacher_forced_top1_correct": 213,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 76
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1486,
+      "generated_sha256": "3e24ca18bb7850877ee1bdb6a9ccd11af42e864491ef4200015b377a85884027",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_PROTECTED_SPAN_REPLAY_MISMATCH",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:d394bcf5cc35ea5051899155:artifact:private_train:source_index:15175",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 436,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 247,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.88625592,
+          "correct": 187,
+          "total": 211
+        },
+        "singleton": {
+          "accuracy": 0.69444444,
+          "correct": 25,
+          "total": 36
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.76923077,
+          "correct": 30,
+          "total": 39
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.87439614,
+          "correct": 181,
+          "total": 207
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 16,
+        "total": 16
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.66666667,
+          "correct": 18,
+          "total": 27
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 2
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.8582996,
+      "teacher_forced_top1_correct": 212,
+      "teacher_forced_top1_total": 247,
+      "teacher_forced_unique_expected_token_count": 79
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1495,
+      "generated_sha256": "3fd30539f3a0264dc40c1432a7b1de2bfd9a178c96d6a35c5d14cbe68e3c32b8",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:2e89a26f07a21a67fa70d8a2:artifact:private_train:source_index:8134",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 450,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.89805825,
+          "correct": 185,
+          "total": 206
+        },
+        "singleton": {
+          "accuracy": 0.72727273,
+          "correct": 24,
+          "total": 33
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.77142857,
+          "correct": 27,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.89162562,
+          "correct": 181,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.74193548,
+          "correct": 23,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.87447699,
+      "teacher_forced_top1_correct": 209,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 76
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1507,
+      "generated_sha256": "69a199ce2c29a4cb6a55a048a16e3aca6362f7eb20b2ee844bc9f6d733ff9463",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:2fdca5b182d32a3fb2f976ff:artifact:private_train:source_index:17519",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 451,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 233,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.93034826,
+          "correct": 187,
+          "total": 201
+        },
+        "singleton": {
+          "accuracy": 0.84375,
+          "correct": 27,
+          "total": 32
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.91428571,
+          "correct": 32,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.91878173,
+          "correct": 181,
+          "total": 197
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.77777778,
+          "correct": 21,
+          "total": 27
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.91845494,
+      "teacher_forced_top1_correct": 214,
+      "teacher_forced_top1_total": 233,
+      "teacher_forced_unique_expected_token_count": 73
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1509,
+      "generated_sha256": "edabd13d4bd11ee821c7ca830705864ed5d17d4fc06dcdad875349b4d0c2dd3a",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_ALIGNMENT_SPAN_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:3db8f76ec12e8355ff02b0f5:artifact:private_train:source_index:17480",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 449,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 241,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.8957346,
+          "correct": 189,
+          "total": 211
+        },
+        "singleton": {
+          "accuracy": 0.83333333,
+          "correct": 25,
+          "total": 30
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.8,
+          "correct": 28,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.90243902,
+          "correct": 185,
+          "total": 205
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.78787879,
+          "correct": 26,
+          "total": 33
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.8879668,
+      "teacher_forced_top1_correct": 214,
+      "teacher_forced_top1_total": 241,
+      "teacher_forced_unique_expected_token_count": 73
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1517,
+      "generated_sha256": "564a2b5364f08b76912ad1c8919f32d8abe8b5a850c231d1b762926b8ea7cc16",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:42e3ce3aa42cf18119246685:artifact:private_train:source_index:25688",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 454,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.90865385,
+          "correct": 189,
+          "total": 208
+        },
+        "singleton": {
+          "accuracy": 0.80645161,
+          "correct": 25,
+          "total": 31
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.77142857,
+          "correct": 27,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.91625616,
+          "correct": 186,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.87096774,
+          "correct": 27,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.89539749,
+      "teacher_forced_top1_correct": 214,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 74
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1489,
+      "generated_sha256": "9d0bace31235b01f4b84fa2444124e95ab04027d166e5adc590d41b87939c72f",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:5d7fb3250260a1958c177070:artifact:private_train:source_index:7816",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 446,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.92307692,
+          "correct": 192,
+          "total": 208
+        },
+        "singleton": {
+          "accuracy": 0.77419355,
+          "correct": 24,
+          "total": 31
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.77142857,
+          "correct": 27,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.92610837,
+          "correct": 188,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.90322581,
+          "correct": 28,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.90376569,
+      "teacher_forced_top1_correct": 216,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 75
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": null,
+      "exact_match": false,
+      "fault_reason": "kerc_code_incomplete_at_budget",
+      "generated_character_count": 0,
+      "generated_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "generated_token_count": 628,
+      "generation_semantic_selection": null,
+      "generation_state": "FAULT",
+      "independent_semantic_fault": "",
+      "independent_semantic_valid": null,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:69d13bc02b18ba6391ef2d7c:artifact:private_train:source_index:28622",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 571,
+      "stop_reason": "max_tokens",
+      "syntax_valid": false,
+      "target_tokens": 256,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.83333333,
+          "correct": 145,
+          "total": 174
+        },
+        "singleton": {
+          "accuracy": 0.76829268,
+          "correct": 63,
+          "total": 82
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.92222222,
+          "correct": 83,
+          "total": 90
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.75151515,
+          "correct": 124,
+          "total": 165
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 0.91666667,
+        "correct": 11,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 1.0,
+          "correct": 8,
+          "total": 8
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.8125,
+      "teacher_forced_top1_correct": 208,
+      "teacher_forced_top1_total": 256,
+      "teacher_forced_unique_expected_token_count": 131
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1489,
+      "generated_sha256": "545cdbf5a564cd3319b821bb53132ee0bf7e67b32b918363ab5574c12bfcb12e",
+      "generated_token_count": 404,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_ALIGNMENT_SPAN_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:8234d3b49f7d353c211e8b7c:artifact:private_train:source_index:25970",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 441,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.88995215,
+          "correct": 186,
+          "total": 209
+        },
+        "singleton": {
+          "accuracy": 0.8,
+          "correct": 24,
+          "total": 30
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.77142857,
+          "correct": 27,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.89655172,
+          "correct": 182,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.67741935,
+          "correct": 21,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.87866109,
+      "teacher_forced_top1_correct": 210,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 75
+    },
+    {
+      "admitted_training_row": true,
+      "compiler_transport_fault": "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+      "compiler_transport_shape": null,
+      "compiler_transport_valid": false,
+      "exact_match": false,
+      "fault_reason": "",
+      "generated_character_count": 1581,
+      "generated_sha256": "f6aaa7d85cad56ad01bb7e1063d720ff9c72ec5e6aadb0822225d27956a1f749",
+      "generated_token_count": 407,
+      "generation_semantic_selection": null,
+      "generation_state": "GREEN",
+      "independent_semantic_fault": "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID",
+      "independent_semantic_valid": false,
+      "objective": "surface_to_kernel_program_v1",
+      "raw_generated_text_retained": false,
+      "row_id": "kerc-view:a2285203e0529f21a5c2481a:artifact:private_train:source_index:19276",
+      "sampled_optimizer_step_count": 0,
+      "sampled_training_row": false,
+      "sequence_tokens": 459,
+      "stop_reason": "eos",
+      "syntax_valid": true,
+      "target_tokens": 239,
+      "teacher_forced_accuracy_by_target_frequency": {
+        "repeated": {
+          "accuracy": 0.89805825,
+          "correct": 185,
+          "total": 206
+        },
+        "singleton": {
+          "accuracy": 0.72727273,
+          "correct": 24,
+          "total": 33
+        }
+      },
+      "teacher_forced_accuracy_by_token_region": {
+        "end": {
+          "accuracy": 1.0,
+          "correct": 1,
+          "total": 1
+        },
+        "kernel": {
+          "accuracy": 0.77142857,
+          "correct": 27,
+          "total": 35
+        },
+        "other": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "pointer": {
+          "accuracy": 0.89162562,
+          "correct": 181,
+          "total": 203
+        },
+        "surface": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_eos_top1": true,
+      "teacher_forced_schema_continuation_accuracy": {
+        "accuracy": 1.0,
+        "correct": 12,
+        "total": 12
+      },
+      "teacher_forced_semantic_target_accuracy_by_kind": {
+        "program_alignment_span": {
+          "accuracy": 0.77419355,
+          "correct": 24,
+          "total": 31
+        },
+        "protected_character_bound": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_fidelity": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        },
+        "residual_unit_id": {
+          "accuracy": 0.0,
+          "correct": 0,
+          "total": 0
+        }
+      },
+      "teacher_forced_top1_accuracy": 0.87447699,
+      "teacher_forced_top1_correct": 209,
+      "teacher_forced_top1_total": 239,
+      "teacher_forced_unique_expected_token_count": 75
+    }
+  ],
+  "rows_per_objective": 16,
+  "sampling_replay": {
+    "all_rows_sampled": false,
+    "authoritative_receipt_match": true,
+    "batch_index_sha256_prefix": [
+      "552a4a6608d384327b0410f4da0f5da26e1e983f02e8d6ca1e115cd89bef0829"
+    ],
+    "epochs_touched": 1,
+    "execution_prefix_indices_sha256": "9bb3623846f9a4ffc15823bf9118feffc84c9aeaac3dfc83826777e091dc591e",
+    "matched_row_ids_sha256": "f4d6e8751a40791a7cd51985b3ecc7342e22254453381d3d5c2d4050f9b32b15",
+    "matched_row_selection": true,
+    "minimum_stratum_coverage": false,
+    "objective_exposure_projection": {
+      "surface_to_kernel_program_v1": {
+        "maximum_row_exposures": 1,
+        "mean_row_exposures": 0.01587302,
+        "minimum_row_exposures": 0,
+        "population_row_count": 63,
+        "sampled_unique_row_count": 1,
+        "total_optimizer_updates": 1,
+        "unsampled_row_count": 62
+      }
+    },
+    "objective_sampling": null,
+    "optimizer_positions": 201,
+    "optimizer_steps": 1,
+    "policy": "project_theseus_kerc_sampler_replay_v1",
+    "projection_only": false,
+    "replay_seed": 20260722,
+    "resource_stress": {
+      "active": false,
+      "active_width": 0,
+      "already_in_coverage_prefix": false,
+      "policy": "project_theseus_target_and_width_resource_stress_prefix_v2",
+      "rows": [],
+      "selected_index_sha256": "",
+      "selected_indices_sha256": "",
+      "selected_row_count": 0,
+      "target_positions": 0
+    },
+    "sampled_row_coverage_rate": 0.01587302,
+    "sampled_unique_row_count": 1,
+    "sampling_prefix": [
+      {
+        "execution_width": 446,
+        "objective": "surface_to_kernel_program_v1",
+        "row_id": "kerc-view:9f9b42549695c30113fb6831:artifact:private_train:source_index:20874",
+        "stage_index": 40,
+        "target_positions": 201
+      }
+    ],
+    "schema_continuation_position_count": 2640,
+    "schema_continuation_postweight_loss_mass": 21120.0,
+    "schema_continuation_preweight_loss_histogram": {
+      "1.0": 2640
+    },
+    "schema_continuation_preweight_loss_mass": 2640.0,
+    "segmented_cumulative_replay": false,
+    "selection_uses_model_outcomes": false,
+    "selection_uses_target_text": false,
+    "semantic_target_loss_weights_by_kind": {
+      "program_alignment_span": 4.0,
+      "protected_character_bound": 4.0,
+      "residual_fidelity": 4.0,
+      "residual_unit_id": 4.0
+    },
+    "semantic_target_position_count": 11775,
+    "semantic_target_position_counts_by_kind": {
+      "program_alignment_span": 9846,
+      "protected_character_bound": 1929,
+      "residual_fidelity": 0,
+      "residual_unit_id": 0
+    },
+    "semantic_target_postweight_loss_mass_by_kind": {
+      "program_alignment_span": 39384.0,
+      "protected_character_bound": 7716.0,
+      "residual_fidelity": 0.0,
+      "residual_unit_id": 0.0
+    },
+    "semantic_target_preweight_loss_histogram_by_kind": {
+      "program_alignment_span": {
+        "1.0": 8456,
+        "2.0": 1390
+      },
+      "protected_character_bound": {
+        "1.0": 1207,
+        "2.0": 722
+      },
+      "residual_fidelity": {},
+      "residual_unit_id": {}
+    },
+    "semantic_target_preweight_loss_mass_by_kind": {
+      "program_alignment_span": 11236.0,
+      "protected_character_bound": 2651.0,
+      "residual_fidelity": 0.0,
+      "residual_unit_id": 0.0
+    },
+    "stage_row_count": 63,
+    "target_positions_requested": 61264,
+    "unsampled_row_count": 62
+  },
+  "seed": 20260722,
+  "syntax_valid_count": 13,
+  "target_visible_to_generator": false,
+  "teacher_forced_schema_continuation_summary": {
+    "accuracy": 0.99509804,
+    "correct": 203,
+    "total": 204
+  },
+  "teacher_forced_semantic_target_summary_by_kind": {
+    "program_alignment_span": {
+      "accuracy": 0.77057357,
+      "correct": 309,
+      "total": 401
+    },
+    "protected_character_bound": {
+      "accuracy": 0.5,
+      "correct": 3,
+      "total": 6
+    },
+    "residual_fidelity": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 0
+    },
+    "residual_unit_id": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 0
+    }
+  },
+  "teacher_forced_summary_by_objective": {
+    "surface_to_kernel_program_v1": {
+      "correct": 3123,
+      "eos_top1_count": 16,
+      "eos_top1_rate": 1.0,
+      "frequency": {
+        "repeated": {
+          "accuracy": 0.88444888,
+          "correct": 2656,
+          "total": 3003
+        },
+        "singleton": {
+          "accuracy": 0.73312402,
+          "correct": 467,
+          "total": 637
+        }
+      },
+      "optimizer_step_count": 1,
+      "row_count": 16,
+      "sampled_row_count": 1,
+      "top1_accuracy": 0.85796703,
+      "total": 3640
+    }
+  },
+  "teacher_forced_token_diagnostics_by_error": [
+    {
+      "accuracy": 0.71923077,
+      "correct": 187,
+      "error_count": 73,
+      "expected_token_id": 12553,
+      "token": "]",
+      "total": 260
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 24,
+      "expected_token_id": 8512,
+      "token": "\"\"",
+      "total": 24
+    },
+    {
+      "accuracy": 0.17391304,
+      "correct": 4,
+      "error_count": 19,
+      "expected_token_id": 12345,
+      "token": "<byte:32>",
+      "total": 23
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 16,
+      "expected_token_id": 12609,
+      "token": "3",
+      "total": 16
+    },
+    {
+      "accuracy": 0.4,
+      "correct": 10,
+      "error_count": 15,
+      "expected_token_id": 12346,
+      "token": "<byte:33>",
+      "total": 25
+    },
+    {
+      "accuracy": 0.21052632,
+      "correct": 4,
+      "error_count": 15,
+      "expected_token_id": 12350,
+      "token": "<byte:37>",
+      "total": 19
+    },
+    {
+      "accuracy": 0.39130435,
+      "correct": 9,
+      "error_count": 14,
+      "expected_token_id": 12348,
+      "token": "<byte:35>",
+      "total": 23
+    },
+    {
+      "accuracy": 0.95,
+      "correct": 247,
+      "error_count": 13,
+      "expected_token_id": 12552,
+      "token": "[",
+      "total": 260
+    },
+    {
+      "accuracy": 0.2,
+      "correct": 3,
+      "error_count": 12,
+      "expected_token_id": 12351,
+      "token": "<byte:38>",
+      "total": 15
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 12,
+      "expected_token_id": 8537,
+      "token": "\"DR\"",
+      "total": 12
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 9,
+      "expected_token_id": 12343,
+      "token": "<byte:30>",
+      "total": 9
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 9,
+      "expected_token_id": 12344,
+      "token": "<byte:31>",
+      "total": 9
+    },
+    {
+      "accuracy": 0.55555556,
+      "correct": 10,
+      "error_count": 8,
+      "expected_token_id": 12349,
+      "token": "<byte:36>",
+      "total": 18
+    },
+    {
+      "accuracy": 0.125,
+      "correct": 1,
+      "error_count": 7,
+      "expected_token_id": 12385,
+      "token": "<byte:5a>",
+      "total": 8
+    },
+    {
+      "accuracy": 0.9944393,
+      "correct": 1073,
+      "error_count": 6,
+      "expected_token_id": 12551,
+      "token": ",",
+      "total": 1079
+    },
+    {
+      "accuracy": 0.625,
+      "correct": 10,
+      "error_count": 6,
+      "expected_token_id": 12347,
+      "token": "<byte:34>",
+      "total": 16
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 6,
+      "expected_token_id": 8787,
+      "token": "\"KCONCEPT:gum.document.gum.interview.peres\"",
+      "total": 6
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 6,
+      "expected_token_id": 13154,
+      "token": "<bytes:3239>",
+      "total": 6
+    },
+    {
+      "accuracy": 0.2,
+      "correct": 1,
+      "error_count": 4,
+      "expected_token_id": 12394,
+      "token": "<byte:63>",
+      "total": 5
+    },
+    {
+      "accuracy": 0.2,
+      "correct": 1,
+      "error_count": 4,
+      "expected_token_id": 12395,
+      "token": "<byte:64>",
+      "total": 5
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 4,
+      "expected_token_id": 8561,
+      "token": "\"previous_turn\"",
+      "total": 4
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 4,
+      "expected_token_id": 12352,
+      "token": "<byte:39>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 4,
+      "expected_token_id": 12376,
+      "token": "<byte:51>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 4,
+      "expected_token_id": 12707,
+      "token": "35",
+      "total": 4
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 4,
+      "expected_token_id": 12752,
+      "token": "70",
+      "total": 4
+    },
+    {
+      "accuracy": 0.90909091,
+      "correct": 30,
+      "error_count": 3,
+      "expected_token_id": 12564,
+      "token": "0",
+      "total": 33
+    },
+    {
+      "accuracy": 0.90625,
+      "correct": 29,
+      "error_count": 3,
+      "expected_token_id": 12329,
+      "token": "<byte:22>",
+      "total": 32
+    },
+    {
+      "accuracy": 0.875,
+      "correct": 21,
+      "error_count": 3,
+      "expected_token_id": 8519,
+      "token": "\"DU\"",
+      "total": 24
+    },
+    {
+      "accuracy": 0.75,
+      "correct": 9,
+      "error_count": 3,
+      "expected_token_id": 12579,
+      "token": "\"PNODE_REF:k0\"",
+      "total": 12
+    },
+    {
+      "accuracy": 0.4,
+      "correct": 2,
+      "error_count": 3,
+      "expected_token_id": 12407,
+      "token": "<byte:70>",
+      "total": 5
+    },
+    {
+      "accuracy": 0.25,
+      "correct": 1,
+      "error_count": 3,
+      "expected_token_id": 8511,
+      "token": "\"R\"",
+      "total": 4
+    },
+    {
+      "accuracy": 0.25,
+      "correct": 1,
+      "error_count": 3,
+      "expected_token_id": 12414,
+      "token": "<byte:77>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12368,
+      "token": "<byte:49>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12636,
+      "token": "28",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12646,
+      "token": "54",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12658,
+      "token": "29",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12681,
+      "token": "47",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12740,
+      "token": "63",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 12757,
+      "token": "65",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 3,
+      "expected_token_id": 13292,
+      "token": "<bytes:372c>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 2,
+      "error_count": 2,
+      "expected_token_id": 12381,
+      "token": "<byte:56>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 2,
+      "error_count": 2,
+      "expected_token_id": 12705,
+      "token": "36",
+      "total": 4
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 2,
+      "error_count": 2,
+      "expected_token_id": 13135,
+      "token": "<bytes:4342>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.33333333,
+      "correct": 1,
+      "error_count": 2,
+      "expected_token_id": 12398,
+      "token": "<byte:67>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.33333333,
+      "correct": 1,
+      "error_count": 2,
+      "expected_token_id": 12735,
+      "token": "71",
+      "total": 3
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8580,
+      "token": "\"@E1\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8727,
+      "token": "\"KOP:ERST_CONTEXT_BACKGROUND\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8728,
+      "token": "\"CONTEXT_BACKGROUND\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8731,
+      "token": "\"KCONCEPT:gum.document.gum.interview.dungeon\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8756,
+      "token": "\"KCONCEPT:gum.document.gum.interview.daly\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8777,
+      "token": "\"KCONCEPT:gum.document.gum.interview.chomsky\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8780,
+      "token": "\"KCONCEPT:gum.document.gum.academic.theropod\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8788,
+      "token": "\"KCONCEPT:gum.document.gum.bio.moreau\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8789,
+      "token": "\"KCONCEPT:gum.document.gum.bio.holt\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8811,
+      "token": "\"KOP:ERST_ADVERSATIVE_CONCESSION\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8812,
+      "token": "\"ADVERSATIVE_CONCESSION\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8825,
+      "token": "\"KCONCEPT:gum.document.gum.news.afghan\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 8842,
+      "token": "\"KCONCEPT:gum.document.gum.voyage.socotra\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12618,
+      "token": "7",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12627,
+      "token": "57",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12629,
+      "token": "15",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12650,
+      "token": "51",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12661,
+      "token": "77",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12667,
+      "token": "24",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12670,
+      "token": "27",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12676,
+      "token": "22",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12677,
+      "token": "23",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12678,
+      "token": "26",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12699,
+      "token": "17",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12725,
+      "token": "49",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 12727,
+      "token": "76",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13095,
+      "token": "<bytes:3130>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13097,
+      "token": "<bytes:3132>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13105,
+      "token": "<bytes:3136>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13180,
+      "token": "<bytes:2c32>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13182,
+      "token": "<bytes:5a57>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13216,
+      "token": "<bytes:3235>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13225,
+      "token": "<bytes:3234>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 2,
+      "expected_token_id": 13290,
+      "token": "<bytes:3231>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.95833333,
+      "correct": 23,
+      "error_count": 1,
+      "expected_token_id": 13178,
+      "token": "<bytes:7d22>",
+      "total": 24
+    },
+    {
+      "accuracy": 0.90909091,
+      "correct": 10,
+      "error_count": 1,
+      "expected_token_id": 13093,
+      "token": "<bytes:5d2c5b>",
+      "total": 11
+    },
+    {
+      "accuracy": 0.875,
+      "correct": 7,
+      "error_count": 1,
+      "expected_token_id": 12356,
+      "token": "<byte:3d>",
+      "total": 8
+    },
+    {
+      "accuracy": 0.8,
+      "correct": 4,
+      "error_count": 1,
+      "expected_token_id": 12417,
+      "token": "<byte:7a>",
+      "total": 5
+    },
+    {
+      "accuracy": 0.75,
+      "correct": 3,
+      "error_count": 1,
+      "expected_token_id": 8315,
+      "token": "<byte:74>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.75,
+      "correct": 3,
+      "error_count": 1,
+      "expected_token_id": 8513,
+      "token": "\"@N1\"",
+      "total": 4
+    },
+    {
+      "accuracy": 0.75,
+      "correct": 3,
+      "error_count": 1,
+      "expected_token_id": 12383,
+      "token": "<byte:58>",
+      "total": 4
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 8316,
+      "token": "<byte:75>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 8559,
+      "token": "\"KCONCEPT:erst.nuclearity.multinuclear\"",
+      "total": 3
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 12393,
+      "token": "<byte:62>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 12401,
+      "token": "<byte:6a>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 12403,
+      "token": "<byte:6c>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 12716,
+      "token": "78",
+      "total": 3
+    },
+    {
+      "accuracy": 0.66666667,
+      "correct": 2,
+      "error_count": 1,
+      "expected_token_id": 13132,
+      "token": "<bytes:6447>",
+      "total": 3
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8308,
+      "token": "<byte:6d>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8309,
+      "token": "<byte:6e>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8311,
+      "token": "<byte:70>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8474,
+      "token": "\"PLACE\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8574,
+      "token": "\"turn_000\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8602,
+      "token": "\"KOP:DIALOGUE_RESPOND\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8603,
+      "token": "\"KROLE:USER_UTTERANCE\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 8709,
+      "token": "\"KCONCEPT:erst.relation.adversative.concession\"",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 12365,
+      "token": "<byte:46>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 12377,
+      "token": "<byte:52>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 12384,
+      "token": "<byte:59>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 12392,
+      "token": "<byte:61>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 12682,
+      "token": "20",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 13134,
+      "token": "<bytes:6c75>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 13189,
+      "token": "<bytes:6942>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 13211,
+      "token": "<bytes:4746>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.5,
+      "correct": 1,
+      "error_count": 1,
+      "expected_token_id": 13215,
+      "token": "<bytes:626d>",
+      "total": 2
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8262,
+      "token": "<byte:3f>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8286,
+      "token": "<byte:57>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8564,
+      "token": "\"E\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8611,
+      "token": "\"KCONCEPT:erst.relation.joint.list\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8664,
+      "token": "\"KROLE:PREVIOUS\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8671,
+      "token": "\"KOP:ERST_JOINT_LIST\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8672,
+      "token": "\"JOINT_LIST\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8689,
+      "token": "\"KROLE:ENTITY\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8691,
+      "token": "\"KCONCEPT:erst.relation.context.circumstance\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8723,
+      "token": "\"JOINT_SEQUENCE\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8732,
+      "token": "\"KCONCEPT:erst.relation.organization.preparation\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8734,
+      "token": "\"KOP:SCOPE_CONTINUATION\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8773,
+      "token": "\"ENTITY\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8781,
+      "token": "\"KOP:ERST_CONTEXT_CIRCUMSTANCE\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8782,
+      "token": "\"CONTEXT_CIRCUMSTANCE\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8792,
+      "token": "\"KCONCEPT:erst.relation.restatement.partial\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8849,
+      "token": "\"Locale_by_use\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8856,
+      "token": "\"KCONCEPT:erst.relation.purpose.attribute\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8873,
+      "token": "\"KOP:ERST_ORGANIZATION_PREPARATION\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8874,
+      "token": "\"ORGANIZATION_PREPARATION\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8943,
+      "token": "\"KROLE:ORIGIN\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8972,
+      "token": "\"RESTATEMENT_PARTIAL\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 8998,
+      "token": "\"KCONCEPT:erst.relation.mode.means\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9038,
+      "token": "\"KOP:ERST_PURPOSE_ATTRIBUTE\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9039,
+      "token": "\"PURPOSE_ATTRIBUTE\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9044,
+      "token": "\"Origin\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9110,
+      "token": "\"ORIGIN\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9149,
+      "token": "\"KOP:ERST_MODE_MEANS\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9150,
+      "token": "\"MODE_MEANS\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 9182,
+      "token": "\"KOP:FRAME_ORIGIN\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 10814,
+      "token": "\"chinese.a\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 11614,
+      "token": "\"shop.n\"",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 11826,
+      "token": "<bytes:696e>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 11864,
+      "token": "<bytes:3538>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 11939,
+      "token": "<bytes:3932>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12030,
+      "token": "<bytes:3939>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12342,
+      "token": "<byte:2f>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12362,
+      "token": "<byte:43>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12379,
+      "token": "<byte:54>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12406,
+      "token": "<byte:6f>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12410,
+      "token": "<byte:73>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12411,
+      "token": "<byte:74>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12412,
+      "token": "<byte:75>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12415,
+      "token": "<byte:78>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12416,
+      "token": "<byte:79>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12657,
+      "token": "66",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12669,
+      "token": "16",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12671,
+      "token": "34",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12689,
+      "token": "72",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12690,
+      "token": "19",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12691,
+      "token": "55",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12702,
+      "token": "21",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12717,
+      "token": "25",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12732,
+      "token": "50",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 12767,
+      "token": "81",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13094,
+      "token": "<bytes:4947>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13101,
+      "token": "<bytes:5b5b31>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13104,
+      "token": "<bytes:3135>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13110,
+      "token": "<bytes:4948>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13187,
+      "token": "<bytes:6764>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13199,
+      "token": "<bytes:5567>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13219,
+      "token": "<bytes:636d>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13284,
+      "token": "<bytes:3931>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13286,
+      "token": "<bytes:5a5342>",
+      "total": 1
+    },
+    {
+      "accuracy": 0.0,
+      "correct": 0,
+      "error_count": 1,
+      "expected_token_id": 13299,
+      "token": "<bytes:6147>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 70,
+      "error_count": 0,
+      "expected_token_id": 12293,
+      "token": "<target_token_bytes>",
+      "total": 70
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 70,
+      "error_count": 0,
+      "expected_token_id": 12294,
+      "token": "</target_token_bytes>",
+      "total": 70
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 8456,
+      "token": "\"KQUANT:NONE\"",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 8457,
+      "token": "\"KPOL:AFFIRMED\"",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 12555,
+      "token": "\"PCONF:1\"",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 12558,
+      "token": "\"PNODE_BEGIN\"",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 12559,
+      "token": "\"PNODE_END\"",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 12561,
+      "token": "\"PDERIV:preserved\"",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 40,
+      "error_count": 0,
+      "expected_token_id": 13083,
+      "token": "<bytes:5d5d22>",
+      "total": 40
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 38,
+      "error_count": 0,
+      "expected_token_id": 8458,
+      "token": "\"KMOD:ASSERTED\"",
+      "total": 38
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 38,
+      "error_count": 0,
+      "expected_token_id": 13069,
+      "token": "<bytes:22505350>",
+      "total": 38
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 38,
+      "error_count": 0,
+      "expected_token_id": 13073,
+      "token": "<bytes:414e533a>",
+      "total": 38
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 26,
+      "error_count": 0,
+      "expected_token_id": 13165,
+      "token": "<bytes:5b5b302c>",
+      "total": 26
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 8516,
+      "token": "\"KROLE:DOCUMENT\"",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 8517,
+      "token": "\"KOP:DISCOURSE_UNIT\"",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 8518,
+      "token": "\"KROLE:EDU_ID\"",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13102,
+      "token": "<bytes:5c223a>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13139,
+      "token": "<bytes:223a5c22>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13240,
+      "token": "<bytes:6e69745c>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13253,
+      "token": "<bytes:504e554d>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13257,
+      "token": "<bytes:4245523a>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13262,
+      "token": "<bytes:2c5c2276>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13265,
+      "token": "<bytes:616c7565>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13295,
+      "token": "<bytes:65725c22>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13302,
+      "token": "<bytes:6964656e>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13309,
+      "token": "<bytes:7b5c2275>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 24,
+      "error_count": 0,
+      "expected_token_id": 13314,
+      "token": "<bytes:74696669>",
+      "total": 24
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 4102,
+      "token": "<KERC_END>",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 8505,
+      "token": "\"SOURCE_RECONSTRUCTION\"",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 8510,
+      "token": "false",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 12556,
+      "token": "{",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 12557,
+      "token": "}",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 12571,
+      "token": "\"PVERSION:KE-1.0\"",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 12572,
+      "token": "\"PSERIALIZATION:KE-SERIALIZATION-2.0\"",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 12573,
+      "token": "\"PPROGRAM_END\"",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 16,
+      "error_count": 0,
+      "expected_token_id": 12578,
+      "token": "\"PNODE_ID:k0\"",
+      "total": 16
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 8514,
+      "token": "\"KROLE:NUCLEARITY\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 8515,
+      "token": "\"KROLE:EDGE_KIND\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 8520,
+      "token": "\"KCONCEPT:erst.edge_kind.primary\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 8534,
+      "token": "\"k2\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 12575,
+      "token": "\"PNODE_REF:k1\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 12580,
+      "token": "\"PNODE_ID:k2\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 12581,
+      "token": "\"PNODE_ID:k1\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 12,
+      "error_count": 0,
+      "expected_token_id": 12582,
+      "token": "\"PROOT:k2\"",
+      "total": 12
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 11,
+      "error_count": 0,
+      "expected_token_id": 8522,
+      "token": "\"KROLE:CHILD\"",
+      "total": 11
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 11,
+      "error_count": 0,
+      "expected_token_id": 8523,
+      "token": "\"KROLE:PARENT\"",
+      "total": 11
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 11,
+      "error_count": 0,
+      "expected_token_id": 8524,
+      "token": "\"KROLE:RELATION\"",
+      "total": 11
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 11,
+      "error_count": 0,
+      "expected_token_id": 12339,
+      "token": "<byte:2c>",
+      "total": 11
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 11,
+      "error_count": 0,
+      "expected_token_id": 13086,
+      "token": "<bytes:5b5b>",
+      "total": 11
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 9,
+      "error_count": 0,
+      "expected_token_id": 8533,
+      "token": "\"KCONCEPT:erst.nuclearity.satellite_nucleus\"",
+      "total": 9
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 8,
+      "error_count": 0,
+      "expected_token_id": 8233,
+      "token": "<byte:22>",
+      "total": 8
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 8,
+      "error_count": 0,
+      "expected_token_id": 12399,
+      "token": "<byte:68>",
+      "total": 8
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 8,
+      "error_count": 0,
+      "expected_token_id": 13289,
+      "token": "<bytes:362c>",
+      "total": 8
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 6,
+      "error_count": 0,
+      "expected_token_id": 13200,
+      "token": "<bytes:22504259>",
+      "total": 6
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 6,
+      "error_count": 0,
+      "expected_token_id": 13206,
+      "token": "<bytes:54453a>",
+      "total": 6
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 4,
+      "error_count": 0,
+      "expected_token_id": 8197,
+      "token": "<target_token_bytes>",
+      "total": 4
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 4,
+      "error_count": 0,
+      "expected_token_id": 8198,
+      "token": "</target_token_bytes>",
+      "total": 4
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 4,
+      "error_count": 0,
+      "expected_token_id": 8556,
+      "token": "\"k0\"",
+      "total": 4
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 4,
+      "error_count": 0,
+      "expected_token_id": 12589,
+      "token": "\"PROOT:k0\"",
+      "total": 4
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 4,
+      "error_count": 0,
+      "expected_token_id": 12751,
+      "token": "68",
+      "total": 4
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 3,
+      "error_count": 0,
+      "expected_token_id": 8300,
+      "token": "<byte:65>",
+      "total": 3
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 3,
+      "error_count": 0,
+      "expected_token_id": 12189,
+      "token": "<bytes:2069>",
+      "total": 3
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8243,
+      "token": "<byte:2c>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8245,
+      "token": "<byte:2e>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8302,
+      "token": "<byte:67>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8303,
+      "token": "<byte:68>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8304,
+      "token": "<byte:69>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8307,
+      "token": "<byte:6c>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8317,
+      "token": "<byte:76>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8476,
+      "token": "\"NUMBER\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8477,
+      "token": "\"VALUE_AND_STYLE\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8569,
+      "token": "\"content\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8571,
+      "token": "\"role\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8575,
+      "token": "\"turn_001\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8583,
+      "token": "\"T\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8586,
+      "token": "\"frame_name\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8587,
+      "token": "\"lexical_unit\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8597,
+      "token": "\"KMOD:REQUIRED\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8661,
+      "token": "\"KCONCEPT:erst.relation.context.background\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 8766,
+      "token": "\"KCONCEPT:gum.document.gum.bio.jerome\"",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 11785,
+      "token": "<bytes:6564>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 11794,
+      "token": "<bytes:6163>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 12094,
+      "token": "<bytes:6e20>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 12103,
+      "token": "<bytes:756d>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 12199,
+      "token": "<bytes:206f>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 12252,
+      "token": "<bytes:6120>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 12278,
+      "token": "<bytes:6620>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 12584,
+      "token": "1",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 13070,
+      "token": "<bytes:50535041>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 13074,
+      "token": "<bytes:4e533a5b>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 13109,
+      "token": "<bytes:302c>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 13281,
+      "token": "<bytes:5b32>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 2,
+      "error_count": 0,
+      "expected_token_id": 13287,
+      "token": "<bytes:4756>",
+      "total": 2
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8249,
+      "token": "<byte:32>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8251,
+      "token": "<byte:34>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8254,
+      "token": "<byte:37>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8283,
+      "token": "<byte:54>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8314,
+      "token": "<byte:73>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8532,
+      "token": "\"EXACT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8585,
+      "token": "\"KROLE:SOURCE_RELATION\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8600,
+      "token": "\"user\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8601,
+      "token": "\"assistant\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8632,
+      "token": "\"KCONCEPT:erst.relation.same.unit\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8645,
+      "token": "\"KCONCEPT:erst.relation.joint.sequence\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8665,
+      "token": "\"KROLE:NEXT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8701,
+      "token": "\"KOP:ERST_SAME_UNIT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8702,
+      "token": "\"SAME_UNIT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8954,
+      "token": "\"KROLE:UNIT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 8971,
+      "token": "\"KOP:ERST_RESTATEMENT_PARTIAL\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 9111,
+      "token": "\"UNIT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 9160,
+      "token": "\"KROLE:COUNT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 9298,
+      "token": "\"Vehicle\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 9318,
+      "token": "\"Measure_duration\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 10387,
+      "token": "\"COUNT\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 11623,
+      "token": "\"KOP:FRAME_MEASURE_DURATION\"",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12069,
+      "token": "<bytes:7320>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12099,
+      "token": "<bytes:657273>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12100,
+      "token": "<bytes:7420>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12194,
+      "token": "<bytes:20746865>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12196,
+      "token": "<bytes:686520>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12210,
+      "token": "<bytes:2073>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12214,
+      "token": "<bytes:6e64>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12215,
+      "token": "<bytes:7220>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12223,
+      "token": "<bytes:6973>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12225,
+      "token": "<bytes:636f>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12234,
+      "token": "<bytes:652e>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12238,
+      "token": "<bytes:6861>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12247,
+      "token": "<bytes:7365>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12249,
+      "token": "<bytes:206d>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12251,
+      "token": "<bytes:2070>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12254,
+      "token": "<bytes:7261>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12260,
+      "token": "<bytes:6574>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12367,
+      "token": "<byte:48>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12378,
+      "token": "<byte:53>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12380,
+      "token": "<byte:55>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12382,
+      "token": "<byte:57>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12404,
+      "token": "<byte:6d>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12405,
+      "token": "<byte:6e>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12626,
+      "token": "11",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12632,
+      "token": "6",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 12659,
+      "token": "14",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 13156,
+      "token": "<bytes:5d2c5b31>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 13181,
+      "token": "<bytes:6759>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 13186,
+      "token": "<bytes:7942>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 13222,
+      "token": "<bytes:7661>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 13226,
+      "token": "<bytes:4245>",
+      "total": 1
+    },
+    {
+      "accuracy": 1.0,
+      "correct": 1,
+      "error_count": 0,
+      "expected_token_id": 13282,
+      "token": "<bytes:6232>",
+      "total": 1
+    }
+  ],
+  "training_report": {
+    "path": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_step01_merged_fp32_seed_20260722.json",
+    "sha256": "a9ddaa7c930950e0d7fdf17f2fb43ef4655772707386bc733835214b6de9263c"
+  },
+  "training_row_panel_report": {
+    "path": "reports/rdc_kerc_k5_compiler_schema_continuation_loss_population_step32_matched_teacher_forced16_retry2_seed_20260722.json",
+    "sha256": "40c0631abe84372c14e50f9da7fe18c549dc267c55563dd5b6a51a3a07682bc6"
+  },
+  "trigger_state": "GREEN"
+}

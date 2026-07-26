@@ -700,12 +700,17 @@ share toward zero. Public benchmarks are calibration only.
    The v3 plan restores schema weight 8 and uniform weight 4 for its remaining compiler semantic
    owners (alignment spans and protected bounds); compiler residual-ID/fidelity position counts
    are zero. Protocol roundtrip, ownership rejection, zero-credit post-compiler attachment,
-   legacy-v2 compatibility, and canonical materialization tests pass. One guarded update from the
-   immutable step-4,657 source is now authorized. Re-run frozen admitted-row teacher forcing,
-   transport, and independent semantic diagnostics before extending it. Typed source-position
-   pointers remain the next conditional repair if raw alignment/protected integers are still the
-   measured wall. No new seed or private surface is authorized before positive independent
-   semantic validity without transport regression.
+   legacy-v2 compatibility, and canonical materialization tests pass.
+
+   The one authorized guarded update is complete at step 4,658 / position 457,228 with zero swap
+   growth and an exact five-learned/234-frozen-tensor FP32 merge. Matched v3 teacher forcing moves
+   only 3,120→3,123/3,640 singleton-level correct tokens; EOS stays 16/16, schema 203/204,
+   alignment 309/401, protected bounds 3/6, and the v3 root token remains 0/16. On the frozen
+   admitted-row free-generation panel, 13/16 rows terminate but all 13 emit legacy v2 and fail the
+   required v3 ABI; three hit the token budget. This is `LEARNABILITY_SANITY_FAILED`, not semantic
+   promotion. The next K5 owner is exact sampler replay plus checkpoint-specific rank/margin and
+   bounded-overfit diagnosis for the root transport token. Typed source-position pointers remain
+   conditional until v3 itself is learned. No new seed or private surface is authorized.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+
