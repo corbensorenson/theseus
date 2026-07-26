@@ -612,6 +612,36 @@ def indexed_teacher_forced_accuracy(
     }
 
 
+def teacher_forced_top1_error_rows(
+    predictions: np.ndarray,
+    expected: np.ndarray,
+    *,
+    token_labels: dict[int, str],
+) -> list[dict[str, Any]]:
+    """Bind each top-1 error to its exact training-target position."""
+
+    predicted = np.asarray(predictions, dtype=np.int64)
+    targets = np.asarray(expected, dtype=np.int64)
+    if predicted.ndim != 1 or predicted.shape != targets.shape:
+        raise ValueError("K5 top-1 error vectors do not align")
+    return [
+        {
+            "target_index": int(index),
+            "expected_token_id": int(targets[index]),
+            "expected_token": token_labels.get(
+                int(targets[index]),
+                f"<TOKEN:{int(targets[index])}>",
+            ),
+            "predicted_token_id": int(predicted[index]),
+            "predicted_token": token_labels.get(
+                int(predicted[index]),
+                f"<TOKEN:{int(predicted[index])}>",
+            ),
+        }
+        for index in np.flatnonzero(predicted != targets).tolist()
+    ]
+
+
 def indexed_teacher_forced_logit_diagnostics(
     logits: np.ndarray,
     expected: np.ndarray,
@@ -2206,6 +2236,11 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 "total": total,
                 "accuracy": round(correct / max(1, total), 8),
             }
+        teacher_forced_top1_errors = teacher_forced_top1_error_rows(
+            supervised_predictions,
+            supervised_expected,
+            token_labels=token_label_lookup,
+        )
         semantic_accuracy_by_kind: dict[str, dict[str, Any]] = {}
         schema_continuation_accuracy: dict[str, Any] | None = None
         root_transport_version_diagnostic: dict[str, Any] | None = None
@@ -2404,6 +2439,10 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 "teacher_forced_unique_expected_token_count": len(
                     expected_frequencies
                 ),
+                "teacher_forced_top1_error_count": len(
+                    teacher_forced_top1_errors
+                ),
+                "teacher_forced_top1_errors": teacher_forced_top1_errors,
                 "teacher_forced_accuracy_by_token_region": accuracy_by_region,
                 "teacher_forced_accuracy_by_target_frequency": accuracy_by_frequency,
                 "teacher_forced_semantic_target_accuracy_by_kind": (

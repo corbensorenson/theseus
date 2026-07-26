@@ -137,6 +137,33 @@ def test_indexed_logit_diagnostic_reports_expected_rank_and_legacy_margin() -> (
     assert diagnostic["rows"][0]["comparison_token_id"] == 1
 
 
+def test_teacher_forced_top1_errors_are_bound_to_exact_target_positions() -> (
+    None
+):
+    rows = probe.teacher_forced_top1_error_rows(
+        np.asarray([4, 7, 9], dtype=np.int64),
+        np.asarray([4, 8, 6], dtype=np.int64),
+        token_labels={6: "six", 7: "seven", 8: "eight"},
+    )
+
+    assert rows == [
+        {
+            "target_index": 1,
+            "expected_token_id": 8,
+            "expected_token": "eight",
+            "predicted_token_id": 7,
+            "predicted_token": "seven",
+        },
+        {
+            "target_index": 2,
+            "expected_token_id": 6,
+            "expected_token": "six",
+            "predicted_token_id": 9,
+            "predicted_token": "<TOKEN:9>",
+        },
+    ]
+
+
 def test_probe_checkpoint_counterfactual_is_content_bound_and_explicit(
     tmp_path: Path,
 ) -> None:
