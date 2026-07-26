@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 import sys
 from pathlib import Path
 
@@ -558,6 +559,15 @@ def test_training_row_panel_requires_exact_admitted_rows() -> None:
                 "rows": [row, {**row, "row_id": "row-a"}],
             }
         )
+    assert probe.exact_training_row_panel_member_id(
+        report,
+        "row-b",
+    ) == "row-b"
+    with pytest.raises(ValueError, match="not in the exact admitted panel"):
+        probe.exact_training_row_panel_member_id(
+            report,
+            "row-c",
+        )
     with pytest.raises(ValueError, match="exact admitted training panel"):
         probe.exact_training_row_panel_ids(
             {
@@ -571,6 +581,61 @@ def test_training_row_panel_requires_exact_admitted_rows() -> None:
                     },
                 ],
             }
+        )
+
+
+def test_independent_semantic_diagnostic_is_post_generation_and_fail_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        probe.training.vcm_semantic_memory,
+        "create_hierarchical_residual_state",
+        lambda *_args, **_kwargs: {"sequence": 0, "segments": []},
+    )
+    observed: dict[str, object] = {}
+
+    def accept(output: str, **kwargs: object) -> dict[str, object]:
+        observed["output"] = output
+        observed.update(kwargs)
+        return {}
+
+    monkeypatch.setattr(
+        probe.kernel_protocol,
+        "parse_learned_compiler_output",
+        accept,
+    )
+    assert probe.independent_compiler_semantic_diagnostic(
+        "[1,[],{},[],[],[]]",
+        json.dumps({"source_surface": "abc"}),
+        row_id="row-a",
+        concept_resolver=lambda _row: {},
+    ) == (True, "")
+    assert observed["source_character_length"] == 3
+    assert observed["source"] == "abc"
+    assert probe.independent_compiler_semantic_diagnostic(
+        "",
+        json.dumps({"source_surface": "abc"}),
+        row_id="row-a",
+    ) == (None, "")
+
+
+def test_indexed_teacher_forced_accuracy_is_exact_and_bounded() -> None:
+    expected = np.asarray([1, 2, 3, 4], dtype=np.int64)
+    predicted = np.asarray([1, 9, 3, 0], dtype=np.int64)
+    assert probe.indexed_teacher_forced_accuracy(
+        predicted,
+        expected,
+        (0, 1, 2),
+    ) == {
+        "correct": 2,
+        "total": 3,
+        "accuracy": 0.66666667,
+    }
+    with pytest.raises(ValueError, match="positions are invalid"):
+        probe.indexed_teacher_forced_accuracy(
+            predicted,
+            expected,
+            (4,),
         )
 
 

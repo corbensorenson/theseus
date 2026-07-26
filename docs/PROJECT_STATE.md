@@ -345,10 +345,11 @@ share toward zero. Public benchmarks are calibration only.
   transport is no longer the rejection owner. Independent faults are seven alignment-span,
   three protected-span replay, and six residual-unit fidelity failures; no invalid candidate is
   repaired (`1e04d3c8...2011`, surface `afcd5ab8...49fe`, rows `0f8212a6...bbc3`,
-  host `91872de7...18e`). K5 remains `INCONCLUSIVE_EXPERIMENT`. The next owner is a
-  training-row-selected semantic-stability repair that preserves the step-27 transport boundary;
-  no new private surface or seed is authorized until matched alignment/replay/fidelity behavior
-  improves. The 101.26-second-per-row fresh decode remains a separate K7 throughput obligation.
+  host `91872de7...18e`). K5 remains `INCONCLUSIVE_EXPERIMENT`. v5-v7 loss-only repairs are now
+  rejected by exact post-generation semantic evidence; the next owner is the bounded
+  semantic-pointer ABI repair described below. No new private surface or seed is authorized until
+  admitted semantic validity becomes positive without transport regression. The
+  101.26-second-per-row fresh decode remains a separate K7 throughput obligation.
   Three process-isolated 128-step KERC/control pairs pass exact common initialization, state custody,
   and zero-swap training, but emit no valid learned-pipeline output. The repaired broad K5 route now
   uses a 4,096-source bounded pool, objective-balanced stratified without-replacement sampling, and
@@ -656,11 +657,44 @@ share toward zero. Public benchmarks are calibration only.
    improves total, Kernel, pointer, singleton, and repeated predictions without EOS regression,
    and all 16 frozen rows now terminate with complete candidates. The remaining direct-behavior
    wall is independently split 8/8 between compact-transport content and schema invalidity.
-   Diagnose those exact errors and execute one prospectively bound same-seed
-   schema/semantic-serialization intervention before any new seed or broad K5 scaling. Preserve
-   the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve stop; do
-   not restore an arbitrary memory floor. Use both maximum-target and maximum-width prefixes for
-   every longer rung. Continue repairing the 629+
+   The admitted-training diagnostic has since driven three prospectively bound repairs from the
+   selected step-4,657 checkpoint. v5 rejected its `3e-4` update after frozen teacher forcing
+   fell 4,194→4,187/5,976 and valid transports fell 12→1/16. v6 used the registered `3e-5`
+   minimum: update one preserved 4,194/5,976 and improved the panel to 13 valid 6/6/3
+   transports, but update eight retained the same aggregate score while collapsing to 3/16 valid.
+   Retained replay places the first failure exactly at update eight, stage index 8 / source index
+   15,944 / width 609. Neither rejected endpoint consumed a new private surface.
+
+   The causal defect was loss allocation, not a need for another seed or an arbitrary memory
+   threshold: v5/v6 reduced the historical schema-continuation weight from 8 to 1. v7
+   restores schema weight 8 and scales the four semantic weights so combined postweight mass
+   remains 166,147.9985. Its independent audit covers 2,640 schema positions and 40,877 semantic
+   positions and binds the unchanged sampler prefix. The first update exactly preserves frozen
+   4,194/5,976 teacher-forced accuracy, EOS 16/16, and 13/13 complete diagnostic transports at
+   6/6/3. The full eight-update rung is now complete at optimizer step 4,665. Update four first
+   rolled back at 324.438 MiB swap growth, then passed unchanged after host recovery; later
+   segments stayed inside the same 2,048 MiB reserve and 320 MiB swap gates. This is evidence
+   against an arbitrary host floor.
+
+   v7 is rejected for semantic promotion. Its endpoint gains only one teacher-forced token
+   (4,195/5,976) while valid admitted transports fall to 4/16. Exact bisection places the first
+   selected-row regression at update seven, stage index 5 / source index 11,242 / width 609.
+   A new post-generation independent semantic audit gives no candidate repair or assisted credit.
+   The source and v7 update one both score 0/13 semantic passes. v7 changes the fault distribution
+   from alignment/schema/protected/fidelity 5/1/1/6 to 5/0/1/7, while all per-family
+   teacher-forced counts remain identical: 308/401 alignment, 3/6 protected bounds, 109/112
+   fidelity, 393/1,792 unit IDs, and 202/204 schema. No private surface was consumed.
+
+   The next owner is a semantic-pointer ABI repair. Replace target-only cryptographic residual
+   unit IDs with learned local references into a prompt-visible independently derived unit table,
+   and replace raw span integers with typed source-position pointers. Deterministic pointer
+   materialization receives zero learned-generation credit; the learned path must select the
+   correct reference and fidelity. Require blind information-flow, exact migration/roundtrip,
+   old-target compatibility, gradient/overfit/reload sanity, and a matched raw-value-token control
+   before another same-seed rung or private surface.
+   Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
+   stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
+   prefixes for every longer rung. Continue repairing the 629+
    and maximum-positive-row routes against the live-reserve/swap watchdog; allocator high-water
    is diagnostic and must not become another arbitrary limit.
 5. Complete KERC K4 interaction causality, adequately train the K5 learned

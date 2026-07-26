@@ -431,6 +431,135 @@ def exact_training_row_panel_ids(report: dict[str, Any]) -> tuple[str, ...]:
     return tuple(str(row["row_id"]) for row in rows)
 
 
+def exact_training_row_panel_member_id(
+    report: dict[str, Any],
+    row_id: str,
+) -> str:
+    """Select one explicit member from an already validated training panel."""
+
+    normalized = str(row_id or "")
+    if not normalized or normalized not in exact_training_row_panel_ids(report):
+        raise ValueError(
+            "K5 training-row panel member is not in the exact admitted panel"
+        )
+    return normalized
+
+
+def independent_compiler_semantic_diagnostic(
+    generated: str,
+    prompt: str,
+    *,
+    row_id: str,
+    concept_resolver: Any = None,
+) -> tuple[bool | None, str]:
+    """Validate a completed compiler output after generation, without repair."""
+
+    if not generated:
+        return None, ""
+    try:
+        compiler_prompt = json.loads(prompt)
+        source = str(compiler_prompt.get("source_surface") or "")
+        hrl_state = training.vcm_semantic_memory.create_hierarchical_residual_state(
+            str(row_id),
+            scope={
+                "user": "local-training-diagnostic",
+                "project": "theseus",
+                "conversation": str(row_id),
+                "privacy": "private_local",
+            },
+        )
+        kernel_protocol.parse_learned_compiler_output(
+            generated,
+            protected_objects={},
+            concept_capsules={},
+            source_character_length=len(source),
+            source=source,
+            hrl_state=hrl_state,
+            concept_resolver=concept_resolver,
+        )
+        return True, ""
+    except kernel_protocol.KernelProtocolFault as exc:
+        return False, exc.code
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return False, "KERC_LEARNED_COMPILER_OUTPUT_INVALID"
+
+
+def compiler_target_index_groups(
+    target_text: str,
+    *,
+    code_vocabulary: dict[str, Any],
+    kernel_offset: int,
+    pointer_offset: int,
+    end_token_id: int,
+) -> tuple[np.ndarray, dict[str, tuple[int, ...]], tuple[int, ...]]:
+    """Reconstruct exact encoded semantic and schema target positions."""
+
+    compact = training.compact_learned_compiler_transport_text(target_text)
+    target_ids, _receipt, logical_ranges = (
+        training.encode_kerc_global_target_with_logical_ranges(
+            compact,
+            code_vocabulary=code_vocabulary,
+            kernel_offset=kernel_offset,
+            pointer_offset=pointer_offset,
+        )
+    )
+    code_tokens = [str(token) for token in training.kerc_code_tokens(compact)]
+
+    def expand(logical_indices: Any) -> tuple[int, ...]:
+        return tuple(
+            encoded_index
+            for logical_index in logical_indices
+            for encoded_index in range(
+                logical_ranges[int(logical_index)][0],
+                logical_ranges[int(logical_index)][1],
+            )
+        )
+
+    logical_by_kind = (
+        training.learned_compiler_transport_semantic_pointer_token_indices_by_kind(
+            code_tokens
+        )
+    )
+    semantic_by_kind = {
+        kind: expand(logical_by_kind[kind])
+        for kind in training.KERC_COMPILER_SEMANTIC_TARGET_KINDS
+    }
+    schema_indices = expand(
+        training.learned_compiler_transport_required_continuation_token_indices(
+            code_tokens
+        )
+    )
+    return (
+        np.asarray([*target_ids, int(end_token_id)], dtype=np.int64),
+        semantic_by_kind,
+        schema_indices,
+    )
+
+
+def indexed_teacher_forced_accuracy(
+    predictions: np.ndarray,
+    expected: np.ndarray,
+    indices: tuple[int, ...],
+) -> dict[str, Any]:
+    """Count exact top-1 accuracy over one bound target-position family."""
+
+    selected = np.asarray(indices, dtype=np.int64)
+    if (
+        predictions.ndim != 1
+        or expected.ndim != 1
+        or len(predictions) != len(expected)
+        or (len(selected) and (selected.min() < 0 or selected.max() >= len(expected)))
+    ):
+        raise ValueError("K5 indexed teacher-forced positions are invalid")
+    total = int(len(selected))
+    correct = int(np.sum(predictions[selected] == expected[selected]))
+    return {
+        "correct": correct,
+        "total": total,
+        "accuracy": round(correct / max(1, total), 8),
+    }
+
+
 def replay_training_stage_row_scope(
     stage: Any, execution_policy: dict[str, Any]
 ) -> tuple[Any, dict[str, int]]:
@@ -1645,6 +1774,16 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     online_transport_validator = bool(
         getattr(args, "online_transport_validator", False)
     )
+    independent_semantic_validator = bool(
+        getattr(args, "independent_semantic_validator", False)
+    )
+    concept_registry = None
+    concept_registry_fault = ""
+    if independent_semantic_validator:
+        try:
+            concept_registry = training.ConceptRegistry()
+        except Exception as exc:  # fail closed; the diagnostic must remain explicit
+            concept_registry_fault = f"{type(exc).__name__}:{exc}"
     if args.gradient_interference and rows_per_objective != 1:
         raise ValueError(
             "gradient-interference diagnostics require one row per objective"
@@ -1655,6 +1794,9 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     retained_row_report_artifact: dict[str, Any] | None = None
     training_row_panel_report_path: Path | None = None
     training_row_panel_report_artifact: dict[str, Any] | None = None
+    training_row_panel_member_id = str(
+        getattr(args, "training_row_panel_member_id", "") or ""
+    )
     matched_row_ids: tuple[str, ...] = ()
     if str(getattr(args, "matched_row_report", "") or ""):
         matched_row_report_path = resolve(args.matched_row_report)
@@ -1713,16 +1855,29 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     if str(getattr(args, "training_row_panel_report", "") or ""):
         training_row_panel_report_path = resolve(args.training_row_panel_report)
         training_row_panel_report = read_json(training_row_panel_report_path)
-        matched_row_ids = exact_training_row_panel_ids(
-            training_row_panel_report
-        )
+        if training_row_panel_member_id:
+            matched_row_ids = (
+                exact_training_row_panel_member_id(
+                    training_row_panel_report,
+                    training_row_panel_member_id,
+                ),
+            )
+        else:
+            matched_row_ids = exact_training_row_panel_ids(
+                training_row_panel_report
+            )
         training_row_panel_report_artifact = (
             candidate_evaluator.source_artifact(
                 training_row_panel_report_path
             )
         )
         checkpoint_selection["matched_row_selection_source"] = (
-            "explicit_admitted_training_row_panel_report"
+            "explicit_admitted_training_row_panel_member"
+            if training_row_panel_member_id
+            else "explicit_admitted_training_row_panel_report"
+        )
+        checkpoint_selection["training_row_panel_member_id"] = (
+            training_row_panel_member_id
         )
     selected_rows, sampling_replay = selected_training_rows(
         report,
@@ -1856,6 +2011,41 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 "total": total,
                 "accuracy": round(correct / max(1, total), 8),
             }
+        semantic_accuracy_by_kind: dict[str, dict[str, Any]] = {}
+        schema_continuation_accuracy: dict[str, Any] | None = None
+        if objective == "surface_to_kernel_program_v1":
+            (
+                reconstructed_target_ids,
+                semantic_indices_by_kind,
+                schema_indices,
+            ) = compiler_target_index_groups(
+                str(row["target"]),
+                code_vocabulary=code_vocabulary,
+                kernel_offset=int(model_contract["kerc_kernel_token_start"]),
+                pointer_offset=int(model_contract["kerc_pointer_token_start"]),
+                end_token_id=int(model_contract["kerc_end_token_id"]),
+            )
+            if not np.array_equal(
+                reconstructed_target_ids,
+                supervised_expected,
+            ):
+                raise ValueError(
+                    "K5 semantic target reconstruction does not match "
+                    "teacher-forced authority"
+                )
+            semantic_accuracy_by_kind = {
+                kind: indexed_teacher_forced_accuracy(
+                    supervised_predictions,
+                    supervised_expected,
+                    indices,
+                )
+                for kind, indices in semantic_indices_by_kind.items()
+            }
+            schema_continuation_accuracy = indexed_teacher_forced_accuracy(
+                supervised_predictions,
+                supervised_expected,
+                schema_indices,
+            )
         del teacher_logits, teacher_cache, teacher_predictions
         mx.clear_cache()
         teacher_forced_only = bool(args.teacher_forced_only)
@@ -1933,6 +2123,8 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         compiler_transport_valid: bool | None = None
         compiler_transport_fault = ""
         compiler_transport_shape: dict[str, Any] | None = None
+        independent_semantic_valid: bool | None = None
+        independent_semantic_fault = ""
         if (
             not teacher_forced_only
             and objective == "surface_to_kernel_program_v1"
@@ -1957,6 +2149,22 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 compiler_transport_fault = (
                     "KERC_LEARNED_COMPILER_OUTPUT_INVALID"
                 )
+            if independent_semantic_validator:
+                if concept_registry is None:
+                    independent_semantic_valid = False
+                    independent_semantic_fault = (
+                        "KERC_CONCEPT_REGISTRY_UNAVAILABLE"
+                    )
+                else:
+                    (
+                        independent_semantic_valid,
+                        independent_semantic_fault,
+                    ) = independent_compiler_semantic_diagnostic(
+                        generated,
+                        str(row["prompt"]),
+                        row_id=str(row["row_id"]),
+                        concept_resolver=concept_registry.resolve,
+                    )
         rows.append(
             {
                 "row_id": row["row_id"],
@@ -1979,6 +2187,12 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 ),
                 "teacher_forced_accuracy_by_token_region": accuracy_by_region,
                 "teacher_forced_accuracy_by_target_frequency": accuracy_by_frequency,
+                "teacher_forced_semantic_target_accuracy_by_kind": (
+                    semantic_accuracy_by_kind
+                ),
+                "teacher_forced_schema_continuation_accuracy": (
+                    schema_continuation_accuracy
+                ),
                 "generated_character_count": len(generated),
                 "generated_sha256": hashlib.sha256(generated.encode()).hexdigest(),
                 "exact_match": (
@@ -1992,6 +2206,8 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 "compiler_transport_valid": compiler_transport_valid,
                 "compiler_transport_fault": compiler_transport_fault,
                 "compiler_transport_shape": compiler_transport_shape,
+                "independent_semantic_valid": independent_semantic_valid,
+                "independent_semantic_fault": independent_semantic_fault,
                 "generation_state": generation.get("state"),
                 "stop_reason": generation.get("stop_reason"),
                 "fault_reason": generation.get("reason") or "",
@@ -2004,6 +2220,8 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 "raw_generated_text_retained": False,
             }
         )
+    if concept_registry is not None:
+        concept_registry.close()
     gradient_interference = None
     if args.gradient_interference:
         from mlx.utils import tree_flatten
@@ -2081,6 +2299,28 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         del snapshots
         model.eval()
         mx.clear_cache()
+    semantic_target_summary_by_kind: dict[str, dict[str, Any]] = {}
+    for kind in training.KERC_COMPILER_SEMANTIC_TARGET_KINDS:
+        kind_rows = [
+            row["teacher_forced_semantic_target_accuracy_by_kind"][kind]
+            for row in rows
+            if kind
+            in row["teacher_forced_semantic_target_accuracy_by_kind"]
+        ]
+        total = sum(int(row["total"]) for row in kind_rows)
+        correct = sum(int(row["correct"]) for row in kind_rows)
+        semantic_target_summary_by_kind[kind] = {
+            "correct": correct,
+            "total": total,
+            "accuracy": round(correct / max(1, total), 8),
+        }
+    schema_rows = [
+        row["teacher_forced_schema_continuation_accuracy"]
+        for row in rows
+        if row["teacher_forced_schema_continuation_accuracy"] is not None
+    ]
+    schema_total = sum(int(row["total"]) for row in schema_rows)
+    schema_correct = sum(int(row["correct"]) for row in schema_rows)
     exact_count = sum(row["exact_match"] is True for row in rows)
     syntax_count = sum(row["syntax_valid"] is True for row in rows)
     teacher_forced_summary = aggregate_teacher_forced_rows(rows)
@@ -2139,6 +2379,9 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 if online_transport_validator
                 else "NONE"
             ),
+            "independent_semantic_validator": independent_semantic_validator,
+            "independent_semantic_validator_credit": "NONE_POST_GENERATION_AUDIT",
+            "concept_registry_fault": concept_registry_fault,
         },
         "training_report": candidate_evaluator.source_artifact(report_path),
         "matched_row_report": matched_row_report_artifact,
@@ -2150,6 +2393,14 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         "sampling_replay": sampling_replay,
         "rows_per_objective": rows_per_objective,
         "teacher_forced_summary_by_objective": teacher_forced_summary,
+        "teacher_forced_semantic_target_summary_by_kind": (
+            semantic_target_summary_by_kind
+        ),
+        "teacher_forced_schema_continuation_summary": {
+            "correct": schema_correct,
+            "total": schema_total,
+            "accuracy": round(schema_correct / max(1, schema_total), 8),
+        },
         "teacher_forced_token_diagnostics_by_error": (
             teacher_forced_token_diagnostics
         ),
@@ -2178,6 +2429,26 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
             "shape_signatures_retain_semantic_values": False,
             "online_transport_validator": online_transport_validator,
             "assisted_output_credit_required": online_transport_validator,
+        },
+        "independent_semantic_diagnostic": {
+            "evaluated_row_count": sum(
+                row["independent_semantic_valid"] is not None for row in rows
+            ),
+            "valid_row_count": sum(
+                row["independent_semantic_valid"] is True for row in rows
+            ),
+            "fault_counts": dict(
+                sorted(
+                    Counter(
+                        str(row["independent_semantic_fault"])
+                        for row in rows
+                        if row["independent_semantic_fault"]
+                    ).items()
+                )
+            ),
+            "post_generation_only": True,
+            "candidate_repair_or_rewrite": False,
+            "assisted_output_credit_required": False,
         },
         "generator_visible_fields": ["trusted_source_prefix_tokens", "prompt"],
         "target_visible_to_generator": False,
@@ -2306,11 +2577,15 @@ def main() -> int:
     parser.add_argument("--matched-row-report", default="")
     parser.add_argument("--retained-row-report", default="")
     parser.add_argument("--training-row-panel-report", default="")
+    parser.add_argument("--training-row-panel-member-id", default="")
     parser.add_argument("--rows-per-objective", type=int, default=1)
     parser.add_argument("--beam-width", type=int, default=1)
     parser.add_argument("--branching-factor", type=int, default=1)
     parser.add_argument(
         "--online-transport-validator", action="store_true"
+    )
+    parser.add_argument(
+        "--independent-semantic-validator", action="store_true"
     )
     parser.add_argument(
         "--evaluation-compute-dtype",
@@ -2352,11 +2627,28 @@ def main() -> int:
             "--rows-per-objective 1"
         )
     if args.training_row_panel_report and (
-        args.teacher_forced_only or args.rows_per_objective < 2
+        args.teacher_forced_only
+        or (
+            args.training_row_panel_member_id
+            and args.rows_per_objective != 1
+        )
+        or (
+            not args.training_row_panel_member_id
+            and args.rows_per_objective < 2
+        )
     ):
         parser.error(
             "an explicit training-row panel requires free generation and "
-            "--rows-per-objective >= 2"
+            "either --rows-per-objective >= 2 or one named panel member "
+            "with --rows-per-objective 1"
+        )
+    if (
+        args.training_row_panel_member_id
+        and not args.training_row_panel_report
+    ):
+        parser.error(
+            "--training-row-panel-member-id requires "
+            "--training-row-panel-report"
         )
     if not 1 <= args.beam_width <= 16:
         parser.error("--beam-width must be in [1, 16]")
@@ -2378,10 +2670,13 @@ def main() -> int:
             or args.diagnostic_checkpoint
             or args.diagnostic_checkpoint_sha256
             or args.matched_row_report
+            or args.training_row_panel_report
+            or args.training_row_panel_member_id
             or args.rows_per_objective != 1
             or args.beam_width != 1
             or args.branching_factor != 1
             or args.online_transport_validator
+            or args.independent_semantic_validator
             or args.evaluation_compute_dtype != "authoritative_fp32"
         ):
             parser.error(
@@ -2473,6 +2768,13 @@ def main() -> int:
                     args.training_row_panel_report,
                 ]
             )
+        if args.training_row_panel_member_id:
+            command.extend(
+                [
+                    "--training-row-panel-member-id",
+                    args.training_row_panel_member_id,
+                ]
+            )
         if args.gradient_interference:
             command.append("--gradient-interference")
         if args.rows_per_objective != 1:
@@ -2485,6 +2787,8 @@ def main() -> int:
             )
         if args.online_transport_validator:
             command.append("--online-transport-validator")
+        if args.independent_semantic_validator:
+            command.append("--independent-semantic-validator")
         if args.evaluation_compute_dtype != "authoritative_fp32":
             command.extend(
                 ["--evaluation-compute-dtype", args.evaluation_compute_dtype]

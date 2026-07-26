@@ -1000,7 +1000,170 @@
           "seed_count": 1,
           "capability_claim": "PRIVATE_DEVELOPMENT_DIAGNOSTIC"
         },
-        "next_owner": "prospectively bind a same-seed semantic-stability repair that improves alignment spans, protected-span replay, and residual-unit fidelity on admitted training diagnostics while preserving the step-27 transport boundary; do not consume another private surface or seed until matched behavior improves",
+    "semantic_stability_interventions": {
+      "v5_high_rate_rebalance": {
+        "state": "REJECTED_AFTER_ONE_UPDATE",
+        "candidate_execution_plan_sha256": "a2ac3a63c510fb1bd6142af7eb4173d0163ce8ab9f6dceceee6a39775314f80a",
+        "learning_rate": 0.0003,
+        "matched_teacher_forced_correct_before": 4194,
+        "matched_teacher_forced_correct_after": 4187,
+        "matched_teacher_forced_total": 5976,
+        "admitted_training_transport_valid_before": 12,
+        "admitted_training_transport_valid_after": 1,
+        "teacher_forced_report_path": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_matched_teacher_forced16_seed_20260722.json",
+        "teacher_forced_report_sha256": "b7946fb292aa4a8b160c8e1f5762c0263295480de535e91c30cc4fbad04d137f",
+        "training_panel_report_path": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_matched_training_rows16_greedy1_seed_20260722.json",
+        "training_panel_report_sha256": "90c18a254189eec5a4a4e780c5052cb7f39182fe3a4147456db5163d453456bb",
+        "fresh_private_surface_consumed": false,
+        "capability_claim": "NONE"
+      },
+      "v6_minimum_rate_rebalance": {
+        "state": "REJECTED_AT_UPDATE_8_AFTER_POSITIVE_UPDATE_1",
+        "candidate_execution_plan_sha256": "3f6fc62e817b0f3725b91cb634e6769f01ab86db21f9488a37d772e6a135c2a9",
+        "learning_rate": 0.00003,
+        "update_1": {
+          "matched_teacher_forced_correct": 4194,
+          "matched_teacher_forced_total": 5976,
+          "admitted_training_syntax_valid_count": 13,
+          "admitted_training_transport_valid_count": 13,
+          "teacher_forced_report_sha256": "774e4b9cfafc8a6c1e99e2a97d0a3575dcaff3f22b03c7176235dbeb9bed40a4",
+          "training_panel_report_sha256": "192f5fd2e9aaf67410b865ea6f6e9774976345a5de16283038b76e35b870953d"
+        },
+        "update_8": {
+          "optimizer_step": 4665,
+          "matched_teacher_forced_correct": 4194,
+          "matched_teacher_forced_total": 5976,
+          "eos_top1_count": 16,
+          "admitted_training_syntax_valid_count": 13,
+          "admitted_training_transport_valid_count": 3,
+          "teacher_forced_report_sha256": "7b9867d1fa84fe24a9eda196e97059c32cc5c271e4651c836a3645b85c590298",
+          "training_panel_report_sha256": "ca4a50be659fc2d57937aac08b10d66eb1b426deaa0ddca0657c25125b2c2ea3"
+        },
+        "first_behavior_regression": {
+          "update": 8,
+          "stage_index": 8,
+          "source_index": 15944,
+          "execution_width": 609
+        },
+        "fresh_private_surface_consumed": false,
+        "capability_claim": "NONE"
+      },
+      "v7_schema_protected_mass_neutral": {
+        "state": "REJECTED_NO_SEMANTIC_MOVEMENT_AND_UPDATE_7_TRANSPORT_REGRESSION",
+        "candidate_execution_plan_sha256": "a54c661ae927bf190951b79e0de735b1507bcb689d74b76c926fa29b2eccb903",
+        "learning_rate": 0.00003,
+        "objective_audit": {
+          "report_path": "reports/rdc_kerc_k5_schema_protected_mass_neutral_v7_plana54c_step4657_training_objective_audit_seed_20260722.json",
+          "report_sha256": "58fb0475f2c5320c839446b7635b5cbe0d738c0e75e6a68cdba7051e38e55114",
+          "schema_continuation_position_count": 2640,
+          "schema_continuation_weight": 8.0,
+          "schema_continuation_postweight_loss_mass": 21120.0,
+          "semantic_target_position_counts_by_kind": {
+            "program_alignment_span": 9846,
+            "protected_character_bound": 1929,
+            "residual_unit_id": 27271,
+            "residual_fidelity": 1831
+          },
+          "semantic_target_loss_weights_by_kind": {
+            "program_alignment_span": 4.14348981,
+            "protected_character_bound": 7.09582406,
+            "residual_unit_id": 2.84371314,
+            "residual_fidelity": 7.09582406
+          },
+          "combined_schema_and_semantic_postweight_loss_mass": 166147.9985435009,
+          "execution_prefix_indices_sha256": "64ac415e7e58f26540f04791fc97156f1ca27b21989c3c73d1f96c4e0305e765"
+        },
+        "update_1": {
+          "matched_teacher_forced_correct": 4194,
+          "matched_teacher_forced_total": 5976,
+          "eos_top1_count": 16,
+          "admitted_training_syntax_valid_count": 13,
+          "admitted_training_transport_valid_count": 13,
+          "teacher_forced_report_sha256": "ec48d756c2a09b0c7e6a0fffea545dd5daced0eb6b46dd406f5dad62f6578a7d",
+          "training_panel_report_sha256": "9d49538022ebaf3a40b34bf30ddaee61da18a9363d33cca356ae8f5da9523dcb"
+        },
+        "completed_updates": 8,
+        "terminal_endpoint": {
+          "optimizer_step": 4665,
+          "training_report_path": "reports/rdc_kerc_k5_schema_protected_mass_neutral_v7_plana54c_step08_seed_20260722.json",
+          "training_report_sha256": "3d96579d9645ee59f7fc2fc6f2f2cebce5b490f42fb74ca930a7f20fdeb9f21e",
+          "merged_report_path": "reports/rdc_kerc_k5_schema_protected_mass_neutral_v7_plana54c_step08_merged_fp32_seed_20260722.json",
+          "merged_report_sha256": "dabf2e4d35205d58a9a6d285c86c8606e0b4bcb769cecf0bdfb5ed79799a2757",
+          "merged_checkpoint_sha256": "0ec2789720504c98b56e318d298d0cb43a5ed05662dd2c605410322a34ce08f6",
+          "matched_teacher_forced_correct": 4195,
+          "matched_teacher_forced_total": 5976,
+          "eos_top1_count": 16,
+          "admitted_training_syntax_valid_count": 13,
+          "admitted_training_transport_valid_count": 4,
+          "admitted_training_transport_invalid_count": 7,
+          "admitted_training_schema_invalid_count": 2,
+          "admitted_training_token_budget_count": 3,
+          "teacher_forced_report_sha256": "d29e7d37392ab0cc25e1083306bfceb89c4f451d94d80c55740337ee2ce869a9",
+          "training_panel_report_sha256": "1624b6d1f172cae4bdc479f59e4eb6c2a86212a3364e1d546e63dbcdf47c42de"
+        },
+        "rolled_back_update_4": {
+          "maximum_swapout_growth_mib": 324.438,
+          "configured_maximum_swapout_growth_mib": 320,
+          "state_advanced": false
+        },
+        "retry_policy": {
+          "measured_same_width_successful_launch_reclaimable_available_mib": 6299.266,
+          "minimum_available_during_run_mib": 2048,
+          "maximum_swapout_growth_mib": 320,
+          "arbitrary_fixed_host_memory_floor": false,
+          "rule": "retry the identical update-4 command only when current reclaimable memory returns to the measured same-width successful launch envelope; this is an empirical operation retry condition, not a generic host floor"
+        },
+        "first_behavior_regression": {
+          "last_valid_update": 6,
+          "first_invalid_update": 7,
+          "triggering_stage_index": 5,
+          "triggering_source_index": 11242,
+          "triggering_target_positions": 404,
+          "triggering_execution_width": 609,
+          "diagnostic_row_source_index": 25647,
+          "last_valid_shape": "6/6/3",
+          "first_invalid_shape": "9/3/0",
+          "first_invalid_report_sha256": "89788853060c5e15a31b6610f15482c1901c9282805bc442a81e66d431ef2f13"
+        },
+        "independent_post_generation_semantic_audit": {
+          "policy": "post_generation_no_repair_no_assisted_credit",
+          "source_checkpoint": {
+            "transport_valid_count": 12,
+            "semantic_valid_count": 0,
+            "fault_counts": {
+              "KERC_ALIGNMENT_SPAN_INVALID": 5,
+              "KERC_COMPACT_COMPILER_TRANSPORT_SCHEMA_INVALID": 1,
+              "KERC_LEARNED_PROTECTED_SPAN_REPLAY_MISMATCH": 1,
+              "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID": 6
+            },
+            "report_sha256": "5e39e56a7d1b0c572b5de4b0ef5c5cdeb7e5d9a8dd5f0398c5e6fb9b29c5a9e2"
+          },
+          "v7_update_1": {
+            "transport_valid_count": 13,
+            "semantic_valid_count": 0,
+            "fault_counts": {
+              "KERC_ALIGNMENT_SPAN_INVALID": 5,
+              "KERC_LEARNED_PROTECTED_SPAN_REPLAY_MISMATCH": 1,
+              "KERC_LEARNED_RESIDUAL_UNIT_FIDELITY_INVALID": 7
+            },
+            "report_sha256": "e1a12c6ef9f0f1f76b43f73c640c5593d48937ee172108d6549dcc11584a2d3e"
+          },
+          "matched_teacher_forced_semantic_target_counts": {
+            "program_alignment_span": {"correct": 308, "total": 401},
+            "protected_character_bound": {"correct": 3, "total": 6},
+            "residual_fidelity": {"correct": 109, "total": 112},
+            "residual_unit_id": {"correct": 393, "total": 1792},
+            "schema_continuation": {"correct": 202, "total": 204}
+          },
+          "source_teacher_forced_report_sha256": "07aba897e1f1b04e8ce2ee8afa8d920d612537f5d647493199b754743149c41b",
+          "v7_update_1_teacher_forced_report_sha256": "078a063ee9642a185778d411103a1f14ce9fd00ed09e41f6819bdcba8362b98a",
+          "targeted_top1_decisions_changed": 0
+        },
+        "fresh_private_surface_consumed": false,
+        "capability_claim": "NONE"
+      }
+    },
+    "next_owner": "implement a semantic-pointer compiler ABI that replaces target-only cryptographic residual unit IDs with learned local references into a prompt-visible independently derived unit table and replaces raw alignment/protected integers with typed source-position pointers; deterministic materialization receives zero learned credit, and blind information-flow, exact migration/roundtrip, old-target compatibility, gradient/overfit/reload sanity, and a matched raw-value-token control are mandatory before another same-seed rung or private surface",
         "separate_k7_owner": "optimize the measured constrained-decode slow path without changing reference semantics",
         "architecture_negative_authority": false,
         "capability_claim": "NONE"
@@ -2689,7 +2852,7 @@
           }
         ],
         "host_failure_interpretation": "global host swap pressure; do not weaken the 16 MiB ceiling and do not create a fixed memory floor",
-          "next_owner": "preserve the completed positive 32-row population rung and 16/16 complete-but-invalid frozen panel; diagnose compact-transport schema/content errors and execute one prospectively bound same-seed semantic-serialization intervention before another seed or K4 v2"
+          "next_owner": "preserve the completed population and exact-once evidence; v5-v7 loss-only repairs are now rejected, so implement the bounded semantic-pointer ABI with zero-credit materialization and matched raw-value control before another seed or private surface"
         },
         "width_selection": {
           "compiler_rows_at_628_tokens": 428,
@@ -5130,7 +5293,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC tiny-parity, representative-objective, 1,005-token mechanics, bounded 648-token, dual-stress 628-token, terminal 4,566-update/423,227-position receipts, and exact segmented 32-update full-stage continuation. Matched population learning is positive and all 16 frozen rows now produce complete candidates, but independent validation rejects eight compact transports and eight transport schemas. Keep K5 INCONCLUSIVE_EXPERIMENT; diagnose those exact content/schema errors and execute one prospectively bound same-seed semantic-serialization intervention before any new seed or K4 v2. Continue separate K7 repair for 629+ and maximum-positive rows plus the 128.80-second-per-row decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
+      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, and v5-v7 rejection evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. Implement the bounded semantic-pointer ABI: prompt-visible independently derived unit tables, typed source-position pointers, zero-credit deterministic materialization, blind information-flow, exact migration/roundtrip, old-target compatibility, gradient/overfit/reload sanity, and a matched raw-value-token control. Consume no new seed or private surface until admitted post-generation semantic validity is positive without transport regression. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -5910,7 +6073,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Preserve the accepted guarded KERC online-attention parity, representative full objective, 1,005-token mechanics, bounded 648-token, dual-stress 628-token, terminal 4,566-update/423,227-position receipts, and exact segmented 32-update full-stage continuation. Exact replay now covers all 24 retained generator rows, matched semantic-token learning improves without weak-tail regression, and all 16 frozen rows produce complete candidates; acceptance remains 0/16 because independent compact-transport content/schema validation rejects them 8/8. Execute one same-seed schema/semantic-serialization intervention against those exact errors before another seed. Bind the proposer/qualifier to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and maximum-positive rows and decode throughput, and complete K4-K8. Preserve K0-K3 and classify the current result as INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
+      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, and v5-v7 rejection evidence. The independent admitted-row audit now proves that loss-only v7 changes no targeted top-1 semantic decision and yields 0/13 semantic passes. Implement the semantic-pointer ABI with prompt-visible unit authority, typed source-position pointers, zero-credit materialization, exact migration, and matched raw-value control before another same-seed rung. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

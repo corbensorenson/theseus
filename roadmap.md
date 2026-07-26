@@ -1569,6 +1569,74 @@ generation service, KERC sidecar, or private evaluator.
    preserving the behavior-valid step-27 transport boundary; selection must use admitted training
    diagnostics only. Separately optimize the measured constrained-decode slow path under K7.
 
+   That semantic-stability owner is now an explicit three-intervention sequence rather than an
+   invitation to add steps or seeds. First, the semantic targets are independently counted by
+   program-alignment span, protected-character bound, residual-unit identity, and residual
+   fidelity. Their respective encoded-position counts across the 24 admitted compiler rows are
+   9,846 / 1,929 / 27,271 / 1,831. The v5 intervention preserves the prior aggregate semantic
+   loss mass while rebalancing those four owners, but one `3e-4` update reduces frozen
+   teacher-forced accuracy from 4,194 to 4,187 of 5,976 and collapses retained-row transport
+   validity from 12/16 to 1/16. It is rejected after one update. This is evidence against that
+   exact update, not against KERC.
+
+   Second, v6 repeats the identical rebalance at the registered `3e-5` minimum rate. Its first
+   update preserves 4,194/5,976 teacher-forced accuracy and improves the admitted training
+   diagnostic from 12 to 13 independently valid 6/6/3 transports. The eight-update endpoint
+   preserves aggregate teacher-forced accuracy and EOS 16/16, but collapses the diagnostic to
+   three valid rows. Retained-checkpoint replay localizes the first regression to update eight,
+   stage index 8 / source index 15,944 / width 609; updates one through seven remain valid. The
+   endpoint is rejected, no fresh private surface is consumed, and the exact source checkpoint,
+   optimizer, sampler cursor, and first-failure generation remain retained.
+
+   The causal audit then finds that both semantic branches reduced schema-continuation pressure
+   from the historical weight 8 to weight 1. The v7 plan restores schema weight 8 and scales the
+   four semantic weights to 4.14348981 / 7.09582406 / 2.84371314 / 7.09582406 so combined
+   schema-plus-semantic postweight mass remains 166,147.9985. The independent objective audit
+   binds all 2,640 schema positions, all 40,877 semantic positions, the four pre/post masses, and
+   the exact sampler prefix `64ac415e...e765`. Its first update preserves 4,194/5,976
+   teacher-forced accuracy, EOS 16/16, and all 13 syntactically complete diagnostic rows as valid
+   6/6/3 transports. This qualifies the bounded update only; exact match remains zero and K5
+   remains `INCONCLUSIVE_EXPERIMENT`.
+
+   v7 continuation completes all eight updates after the host returns to the measured same-width
+   launch envelope. The earlier update-four refusal remains valid resource evidence: it rolled
+   back at 324.438 MiB against the fixed 320 MiB swap stop, then the identical update passed with
+   zero swap growth when reclaimable memory recovered. The complete rung reaches optimizer step
+   4,665; every admitted update preserves the 2,048 MiB runtime reserve and the exact source,
+   optimizer, RNG, cursor, and sampler lineage. Its exact FP32 merge preserves all five learned
+   and 234 frozen tensors.
+
+   The endpoint is rejected. Teacher-forced accuracy moves only 4,194→4,195/5,976 with EOS
+   16/16, while the admitted-row panel falls from 12 to four valid transports: seven become
+   9/3/0, two remain schema-invalid, and three hit the token budget. A fail-closed panel-member
+   selector binds one exact admitted row without target leakage and localizes its first 6/6/3→
+   9/3/0 regression to update seven, stage index 5 / source index 11,242 / width 609 / 404 target
+   positions. The row remains valid through update six. No private surface is consumed.
+
+   The evaluator now independently audits completed compiler candidates after generation. It
+   cannot steer, repair, rewrite, or earn assisted credit. On the selected step-4,657 source,
+   13 syntactically complete admitted rows yield zero semantically valid candidates: five
+   alignment-span faults, one compact-schema fault, one protected-span replay mismatch, and six
+   residual-unit-fidelity faults. v7 update one repairs the compact schema but still yields zero
+   semantic passes: five alignment, one protected replay, and seven residual-unit-fidelity
+   faults. Exact teacher-forced family accounting is unchanged between source and v7 update one:
+   alignment 308/401, protected bounds 3/6, fidelity 109/112, residual unit IDs 393/1,792, and
+   schema continuation 202/204. v7 therefore changes no targeted top-1 decision and merely moves
+   one failure family. It is rejected for semantic promotion.
+
+   The next bounded owner is a semantic-pointer ABI repair, not another loss scalar, seed, or
+   blind step extension. Residual unit IDs are cryptographic-looking target values absent from the
+   generator-visible prompt; requiring exact free generation tests hash memorization rather than
+   the claimed residual allocator. Replace hidden raw unit IDs with bounded learned local
+   references into a prompt-visible, independently derived unit table, and replace raw
+   alignment/protected character integers with typed source-position pointers. Independent
+   materialization may copy the selected value but receives zero learned-generation credit; the
+   model must select the correct pointer and fidelity. Prove information-flow legality, exact
+   migration/roundtrip, old-target compatibility, gradient flow, one-row overfit, checkpoint
+   replay, and matched raw-value-token control before a new same-seed rung. Keep K5
+   `INCONCLUSIVE_EXPERIMENT` and spend no new private surface until admitted post-generation
+   semantic validity is positive without transport regression.
+
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity
    choices, closure state, and one or more future semantic units. The incremental grammar
