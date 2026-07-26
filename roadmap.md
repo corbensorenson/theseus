@@ -202,15 +202,17 @@ The next optimization docket is finite and ordered by possible calendar impact:
 1. Qualify compiled-state detachment and 64-step fresh-process publication. This eliminates
    the leak and roughly halves restart/checkpoint frequency; it does not promise a large
    device-throughput gain.
-2. Reclaim launch-safe disk through the manifest-backed artifact-retention path. The current
-   filesystem reached 34 MiB available while `runtime/t0a_canaries` retained about 81 GiB,
-   including about 67 GiB under superseded RDC/KERC K5 adequacy and overfit namespaces.
-   This already caused a completed guarded diagnostic to fail receipt publication. Preserve
-   final checkpoints, final receipts, lineage pointers, and negative evidence; archive or
-   delete only independently classified superseded canary payloads after an exact inventory
-   and operator-approved action manifest. Extend the artifact budget gate to cover runtime
-   canary/checkpoint namespaces, not only `reports/` and `checkpoints/`, and require enough
-   free space for two checkpoint transactions plus the watchdog receipt before launch.
+2. Keep launch-safe disk through the manifest-backed artifact-retention path. The filesystem
+   had reached 34 MiB available while `runtime/t0a_canaries` retained about 81 GiB, including
+   about 67 GiB under RDC/KERC K5 adequacy and overfit namespaces; this caused a completed
+   guarded diagnostic to fail receipt publication. The first exact pass removed 31.791 GiB
+   of stale process-local common-initialization arrays and restored 34 GiB available while
+   preserving the complete active production tree. Preserve final checkpoints, final
+   receipts, lineage pointers, and negative evidence; archive or delete any remaining
+   superseded payload only after independent reference classification and an exact action
+   manifest. Extend the artifact budget gate to cover runtime canary/checkpoint namespaces,
+   not only `reports/` and `checkpoints/`, and continuously require enough free space for
+   two checkpoint transactions plus the watchdog receipt before launch.
 3. Keep source-conditioned and supervision optimization proportional to end-to-end impact.
    Their frozen caches contain 2,726,861 and 2,246,919 target positions respectively:
    4,973,780 total, or about 2.8 device-hours at the measured 500 positions/second. This is
@@ -261,13 +263,14 @@ milestones are:
 
 Work this finite docket in order:
 
-1. **Make storage safety a precondition.** Before another material-state diagnostic or campaign
-   segment, publish an exact manifest for the 81 GiB T0A canary tree, classify final/lineage/
-   negative-evidence owners versus regenerable superseded payloads, and reclaim enough space
-   for two atomic checkpoint generations plus 20% headroom. Add runtime namespaces and
-   content-addressed auxiliary-cache generations to retention accounting. Keep at most the
-   current and one previous valid auxiliary cache per exact contract; identical array payloads
-   under changed manifest hashes must be deduplicated or reflinked rather than copied.
+1. **Keep storage safety as a precondition.** The first exact T0A manifest classified and
+   deleted 31.791 GiB of regenerable process-local initialization caches, restored available
+   disk from 2.3 to 34 GiB, and left the active checkpoint fingerprint unchanged. Add the
+   remaining runtime namespaces and content-addressed auxiliary-cache generations to retention
+   accounting before a second pass. Keep at most the current and one previous valid auxiliary
+   cache per exact contract; identical array payloads under changed manifest hashes must be
+   deduplicated or reflinked rather than copied. Preserve final/lineage/negative-evidence
+   owners unless the reference graph independently proves they are unprotected.
 2. **Adopt only the cheap qualified switch.** MLX documents
    `MLX_METAL_FAST_SYNCH=1` as a generally available faster CPU/GPU synchronization path.
    Three alternating exact-checkpoint pairs measured +2.19% median and +1.67% mean
@@ -326,6 +329,90 @@ Primary references for this docket are the official
 and the prospective (not current-lineage) research candidates
 [Dataset Decomposition](https://arxiv.org/abs/2405.13226) and
 [Curriculum-Guided Layer Scaling](https://arxiv.org/abs/2506.11389).
+
+#### 2026-07-26 Online Acceleration Refresh And Canary Storage Reclamation
+
+The first storage pass is complete. `scripts/t0a_canary_storage_retention.py`
+classified only directories named `candidate_common_initialization`: process-local,
+disk-backed `.npy` mirrors used to transfer exact common tensors from the first candidate
+to the second candidate in one matched process. The trainer never reopened them after that
+process exited. All 117 directories were older than 24 hours, flat, `.npy`-only, untracked,
+symlink-free, and unchanged between manifest and deletion. The guarded action removed
+28,257 files and 31.791 GiB of allocated storage. Available filesystem space increased from
+2.3 GiB to 34 GiB and `runtime/t0a_canaries` fell from about 81 GiB to 49 GiB. The complete
+active 57M production tree remained byte-fingerprint identical before and after
+(`e9012fc705cf17a62ea2d8b0bd41e272ad7e2ea64eaa82ae3593b552d4516d69`).
+All weights, optimizer states, RNG state, training/evaluation receipts, and negative
+evidence were preserved. The remaining 49 GiB is not permission for a blind second purge:
+extend reference accounting to those runtime checkpoints and prune only a separately
+manifested unprotected payload class.
+
+A fresh primary-source MLX review changes the acceleration docket in five ways:
+
+1. **Add FP16/FP32-master as the highest-upside untested execution candidate.** The
+   installed MLX is current `0.32.0`; recent releases already include training-reduction
+   and compiled input-donation fixes. An MLX maintainer explicitly recommends FP16 rather
+   than BF16 when the model's numeric range permits it because FP16 is faster. Theseus has
+   never run that experiment. The current trainer deliberately accepts only FP32 or BF16
+   compute, and its master-weight update recasts compute parameters specifically to BF16.
+   A guarded attempt therefore stopped at the unsupported-dtype boundary before an update,
+   with zero swap growth; no speed or quality claim was produced. Implement an explicit
+   diagnostic FP16 compute/FP32 master route with FP32 loss reduction, loss scaling if
+   required, finite-gradient checks, and dtype-correct master-to-compute recasting. Then run
+   three alternating exact-checkpoint pairs, a 64-update watchdog canary, independent
+   process replay, and save/reload continuity. Migrate the production plan only if it clears
+   all existing numeric and weak-tail gates.
+2. **Do not spend days on persistent compilation folklore.** MLX caches a compiled function
+   while the process lives and retraces when input shapes or dtypes change. The production
+   route already compiles the outer stateful update with model, optimizer, and RNG captured
+   as inputs and outputs, exactly matching the official guide. It also has a fixed width of
+   512, so shapeless compilation cannot help the base route. MLX function export can persist
+   a graph across front ends, but the official API does not promise a precompiled Metal
+   binary that removes all fresh-process compilation. Two qualified 32-step processes spent
+   138.69 seconds in device updates, 4.97 seconds publishing, and only 3.38 additional
+   seconds outside both. Even eliminating all remaining process setup would save less than
+   2.5% there.
+3. **Bound asynchronous checkpoint work by measured economics and memory.** MLX exposes
+   `async_eval`, and Apple recommends overlapping independent CPU/GPU work with multiple
+   resource instances. The full checkpoint currently costs about 2.5 seconds per 32-step
+   segment, only about 3.6% of device time and roughly half that at 64 steps. A double-buffer
+   or snapshot scheme can therefore win only a few percent while temporarily retaining
+   another 657 MiB model/optimizer payload plus allocator state on a 16 GiB host. Test
+   asynchronous hashing/serialization only after 64-step qualification, with immutable
+   snapshot ownership, exact restore, injected interruption, disk-reserve, peak-memory, and
+   zero-swap checks. Do not overlap live mutable tensors with serialization.
+4. **Keep custom Metal focused on a measured residual.** MLX officially supports custom
+   Metal kernels with custom gradients, so a fused residual kernel remains possible. The
+   current model already uses fast scaled-dot-product attention, fast RoPE, native RMSNorm,
+   grouped-query attention, and compiled elementwise fusion. The two attempted native traces
+   reached 38.6-56.1 GiB, far beyond the evidence budget. Use the existing bounded station
+   timers to rank vocabulary projection/cross-entropy, MLP, normalization, clipping, and
+   AdamW. Write one custom forward/backward kernel only for the top stable residual and
+   require at least 10% sustained joined wall-time improvement; a Rust or C++ wrapper alone
+   receives no credit.
+5. **Keep host-language rewrites proportional.** MLX C can import exported functions and
+   Rust can wrap C or Metal, but measured Python batch preparation is about 0.2% of device
+   time. Moving the optimizer loop from Python to Rust cannot accelerate the Metal matrix
+   work and would add a second state ABI. Retain Rust for the already-positive corpus/KERC
+   preprocessing, lifecycle, and checkpoint tools. Reopen native host code only after a
+   profile attributes at least 5% joined time to CPU orchestration.
+
+The finite order is now: keep the reclaimed disk reserve; qualify 64-step FP32 state
+detachment when host memory is genuinely available; implement and disposition FP16/FP32
+master; finish full-state qualification of the measured 1-2% fast-synchronization switch;
+rank bounded stations and test at most one custom kernel; then stop the acceleration sprint.
+For laptop availability, the user-presence-aware overnight scheduler and control/arm fanout
+remain more important than shaving another percent from a foreground process. The first
+100M-position reading remains an overnight-scale milestone; selected-path dogfood and the
+two dense scientific controls remain separate schedules.
+
+Additional primary references are the official
+[MLX release history](https://github.com/ml-explore/mlx/releases),
+[MLX function export guide](https://ml-explore.github.io/mlx/build/html/usage/export.html),
+[MLX transforms including `async_eval`](https://ml-explore.github.io/mlx/build/html/python/transforms.html),
+[MLX custom Metal kernel guide](https://ml-explore.github.io/mlx/build/html/dev/custom_metal_kernels.html),
+[MLX C overview](https://ml-explore.github.io/mlx-c/build/html/overview.html), and Apple's
+[CPU/GPU synchronization guidance](https://developer.apple.com/documentation/metal/synchronizing-cpu-and-gpu-work).
 
 ### 2026-07-26 Acceleration-First Launch Gate
 

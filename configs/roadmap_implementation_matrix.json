@@ -5850,6 +5850,12 @@
         "reports/resource_acceleration_joined_campaign_path_bf16_m8_aux_m1_steps64_8_8_retry6.json",
         "reports/fresh_process_pretraining_qualification.json",
         "reports/fresh_process_pretraining_qualification.outer_host_resource_safety.json",
+        "reports/t0a_canary_storage_retention.json",
+        "scripts/t0a_canary_storage_retention.py",
+        "tests/test_t0a_canary_storage_retention.py",
+        "reports/training_acceleration_audit_2026_07_26.json",
+        "reports/training_resource_safety/fp32_online_acceleration_baseline8.host_resource_safety.json",
+        "reports/training_resource_safety/fp16_online_acceleration_candidate8.host_resource_safety.json",
         "scripts/fresh_process_pretraining_qualification.py",
         "scripts/moecot_auxiliary_stage_cache.py",
         "scripts/neural_seed_training_campaign.py",
@@ -5888,11 +5894,12 @@
       ],
       "missing_items": [
         "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign.",
-        "Runtime canary retention is outside the current artifact budget gate: about 81 GiB under runtime/t0a_canaries filled the filesystem and prevented one completed guarded diagnostic from publishing its receipt. Classify and reclaim superseded payloads through an operator-approved manifest, extend budget accounting to runtime checkpoint/cache namespaces, and require two checkpoint transactions plus headroom before launch."
+        "The first runtime-canary cleanup removed 31.791 GiB of stale process-local candidate-initialization arrays and preserved the active production tree exactly, but runtime canary checkpoints remain outside the artifact budget gate. Extend reference accounting to the remaining approximately 49 GiB, classify unprotected final/intermediate payloads independently, and require two checkpoint transactions plus headroom before launch.",
+        "FP16 compute with FP32 master state is the highest-upside untested M1 candidate found in the primary-source refresh. The current trainer explicitly supports only FP32/BF16 and hardcodes BF16 master-to-compute recasting; implement a diagnostic route with FP32 reduction/loss scaling as required and do not migrate production until matched full-state, watchdog, reload, cross-process replay, and weak-tail gates pass."
       ],
       "pre_training_readiness": {
         "state": "REQUALIFICATION_REQUIRED_FOR_COMPILED_STATE_AMENDMENT",
-        "acceptance_boundary": "The historical selected M1 policy remains qualified at compiled FP32 microbatch four, width quantum 64, externally watched 32-step fresh processes, and eager microbatch-one auxiliary phases. A production campaign exposed linear compiled-state graph retention. Explicit post-update model/optimizer materialization holds isolated 64-step active MLX memory flat near 659 MB with zero swap and preserves FP32 state inside the prior fresh-process envelope, but its proposed 64-step production cadence is not authorized until launch-safe disk is restored, two contiguous fresh processes plus an independent replay pass under the external watchdog, and the replacement freeze is regenerated.",
+        "acceptance_boundary": "The historical selected M1 policy remains qualified at compiled FP32 microbatch four, width quantum 64, externally watched 32-step fresh processes, and eager microbatch-one auxiliary phases. A production campaign exposed linear compiled-state graph retention. Explicit post-update model/optimizer materialization holds isolated 64-step active MLX memory flat near 659 MB with zero swap and preserves FP32 state inside the prior fresh-process envelope. Launch-safe disk has been restored from 2.3 to 34 GiB by deleting only manifest-verified transient alignment caches, but the proposed 64-step production cadence is not authorized until two contiguous fresh processes plus an independent replay pass under the external watchdog and the replacement freeze is regenerated.",
         "nonblocking_residuals": [
           "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
         ],
@@ -5907,7 +5914,11 @@
           "reports/fresh_process_pretraining_qualification.json",
           "scripts/fresh_process_pretraining_qualification.py",
           "scripts/moecot_language_arm_training.py",
-          "tests/test_moecot_language_arm_training.py"
+          "tests/test_moecot_language_arm_training.py",
+          "scripts/t0a_canary_storage_retention.py",
+          "tests/test_t0a_canary_storage_retention.py",
+          "reports/t0a_canary_storage_retention.json",
+          "reports/training_acceleration_audit_2026_07_26.json"
         ]
       },
       "current_non_claims": [
@@ -5917,7 +5928,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "First publish an exact operator-reviewed retention manifest for the 81 GiB runtime T0A canary tree and restore enough disk for two atomic checkpoint transactions plus 20% headroom. Then complete the 64-step fresh-process state/cursor/publication replay without weakening the live reserve, regenerate the replacement freeze, and resume the exact step-3480 FP32 lineage toward the 100M-position frozen review. Do not repeat the 38.6-56.1 GiB Metal capture or let the roughly 2.8-device-hour auxiliary tail delay the 1.529-billion-position selected base path. Qualify MLX fast synchronization as the remaining cheap switch, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
+      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve, extend the budget/reference graph to the remaining runtime canary checkpoints, and do not perform a blind second purge. When real host headroom is available, complete the 64-step fresh-process state/cursor/publication replay without weakening the live reserve and regenerate the replacement freeze. In parallel, implement FP16 compute with FP32 master state as a diagnostic-only challenger with correct recasting/loss scaling and run its matched full-state/reload/replay gates; this outranks persistent-process folklore because measured non-checkpoint process overhead is below 2.5%. Qualify MLX fast synchronization, use bounded station timing for at most one custom kernel, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
