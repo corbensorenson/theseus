@@ -6293,6 +6293,22 @@ def evaluate_target(
     return {**report, "rows": {"path": relative(output), "embedded_row_count": len(rows)}}
 
 
+def validate_required_compiler_transport_version(
+    parsed: dict[str, Any],
+    *,
+    required_version: int,
+) -> None:
+    """Reject a valid legacy wire result when the bound target requires v3."""
+
+    observed_version = int(parsed.get("compiler_transport_version") or 0)
+    if observed_version != int(required_version):
+        raise KernelProtocolFault(
+            "KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+            f"required={int(required_version)} observed={observed_version}",
+            path="compiler_output",
+        )
+
+
 def generate_kerc_pipeline_text(
     model: Any,
     prompt: str,
@@ -6315,8 +6331,22 @@ def generate_kerc_pipeline_text(
         ((target.get("kernel_code_vocabulary") or {}).get("payload") or {})
     )
     model_contract = target.get("model") or {}
+    compiler_transport = (
+        target.get("kerc_compiler_transport")
+        if isinstance(target.get("kerc_compiler_transport"), dict)
+        else {}
+    )
+    required_compiler_transport_version = int(
+        compiler_transport.get("version")
+        or LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+    )
     if code_vocabulary.get("policy") != "project_theseus_kerc_dual_code_vocabulary_v1":
         return "", generation_fault("kerc_code_vocabulary_missing")
+    if required_compiler_transport_version not in {
+        LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+        LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+    }:
+        return "", generation_fault("kerc_compiler_transport_version_invalid")
     hrl_state = vcm_semantic_memory.create_hierarchical_residual_state(
         interaction_id,
         scope={
@@ -6333,7 +6363,7 @@ def generate_kerc_pipeline_text(
                 if objective == "surface_to_kernel_program_v1":
                     compiler_prompt = json.loads(stage_prompt)
                     surface = str(compiler_prompt.get("source_surface") or "")
-                    parse_learned_compiler_output(
+                    parsed = parse_learned_compiler_output(
                         candidate_text,
                         protected_objects={},
                         concept_capsules={},
@@ -6345,6 +6375,10 @@ def generate_kerc_pipeline_text(
                             if concept_registry is not None
                             else None
                         ),
+                    )
+                    validate_required_compiler_transport_version(
+                        parsed,
+                        required_version=required_compiler_transport_version,
                     )
                 else:
                     parse_learned_answer_output(candidate_text)

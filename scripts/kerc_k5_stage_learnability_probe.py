@@ -491,10 +491,16 @@ def compiler_target_index_groups(
     kernel_offset: int,
     pointer_offset: int,
     end_token_id: int,
+    transport_version: int = (
+        kernel_protocol.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+    ),
 ) -> tuple[np.ndarray, dict[str, tuple[int, ...]], tuple[int, ...]]:
     """Reconstruct exact encoded semantic and schema target positions."""
 
-    compact = training.compact_learned_compiler_transport_text(target_text)
+    compact = training.compact_learned_compiler_transport_text(
+        target_text,
+        transport_version=transport_version,
+    )
     target_ids, _receipt, logical_ranges = (
         training.encode_kerc_global_target_with_logical_ranges(
             compact,
@@ -1750,6 +1756,22 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
     )
     code_vocabulary = (target.get("kernel_code_vocabulary") or {}).get("payload") or {}
     model_contract = target["model"]
+    compiler_transport = (
+        target.get("kerc_compiler_transport")
+        if isinstance(target.get("kerc_compiler_transport"), dict)
+        else {}
+    )
+    compiler_transport_version = int(
+        compiler_transport.get("version")
+        or kernel_protocol.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+    )
+    if compiler_transport_version not in (
+        kernel_protocol.LEARNED_COMPILER_SUPPORTED_TRANSPORT_VERSIONS
+    ):
+        raise ValueError(
+            "unsupported KERC compiler transport version in diagnostic target: "
+            f"{compiler_transport_version}"
+        )
     rows = []
     token_accuracy_counts: dict[int, dict[str, Any]] = {}
     token_label_lookup = {
@@ -2024,6 +2046,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 kernel_offset=int(model_contract["kerc_kernel_token_start"]),
                 pointer_offset=int(model_contract["kerc_pointer_token_start"]),
                 end_token_id=int(model_contract["kerc_end_token_id"]),
+                transport_version=compiler_transport_version,
             )
             if not np.array_equal(
                 reconstructed_target_ids,

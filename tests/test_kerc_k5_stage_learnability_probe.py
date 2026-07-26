@@ -15,6 +15,76 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import kerc_k5_stage_learnability_probe as probe  # noqa: E402
+import moecot_source_conditioned_pretraining as pretraining  # noqa: E402
+
+
+def test_compiler_target_index_groups_follow_configured_v3_allocator_ownership() -> (
+    None
+):
+    target_text = json.dumps(
+        {
+            "kernel_version": "KE-1.0",
+            "protected_objects": [
+                {
+                    "handle": "obj:test",
+                    "object_type": "verbatim",
+                    "copy_policy": "EXACT",
+                    "character_start": 2,
+                    "character_end": 7,
+                }
+            ],
+            "concept_capsules": {},
+            "program": {
+                "policy": "project_theseus_kerc_learned_program_tokens_v1",
+                "tokens": ["PVERSION:KE-1.0", "PSPANS:[[2,7]]"],
+            },
+            "residual": {
+                "mode": "SOURCE_RECONSTRUCTION",
+                "unit_fidelity": [["ru:0123456789abcdef01234567", "lexical"]],
+                "interaction": [],
+                "segment": [],
+                "tokens": [],
+                "exact_handles": [],
+            },
+            "hierarchical_compiler": {
+                "policy": "project_theseus_kerc_hierarchical_compiler_v1",
+                "chunk_index": 0,
+                "continuation": False,
+                "root_node_ids": [],
+            },
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    code_vocabulary = pretraining.build_kerc_code_vocabulary(
+        [{"objective": "surface_to_kernel_program_v1", "target": target_text}],
+        {"kernel_max_vocab": 512, "pointer_max_vocab": 512},
+    )
+
+    v2_ids, v2_groups, _ = probe.compiler_target_index_groups(
+        target_text,
+        code_vocabulary=code_vocabulary,
+        kernel_offset=600,
+        pointer_offset=1200,
+        end_token_id=1800,
+        transport_version=2,
+    )
+    v3_ids, v3_groups, _ = probe.compiler_target_index_groups(
+        target_text,
+        code_vocabulary=code_vocabulary,
+        kernel_offset=600,
+        pointer_offset=1200,
+        end_token_id=1800,
+        transport_version=3,
+    )
+
+    assert len(v3_ids) < len(v2_ids)
+    assert v2_groups["residual_unit_id"]
+    assert v2_groups["residual_fidelity"]
+    assert v3_groups["residual_unit_id"] == ()
+    assert v3_groups["residual_fidelity"] == ()
+    assert v3_groups["program_alignment_span"]
+    assert v3_groups["protected_character_bound"]
 
 
 def test_probe_checkpoint_counterfactual_is_content_bound_and_explicit(

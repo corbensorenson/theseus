@@ -63,6 +63,7 @@ from moecot_language_arm_training import (  # noqa: E402
     range_view,
     resume_phase_data_state,
     rng_state_path,
+    validate_required_compiler_transport_version,
     serialization_valid_local_ids,
     supervision_row_instance_id,
     scratch_target_contract,
@@ -3211,6 +3212,21 @@ def test_generation_api_cannot_receive_hidden_target() -> None:
     pipeline_parameters = inspect.signature(generate_kerc_pipeline_text).parameters
     assert "prompt" in pipeline_parameters
     assert "expected" not in pipeline_parameters
+
+
+def test_generation_rejects_legacy_compiler_transport_when_v3_is_bound() -> None:
+    validate_required_compiler_transport_version(
+        {"compiler_transport_version": 3},
+        required_version=3,
+    )
+    with pytest.raises(
+        training_module.KernelProtocolFault,
+        match="KERC_COMPILER_TRANSPORT_VERSION_MISMATCH",
+    ):
+        validate_required_compiler_transport_version(
+            {"compiler_transport_version": 2},
+            required_version=3,
+        )
 
 
 def test_batched_text_beam_advance_matches_serial_reference() -> None:
