@@ -720,9 +720,15 @@ share toward zero. Public benchmarks are calibration only.
    The remaining errors include a closing bracket even though the old report says schema 12/12.
    The schema owner was incomplete: it weighted fixed-slot commas but not fixed-container closing
    brackets. The corrected owner raises bounded schema positions 2,640→3,300 with no target,
-   vocabulary, row-selection, semantic-position, or tensor-shape change. The same exact control is
-   authorized under plan `1629aa3c...5c7e65`; it remains training-row evidence only. No new seed
-   or private surface is authorized.
+   vocabulary, row-selection, semantic-position, or tensor-shape change.
+
+   The rerun improves root cardinality from 14 slots to 9 at 16 repeats; at 32, schema is 15/15
+   and teacher forcing is 119/120, but raw generation still loops. The last error is precisely
+   target index 75 inside a `PBYTE:` token: one base64 fallback byte copied from source is wrong.
+   This isolates the next owner. Source-derived `PBYTE` payloads must use a typed source-span
+   program token with exact, tamper-checked, zero-credit materialization. Full admitted-population
+   compatibility comes before another overfit or population continuation. No new seed or private
+   surface is authorized.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+

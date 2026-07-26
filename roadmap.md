@@ -1679,9 +1679,21 @@ generation service, KERC sidecar, or private evaluator.
    causes nontermination is invalid construct coverage. The owner now includes fixed root,
    protected-row, residual, and hierarchy closing brackets without adding semantic values. In the
    bounded 128-source stage this raises schema positions 2,640→3,300 while target bytes, selected
-   rows, semantic positions, vocabulary, and checkpoint shapes remain unchanged. Re-run the same
-   one-row control under plan `1629aa3c...5c7e65`; require complete target recovery, raw v3
-   validity, reload exactness, and host safety before population continuation. Do not consume a
+   rows, semantic positions, vocabulary, and checkpoint shapes remain unchanged.
+
+   The matched closure controls confirm the repair but do not yet close learnability. At 16
+   repeats raw root overrun improves from 14 slots to 9 and schema becomes 14/15. At 32 repeats
+   schema is truly 15/15 and teacher forcing reaches 119/120, but raw generation still loops to
+   budget. The sole error is target index 75 inside a `PBYTE:` program token: expected fallback
+   byte `3`, predicted `p`. That token is a base64 duplicate of source text already present in the
+   prompt. Requiring the compiler to regenerate every copied source byte is the remaining
+   isolated ownership defect.
+
+   Next, add a typed source-span program token for source-derived `PBYTE` payloads, prove exact
+   source-bound materialization and tamper rejection, and assign materialization zero generation,
+   repair, or capability credit. Audit the full admitted compiler population before another
+   control; no learned semantic value may be elided. Then rerun the same one-row canary and require
+   complete target recovery plus raw v3 validity before population continuation. Do not consume a
    new seed or private surface. K5 remains `INCONCLUSIVE_EXPERIMENT`.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete

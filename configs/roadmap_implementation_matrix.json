@@ -1248,7 +1248,7 @@
           "fresh_private_surface_consumed": false
         },
         "next_gate": {
-          "owner": "fixed_cardinality_closure_bounded_overfit",
+          "owner": "typed_source_span_program_token_for_source_derived_pbyte",
           "exact_sampler_replay": {
             "stage_row_count": 63,
             "sampled_unique_row_count": 1,
@@ -1291,16 +1291,49 @@
             "construct_validity_fault": "Fixed-cardinality closing brackets were omitted from the schema-continuation owner, so schema-perfect reports could coexist with root nontermination.",
             "capability_claim": "NONE_TRAINING_ROW_LEARNABILITY_ONLY"
           },
+          "bounded_overfit_after_closure_repair": {
+            "step_16": {
+              "loss_start": 3.00106978,
+              "loss_end": 2.43418,
+              "teacher_forced_correct": 115,
+              "teacher_forced_total": 120,
+              "schema_correct": 14,
+              "schema_total": 15,
+              "raw_root_length": 9,
+              "raw_transport_valid": false,
+              "maximum_swapout_growth_mib": 0.0
+            },
+            "step_32": {
+              "loss_start": 3.00106978,
+              "loss_end": 2.277722,
+              "teacher_forced_correct": 119,
+              "teacher_forced_total": 120,
+              "schema_correct": 15,
+              "schema_total": 15,
+              "raw_generation_state": "MAX_TOKENS_640",
+              "raw_transport_valid": false,
+              "maximum_swapout_growth_mib": 0.0
+            },
+            "remaining_error": {
+              "target_index": 75,
+              "expected_token": "<byte:33>",
+              "predicted_token": "<byte:70>",
+              "logical_token_kind": "PBYTE_SOURCE_DERIVED_BASE64_PAYLOAD",
+              "ownership_disposition": "REPLACE_WITH_TYPED_SOURCE_SPAN_AND_ZERO_CREDIT_MATERIALIZATION"
+            },
+            "capability_claim": "NONE_TRAINING_ROW_LEARNABILITY_ONLY"
+          },
           "bounded_overfit_plan_sha256": "1629aa3c43a6e43d39447fcd385ed89b9cc8747c2d8874e2f3a99a68175c7e65",
           "bounded_overfit_source_optimizer_step": 4658,
           "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
           "required_diagnostics": [
-            "fixed_closure_bounded_overfit_complete_target_recovery",
-            "fixed_closure_bounded_overfit_raw_v3_validity",
-            "fixed_closure_bounded_overfit_checkpoint_reload"
+            "full_admitted_source_derived_pbyte_compatibility_audit",
+            "typed_source_span_exact_materialization_and_tamper_rejection",
+            "typed_source_span_zero_generation_repair_capability_credit",
+            "typed_source_span_bounded_overfit_complete_recovery_and_raw_validity"
           ],
-          "typed_source_position_pointers_authorized": false,
-          "reason": "The immediate measured wall is failure to adopt the required v3 root ABI, so alignment/protected integer encoding is not yet isolated as the causal blocker.",
+          "typed_source_position_pointers_authorized": true,
+          "reason": "V3 root and fixed closures are learned on the bounded row; the sole remaining teacher-forced error is a byte inside a PBYTE payload that duplicates prompt-visible source text.",
           "new_seed_or_private_surface_authorized": false
         },
         "qualification_report": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json",
@@ -5438,7 +5471,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. One-row controls prove v3 root learnability but fail full recovery: 16 repeats emit a 14-slot root and 32 repeats loop to budget despite 118/120 teacher-forced accuracy. The schema owner omitted fixed-container closing brackets, making its prior perfect score construct-invalid. Re-run the same exact step-4658 one-row control with fixed root/protected/residual/hierarchy closures included in schema loss; require complete target recovery, raw v3 validity, reload, and host safety before population continuation. Do not implement typed source-position pointers until v3 itself is learned and alignment/protected integers are isolated as the remaining wall. Consume no new seed or private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
+      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. Fixed-closure controls now reach real schema 15/15 and 119/120 teacher forcing, but raw generation still loops. The sole error is one fallback byte inside a PBYTE token that base64-duplicates prompt-visible source text. Replace only source-derived PBYTE payloads with a typed source-span program token, require exact source-bound materialization and tamper rejection with zero generation/repair/capability credit, audit every admitted compiler row, then rerun the same bounded control before population continuation. Consume no new seed or private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -6218,7 +6251,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, and shrinks the bounded target stream. One-row controls prove root learnability but expose missing fixed-container closure ownership: 16 repeats emit a 14-slot root and 32 repeat generation loops despite 118/120 teacher forcing. Re-run the exact step-4658 bounded control with fixed root/protected/residual/hierarchy closing brackets included in schema loss and require complete target recovery, raw v3 validity, reload, and host safety before population extension; add typed source-position pointers only after v3 is learned and raw alignment/protected integers are isolated as the wall. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
+      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, and shrinks the bounded target stream. Fixed-closure controls reach schema 15/15 and 119/120 teacher forcing, isolating the last error to one fallback byte in a source-duplicating PBYTE token while raw generation still loops. Replace only source-derived PBYTE payloads with a typed source-span program token, prove exact zero-credit materialization and tamper rejection across the full admitted population, and rerun the bounded control before population extension. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
