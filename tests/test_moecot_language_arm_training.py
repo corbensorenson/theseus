@@ -4462,7 +4462,7 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
                 row
                 for row in candidate_plan["plan_identity"]["legacy_migrations"]
                 if row["migration_id"]
-                == "english_kerc_step4657_compiler_allocator_ownership_transport_v3"
+                == "english_kerc_step4658_transport_v4_population_v1"
         )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]

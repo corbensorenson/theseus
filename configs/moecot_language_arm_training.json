@@ -542,6 +542,21 @@
         "reason": "Reject the schema-protected v7 continuation because eight updates changed none of the frozen 16-row targeted top-1 semantic decisions and independently valid free generation remained zero: it converted schema failures into residual-fidelity failures. The compiler target duplicated the post-compiler residual allocator owner by requiring 24-hex unit identities derived from a source-record hash and higher-state paths absent from the generator-visible prompt. Transport v3 removes those allocator-owned unit-id/fidelity rows from the compiler wire, independently attaches the canonical residual packet after an accepted learned program, grants the attachment zero generation or repair credit, keeps the frozen vocabulary and checkpoint tensor shapes unchanged, restores schema 8x plus uniform 4x remaining semantic loss, and resets only the invalidated kernel sampler cursor. Full admitted-train replay migrates all 12886 compiler rows, removes 208224 hidden allocator rows and 15707815 wire bytes, and exposes no public/evaluation data."
       },
       {
+        "migration_id": "english_kerc_step4658_transport_v4_population_v1",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
+        "legacy_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
+        "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
+        "legacy_optimizer_steps": 4658,
+        "legacy_optimizer_positions": 457228,
+        "required_current_plan_sha256": "bd392be52d0b1b917cff275dd040e207b14d9b3e9cc920a26244b6c3bbe07f8d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_audit_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_overfit_steps32_teacher_forced1_position_errors_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_overfit_steps32_generation1_semantic_audit_seed_20260722.json",
+        "reason": "Import only the exact immutable step-4658 v3 checkpoint, projected AdamW bytes, and MLX RNG into the v4 admitted-population plan after the full 12886-row transport audit showed 25772/25772 exact v3-semantic equivalence and the bounded one-row control reached 97/97 teacher forcing plus exact online-valid independently semantic-valid raw v4 generation. Reset only the kernel sampler cursor, retain the conservative registered 3e-5 rate and same seed, and require exposure, weakest-row, raw-panel, reload, and source-disjoint diagnostics. The one-row overfit checkpoint is not population initialization and this migration grants no capability credit."
+      },
+      {
         "migration_id": "english_kerc_step4658_transport_v3_root_overfit_v1",
         "target_id": "english_kerc",
         "legacy_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
