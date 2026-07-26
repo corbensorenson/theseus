@@ -414,6 +414,130 @@ Additional primary references are the official
 [MLX C overview](https://ml-explore.github.io/mlx-c/build/html/overview.html), and Apple's
 [CPU/GPU synchronization guidance](https://developer.apple.com/documentation/metal/synchronizing-cpu-and-gpu-work).
 
+#### 2026-07-26 Second Extensive Acceleration Search And Measured Bounds
+
+The second primary-source pass is recorded in
+`reports/training_acceleration_research_refresh_2026_07_26.json`. Its conclusion is
+deliberately narrower than “nothing else can be done”: **there is no evidence of a hidden
+multi-fold host-language or MLX switch in the frozen graph, but FP16 and prospective
+time-to-quality changes still deserve finite tests.**
+
+The new exact-shape station probe materially improves the custom-kernel decision. Each
+production microbatch currently projects a `4 x 512 x 512` hidden tensor through the tied
+`8195 x 512` classifier, materializes 16,783,360 logits (67,133,440 bytes in FP32), and
+computes cross-entropy plus gradients for both hidden state and classifier. Two alternating
+process measurements give these median station times:
+
+| Compute / loss policy | Mean of process medians | Station-only speedup |
+|---|---:|---:|
+| FP32 / FP32 | 46.19 ms | 1.000x |
+| BF16 / FP32 | 44.24 ms | 1.044x |
+| FP16 / FP32 | 36.75 ms | 1.257x |
+
+The FP32 station is only 8.25% of the observed roughly 560 ms full forward/backward
+microbatch. That is an *elimination upper bound*, not a fused-kernel forecast: exact Cut
+Cross-Entropy still performs the classifier dot products, log-sum-exp, and both gradients.
+Therefore:
+
+1. **Do not implement fused linear cross-entropy merely because CUDA papers report large
+   aggregate kernel gains.** Apple's Cut Cross-Entropy and Liger establish a real kernel
+   pattern and substantial memory savings on their evaluated hardware, but Theseus's
+   vocabulary is only 8,195 and the locally measured whole station is capped below the
+   existing 10% joined-wall adoption threshold. Reopen a custom Metal loss only if bounded
+   full-model station timing shows additional fusion opportunity or its memory reduction
+   demonstrably enables a faster sustained microbatch. The reproducible probe is
+   `scripts/mlx_linear_cross_entropy_station_probe.py`.
+2. **Keep FP16/FP32-master first.** The local FP16 station result is consistent with the MLX
+   maintainer's guidance that FP16 is faster when numeric range permits it. This is still not
+   a training speed or convergence claim. Implement dtype-general master-to-compute recasting,
+   FP32 loss reduction, dynamic or proven-static loss scaling, finite-gradient stops, and
+   exact checkpoint custody. Require alternating full-checkpoint pairs, a 64-update watchdog
+   run, independent-process full-state replay, save/reload continuity, and source-disjoint
+   weak-tail learning before adoption.
+3. **Time the remaining operators without another unbounded trace.** Add bounded exclusive
+   timings for one-layer attention projections/core, SwiGLU MLP, norms, clipping, AdamW, and
+   state materialization. The model already uses fast SDPA, fast RoPE, native RMSNorm,
+   grouped-query attention, and outer compiled elementwise fusion. Implement at most one
+   custom Metal forward/backward kernel, and only when its measured realizable joined-wall
+   bound is at least 10%. A Rust/C++ wrapper without a faster Metal operator remains
+   ineligible.
+4. **Treat disconnected optimizer state as a memory candidate, not a 26% speed claim.**
+   Plain-token pretraining executes 40,384,512 of the 54,836,746 trunk parameters.
+   Source encoder, decoder cross-attention, pointer generator, and inactive MTP account for
+   14,452,234 parameters (`26.36%`). The current step-3,480 optimizer contains 174 matching
+   moment tensors with 28,904,468 elements, and an independent read finds every element
+   exactly zero. A virtual-zero Adam state plus governed lazy decoupled decay is therefore
+   implementable in principle. Direct upside is small: explicit materialization of *all*
+   model/optimizer state costs about 46 ms per full 2.3-second update. Test this only if the
+   memory saving allows a faster sustained microbatch, and prove per-step rounding,
+   checkpoint/reload, source/MTP activation, and optimizer-state equivalence.
+5. **Bound packing by the observed data rather than folklore.** The measured 16-step slice
+   carries 124,164 optimizer positions out of 131,072 dense width-512 slots (`94.73%`
+   occupancy). Exact block-diagonal packing can therefore remove at most about 5.27% of this
+   slice's slots before its own mask/position overhead. It remains useful for a stage with
+   materially lower occupancy, but it cannot explain a missing multi-fold base-pretraining
+   gain.
+6. **Do not tune `MLX_SDPA_BLOCKS` on the selected FP32 route.** MLX 0.32.0 added that
+   override for the BF16 two-pass vector SDPA kernel; upstream documents no corresponding
+   FP32 opportunity. It may enter an already-qualified BF16/FP16 route only after confirming
+   the selected kernel and exact output/gradient parity. Likewise, current MLX Neural
+   Accelerator support does not make the M1 ANE a hidden training backend.
+7. **Measure sustained machine behavior, not unsupported fan folklore.** This host is the
+   actively cooled 13-inch M1 MacBook Pro; Low Power Mode is already off and High Power Mode
+   is not available on this model. Add one two-hour receipt with first/middle/last throughput,
+   AC state, live reserve, swap, and available thermal/performance warnings. Follow Apple's
+   supported operating guidance: current macOS, authorized power, a stable open surface, and
+   unobstructed ventilation. Do not count fan-control utilities or cooling accessories as a
+   speedup without an alternating sustained measurement.
+
+The larger remaining opportunity is **time to heldout quality**, not raw seconds per frozen
+AdamW update. Keep that search finite:
+
+1. **AdEMAMix** enters as a prospective optimizer challenger. Its ICLR 2025 result reports a
+   1.3B model at 101B tokens matching its AdamW control at 197B tokens, but that is a prior,
+   not a Theseus forecast. Test three matched 5-10M seeds with equal raw data, compute,
+   tuning allowance, heldouts, and weak-language reporting. Advance only with at least 15%
+   joined time-to-heldout-quality improvement.
+2. **Adam-mini** enters as the memory-oriented Adam challenger. The paper reports comparable
+   pretraining from 125M upward with roughly 45-50% less optimizer memory, but its 49.6%
+   throughput result depends heavily on larger batches and distributed communication that
+   this M1 does not have. Implement the Hessian-informed transformer partition exactly and
+   test whether it enables a genuinely faster microbatch; a scalar second moment with the
+   wrong grouping is not Adam-mini.
+3. **One function-preserving structural-growth schedule** enters as the highest-upside fresh
+   campaign design. Masked Structural Growth reports up to 2.2x in its evaluated settings and
+   complements the already-registered curriculum-guided layer-growth concept. It cannot
+   inherit the step-3,480 lineage as unchanged semantics. Compare it from a common fresh
+   initialization with exact growth receipts, matched token/compute accounting, checkpoint
+   tests, interventions, and direct functional review.
+4. **Progressive sequence length** remains the fourth and final design challenger.
+   GrowLength reports benefits at 70M, 160M, and 410M, making it scale-relevant, but Theseus
+   starts at only 512 tokens and already has high occupancy. Test `128 -> 256 -> 512` only if
+   a static compute model predicts at least 15% possible gain, then require equal-token
+   short- and long-context heldout evidence.
+
+Do not append GaLore, APOLLO, another optimizer, or another growth schedule to this selector
+until one of these four is dispositioned. GaLore/APOLLO primarily buy memory and larger
+distributed batches; the current Adafactor/Muon/schedule-free docket already demonstrates
+that memory reduction or an attractive paper result cannot substitute for Theseus weak-tail
+learning. The finite order is now: qualify 64-step FP32 custody; implement and disposition
+FP16; finish bounded operator timing; test inactive-state custody only as a microbatch
+enabler; run the four-way prospective time-to-quality selector; then end the acceleration
+sprint and launch the fastest qualified design.
+
+Primary sources added by this pass are Apple's
+[Cut Cross-Entropy implementation](https://github.com/apple/ml-cross-entropy),
+the [Cut Cross-Entropy paper](https://arxiv.org/abs/2411.09009),
+the [Liger kernel paper](https://arxiv.org/abs/2410.10989),
+Apple's [AdEMAMix implementation](https://github.com/apple/ml-ademamix) and
+[ICLR result](https://proceedings.iclr.cc/paper_files/paper/2025/hash/a2cf225ba392627529efef14dc857e22-Abstract-Conference.html),
+[Adam-mini](https://arxiv.org/abs/2406.16793),
+[Masked Structural Growth](https://arxiv.org/abs/2305.02869),
+[GrowLength](https://arxiv.org/abs/2310.00576), the official
+[MLX SDPA override change](https://github.com/ml-explore/mlx/pull/3455), and Apple's
+[power-mode](https://support.apple.com/en-us/101613) and
+[operating-temperature](https://support.apple.com/en-ie/102336) guidance.
+
 ### 2026-07-26 Acceleration-First Launch Gate
 
 The final bounded KERC exposure rung and first-campaign disposition are banked. Training

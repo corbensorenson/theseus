@@ -1,0 +1,213 @@
+{
+  "policy": "project_theseus_training_acceleration_research_refresh_v1",
+  "created_utc": "2026-07-26T18:38:30Z",
+  "trigger_state": "YELLOW",
+  "capability_claim": "NONE_ACCELERATION_RESEARCH_AND_SYNTHETIC_STATION_TIMING_ONLY",
+  "canonical_checkpoint_mutated": false,
+  "verdict": {
+    "current_graph": "NO_EVIDENCE_OF_A_MISSING_MULTIFOLD_HOST_OR_MLX_SWITCH",
+    "immediate_highest_upside": "IMPLEMENT_AND_QUALIFY_FP16_COMPUTE_WITH_FP32_MASTER_STATE",
+    "kernel_gap": "FUSED_LINEAR_CROSS_ENTROPY_IS_REAL_BUT_LOCALLY_CAPPED_BELOW_A_TEN_PERCENT_ELIMINATION_BOUND",
+    "larger_calendar_opportunity": "PROSPECTIVE_TIME_TO_QUALITY_CHANGES_REQUIRE_MATCHED_SMALL_SCALE_SELECTION_BEFORE_A_FRESH_LONG_CAMPAIGN",
+    "claim_boundary": "External paper speedups are priors only. Theseus adoption requires exact local wall-time, state, replay, weak-tail, and heldout evidence."
+  },
+  "local_hot_path": {
+    "production_shape": {
+      "logical_batch_size": 16,
+      "compiled_microbatch_size": 4,
+      "sequence_length": 512,
+      "hidden_size": 512,
+      "vocab_size": 8195
+    },
+    "observed_full_microbatch_seconds_reference": 0.56,
+    "host_batch_preparation_fraction_of_device_time": 0.00196,
+    "checkpoint_fraction_of_device_time_at_32_steps": 0.035812,
+    "other_nondevice_fraction_across_two_qualified_segments": 0.02297,
+    "training_position_occupancy": {
+      "observed_positions": 124164,
+      "optimizer_steps": 16,
+      "maximum_dense_slots": 131072,
+      "fraction": 0.947296,
+      "padding_fraction_upper_bound": 0.052704,
+      "source": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair3.json"
+    }
+  },
+  "linear_cross_entropy_station": {
+    "policy": "project_theseus_mlx_linear_cross_entropy_station_probe_v1",
+    "script": "scripts/mlx_linear_cross_entropy_station_probe.py",
+    "claim_scope": "Synthetic exact-shape compiled forward and VJP only; gradients cover hidden state and tied classifier weights.",
+    "shape": {
+      "batch_size": 4,
+      "sequence_length": 512,
+      "hidden_size": 512,
+      "vocab_size": 8195,
+      "materialized_logit_elements": 16783360,
+      "materialized_logit_bytes_float32": 67133440
+    },
+    "alternating_process_medians_seconds": {
+      "float32": [
+        0.046356,
+        0.046015
+      ],
+      "bfloat16_with_float32_loss": [
+        0.044565,
+        0.043913
+      ],
+      "float16_with_float32_loss": [
+        0.036221,
+        0.037272
+      ]
+    },
+    "mean_of_process_medians_seconds": {
+      "float32": 0.0461855,
+      "bfloat16_with_float32_loss": 0.044239,
+      "float16_with_float32_loss": 0.0367465
+    },
+    "station_speedup_over_float32": {
+      "bfloat16_with_float32_loss": 1.044,
+      "float16_with_float32_loss": 1.256868
+    },
+    "float32_station_fraction_of_observed_full_microbatch": 0.082474,
+    "fused_loss_elimination_upper_bound": 0.082474,
+    "interpretation": "An exact fused loss still performs classifier dot products, log-sum-exp, and both gradients, so its realizable end-to-end gain is below this 8.25% elimination bound. Memory savings may still matter if they unlock a faster full-model microbatch."
+  },
+  "inactive_parameter_state": {
+    "shared_trunk_parameters": 54836746,
+    "plain_token_active_parameters": 40384512,
+    "inactive_source_and_mtp_parameters": 14452234,
+    "inactive_fraction": 0.263551,
+    "inactive_adam_moment_tensor_count": 174,
+    "inactive_adam_moment_elements": 28904468,
+    "inactive_adam_moment_nonzero_elements_at_step_3480": 0,
+    "inactive_adam_moment_maximum_absolute_value_at_step_3480": 0.0,
+    "direct_wall_time_bound": "The 64-step route spends about 0.046 seconds per update materializing all model/optimizer state, roughly 2% of a full step. Lazy inactive-state custody is therefore a memory-enabling candidate, not a 26% throughput claim.",
+    "candidate": "Represent disconnected zero-moment modules with virtual zero Adam state and analytically governed decoupled decay until source conditioning or MTP becomes active. Require checkpoint-format, per-step rounding, activation-boundary, and exact-replay proof."
+  },
+  "ranked_current_lineage_candidates": [
+    {
+      "rank": 1,
+      "candidate": "float16_compute_fp32_master",
+      "upside_class": "POTENTIALLY_MATERIAL",
+      "local_prior": "The isolated output-loss station is 1.257x faster than FP32, and the already-tested BF16 full route was 1.257x faster before repeatability rejection.",
+      "required_work": "Implement dtype-general master-to-compute recasting, FP32 loss reduction, dynamic or proven static loss scaling, finite-gradient checks, alternating full-checkpoint trials, 64-step watchdog replay, independent-process state comparison, save/reload continuity, and heldout weak-tail checks.",
+      "adoption_state": "IMPLEMENTATION_REQUIRED"
+    },
+    {
+      "rank": 2,
+      "candidate": "bounded_component_timing_then_one_metal_kernel",
+      "upside_class": "UNKNOWN_UNTIL_STATION_RANKING",
+      "local_prior": "The output-loss station is only 8.25% of a full microbatch. Attention already uses fast SDPA; RoPE and RMSNorm already use native fast paths; compiled SwiGLU projection fusion was previously slower.",
+      "required_work": "Time MLP, attention projections/core, vocabulary loss, clipping, optimizer, and state custody without a multi-gigabyte Metal trace. Implement no more than one custom kernel, and only if its measured realizable joined-wall bound exceeds 10%.",
+      "adoption_state": "TIMING_REQUIRED"
+    },
+    {
+      "rank": 3,
+      "candidate": "lazy_inactive_module_optimizer_state",
+      "upside_class": "LOW_DIRECT_POSSIBLE_MEMORY_ENABLER",
+      "local_prior": "26.36% of parameters are disconnected in plain-token pretraining and all 28.9M corresponding Adam moment elements are exactly zero, but total explicit state materialization is only about 2% of step time.",
+      "required_work": "Prove parameter ownership, zero-gradient status, decoupled-decay equivalence, exact source/MTP activation, checkpoint/reload, and whether the memory reduction enables a sustained faster microbatch without host pressure.",
+      "adoption_state": "DESIGN_AND_PARITY_REQUIRED"
+    },
+    {
+      "rank": 4,
+      "candidate": "asynchronous_checkpoint_snapshot",
+      "upside_class": "FEW_PERCENT_MAXIMUM",
+      "local_prior": "Checkpoint publication is 3.58% of device time at 32 steps and about half that at 64 steps.",
+      "required_work": "Wait for 64-step qualification, then require immutable snapshot ownership, exact interruption replay, two-transaction disk reserve, bounded unified memory, and zero swap.",
+      "adoption_state": "DEFER_UNTIL_64_STEP_ROUTE"
+    }
+  ],
+  "prospective_time_to_quality_candidates": [
+    {
+      "candidate": "AdEMAMix",
+      "external_primary_evidence": "A 1.3B model trained on 101B tokens matched an AdamW model trained on 197B tokens in the reported setting.",
+      "theseus_risk": "Adds a slow momentum state, changes optimizer semantics, and may not transfer to 57M or this data mixture.",
+      "test": "Three-seed 5-10M matched AdamW versus AdEMAMix learning curves with equal data, raw compute, tuning allowance, heldout identities, and weak-language reporting. Advance only at >=15% time-to-heldout-quality improvement."
+    },
+    {
+      "candidate": "Adam-mini",
+      "external_primary_evidence": "Reported comparable pretraining from 125M through multi-billion-parameter models with roughly 45-50% less optimizer memory; its large distributed throughput result is not assumed on one M1.",
+      "theseus_risk": "Correct Hessian-informed parameter partitioning is essential; memory reduction may not improve a single-device 57M step unless it enables a better microbatch.",
+      "test": "Implement an MLX policy card and exact state migration, then compare learning and wall time at microbatches four, five, and six under the same small-scale three-seed gate."
+    },
+    {
+      "candidate": "masked_or_curriculum_guided_structural_growth",
+      "external_primary_evidence": "Masked Structural Growth reports up to 2.2x pretraining speedup with function-preserving growth in its evaluated settings.",
+      "theseus_risk": "Changes the training trajectory and architecture schedule; cannot continue the step-3480 lineage as if semantics were unchanged.",
+      "test": "Fresh common-initialization 5-10M A/B with exact growth operators, matched token/compute accounting, intervention and checkpoint tests, and direct functional review. It is the highest-upside fresh-campaign design candidate."
+    },
+    {
+      "candidate": "progressive_sequence_length",
+      "external_primary_evidence": "GrowLength reports faster time-to-loss at 70M, 160M, and 410M by moving from short to long sequences.",
+      "theseus_risk": "Theseus already uses only length 512 and 94.73% of dense token slots carry optimizer positions; the local attention-compute opportunity is much smaller than long-context examples.",
+      "test": "Compare 128-to-256-to-512 against fixed 512 on source-disjoint data with equal tokens and long-context heldouts. Do not advance unless joined time-to-quality improves by >=15%."
+    }
+  ],
+  "deprioritized_or_closed": [
+    {
+      "candidate": "rust_rewrite_of_python_training_loop",
+      "local_upper_bound": 0.00196,
+      "disposition": "CLOSED_WITHOUT_A_NEW_CPU_PROFILE"
+    },
+    {
+      "candidate": "persistent_export_or_resident_process_only",
+      "local_upper_bound": 0.02297,
+      "disposition": "DO_NOT_DELAY_FP16_OR_TRAINING"
+    },
+    {
+      "candidate": "exact_sequence_packing",
+      "local_padding_fraction_upper_bound": 0.052704,
+      "disposition": "LOW_PRIORITY_UNLESS_A_DIFFERENT_STAGE_SHOWS_SUBSTANTIALLY_LOWER_OCCUPANCY"
+    },
+    {
+      "candidate": "cut_cross_entropy_custom_metal_now",
+      "local_station_elimination_upper_bound": 0.082474,
+      "disposition": "DO_NOT_IMPLEMENT_BEFORE_FULL_STATION_RANKING_OR_A_PROVEN_MICROBATCH_MEMORY_TRIGGER"
+    },
+    {
+      "candidate": "MLX_SDPA_BLOCKS_on_current_fp32_route",
+      "disposition": "NOT_APPLICABLE_TO_THE_UPSTREAM_FP32_PATH; THE_CURRENT_OVERRIDE TARGETS_THE_BF16_TWO_PASS_VECTOR_KERNEL"
+    },
+    {
+      "candidate": "Apple_Neural_Accelerator_on_M1",
+      "disposition": "UNAVAILABLE; CURRENT_MLX_NAX_SUPPORT_REQUIRES_NEWER_SUPPORTED_HARDWARE_AND_OS"
+    },
+    {
+      "candidate": "High_Power_Mode",
+      "disposition": "UNAVAILABLE_ON_THE_13_INCH_M1_MACBOOK_PRO; LOW_POWER_MODE_IS_ALREADY_OFF"
+    }
+  ],
+  "sustained_machine_controls": {
+    "machine_class": "13-inch MacBook Pro with Apple M1 and 16 GB unified memory",
+    "low_power_mode": false,
+    "high_power_mode_available": false,
+    "required_test": "Add a two-hour sustained throughput receipt with first/middle/last-window rates, host pressure, AC state, and thermal/performance warnings where available. Use an open, stable, well-ventilated work surface and do not use unsupported fan overrides as evidence.",
+    "claim": "Cooling and background contention can preserve throughput but are not counted as speedups without an alternating sustained measurement."
+  },
+  "finite_next_actions": [
+    "Complete the 64-step FP32 state-detachment qualification.",
+    "Implement and disposition FP16 compute with FP32 master state before any custom kernel.",
+    "Add bounded MLP and attention station timing; implement at most one kernel if the realizable joined-wall bound is at least 10%.",
+    "Test lazy inactive optimizer custody only if it enables a faster sustained microbatch under the watchdog.",
+    "Run the finite prospective selector: AdamW, AdEMAMix, Adam-mini, and one structural-growth schedule at 5-10M scale; progressive length enters only if compute accounting predicts at least 15% upside.",
+    "At the sprint ceiling, launch the fastest qualified route and continue algorithmic challengers only as isolated fresh-campaign evidence."
+  ],
+  "primary_sources": [
+    "https://ml-explore.github.io/mlx/build/html/usage/compile.html",
+    "https://ml-explore.github.io/mlx/build/html/python/fast.html",
+    "https://ml-explore.github.io/mlx/build/html/dev/custom_metal_kernels.html",
+    "https://github.com/ml-explore/mlx/releases",
+    "https://github.com/ml-explore/mlx/pull/3455",
+    "https://github.com/ml-explore/mlx-lm/issues/48",
+    "https://github.com/apple/ml-cross-entropy",
+    "https://arxiv.org/abs/2411.09009",
+    "https://arxiv.org/abs/2410.10989",
+    "https://proceedings.iclr.cc/paper_files/paper/2025/hash/a2cf225ba392627529efef14dc857e22-Abstract-Conference.html",
+    "https://github.com/apple/ml-ademamix",
+    "https://arxiv.org/abs/2406.16793",
+    "https://arxiv.org/abs/2305.02869",
+    "https://arxiv.org/abs/2310.00576",
+    "https://support.apple.com/en-us/101613",
+    "https://support.apple.com/en-ie/102336"
+  ]
+}
