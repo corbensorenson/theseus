@@ -4473,6 +4473,49 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
     assert candidate_plan_hashes != {base_plan["plan_sha256"]}
 
 
+def test_kerc_v3_root_overfit_migration_binds_overfit_execution_plan() -> None:
+    config_path = ROOT / "configs" / "moecot_language_arm_training.json"
+    config = bind_scale_preregistration(training_module.read_json(config_path))
+    authority = architecture_training_authority(
+        config,
+        max_steps=16,
+        candidate_id="rdc_kerc_k5_overfit",
+        scratch_checkpoint_root=(
+            ROOT
+            / "runtime"
+            / "t0a_canaries"
+            / "rdc_kerc_k5_overfit"
+            / "root-v3-plan-hash"
+        ),
+        targets=["english_kerc"],
+        phase="kernel_english",
+        resume=False,
+        candidate_seed=20260722,
+    )
+    candidate_plan = training_module.build_plan(
+        bind_candidate_canary_overlay(
+            config,
+            authority["candidate_lease"],
+        ),
+        config_path=config_path,
+        candidate_lease=authority["candidate_lease"],
+    )
+    migration = next(
+        row
+        for row in candidate_plan["plan_identity"]["legacy_migrations"]
+        if row["migration_id"]
+        == "english_kerc_step4658_transport_v3_root_overfit_v1"
+    )
+
+    assert migration["required_current_plan_sha256"] == (
+        candidate_plan["plan_sha256"]
+    )
+    assert migration["legacy_optimizer_steps"] == 4658
+    assert migration["legacy_checkpoint_sha256"] == (
+        "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"
+    )
+
+
 def test_kerc_logical_loss_positions_follow_byte_fallback_expansion() -> None:
     row = {
         "objective": "surface_to_kernel_program_v1",

@@ -540,6 +540,21 @@
         "reset_data_cursor_seed": 20260722,
         "evidence": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json tests/test_kernel_english_protocol.py::test_semantic_pointer_compiler_transport_removes_hidden_unit_hash_targets tests/test_kernel_english_protocol.py::test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route tests/test_moecot_language_arm_training.py::test_kerc_materialization_trains_verifier_negatives_without_generator_credit",
         "reason": "Reject the schema-protected v7 continuation because eight updates changed none of the frozen 16-row targeted top-1 semantic decisions and independently valid free generation remained zero: it converted schema failures into residual-fidelity failures. The compiler target duplicated the post-compiler residual allocator owner by requiring 24-hex unit identities derived from a source-record hash and higher-state paths absent from the generator-visible prompt. Transport v3 removes those allocator-owned unit-id/fidelity rows from the compiler wire, independently attaches the canonical residual packet after an accepted learned program, grants the attachment zero generation or repair credit, keeps the frozen vocabulary and checkpoint tensor shapes unchanged, restores schema 8x plus uniform 4x remaining semantic loss, and resets only the invalidated kernel sampler cursor. Full admitted-train replay migrates all 12886 compiler rows, removes 208224 hidden allocator rows and 15707815 wire bytes, and exposes no public/evaluation data."
+      },
+      {
+        "migration_id": "english_kerc_step4658_transport_v3_root_overfit_v1",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
+        "legacy_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
+        "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
+        "legacy_optimizer_steps": 4658,
+        "legacy_optimizer_positions": 457228,
+        "required_current_plan_sha256": "05a0b84f7546dd2debcbccaafa23f82e8c020da91be8aa393d66b268b99ecff7",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_step4658_root_rank_margin_matched_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_step01_matched_training_rows16_semantic_audit_greedy1_seed_20260722.json tests/test_kerc_k5_stage_learnability_probe.py::test_indexed_logit_diagnostic_reports_expected_rank_and_legacy_margin",
+        "reason": "Import only the exact step-4658 v3 checkpoint, projected AdamW bytes, and MLX RNG into the registered one-row compiler-only overfit plan after matched diagnostics showed the required v3 root token remained mean rank 670.0625 and 17.337442 logits behind v2 following one exposure. The scratch canary repeats one deterministic admitted compiler row at 3e-4 to establish checkpoint-specific ABI learnability, full-target recovery, reload exactness, and host safety. It consumes no evaluation row and has no population, generalization, capability, promotion, or architecture-falsification authority."
       }
     ]
   },
