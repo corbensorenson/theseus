@@ -346,9 +346,10 @@ share toward zero. Public benchmarks are calibration only.
   three protected-span replay, and six residual-unit fidelity failures; no invalid candidate is
   repaired (`1e04d3c8...2011`, surface `afcd5ab8...49fe`, rows `0f8212a6...bbc3`,
   host `91872de7...18e`). K5 remains `INCONCLUSIVE_EXPERIMENT`. v5-v7 loss-only repairs are now
-  rejected by exact post-generation semantic evidence; the next owner is the bounded
-  semantic-pointer ABI repair described below. No new private surface or seed is authorized until
-  admitted semantic validity becomes positive without transport regression. The
+  rejected by exact post-generation semantic evidence. Compiler transport v3 completes the first
+  bounded semantic-ownership repair described below and is qualified for one guarded update from
+  immutable step 4,657. No new private surface or seed is authorized until admitted semantic
+  validity becomes positive without transport regression. The
   101.26-second-per-row fresh decode remains a separate K7 throughput obligation.
   Three process-isolated 128-step KERC/control pairs pass exact common initialization, state custody,
   and zero-swap training, but emit no valid learned-pipeline output. The repaired broad K5 route now
@@ -685,13 +686,26 @@ share toward zero. Public benchmarks are calibration only.
    teacher-forced counts remain identical: 308/401 alignment, 3/6 protected bounds, 109/112
    fidelity, 393/1,792 unit IDs, and 202/204 schema. No private surface was consumed.
 
-   The next owner is a semantic-pointer ABI repair. Replace target-only cryptographic residual
-   unit IDs with learned local references into a prompt-visible independently derived unit table,
-   and replace raw span integers with typed source-position pointers. Deterministic pointer
-   materialization receives zero learned-generation credit; the learned path must select the
-   correct reference and fidelity. Require blind information-flow, exact migration/roundtrip,
-   old-target compatibility, gradient/overfit/reload sanity, and a matched raw-value-token control
-   before another same-seed rung or private surface.
+   Compiler transport v3 now fixes the first semantic-ownership defect. Residual unit identity and
+   fidelity are owned by the independently built post-compiler residual packet and dedicated
+   allocator head, so the compiler wire no longer asks the decoder to reproduce prompt-hidden
+   24-hex hashes or duplicate allocator decisions. V3 rejects any compiler-populated allocation,
+   independently attaches the canonical packet after accepting the learned program, and assigns
+   that attachment zero generation/repair credit. Full admitted-train replay migrates 12,886 of
+   12,886 compiler rows, removes 208,224 allocator rows and 35.0182% of compiler wire bytes, keeps
+   the frozen code vocabulary/checkpoint shapes, and consumes no evaluation row. The bounded
+   128-source stage drops from 118,803 to 74,369 target tokens and now retains 124 rather than 46
+   rows under the same 628-token envelope with complete required coverage.
+
+   The v3 plan restores schema weight 8 and uniform weight 4 for its remaining compiler semantic
+   owners (alignment spans and protected bounds); compiler residual-ID/fidelity position counts
+   are zero. Protocol roundtrip, ownership rejection, zero-credit post-compiler attachment,
+   legacy-v2 compatibility, and canonical materialization tests pass. One guarded update from the
+   immutable step-4,657 source is now authorized. Re-run frozen admitted-row teacher forcing,
+   transport, and independent semantic diagnostics before extending it. Typed source-position
+   pointers remain the next conditional repair if raw alignment/protected integers are still the
+   measured wall. No new seed or private surface is authorized before positive independent
+   semantic validity without transport regression.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+

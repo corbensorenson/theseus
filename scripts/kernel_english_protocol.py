@@ -194,6 +194,14 @@ LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION = 2
 LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY = (
     "project_theseus_kerc_compiler_compact_transport_v2"
 )
+LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION = 3
+LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY = (
+    "project_theseus_kerc_compiler_semantic_pointer_transport_v3"
+)
+LEARNED_COMPILER_SUPPORTED_TRANSPORT_VERSIONS = {
+    LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+    LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+}
 KERC_HIERARCHICAL_CORE_POLICY = "project_theseus_kerc_hierarchical_core_v1"
 KERC_CORE_CHUNK_MAX_NODES = 8
 KERC_HIERARCHICAL_COMPILER_POLICY = "project_theseus_kerc_hierarchical_compiler_v1"
@@ -1958,7 +1966,11 @@ def learned_kernel_program_view_from_program(
     }
 
 
-def compact_learned_compiler_transport(payload: Any) -> list[Any]:
+def compact_learned_compiler_transport(
+    payload: Any,
+    *,
+    transport_version: int = LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+) -> list[Any]:
     """Encode the learned compiler object as a reversible low-overhead JSON ABI.
 
     The model still emits every variable semantic value.  Only invariant policy
@@ -2050,12 +2062,51 @@ def compact_learned_compiler_transport(payload: Any) -> list[Any]:
             canonical_json(hierarchy),
             path="compiler_output.hierarchical_compiler",
         )
+    if transport_version not in LEARNED_COMPILER_SUPPORTED_TRANSPORT_VERSIONS:
+        raise KernelProtocolFault(
+            "KERC_COMPACT_COMPILER_TRANSPORT_VERSION_INVALID",
+            str(transport_version),
+            path="compiler_output",
+        )
+    unit_fidelity = copy.deepcopy(residual["unit_fidelity"])
+    if transport_version == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION:
+        if (
+            not isinstance(unit_fidelity, list)
+            or any(
+                not isinstance(row, list)
+                or len(row) != 2
+                or not (
+                    isinstance(row[0], str)
+                    and re.fullmatch(r"ru:[0-9a-f]{24}", row[0])
+                )
+                for row in unit_fidelity
+            )
+        ):
+            raise KernelProtocolFault(
+                "KERC_SEMANTIC_POINTER_UNIT_SOURCE_INVALID",
+                canonical_json(unit_fidelity),
+                path="compiler_output.residual.unit_fidelity",
+            )
+        # Unit identities and fidelity allocation belong to the independently
+        # constructed residual packet / dedicated allocator head. Requiring the
+        # compiler decoder to reproduce hidden source-record hashes duplicated
+        # that owner and turned evidence identifiers into impossible language
+        # targets. V3 carries no compiler-owned value in this slot.
+        unit_fidelity = []
+    residual_values = [
+        (
+            unit_fidelity
+            if field == "unit_fidelity"
+            else copy.deepcopy(residual[field])
+        )
+        for field in residual_fields
+    ]
     return [
-        LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+        int(transport_version),
         [[copy.deepcopy(row[field]) for field in protected_fields] for row in protected],
         copy.deepcopy(concepts),
         copy.deepcopy(program["tokens"]),
-        [copy.deepcopy(residual[field]) for field in residual_fields],
+        residual_values,
         [copy.deepcopy(hierarchy[field]) for field in hierarchy_fields],
     ]
 
@@ -2068,14 +2119,14 @@ def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
     if (
         not isinstance(payload, list)
         or len(payload) != 6
-        or payload[0] != LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+        or payload[0] not in LEARNED_COMPILER_SUPPORTED_TRANSPORT_VERSIONS
     ):
         raise KernelProtocolFault(
             "KERC_COMPACT_COMPILER_TRANSPORT_INVALID",
             canonical_json(payload),
             path="compiler_output",
         )
-    _, protected_rows, concepts, program_tokens, residual_values, hierarchy_values = (
+    version, protected_rows, concepts, program_tokens, residual_values, hierarchy_values = (
         payload
     )
     protected_fields = (
@@ -2129,7 +2180,13 @@ def materialize_learned_compiler_transport(payload: Any) -> dict[str, Any]:
         },
     }
     # Run the inverse transform as a strict schema and reversibility audit.
-    if compact_learned_compiler_transport(materialized) != payload:
+    if (
+        compact_learned_compiler_transport(
+            materialized,
+            transport_version=int(version),
+        )
+        != payload
+    ):
         raise KernelProtocolFault(
             "KERC_COMPACT_COMPILER_TRANSPORT_REPLAY_MISMATCH",
             canonical_json(payload),
@@ -2163,7 +2220,7 @@ def learned_compiler_transport_shape_signature(payload: Any) -> dict[str, Any]:
             bool(
                 isinstance(payload, list)
                 and payload
-                and payload[0] == LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+                and payload[0] in LEARNED_COMPILER_SUPPORTED_TRANSPORT_VERSIONS
             )
         ),
         "slot_types": [],
@@ -2478,24 +2535,20 @@ def learned_compiler_transport_semantic_pointer_token_indices_by_kind(
             and not isinstance(value, bool)
         )
         residual_unit_id = (
-            len(path) >= 2
+            len(path) == 4
             and path[0:2] == (4, 1)
+            and isinstance(path[2], int)
+            and path[3] == 0
             and isinstance(value, str)
             and re.fullmatch(r"ru:[0-9a-f]{24}", value) is not None
         )
         residual_fidelity = (
-            len(path) >= 2
+            len(path) == 4
             and path[0:2] == (4, 1)
-            and (
-                (
-                    isinstance(value, str)
-                    and value in FIDELITY_MODES
-                )
-                or (
-                    isinstance(value, (int, float))
-                    and not isinstance(value, bool)
-                )
-            )
+            and isinstance(path[2], int)
+            and path[3] == 1
+            and isinstance(value, str)
+            and value in FIDELITY_MODES
         )
         if program_span:
             selected_spans_by_kind["program_alignment_span"].append(
@@ -2548,7 +2601,11 @@ def learned_compiler_transport_semantic_pointer_token_indices(
     )
 
 
-def compact_learned_compiler_transport_text(output: str) -> str:
+def compact_learned_compiler_transport_text(
+    output: str,
+    *,
+    transport_version: int = LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+) -> str:
     """Migrate one canonical legacy/compact target to compact transport."""
 
     try:
@@ -2558,7 +2615,12 @@ def compact_learned_compiler_transport_text(output: str) -> str:
             "KERC_LEARNED_COMPILER_OUTPUT_INVALID", str(exc), path="compiler_output"
         ) from exc
     materialized = materialize_learned_compiler_transport(decoded)
-    return canonical_json(compact_learned_compiler_transport(materialized))
+    return canonical_json(
+        compact_learned_compiler_transport(
+            materialized,
+            transport_version=int(transport_version),
+        )
+    )
 
 
 def decode_learned_compiler_transport(output: str) -> dict[str, Any]:
@@ -3676,6 +3738,7 @@ def execute_learned_pipeline(
         canonical_nodes: list[dict[str, Any]] = []
         generated_capsules: dict[str, dict[str, Any]] = {}
         generated_residual: dict[str, Any] | None = None
+        compiler_transport_version: int | None = None
         root_node_ids: list[str] = []
         previous_program: dict[str, Any] | None = None
         for chunk_index in range(256):
@@ -3720,6 +3783,17 @@ def execute_learned_pipeline(
                 hrl_state=hrl_state,
                 concept_resolver=concept_resolver,
             )
+            observed_transport_version = int(
+                compiler_output.get("compiler_transport_version") or 0
+            )
+            if compiler_transport_version is None:
+                compiler_transport_version = observed_transport_version
+            elif observed_transport_version != compiler_transport_version:
+                raise KernelProtocolFault(
+                    "KERC_COMPILER_TRANSPORT_VERSION_CHANGED",
+                    f"{compiler_transport_version}:{observed_transport_version}",
+                    path=f"compiler_chunks[{chunk_index}]",
+                )
             chunk_objects = compiler_output.get("generated_protected_objects")
             if not isinstance(chunk_objects, dict):
                 raise KernelProtocolFault(
@@ -3862,6 +3936,17 @@ def execute_learned_pipeline(
             raise KernelProtocolFault(
                 "KERC_LEARNED_RESIDUAL_MISSING", "all", path="compiler_chunks"
             )
+        if (
+            compiler_transport_version
+            == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+        ):
+            # Evidence-plane residual identities and allocation are constructed
+            # by their canonical owner after the learned program is accepted.
+            # This deterministic attachment receives zero generation credit.
+            generated_residual["unit_fidelity"] = learned_residual_view(
+                packet["residual"],
+                hrl_state=hrl_state,
+            )["unit_fidelity"]
         return packet, generated_residual
 
     def reason(
@@ -4605,7 +4690,23 @@ def parse_learned_compiler_output(
 ) -> dict[str, Any]:
     """Parse and independently validate a learned compiler result."""
 
-    decoded = decode_learned_compiler_transport(output)
+    try:
+        wire_payload = json.loads(output)
+    except (TypeError, json.JSONDecodeError) as exc:
+        raise KernelProtocolFault(
+            "KERC_LEARNED_COMPILER_OUTPUT_INVALID",
+            str(exc),
+            path="compiler_output",
+        ) from exc
+    transport_version = (
+        int(wire_payload[0])
+        if isinstance(wire_payload, list)
+        and wire_payload
+        and isinstance(wire_payload[0], int)
+        and not isinstance(wire_payload[0], bool)
+        else 0
+    )
+    decoded = materialize_learned_compiler_transport(wire_payload)
     if not isinstance(decoded, dict) or decoded.get("kernel_version") != KERNEL_VERSION:
         raise KernelProtocolFault(
             "KERC_LEARNED_COMPILER_VERSION_INVALID",
@@ -4685,12 +4786,31 @@ def parse_learned_compiler_output(
                 "missing hrl_state",
                 path="compiler_output.residual",
             )
+        residual_view = copy.deepcopy(decoded["residual"])
+        if (
+            transport_version
+            == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+            and (
+                not isinstance(residual_view, dict)
+                or residual_view.get("unit_fidelity") != []
+            )
+        ):
+            raise KernelProtocolFault(
+                "KERC_COMPILER_ALLOCATOR_OWNERSHIP_VIOLATION",
+                canonical_json(
+                    residual_view.get("unit_fidelity")
+                    if isinstance(residual_view, dict)
+                    else residual_view
+                ),
+                path="compiler_output.residual.unit_fidelity",
+            )
         validated["learned_residual"] = validate_learned_residual_view(
-            decoded["residual"],
+            residual_view,
             source_character_length=source_character_length,
             protected_objects=available_objects,
             hrl_state=hrl_state,
         )
+    validated["compiler_transport_version"] = transport_version
     return validated
 
 

@@ -363,8 +363,8 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 "continuation_learning_rate": 0.00003,
                 "continuation_min_learning_rate": 0.00003,
                 "large_sequence_route": (
-                    "compiler_full_stage_schema_protected_mass_neutral_semantic_"
-                    "rebalance_lr_min_position32_q32_k32_coverage128_v20"
+                    "compiler_full_stage_allocator_ownership_transport_v3_schema8_"
+                    "semantic4_lr_min_position32_q32_k32_coverage128_v21"
                 ),
             }
         elif candidate_id == "rdc_kerc_k5_overfit":

@@ -2962,6 +2962,10 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
             "kerc_pointer_token_start": 1200,
         },
         "kernel_code_vocabulary": {"payload": code_vocabulary},
+        "kerc_compiler_transport": {
+            "policy": "project_theseus_kerc_compiler_semantic_pointer_transport_v3",
+            "version": 3,
+        },
         "kernel_english_artifacts": {
             "private_train": {
                 "path": str(artifact),
@@ -3012,11 +3016,17 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     assert stage.receipt["verifier_only_row_count"] == 3
     compact_receipt = stage.receipt["compact_compiler_transport"]
     assert compact_receipt["policy"] == (
-        "project_theseus_kerc_compiler_compact_transport_v2"
+        "project_theseus_kerc_compiler_semantic_pointer_transport_v3"
     )
+    assert compact_receipt["version"] == 3
     assert compact_receipt["generator_row_count"] == 1
     assert compact_receipt["target_tokens_elided"] > 0
     assert compact_receipt["learned_semantic_values_elided"] == 0
+    assert (
+        compact_receipt["allocator_owned_unit_fidelity_rows_removed"] > 0
+    )
+    assert compact_receipt["allocator_attachment_generation_credit"] == 0
+    assert compact_receipt["compiler_allocator_ownership_enforced"] is True
     assert compact_receipt["deterministic_generation_credit"] == 0
     assert stage.receipt[
         "kerc_compiler_schema_continuation_loss_weight"
@@ -3043,7 +3053,10 @@ def test_kerc_materialization_trains_verifier_negatives_without_generator_credit
     semantic_counts = stage.receipt[
         "kerc_compiler_semantic_pointer_position_counts_by_kind"
     ]
-    assert all(semantic_counts.values())
+    assert semantic_counts["program_alignment_span"] > 0
+    assert semantic_counts["protected_character_bound"] > 0
+    assert semantic_counts["residual_unit_id"] == 0
+    assert semantic_counts["residual_fidelity"] == 0
     assert stage.receipt[
         "kerc_compiler_semantic_pointer_position_count"
     ] == sum(semantic_counts.values())
@@ -4430,10 +4443,10 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
             candidate_lease=lease,
         )
         migration = next(
-            row
-            for row in candidate_plan["plan_identity"]["legacy_migrations"]
-            if row["migration_id"]
-            == "english_kerc_step4657_schema_protected_mass_neutral_v7"
+                row
+                for row in candidate_plan["plan_identity"]["legacy_migrations"]
+                if row["migration_id"]
+                == "english_kerc_step4657_compiler_allocator_ownership_transport_v3"
         )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]

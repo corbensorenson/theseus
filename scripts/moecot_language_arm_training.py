@@ -504,6 +504,8 @@ from kernel_english_protocol import (
     KERNEL_VERSION,
     LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY,
     LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+    LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY,
+    LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
     LEARNED_ANSWER_TRANSPORT_POLICY,
     LEARNED_PROGRAM_TRANSPORT_POLICY,
     KernelProtocolFault,
@@ -2681,6 +2683,11 @@ def target_contracts(
                 if target == KERC_ENGLISH_ID
                 else {}
             ),
+            "kerc_compiler_transport": (
+                copy.deepcopy(config.get("kerc_compiler_transport") or {})
+                if target == KERC_ENGLISH_ID
+                else {}
+            ),
         }
     return targets
 
@@ -4679,6 +4686,23 @@ def materialize_target_supervision(
     compact_compiler_transport_generator_rows = 0
     compact_compiler_transport_legacy_target_tokens = 0
     compact_compiler_transport_encoded_target_tokens = 0
+    compact_compiler_transport_allocator_values_removed = 0
+    compiler_transport = (
+        target.get("kerc_compiler_transport")
+        if isinstance(target.get("kerc_compiler_transport"), dict)
+        else {}
+    )
+    compiler_transport_version = int(
+        compiler_transport.get("version")
+        or LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION
+    )
+    if kerc_mode and compiler_transport_version not in {
+        LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+        LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+    }:
+        raise ValueError(
+            f"unsupported KERC compiler transport version: {compiler_transport_version}"
+        )
     row_hashes: list[str] = []
     artifact_receipts: list[dict[str, Any]] = []
     context_counterfactual_counts = {
@@ -4775,7 +4799,10 @@ def materialize_target_supervision(
                     and str(row.get("objective") or "") in KERC_KERNEL_OBJECTIVES
                 )
                 encoded_answer = (
-                    compact_learned_compiler_transport_text(answer)
+                    compact_learned_compiler_transport_text(
+                        answer,
+                        transport_version=compiler_transport_version,
+                    )
                     if kerc_mode and objective == "surface_to_kernel_program_v1"
                     else answer
                 )
@@ -4858,6 +4885,16 @@ def materialize_target_supervision(
                         compact_compiler_transport_encoded_target_tokens += len(
                             target_ids
                         )
+                        if (
+                            compiler_transport_version
+                            == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                        ):
+                            compact_compiler_transport_allocator_values_removed += len(
+                                (
+                                    json.loads(answer).get("residual") or {}
+                                ).get("unit_fidelity")
+                                or []
+                            )
                 else:
                     target_ids, target_receipt = encode_tokens(
                         kerc_surface_tokens(answer), target_vocab, stream="target"
@@ -4938,7 +4975,10 @@ def materialize_target_supervision(
                         raise ValueError(f"invalid KERC auxiliary supervision: {key}:{source_rows - 1}")
                     negative_answer = str(negative.get("target") or "")
                     encoded_negative_answer = (
-                        compact_learned_compiler_transport_text(negative_answer)
+                        compact_learned_compiler_transport_text(
+                            negative_answer,
+                            transport_version=compiler_transport_version,
+                        )
                         if objective == "surface_to_kernel_program_v1"
                         else negative_answer
                     )
@@ -5109,7 +5149,8 @@ def materialize_target_supervision(
                         if kernel_objective:
                             encoded_counter_answer = (
                                 compact_learned_compiler_transport_text(
-                                    counter_answer
+                                    counter_answer,
+                                    transport_version=compiler_transport_version,
                                 )
                                 if objective == "surface_to_kernel_program_v1"
                                 else counter_answer
@@ -5508,8 +5549,13 @@ def materialize_target_supervision(
         "ground_truth_json_grammar_rejected_count": 0,
         "compact_compiler_transport": (
             {
-                "policy": LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY,
-                "version": LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION,
+                "policy": (
+                    LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_POLICY
+                    if compiler_transport_version
+                    == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                    else LEARNED_COMPILER_COMPACT_TRANSPORT_POLICY
+                ),
+                "version": compiler_transport_version,
                 "migration_boundary": (
                     "frozen_legacy_semantic_artifact_to_training_and_runtime_wire"
                 ),
@@ -5526,6 +5572,14 @@ def materialize_target_supervision(
                 ),
                 "exact_reconstruction_required": True,
                 "learned_semantic_values_elided": 0,
+                "allocator_owned_unit_fidelity_rows_removed": (
+                    compact_compiler_transport_allocator_values_removed
+                ),
+                "allocator_attachment_generation_credit": 0,
+                "compiler_allocator_ownership_enforced": (
+                    compiler_transport_version
+                    == LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                ),
                 "target_metadata_visible_to_generator": False,
                 "deterministic_generation_credit": 0,
             }

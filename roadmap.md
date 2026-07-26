@@ -1624,18 +1624,34 @@ generation service, KERC sidecar, or private evaluator.
    schema continuation 202/204. v7 therefore changes no targeted top-1 decision and merely moves
    one failure family. It is rejected for semantic promotion.
 
-   The next bounded owner is a semantic-pointer ABI repair, not another loss scalar, seed, or
-   blind step extension. Residual unit IDs are cryptographic-looking target values absent from the
-   generator-visible prompt; requiring exact free generation tests hash memorization rather than
-   the claimed residual allocator. Replace hidden raw unit IDs with bounded learned local
-   references into a prompt-visible, independently derived unit table, and replace raw
-   alignment/protected character integers with typed source-position pointers. Independent
-   materialization may copy the selected value but receives zero learned-generation credit; the
-   model must select the correct pointer and fidelity. Prove information-flow legality, exact
-   migration/roundtrip, old-target compatibility, gradient flow, one-row overfit, checkpoint
-   replay, and matched raw-value-token control before a new same-seed rung. Keep K5
-   `INCONCLUSIVE_EXPERIMENT` and spend no new private surface until admitted post-generation
-   semantic validity is positive without transport regression.
+   The first semantic-ownership repair is now implemented and qualified for one guarded update.
+   The audit found a stronger defect than an awkward pointer encoding: residual unit identity and
+   fidelity already belong to the independently built post-compiler residual packet and dedicated
+   allocator head. Requiring the compiler decoder to repeat 24-hex source-record/path hashes and
+   allocator decisions duplicated that owner and exposed values absent from its prompt. Compiler
+   transport v3 therefore removes those fields from the compiler wire, rejects any v3 attempt to
+   populate them, and attaches the canonical residual packet only after an independently accepted
+   learned program. Attachment receives zero generation, repair, or runtime capability credit;
+   the allocator auxiliary remains the sole learned fidelity owner.
+
+   Full admitted private-train replay migrates all 12,886 compiler rows, removes 208,224 hidden
+   allocator rows and 15,707,815 wire bytes (35.0182%), leaves checkpoint tensor shapes and the
+   frozen V_K/V_P vocabulary unchanged, and consumes no evaluation row. In the exact bounded
+   128-source stage, target positions fall from 118,803 to 74,369 and the existing 628-token host
+   envelope retains 124 rows instead of 46 while preserving all required KERC coverage. Compiler
+   semantic loss now owns only alignment spans and protected bounds under the restored schema-8 /
+   semantic-4 contract; residual unit/fidelity compiler position counts are exactly zero.
+   Protocol roundtrip, ownership rejection, zero-credit post-compiler attachment, canonical
+   materialization, and unchanged legacy-v2 compatibility tests pass. Evidence is bound in
+   `reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json`.
+
+   Next, run exactly one guarded v3 continuation update from immutable step 4,657 and require the
+   frozen admitted-row teacher-forced, transport, and independent semantic diagnostics before
+   extending the rung. If alignment/protected raw integers remain the measured wall, replace them
+   with typed source-position pointers under the same blind, zero-credit materialization rule and
+   compare against the retained raw-value source. Do not consume a new seed or private surface
+   until admitted post-generation semantic validity is positive without transport regression.
+   K5 remains `INCONCLUSIVE_EXPERIMENT`.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

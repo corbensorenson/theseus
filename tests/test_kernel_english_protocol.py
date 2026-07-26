@@ -480,7 +480,7 @@ def test_compact_compiler_transport_is_exact_smaller_and_fail_closed() -> None:
     assert parsed["state"] == "READY"
 
     wrong_version = copy.deepcopy(compact)
-    wrong_version[0] += 1
+    wrong_version[0] = 999
     with pytest.raises(
         kernel.KernelProtocolFault,
         match="KERC_COMPACT_COMPILER_TRANSPORT_INVALID",
@@ -590,6 +590,62 @@ def test_compact_compiler_transport_is_exact_smaller_and_fail_closed() -> None:
     assert str(kernel.LEARNED_COMPILER_COMPACT_TRANSPORT_VERSION) not in (
         selected_values
     )
+
+
+def test_semantic_pointer_compiler_transport_removes_hidden_unit_hash_targets() -> None:
+    record = kernel.validate_training_record(training_record())
+    compiler_view = next(
+        row
+        for row in kernel.compile_training_views(record)
+        if row["objective"] == "surface_to_kernel_program_v1"
+    )
+    legacy = json.loads(compiler_view["target"])
+    compact = kernel.compact_learned_compiler_transport(
+        legacy,
+        transport_version=kernel.LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION,
+    )
+    compact_text = kernel.canonical_json(compact)
+
+    assert compact[0] == kernel.LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+    assert compact[4][1] == []
+    assert "ru:" not in compact_text
+    materialized = kernel.materialize_learned_compiler_transport(compact)
+    assert materialized["residual"]["unit_fidelity"] == []
+    parsed = kernel.parse_learned_compiler_output(
+        compact_text,
+        protected_objects=record["kernel_packet"]["protected_objects"],
+        concept_capsules={},
+        source_character_length=len(record["source_text"]),
+        source=record["source_text"],
+        hrl_state=record["hrl_state"],
+    )
+    assert parsed["state"] == "READY"
+    assert parsed["learned_residual"]["unit_fidelity"] == []
+    assert parsed["compiler_transport_version"] == 3
+
+    tokens = kerc_code_tokens(compact_text)
+    by_kind = kernel.learned_compiler_transport_semantic_pointer_token_indices_by_kind(
+        [str(token) for token in tokens]
+    )
+    assert by_kind["residual_unit_id"] == []
+    assert by_kind["residual_fidelity"] == []
+
+    ownership_violation = copy.deepcopy(compact)
+    ownership_violation[4][1] = [
+        ["ru:0123456789abcdef01234567", "exact"]
+    ]
+    with pytest.raises(
+        kernel.KernelProtocolFault,
+        match="KERC_COMPACT_COMPILER_TRANSPORT_REPLAY_MISMATCH",
+    ):
+        kernel.parse_learned_compiler_output(
+            kernel.canonical_json(ownership_violation),
+            protected_objects=record["kernel_packet"]["protected_objects"],
+            concept_capsules={},
+            source_character_length=len(record["source_text"]),
+            source=record["source_text"],
+            hrl_state=record["hrl_state"],
+        )
 
 
 def test_hierarchical_core_partitions_dependencies_and_merges_exact_answer() -> None:
@@ -999,8 +1055,7 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
         stage_prompts.append((objective, prompt))
         if objective == "surface_to_kernel_program_v1":
             compiler_contract = json.loads(prompt)["hierarchical_compiler"]
-            output = kernel.canonical_json(
-                {
+            compiler_payload = {
                     "kernel_version": kernel.KERNEL_VERSION,
                     "protected_objects": learned_protected_spans,
                     "concept_capsules": {
@@ -1025,6 +1080,13 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
                         "root_node_ids": ["k0"],
                     },
                 }
+            output = kernel.canonical_json(
+                kernel.compact_learned_compiler_transport(
+                    compiler_payload,
+                    transport_version=(
+                        kernel.LEARNED_COMPILER_SEMANTIC_POINTER_TRANSPORT_VERSION
+                    ),
+                )
             )
         elif objective == "kernel_program_to_answer_packet_v1":
             output = kernel.canonical_json(learned_answer_transport)
@@ -1054,6 +1116,15 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
     assert receipt["roundtrip"]["passes"] is True
     assert receipt["direct_surface_route_used"] is False
     assert receipt["fallback_return_count"] == 0
+    core_prompts = [
+        json.loads(prompt)
+        for objective, prompt in stage_prompts
+        if objective == "kernel_program_to_answer_packet_v1"
+    ]
+    assert core_prompts
+    assert all(
+        prompt["residual"]["unit_fidelity"] for prompt in core_prompts
+    )
     for objective, prompt in stage_prompts:
         if objective not in {
             "kernel_program_to_answer_packet_v1",
@@ -1062,7 +1133,11 @@ def test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route
             continue
         residual = json.loads(prompt)["residual"]
         assert residual["mode"] == "SOURCE_RECONSTRUCTION"
-        assert residual["unit_fidelity"] == []
+        assert residual["unit_fidelity"]
+        assert all(
+            str(row[0]).startswith("ru:")
+            for row in residual["unit_fidelity"]
+        )
     assert resolution_requests == [
         {"surface": "example", "pos": "n"},
         {"surface": "example", "pos": "n"},

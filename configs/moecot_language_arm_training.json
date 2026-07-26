@@ -43,6 +43,16 @@
     "checkpoint_shaping_auxiliary": "mtp",
     "initial_loss_scale": 0.0
   },
+  "kerc_compiler_transport": {
+    "policy": "project_theseus_kerc_compiler_semantic_pointer_transport_v3",
+    "version": 3,
+    "legacy_artifact_abi": "canonical_object_or_compact_transport_v2",
+    "compiler_unit_allocation_policy": "allocator_owned_unit_identity_and_fidelity_omitted_from_compiler_wire",
+    "allocator_source": "independent_post_compiler_residual_packet_and_dedicated_allocator_head",
+    "hidden_target_hashes_visible_to_generator": false,
+    "materializer_generation_credit": 0,
+    "runtime_repair_credit": 0
+  },
   "architecture_training_authority": {
     "policy": "project_theseus_pre_training_architecture_authority_v1",
     "required_for_long_optimizer_runs": true,
@@ -515,6 +525,21 @@
         "reset_data_cursor_seed": 20260722,
         "evidence": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step01_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step08_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step07_retained_step4657_row_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step08_merged_fp32_seed_20260722.json",
         "reason": "Reject the eight-update 3e-5 semantic-mass rung because aggregate teacher-forced accuracy stayed 4194/5976 but independent free-generation transport collapsed from 13/16 valid after one update to 3/16 at step eight. Retained checkpoint bisection keeps the sentinel 6/6/3 through step seven and localizes its 9/3/0 regression to sampler stage index 8, a row with proportionally elevated protected/fidelity pressure. Restore the 8x fixed schema-continuation protection used by the immutable source lineage and transfer its added 18480 units from the semantic groups so the 166148 total specialized postweight loss mass remains constant to float32 rounding: schema 8x, alignment 4.14348981x, protected bounds 7.09582406x, residual fidelity 7.09582406x, and residual unit ids 2.84371314x. Keep the exact source checkpoint, AdamW state, 3e-5 rate, sampler, seed, data, q32 execution, and host gates. No target value, evaluation row, decoder field, runtime repair, or capability credit is added."
+      },
+      {
+        "migration_id": "english_kerc_step4657_compiler_allocator_ownership_transport_v3",
+        "target_id": "english_kerc",
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_optimizer_positions": 457027,
+        "required_current_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "evidence": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json tests/test_kernel_english_protocol.py::test_semantic_pointer_compiler_transport_removes_hidden_unit_hash_targets tests/test_kernel_english_protocol.py::test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route tests/test_moecot_language_arm_training.py::test_kerc_materialization_trains_verifier_negatives_without_generator_credit",
+        "reason": "Reject the schema-protected v7 continuation because eight updates changed none of the frozen 16-row targeted top-1 semantic decisions and independently valid free generation remained zero: it converted schema failures into residual-fidelity failures. The compiler target duplicated the post-compiler residual allocator owner by requiring 24-hex unit identities derived from a source-record hash and higher-state paths absent from the generator-visible prompt. Transport v3 removes those allocator-owned unit-id/fidelity rows from the compiler wire, independently attaches the canonical residual packet after an accepted learned program, grants the attachment zero generation or repair credit, keeps the frozen vocabulary and checkpoint tensor shapes unchanged, restores schema 8x plus uniform 4x remaining semantic loss, and resets only the invalidated kernel sampler cursor. Full admitted-train replay migrates all 12886 compiler rows, removes 208224 hidden allocator rows and 15707815 wire bytes, and exposes no public/evaluation data."
       }
     ]
   },
@@ -614,10 +639,10 @@
     "kerc_compiler_schema_continuation_loss_weight": 8.0,
     "kerc_compiler_semantic_pointer_loss_weight": 4.0,
     "kerc_compiler_semantic_pointer_loss_weights_by_kind": {
-      "program_alignment_span": 4.14348981,
-      "protected_character_bound": 7.09582406,
-      "residual_unit_id": 2.84371314,
-      "residual_fidelity": 7.09582406
+      "program_alignment_span": 4.0,
+      "protected_character_bound": 4.0,
+      "residual_unit_id": 4.0,
+      "residual_fidelity": 4.0
     },
     "training_rope_kernel": "mlx_fast",
     "inference_rope_kernel": "manual_reference",

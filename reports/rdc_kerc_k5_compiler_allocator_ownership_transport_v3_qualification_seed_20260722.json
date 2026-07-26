@@ -1,0 +1,114 @@
+{
+  "policy": "project_theseus_kerc_compiler_allocator_ownership_transport_qualification_v1",
+  "created_utc": "2026-07-26T02:12:27Z",
+  "candidate_id": "rdc_kerc_k5_adequacy",
+  "seed": 20260722,
+  "state": "GREEN_FOR_ONE_GUARDED_TRAINING_UPDATE",
+  "plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
+  "source_checkpoint": {
+    "optimizer_steps": 4657,
+    "optimizer_positions": 457027,
+    "checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+    "optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+    "plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+    "selection_reason": "last independently transport-valid source before rejected loss-only continuations"
+  },
+  "transport": {
+    "policy": "project_theseus_kerc_compiler_semantic_pointer_transport_v3",
+    "version": 3,
+    "compiler_owned_values": [
+      "protected_object_spans",
+      "concept_capsules",
+      "kernel_program",
+      "semantic_residual_shape",
+      "hierarchical_compiler_control"
+    ],
+    "allocator_owned_values_removed_from_compiler_wire": [
+      "residual_unit_id",
+      "residual_unit_fidelity"
+    ],
+    "allocator_attachment_owner": "independent_post_compiler_residual_packet_and_dedicated_allocator_head",
+    "allocator_attachment_generation_credit": 0,
+    "runtime_repair_credit": 0,
+    "hidden_target_hashes_visible_to_generator": false,
+    "checkpoint_tensor_shape_changed": false,
+    "frozen_code_vocabulary_changed": false
+  },
+  "full_admitted_private_train_replay": {
+    "artifact": "data/training_data/moecot_kernel_english_v1/private_train.jsonl",
+    "artifact_sha256": "6203a676954e119d9acd487861440db23cca2fc3ce4826f02597b1fa1fcf3d98",
+    "compiler_rows_seen": 12886,
+    "compiler_rows_migrated": 12886,
+    "compiler_rows_rejected": 0,
+    "allocator_owned_unit_fidelity_rows_removed": 208224,
+    "legacy_wire_bytes": 44856097,
+    "v3_wire_bytes": 29148282,
+    "wire_bytes_removed": 15707815,
+    "wire_byte_reduction_fraction": 0.350182,
+    "v3_targets_containing_legacy_residual_unit_hash": 0,
+    "public_training_rows": 0,
+    "evaluation_rows_consumed": 0,
+    "external_inference_calls": 0
+  },
+  "bounded_stage_replay": {
+    "bounded_source_row_limit": 128,
+    "materialized_row_count": 256,
+    "generator_row_count": 128,
+    "verifier_only_row_count": 128,
+    "content_digest": "59b2aa38d8efebbfaee7e8853800b24f5378595c4344005cabc52ebdf0d22445",
+    "legacy_target_token_count": 118803,
+    "v3_target_token_count": 74369,
+    "target_tokens_removed": 44434,
+    "allocator_owned_unit_fidelity_rows_removed": 1831,
+    "compiler_semantic_position_counts": {
+      "program_alignment_span": 9846,
+      "protected_character_bound": 1929,
+      "residual_unit_id": 0,
+      "residual_fidelity": 0
+    },
+    "schema_continuation_position_count": 2640,
+    "selected_training_envelope": {
+      "maximum_sequence_tokens": 628,
+      "selected_row_count": 124,
+      "excluded_row_count": 132,
+      "selected_maximum_sequence_tokens": 612,
+      "selected_maximum_supervised_sequence_tokens": 604,
+      "selected_indices_sha256": "1f4f8a1acb16d41137577ecca914e270cb47ed3ee167b7487261d3e09f130a0d",
+      "required_kerc_coverage_preserved": true
+    },
+    "v2_rejected_branch_comparator": {
+      "selected_row_count": 46,
+      "selected_maximum_sequence_tokens": 626,
+      "selected_indices_sha256": "fc4d88e8e057d291d1493fc2ce12c92e5c06e3f49d4f3430206d7ff5f8ebafca",
+      "comparison_scope": "same_628_token_host_envelope_not_capability"
+    }
+  },
+  "loss_contract": {
+    "schema_continuation_weight": 8.0,
+    "remaining_semantic_weights": {
+      "program_alignment_span": 4.0,
+      "protected_character_bound": 4.0
+    },
+    "inactive_compiler_groups": [
+      "residual_unit_id",
+      "residual_fidelity"
+    ],
+    "unit_allocator_auxiliary_ownership_preserved": true
+  },
+  "focused_tests": [
+    "tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed",
+    "tests/test_kernel_english_protocol.py::test_semantic_pointer_compiler_transport_removes_hidden_unit_hash_targets",
+    "tests/test_kernel_english_protocol.py::test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route",
+    "tests/test_moecot_language_arm_training.py::test_kerc_materialization_trains_verifier_negatives_without_generator_credit"
+  ],
+  "implementation_sha256": {
+    "scripts/kernel_english_protocol.py": "3024a5516e1a707e40728c9209e7aebb5b1b452cf0cbe6a015be8087c064dfa0",
+    "scripts/moecot_language_arm_training.py": "af41eebc0b296529e3ea4f0731150e38fc7701a16dcddf8683d4b1e0e13a69c3",
+    "scripts/pretraining_candidate_canary.py": "f3357df89f600e72659e816dfb86eabcd243c51f7a42156a79c27beeb86b04aa",
+    "configs/moecot_language_arm_training.json": "8b15d2689d856a9ea7a3fb47ca37a80f8e2f6c6a49597d7a9e2c43b53418c0aa",
+    "configs/pretraining_architecture_candidates.json": "e24797892d0ea98dfde7333f7c53b6167d49f953492df023d78fc05d1e292afb"
+  },
+  "claim_boundary": "Private admitted-training compatibility, ownership separation, and host-envelope qualification only. This is not learned capability, semantic correctness, KERC utility, or architecture superiority.",
+  "capability_claim": "NOT_EVALUATED",
+  "next_action": "Run one guarded v3 continuation update from immutable step 4657, then require matched frozen training diagnostics and independent zero-credit compiler validation before extending the rung."
+}
