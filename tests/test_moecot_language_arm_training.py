@@ -4467,6 +4467,19 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]
         )
+        assert candidate_plan["targets"]["english_kerc"][
+            "kerc_compiler_transport"
+        ] == {
+            "policy": "project_theseus_kerc_compiler_source_span_transport_v4",
+            "version": 4,
+            "source_authority": "generator_visible_prompt.source_surface_only",
+            "materializer_generation_credit": 0,
+            "materializer_capability_credit": 0,
+        }
+        assert lease["execution_policy"]["continuation_source_optimizer_steps"] == 4658
+        assert lease["execution_policy"]["continuation_source_checkpoint_sha256"] == (
+            "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"
+        )
         candidate_plan_hashes.add(candidate_plan["plan_sha256"])
 
     assert len(candidate_plan_hashes) == 1

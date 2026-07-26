@@ -1652,7 +1652,8 @@ def bind_candidate_canary_overlay(
     compiler_transport_override = execution_policy.get("kerc_compiler_transport")
     if compiler_transport_override is not None:
         if (
-            candidate_lease.get("candidate_id") != "rdc_kerc_k5_overfit"
+            candidate_lease.get("candidate_id")
+            not in {"rdc_kerc_k5_adequacy", "rdc_kerc_k5_overfit"}
             or compiler_transport_override
             != {
                 "policy": LEARNED_COMPILER_SOURCE_SPAN_TRANSPORT_POLICY,

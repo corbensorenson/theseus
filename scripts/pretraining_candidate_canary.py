@@ -338,34 +338,44 @@ def load_contract(path: Path = DEFAULT_CONTRACT) -> dict[str, Any]:
                 "optimizer_state_offload_between_steps": True,
                 "optimizer_state_offload_minimum_target_positions": 600,
                 "kerc_resource_stress_prefix": False,
-                "continuation_source_report": (
-                    "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_"
-                    "fidelity_loss_retained_generations_v4_planbb9f_regression_"
-                    "search_step27_merged_fp32_seed_20260722.json"
-                ),
-                "continuation_source_report_sha256": (
-                    "d52ff92917b5dfa7036ce06b7965208d11ca170fdba4aae082f8fb0afb208d3b"
-                ),
-                "continuation_source_plan_sha256": (
-                    "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7"
-                ),
-                "continuation_source_checkpoint_sha256": (
-                    "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691"
-                ),
-                "continuation_source_optimizer_state_sha256": (
-                    "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf"
+                    "continuation_source_report": (
+                        "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_"
+                        "v3_step01_merged_fp32_seed_20260722.json"
+                    ),
+                    "continuation_source_report_sha256": (
+                        "a9ddaa7c930950e0d7fdf17f2fb43ef4655772707386bc733835214b6de9263c"
+                    ),
+                    "continuation_source_plan_sha256": (
+                        "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa"
+                    ),
+                    "continuation_source_checkpoint_sha256": (
+                        "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"
+                    ),
+                    "continuation_source_optimizer_state_sha256": (
+                        "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869"
                 ),
                 "continuation_source_mlx_rng_state_sha256": (
                     "f2f82eb4678013d3e8f1edaf53edfb29a0c1cdd8d6402582e1bbcc9f375d1bc9"
                 ),
-                "continuation_source_optimizer_steps": 4657,
-                "continuation_source_optimizer_positions": 457027,
+                    "continuation_source_optimizer_steps": 4658,
+                    "continuation_source_optimizer_positions": 457228,
                 "continuation_learning_rate": 0.00003,
                 "continuation_min_learning_rate": 0.00003,
-                "large_sequence_route": (
-                    "compiler_full_stage_allocator_ownership_transport_v3_schema8_"
-                    "semantic4_lr_min_position32_q32_k32_coverage128_v21"
-                ),
+                    "large_sequence_route": (
+                        "compiler_population_source_span_transport_v4_schema8_"
+                        "semantic4_lr_min_position32_q32_k32_coverage128_v22"
+                    ),
+                    "kerc_compiler_transport": {
+                        "policy": (
+                            "project_theseus_kerc_compiler_source_span_transport_v4"
+                        ),
+                        "version": 4,
+                        "source_authority": (
+                            "generator_visible_prompt.source_surface_only"
+                        ),
+                        "materializer_generation_credit": 0,
+                        "materializer_capability_credit": 0,
+                    },
             }
         elif candidate_id == "rdc_kerc_k5_overfit":
             allowed_override = {
