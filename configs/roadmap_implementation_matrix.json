@@ -5964,7 +5964,15 @@
           "reports/mlx_training_station_swiglu_2026_07_26.json",
           "reports/mlx_training_station_rmsnorm_2026_07_26.json",
           "reports/mlx_training_station_clip_2026_07_26.json",
-          "reports/mlx_training_station_adamw_2026_07_26.json"
+          "reports/mlx_training_station_adamw_2026_07_26.json",
+          "configs/optimizer_update_efficiency_qualification.json",
+          "scripts/pretraining_optimizers.py",
+          "scripts/optimizer_matched_adequacy.py",
+          "tests/test_pretraining_optimizers.py",
+          "tests/test_optimizer_matched_adequacy.py",
+          "reports/optimizer_update_efficiency_qualification.json",
+          "reports/accelerator_replay/pretraining_optimizers_update_efficiency_guard.json",
+          "reports/accelerator_replay/optimizer_update_efficiency_qualification_width_resume_guard.json"
         ]
       },
       "current_non_claims": [
@@ -5974,7 +5982,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve and do not perform a blind second purge. FP16, bounded operator ranking, custom-kernel eligibility, fused loss, packing, and lazy inactive optimizer state are now dispositioned. Lazy state is not implemented because its 110.262 MiB removable payload cannot close microbatch six's measured 236.656 MiB live-reserve deficit, while microbatch five already fits and is only 1.008085x pooled over microbatch four. Next implement the preregistered matched small-scale optimizer selector for AdamW, AdEMAMix, and correctly grouped Adam-mini, followed by function-preserving masked growth and the conditional 128-to-256-to-512 sequence curriculum. Adopt only joined time-to-heldout-quality winners. Extend the budget/reference graph to remaining runtime checkpoints separately, qualify MLX fast synchronization, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
+      "smallest_next_patch": "Keep the 31.791 GiB reclaimed disk reserve and do not perform a blind second purge. FP16, bounded operator ranking, custom-kernel eligibility, fused loss, packing, lazy inactive optimizer state, AdEMAMix, and correctly grouped Adam-mini are now dispositioned. Adam-mini achieved the intended 0.501582x optimizer-state ratio but missed joined time-to-quality and weak-tail gates; AdEMAMix missed quality, weak-tail, and state-cost gates; AdamW remains selected for the first campaign under an exact-regime engineering disposition rather than universal falsification. Next implement the preregistered function-preserving masked-growth challenger, then run the conditional 128-to-256-to-512 sequence curriculum only if its static compute model predicts at least a 15 percent realizable gain. Adopt only joined time-to-heldout-quality winners. Extend the budget/reference graph to remaining runtime checkpoints separately, qualify MLX fast synchronization, implement user-presence-aware segment scheduling, and fan independent controls/arms to additional local Macs when available.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from typing import Any
 
 
@@ -14,11 +15,97 @@ class OptimizerContractFault(ValueError):
 
 OPTIMIZER_IDS = {
     "adafactor_mlx",
+    "adam_mini_mlx",
     "adamw_mlx",
     "adamw_bfloat16_moments_mlx",
+    "ademamix_mlx",
     "muon_mlx",
     "schedule_free_adamw_mlx",
 }
+
+
+ADAM_MINI_EMBEDDING_NAMES = {"embed", "embd", "embedding", "wte"}
+ADAM_MINI_OUTPUT_NAMES = {"lm_head", "output", "final_layer"}
+ADAM_MINI_QUERY_KEY_NAMES = {
+    "k_proj",
+    "q_proj",
+    "wq",
+    "wk",
+    "query",
+    "key",
+}
+ADAM_MINI_VALUE_NAMES = {"v_proj", "wv", "value"}
+ADAM_MINI_ATTENTION_OUTPUT_NAMES = {
+    "o_proj",
+    "out_proj",
+    "wo",
+    "attn.proj",
+}
+ADAM_MINI_MLP_NAMES = {"feed_forward", "linear", "mlp"}
+
+
+def ademamix_alpha_for_step(
+    step: int, *, alpha_final: float, warmup_steps: int
+) -> float:
+    """Official linear AdEMAMix alpha warmup, exposed for independent tests."""
+
+    if step < 0 or warmup_steps < 0 or alpha_final < 0.0:
+        raise OptimizerContractFault("ademamix_alpha_schedule_invalid")
+    if not warmup_steps or step >= warmup_steps:
+        return float(alpha_final)
+    return float(alpha_final) * float(step) / float(warmup_steps)
+
+
+def ademamix_beta3_for_step(
+    step: int,
+    *,
+    beta1: float,
+    beta3_final: float,
+    warmup_steps: int,
+) -> float:
+    """Official half-life-linear AdEMAMix beta3 warmup."""
+
+    if (
+        step < 0
+        or warmup_steps < 0
+        or not 0.0 <= beta1 < 1.0
+        or not 0.0 <= beta3_final < 1.0
+    ):
+        raise OptimizerContractFault("ademamix_beta3_schedule_invalid")
+    if not warmup_steps or step >= warmup_steps:
+        return float(beta3_final)
+
+    def half_life(beta: float) -> float:
+        return math.log(0.5) / math.log(beta + 1e-8) - 1.0
+
+    fraction = float(step) / float(warmup_steps)
+    interpolated = (
+        (1.0 - fraction) * half_life(beta1)
+        + fraction * half_life(beta3_final)
+    )
+    return math.pow(0.5, 1.0 / (interpolated + 1.0))
+
+
+def adam_mini_partition(path: str, value: Any | None = None) -> str:
+    """Return the official Adam-mini v1.1 partition adapted to Theseus names."""
+
+    del value
+    name = path.lower()
+    if "bias" in name:
+        return "adam"
+    if any(fragment in name for fragment in ADAM_MINI_QUERY_KEY_NAMES):
+        return "head"
+    if (
+        any(fragment in name for fragment in ADAM_MINI_EMBEDDING_NAMES)
+        or any(fragment in name for fragment in ADAM_MINI_OUTPUT_NAMES)
+        or any(fragment in name for fragment in ADAM_MINI_VALUE_NAMES)
+        or any(fragment in name for fragment in ADAM_MINI_MLP_NAMES)
+        or any(fragment in name for fragment in ADAM_MINI_ATTENTION_OUTPUT_NAMES)
+    ):
+        return "row"
+    if "norm" in name or ".ln" in name:
+        return "block_no_decay"
+    return "block"
 
 
 def optimizer_contract_digest(config: dict[str, Any]) -> str:
@@ -69,6 +156,13 @@ def build_optimizer(
     adafactor_decay_rate: float = -0.8,
     adafactor_parameter_scale: bool = True,
     adafactor_relative_step: bool = False,
+    ademamix_beta3: float = 0.9999,
+    ademamix_alpha: float = 8.0,
+    ademamix_beta3_warmup_steps: int = 0,
+    ademamix_alpha_warmup_steps: int = 0,
+    adam_mini_dim: int | None = None,
+    adam_mini_num_heads: int | None = None,
+    adam_mini_num_kv_heads: int | None = None,
 ) -> Any:
     if optimizer_id not in OPTIMIZER_IDS:
         raise OptimizerContractFault(f"optimizer_unknown:{optimizer_id}")
@@ -78,6 +172,61 @@ def build_optimizer(
         raise OptimizerContractFault("optimizer_beta_contract_invalid")
     if warmup_steps < 0:
         raise OptimizerContractFault("optimizer_warmup_invalid")
+    if optimizer_id == "ademamix_mlx":
+        if (
+            not 0.0 <= ademamix_beta3 < 1.0
+            or ademamix_alpha < 0.0
+            or ademamix_beta3_warmup_steps < 0
+            or ademamix_alpha_warmup_steps < 0
+        ):
+            raise OptimizerContractFault("ademamix_numeric_contract_invalid")
+        return AdEMAMix(
+            learning_rate=learning_rate,
+            beta1=beta1,
+            beta2=beta2,
+            beta3=float(ademamix_beta3),
+            alpha=float(ademamix_alpha),
+            beta3_warmup_steps=int(ademamix_beta3_warmup_steps),
+            alpha_warmup_steps=int(ademamix_alpha_warmup_steps),
+            eps=eps,
+            weight_decay=weight_decay,
+            optim=optim,
+            mx=mx,
+        )
+    if optimizer_id == "adam_mini_mlx":
+        if (
+            adam_mini_dim is None
+            or adam_mini_num_heads is None
+            or int(adam_mini_dim) <= 0
+            or int(adam_mini_num_heads) <= 0
+        ):
+            raise OptimizerContractFault(
+                "adam_mini_requires_content_bound_model_dimensions"
+            )
+        num_kv_heads = (
+            int(adam_mini_num_kv_heads)
+            if adam_mini_num_kv_heads is not None
+            else int(adam_mini_num_heads)
+        )
+        if (
+            num_kv_heads <= 0
+            or int(adam_mini_num_heads) % num_kv_heads
+            or (int(adam_mini_dim) * int(adam_mini_dim))
+            % int(adam_mini_num_heads)
+        ):
+            raise OptimizerContractFault("adam_mini_dimension_contract_invalid")
+        return AdamMini(
+            learning_rate=learning_rate,
+            beta1=beta1,
+            beta2=beta2,
+            eps=eps,
+            weight_decay=weight_decay,
+            dim=int(adam_mini_dim),
+            num_heads=int(adam_mini_num_heads),
+            num_kv_heads=num_kv_heads,
+            optim=optim,
+            mx=mx,
+        )
     if optimizer_id == "adamw_mlx":
         return optim.AdamW(
             learning_rate=learning_rate,
@@ -164,6 +313,293 @@ def build_optimizer(
         mx=mx,
         optim=optim,
     )
+
+
+def AdEMAMix(
+    *,
+    learning_rate: Any,
+    beta1: float,
+    beta2: float,
+    beta3: float,
+    alpha: float,
+    beta3_warmup_steps: int,
+    alpha_warmup_steps: int,
+    eps: float,
+    weight_decay: float,
+    optim: Any,
+    mx: Any,
+) -> Any:
+    """Create Apple's reference fast/slow-EMA AdEMAMix update for MLX."""
+
+    from mlx.utils import tree_map
+
+    class _AdEMAMix(optim.Optimizer):
+        def __init__(self) -> None:
+            super().__init__()
+            self._maybe_schedule("learning_rate", learning_rate)
+            self.beta1 = float(beta1)
+            self.beta2 = float(beta2)
+            self.beta3_final = float(beta3)
+            self.alpha_final = float(alpha)
+            self.beta3_warmup_steps = int(beta3_warmup_steps)
+            self.alpha_warmup_steps = int(alpha_warmup_steps)
+            self.eps = float(eps)
+            self.weight_decay = float(weight_decay)
+            self.theseus_policy_id = "ademamix_fast_slow_ema_v1"
+            self.state["effective_alpha"] = mx.array(0.0, dtype=mx.float32)
+            self.state["effective_beta3"] = mx.array(
+                self.beta1, dtype=mx.float32
+            )
+
+        def init_single(self, parameter: Any, state: dict[str, Any]) -> None:
+            if self.beta1:
+                state["exp_avg_fast"] = mx.zeros_like(parameter)
+            state["exp_avg_slow"] = mx.zeros_like(parameter)
+            state["exp_avg_sq"] = mx.zeros_like(parameter)
+
+        def apply_gradients(self, gradients: dict, parameters: dict) -> dict:
+            if not self._initialized:
+                self.init(gradients)
+            for name, scheduler in self._schedulers.items():
+                self.state[name] = scheduler(self.step)
+            step = self.step + 1
+            step_fp32 = step.astype(mx.float32)
+            alpha_fraction = (
+                mx.minimum(
+                    step_fp32 / float(self.alpha_warmup_steps),
+                    mx.array(1.0, dtype=mx.float32),
+                )
+                if self.alpha_warmup_steps
+                else mx.array(1.0, dtype=mx.float32)
+            )
+            alpha_now = self.alpha_final * alpha_fraction
+            if self.beta3_warmup_steps:
+                beta3_fraction = mx.minimum(
+                    step_fp32 / float(self.beta3_warmup_steps),
+                    mx.array(1.0, dtype=mx.float32),
+                )
+                start_half_life = (
+                    math.log(0.5) / math.log(self.beta1 + 1e-8) - 1.0
+                )
+                end_half_life = (
+                    math.log(0.5) / math.log(self.beta3_final + 1e-8) - 1.0
+                )
+                half_life = (
+                    (1.0 - beta3_fraction) * start_half_life
+                    + beta3_fraction * end_half_life
+                )
+                beta3_now = mx.power(
+                    mx.array(0.5, dtype=mx.float32),
+                    1.0 / (half_life + 1.0),
+                )
+            else:
+                beta3_now = mx.array(self.beta3_final, dtype=mx.float32)
+            self.state.update(
+                {
+                    "step": step,
+                    "effective_alpha": alpha_now,
+                    "effective_beta3": beta3_now,
+                }
+            )
+            return tree_map(self.apply_single, gradients, parameters, self.state)
+
+        def apply_single(
+            self, gradient: Any, parameter: Any, state: dict[str, Any]
+        ) -> Any:
+            gradient = gradient.astype(parameter.dtype)
+            if self.beta1:
+                fast = self.beta1 * state["exp_avg_fast"] + (
+                    1.0 - self.beta1
+                ) * gradient
+                state["exp_avg_fast"] = fast
+            else:
+                fast = gradient
+            beta3_now = self.state["effective_beta3"].astype(gradient.dtype)
+            slow = beta3_now * state["exp_avg_slow"] + (
+                1.0 - beta3_now
+            ) * gradient
+            square = self.beta2 * state["exp_avg_sq"] + (
+                1.0 - self.beta2
+            ) * mx.square(gradient)
+            state["exp_avg_slow"] = slow
+            state["exp_avg_sq"] = square
+
+            step = self.step.astype(gradient.dtype)
+            correction1 = 1.0 - self.beta1**step
+            correction2 = 1.0 - self.beta2**step
+            denominator = mx.sqrt(square) / mx.sqrt(correction2) + self.eps
+            update = (
+                fast / correction1
+                + self.state["effective_alpha"].astype(gradient.dtype) * slow
+            ) / denominator
+            if self.weight_decay:
+                update = update + self.weight_decay * parameter
+            return parameter - self.learning_rate.astype(gradient.dtype) * update
+
+    return _AdEMAMix()
+
+
+def AdamMini(
+    *,
+    learning_rate: Any,
+    beta1: float,
+    beta2: float,
+    eps: float,
+    weight_decay: float,
+    dim: int,
+    num_heads: int,
+    num_kv_heads: int,
+    optim: Any,
+    mx: Any,
+) -> Any:
+    """Create Adam-mini v1.1 with Theseus-specific content-bound partitions."""
+
+    from mlx.utils import tree_flatten, tree_merge
+
+    class _AdamMiniPartition(optim.Optimizer):
+        def __init__(self, mode: str, local_weight_decay: float) -> None:
+            super().__init__()
+            self._maybe_schedule("learning_rate", learning_rate)
+            self.mode = mode
+            self.beta1 = float(beta1)
+            self.beta2 = float(beta2)
+            self.eps = float(eps)
+            self.weight_decay = float(local_weight_decay)
+            self.head_numel = int(dim) * int(dim) // int(num_heads)
+
+        def init_single(self, parameter: Any, state: dict[str, Any]) -> None:
+            state["m"] = mx.zeros_like(parameter)
+            if self.mode == "adam":
+                state["v"] = mx.zeros_like(parameter)
+            elif self.mode == "head":
+                if int(parameter.size) % self.head_numel:
+                    raise OptimizerContractFault(
+                        "adam_mini_query_key_head_partition_invalid"
+                    )
+                state["vmean"] = mx.zeros(
+                    (int(parameter.size) // self.head_numel, 1),
+                    dtype=parameter.dtype,
+                )
+            elif self.mode == "row":
+                if int(parameter.ndim) != 2:
+                    raise OptimizerContractFault(
+                        "adam_mini_row_partition_requires_matrix"
+                    )
+                state["vmean"] = mx.zeros(
+                    (int(parameter.shape[0]), 1), dtype=parameter.dtype
+                )
+            else:
+                state["vmean"] = mx.array(0.0, dtype=parameter.dtype)
+
+        def apply_single(
+            self, gradient: Any, parameter: Any, state: dict[str, Any]
+        ) -> Any:
+            step = self.step.astype(gradient.dtype)
+            moment = self.beta1 * state["m"] + (
+                1.0 - self.beta1
+            ) * gradient
+            state["m"] = moment
+            if self.mode == "adam":
+                square = self.beta2 * state["v"] + (
+                    1.0 - self.beta2
+                ) * mx.square(gradient)
+                state["v"] = square
+                variance = square
+            elif self.mode == "head":
+                reshaped = gradient.reshape(-1, self.head_numel)
+                current = mx.mean(mx.square(reshaped), axis=1, keepdims=True)
+                variance = self.beta2 * state["vmean"] + (
+                    1.0 - self.beta2
+                ) * current
+                state["vmean"] = variance
+                variance = mx.broadcast_to(
+                    variance, reshaped.shape
+                ).reshape(gradient.shape)
+            elif self.mode == "row":
+                current = mx.mean(mx.square(gradient), axis=1, keepdims=True)
+                variance = self.beta2 * state["vmean"] + (
+                    1.0 - self.beta2
+                ) * current
+                state["vmean"] = variance
+                variance = mx.broadcast_to(variance, gradient.shape)
+            else:
+                current = mx.mean(mx.square(gradient))
+                variance = self.beta2 * state["vmean"] + (
+                    1.0 - self.beta2
+                ) * current
+                state["vmean"] = variance
+
+            correction1 = 1.0 - self.beta1**step
+            correction2 = 1.0 - self.beta2**step
+            denominator = mx.sqrt(variance) / mx.sqrt(correction2) + self.eps
+            decayed = parameter * (
+                1.0
+                - self.learning_rate.astype(parameter.dtype)
+                * self.weight_decay
+            )
+            return decayed - self.learning_rate.astype(gradient.dtype) * (
+                moment / correction1
+            ) / denominator
+
+    class _AdamMiniMultiOptimizer(optim.MultiOptimizer):
+        """MLX MultiOptimizer variant that safely skips empty partitions."""
+
+        def init(self, parameters: dict) -> None:
+            for child, partition in zip(
+                self.optimizers, self._split_dictionary(parameters)
+            ):
+                if tree_flatten(partition):
+                    child.init(partition)
+
+        def apply_gradients(self, gradients: dict, parameters: dict) -> dict:
+            updated: dict[str, Any] = {}
+            for child, partition in zip(
+                self.optimizers, self._split_dictionary(gradients)
+            ):
+                if tree_flatten(partition):
+                    updated = tree_merge(
+                        updated,
+                        child.apply_gradients(partition, parameters),
+                    )
+            return updated
+
+    children = [
+        _AdamMiniPartition("adam", 0.0),
+        _AdamMiniPartition("head", weight_decay),
+        _AdamMiniPartition("row", weight_decay),
+        _AdamMiniPartition("block", 0.0),
+        _AdamMiniPartition("block", weight_decay),
+    ]
+    partitions = ["adam", "head", "row", "block_no_decay"]
+    optimizer = _AdamMiniMultiOptimizer(
+        children,
+        [
+            lambda path, value, expected=expected: adam_mini_partition(
+                path, value
+            )
+            == expected
+            for expected in partitions
+        ],
+    )
+    optimizer.theseus_policy_id = "adam_mini_hessian_partition_v1_1"
+    optimizer.adam_mini_dim = int(dim)
+    optimizer.adam_mini_num_heads = int(num_heads)
+    optimizer.adam_mini_num_kv_heads = int(num_kv_heads)
+    optimizer.adam_mini_head_numel = int(dim) * int(dim) // int(num_heads)
+    optimizer.adam_mini_partition_policy = {
+        "adam": sorted({"bias"}),
+        "head": sorted(ADAM_MINI_QUERY_KEY_NAMES),
+        "row": sorted(
+            ADAM_MINI_EMBEDDING_NAMES
+            | ADAM_MINI_OUTPUT_NAMES
+            | ADAM_MINI_VALUE_NAMES
+            | ADAM_MINI_ATTENTION_OUTPUT_NAMES
+            | ADAM_MINI_MLP_NAMES
+        ),
+        "block_no_decay": sorted({"norm", ".ln"}),
+        "block": ["fallback"],
+    }
+    return optimizer
 
 
 def AdamWWithBFloat16Moments(
@@ -379,6 +815,16 @@ def ScheduleFreeAdamW(
 
 
 def optimizer_state_kind(optimizer: Any) -> str:
+    if (
+        getattr(optimizer, "theseus_policy_id", "")
+        == "ademamix_fast_slow_ema_v1"
+    ):
+        return "ademamix_fast_slow_and_squared_ema"
+    if (
+        getattr(optimizer, "theseus_policy_id", "")
+        == "adam_mini_hessian_partition_v1_1"
+    ):
+        return "adam_mini_full_first_moment_partitioned_second_moment"
     if (
         getattr(optimizer, "theseus_policy_id", "")
         == "adafactor_factored_second_moment_v1"

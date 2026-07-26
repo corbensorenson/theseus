@@ -53,6 +53,32 @@ def test_optimizer_policy_cards_are_complete_content_bound_and_tamper_evident() 
     ]
 
 
+def test_update_efficiency_config_is_six_million_parameter_matched_rung() -> None:
+    config = adequacy.load_config(
+        ROOT / "configs/optimizer_update_efficiency_qualification.json"
+    )
+    assert {row["id"] for row in config["candidates"]} == {
+        "adamw_mlx",
+        "ademamix_mlx",
+        "adam_mini_mlx",
+    }
+    metadata = json.loads(
+        adequacy.resolve(config["stage_metadata"]).read_text()
+    )
+    base = json.loads(adequacy.resolve(config["base_config"]).read_text())
+    vocabulary = adequacy.model_vocab_size(
+        base, metadata["source_vocab"], metadata["target_vocab"]
+    )
+    gate = adequacy.parameter_count_gate(config, vocabulary)
+    assert gate["passed"] is True
+    assert 5_000_000 <= gate["analytical_parameter_count"] <= 10_000_000
+    cards = adequacy.optimizer_policy_cards(config)
+    assert adequacy.validate_optimizer_policy_cards(cards, config) == []
+    assert cards["adam_mini_mlx"]["parameterization"][
+        "partition_version"
+    ] == "official_v1.1_with_theseus_names"
+
+
 def test_tune_split_is_deterministic_and_disjoint() -> None:
     rows = {
         arm: [{"source_identity": f"{arm}-{index}"} for index in range(8)]
@@ -104,6 +130,53 @@ def test_reference_is_retained_when_challenger_misses_pareto_floor() -> None:
     assert disposition["scientific_falsification_claimed"] is False
 
 
+def test_joined_time_to_reference_quality_gate_requires_fifteen_percent_win() -> None:
+    config = adequacy.load_config(
+        ROOT / "configs/optimizer_update_efficiency_qualification.json"
+    )
+    arms = {arm: {"ntp_loss": 1.0} for arm in config["scoped_arms"]}
+    runs = []
+    for candidate_id, final_loss, hit_step, wall in (
+        ("adamw_mlx", 1.0, 128, 128.0),
+        ("ademamix_mlx", 0.98, 96, 128.0),
+        ("adam_mini_mlx", 0.99, 112, 128.0),
+    ):
+        for seed in config["seeds"]:
+            curve = [
+                {"step": 0, "heldout": {"ntp_loss": 2.0}},
+                {
+                    "step": hit_step,
+                    "heldout": {"ntp_loss": final_loss},
+                },
+                {
+                    "step": 128,
+                    "heldout": {"ntp_loss": final_loss},
+                },
+            ]
+            runs.append(
+                {
+                    "candidate_id": candidate_id,
+                    "seed": seed,
+                    "optimizer_steps": 128,
+                    "training_wall_seconds": wall,
+                    "optimizer_state_bytes": 100,
+                    "learning_curve": curve,
+                    "final_heldout": {
+                        "ntp_loss": final_loss,
+                        "by_arm": arms,
+                    },
+                }
+            )
+    comparisons, disposition = adequacy.compare_final(runs, config)
+    assert comparisons["ademamix_mlx"]["gates"][
+        "time_to_reference_quality"
+    ] is True
+    assert comparisons["adam_mini_mlx"]["gates"][
+        "time_to_reference_quality"
+    ] is False
+    assert disposition["selected_optimizer"] == "ademamix_mlx"
+
+
 def test_target_width_transfer_requires_every_seed_loss_progress_and_exact_resume() -> None:
     config = adequacy.load_config()
     runs = []
@@ -141,6 +214,29 @@ def test_loaded_optimizer_binding_preserves_existing_state() -> None:
     optimizer = Dummy()
     adequacy.bind_loaded_optimizer_state(optimizer, {"weight": "bound"})
     assert optimizer.calls == 1
+
+
+def test_run_journal_resumes_only_under_exact_content_identity() -> None:
+    with tempfile.TemporaryDirectory() as raw:
+        scratch = Path(raw) / "scratch"
+        journal, rows, resumed = adequacy.prepare_run_journal(
+            adequacy.DEFAULT_CONFIG, scratch
+        )
+        assert rows == []
+        assert resumed is False
+        row = {
+            "stage": "tune",
+            "candidate_id": "adamw_mlx",
+            "profile": {"id": "adamw_lr_3e4"},
+            "seed": 20260722,
+        }
+        adequacy.append_run_journal(journal, row)
+        second_journal, second_rows, second_resumed = (
+            adequacy.prepare_run_journal(adequacy.DEFAULT_CONFIG, scratch)
+        )
+        assert second_journal == journal
+        assert second_rows == [row]
+        assert second_resumed is True
 
 
 def test_mutated_public_boundary_fails_closed() -> None:

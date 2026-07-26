@@ -49,6 +49,11 @@ def train(optimizer_id: str, steps: int = 48):
         learning_rate=0.02,
         weight_decay=0.0,
         warmup_steps=4,
+        ademamix_alpha_warmup_steps=48,
+        ademamix_beta3_warmup_steps=48,
+        adam_mini_dim=4,
+        adam_mini_num_heads=1,
+        adam_mini_num_kv_heads=1,
         optim=optim,
         mx=mx,
     )
@@ -86,6 +91,50 @@ def test_muon_routes_only_hidden_matrices() -> None:
     assert not candidate_optimizers.muon_hidden_matrix_filter(
         "output.bias", flat["output.bias"]
     )
+
+
+def test_ademamix_official_warmup_schedules() -> None:
+    assert candidate_optimizers.ademamix_alpha_for_step(
+        0, alpha_final=8.0, warmup_steps=100
+    ) == 0.0
+    assert candidate_optimizers.ademamix_alpha_for_step(
+        25, alpha_final=8.0, warmup_steps=100
+    ) == 2.0
+    assert candidate_optimizers.ademamix_alpha_for_step(
+        100, alpha_final=8.0, warmup_steps=100
+    ) == 8.0
+    beta1 = candidate_optimizers.ademamix_beta3_for_step(
+        0, beta1=0.9, beta3_final=0.9999, warmup_steps=100
+    )
+    midpoint = candidate_optimizers.ademamix_beta3_for_step(
+        50, beta1=0.9, beta3_final=0.9999, warmup_steps=100
+    )
+    final = candidate_optimizers.ademamix_beta3_for_step(
+        100, beta1=0.9, beta3_final=0.9999, warmup_steps=100
+    )
+    assert abs(beta1 - 0.9) < 2e-8
+    assert 0.9 < midpoint < 0.9999
+    assert final == 0.9999
+
+
+def test_adam_mini_partition_is_bound_to_theseus_parameter_names() -> None:
+    expected = {
+        "token_embedding.weight": "row",
+        "layers.0.attention.q_proj.weight": "head",
+        "layers.0.attention.k_proj.weight": "head",
+        "layers.0.attention.v_proj.weight": "row",
+        "layers.0.attention.out_proj.weight": "row",
+        "layers.0.feed_forward.gate.weight": "row",
+        "layers.0.feed_forward.up.weight": "row",
+        "layers.0.feed_forward.down.weight": "row",
+        "layers.0.attention_norm.weight": "block_no_decay",
+        "auxiliary.weight": "block",
+        "auxiliary.bias": "adam",
+    }
+    assert {
+        path: candidate_optimizers.adam_mini_partition(path)
+        for path in expected
+    } == expected
 
 
 def test_muon_owns_matrix_rate_without_inflating_adamw_fallback_rate() -> None:
@@ -147,6 +196,103 @@ def test_schedule_free_optimizer_state_roundtrips_for_exact_next_update() -> Non
     ):
         assert left_name == right_name
         assert float(mx.max(mx.abs(left - right)).item()) == 0.0
+
+
+@pytest.mark.parametrize(
+    "optimizer_id",
+    ["ademamix_mlx", "adam_mini_mlx"],
+)
+def test_new_update_efficiency_optimizer_state_roundtrips_exactly(
+    optimizer_id: str,
+) -> None:
+    model, optimizer, inputs, targets, _initial, _final = train(
+        optimizer_id, steps=12
+    )
+    mx.random.seed(103)
+    reloaded = TinyRegressor()
+    reloaded.update(model.parameters())
+    resumed = candidate_optimizers.build_optimizer(
+        optimizer_id,
+        learning_rate=0.02,
+        weight_decay=0.0,
+        ademamix_alpha_warmup_steps=48,
+        ademamix_beta3_warmup_steps=48,
+        adam_mini_dim=4,
+        adam_mini_num_heads=1,
+        adam_mini_num_kv_heads=1,
+        optim=optim,
+        mx=mx,
+    )
+    resumed.state = mlx_utils.tree_unflatten(
+        [
+            (name, mx.array(value))
+            for name, value in mlx_utils.tree_flatten(optimizer.state)
+        ]
+    )
+    resumed.init(reloaded.trainable_parameters())
+    first_loss, first_grads = nn.value_and_grad(model, loss_fn)(
+        model, inputs, targets
+    )
+    second_loss, second_grads = nn.value_and_grad(reloaded, loss_fn)(
+        reloaded, inputs, targets
+    )
+    optimizer.update(model, first_grads)
+    resumed.update(reloaded, second_grads)
+    mx.eval(model.parameters(), reloaded.parameters(), first_loss, second_loss)
+    for (left_name, left), (right_name, right) in zip(
+        mlx_utils.tree_flatten(model.parameters()),
+        mlx_utils.tree_flatten(reloaded.parameters()),
+    ):
+        assert left_name == right_name
+        assert float(mx.max(mx.abs(left - right)).item()) == 0.0
+
+
+def test_adam_mini_state_uses_partitioned_second_moments() -> None:
+    _model, optimizer, _inputs, _targets, _initial, _final = train(
+        "adam_mini_mlx", steps=1
+    )
+    states = optimizer.state["states"]
+    flat_adam = dict(mlx_utils.tree_flatten(states[0]))
+    flat_row = dict(mlx_utils.tree_flatten(states[2]))
+    flat_block = dict(mlx_utils.tree_flatten(states[4]))
+    assert flat_adam["output.bias.v"].shape == (2,)
+    assert flat_row["output.weight.vmean"].shape == (2, 1)
+    assert flat_block["hidden.weight.vmean"].shape == ()
+    assert "output.weight.v" not in flat_row
+    assert (
+        candidate_optimizers.optimizer_state_kind(optimizer)
+        == "adam_mini_full_first_moment_partitioned_second_moment"
+    )
+
+
+def test_adam_mini_qk_head_and_gqa_partition_shapes_are_exact() -> None:
+    optimizer = candidate_optimizers.build_optimizer(
+        "adam_mini_mlx",
+        learning_rate=1e-3,
+        weight_decay=0.01,
+        adam_mini_dim=4,
+        adam_mini_num_heads=2,
+        adam_mini_num_kv_heads=1,
+        optim=optim,
+        mx=mx,
+    )
+    parameters = {
+        "layers": [
+            {
+                "attention": {
+                    "q_proj": {"weight": mx.zeros((4, 4))},
+                    "k_proj": {"weight": mx.zeros((2, 4))},
+                    "v_proj": {"weight": mx.zeros((2, 4))},
+                }
+            }
+        ]
+    }
+    optimizer.init(parameters)
+    head = dict(mlx_utils.tree_flatten(optimizer.state["states"][1]))
+    row = dict(mlx_utils.tree_flatten(optimizer.state["states"][2]))
+    assert head["layers.0.attention.q_proj.weight.vmean"].shape == (2, 1)
+    assert head["layers.0.attention.k_proj.weight.vmean"].shape == (1, 1)
+    assert row["layers.0.attention.v_proj.weight.vmean"].shape == (2, 1)
 
 
 def test_bfloat16_moment_adamw_keeps_fp32_weights_and_restarts_exactly() -> None:

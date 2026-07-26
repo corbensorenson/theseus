@@ -10050,6 +10050,33 @@ def train_target(
         learning_rate=optimizer_learning_rate,
         weight_decay=float(training["weight_decay"]),
         warmup_steps=int(schedule_training.get("warmup_steps") or 0),
+        ademamix_alpha=float(
+            candidate_execution_policy.get("ademamix_alpha", 8.0)
+        ),
+        ademamix_beta3=float(
+            candidate_execution_policy.get("ademamix_beta3", 0.9999)
+        ),
+        ademamix_alpha_warmup_steps=int(
+            candidate_execution_policy.get(
+                "ademamix_alpha_warmup_steps",
+                planned_steps
+                + source_planned_steps
+                + kernel_planned_steps
+                + sft_planned_steps,
+            )
+        ),
+        ademamix_beta3_warmup_steps=int(
+            candidate_execution_policy.get(
+                "ademamix_beta3_warmup_steps",
+                planned_steps
+                + source_planned_steps
+                + kernel_planned_steps
+                + sft_planned_steps,
+            )
+        ),
+        adam_mini_dim=int(model_config.d_model),
+        adam_mini_num_heads=int(model_config.num_heads),
+        adam_mini_num_kv_heads=int(model_config.num_kv_heads),
         optim=optim,
         mx=mx,
     )

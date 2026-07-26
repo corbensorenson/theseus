@@ -18,7 +18,11 @@ import numpy as np
 import mtp_matched_adequacy as corpus
 import pretraining_candidate_canary
 import pretraining_optimizers
-from standard_causal_transformer_model import CausalTransformerConfig, build_model
+from standard_causal_transformer_model import (
+    CausalTransformerConfig,
+    analytical_parameter_breakdown,
+    build_model,
+)
 from standard_causal_transformer_survival import (
     SOURCE_TARGET_SEPARATOR_ID,
     model_vocab_size,
@@ -58,18 +62,85 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def journal_contract(
+    config_path: Path, scratch: Path
+) -> tuple[Path, Path, dict[str, Any]]:
+    contract_path = scratch / "run_journal.contract.json"
+    journal_path = scratch / "run_journal.jsonl"
+    contract = {
+        "policy": "project_theseus_optimizer_run_journal_v1",
+        "config_sha256": sha256_file(config_path),
+        "optimizer_implementation_sha256": sha256_file(
+            ROOT / "scripts/pretraining_optimizers.py"
+        ),
+        "adequacy_implementation_sha256": sha256_file(Path(__file__)),
+    }
+    return contract_path, journal_path, contract
+
+
+def prepare_run_journal(
+    config_path: Path, scratch: Path
+) -> tuple[Path, list[dict[str, Any]], bool]:
+    contract_path, journal_path, expected = journal_contract(
+        config_path, scratch
+    )
+    resumable = False
+    rows: list[dict[str, Any]] = []
+    if contract_path.is_file() and journal_path.is_file():
+        observed = json.loads(contract_path.read_text(encoding="utf-8"))
+        if observed == expected:
+            for line_number, line in enumerate(
+                journal_path.read_text(encoding="utf-8").splitlines(), 1
+            ):
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError as exc:
+                    raise OptimizerAdequacyFault(
+                        f"run_journal_invalid:{line_number}"
+                    ) from exc
+                if not isinstance(row, dict) or not row.get("stage"):
+                    raise OptimizerAdequacyFault(
+                        f"run_journal_row_invalid:{line_number}"
+                    )
+                rows.append(row)
+            resumable = True
+    if not resumable:
+        if scratch.exists():
+            shutil.rmtree(scratch)
+        scratch.mkdir(parents=True)
+        contract_path.write_text(
+            json.dumps(expected, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        journal_path.touch()
+    return journal_path, rows, resumable
+
+
+def append_run_journal(path: Path, row: dict[str, Any]) -> None:
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row, sort_keys=True, separators=(",", ":")))
+        handle.write("\n")
+        handle.flush()
+
+
 def load_config(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     config = json.loads(path.read_text(encoding="utf-8"))
     if config.get("policy") != POLICY:
         raise OptimizerAdequacyFault("config_policy_invalid")
-    expected = {
+    candidates = config.get("candidates") or []
+    legacy_expected = {
         "adafactor_mlx",
         "adamw_mlx",
         "muon_mlx",
         "schedule_free_adamw_mlx",
     }
-    candidates = config.get("candidates") or []
-    if {row.get("id") for row in candidates} != expected:
+    expected = set(config.get("candidate_inventory") or legacy_expected)
+    observed = {row.get("id") for row in candidates}
+    if (
+        observed != expected
+        or "adamw_mlx" not in observed
+        or not observed <= pretraining_optimizers.OPTIMIZER_IDS
+    ):
         raise OptimizerAdequacyFault("candidate_inventory_invalid")
     profile_counts = {len(row.get("profiles") or []) for row in candidates}
     if profile_counts != {3}:
@@ -137,6 +208,13 @@ def load_config(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         raise OptimizerAdequacyFault("candidate_step_budget_exceeded")
     if float(config["training"].get("gradient_clip_norm") or 0.0) <= 0.0:
         raise OptimizerAdequacyFault("gradient_clip_contract_invalid")
+    parameter_range = config.get("model_parameter_count_range")
+    if parameter_range is not None and (
+        int(parameter_range.get("minimum") or 0) <= 0
+        or int(parameter_range.get("maximum") or 0)
+        < int(parameter_range.get("minimum") or 0)
+    ):
+        raise OptimizerAdequacyFault("model_parameter_count_range_invalid")
     return config
 
 
@@ -169,6 +247,9 @@ def optimizer_policy_cards(
     """Build executable, content-bound identity cards for compared optimizers."""
 
     selected_profiles = selected_profiles or {}
+    candidate_profiles = {
+        row["id"]: row["profiles"] for row in config["candidates"]
+    }
     implementation = {
         "path": relative(ROOT / "scripts/pretraining_optimizers.py"),
         "sha256": sha256_file(ROOT / "scripts/pretraining_optimizers.py"),
@@ -219,11 +300,7 @@ def optimizer_policy_cards(
                 "apply normalized moment update",
             ],
             "learning_rate_and_warmup": {
-                "profiles": next(
-                    row["profiles"]
-                    for row in config["candidates"]
-                    if row["id"] == "adamw_mlx"
-                ),
+                "profiles": candidate_profiles.get("adamw_mlx", []),
                 "warmup": "none in the matched fixed-rate rung",
             },
             "decay": {
@@ -279,11 +356,7 @@ def optimizer_policy_cards(
                 "apply decoupled weight decay and parameter update",
             ],
             "learning_rate_and_warmup": {
-                "profiles": next(
-                    row["profiles"]
-                    for row in config["candidates"]
-                    if row["id"] == "adafactor_mlx"
-                ),
+                "profiles": candidate_profiles.get("adafactor_mlx", []),
                 "relative_step": False,
                 "warmup": "none",
             },
@@ -342,11 +415,7 @@ def optimizer_policy_cards(
                 "merge disjoint updated trees",
             ],
             "learning_rate_and_warmup": {
-                "profiles": next(
-                    row["profiles"]
-                    for row in config["candidates"]
-                    if row["id"] == "muon_mlx"
-                ),
+                "profiles": candidate_profiles.get("muon_mlx", []),
                 "warmup": "none in the matched fixed-rate rung",
             },
             "decay": {
@@ -418,10 +487,8 @@ def optimizer_policy_cards(
                 "publish x only for evaluation then restore y",
             ],
             "learning_rate_and_warmup": {
-                "profiles": next(
-                    row["profiles"]
-                    for row in config["candidates"]
-                    if row["id"] == "schedule_free_adamw_mlx"
+                "profiles": candidate_profiles.get(
+                    "schedule_free_adamw_mlx", []
                 ),
                 "linear_warmup_steps": int(config["training"]["warmup_steps"]),
             },
@@ -447,6 +514,142 @@ def optimizer_policy_cards(
                 "publication mode restored to training y after evaluation",
             ],
         },
+        "ademamix_mlx": {
+            **common,
+            "card_id": "optimizer_policy.ademamix_mlx.v1",
+            "parameterization": {
+                "betas": [0.9, 0.999, 0.9999],
+                "alpha": 8.0,
+                "alpha_warmup_steps": int(
+                    config["training"]["final_steps"]
+                ),
+                "beta3_half_life_warmup_steps": int(
+                    config["training"]["final_steps"]
+                ),
+            },
+            "eligibility_groups_and_fallback": {
+                "eligible": "all trainable tensors",
+                "fallback": None,
+            },
+            "state_tensors_and_dtypes": {
+                "per_parameter": [
+                    "exp_avg_fast:same_as_parameter",
+                    "exp_avg_slow:same_as_parameter",
+                    "exp_avg_sq:same_as_parameter",
+                ],
+                "global": [
+                    "step:uint64",
+                    "learning_rate",
+                    "effective_alpha:float32",
+                    "effective_beta3:float32",
+                ],
+            },
+            "exact_update_order": [
+                "clip global gradient norm before optimizer state update",
+                "increment step",
+                "linearly warm alpha and half-life-linearly warm beta3",
+                "update fast, slow, and squared exponential averages",
+                "bias-correct fast and squared averages",
+                "mix fast and alpha-scaled slow averages",
+                "apply normalized update plus AdamW-equivalent decay",
+            ],
+            "learning_rate_and_warmup": {
+                "profiles": candidate_profiles.get("ademamix_mlx", []),
+                "slow_ema_and_alpha_warmup": "full matched final-step budget",
+            },
+            "decay": {
+                "kind": "AdamW-equivalent parameter term in update",
+                "weight_decay": float(config["training"]["weight_decay"]),
+            },
+            "clipping": {
+                "global_gradient_norm_before_update": float(
+                    config["training"]["gradient_clip_norm"]
+                ),
+                "optimizer_internal": "none",
+            },
+            "epsilon_and_stabilizers": {"eps": 1e-8},
+            "approximation_cadence_and_precision": {
+                "approximation": "none",
+                "cadence": "all three moments every step",
+                "persistent_precision": "parameter_dtype",
+            },
+            "full_checkpoint_state": [
+                "step and scheduled learning rate",
+                "effective alpha and beta3",
+                "every parameter fast, slow, and squared EMA",
+            ],
+        },
+        "adam_mini_mlx": {
+            **common,
+            "card_id": "optimizer_policy.adam_mini_mlx.v1",
+            "parameterization": {
+                "betas": [0.9, 0.999],
+                "partition_version": "official_v1.1_with_theseus_names",
+                "d_model": int(config["model"]["d_model"]),
+                "num_heads": int(config["model"]["num_heads"]),
+                "num_kv_heads": int(config["model"]["num_kv_heads"]),
+            },
+            "eligibility_groups_and_fallback": {
+                "full_adam": "bias tensors",
+                "per_head_second_moment": "query and key projections",
+                "per_row_second_moment": (
+                    "embedding, output, value, attention-output, and MLP matrices"
+                ),
+                "scalar_second_moment_no_decay": "normalization tensors",
+                "scalar_second_moment_fallback": "remaining tensors",
+            },
+            "state_tensors_and_dtypes": {
+                "all_parameters": ["m:same_shape_and_dtype"],
+                "bias": ["v:same_shape_and_dtype"],
+                "query_key": ["vmean:one_scalar_per_attention_head"],
+                "row_partition": ["vmean:one_scalar_per_output_row"],
+                "block_partition": ["vmean:scalar"],
+                "global": "one step and learning-rate state per nonempty partition",
+            },
+            "exact_update_order": [
+                "clip global gradient norm before optimizer state update",
+                "partition by content-bound parameter path",
+                "increment each nonempty partition step",
+                "update full first moment",
+                "update full, per-head, per-row, or scalar second moment",
+                "bias-correct both moments",
+                "apply partition-preconditioned update and decoupled decay",
+            ],
+            "learning_rate_and_warmup": {
+                "profiles": candidate_profiles.get("adam_mini_mlx", []),
+                "warmup": "none in the matched fixed-rate rung",
+            },
+            "decay": {
+                "kind": "decoupled_weight_decay_except_norm_and_bias",
+                "weight_decay": float(config["training"]["weight_decay"]),
+            },
+            "clipping": {
+                "global_gradient_norm_before_update": float(
+                    config["training"]["gradient_clip_norm"]
+                ),
+                "optimizer_internal": "none",
+            },
+            "epsilon_and_stabilizers": {"eps": 1e-8},
+            "approximation_cadence_and_precision": {
+                "approximation": (
+                    "Hessian-informed shared second moments by head, row, or block"
+                ),
+                "cadence": "every optimizer step",
+                "persistent_precision": "parameter_dtype",
+            },
+            "full_checkpoint_state": [
+                "all child partition steps and learning rates",
+                "every full first moment",
+                "every full, per-head, per-row, or scalar second moment",
+                "content-bound partition policy and model dimensions",
+            ],
+        },
+    }
+    configured = {row["id"] for row in config["candidates"]}
+    cards = {
+        optimizer_id: card
+        for optimizer_id, card in cards.items()
+        if optimizer_id in configured
     }
     for optimizer_id, card in cards.items():
         selected = selected_profiles.get(optimizer_id)
@@ -525,6 +728,25 @@ def model_config(
         attention_policy=str(row["attention_policy"]),
         source_target_separator_token_id=SOURCE_TARGET_SEPARATOR_ID,
     )
+
+
+def parameter_count_gate(
+    config: dict[str, Any], vocab_size: int
+) -> dict[str, Any]:
+    count = sum(
+        analytical_parameter_breakdown(model_config(config, vocab_size)).values()
+    )
+    declared = config.get("model_parameter_count_range")
+    passed = (
+        True
+        if declared is None
+        else int(declared["minimum"]) <= count <= int(declared["maximum"])
+    )
+    return {
+        "analytical_parameter_count": count,
+        "declared_range": declared,
+        "passed": passed,
+    }
 
 
 def parameter_digest(model: Any, mlx_utils: Any) -> str:
@@ -646,7 +868,11 @@ def build_candidate_optimizer(
     *,
     mx: Any,
     optim: Any,
+    local_model_config: CausalTransformerConfig | None = None,
 ) -> Any:
+    model = local_model_config or model_config(
+        config, 1, model_override=config["model"]
+    )
     return pretraining_optimizers.build_optimizer(
         candidate_id,
         learning_rate=float(profile["learning_rate"]),
@@ -657,6 +883,21 @@ def build_candidate_optimizer(
         ),
         weight_decay=float(config["training"]["weight_decay"]),
         warmup_steps=int(config["training"]["warmup_steps"]),
+        ademamix_alpha=float(profile.get("alpha", 8.0)),
+        ademamix_beta3=float(profile.get("beta3", 0.9999)),
+        ademamix_alpha_warmup_steps=int(
+            profile.get(
+                "alpha_warmup_steps", config["training"]["final_steps"]
+            )
+        ),
+        ademamix_beta3_warmup_steps=int(
+            profile.get(
+                "beta3_warmup_steps", config["training"]["final_steps"]
+            )
+        ),
+        adam_mini_dim=int(model.d_model),
+        adam_mini_num_heads=int(model.num_heads),
+        adam_mini_num_kv_heads=int(model.num_kv_heads),
         optim=optim,
         mx=mx,
     )
@@ -726,7 +967,14 @@ def run_profile(
     mx.random.seed(int(seed))
     model = build_model(local_model_config, mx=mx, nn=nn)
     initial_parameter_sha256 = parameter_digest(model, mlx_utils)
-    optimizer = build_candidate_optimizer(candidate_id, profile, config, mx=mx, optim=optim)
+    optimizer = build_candidate_optimizer(
+        candidate_id,
+        profile,
+        config,
+        mx=mx,
+        optim=optim,
+        local_model_config=local_model_config,
+    )
     maximum = int(config["supervision"]["maximum_sequence_tokens"])
     batches = corpus.balanced_batches(train_rows, steps=steps, seed=seed)
 
@@ -810,7 +1058,14 @@ def run_profile(
         state_names = save_optimizer_state(state, optimizer, mx, mlx_utils)
         reloaded = build_model(local_model_config, mx=mx, nn=nn)
         reloaded.load_weights(str(weights))
-        resumed = build_candidate_optimizer(candidate_id, profile, config, mx=mx, optim=optim)
+        resumed = build_candidate_optimizer(
+            candidate_id,
+            profile,
+            config,
+            mx=mx,
+            optim=optim,
+            local_model_config=local_model_config,
+        )
         load_optimizer_state(state, state_names, resumed, mx, mlx_utils)
         bind_loaded_optimizer_state(resumed, reloaded.trainable_parameters())
         if parameter_digest(model, mlx_utils) != parameter_digest(reloaded, mlx_utils):
@@ -907,6 +1162,34 @@ def compare_final(final_runs: list[dict[str, Any]], config: dict[str, Any]) -> t
             control = reference[row["seed"]]
             control_loss = float(control["final_heldout"]["ntp_loss"])
             candidate_loss = float(row["final_heldout"]["ntp_loss"])
+
+            def first_quality_step(run: dict[str, Any]) -> int | None:
+                for point in run.get("learning_curve") or []:
+                    if (
+                        float(point["heldout"]["ntp_loss"])
+                        <= control_loss
+                    ):
+                        return int(point["step"])
+                return None
+
+            control_quality_step = first_quality_step(control)
+            candidate_quality_step = first_quality_step(row)
+            control_step_seconds = float(control["training_wall_seconds"]) / max(
+                int(control.get("optimizer_steps") or 1), 1
+            )
+            candidate_step_seconds = float(row["training_wall_seconds"]) / max(
+                int(row.get("optimizer_steps") or 1), 1
+            )
+            time_to_quality_ratio = (
+                candidate_step_seconds * candidate_quality_step
+                / max(
+                    control_step_seconds * int(control_quality_step or 0),
+                    1e-12,
+                )
+                if candidate_quality_step is not None
+                and control_quality_step is not None
+                else None
+            )
             arm_regressions = {
                 arm: (
                     float(row["final_heldout"]["by_arm"][arm]["ntp_loss"])
@@ -922,6 +1205,10 @@ def compare_final(final_runs: list[dict[str, Any]], config: dict[str, Any]) -> t
                     "arm_relative_loss_regressions": arm_regressions,
                     "wall_time_ratio": float(row["training_wall_seconds"]) / max(float(control["training_wall_seconds"]), 1e-12),
                     "optimizer_state_ratio": float(row["optimizer_state_bytes"]) / max(float(control["optimizer_state_bytes"]), 1.0),
+                    "reference_quality_threshold": control_loss,
+                    "control_first_quality_step": control_quality_step,
+                    "candidate_first_quality_step": candidate_quality_step,
+                    "time_to_reference_quality_ratio": time_to_quality_ratio,
                 }
             )
         decision = config["prospective_decision"]
@@ -933,11 +1220,34 @@ def compare_final(final_runs: list[dict[str, Any]], config: dict[str, Any]) -> t
             "wall_time": statistics.fmean(row["wall_time_ratio"] for row in paired) <= float(decision["maximum_wall_time_ratio"]),
             "optimizer_state": statistics.fmean(row["optimizer_state_ratio"] for row in paired) <= float(decision["maximum_optimizer_state_ratio"]),
         }
+        joined_limit = decision.get(
+            "maximum_mean_time_to_reference_quality_ratio"
+        )
+        if joined_limit is not None:
+            joined = [
+                row["time_to_reference_quality_ratio"] for row in paired
+            ]
+            gates["time_to_reference_quality"] = all(
+                value is not None for value in joined
+            ) and statistics.fmean(float(value) for value in joined) <= float(
+                joined_limit
+            )
         adopted = all(gates.values())
         comparisons[candidate_id] = {
             "control_id": reference_id,
             "paired_runs": paired,
             "mean_relative_loss_improvement": mean_gain,
+            "mean_time_to_reference_quality_ratio": (
+                statistics.fmean(
+                    float(row["time_to_reference_quality_ratio"])
+                    for row in paired
+                )
+                if all(
+                    row["time_to_reference_quality_ratio"] is not None
+                    for row in paired
+                )
+                else None
+            ),
             "gates": gates,
             "disposition": "ADOPTED" if adopted else "NOT_SELECTED_FIRST_CAMPAIGN",
             "scientific_falsification_claimed": False,
@@ -1040,6 +1350,16 @@ def assess_width_transfer(
 
 def execute(config_path: Path) -> dict[str, Any]:
     config = load_config(config_path)
+    metadata = json.loads(
+        resolve(config["stage_metadata"]).read_text(encoding="utf-8")
+    )
+    base = json.loads(resolve(config["base_config"]).read_text(encoding="utf-8"))
+    vocabulary = model_vocab_size(
+        base, metadata["source_vocab"], metadata["target_vocab"]
+    )
+    parameter_count = parameter_count_gate(config, vocabulary)
+    if not parameter_count["passed"]:
+        raise OptimizerAdequacyFault("model_parameter_count_out_of_range")
     all_train = corpus.load_governed_rows(config, split="train")
     heldout = corpus.load_governed_rows(config, split="heldout")
     tune_count = int(config["supervision"]["tune_rows_per_arm"])
@@ -1052,9 +1372,18 @@ def execute(config_path: Path) -> dict[str, Any]:
     if train_ids & tune_ids or train_ids & heldout_ids or tune_ids & heldout_ids:
         raise OptimizerAdequacyFault("source_disjointness_failed")
     scratch = resolve(config["scratch_root"])
-    if scratch.exists():
-        shutil.rmtree(scratch)
-    scratch.mkdir(parents=True)
+    journal_path, journal_rows, resumed_from_journal = prepare_run_journal(
+        config_path, scratch
+    )
+    journal_index = {
+        (
+            str(row["stage"]),
+            str(row["candidate_id"]),
+            str(row["profile"]["id"]),
+            int(row["seed"]),
+        ): row
+        for row in journal_rows
+    }
     lease = pretraining_candidate_canary.candidate_lease(
         candidate_id=config["candidate_lease_id"],
         max_steps=int(config["training"]["final_steps"]),
@@ -1070,8 +1399,15 @@ def execute(config_path: Path) -> dict[str, Any]:
     for candidate in config["candidates"]:
         for profile in candidate["profiles"]:
             for seed in config["seeds"]:
-                tune_runs.append(
-                    run_profile(
+                key = (
+                    "tune",
+                    candidate["id"],
+                    profile["id"],
+                    int(seed),
+                )
+                row = journal_index.get(key)
+                if row is None:
+                    row = run_profile(
                         config,
                         candidate_id=candidate["id"],
                         profile=profile,
@@ -1083,14 +1419,23 @@ def execute(config_path: Path) -> dict[str, Any]:
                         monitor=monitor,
                         retain_checkpoint=False,
                     )
-                )
+                    append_run_journal(journal_path, row)
+                    journal_index[key] = row
+                tune_runs.append(row)
     selected_profiles = select_tuned_profiles(tune_runs)
     final_runs = []
     for candidate in config["candidates"]:
         profile = selected_profiles[candidate["id"]]["profile"]
         for seed in config["seeds"]:
-            final_runs.append(
-                run_profile(
+            key = (
+                "final",
+                candidate["id"],
+                profile["id"],
+                int(seed),
+            )
+            row = journal_index.get(key)
+            if row is None:
+                row = run_profile(
                     config,
                     candidate_id=candidate["id"],
                     profile=profile,
@@ -1102,7 +1447,9 @@ def execute(config_path: Path) -> dict[str, Any]:
                     monitor=monitor,
                     retain_checkpoint=True,
                 )
-            )
+                append_run_journal(journal_path, row)
+                journal_index[key] = row
+            final_runs.append(row)
     for seed in config["seeds"]:
         identities = {
             row["initial_parameter_sha256"]
@@ -1116,8 +1463,15 @@ def execute(config_path: Path) -> dict[str, Any]:
     selected_profile = selected_profiles[selected_optimizer]["profile"]
     width_transfer_runs = []
     for seed in config["width_transfer"]["seeds"]:
-        width_transfer_runs.append(
-            run_profile(
+        key = (
+            "width_transfer",
+            selected_optimizer,
+            selected_profile["id"],
+            int(seed),
+        )
+        row = journal_index.get(key)
+        if row is None:
+            row = run_profile(
                 config,
                 candidate_id=selected_optimizer,
                 profile=selected_profile,
@@ -1131,7 +1485,9 @@ def execute(config_path: Path) -> dict[str, Any]:
                 model_override=config["width_transfer"]["model"],
                 checkpoint_namespace="width_transfer",
             )
-        )
+            append_run_journal(journal_path, row)
+            journal_index[key] = row
+        width_transfer_runs.append(row)
     width_transfer = assess_width_transfer(
         width_transfer_runs, config, selected_optimizer
     )
@@ -1160,6 +1516,7 @@ def execute(config_path: Path) -> dict[str, Any]:
         ]
         == "GREEN",
         "resource_bounds": resource["passed"],
+        "model_parameter_count": parameter_count["passed"],
         "no_public_external_or_fallback": all(
             row["public_training_rows"] == 0
             and row["public_evaluation_rows"] == 0
@@ -1181,6 +1538,15 @@ def execute(config_path: Path) -> dict[str, Any]:
             "overlap_count": len((train_ids & tune_ids) | (train_ids & heldout_ids) | (tune_ids & heldout_ids)),
         },
         "candidate_lease": lease,
+        "run_journal": {
+            "path": relative(journal_path),
+            "resumed": resumed_from_journal,
+            "reused_run_count": len(journal_rows),
+            "completed_run_count": len(
+                tune_runs + final_runs + width_transfer_runs
+            ),
+        },
+        "model_parameter_count": parameter_count,
         "resource_receipt": resource,
         "selected_profiles": selected_profiles,
         "optimizer_policy_cards": cards,
@@ -1217,15 +1583,28 @@ def preflight(config_path: Path) -> dict[str, Any]:
     overlap = len((ids[0] & ids[1]) | (ids[0] & ids[2]) | (ids[1] & ids[2]))
     cards = optimizer_policy_cards(config)
     card_faults = validate_optimizer_policy_cards(cards, config)
+    metadata = json.loads(
+        resolve(config["stage_metadata"]).read_text(encoding="utf-8")
+    )
+    base = json.loads(resolve(config["base_config"]).read_text(encoding="utf-8"))
+    vocabulary = model_vocab_size(
+        base, metadata["source_vocab"], metadata["target_vocab"]
+    )
+    parameter_count = parameter_count_gate(config, vocabulary)
     return {
         "policy": POLICY,
-        "trigger_state": "GREEN" if overlap == 0 and not card_faults else "RED",
+        "trigger_state": (
+            "GREEN"
+            if overlap == 0 and not card_faults and parameter_count["passed"]
+            else "RED"
+        ),
         "candidate_count": len(config["candidates"]),
         "profile_count_per_candidate": len(config["candidates"][0]["profiles"]),
         "seed_count": len(config["seeds"]),
         "source_overlap_count": overlap,
         "optimizer_policy_cards": cards,
         "optimizer_policy_card_faults": card_faults,
+        "model_parameter_count": parameter_count,
         "width_transfer": {
             "source_width": config["width_transfer"]["source_width"],
             "target_width": config["width_transfer"]["target_width"],

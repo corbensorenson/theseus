@@ -574,6 +574,22 @@ AdamW update. Keep that search finite:
    this M1 does not have. Implement the Hessian-informed transformer partition exactly and
    test whether it enables a genuinely faster microbatch; a scalar second moment with the
    wrong grouping is not Adam-mini.
+
+   **Trigger disposition (2026-07-26):** both challengers are now implemented in native MLX,
+   bound to the production trainer, checkpoint-exact, and tested under a preregistered
+   source-disjoint 6,623,232-parameter comparison with three tuning profiles, three seeds,
+   weak-arm reporting, and a 15% joined wall-time-to-AdamW-quality gate. Adam-mini reduced
+   optimizer state to `0.501582x` AdamW, but its mean heldout loss regressed `0.1569%`; one
+   seed never reached its matched AdamW quality and the worst arm regressed `2.6514%`.
+   AdEMAMix used `1.500000x` AdamW state, regressed mean heldout loss `1.6945%`, missed the
+   matched quality threshold on two seeds, and reached `4.4303%` weak-arm regression.
+   Neither clears the joined time-to-quality gate. Retain AdamW for the first campaign.
+   This is `NOT_SELECTED_FIRST_CAMPAIGN` for the exact 6.623M/128-step/private regime, not
+   universal optimizer falsification. The selected AdamW recipe passed all three exact
+   checkpoint/reload/next-update checks and all three 512-width transfer seeds with mean
+   initial-to-final loss progress of `77.3518%`. The interrupted qualification also exposed
+   a harness defect: every completed matched run is now durably journaled and a fresh process
+   resumes only unmatched work, so a watchdog event cannot discard completed measurements.
 3. **One function-preserving structural-growth schedule** enters as the highest-upside fresh
    campaign design. Masked Structural Growth reports up to 2.2x in its evaluated settings and
    complements the already-registered curriculum-guided layer-growth concept. It cannot

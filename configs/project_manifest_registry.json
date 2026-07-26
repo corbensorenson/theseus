@@ -7089,6 +7089,9 @@
     "tests/test_mtp_matched_adequacy.py",
     "scripts/pretraining_optimizers.py",
     "tests/test_pretraining_optimizers.py",
+    "configs/optimizer_update_efficiency_qualification.json",
+    "scripts/optimizer_matched_adequacy.py",
+    "tests/test_optimizer_matched_adequacy.py",
     "scripts/target_authoritative_drafting.py",
     "tests/test_target_authoritative_drafting.py",
     "scripts/kerc_structured_drafting.py",
@@ -7142,6 +7145,7 @@
         "reports/macos_mlx_environment_diagnosis.json"
         ,"reports/rdc_kerc_resource_disposition.json"
         ,"reports/mtp_matched_adequacy.json"
+        ,"reports/optimizer_update_efficiency_qualification.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -7208,6 +7212,9 @@
         "tests/test_rdc_kerc_resource_disposition.py",
         "scripts/pretraining_optimizers.py",
         "tests/test_pretraining_optimizers.py",
+        "configs/optimizer_update_efficiency_qualification.json",
+        "scripts/optimizer_matched_adequacy.py",
+        "tests/test_optimizer_matched_adequacy.py",
         "scripts/target_authoritative_drafting.py",
         "tests/test_target_authoritative_drafting.py",
         "scripts/dynamic_byte_patch_codec.py",
@@ -7246,6 +7253,7 @@
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
             ,"reports/rdc_kerc_resource_disposition.json"
+            ,"reports/optimizer_update_efficiency_qualification.json"
           ],
           "migration_required": false,
           "rollback_mode": "route_containment_plus_registered_successor_or_prior_evidence_view"
@@ -7264,6 +7272,7 @@
             "reports/windows_cuda_doctor.json",
             "reports/macos_mlx_environment_diagnosis.json"
             ,"reports/rdc_kerc_resource_disposition.json"
+            ,"reports/optimizer_update_efficiency_qualification.json"
           ],
       "verification_command": "python3 scripts/host_resource_safety.py && python3 scripts/pretraining_factorized_bakeoff.py && python3 -m pytest -q -m 'not accelerator' tests/test_host_resource_safety.py tests/test_accelerator_watchdog_enforcement.py tests/test_pretraining_candidate_canary.py tests/test_rdc_kerc_resource_disposition.py tests/test_pretraining_factorized_bakeoff.py tests/test_resource_acceleration_qualification.py tests/test_resource_acceleration_assembly_line.py tests/test_theseus_corpus_acceleration.py tests/test_neural_seed_campaign_controller.py tests/test_neural_seed_resident_runtime.py tests/test_assistant_reflexive_dispatch.py && python3 -m py_compile conftest.py scripts/host_resource_safety.py scripts/pretraining_candidate_canary.py scripts/pretraining_factorized_bakeoff.py scripts/rdc_kerc_resource_disposition.py scripts/resource_aware_execution_policy.py scripts/neural_seed_campaign_controller.py scripts/resource_acceleration_assembly_line.py scripts/resource_acceleration_qualification.py scripts/theseus_corpus_acceleration.py scripts/neural_seed_resident_runtime.py scripts/theseus_assistant_runtime.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py",
           "freshness_required": true,

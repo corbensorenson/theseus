@@ -1,0 +1,172 @@
+{
+  "policy": "project_theseus_optimizer_matched_adequacy_v1",
+  "candidate_lease_id": "optimizer_adequacy",
+  "candidate_inventory": [
+    "adamw_mlx",
+    "ademamix_mlx",
+    "adam_mini_mlx"
+  ],
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "stage_metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+  "scratch_root": "runtime/t0a_canaries/optimizer_adequacy/update_efficiency_6m_v1",
+  "report": "reports/optimizer_update_efficiency_qualification.json",
+  "seeds": [
+    20260722,
+    20260723,
+    20260724
+  ],
+  "scoped_arms": [
+    "english",
+    "python",
+    "javascript_typescript",
+    "html_css",
+    "rust"
+  ],
+  "supervision": {
+    "root": "data/training_data/moecot_language_supervision_v1",
+    "train_split": "private_train",
+    "heldout_split": "private_dev",
+    "train_rows_per_arm": 24,
+    "tune_rows_per_arm": 4,
+    "heldout_rows_per_arm": 8,
+    "maximum_sequence_tokens": 256,
+    "selection_namespace": "t0a_private_optimizer_update_efficiency_source_disjoint_v1"
+  },
+  "model": {
+    "d_model": 256,
+    "num_layers": 6,
+    "num_heads": 8,
+    "num_kv_heads": 2,
+    "ff_dim": 768,
+    "attention_policy": "prefix_lm"
+  },
+  "model_parameter_count_range": {
+    "minimum": 5000000,
+    "maximum": 10000000
+  },
+  "training": {
+    "tune_steps": 32,
+    "final_steps": 128,
+    "weight_decay": 0.01,
+    "gradient_clip_norm": 1.0,
+    "warmup_steps": 0,
+    "evaluation_interval_steps": 16
+  },
+  "policy_card_contract": {
+    "schema_version": "1.0.0",
+    "implementation_version": "project_theseus_pretraining_optimizers_update_efficiency_v1",
+    "gradient_accumulation_steps": 1,
+    "distributed_placement": "single_host_mlx_unified_memory",
+    "stopping_rule": "finish the preregistered bounded rung unless a resource, nonfinite, checkpoint, or integrity gate fails",
+    "rescue_budget": "no post-heldout rescue; a larger production-corpus rung requires a new prospective lease"
+  },
+  "width_transfer": {
+    "policy": "selected_recipe_proxy_to_target_width_v1",
+    "target_architecture_config": "configs/neural_seed_50m_scale_preregistration.json",
+    "source_width": 256,
+    "target_width": 512,
+    "isolate_width_only": true,
+    "model": {
+      "d_model": 512,
+      "num_layers": 6,
+      "num_heads": 8,
+      "num_kv_heads": 2,
+      "ff_dim": 1536,
+      "attention_policy": "prefix_lm"
+    },
+    "steps": 48,
+    "seeds": [
+      20260722,
+      20260723,
+      20260724
+    ],
+    "minimum_seed_progress_fraction": 1.0,
+    "maximum_mean_loss_regression_from_initial": 0.0,
+    "confirmation_surface_consumption": 0
+  },
+  "candidates": [
+    {
+      "id": "adamw_mlx",
+      "profiles": [
+        {
+          "id": "adamw_lr_3e4",
+          "learning_rate": 0.0003
+        },
+        {
+          "id": "adamw_lr_5e4",
+          "learning_rate": 0.0005
+        },
+        {
+          "id": "adamw_lr_8e4",
+          "learning_rate": 0.0008
+        }
+      ]
+    },
+    {
+      "id": "ademamix_mlx",
+      "profiles": [
+        {
+          "id": "ademamix_lr_3e4",
+          "learning_rate": 0.0003,
+          "alpha": 8.0,
+          "beta3": 0.9999,
+          "alpha_warmup_steps": 128,
+          "beta3_warmup_steps": 128
+        },
+        {
+          "id": "ademamix_lr_5e4",
+          "learning_rate": 0.0005,
+          "alpha": 8.0,
+          "beta3": 0.9999,
+          "alpha_warmup_steps": 128,
+          "beta3_warmup_steps": 128
+        },
+        {
+          "id": "ademamix_lr_8e4",
+          "learning_rate": 0.0008,
+          "alpha": 8.0,
+          "beta3": 0.9999,
+          "alpha_warmup_steps": 128,
+          "beta3_warmup_steps": 128
+        }
+      ]
+    },
+    {
+      "id": "adam_mini_mlx",
+      "profiles": [
+        {
+          "id": "adam_mini_lr_3e4",
+          "learning_rate": 0.0003
+        },
+        {
+          "id": "adam_mini_lr_5e4",
+          "learning_rate": 0.0005
+        },
+        {
+          "id": "adam_mini_lr_8e4",
+          "learning_rate": 0.0008
+        }
+      ]
+    }
+  ],
+  "prospective_decision": {
+    "reference_optimizer": "adamw_mlx",
+    "minimum_relative_heldout_loss_improvement": 0.01,
+    "maximum_weak_arm_relative_loss_regression": 0.02,
+    "minimum_seed_win_fraction": 0.6666666666666666,
+    "maximum_wall_time_ratio": 1.35,
+    "maximum_optimizer_state_ratio": 2.0,
+    "maximum_next_update_absolute_error": 1e-7,
+    "maximum_mean_time_to_reference_quality_ratio": 0.85
+  },
+  "hard_boundaries": {
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_or_template_credit": 0,
+    "confirmation_surface_consumption": 0,
+    "production_checkpoint_mutation": false,
+    "heldout_labels_visible_to_tuning": false,
+    "selection_from_update_throughput_alone": false
+  }
+}
