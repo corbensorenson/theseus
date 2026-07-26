@@ -1703,9 +1703,26 @@ generation service, KERC sidecar, or private evaluator.
    v3 semantics for 25,772/25,772 targets. Against the frozen dual-code vocabulary it reduces the
    actual encoded compiler stream 15,604,850→15,412,318 tokens (1.233796%), with no evaluation
    consumption, new rows, or capability claim. This qualifies only the same bounded one-row
-   overfit control under v4. Require complete target recovery plus raw v4 validity before any
-   population continuation. Do not consume a new seed or private surface. K5 remains
-   `INCONCLUSIVE_EXPERIMENT`.
+   overfit control under v4.
+
+   That control is now green. Thirty-two exact repeats from the immutable step-4,658 source reduce
+   loss 3.674020→2.590474 and recover 97/97 teacher-forced targets, EOS 1/1, schema 15/15,
+   alignment 8/8, and the v4 root at rank 1 / +15.606631 logits over v3. Raw generation stops at
+   EOS after 96 emitted tokens and exactly matches the 351-character configured v4 target
+   (`a9f5a747…`); the compact transport, online validator, and independent semantic validator all
+   pass. The guarded run peaks at 1,419.891 MiB inferred unified memory, retains 3,661.031 MiB
+   reclaimable availability, and records zero swap growth.
+
+   Two evaluator defects found during this control are fixed and preserved as negative evidence:
+   online v4 validation now receives the generator-visible source, and exact-match authority
+   compares against the configured transport target rather than the frozen legacy object. Neither
+   defect changes model weights or retroactively upgrades a failed generation.
+
+   This authorizes population exposure from the immutable step-4,658 checkpoint using the same
+   seed and admitted training rows. Require exact sampler/exposure accounting, weakest-row
+   teacher-forced reporting, raw v4 validity on an admitted training panel, checkpoint/reload, and
+   source-disjoint behavior before K5 can advance. No fresh private surface is authorized yet.
+   K5 remains `INCONCLUSIVE_EXPERIMENT`, not a capability result.
 
 6. **KERC structured draft heads.** Add boundary-aware multi-target heads that propose complete
    Kernel operators/macros, typed roles, entity/protected-object pointers, residual-fidelity

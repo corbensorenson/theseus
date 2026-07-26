@@ -721,6 +721,10 @@ def test_retained_row_probe_cli_is_free_generation_only() -> None:
     assert "--retained-row-report" in source
     assert "explicit retained row report requires free generation" in source
     assert "K5 row-selection reports are mutually exclusive" in source
+    execution_source = inspect.getsource(probe.execute)
+    assert "decode_learned_compiler_transport" in execution_source
+    assert "source=compiler_source" in execution_source
+    assert "generated == configured_target_text" in execution_source
 
 
 def test_training_row_panel_requires_exact_admitted_rows() -> None:

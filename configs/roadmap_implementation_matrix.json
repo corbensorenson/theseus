@@ -1163,7 +1163,7 @@
         "capability_claim": "NONE"
       },
       "v8_compiler_allocator_ownership_transport": {
-        "state": "V4_SOURCE_SPAN_POPULATION_AUDIT_GREEN_BOUNDED_CONTROL_AUTHORIZED",
+        "state": "V4_BOUNDED_OVERFIT_GREEN_POPULATION_CONTINUATION_AUTHORIZED",
         "candidate_execution_plan_sha256": "0e25f828f3bc76f3d7e3314b2d9f32f52bbf960c0a7008fb3b1b0ef44dcce8dc",
         "update_execution_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
         "source_optimizer_step": 4657,
@@ -1341,14 +1341,53 @@
             "evaluation_rows_consumed": 0,
             "qualification": "GREEN_FOR_BOUNDED_OVERFIT_CONTROL_ONLY"
           },
+          "source_span_transport_v4_bounded_overfit": {
+            "training_report": "reports/rdc_kerc_k5_source_span_transport_v4_overfit_steps32_seed_20260722.json",
+            "training_report_sha256": "54e389690dd3379c2fd1434f66205c3f98e642ae0a141fe501d340639a00570a",
+            "host_resource_safety_sha256": "316baac0a259cee6ee034edcc83077cc91a0287dd5c93a5dd0c1b1daa807ec85",
+            "merged_checkpoint_report_sha256": "211597c0201303c013c789dba7091b68e1d76b533352313bf32c349b281d1bd2",
+            "merged_checkpoint_sha256": "b31374ecf91210855b50863ad28fcee7ad40ef515e8b6aafa7f0cbfd0c16a3f8",
+            "optimizer_steps": 32,
+            "target_positions_per_repeat": 97,
+            "initial_loss": 3.67402005,
+            "final_loss": 2.590474,
+            "teacher_forced_correct": 97,
+            "teacher_forced_total": 97,
+            "teacher_forced_eos_correct": 1,
+            "schema_correct": 15,
+            "schema_total": 15,
+            "program_alignment_correct": 8,
+            "program_alignment_total": 8,
+            "v4_root_expected_rank": 1,
+            "v4_root_margin_over_v3": 15.60663128,
+            "raw_generated_tokens": 96,
+            "raw_generated_character_count": 351,
+            "raw_generated_sha256": "a9f5a74757f3699a49bfb7825c58903e1eb2a0f23cdc00f08c6394e741ba2d16",
+            "configured_target_sha256": "a9f5a74757f3699a49bfb7825c58903e1eb2a0f23cdc00f08c6394e741ba2d16",
+            "raw_exact_match": true,
+            "raw_transport_valid": true,
+            "raw_independent_semantic_valid": true,
+            "teacher_forced_report_sha256": "5489979698754f440161327a627837e587a216e01323be5796cc3eb7b0855a5c",
+            "generation_report_sha256": "af57eea099af96a4c643713772620b122c979731af0c8aab612182b59971493a",
+            "maximum_process_rss_mib": 271.906,
+            "maximum_inferred_unified_memory_mib": 1419.891,
+            "minimum_reclaimable_available_mib": 3661.031,
+            "maximum_swapout_growth_mib": 0.0,
+            "qualification": "LEARNABILITY_SANITY_GREEN",
+            "capability_claim": "NONE_TRAINING_ROW_LEARNABILITY_ONLY"
+          },
           "bounded_overfit_plan_sha256": "6cc1c6d7493b0505075cf7c3381eedbe66b6e03b88f283e4d37e059d938df622",
           "bounded_overfit_source_optimizer_step": 4658,
           "bounded_overfit_source_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
           "required_diagnostics": [
-            "typed_source_span_bounded_overfit_complete_recovery_and_raw_validity"
+            "v4_population_exact_sampler_and_exposure_accounting",
+            "v4_population_weakest_row_teacher_forced_reporting",
+            "v4_admitted_training_panel_raw_transport_and_independent_semantic_validity",
+            "v4_checkpoint_reload",
+            "v4_source_disjoint_behavior_before_advancement"
           ],
           "typed_source_position_pointers_authorized": true,
-          "reason": "V4 passes exact zero-credit source-bound materialization and the full 12886-row population audit; only the same bounded one-row learnability control is authorized next.",
+          "reason": "V4 passes the full population transport audit and the bounded one-row control with 97/97 teacher forcing plus exact independently valid raw generation; same-seed admitted-row population exposure is authorized next without a capability claim.",
           "new_seed_or_private_surface_authorized": false
         },
         "qualification_report": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json",
@@ -5486,7 +5525,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. Fixed-closure controls reach real schema 15/15 and 119/120 teacher forcing but raw generation loops; the sole error is one source-copy fallback byte. V4 typed source spans now pass exact zero-credit materialization and the full 12886-row / 25772-target population audit, converting 7790/9716 byte literals with zero semantic mismatches and a 1.233796% frozen-vocabulary token reduction. Rerun only the same bounded one-row control and require complete target recovery plus raw v4 validity before population continuation. Consume no new seed or private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
+      "smallest_next_patch": "Preserve the reproducible canonical Python/Rust environment and accepted KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. Keep K5 INCONCLUSIVE_EXPERIMENT. V4 typed source spans pass exact zero-credit materialization over all 12886 rows / 25772 targets and the same bounded control now reaches 97/97 teacher forcing plus exact, online-valid, independently semantic-valid raw generation with EOS and zero swap growth. Start same-seed admitted-row population exposure from immutable step 4658; require exact sampler accounting, weakest-row teacher forcing, raw admitted-panel validity, checkpoint/reload, and source-disjoint behavior before advancement. Consume no fresh private surface. Continue separate K7 repair for 629+ and the constrained-decode path, complete K4-K8, replay all replacement-freeze shards serially, and publish only from complete untampered receipts. Once T0A is GREEN, the matched five-arm plus dense-active/dense-total campaign and frozen model-only evaluation take priority over any new architecture-review cycle.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -6266,7 +6305,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets, independently attaches canonical allocation with zero credit, and shrinks the bounded target stream. Fixed-closure controls reach schema 15/15 and 119/120 teacher forcing, isolating the last error to one source-copy byte while raw generation still loops. V4 typed source spans pass exact fail-closed zero-credit materialization across all 12886 rows / 25772 positive and verifier-negative targets with zero semantic mismatches; rerun only the same bounded one-row control and require complete target recovery plus raw v4 validity before population extension. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
+      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets. V4 typed source spans pass exact fail-closed zero-credit materialization across all 12886 rows / 25772 targets, and the bounded one-row control passes 97/97 teacher forcing plus exact independently valid raw generation. Begin same-seed admitted-row population exposure from immutable step 4658 with exact sampler accounting, weakest-row reporting, admitted-panel raw validity, checkpoint/reload, and source-disjoint behavior gates. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",

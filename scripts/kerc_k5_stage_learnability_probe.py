@@ -2248,9 +2248,17 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         semantic_accuracy_by_kind: dict[str, dict[str, Any]] = {}
         schema_continuation_accuracy: dict[str, Any] | None = None
         root_transport_version_diagnostic: dict[str, Any] | None = None
+        configured_target_text = str(row["target"])
         if objective == "surface_to_kernel_program_v1":
             compiler_prompt = json.loads(str(row["prompt"]))
             compiler_source = str(compiler_prompt.get("source_surface") or "")
+            configured_target_text = (
+                training.compact_learned_compiler_transport_text(
+                    str(row["target"]),
+                    transport_version=compiler_transport_version,
+                    source=compiler_source,
+                )
+            )
             (
                 reconstructed_target_ids,
                 semantic_indices_by_kind,
@@ -2336,7 +2344,10 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                             json.loads(text),
                             required_version=compiler_transport_version,
                         ),
-                        kernel_protocol.decode_learned_compiler_transport(text),
+                        kernel_protocol.decode_learned_compiler_transport(
+                            text,
+                            source=compiler_source,
+                        ),
                     )[-1]
                     if online_transport_validator
                     and objective == "surface_to_kernel_program_v1"
@@ -2464,10 +2475,13 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
                 ),
                 "generated_character_count": len(generated),
                 "generated_sha256": hashlib.sha256(generated.encode()).hexdigest(),
+                "configured_target_sha256": hashlib.sha256(
+                    configured_target_text.encode()
+                ).hexdigest(),
                 "exact_match": (
                     None
                     if teacher_forced_only
-                    else generated == str(row["target"])
+                    else generated == configured_target_text
                 ),
                 "syntax_valid": (
                     None if teacher_forced_only else syntax_valid

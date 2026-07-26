@@ -734,8 +734,20 @@ share toward zero. Public benchmarks are calibration only.
    7,790/9,716 byte literals, retains 1,926, preserves v3 semantics exactly on 25,772/25,772, and
    has zero failures. Exact frozen-vocabulary accounting falls 15,604,850→15,412,318 encoded
    tokens (1.233796%). No evaluation surface or new row was consumed. The audit authorizes only
-   the same one-row v4 overfit control; complete target recovery and raw v4 validity are required
-   before population continuation. No new seed or private surface is authorized.
+   the same one-row v4 overfit control.
+
+   That control now passes: loss 3.674020→2.590474, teacher forcing 97/97, EOS 1/1, schema 15/15,
+   alignment 8/8, and v4 root rank 1 / +15.606631 over v3. Raw generation emits 96 tokens, stops
+   at EOS, exactly matches the 351-character configured v4 target, and passes compact, online, and
+   independent semantic validation. Host safety records 1,419.891 MiB maximum inferred unified
+   memory, 3,661.031 MiB minimum reclaimable availability, and zero swap growth.
+
+   The run also exposed and closed two evaluator faults: v4 online validation was not passed the
+   prompt source, and exact match compared compact v4 output with the legacy object target.
+   Population exposure from immutable step 4,658 is now authorized on the same seed and admitted
+   training rows. Exact exposure accounting, weakest-row diagnostics, raw admitted-panel validity,
+   checkpoint/reload, and source-disjoint behavior remain required. No fresh private surface is
+   authorized and this is not a capability claim.
    Preserve the measured K5-only 320 MiB burst ceiling plus independent 2,048 MiB live-reserve
    stop; do not restore an arbitrary memory floor. Use both maximum-target and maximum-width
    prefixes for every longer rung. Continue repairing the 629+
