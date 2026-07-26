@@ -3910,6 +3910,36 @@ def test_sampler_migration_resets_only_the_declared_phase_cursor() -> None:
     ) == (18, pretrain_cursor)
 
 
+def test_same_objective_continuation_preserves_exact_kernel_cursor() -> None:
+    kernel_cursor = {
+        "policy": "project_theseus_training_data_cursor_v1",
+        "seed": 20260722,
+        "epoch": 2,
+        "batch_index": 2,
+        "batch_size": 1,
+        "row_count": 63,
+    }
+    prior = {
+        "phases": {
+            "kernel_english": {"data_cursor_next": kernel_cursor},
+        }
+    }
+    migration = {
+        "migration_id": (
+            "english_kerc_step4786_transport_v4_exact_cursor_"
+            "exposure_doubling_v1"
+        ),
+    }
+
+    assert resume_phase_data_state(
+        prior,
+        migration,
+        target_id="english_kerc",
+        phase_key="kernel_english",
+        default_seed=99,
+    ) == (20260722, kernel_cursor)
+
+
 def test_candidate_continuation_import_is_content_bound_and_scratch_only(
     tmp_path: Path,
 ) -> None:
@@ -4462,7 +4492,10 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
                 row
                 for row in candidate_plan["plan_identity"]["legacy_migrations"]
                 if row["migration_id"]
-                == "english_kerc_step4658_transport_v4_population_v1"
+                == (
+                    "english_kerc_step4786_transport_v4_exact_cursor_"
+                    "exposure_doubling_v1"
+                )
         )
         assert migration["required_current_plan_sha256"] == (
             candidate_plan["plan_sha256"]
@@ -4476,10 +4509,12 @@ def test_kerc_continuation_migration_binds_candidate_execution_plan(
             "materializer_generation_credit": 0,
             "materializer_capability_credit": 0,
         }
-        assert lease["execution_policy"]["continuation_source_optimizer_steps"] == 4658
+        assert lease["execution_policy"]["continuation_source_optimizer_steps"] == 4786
         assert lease["execution_policy"]["continuation_source_checkpoint_sha256"] == (
-            "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3"
+            "e123932dabb31d238bacef16945afca35c14dc6a3aaee49ead9731168d5278fb"
         )
+        assert migration.get("reset_data_cursor_phase") is None
+        assert migration["legacy_optimizer_steps"] == 4786
         candidate_plan_hashes.add(candidate_plan["plan_sha256"])
 
     assert len(candidate_plan_hashes) == 1
