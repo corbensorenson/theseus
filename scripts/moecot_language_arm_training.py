@@ -9678,6 +9678,11 @@ def train_target(
             config["training"].get("training_rope_kernel")
             or "manual_reference"
         ),
+        self_attention_projection=str(
+            candidate_execution_policy.get("self_attention_projection")
+            or config["training"].get("self_attention_projection")
+            or "separate"
+        ),
         gradient_checkpointing=gradient_checkpointing_active,
         attention_query_chunk_size=int(
             candidate_execution_policy.get("attention_query_chunk_size") or 0
@@ -9813,6 +9818,11 @@ def train_target(
             rope_kernel=str(
                 config["training"].get("training_rope_kernel")
                 or "manual_reference"
+            ),
+            self_attention_projection=str(
+                candidate_execution_policy.get("self_attention_projection")
+                or config["training"].get("self_attention_projection")
+                or "separate"
             ),
             gradient_checkpointing=gradient_checkpointing_active,
             attention_query_chunk_size=int(

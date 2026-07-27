@@ -782,6 +782,7 @@
       "residual_fidelity": 4.0
     },
     "training_rope_kernel": "mlx_fast",
+    "self_attention_projection": "separate",
     "inference_rope_kernel": "manual_reference",
     "prune_inactive_auxiliary_outputs": true
   },

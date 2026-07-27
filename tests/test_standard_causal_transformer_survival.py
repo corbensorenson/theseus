@@ -943,6 +943,62 @@ def test_fast_rope_kernel_is_bounded_and_manual_remains_default() -> None:
         build_model(config, mx=mx, nn=nn, rope_kernel="unknown")
 
 
+def test_fused_qkv_preserves_output_and_parameter_abi() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+    )
+    mx.random.seed(20260727)
+    reference = build_model(config, mx=mx, nn=nn)
+    mx.eval(reference.parameters())
+    candidate = build_model(
+        config,
+        mx=mx,
+        nn=nn,
+        self_attention_projection="fused_qkv",
+    )
+    candidate.load_weights(
+        list(mlx_utils.tree_flatten(reference.parameters())),
+        strict=True,
+    )
+    reference_parameters = dict(
+        mlx_utils.tree_flatten(reference.parameters())
+    )
+    candidate_parameters = dict(
+        mlx_utils.tree_flatten(candidate.parameters())
+    )
+    assert reference_parameters.keys() == candidate_parameters.keys()
+    assert {
+        name: tuple(value.shape)
+        for name, value in reference_parameters.items()
+    } == {
+        name: tuple(value.shape)
+        for name, value in candidate_parameters.items()
+    }
+
+    tokens = mx.array([[1, 2, 3, 4, 5, 6]], dtype=mx.int32)
+    reference_logits, _ = reference(tokens)
+    candidate_logits, _ = candidate(tokens)
+    mx.eval(reference_logits, candidate_logits)
+    assert bool(mx.array_equal(reference_logits, candidate_logits))
+
+    with pytest.raises(ValueError, match="self-attention projection"):
+        build_model(
+            config,
+            mx=mx,
+            nn=nn,
+            self_attention_projection="fused_gate_up",
+        )
+
+
 def test_causal_loss_prunes_only_provably_inactive_auxiliary_outputs() -> None:
     import mlx.core as mx
     import mlx.nn as nn

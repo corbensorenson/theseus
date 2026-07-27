@@ -1,0 +1,128 @@
+{
+  "policy": "project_theseus_ane_training_feasibility_v1",
+  "created_utc": "2026-07-27T17:24:00Z",
+  "trigger_state": "PARTIAL_RESEARCH_BACKEND_MECHANICS_GREEN_PRODUCTION_NOT_ELIGIBLE",
+  "claim_scope": "Local M1 private-API mechanics and MLX projection-station evidence only; no full-model, campaign, convergence, utility, capability, or production-backend claim.",
+  "source": {
+    "repository": "https://github.com/maderix/ANE",
+    "commit": "d91c9845c0784dec7753048954fc6d0e8411fe29",
+    "license": "MIT",
+    "source_code_imported_into_theseus": false,
+    "private_apis": [
+      "_ANEInMemoryModelDescriptor",
+      "_ANEInMemoryModel",
+      "_ANERequest",
+      "_ANEIOSurfaceObject"
+    ],
+    "upstream_disclaimer_acknowledged": true
+  },
+  "host": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "memory_gib": 16,
+    "macos_version": "15.0",
+    "architecture": "arm64"
+  },
+  "local_ane_probes": {
+    "standalone_projection": {
+      "state": "EXPECTED_M1_MIL_COMPATIBILITY_FAILURE",
+      "configurations_attempted": [
+        "256ch_x64sp",
+        "512ch_x64sp",
+        "1024ch_x64sp",
+        "2048ch_x64sp",
+        "3072ch_x64sp",
+        "4096ch_x64sp"
+      ],
+      "error": "_ANECompiler : ANECCompile() FAILED",
+      "interpretation": "Matches upstream M1-family evidence that standalone/single-blob probes fail while the per-matrix training path works; not evidence that ANE hardware is absent."
+    },
+    "per_matrix_training_smoke": {
+      "state": "GREEN",
+      "shape": {
+        "d_model": 512,
+        "ff_dim": 1536,
+        "heads": 8,
+        "sequence_length": 64,
+        "layers": 1,
+        "vocab_size": 512,
+        "parameters": 3670000
+      },
+      "optimizer_steps": 1,
+      "loss": 5.74821,
+      "compiled_weight_bearing_kernels": 5,
+      "total_kernels": 6,
+      "compile_milliseconds": 408,
+      "train_milliseconds": 6.2,
+      "ane_milliseconds": 0.706,
+      "io_milliseconds": 0.137,
+      "classifier_milliseconds": 2.112,
+      "resource_receipt": {
+        "passed": true,
+        "wall_seconds": 0.81,
+        "maximum_process_rss_mib": 73.828,
+        "maximum_inferred_unified_memory_mib": 97.5,
+        "minimum_reclaimable_available_mib": 4052.984,
+        "maximum_swapout_growth_mib": 0.0
+      },
+      "checkpoint_authority": "NONE_SCRATCH_MECHANICS_ONLY"
+    }
+  },
+  "upstream_m1_context": {
+    "published_models": "Stories110M decoder-only MHA",
+    "published_m1_family_step_milliseconds": [
+      143,
+      167
+    ],
+    "published_sequence_length": 256,
+    "published_batch_size": 1,
+    "published_precision": "FP16_ANE_FP32_CPU",
+    "published_weight_gradient_device": "CPU_ACCELERATE_CBLAS",
+    "theseus_speed_inference_allowed": false
+  },
+  "mlx_concept_port": {
+    "qkv_projection": {
+      "state": "GREEN_FOR_FULL_ROUTE_QUALIFICATION",
+      "fresh_process_speedups": [
+        1.329468,
+        1.153062,
+        1.245703
+      ],
+      "fresh_process_projected_full_microbatch_saved_percent_upper_bounds": [
+        3.3051,
+        1.2193,
+        1.8927
+      ],
+      "output_maximum_absolute_delta": 0.0,
+      "loss_absolute_delta": 0.0,
+      "maximum_gradient_absolute_delta": 2.6921043172478676e-10,
+      "checkpoint_parameter_names_shapes_and_ownership_unchanged": true,
+      "implementation": {
+        "model_owner": "scripts/standard_causal_transformer_model.py",
+        "trainer_policy_key": "self_attention_projection",
+        "candidate_value": "fused_qkv",
+        "canonical_value": "separate",
+        "checkpoint_abi_integration_test_added": true
+      },
+      "production_adopted": false,
+      "next_gate": "Pass multi-step replay, save/reload, fresh-process, full-microbatch alternating, sustained joined-wall, memory, thermal, and learning checks."
+    },
+    "swiglu_gate_up": {
+      "state": "NOT_SELECTED_SLOWER_ON_THIS_M1",
+      "speedup": 0.884897,
+      "output_maximum_absolute_delta": 0.0,
+      "loss_absolute_delta": 0.0,
+      "production_adopted": false
+    }
+  },
+  "backend_disposition": {
+    "mlx_production_route": "RETAINED",
+    "direct_ane_training": "ISOLATED_PROSPECTIVE_BACKEND",
+    "hybrid_metal_ane": "PROSPECTIVE_REQUIRES_COEXISTENCE_BENCHMARK",
+    "automatic_fallback_before_checkpoint_mutation_required": true,
+    "capability_claim": "NONE"
+  },
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0,
+  "canonical_checkpoint_mutated": false
+}

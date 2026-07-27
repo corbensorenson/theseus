@@ -471,11 +471,16 @@ share toward zero. Public benchmarks are calibration only.
   within `2.38e-7`, reduced peak memory slightly, and preserved 8/8 exact outputs plus
   normalized receipts when both resulting checkpoints were served through the unchanged
   manual reference kernel. Fast RoPE is therefore training-only; using it for serving
-  changed 7/8 token paths and remains forbidden. Parameter-preserving
-  fused QKV/SwiGLU projections (`1.57x`), a reusable 512-position RoPE basis
-  (`1.64x`), and one monolithic accumulation/update graph (`1.53x`). Each retained
-  bounded update integrity but lost end-to-end throughput, so the original
-  implementations remain canonical. A two-microbatch synchronization group then entered
+  changed 7/8 token paths and remains forbidden. The historical `1.57x`
+  projection packet compared eager/separate against compiled/fused-QKV/fused-SwiGLU,
+  so it did not isolate either transformation and should not have been described as
+  rejecting both. A 2026-07-27 same-compiled production-shape station probe measures
+  QKV-only at `1.153x-1.329x` across three guarded fresh processes, while
+  SwiGLU-only is slower at `0.8849x`; QKV-only is now an opt-in,
+  checkpoint-compatible qualification candidate and SwiGLU fusion remains excluded
+  on this M1. A reusable 512-position RoPE basis (`1.64x`) and one monolithic
+  accumulation/update graph (`1.53x`) retained bounded update integrity but lost
+  end-to-end throughput. A two-microbatch synchronization group then entered
   severe unified-memory pressure during a 12-step exact-checkpoint paired preflight and was
   terminated before a complete result. Its semantics result is inconclusive, but the exact
   implementation is engineering-rejected and absent from the canonical path.

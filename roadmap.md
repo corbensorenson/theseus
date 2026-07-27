@@ -253,8 +253,8 @@ The goal is no longer “occupy the laptop until every control finishes.” The 
 milestones are:
 
 - **first trustworthy capability reading:** finish the preregistered 100M-position review;
-  at the current checkpoint and measured rate this is about 5.8 device-hours, so it fits in
-  one overnight window;
+  at the current checkpoint and measured rate this requires about 5.8 device-hours, with no
+  clock-of-day restriction;
 - **first dogfoodable selected system:** finish and frozen-evaluate the shared trunk and arms;
   estimate 5-7 device-days, not 16-19, with uncertainty carried until real arm throughput is
   measured;
@@ -278,13 +278,14 @@ Work this finite docket in order:
    checkpoint/reload, and two-segment replay clears the existing bounds; the interrupted
    scratch-state qualification earns no adoption.
 
-   **Final disposition (2026-07-26):** the exact three pair speed ratios are `1.021918x`,
-   `1.026620x`, and `1.001462x`; the maximum is only `1.026620x`. Because even the best
-   observed result misses the frozen 10% joined-wall adoption floor, no further state or
-   sustained surface can promote this switch. Record
-   `NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT`, preserve the measurements,
-   and keep the default synchronization route. This is a scoped engineering disposition,
-   not a claim about another graph or MLX release.
+   **Revised disposition (2026-07-27):** the exact three pair speed ratios are `1.021918x`,
+   `1.026620x`, and `1.001462x`. The direction is positive but not yet distinguishable from
+   route-order and thermal noise, and the full-state qualification was interrupted. Keep the
+   default route until one sustained full-state replay establishes a positive lower
+   confidence bound. Do not reject a verified gain merely because it is below a fixed
+   percentage. Preserve the earlier
+   `NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT` label as historical policy,
+   not the current decision rule.
 3. **Reject unsafe graph-chain fusion.** Deferring every microbatch synchronization retained
    the full dependency chain, reduced reclaimable memory to about 734 MiB, grew swap by about
    954 MiB, and was killed before a durable update. Do not retry that implementation unchanged.
@@ -297,11 +298,13 @@ Work this finite docket in order:
    remains closed. Full encoder/decoder partition compaction reached 1.73-1.77x but changed
    loss and therefore belongs to a successor architecture, not this lineage.
 
-   **Final disposition (2026-07-26):** the exact measured speed ratio is `1.068527x`, below
-   the same 10% adoption floor even before the parameter-delta prerequisite. Stop the
-   canonical-lineage branch here as
-   `NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT`; preserve compact partitioning only
-   as a fresh successor-architecture candidate with matched quality evidence.
+   **Revised disposition (2026-07-27):** the exact measured speed ratio is `1.068527x`, but
+   the maximum absolute parameter delta (`7.490e-6`) still exceeds the registered `5e-6`
+   continuity bound. Stop this exact canonical-lineage implementation on semantic custody,
+   not on its percentage gain. Preserve the historical
+   `NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT` receipt, and retain compact
+   partitioning only as a fresh successor-architecture candidate with matched quality
+   evidence.
 5. **Operate the resource-aware segment scheduler.** Never suspend an in-flight Metal
    command graph. Launch a bounded 32/64-step segment at any hour when AC power is present, Low Power
    Mode is off, disk/checkpoint reserve is green, and no interactive accelerator job is active.
@@ -405,38 +408,40 @@ A fresh primary-source MLX review changes the acceleration docket in five ways:
    snapshot ownership, exact restore, injected interruption, disk-reserve, peak-memory, and
    zero-swap checks. Do not overlap live mutable tensors with serialization.
 
-   **Final disposition (2026-07-26):** the selected 64-step cadence halves the measured
+   **Revised disposition (2026-07-27):** the selected 64-step cadence halves the measured
    3.5812% 32-step publication fraction to an upside bound below 2%, before double-buffer
-   memory and synchronization costs. It cannot clear the frozen 10% joined-wall floor, so
-   do not add a second snapshot-ownership ABI on this 16 GiB host. Record
-   `NOT_IMPLEMENTED_64_STEP_UPSIDE_BOUND_BELOW_2_PERCENT`; reopen only if checkpoint
-   frequency or measured publication share materially changes.
+   memory and synchronization costs. Do not add a second snapshot-ownership ABI while its
+   failure and memory surface is larger than its measured realizable saving. Record
+   `NOT_IMPLEMENTED_64_STEP_UPSIDE_BOUND_BELOW_2_PERCENT`; reopen if checkpoint frequency,
+   publication share, or a simpler immutable-snapshot mechanism materially changes the
+   evidence balance.
 4. **Keep custom Metal focused on a measured residual.** MLX officially supports custom
    Metal kernels with custom gradients, so a fused residual kernel remains possible. The
    current model already uses fast scaled-dot-product attention, fast RoPE, native RMSNorm,
    grouped-query attention, and compiled elementwise fusion. The two attempted native traces
    reached 38.6-56.1 GiB, far beyond the evidence budget. Use the existing bounded station
    timers to rank vocabulary projection/cross-entropy, MLP, normalization, clipping, and
-   AdamW. Write one custom forward/backward kernel only for the top stable residual and
-   require at least 10% sustained joined wall-time improvement; a Rust or C++ wrapper alone
-   receives no credit.
+   AdamW. Write a custom forward/backward kernel only for a stable measured residual whose
+   realizable saving justifies its numerical, lifecycle, and maintenance surface; a Rust or
+   C++ wrapper alone receives no credit.
 5. **Keep host-language rewrites proportional.** MLX C can import exported functions and
    Rust can wrap C or Metal, but measured Python batch preparation is about 0.2% of device
    time. Moving the optimizer loop from Python to Rust cannot accelerate the Metal matrix
    work and would add a second state ABI. Retain Rust for the already-positive corpus/KERC
    preprocessing, lifecycle, and checkpoint tools. Reopen native host code only after a
-   profile attributes at least 5% joined time to CPU orchestration.
+   profile identifies CPU orchestration as a reproducible joined-wall owner large enough to
+   repay the added state ABI and maintenance burden.
 
-The finite order is now closed: keep the reclaimed disk reserve; qualify the current-plan
+The finite order is now reopened only for the source-triggered QKV/ANE work: keep the
+reclaimed disk reserve; qualify the current-plan
 64-step FP32 state-detachment replay when host memory is genuinely available; retain FP16 as
-an exact-replay implementation exclusion; retain default synchronization after the measured
-1-2% switch missed the speed gate; and add no custom kernel after bounded station ranking
-found either existing native fast paths or sub-10% elimination bounds. Then stop the
-acceleration sprint.
+an exact-replay implementation exclusion; resolve the positive-but-noisy synchronization
+switch with sustained replay; qualify QKV-only fusion; and bound direct ANE and hybrid
+coexistence against the canonical route. Add no custom kernel without a measured residual.
 For laptop availability, the implemented resource-aware scheduler and future
-control/arm fanout remain more important than shaving another percent from a foreground process. The first
-100M-position reading remains an overnight-scale milestone; selected-path dogfood and the
-two dense scientific controls remain separate schedules.
+control/arm fanout remain important complements to foreground speed. The first
+100M-position reading remains a roughly 5.8-device-hour milestone; selected-path dogfood
+and the two dense scientific controls remain separate schedules.
 
 Additional primary references are the official
 [MLX release history](https://github.com/ml-explore/mlx/releases),
@@ -474,10 +479,10 @@ Therefore:
 1. **Do not implement fused linear cross-entropy merely because CUDA papers report large
    aggregate kernel gains.** Apple's Cut Cross-Entropy and Liger establish a real kernel
    pattern and substantial memory savings on their evaluated hardware, but Theseus's
-   vocabulary is only 8,195 and the locally measured whole station is capped below the
-   existing 10% joined-wall adoption threshold. Reopen a custom Metal loss only if bounded
-   full-model station timing shows additional fusion opportunity or its memory reduction
-   demonstrably enables a faster sustained microbatch. The reproducible probe is
+   vocabulary is only 8,195 and the locally measured whole station occupies just 8.25% of a
+   microbatch before the replacement performs any required work. Reopen a custom Metal loss
+   only if bounded full-model timing shows realizable fusion opportunity or its memory
+   reduction demonstrably enables a faster sustained microbatch. The reproducible probe is
    `scripts/mlx_linear_cross_entropy_station_probe.py`.
 2. **Keep FP16/FP32-master first.** The local FP16 station result is consistent with the MLX
    maintainer's guidance that FP16 is faster when numeric range permits it. This is still not
@@ -528,9 +533,9 @@ Therefore:
    timings for one-layer attention projections/core, SwiGLU MLP, norms, clipping, AdamW, and
    state materialization. The model already uses fast SDPA, fast RoPE, native RMSNorm,
    grouped-query attention, and outer compiled elementwise fusion. Implement at most one
-   custom Metal forward/backward kernel, and only when its measured realizable joined-wall
-   bound is at least 10%. A Rust/C++ wrapper without a faster Metal operator remains
-   ineligible.
+   custom Metal forward/backward kernel, and only when a stable measured residual and
+   realizable joined-wall bound justify its numerical and lifecycle cost. A Rust/C++ wrapper
+   without a faster Metal operator remains ineligible.
 
    **Measured disposition (2026-07-26):** fresh guarded processes now time every remaining
    station at the exact FP32 production shape. Median one-layer self-attention
@@ -542,13 +547,21 @@ Therefore:
    compilation, allocator behavior, and whole-graph scheduling overlap, while any
    replacement must still perform the matrix math and memory traffic. Attention already
    uses MLX fast RoPE plus native grouped-query SDPA, and the MLP's elementwise gate is
-   compiled around native GEMMs. The only credible cross-operator fusion—parameter-preserving
-   combined QKV/SwiGLU projections—was already implemented and measured below the retained
-   whole-model route. Therefore no new custom Metal kernel is authorized by this ranking.
-   Norm, clipping, AdamW, and classifier/loss cannot clear the 10% threshold even under
-   impossible total elimination; fused linear cross-entropy and exact packing remain
-   memory-enablers only. This closes the kernel-search station without another multi-GiB
-   trace or a host-language wrapper.
+   compiled around native GEMMs. A new ANE-derived, parameter-preserving projection probe
+   now distinguishes two cases that the earlier ranking incorrectly treated as already
+   closed. The historical `1.57x` packet compared eager/separate against
+   compiled/fused-QKV/fused-SwiGLU and therefore did not isolate either projection change;
+   later prose incorrectly described that confounded result as a projection rejection.
+   Combining Q/K/V into one MLX matmul is `1.153x-1.329x` faster across three
+   guarded fresh processes at the exact production shape, with identical forward output
+   and loss and only `1e-10`-scale absolute gradient-order differences. Its isolated
+   full-microbatch saving bound is `1.22%-3.31%`. Combining the SwiGLU gate/up projections
+   is slower (`0.8849x`) and is rejected on this M1. Therefore implement only fused
+   self-attention QKV behind the unchanged three-weight checkpoint ABI and require
+   multi-step replay plus full-route alternating and sustained measurements. Do not
+   authorize a custom Metal kernel or host-language wrapper from this result.
+   Norm, clipping, AdamW, and classifier/loss remain bounded small even under impossible
+   total elimination; fused linear cross-entropy and exact packing remain memory-enablers.
 4. **Treat disconnected optimizer state as a memory candidate, not a 26% speed claim.**
    Plain-token pretraining executes 40,384,512 of the 54,836,746 trunk parameters.
    Source encoder, decoder cross-attention, pointer generator, and inactive MTP account for
@@ -582,11 +595,14 @@ Therefore:
 6. **Do not tune `MLX_SDPA_BLOCKS` on the selected FP32 route.** MLX 0.32.0 added that
    override for the BF16 two-pass vector SDPA kernel; upstream documents no corresponding
    FP32 opportunity. It may enter an already-qualified BF16/FP16 route only after confirming
-   the selected kernel and exact output/gradient parity. Likewise, current MLX Neural
-   Accelerator support does not make the M1 ANE a hidden training backend.
+   the selected kernel and exact output/gradient parity. MLX itself still exposes CPU and
+   GPU devices only, so ANE is not a hidden MLX switch. Direct M1 ANE training is now a
+   separately verified private-API research path and must earn backend parity, joined
+   throughput, lifecycle, and stability evidence of its own.
 7. **Measure sustained machine behavior, not unsupported fan folklore.** This host is the
    actively cooled 13-inch M1 MacBook Pro; Low Power Mode is already off and High Power Mode
-   is not available on this model. Add one two-hour receipt with first/middle/last throughput,
+   is not available on this model. Add one sustained receipt long enough to reach and observe
+   a stable thermal regime, with first/middle/last throughput,
    AC state, live reserve, swap, and available thermal/performance warnings. Follow Apple's
    supported operating guidance: current macOS, authorized power, a stable open surface, and
    unobstructed ventilation. Do not count fan-control utilities or cooling accessories as a
@@ -701,8 +717,9 @@ distributed batches; the current Adafactor/Muon/schedule-free docket already dem
 that memory reduction or an attractive paper result cannot substitute for Theseus weak-tail
 learning. The finite order is now: qualify 64-step FP32 custody; implement and disposition
 FP16; finish bounded operator timing; test inactive-state custody only as a microbatch
-enabler; run the four-way prospective time-to-quality selector; then end the acceleration
-sprint and launch the fastest qualified design.
+enabler; run the four-way prospective time-to-quality selector; qualify the newly discovered
+QKV fusion and bounded ANE path; then launch the fastest qualified design. New acceleration
+work requires a concrete source or measured residual, not elapsed-time permission.
 
 Primary sources added by this pass are Apple's
 [Cut Cross-Entropy implementation](https://github.com/apple/ml-cross-entropy),
@@ -717,18 +734,78 @@ Apple's [AdEMAMix implementation](https://github.com/apple/ml-ademamix) and
 [power-mode](https://support.apple.com/en-us/101613) and
 [operating-temperature](https://support.apple.com/en-ie/102336) guidance.
 
+### 2026-07-27 M1 Neural Engine Feasibility And Projection-Fusion Reopening
+
+The [maderix/ANE](https://github.com/maderix/ANE) repository changes one prior assumption
+without authorizing a backend rewrite. MLX 0.32.0 officially supports CPU and GPU devices,
+but reverse-engineered `_ANEInMemoryModel` private APIs can execute forward and backward
+transformer kernels directly on the M1 Neural Engine. The source is MIT licensed, explicitly
+research-only, uses undocumented APIs with no stability guarantee, computes parameter
+gradients and Adam work on CPU, requires FP16/loss scaling, and works around M1 MIL and
+causal-attention limitations. These constraints make it a separate experimental backend,
+not a production MLX feature.
+
+Local guarded evidence at upstream commit
+`d91c9845c0784dec7753048954fc6d0e8411fe29` establishes:
+
+- the repository's standalone single-blob projection probes fail locally with
+  `_ANECompiler : ANECCompile() FAILED`, matching its published M1-family compatibility
+  table rather than showing that the ANE is absent;
+- an M1-compatible per-matrix training smoke at Theseus's width 512, FFN width 1,536,
+  eight heads, sequence 64, one layer, and one optimizer step compiles five weight-bearing
+  kernels in 408 ms and completes the step in 6.2 ms with finite loss, zero swap growth,
+  73.828 MiB peak child RSS, and 97.5 MiB maximum inferred unified memory;
+- this is mechanics evidence only. The published 12-layer Stories110M M1 Pro/Max result is
+  143-167 ms per sequence-256 step and uses MHA, decoder-only attention, batch one, FP16
+  ANE compute, CPU weight gradients, and a different optimizer/data/checkpoint contract.
+  It cannot be converted into a Theseus campaign speed claim.
+
+Port the useful concepts in this order:
+
+1. **Adopt only evidence-positive MLX projection fusion.** Three fresh production-shape
+   QKV station trials reach `1.153x`, `1.246x`, and `1.329x`; fused SwiGLU reaches only
+   `0.8849x` and stays excluded. Implement fused self-attention QKV while retaining the
+   separate `q_proj`, `k_proj`, and `v_proj` parameter names, shapes, optimizer leaves, and
+   checkpoint bytes. Require exact forward parity, finite gradients, bounded numerical
+   replay, save/reload, two fresh processes, whole-microbatch A/B, and sustained joined-wall
+   evidence. Adopt any reproducible whole-route improvement that exceeds measurement
+   uncertainty without replay, memory, thermal, or learning regression; do not discard it
+   merely for missing an arbitrary percentage.
+2. **Keep direct ANE training isolated.** Build a Theseus-shaped decoder-control kernel
+   profile first, then add GQA, sequence 512, source encoder/cross-attention, source copying,
+   and specialist adapters only through parity-tested increments. Compare equal useful
+   positions, optimizer work, checkpoint publication, CPU-gradient time, compile/restart
+   time, power, thermals, and memory against MLX. No production checkpoint may migrate to
+   FP16 ANE math from a one-step mechanics smoke.
+3. **Test hybrid concurrency rather than assuming additive silicon.** The most plausible
+   longer-term win is overlapping ANE kernels or frozen evaluation with Metal work through
+   IOSurface-backed shared storage. The base M1 has shared memory bandwidth and a shared
+   thermal envelope, while ANE dW currently consumes CPU. Require an alternating
+   Metal-only versus Metal+ANE coexistence benchmark and reject any combination that slows
+   the canonical MLX route, grows swap, or perturbs exact custody.
+4. **Treat private APIs as optional and fail closed.** Bind macOS build, chip family, source
+   commit, generated MIL, compile result, and numerical parity in every receipt. A missing
+   class, compiler failure, OS update break, or unexpected kernel placement falls back to
+   the qualified MLX route before checkpoint mutation. Serving and capability claims remain
+   unchanged.
+
+The durable audit is `reports/ane_training_feasibility_2026_07_27.json`; the reproducible
+MLX station owner is `scripts/mlx_projection_fusion_probe.py`.
+
 ### 2026-07-26 Acceleration-First Launch Gate
 
 The final bounded KERC exposure rung and first-campaign disposition are banked. Training
 acceleration is now the critical path before the matched 57M launch. This is a sequencing
 change inside `T0A`, not permission for another architecture-review loop.
 
-Use a **60-hour acceleration sprint with a 72-hour hard ceiling**. The sprint ends sooner
-when its finite candidate docket is dispositioned. At the ceiling, launch the fastest
-semantics-qualified route even if the 2x stretch target remains unmet. The sprint may change
-execution, precision, batching, checkpoint cadence, caching, and kernel lowering; it may not
-change candidate parameters, data order, optimizer-position budgets, objective mass, update
-count, evaluation access, or verifier work.
+Work the finite evidence docket to logical completion without a clock-of-day window or
+arbitrary hour ceiling. The docket closes when every named candidate has a reproducible
+adoption or exclusion receipt and the fastest semantics-qualified route passes sustained
+qualification. New candidates enter only from a concrete source or measured production
+residual. The work may change execution, precision, batching, checkpoint cadence, caching,
+and kernel lowering; it may not change candidate parameters, data order,
+optimizer-position budgets, objective mass, update count, evaluation access, or verifier
+work.
 
 The immutable historical references are the real 500-update FP32 continuation at
 2,914.2 optimizer positions/second and the repeated compiled FP32 microbatch-four canary at
@@ -786,12 +863,15 @@ Work the following docket in measured bottleneck order:
    Metal graph-cache reuse, and verifier/evaluation overlap without hiding required lifecycle
    work or risking the only durable checkpoint.
 
-Adopt a route only when three alternating trials and a representative sustained run show at
-least 10% joined wall-time improvement, finite state, correct update and resume semantics,
-non-regressed heldout learning within the preregistered tolerance, and the live host reserve
-and swap-growth watchdogs remain green. Preserve negative and unstable measurements. Publish
-the selected performance receipt and bind its exact execution policy into the replacement
-architecture freeze before any 57M optimizer budget is spent.
+Adopt a route only when three alternating trials and a representative sustained run show a
+reproducible joined-wall improvement beyond the measured uncertainty, finite state, correct
+update and resume semantics, non-regressed heldout learning within the preregistered
+tolerance, and green live-reserve and swap-growth watchdogs. The required evidence grows
+with implementation complexity and numerical change; there is no arbitrary minimum
+percentage that discards an otherwise free, semantics-preserving gain. Preserve negative
+and unstable measurements. Publish the selected performance receipt and bind its exact
+execution policy into the replacement architecture freeze before any 57M optimizer budget
+is spent.
 
 Current gate state: **HISTORICAL 32-STEP FP32 FREEZE GREEN; COMPILED-STATE AMENDMENT
 REQUALIFICATION REQUIRED**. The final bounded KERC population rung, exact merge,
@@ -1286,9 +1366,12 @@ after closure requires a measured station regression or a materially new impleme
    trial (`1.24x`) was rejected; a narrower training-only `mx.fast.rope` route later won
    three direct compiled pairs by about 2.5%, preserved bounded update parity, and preserved
    8/8 exact manual-kernel serving outputs. Serving remains on the manual reference kernel
-   because fast-kernel serving changed token paths. Full-model trials also rejected
-   parameter-preserving fused QKV/SwiGLU projections (`1.57x`),
-   a reusable RoPE basis (`1.64x`), and a monolithic accumulation/update graph (`1.53x`).
+   because fast-kernel serving changed token paths. The historical `1.57x` projection
+   packet compared eager/separate against compiled/fused-QKV/fused-SwiGLU and therefore
+   did not isolate either projection transformation; later prose incorrectly treated it as
+   rejecting both. The 2026-07-27 same-compiled station reopens QKV-only and rejects
+   SwiGLU-only on this M1. A reusable RoPE basis (`1.64x`) and a monolithic
+   accumulation/update graph (`1.53x`) were also tested.
    A narrower two-microbatch synchronization group also entered severe unified-memory
    pressure during its exact-checkpoint paired preflight and was terminated before a
    complete receipt; classify it as an engineering rejection with scientifically

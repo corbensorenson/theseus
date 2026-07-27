@@ -535,6 +535,7 @@ def build_model(
     compact_partition_width_quantum: int = 0,
     parameter_initialization_dtype: str = "float32",
     exact_checkpoint_placeholder_initialization: bool = False,
+    self_attention_projection: str = "separate",
 ) -> Any:
     """Build a pre-norm RoPE/GQA/SwiGLU causal LM with tied embeddings."""
 
@@ -559,6 +560,10 @@ def build_model(
         )
     if rope_kernel not in {"manual_reference", "mlx_fast"}:
         raise ValueError(f"unsupported RoPE kernel: {rope_kernel}")
+    if self_attention_projection not in {"separate", "fused_qkv"}:
+        raise ValueError(
+            "self-attention projection must be separate or fused_qkv"
+        )
     if attention_query_chunk_size < 0:
         raise ValueError("attention query chunk size cannot be negative")
     if attention_key_chunk_size < 0:
@@ -1177,9 +1182,42 @@ def build_model(
         ) -> tuple[Any, tuple[Any, Any]]:
             batch, length, _dims = hidden.shape
             offset = int(cache[0].shape[2]) if cache is not None else 0
-            query = self.q_proj(hidden).reshape(batch, length, config.num_heads, head_dim).transpose(0, 2, 1, 3)
-            key = self.k_proj(hidden).reshape(batch, length, config.num_kv_heads, head_dim).transpose(0, 2, 1, 3)
-            value = self.v_proj(hidden).reshape(batch, length, config.num_kv_heads, head_dim).transpose(0, 2, 1, 3)
+            if self_attention_projection == "fused_qkv":
+                # Preserve the three authoritative parameter leaves and their
+                # checkpoint/optimizer ABI. Concatenation happens only inside
+                # the execution graph, reducing three same-input projections
+                # to one matmul while gradients still flow to each leaf.
+                projected = mx.matmul(
+                    hidden,
+                    mx.concatenate(
+                        [
+                            self.q_proj.weight,
+                            self.k_proj.weight,
+                            self.v_proj.weight,
+                        ],
+                        axis=0,
+                    ).T,
+                )
+                query_width = config.num_heads * head_dim
+                kv_width = config.num_kv_heads * head_dim
+                query, key, value = mx.split(
+                    projected,
+                    (query_width, query_width + kv_width),
+                    axis=-1,
+                )
+            else:
+                query = self.q_proj(hidden)
+                key = self.k_proj(hidden)
+                value = self.v_proj(hidden)
+            query = query.reshape(
+                batch, length, config.num_heads, head_dim
+            ).transpose(0, 2, 1, 3)
+            key = key.reshape(
+                batch, length, config.num_kv_heads, head_dim
+            ).transpose(0, 2, 1, 3)
+            value = value.reshape(
+                batch, length, config.num_kv_heads, head_dim
+            ).transpose(0, 2, 1, 3)
             query = apply_rope(query, offset=offset)
             key = apply_rope(key, offset=offset)
             if cache is not None:
