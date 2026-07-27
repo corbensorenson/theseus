@@ -352,7 +352,7 @@
     "conservative_speedup_mlx_over_candidate": 0.9485460483411529,
     "mechanics_green": true,
     "schedule_selected": false,
-    "whole_microbatch_is_immediate_next": true,
+    "whole_microbatch_is_immediate_next": false,
     "memory": {
       "maximum_twelve_layer_discarded_mib_ceiling": 288.0,
       "historical_microbatch_six_live_reserve_deficit_mib": 236.656,
@@ -380,6 +380,63 @@
     },
     "production_eligible": false,
     "claim_scope": "One exact SwiGLU gate/up recomputation schedule against one independent attention-backward window. A joined-wall loss does not falsify other recomputation schedules, whole-microbatch parallelism, matched-arm concurrency, or inference."
+  },
+  "heterogeneous_microbatch_projection": {
+    "state": "INCONCLUSIVE_IMPLEMENTATION_FULL_ANE_MODEL_PARITY_REQUIRED",
+    "disposition": "STATION_MECHANICS_GREEN_FULL_MODEL_GATED",
+    "shape": {
+      "logical_batch": 8,
+      "shard_batch": 4,
+      "sequence": 512,
+      "hidden": 512,
+      "projection": "decoder_self_attention_q_proj"
+    },
+    "control_two_mlx_shards_total_milliseconds": [
+      113.99654200067744,
+      114.39741699723527
+    ],
+    "candidate_critical_path_total_milliseconds": [
+      92.87470833333334,
+      102.81566666666669
+    ],
+    "mean_speedup_control_over_candidate": 1.1671190215559282,
+    "conservative_speedup_control_over_candidate": 1.108746805778731,
+    "station_authority_green": true,
+    "full_model_ready": false,
+    "exact_ane_decoder_block_is_immediate_next": true,
+    "authority": {
+      "sampler_row_count": 8,
+      "global_objective_mass": 4096.0,
+      "normalization": "global_objective_mass_denominator_v1",
+      "one_fp32_generation": true,
+      "local_optimizer_steps": 0,
+      "global_clip_count": 1,
+      "adamw_update_count": 1
+    },
+    "resource_receipt": {
+      "passed": true,
+      "wall_seconds": 1.915,
+      "maximum_process_rss_mib": 192.172,
+      "maximum_inferred_unified_memory_mib": 295.422,
+      "minimum_reclaimable_available_mib": 3862.109,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "sampler_exact_disjoint_coverage": true,
+      "objective_mass_conserved": true,
+      "single_fp32_generation": true,
+      "no_per_device_optimizer": true,
+      "one_global_clip_and_adamw": true,
+      "station_gradient_and_update_parity": true,
+      "matched_station_wall_gain": true,
+      "resource_safety": true,
+      "zero_swap_growth": true,
+      "complete_ane_model_gradient_tree_parity": false,
+      "no_python_or_numpy_gradient_bridge": false,
+      "full_step_replay_resource_thermal_audit": false
+    },
+    "production_eligible": false,
+    "claim_scope": "One exact q_proj station with two sampler-exact shards and one global update. Station speed and parity cannot establish a complete ANE decoder/model gradient tree."
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",

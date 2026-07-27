@@ -72,7 +72,7 @@
       "claim_boundary": "Core ML state is public and mutable, but Apple documents it as prediction state and provides no general transformer backward. This is a forward/input transport probe, not a training solution by itself."
     },
     "synchronous_heterogeneous_data_parallel": {
-      "scope": "preferred end-to-end training topology after exact ANE model parity",
+      "scope": "station authority and scheduling mechanics green; end-to-end topology waits for exact ANE model parity",
       "schedule": "Dispatch disjoint microbatch shards from one sampler/update batch to MLX/Metal and ANE concurrently, accumulate both gradient trees in FP32, apply one global normalization and clip, then publish one AdamW update.",
       "forbidden": [
         "stale_weight_microbatches",
@@ -81,7 +81,9 @@
         "loss normalization by device rather than total authority mass",
         "checkpoint publication before both gradient contributions join"
       ],
-      "reason": "Independent microbatches expose the most device parallelism without inserting a synchronization boundary inside every transformer layer."
+      "reason": "Independent microbatches expose the most device parallelism without inserting a synchronization boundary inside every transformer layer.",
+      "current_result": "At the exact batch-8 q_proj station, disjoint batch-4 MLX and ANE/Accelerate shards share one FP32 generation, conserve 4,096 positions of objective mass, perform zero local optimizer steps, join one FP32 gradient, and publish one clip/AdamW update. Full gradient/update parity passes. Two guarded alternating rounds reach 1.167119x mean and 1.108747x conservative control-over-candidate critical-path speedup with zero swap growth.",
+      "next_gate": "Implement one exact ANE decoder block with RMSNorm, corrected GQA, split-half RoPE, unscaled residuals, SwiGLU, loss, dX, and every parameter gradient. Do not scale station evidence into a full-model or training speed claim."
     },
     "ane_forward_dx_cpu_dw_gpu_remainder_pipeline": {
       "scope": "completed exact native zero-copy projection station; direct q_proj offload not selected",

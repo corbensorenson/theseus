@@ -1,0 +1,107 @@
+{
+  "canonical_checkpoint_mutated": false,
+  "claim_scope": "One exact q_proj station with two disjoint sampler shards and one global update. This is not a transformer, full gradient tree, training-throughput, convergence, utility, or capability claim.",
+  "disposition": "STATION_MECHANICS_GREEN_FULL_MODEL_GATED",
+  "external_inference_calls": 0,
+  "gates": {
+    "complete_ane_model_gradient_tree_parity": false,
+    "full_step_replay_resource_thermal_audit": false,
+    "matched_station_wall_gain": true,
+    "no_per_device_optimizer": true,
+    "no_python_or_numpy_gradient_bridge": false,
+    "objective_mass_conserved": true,
+    "one_global_clip_and_adamw": true,
+    "sampler_exact_disjoint_coverage": true,
+    "single_fp32_generation": true,
+    "station_gradient_and_update_parity": true
+  },
+  "join_receipt": {
+    "engines": [
+      "ane_accelerate",
+      "mlx_metal"
+    ],
+    "generation": 0,
+    "global_objective_mass": 4096.0,
+    "gradient_schema_digest": "5629ae4da8c6a63f668a702e50127872f42b8332beaed224f57f7439920c2d61",
+    "local_optimizer_steps": 0,
+    "normalization": "global_objective_mass_denominator_v1",
+    "one_fp32_accumulator": true,
+    "policy": "project_theseus_heterogeneous_microbatch_contract_v1",
+    "ready_for_single_global_clip_and_update": true,
+    "sampler_row_count": 8,
+    "sampler_rows": [
+      "row0",
+      "row1",
+      "row2",
+      "row3",
+      "row4",
+      "row5",
+      "row6",
+      "row7"
+    ],
+    "shard_ids": [
+      "ane_shard_b",
+      "mlx_shard_a"
+    ]
+  },
+  "parity": {
+    "combined_gradient": {
+      "all_finite": true,
+      "maximum_absolute_delta": 2.1112782633281313e-09,
+      "mismatch_count": 0,
+      "tolerance": 0.01
+    },
+    "first_moment": {
+      "all_finite": true,
+      "maximum_absolute_delta": 2.1112711579007737e-10,
+      "mismatch_count": 0,
+      "tolerance": 0.0001
+    },
+    "second_moment": {
+      "all_finite": true,
+      "maximum_absolute_delta": 7.120158954619649e-18,
+      "mismatch_count": 0,
+      "tolerance": 1e-06
+    },
+    "updated_weight": {
+      "all_finite": true,
+      "maximum_absolute_delta": 4.936737241223454e-07,
+      "mismatch_count": 0,
+      "tolerance": 0.0001
+    }
+  },
+  "policy": "project_theseus_heterogeneous_microbatch_projection_qualification_v1",
+  "production_eligible": false,
+  "public_benchmark_rows_read": 0,
+  "repetitions": 24,
+  "rounds": 2,
+  "shape": {
+    "hidden": 512,
+    "logical_batch": 8,
+    "projection": "decoder_self_attention_q_proj",
+    "sequence": 512,
+    "shard_batch": 4
+  },
+  "timing": {
+    "candidate_critical_path_total_milliseconds": [
+      92.87470833333334,
+      102.81566666666669
+    ],
+    "conservative_speedup_control_over_candidate": 1.108746805778731,
+    "control_two_mlx_shards_total_milliseconds": [
+      113.99654200067744,
+      114.39741699723527
+    ],
+    "mean_speedup_control_over_candidate": 1.1671190215559282
+  },
+  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION_FULL_ANE_MODEL_PARITY_REQUIRED",
+  "update_receipt": {
+    "adamw_update_count": 1,
+    "all_state_finite": true,
+    "clip_scale": 1.0,
+    "global_clip_count": 1,
+    "gradient_norm": 0.000532458543264789,
+    "policy": "project_theseus_heterogeneous_microbatch_contract_v1",
+    "published_generation_increment": 1
+  }
+}

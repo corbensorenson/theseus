@@ -409,7 +409,7 @@ def test_native_zero_copy_triad_rejects_direct_offload() -> None:
     assert native["production_eligible"] is False
 
 
-def test_recomputation_result_advances_to_whole_microbatch() -> None:
+def test_recomputation_result_is_closed_by_whole_microbatch_station() -> None:
     evidence = json.loads(
         (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
             encoding="utf-8"
@@ -420,8 +420,27 @@ def test_recomputation_result_advances_to_whole_microbatch() -> None:
 
     assert recompute["mechanics_green"] is True
     assert recompute["schedule_selected"] is False
-    assert recompute["whole_microbatch_is_immediate_next"] is True
+    assert recompute["whole_microbatch_is_immediate_next"] is False
     assert recompute["mean_speedup_mlx_over_candidate"] < 1.0
     assert recompute["conservative_speedup_mlx_over_candidate"] < 1.0
     assert recompute["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert recompute["production_eligible"] is False
+
+
+def test_whole_microbatch_station_advances_to_exact_decoder_block() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    station = report["heterogeneous_microbatch_projection"]
+
+    assert station["station_authority_green"] is True
+    assert station["full_model_ready"] is False
+    assert station["exact_ane_decoder_block_is_immediate_next"] is True
+    assert station["mean_speedup_control_over_candidate"] > 1.0
+    assert station["conservative_speedup_control_over_candidate"] > 1.0
+    assert station["authority"]["local_optimizer_steps"] == 0
+    assert station["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert station["production_eligible"] is False

@@ -546,7 +546,11 @@ def _ane_activation_recomputation_record(
         "conservative_speedup_mlx_over_candidate": conservative_speedup,
         "mechanics_green": mechanics_green,
         "schedule_selected": selected,
-        "whole_microbatch_is_immediate_next": mechanics_green and not selected,
+        "whole_microbatch_is_immediate_next": (
+            mechanics_green
+            and not selected
+            and not bool(evidence.get("heterogeneous_microbatch_projection"))
+        ),
         "memory": record.get("memory"),
         "resource_receipt": record.get("resource_receipt"),
         "gates": gates,
@@ -556,6 +560,104 @@ def _ane_activation_recomputation_record(
             "independent attention-backward window. A joined-wall loss does "
             "not falsify other recomputation schedules, whole-microbatch "
             "parallelism, matched-arm concurrency, or inference."
+        ),
+    }
+
+
+def _heterogeneous_microbatch_projection_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("heterogeneous_microbatch_projection") or {}
+    controls = [
+        float(value)
+        for value in record.get(
+            "control_two_mlx_shards_total_milliseconds"
+        )
+        or []
+    ]
+    candidates = [
+        float(value)
+        for value in record.get(
+            "candidate_critical_path_total_milliseconds"
+        )
+        or []
+    ]
+    if record and (
+        len(controls) < 2
+        or len(candidates) < 2
+        or any(
+            not math.isfinite(value) or value <= 0
+            for value in controls + candidates
+        )
+    ):
+        raise PlanningFault("heterogeneous_microbatch_timings_invalid")
+    mean_speedup = (
+        statistics.fmean(controls) / statistics.fmean(candidates)
+        if controls and candidates
+        else None
+    )
+    conservative_speedup = (
+        min(controls) / max(candidates)
+        if controls and candidates
+        else None
+    )
+    recorded_mean = _finite_measurement(
+        record, "mean_speedup_control_over_candidate"
+    )
+    recorded_conservative = _finite_measurement(
+        record, "conservative_speedup_control_over_candidate"
+    )
+    if mean_speedup is not None and (
+        not math.isclose(mean_speedup, recorded_mean or -1, rel_tol=1e-6)
+        or not math.isclose(
+            conservative_speedup,
+            recorded_conservative or -1,
+            rel_tol=1e-6,
+        )
+    ):
+        raise PlanningFault("heterogeneous_microbatch_speedup_inconsistent")
+    gates = record.get("gates") or {}
+    authority_green = all(
+        gates.get(gate) is True
+        for gate in (
+            "sampler_exact_disjoint_coverage",
+            "objective_mass_conserved",
+            "single_fp32_generation",
+            "no_per_device_optimizer",
+            "one_global_clip_and_adamw",
+            "station_gradient_and_update_parity",
+            "matched_station_wall_gain",
+            "resource_safety",
+            "zero_swap_growth",
+        )
+    )
+    full_model_ready = (
+        authority_green
+        and gates.get("complete_ane_model_gradient_tree_parity") is True
+        and gates.get("no_python_or_numpy_gradient_bridge") is True
+        and gates.get("full_step_replay_resource_thermal_audit") is True
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "control_two_mlx_shards_total_milliseconds": controls,
+        "candidate_critical_path_total_milliseconds": candidates,
+        "mean_speedup_control_over_candidate": mean_speedup,
+        "conservative_speedup_control_over_candidate": conservative_speedup,
+        "station_authority_green": authority_green,
+        "full_model_ready": full_model_ready,
+        "exact_ane_decoder_block_is_immediate_next": (
+            authority_green and not full_model_ready
+        ),
+        "authority": record.get("authority"),
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "One exact q_proj station with two sampler-exact shards and one "
+            "global update. Station speed and parity cannot establish a "
+            "complete ANE decoder/model gradient tree."
         ),
     }
 
@@ -637,6 +739,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     ane_activation_recomputation = (
         _ane_activation_recomputation_record(evidence)
     )
+    heterogeneous_microbatch_projection = (
+        _heterogeneous_microbatch_projection_record(evidence)
+    )
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -667,6 +772,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
             native_zero_copy_projection_triad
         ),
         "ane_activation_recomputation": ane_activation_recomputation,
+        "heterogeneous_microbatch_projection": (
+            heterogeneous_microbatch_projection
+        ),
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

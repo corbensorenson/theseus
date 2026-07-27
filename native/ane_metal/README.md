@@ -123,6 +123,17 @@ schedule is not selected and no custom backward is authorized from it. Its
 288 MiB twelve-layer release is a tensor-size ceiling, not an observed
 allocator or larger-batch result.
 
+The same native triad now has a `--gradient-only` mode for whole-microbatch
+work. It returns forward, `dX`, and FP32 `dW` while explicitly performing zero
+local optimizer steps. `scripts/heterogeneous_microbatch_contract.py` rejects
+mixed generations, sampler overlap/gaps, local normalization, non-FP32 or
+nonfinite gradients, and per-device updates before one global clip/AdamW
+publication. The exact two-shard `q_proj` qualification passes full
+gradient/update parity and reaches `1.167119x` mean and `1.108747x`
+conservative critical-path speedup versus two MLX shards. It remains
+station-only: the Python/NumPy qualification join and missing complete ANE
+decoder gradient tree block production eligibility.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

@@ -19,6 +19,7 @@
 #include <dlfcn.h>
 #include <mach/mach_time.h>
 #include <math.h>
+#include <unistd.h>
 
 #include "ane_metal_surface_contract.h"
 
@@ -716,7 +717,7 @@ static BOOL EncodeUpdate(
 
 static BOOL RunStep(
     ANEModel *ane, MetalStation *metal, TransactionState *state,
-    uint64_t generation, StepReceipt *receipt, NSError **error
+    uint64_t generation, BOOL applyUpdate, StepReceipt *receipt, NSError **error
 ) {
     uint64_t joinedStarted = mach_absolute_time();
     state->forwardCustody.active_writer = THESEUS_WRITER_METAL;
@@ -785,13 +786,21 @@ static BOOL RunStep(
     state->dxOutputCustody.active_writer = THESEUS_WRITER_NONE;
     state->dxOutputCustody.generation = generation;
 
-    if (!EncodeUpdate(
-            metal, state, error, &receipt->metalUpdateMilliseconds)) {
-        return NO;
+    if (applyUpdate) {
+        if (!EncodeUpdate(
+                metal, state, error, &receipt->metalUpdateMilliseconds)) {
+            return NO;
+        }
+        receipt->gradientNorm =
+            ((float *)[state->gradientNorm contents])[0];
+    } else {
+        receipt->metalUpdateMilliseconds = 0.0;
+        receipt->gradientNorm = cblas_snrm2(
+            (int)WEIGHT_ELEMENTS,
+            (const float *)[state->dw contents],
+            1);
     }
     receipt->loss = ((float *)[state->loss contents])[0];
-    receipt->gradientNorm =
-        ((float *)[state->gradientNorm contents])[0];
     receipt->joinedMilliseconds =
         Milliseconds(mach_absolute_time() - joinedStarted);
     return YES;
@@ -895,6 +904,23 @@ static BOOL WriteJSON(NSString *path, NSDictionary *report, NSError **error) {
     return [withNewline writeToFile:path options:NSDataWritingAtomic error:error];
 }
 
+static BOOL WaitForGo(NSString *readyPath, NSString *goPath) {
+    if (!readyPath.length && !goPath.length) return YES;
+    if (!readyPath.length || !goPath.length) return NO;
+    if (![@"ready\n" writeToFile:readyPath
+                        atomically:YES
+                          encoding:NSUTF8StringEncoding
+                             error:nil]) {
+        return NO;
+    }
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:30.0];
+    while (![[NSFileManager defaultManager] fileExistsAtPath:goPath]) {
+        if ([deadline timeIntervalSinceNow] <= 0.0) return NO;
+        usleep(1000);
+    }
+    return YES;
+}
+
 int main(int argc, const char *argv[]) {
     @autoreleasepool {
         setbuf(stdout, NULL);
@@ -902,8 +928,11 @@ int main(int argc, const char *argv[]) {
         NSString *outputPath = nil;
         NSString *artifactDirectory = nil;
         NSString *inputDirectory = nil;
+        NSString *readyPath = nil;
+        NSString *goPath = nil;
         int steps = 64;
         int warmup = 2;
+        BOOL gradientOnly = NO;
         for (int index = 1; index < argc; ++index) {
             if (!strcmp(argv[index], "--out") && index + 1 < argc) {
                 outputPath = [NSString stringWithUTF8String:argv[++index]];
@@ -917,10 +946,20 @@ int main(int argc, const char *argv[]) {
             ) {
                 inputDirectory =
                     [NSString stringWithUTF8String:argv[++index]];
+            } else if (
+                !strcmp(argv[index], "--ready-file") && index + 1 < argc
+            ) {
+                readyPath = [NSString stringWithUTF8String:argv[++index]];
+            } else if (
+                !strcmp(argv[index], "--go-file") && index + 1 < argc
+            ) {
+                goPath = [NSString stringWithUTF8String:argv[++index]];
             } else if (!strcmp(argv[index], "--steps") && index + 1 < argc) {
                 steps = atoi(argv[++index]);
             } else if (!strcmp(argv[index], "--warmup") && index + 1 < argc) {
                 warmup = atoi(argv[++index]);
+            } else if (!strcmp(argv[index], "--gradient-only")) {
+                gradientOnly = YES;
             } else {
                 fprintf(stderr, "unknown_or_incomplete_argument:%s\n", argv[index]);
                 return 2;
@@ -929,7 +968,9 @@ int main(int argc, const char *argv[]) {
         if (!outputPath || !artifactDirectory || steps < 2 || warmup < 0) {
             fprintf(stderr, "usage: %s --out REPORT --artifact-dir DIR "
                             "[--input-dir DIR] "
-                            "[--steps 64] [--warmup 2]\n", argv[0]);
+                            "[--steps 64] [--warmup 2] "
+                            "[--gradient-only] "
+                            "[--ready-file PATH --go-file PATH]\n", argv[0]);
             return 2;
         }
         NSError *error = nil;
@@ -989,13 +1030,19 @@ int main(int argc, const char *argv[]) {
             RestoreState(
                 &state, initialWeight, initialFirst, initialSecond);
             StepReceipt ignored = {0};
-            if (!RunStep(ane, &metal, &state, 0, &ignored, &error)) {
+            if (!RunStep(
+                    ane, &metal, &state, 0, !gradientOnly,
+                    &ignored, &error)) {
                 fprintf(stderr, "warmup_failed:%s\n",
                         error.localizedDescription.UTF8String);
                 return 9;
             }
         }
         RestoreState(&state, initialWeight, initialFirst, initialSecond);
+        if (!WaitForGo(readyPath, goPath)) {
+            fprintf(stderr, "gradient_barrier_failed\n");
+            return 9;
+        }
 
         NSArray<NSString *> *timingKeys = @[
             @"pack_forward", @"ane_forward", @"loss_and_pack_dx",
@@ -1021,7 +1068,8 @@ int main(int argc, const char *argv[]) {
             uint64_t generation = (uint64_t)step;
             StepReceipt receipt = {0};
             if (!RunStep(
-                    ane, &metal, &state, generation, &receipt, &error)) {
+                    ane, &metal, &state, generation, !gradientOnly,
+                    &receipt, &error)) {
                 fprintf(stderr, "step_%d_failed:%s\n", step + 1,
                         error.localizedDescription.UTF8String);
                 return 10;
@@ -1099,7 +1147,7 @@ int main(int argc, const char *argv[]) {
         StepReceipt replayReceiptA = {0};
         BOOL replayAOK = RunStep(
             ane, &metal, &state, (uint64_t)(steps / 2),
-            &replayReceiptA, &error);
+            !gradientOnly, &replayReceiptA, &error);
         float *replayAWeight = malloc(stateBytes);
         float *replayAFirst = malloc(stateBytes);
         float *replayASecond = malloc(stateBytes);
@@ -1113,7 +1161,7 @@ int main(int argc, const char *argv[]) {
         StepReceipt replayReceiptB = {0};
         BOOL replayBOK = RunStep(
             ane, &metal, &state, (uint64_t)(steps / 2),
-            &replayReceiptB, &error);
+            !gradientOnly, &replayReceiptB, &error);
         NSData *replayBDX = SurfaceData(
             state.dxOutput, ACTIVATION_ELEMENTS * sizeof(_Float16));
         BOOL replayExact = replayAOK && replayBOK &&
@@ -1164,7 +1212,13 @@ int main(int argc, const char *argv[]) {
                 @"projection" : @"decoder_self_attention_q_proj",
             },
             @"execution" : @{
-                @"optimizer_steps" : @(steps),
+                @"mode" : (
+                    gradientOnly
+                        ? @"gradient_contribution_only"
+                        : @"optimizer_transaction"
+                ),
+                @"gradient_transactions" : @(steps),
+                @"optimizer_steps" : @(gradientOnly ? 0 : steps),
                 @"warmup_steps" : @(warmup),
                 @"input_source" : (
                     inputDirectory
@@ -1177,12 +1231,17 @@ int main(int argc, const char *argv[]) {
                 @"ane_forward" : @"private_compile_once_dynamic_matmul",
                 @"ane_input_gradient" : @"private_compile_once_dynamic_matmul",
                 @"cpu_weight_gradient" : @"single_thread_accelerate_sgemm_shared_buffers",
-                @"metal_remainder" : @"loss_dy_reductions_clip_adamw",
+                @"metal_remainder" : (
+                    gradientOnly
+                        ? @"loss_dy_no_local_optimizer"
+                        : @"loss_dy_reductions_clip_adamw"
+                ),
             },
             @"custody" : @{
                 @"single_generation_conserved" : @(generationConserved),
                 @"one_fp32_gradient_accumulator" : @YES,
-                @"one_fp32_adamw_update_per_step" : @YES,
+                @"one_fp32_adamw_update_per_step" : @(!gradientOnly),
+                @"local_optimizer_update_forbidden" : @(gradientOnly),
                 @"hot_step_python_or_numpy" : @NO,
                 @"intermediate_host_tensor_copy" : @NO,
                 @"shared_fp32_x_dy_buffers_consumed_by_accelerate" : @YES,
@@ -1216,10 +1275,15 @@ int main(int argc, const char *argv[]) {
                 @"sampler_and_objective_mass_conservation",
                 @"independent_gate_audit",
             ],
-            @"claim_scope" :
-                @"One deterministic q_proj-shaped native optimizer transaction. "
-                 "No transformer, convergence, utility, capability, or production "
-                 "training speedup claim is allowed.",
+            @"claim_scope" : (
+                gradientOnly
+                    ? @"One deterministic q_proj-shaped native gradient contribution. "
+                      "No optimizer, transformer, convergence, utility, capability, "
+                      "or production training speedup claim is allowed."
+                    : @"One deterministic q_proj-shaped native optimizer transaction. "
+                      "No transformer, convergence, utility, capability, or production "
+                      "training speedup claim is allowed."
+            ),
             @"public_benchmark_rows_read" : @0,
             @"external_inference_calls" : @0,
         };

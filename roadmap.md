@@ -1077,11 +1077,13 @@ The training implementation order is therefore:
    green and fits inside an independent attention-backward window, but accelerator
    contention makes the joined critical path slower. Do not build the missing custom
    backward for this schedule.
-5. **Then test whole-microbatch and whole-arm pipelines.** Sampler-exact ANE/Metal data
-   parallel remains a strong long-window candidate. Separately, independent matched
-   candidates may occupy different engines to shorten total experiment-calendar wall, but
-   this does not accelerate either model and may not weaken matched data, compute,
-   optimizer, or evaluation authority.
+5. **Whole-microbatch station mechanics green; close the exact decoder block.** The
+   sampler/mass/generation/one-update contract and exact `q_proj` two-shard transaction now
+   win matched station wall. Implement RMSNorm, corrected GQA, split-half RoPE, residual,
+   SwiGLU, loss, `dX`, and every block parameter gradient before extending this to a full
+   model. Separately, independent matched candidates may occupy different engines to
+   shorten experiment-calendar wall, but that does not accelerate either model or weaken
+   matched data, compute, optimizer, or evaluation authority.
 6. **Qualify the joined route.** Require no hot-step Python/NumPy tensor round trip,
    deterministic save/reload, 64-step stability, multiple alternating sustained repeats,
    zero resource failure, thermal evidence, and a joined wall/time-to-quality win outside
@@ -1166,10 +1168,25 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
    `236.656 MiB` microbatch-six live-reserve deficit only in theory. No MLX allocator
    release or faster sustained batch was measured, and MLX autograd cannot consume the
    private IOSurface output. Do not build a native SwiGLU backward on a losing schedule.
-8. The immediate owner is sampler-exact whole-microbatch heterogeneous execution, followed
-   by concurrent matched-arm execution. Both give ANE long independent work windows and
-   avoid the per-layer synchronization that caused this loss.
-9. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+8. The whole-microbatch authority and station transaction are now executable. Two disjoint
+   batch-4 shards cover one logical batch of eight and exactly `4,096` positions of
+   objective mass. The MLX/Metal and ANE/Accelerate shards read generation zero, perform
+   zero local optimizer steps, join one FP32 gradient, clip once, and publish one AdamW
+   update. Combined-gradient, final-weight, and moment maximum deltas versus two MLX shards
+   are `2.11e-9`, `4.94e-7`, `2.11e-10`, and `7.12e-18`, all with zero registered
+   mismatches.
+9. The guarded alternating totals are `113.997-114.397 ms` for two MLX shards and
+   `92.875-102.816 ms` for the heterogeneous critical path: `1.167119x` mean and
+   `1.108747x` conservative control-over-candidate speedup. The run peaks at `192.172 MiB`
+   process RSS and `295.422 MiB` inferred unified memory, preserves `3,862.109 MiB`
+   reclaimable memory, and grows swap by `0.0 MiB`.
+10. This clears only station scheduling and authority. The qualification bridge reads the
+   station gradient into Python/NumPy, and the ANE shard does not yet emit the complete
+   transformer gradient tree. The immediate owner is therefore the exact decoder block:
+   RMSNorm, corrected GQA, split-half RoPE, unscaled residuals, SwiGLU, scalar loss, `dX`,
+   and every parameter gradient. Then add source encoder, decoder cross-attention, pointer
+   generation, and auxiliary objectives before full-model heterogeneous data parallelism.
+11. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.
@@ -1189,6 +1206,11 @@ The recomputation sources are `native/ane_metal/ane_swiglu_activation_recompute.
 `scripts/ane_activation_recomputation_qualification.py`; their final receipts are
 `reports/ane_activation_recomputation_m1.json` and
 `reports/ane_activation_recomputation_m1.host_resource_safety.json`.
+The whole-microbatch authority owner is
+`scripts/heterogeneous_microbatch_contract.py`; the exact station runner is
+`scripts/heterogeneous_microbatch_projection_qualification.py`; its final receipts are
+`reports/heterogeneous_microbatch_projection_m1.json` and
+`reports/heterogeneous_microbatch_projection_m1.host_resource_safety.json`.
 
 ### 2026-07-26 Acceleration-First Launch Gate
 
