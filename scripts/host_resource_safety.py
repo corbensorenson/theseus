@@ -52,17 +52,21 @@ class HostSafetyPolicy:
     swapout_growth_action: str = "hard_stop"
 
     def validate(self, *, physical_memory_mib: float) -> None:
-        numeric_values = (
+        strictly_positive_values = (
             self.max_process_memory_mib,
-            self.minimum_available_before_launch_mib,
-            self.minimum_available_during_run_mib,
-            self.maximum_swapout_growth_mib,
             self.maximum_wall_seconds,
             self.poll_interval_seconds,
             self.terminate_grace_seconds,
         )
-        if any(float(value) <= 0 for value in numeric_values):
+        nonnegative_thresholds = (
+            self.minimum_available_before_launch_mib,
+            self.minimum_available_during_run_mib,
+            self.maximum_swapout_growth_mib,
+        )
+        if any(float(value) <= 0 for value in strictly_positive_values):
             raise HostResourceSafetyFault("host_safety_policy_nonpositive")
+        if any(float(value) < 0 for value in nonnegative_thresholds):
+            raise HostResourceSafetyFault("host_safety_policy_negative_threshold")
         if self.swapout_growth_action not in SWAPOUT_GROWTH_ACTIONS:
             raise HostResourceSafetyFault("swapout_growth_action_invalid")
         if self.max_process_memory_mib > physical_memory_mib * 0.5:

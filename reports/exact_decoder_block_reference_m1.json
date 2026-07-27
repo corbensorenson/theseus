@@ -1,0 +1,310 @@
+{
+  "policy": "project_theseus_exact_decoder_block_qualification_v1",
+  "state": "EXACT_BLOCK_REFERENCE_GREEN_NATIVE_NOT_YET_EXECUTED",
+  "claim_scope": "One canonical decoder self-attention plus SwiGLU block. This is a numerical ABI and implementation gate, not a full-model or capability claim.",
+  "shape": {
+    "batch": 1,
+    "sequence": 128,
+    "d_model": 512,
+    "ff_dim": 1536,
+    "query_heads": 8,
+    "kv_heads": 2,
+    "head_dim": 64
+  },
+  "semantics": {
+    "rms_norm_epsilon": 1e-05,
+    "rope": "split_half_traditional_false_base_10000",
+    "gqa": "contiguous_four_query_heads_per_kv_head",
+    "attention": "causal_scaled_dot_product",
+    "residual": "unscaled_add",
+    "feed_forward": "down_silu_gate_times_up",
+    "parameter_biases": false,
+    "loss": "masked_half_mean_squared_error_over_authority_mass"
+  },
+  "parameter_schema": {
+    "attention_norm.weight": [
+      512
+    ],
+    "attention.q_proj.weight": [
+      512,
+      512
+    ],
+    "attention.k_proj.weight": [
+      128,
+      512
+    ],
+    "attention.v_proj.weight": [
+      128,
+      512
+    ],
+    "attention.out_proj.weight": [
+      512,
+      512
+    ],
+    "ffn_norm.weight": [
+      512
+    ],
+    "feed_forward.gate.weight": [
+      1536,
+      512
+    ],
+    "feed_forward.up.weight": [
+      1536,
+      512
+    ],
+    "feed_forward.down.weight": [
+      512,
+      1536
+    ]
+  },
+  "parameter_count": 3015680,
+  "objective": {
+    "torch_authority_mass": 64000.0,
+    "mlx_authority_mass": 64000.0,
+    "torch_loss": 0.22058868408203125,
+    "mlx_loss": 0.22058866918087006,
+    "absolute_loss_delta": 1.4901161193847656e-08
+  },
+  "comparisons": {
+    "output": {
+      "shape": [
+        1,
+        128,
+        512
+      ],
+      "tolerance": 0.0001,
+      "maximum_absolute_delta": 4.172325134277344e-06,
+      "mean_absolute_delta": 7.07044923942135e-07,
+      "maximum_relative_delta": 0.060515603799185885,
+      "mismatch_count": 0,
+      "all_finite": true,
+      "nonzero_fraction": 1.0
+    },
+    "input_gradient": {
+      "shape": [
+        1,
+        128,
+        512
+      ],
+      "tolerance": 0.0001,
+      "maximum_absolute_delta": 2.6775524020195007e-09,
+      "mean_absolute_delta": 2.9579903598146023e-10,
+      "maximum_relative_delta": 0.03959041403798334,
+      "mismatch_count": 0,
+      "all_finite": true,
+      "nonzero_fraction": 0.9765625
+    },
+    "parameter_gradients": {
+      "attention_norm.weight": {
+        "shape": [
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 1.4260876923799515e-09,
+        "mean_absolute_delta": 4.1030201458625015e-10,
+        "maximum_relative_delta": 0.00034683814844672754,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "attention.q_proj.weight": {
+        "shape": [
+          512,
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 1.6298145055770874e-09,
+        "mean_absolute_delta": 2.3134025118091016e-10,
+        "maximum_relative_delta": 5.231298746522537,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "attention.k_proj.weight": {
+        "shape": [
+          128,
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 2.7321220841258764e-09,
+        "mean_absolute_delta": 4.74434117961667e-10,
+        "maximum_relative_delta": 0.1610174412082666,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "attention.v_proj.weight": {
+        "shape": [
+          128,
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 4.190951585769653e-09,
+        "mean_absolute_delta": 5.144828612885666e-10,
+        "maximum_relative_delta": 0.05309697023657372,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "attention.out_proj.weight": {
+        "shape": [
+          512,
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 1.862645149230957e-09,
+        "mean_absolute_delta": 2.486461135060983e-10,
+        "maximum_relative_delta": 1.5475805258076858,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "ffn_norm.weight": {
+        "shape": [
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 2.0954757928848267e-09,
+        "mean_absolute_delta": 3.885816113324836e-10,
+        "maximum_relative_delta": 1.1691201799839886e-06,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "feed_forward.gate.weight": {
+        "shape": [
+          1536,
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 2.0954757928848267e-09,
+        "mean_absolute_delta": 9.776570871180256e-11,
+        "maximum_relative_delta": 1.0325032301588095,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "feed_forward.up.weight": {
+        "shape": [
+          1536,
+          512
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 2.444721758365631e-09,
+        "mean_absolute_delta": 8.743408918731165e-11,
+        "maximum_relative_delta": 0.2282597662833342,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      },
+      "feed_forward.down.weight": {
+        "shape": [
+          512,
+          1536
+        ],
+        "tolerance": 0.0001,
+        "maximum_absolute_delta": 1.862645149230957e-09,
+        "mean_absolute_delta": 9.695431981225837e-11,
+        "maximum_relative_delta": 0.14530307541830684,
+        "mismatch_count": 0,
+        "all_finite": true,
+        "nonzero_fraction": 1.0
+      }
+    }
+  },
+  "replay": {
+    "exact": true,
+    "digests": {
+      "output": {
+        "first": "f09d4dc2477d42df8ce5a3596c7591f2e72f719c57f0bc725aab4a0f05e4c85a",
+        "second": "f09d4dc2477d42df8ce5a3596c7591f2e72f719c57f0bc725aab4a0f05e4c85a"
+      },
+      "input_gradient": {
+        "first": "e62f2ab945029d2cf884dd8c7352c459589d29f1dc106bcafdccc94637a5b83d",
+        "second": "e62f2ab945029d2cf884dd8c7352c459589d29f1dc106bcafdccc94637a5b83d"
+      },
+      "parameter_gradient:attention_norm.weight": {
+        "first": "00b3faa163262cb7ad070e59a8b69abde2d4d12b7e8bda4d3163fb1703bf18c4",
+        "second": "00b3faa163262cb7ad070e59a8b69abde2d4d12b7e8bda4d3163fb1703bf18c4"
+      },
+      "parameter_gradient:attention.q_proj.weight": {
+        "first": "210e3aa0d02d472a0c88359bfa8bc313653c5007400bcf5174705a0d1416a5b7",
+        "second": "210e3aa0d02d472a0c88359bfa8bc313653c5007400bcf5174705a0d1416a5b7"
+      },
+      "parameter_gradient:attention.k_proj.weight": {
+        "first": "c917018fa0f507e12d0b1b01ac71f8306a31a5f64a950616841a099768542884",
+        "second": "c917018fa0f507e12d0b1b01ac71f8306a31a5f64a950616841a099768542884"
+      },
+      "parameter_gradient:attention.v_proj.weight": {
+        "first": "1e738583b5a52396ba962d398e5535a83e21087929ff344672683a5c41a1b92f",
+        "second": "1e738583b5a52396ba962d398e5535a83e21087929ff344672683a5c41a1b92f"
+      },
+      "parameter_gradient:attention.out_proj.weight": {
+        "first": "4f40f0a55209e00c4166bee7e722a360b2ed01ded93772283d5d5db5c80ce0bb",
+        "second": "4f40f0a55209e00c4166bee7e722a360b2ed01ded93772283d5d5db5c80ce0bb"
+      },
+      "parameter_gradient:ffn_norm.weight": {
+        "first": "2123d4829ba993bfc43524a21c9002f11bdd8e3bb09ceb3c42e530c582ffd0c5",
+        "second": "2123d4829ba993bfc43524a21c9002f11bdd8e3bb09ceb3c42e530c582ffd0c5"
+      },
+      "parameter_gradient:feed_forward.gate.weight": {
+        "first": "6ec1f504bc71036a64099081ea578b3b0bd2043359efc9269ca0b63807666b7e",
+        "second": "6ec1f504bc71036a64099081ea578b3b0bd2043359efc9269ca0b63807666b7e"
+      },
+      "parameter_gradient:feed_forward.up.weight": {
+        "first": "9170433cf5c4412144e514d2e386bf78852891209a801ae04a433c31d68bd650",
+        "second": "9170433cf5c4412144e514d2e386bf78852891209a801ae04a433c31d68bd650"
+      },
+      "parameter_gradient:feed_forward.down.weight": {
+        "first": "333e15fc54c5460ac17487886700e038fcb1dfb11cbf118d7c9fb43419146619",
+        "second": "333e15fc54c5460ac17487886700e038fcb1dfb11cbf118d7c9fb43419146619"
+      }
+    }
+  },
+  "timing": {
+    "compiled_mlx_mean_milliseconds": 4.461861002103736,
+    "scope": "reference_harness_only_not_a_native_or_full_step_speed_claim"
+  },
+  "gates": {
+    "independent_framework_numerical_parity": true,
+    "every_parameter_gradient_present": true,
+    "all_finite": true,
+    "exact_replay": true,
+    "native_ane_block_executed": false,
+    "joined_wall_speedup_proven": false,
+    "production_eligible": false
+  },
+  "native_next": {
+    "state": "IMMEDIATE_NEXT_AFTER_REFERENCE_ABI",
+    "required_devices": {
+      "ane": "long forward and input-gradient subgraphs",
+      "accelerate": "single-thread FP32 parameter gradients where faster",
+      "metal": "attention, elementwise work, scalar loss, reductions, accumulation, clipping, and sole AdamW update"
+    },
+    "required_evidence": [
+      "all nine parameter leaves and input gradient emitted under one generation tag",
+      "FP16 compute compared with the frozen FP32 reference and a matched FP16 MLX control",
+      "one objective-mass normalization, one clip, and one AdamW update",
+      "save/reload and exact replay",
+      "64-step stability with overflow replay",
+      "alternating joined-wall repeats",
+      "resource and sustained thermal qualification",
+      "no Python or NumPy tensor round trip in the measured hot step"
+    ]
+  },
+  "source_boundary": {
+    "maderix_ane": {
+      "repository": "https://github.com/maderix/ANE",
+      "license": "MIT",
+      "use": "Private runtime transport and compile-once dynamic-weight MIL mechanics only",
+      "forbidden_imports": [
+        "interleaved adjacent-pair RoPE",
+        "alternating GQA head expansion",
+        "scaled residual branches",
+        "vocabulary compaction",
+        "private optimizer authority"
+      ]
+    }
+  },
+  "capability_claim": "NONE_ENGINEERING_NUMERICAL_ABI_ONLY"
+}

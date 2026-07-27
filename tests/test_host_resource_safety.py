@@ -67,6 +67,33 @@ def test_policy_overrides_size_guard_to_workload_without_hidden_floor(
     assert policy.poll_interval_seconds == default.poll_interval_seconds
 
 
+def test_explicit_zero_reserve_floor_is_observation_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(safety, "physical_memory_mib", lambda: 16384.0)
+    policy = safety.policy_with_overrides(
+        safety.default_policy(maximum_wall_seconds=60),
+        minimum_available_before_launch_mib=0,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+    )
+
+    assert policy.minimum_available_before_launch_mib == 0
+    assert policy.minimum_available_during_run_mib == 0
+    assert policy.maximum_swapout_growth_mib == 0
+
+
+def test_negative_reserve_threshold_remains_invalid(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(safety, "physical_memory_mib", lambda: 16384.0)
+    with pytest.raises(safety.HostResourceSafetyFault, match="negative_threshold"):
+        safety.policy_with_overrides(
+            safety.default_policy(maximum_wall_seconds=60),
+            minimum_available_before_launch_mib=-1,
+        )
+
+
 def test_policy_overrides_still_reject_invalid_reserve_order(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

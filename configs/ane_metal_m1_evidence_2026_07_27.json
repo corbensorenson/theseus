@@ -562,6 +562,62 @@
     "next_gate": "Close one exact ANE decoder block before full-model data parallelism: RMSNorm, corrected GQA, split-half RoPE, unscaled residuals, SwiGLU, station loss, input gradient, and every parameter gradient. Then add source encoder, cross-attention, pointer generation, and auxiliary objectives before any production eligibility.",
     "claim_scope": "One exact q_proj station with two disjoint sampler shards and one global update. This is not a transformer, complete gradient tree, training-throughput, convergence, utility, serving, or capability claim."
   },
+  "exact_decoder_block_reference": {
+    "state": "EXACT_BLOCK_REFERENCE_GREEN_NATIVE_NOT_YET_EXECUTED",
+    "disposition": "NUMERICAL_ABI_FROZEN_NATIVE_IMPLEMENTATION_IMMEDIATE",
+    "shape": {
+      "batch": 1,
+      "sequence": 128,
+      "d_model": 512,
+      "ff_dim": 1536,
+      "query_heads": 8,
+      "kv_heads": 2,
+      "head_dim": 64
+    },
+    "parameter_count": 3015680,
+    "parameter_leaf_count": 9,
+    "semantics": {
+      "rms_norm_epsilon": 1e-05,
+      "rope": "split_half_traditional_false_base_10000",
+      "gqa": "contiguous_four_query_heads_per_kv_head",
+      "attention": "causal_scaled_dot_product",
+      "residual": "unscaled_add",
+      "feed_forward": "down_silu_gate_times_up",
+      "loss": "masked_half_mean_squared_error_over_authority_mass"
+    },
+    "maximum_absolute_delta_by_state": {
+      "output": 4.172325134277344e-06,
+      "loss": 1.4901161193847656e-08,
+      "input_gradient": 2.6775524020195007e-09,
+      "parameter_gradient": 4.190951585769653e-09
+    },
+    "compiled_mlx_reference_mean_milliseconds": 4.461861002103736,
+    "gates": {
+      "independent_pytorch_mlx_output_and_loss_parity": true,
+      "independent_pytorch_mlx_input_gradient_parity": true,
+      "every_parameter_gradient_present_and_parity": true,
+      "all_finite": true,
+      "exact_replay": true,
+      "resource_safety": true,
+      "zero_swap_growth": true,
+      "native_ane_block_executed": false,
+      "matched_joined_wall_gain": false,
+      "no_python_or_numpy_hot_step_bridge": false,
+      "production_eligible": false
+    },
+    "resource_receipt": {
+      "path": "reports/exact_decoder_block_reference_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 1.919,
+      "maximum_process_rss_mib": 347.0,
+      "maximum_inferred_unified_memory_mib": 347.0,
+      "minimum_reclaimable_available_mib": 3684.5,
+      "minimum_available_memory_floor_mib": 0.0,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "next_gate": "Implement this exact ABI in the native IOSurface route: ANE long forward and dX subgraphs, single-thread Accelerate FP32 parameter gradients where faster, Metal attention/elementwise/loss/reduction, and one generation-tagged global update. Then compare against both frozen FP32 and matched FP16 MLX controls.",
+    "claim_scope": "Independent-framework numerical ABI and gradient-tree reference for one decoder block only. No native ANE execution, full-model acceleration, convergence, serving, or capability claim."
+  },
   "three_engine_training_gates": {
     "exact_ane_forward_parity": true,
     "exact_ane_input_gradient_parity": true,

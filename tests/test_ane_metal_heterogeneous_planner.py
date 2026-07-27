@@ -444,3 +444,21 @@ def test_whole_microbatch_station_advances_to_exact_decoder_block() -> None:
     assert station["authority"]["local_optimizer_steps"] == 0
     assert station["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert station["production_eligible"] is False
+
+
+def test_exact_decoder_block_reference_freezes_native_target() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    block = report["exact_decoder_block_reference"]
+
+    assert block["reference_abi_green"] is True
+    assert block["native_block_green"] is False
+    assert block["native_implementation_is_immediate_next"] is True
+    assert block["parameter_leaf_count"] == 9
+    assert block["parameter_count"] == 3_015_680
+    assert block["resource_receipt"]["minimum_available_memory_floor_mib"] == 0.0
+    assert block["production_eligible"] is False

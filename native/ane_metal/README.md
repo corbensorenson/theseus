@@ -134,6 +134,18 @@ conservative critical-path speedup versus two MLX shards. It remains
 station-only: the Python/NumPy qualification join and missing complete ANE
 decoder gradient tree block production eligibility.
 
+`configs/exact_decoder_block_qualification.json` and
+`scripts/exact_decoder_block_qualification.py` now freeze the next native
+target before importing more kernels. The independent PyTorch/MLX reference
+covers the exact width-512, FFN-1536, 8-query/2-KV-head feature geometry,
+contiguous 4:1 GQA ownership, split-half RoPE, unscaled residuals, both
+RMSNorm leaves, all seven bias-free linear leaves, one masked scalar loss,
+`dX`, and all nine parameter gradients (3,015,680 parameters). The reference
+gate is GREEN with `4.18e-6` maximum output delta, `1.50e-8` loss delta,
+`2.68e-9` input-gradient delta, `4.20e-9` worst parameter-gradient delta, and
+exact replay. This is the numerical ABI for the native port, not evidence that
+the native ANE block exists or is faster.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

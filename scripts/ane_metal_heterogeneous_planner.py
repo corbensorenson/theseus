@@ -662,6 +662,65 @@ def _heterogeneous_microbatch_projection_record(
     }
 
 
+def _exact_decoder_block_reference_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("exact_decoder_block_reference") or {}
+    deltas = record.get("maximum_absolute_delta_by_state") or {}
+    if record and (
+        int(record.get("parameter_leaf_count", 0)) != 9
+        or int(record.get("parameter_count", 0)) != 3_015_680
+        or any(
+            not math.isfinite(float(deltas.get(name, float("nan"))))
+            or float(deltas.get(name, -1.0)) < 0.0
+            for name in ("output", "loss", "input_gradient", "parameter_gradient")
+        )
+    ):
+        raise PlanningFault("exact_decoder_block_reference_invalid")
+    gates = record.get("gates") or {}
+    reference_green = all(
+        gates.get(gate) is True
+        for gate in (
+            "independent_pytorch_mlx_output_and_loss_parity",
+            "independent_pytorch_mlx_input_gradient_parity",
+            "every_parameter_gradient_present_and_parity",
+            "all_finite",
+            "exact_replay",
+            "resource_safety",
+            "zero_swap_growth",
+        )
+    )
+    native_green = (
+        reference_green
+        and gates.get("native_ane_block_executed") is True
+        and gates.get("matched_joined_wall_gain") is True
+        and gates.get("no_python_or_numpy_hot_step_bridge") is True
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "semantics": record.get("semantics"),
+        "parameter_count": record.get("parameter_count"),
+        "parameter_leaf_count": record.get("parameter_leaf_count"),
+        "maximum_absolute_delta_by_state": deltas,
+        "compiled_mlx_reference_mean_milliseconds": record.get(
+            "compiled_mlx_reference_mean_milliseconds"
+        ),
+        "reference_abi_green": reference_green,
+        "native_block_green": native_green,
+        "native_implementation_is_immediate_next": reference_green and not native_green,
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "One exact independent-framework decoder-block numerical ABI. "
+            "It freezes the native target but does not establish ANE execution, "
+            "full-model parity, acceleration, convergence, or capability."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -742,6 +801,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     heterogeneous_microbatch_projection = (
         _heterogeneous_microbatch_projection_record(evidence)
     )
+    exact_decoder_block_reference = _exact_decoder_block_reference_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -775,6 +835,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "heterogeneous_microbatch_projection": (
             heterogeneous_microbatch_projection
         ),
+        "exact_decoder_block_reference": exact_decoder_block_reference,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

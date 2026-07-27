@@ -1,0 +1,79 @@
+{
+  "policy": "project_theseus_exact_decoder_block_qualification_v1",
+  "claim_scope": "One canonical decoder self-attention plus SwiGLU block. This is a numerical ABI and implementation gate, not a full-model or capability claim.",
+  "canonical_source": "scripts/standard_causal_transformer_model.py",
+  "shape": {
+    "batch": 1,
+    "sequence": 128,
+    "d_model": 512,
+    "ff_dim": 1536,
+    "query_heads": 8,
+    "kv_heads": 2,
+    "head_dim": 64
+  },
+  "semantics": {
+    "rms_norm_epsilon": 1e-05,
+    "rope": "split_half_traditional_false_base_10000",
+    "gqa": "contiguous_four_query_heads_per_kv_head",
+    "attention": "causal_scaled_dot_product",
+    "residual": "unscaled_add",
+    "feed_forward": "down_silu_gate_times_up",
+    "parameter_biases": false,
+    "loss": "masked_half_mean_squared_error_over_authority_mass"
+  },
+  "parameter_schema": {
+    "attention_norm.weight": [512],
+    "attention.q_proj.weight": [512, 512],
+    "attention.k_proj.weight": [128, 512],
+    "attention.v_proj.weight": [128, 512],
+    "attention.out_proj.weight": [512, 512],
+    "ffn_norm.weight": [512],
+    "feed_forward.gate.weight": [1536, 512],
+    "feed_forward.up.weight": [1536, 512],
+    "feed_forward.down.weight": [512, 1536]
+  },
+  "reference_gate": {
+    "implementations": ["mlx", "pytorch"],
+    "compute_dtype": "float32",
+    "output_absolute_tolerance": 0.0001,
+    "loss_absolute_tolerance": 1e-06,
+    "input_gradient_absolute_tolerance": 0.0001,
+    "parameter_gradient_absolute_tolerance": 0.0001,
+    "require_every_parameter_gradient": true,
+    "require_all_finite": true,
+    "require_nonzero_gradient_fraction": 0.95,
+    "require_replay_exact": true
+  },
+  "native_gate": {
+    "state": "IMMEDIATE_NEXT_AFTER_REFERENCE_ABI",
+    "required_devices": {
+      "ane": "long forward and input-gradient subgraphs",
+      "accelerate": "single-thread FP32 parameter gradients where faster",
+      "metal": "attention, elementwise work, scalar loss, reductions, accumulation, clipping, and sole AdamW update"
+    },
+    "required_evidence": [
+      "all nine parameter leaves and input gradient emitted under one generation tag",
+      "FP16 compute compared with the frozen FP32 reference and a matched FP16 MLX control",
+      "one objective-mass normalization, one clip, and one AdamW update",
+      "save/reload and exact replay",
+      "64-step stability with overflow replay",
+      "alternating joined-wall repeats",
+      "resource and sustained thermal qualification",
+      "no Python or NumPy tensor round trip in the measured hot step"
+    ]
+  },
+  "source_boundary": {
+    "maderix_ane": {
+      "repository": "https://github.com/maderix/ANE",
+      "license": "MIT",
+      "use": "Private runtime transport and compile-once dynamic-weight MIL mechanics only",
+      "forbidden_imports": [
+        "interleaved adjacent-pair RoPE",
+        "alternating GQA head expansion",
+        "scaled residual branches",
+        "vocabulary compaction",
+        "private optimizer authority"
+      ]
+    }
+  }
+}

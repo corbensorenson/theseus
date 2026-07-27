@@ -1186,7 +1186,22 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
    RMSNorm, corrected GQA, split-half RoPE, unscaled residuals, SwiGLU, scalar loss, `dX`,
    and every parameter gradient. Then add source encoder, decoder cross-attention, pointer
    generation, and auxiliary objectives before full-model heterogeneous data parallelism.
-11. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+11. The exact block target is now frozen and independently executable. A production-feature
+    geometry reference (`d_model=512`, `ff_dim=1536`, 8 query heads, 2 KV heads,
+    head dimension 64) compares PyTorch and compiled MLX across one masked scalar loss,
+    block output, `dX`, both RMSNorm leaves, and all seven linear leaves: 3,015,680
+    parameters in nine leaves. Maximum output, loss, input-gradient, and worst
+    parameter-gradient deltas are `4.18e-6`, `1.50e-8`, `2.68e-9`, and `4.20e-9`;
+    every registered mismatch count is zero, all gradients are present and finite, and
+    replay digests are exact. This is a GREEN numerical ABI, not native ANE execution or
+    a speed claim. Port the native transport against this ABI rather than the neighboring
+    research model.
+12. The resource observer now accepts an explicit zero available-memory reserve. This
+    removes the old hidden positive floor while retaining independently configurable
+    process-memory, swap-growth, wall, and telemetry fail-safes. The exact-block receipt
+    used a zero reserve floor, observed `347 MiB` maximum process/inferred unified memory,
+    retained `3,684.5 MiB` minimum reclaimable memory, and grew swap by `0 MiB`.
+13. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.
