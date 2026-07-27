@@ -1,0 +1,64 @@
+{
+  "policy": "project_theseus_exact_decoder_block_join_qualification_v1",
+  "state": "GREEN_EXACT_DECODER_BLOCK_JOIN_MLX_CONTROL_OPEN",
+  "source": "native/ane_metal/exact_decoder_block_join.m",
+  "source_sha256": "e0d1e635480e6436dc05e4d443110533be5363a1a4c43cd303205e13a6f5d368",
+  "dependency_sha256": {
+    "native/ane_metal/ane_exact_attention_forward.m": "b72018d33813a114cc82f4c0da99181931e994f4f868bd2c06a22bb9113acd27",
+    "native/ane_metal/ane_exact_attention_backward.m": "f064dced4a0c35bbf618e583b690b0dad36285da3a4028ef0031645c77a1e4a9",
+    "native/ane_metal/exact_decoder_block_remainder.m": "e91aceb26e96ee65fa36baf9d1f7b5ecc10e488c863a2173c3f53d20134afeb0",
+    "native/ane_metal/ane_metal_surface_contract.h": "28f32693f08bf5aec07694ea7f930776bb665b8c2299d433c12dcb845f1e3216"
+  },
+  "shape": {
+    "batch": 1,
+    "sequence": 128,
+    "d_model": 512,
+    "ff_dim": 1536,
+    "query_heads": 8,
+    "kv_heads": 2
+  },
+  "parameter_generation": 0,
+  "parameter_elements": 3015680,
+  "parameter_leaf_count": 9,
+  "objective_authority_mass": 64000.0,
+  "timing": {
+    "joined_milliseconds": 12.810958,
+    "ane_forward_milliseconds": 0.465958,
+    "remainder_milliseconds": 5.897458,
+    "ane_backward_milliseconds": 0.458125,
+    "attention_gradient_milliseconds": 1.173667,
+    "unified_update_milliseconds": 3.779375,
+    "mean_joined_64_milliseconds": 10.333729
+  },
+  "loss": 1554.20227,
+  "global_gradient_norm": 2222.11108,
+  "gradient_coverage": {
+    "attention_nonzero_fraction": 1,
+    "remainder_nonzero_fraction": 1,
+    "minimum_leaf_nonzero_fraction": 1,
+    "frozen_minimum": 0.95
+  },
+  "gates": {
+    "one_process": true,
+    "compile_once_ane_forward_backward": true,
+    "generation_tagged_iosurface_forward_backward": true,
+    "single_thread_fp32_accelerate_dw": true,
+    "native_metal_remainder": true,
+    "all_nine_parameter_leaves": true,
+    "combined_hidden_gradient": true,
+    "one_objective_mass_normalization": true,
+    "one_global_norm_and_clip": true,
+    "one_fp32_adamw_publication": true,
+    "replay_exact": true,
+    "all_finite": true,
+    "sixty_four_step_finite": true,
+    "matched_mlx_wall_control": false,
+    "production_eligible": false,
+    "complete_decoder_block_mechanics": true,
+    "save_reload_file_roundtrip": false,
+    "sustained_thermal_qualification": false
+  },
+  "next_gate": "Run alternating complete-block repeats against the matched compiled-MLX FP32 and FP16 controls, add file save/reload and sustained thermal qualification, and select only if joined wall wins while replay and numerical authority remain green.",
+  "claim_scope": "One exact batch-one sequence-128 decoder-block optimizer transaction. Complete mechanics do not establish a wall-time speedup, full-model integration, convergence, or capability.",
+  "capability_claim": "NONE_ENGINEERING_EXACT_BLOCK_JOIN_ONLY"
+}

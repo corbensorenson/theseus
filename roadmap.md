@@ -1231,12 +1231,25 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
     `3,971.812 MiB`, and swap growth is zero. This is remainder mechanics, not a
     complete block or speedup. Join the exact ANE attention tree over
     generation-tagged IOSurfaces before the matched MLX wall control.
-15. The resource observer now accepts an explicit zero available-memory reserve. This
+15. The exact block is now one generation-tagged native transaction. One process
+    executes compile-once ANE attention forward, the Metal/Accelerate remainder,
+    compile-once ANE attention backward, single-thread FP32 attention gradients, one
+    combined hidden gradient, and one global norm/clip/AdamW publication across all
+    nine leaves and `3,015,680` parameters. The frozen `64,000` objective mass is
+    normalized exactly once; every leaf has `100%` nonzero gradient coverage at the
+    qualification transaction; replay is exact; and 64 joined updates remain finite.
+    The guarded first joined wall is `12.811 ms` and the 64-update mean is
+    `10.334 ms`; peak process RSS is `184.453 MiB`, peak inferred unified memory is
+    `204.391 MiB`, minimum reclaimable memory is `4,020.75 MiB`, and swap growth is
+    zero. This closes complete-block mechanics only. The immediate owner is an
+    alternating matched compiled-MLX FP32/FP16 wall control plus file save/reload and
+    sustained thermal qualification; retain MLX unless that evidence selects native.
+16. The resource observer now accepts an explicit zero available-memory reserve. This
     removes the old hidden positive floor while retaining independently configurable
     process-memory, swap-growth, wall, and telemetry fail-safes. The exact-block receipt
     used a zero reserve floor, observed `347 MiB` maximum process/inferred unified memory,
     retained `3,684.5 MiB` minimum reclaimable memory, and grew swap by `0 MiB`.
-16. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+17. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.

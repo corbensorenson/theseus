@@ -177,6 +177,16 @@ updates remain finite. The guarded mean is `6.678 ms`. The attention and
 remainder executables are not yet one generation-tagged transaction, so this
 is not a complete block or speedup claim.
 
+`exact_decoder_block_join.m` composes both owners into one process and one
+generation-tagged IOSurface transaction. The joined path executes compile-once
+ANE forward/backward, native Metal remainder work, single-thread FP32
+Accelerate gradients, one combined hidden gradient, and one global
+norm/clip/AdamW publication across all nine leaves (`3,015,680` parameters).
+Replay is exact, the initial transaction has full per-leaf gradient coverage,
+and 64 joined updates remain finite. The guarded 64-update mean is `10.334 ms`
+with zero swap growth. A matched compiled-MLX control, file save/reload, and
+sustained thermal evidence remain mandatory before selection.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

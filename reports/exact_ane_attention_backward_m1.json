@@ -2,7 +2,7 @@
   "policy": "project_theseus_exact_ane_attention_backward_qualification_v1",
   "state": "GREEN_EXACT_ATTENTION_GRADIENT_TREE_BLOCK_REMAINDER_OPEN",
   "source": "native/ane_metal/ane_exact_attention_backward.m",
-  "source_sha256": "423b2bf4b02da4c419f4585aa4957c77f7eb4f10a2a52f2110b868cbde182927",
+  "source_sha256": "f064dced4a0c35bbf618e583b690b0dad36285da3a4028ef0031645c77a1e4a9",
   "shape": {
     "sequence": 128,
     "query_heads": 8,
@@ -10,9 +10,9 @@
     "head_dim": 64
   },
   "parameter_generation": 0,
-  "compile_milliseconds": 184.481375,
-  "mean_evaluation_milliseconds": 0.399458,
-  "mean_cpu_projection_gradient_milliseconds": 0.262948,
+  "compile_milliseconds": 179.667708,
+  "mean_evaluation_milliseconds": 0.335849,
+  "mean_cpu_projection_gradient_milliseconds": 0.248854,
   "comparisons": {
     "dq_rope": {
       "tolerance": 0.002,

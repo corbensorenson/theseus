@@ -474,7 +474,7 @@ static BOOL RunStep(
     const float *hidden, const float *attended,
     float *normalized, float *dNormalized, float *dAfter,
     float *dAttended, float *dHiddenDirect,
-    StepReceipt *receipt, NSError **error
+    BOOL applyUpdate, StepReceipt *receipt, NSError **error
 ) {
     uint64_t joinedStarted = mach_absolute_time();
     float *weight = state->weight.contents;
@@ -569,10 +569,14 @@ static BOOL RunStep(
     memcpy(dHiddenDirect, dAfter, OUTPUT_ELEMENTS * sizeof(float));
     receipt->backwardGemmMilliseconds +=
         Milliseconds(mach_absolute_time() - started);
-    started = mach_absolute_time();
-    if (!EncodeUpdate(metal, state, error)) return NO;
-    receipt->metalUpdateMilliseconds =
-        Milliseconds(mach_absolute_time() - started);
+    if (applyUpdate) {
+        started = mach_absolute_time();
+        if (!EncodeUpdate(metal, state, error)) return NO;
+        receipt->metalUpdateMilliseconds =
+            Milliseconds(mach_absolute_time() - started);
+    } else {
+        receipt->metalUpdateMilliseconds = 0.0;
+    }
     receipt->loss = ((float *)state->scalarLoss.contents)[0];
     receipt->gradientNorm = ((float *)state->gradientNorm.contents)[0];
     receipt->joinedMilliseconds =
@@ -625,7 +629,7 @@ int main(void) {
         StepReceipt first = {0};
         if (!RunStep(
                 &metal, &state, hidden, attended, normalized, dNormalized,
-                dAfter, dAttended, dHiddenDirect, &first, &error)) {
+                dAfter, dAttended, dHiddenDirect, YES, &first, &error)) {
             fprintf(stderr, "first_step_failed:%s\n", error.description.UTF8String);
             return 3;
         }
@@ -652,7 +656,7 @@ int main(void) {
         StepReceipt replay = {0};
         if (!RunStep(
                 &metal, &state, hidden, attended, normalized, dNormalized,
-                dAfter, dAttended, dHiddenDirect, &replay, &error)) return 4;
+                dAfter, dAttended, dHiddenDirect, YES, &replay, &error)) return 4;
         BOOL replayExact =
             !memcmp(state.weight.contents, firstWeight, stateBytes) &&
             !memcmp(state.first.contents, firstFirst, stateBytes) &&
@@ -668,7 +672,8 @@ int main(void) {
             StepReceipt receipt = {0};
             if (!RunStep(
                     &metal, &state, hidden, attended, normalized, dNormalized,
-                    dAfter, dAttended, dHiddenDirect, &receipt, &error)) return 5;
+                    dAfter, dAttended, dHiddenDirect, YES, &receipt, &error))
+                return 5;
             joinedTotal += receipt.joinedMilliseconds;
             finite64 = finite64 && isfinite(receipt.loss) &&
                 isfinite(receipt.gradientNorm) &&

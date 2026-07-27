@@ -927,6 +927,71 @@ def _exact_decoder_block_remainder_record(
     }
 
 
+def _exact_decoder_block_join_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("exact_decoder_block_join") or {}
+    gates = record.get("gates") or {}
+    coverage = record.get("gradient_coverage") or {}
+    mechanics_green = all(
+        gates.get(name) is True
+        for name in (
+            "one_process",
+            "compile_once_ane_forward_backward",
+            "generation_tagged_iosurface_forward_backward",
+            "single_thread_fp32_accelerate_dw",
+            "native_metal_remainder",
+            "all_nine_parameter_leaves",
+            "combined_hidden_gradient",
+            "one_objective_mass_normalization",
+            "one_global_norm_and_clip",
+            "one_fp32_adamw_publication",
+            "replay_exact",
+            "all_finite",
+            "sixty_four_step_finite",
+            "complete_decoder_block_mechanics",
+        )
+    )
+    if record and (
+        int(record.get("parameter_elements", -1)) != 3_015_680
+        or int(record.get("parameter_leaf_count", -1)) != 9
+        or float(coverage.get("minimum_leaf_nonzero_fraction", -1.0))
+        < float(coverage.get("frozen_minimum", 0.95))
+    ):
+        raise PlanningFault("exact_decoder_block_join_invalid")
+    production_green = (
+        mechanics_green
+        and gates.get("matched_mlx_wall_control") is True
+        and gates.get("save_reload_file_roundtrip") is True
+        and gates.get("sustained_thermal_qualification") is True
+        and gates.get("production_eligible") is True
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "parameter_elements": record.get("parameter_elements"),
+        "parameter_leaf_count": record.get("parameter_leaf_count"),
+        "objective_authority_mass": record.get("objective_authority_mass"),
+        "joined_milliseconds": record.get("joined_milliseconds"),
+        "mean_joined_64_milliseconds": record.get(
+            "mean_joined_64_milliseconds"
+        ),
+        "gradient_coverage": coverage,
+        "complete_block_mechanics_green": mechanics_green,
+        "matched_mlx_control_is_immediate_next": mechanics_green
+        and not production_green,
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": production_green,
+        "claim_scope": (
+            "One complete exact decoder-block optimizer transaction. It does "
+            "not establish a speedup, full-model integration, convergence, "
+            "or capability."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -1011,6 +1076,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     exact_ane_attention_forward = _exact_ane_attention_forward_record(evidence)
     exact_ane_attention_backward = _exact_ane_attention_backward_record(evidence)
     exact_decoder_block_remainder = _exact_decoder_block_remainder_record(evidence)
+    exact_decoder_block_join = _exact_decoder_block_join_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -1048,6 +1114,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "exact_ane_attention_forward": exact_ane_attention_forward,
         "exact_ane_attention_backward": exact_ane_attention_backward,
         "exact_decoder_block_remainder": exact_decoder_block_remainder,
+        "exact_decoder_block_join": exact_decoder_block_join,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

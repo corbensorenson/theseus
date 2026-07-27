@@ -2,7 +2,7 @@
   "policy": "project_theseus_exact_decoder_block_remainder_qualification_v1",
   "state": "GREEN_EXACT_BLOCK_REMAINDER_ATTENTION_JOIN_OPEN",
   "source": "native/ane_metal/exact_decoder_block_remainder.m",
-  "source_sha256": "9c5a8fb92f7948333d175bde29808c4a29e94c6a0c2d445ed3055e95246373f5",
+  "source_sha256": "e91aceb26e96ee65fa36baf9d1f7b5ecc10e488c863a2173c3f53d20134afeb0",
   "shape": {
     "rows": 128,
     "d_model": 512,
@@ -19,12 +19,12 @@
   ],
   "objective_authority_mass": 64000.0,
   "timing": {
-    "first_joined_milliseconds": 11.042083,
-    "forward_gemm_milliseconds": 1.612958,
-    "metal_elementwise_milliseconds": 2.786375,
-    "backward_gemm_milliseconds": 2.653667,
-    "metal_update_milliseconds": 3.986208,
-    "mean_joined_64_milliseconds": 6.678012
+    "first_joined_milliseconds": 11.807792,
+    "forward_gemm_milliseconds": 1.669167,
+    "metal_elementwise_milliseconds": 3.559625,
+    "backward_gemm_milliseconds": 2.989458,
+    "metal_update_milliseconds": 3.587667,
+    "mean_joined_64_milliseconds": 6.851567
   },
   "comparisons": {
     "swiglu_activation": {

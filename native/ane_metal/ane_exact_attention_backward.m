@@ -681,7 +681,11 @@ static PropagatedComparison CompareRMSInputPropagation(
     return result;
 }
 
-int main(void) {
+#ifndef THESEUS_ATTENTION_BACKWARD_ENTRY
+#define THESEUS_ATTENTION_BACKWARD_ENTRY main
+#endif
+
+int THESEUS_ATTENTION_BACKWARD_ENTRY(void) {
     @autoreleasepool {
         setbuf(stdout, NULL);
         setenv("VECLIB_MAXIMUM_THREADS", "1", 1);
