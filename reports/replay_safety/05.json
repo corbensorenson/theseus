@@ -6,7 +6,7 @@
   "index": 5,
   "passed": true,
   "returncode": 0,
-  "runtime_ms": 115,
+  "runtime_ms": 132,
   "safety_receipt": {
     "child_started": true,
     "command": [
@@ -16,7 +16,7 @@
     "fault": "",
     "fault_observation": null,
     "first_swapout_growth_breach_observation": null,
-    "initial_reclaimable_available_mib": 6074.719,
+    "initial_reclaimable_available_mib": 3492.375,
     "limits": {
       "max_process_memory_mib": 1024.0,
       "maximum_swapout_growth_mib": 16.0,
@@ -28,26 +28,26 @@
       "terminate_grace_seconds": 2.0
     },
     "maximum_consecutive_reserve_breaches": 0,
-    "maximum_consecutive_telemetry_failures": 1,
-    "maximum_inferred_unified_memory_mib": 0.0,
-    "maximum_process_rss_mib": 0.0,
+    "maximum_consecutive_telemetry_failures": 0,
+    "maximum_inferred_unified_memory_mib": 2.828,
+    "maximum_process_rss_mib": 0.266,
     "maximum_swapout_growth_mib": 0.0,
-    "minimum_reclaimable_available_mib": 6074.719,
+    "minimum_reclaimable_available_mib": 3489.547,
     "observation_prefix": [
       {
-        "elapsed_seconds": 0.002,
-        "inferred_unified_memory_mib": 0.0,
-        "process_rss_mib": 0.0,
-        "reclaimable_available_mib": 6075.156,
+        "elapsed_seconds": 0.003,
+        "inferred_unified_memory_mib": 2.828,
+        "process_rss_mib": 0.266,
+        "reclaimable_available_mib": 3489.547,
         "swapout_growth_mib": 0.0
       }
     ],
     "observation_suffix": [
       {
-        "elapsed_seconds": 0.002,
-        "inferred_unified_memory_mib": 0.0,
-        "process_rss_mib": 0.0,
-        "reclaimable_available_mib": 6075.156,
+        "elapsed_seconds": 0.003,
+        "inferred_unified_memory_mib": 2.828,
+        "process_rss_mib": 0.266,
+        "reclaimable_available_mib": 3489.547,
         "swapout_growth_mib": 0.0
       }
     ],
@@ -61,15 +61,9 @@
     "swapout_growth_breach_observations": 0,
     "swapout_growth_threshold_exceeded": false,
     "telemetry_failure_observations_allowed": 2,
-    "telemetry_failure_prefix": [
-      {
-        "elapsed_seconds": 0.002,
-        "fault_type": "PermissionError",
-        "source": "process_group_rss"
-      }
-    ],
+    "telemetry_failure_prefix": [],
     "terminated_by_guard": false,
-    "wall_seconds": 0.112
+    "wall_seconds": 0.129
   },
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "stderr_tail": "",

@@ -314,27 +314,27 @@
         },
       "moecot_training_config": {
         "path": "configs/moecot_language_arm_training.json",
-        "sha256": "ffa09985f2ece05408a8852915087a252c40b7984326f6346c04cb81d8c1e3ca"
+        "sha256": "0777b2f577251fbdbb2bc0f31267f67c84be821ceb7c9639fa183734304a0526"
       },
       "moecot_training_implementation": {
         "path": "scripts/moecot_language_arm_training.py",
-        "sha256": "4537007c9ae4d03bccb80bbe3a365b5a0ffa43e409e4236f680092c1fb375b24"
+        "sha256": "5f1afc1c612d196ec50f779a0eba608f81a4cca1aeda66975a340122ed5d1243"
       },
       "moecot_training_tests": {
         "path": "tests/test_moecot_language_arm_training.py",
-        "sha256": "4dd5bff22175da09e1a7eeb74f863e112593d0807dc96342e1dac6622a8b1715"
+        "sha256": "e8400f1e12333eef53c8f3ad1d0eb07b7f6e745f3312d57ad442337355165544"
       },
       "canonical_pretraining_optimizers": {
         "path": "scripts/pretraining_optimizers.py",
-        "sha256": "1307b87d47e06c0201e856c2340bcda2447250396f4281b08d843ec28071fc92"
+        "sha256": "5263d02c7086724a5cb60570c712a41f0eb2414a371fe8eb009216b74785bea0"
       },
       "canonical_pretraining_optimizer_tests": {
         "path": "tests/test_pretraining_optimizers.py",
-        "sha256": "75f24810412ace2158e5648d6e8f8ff9df25231e797a36fd391b39b5e9529d75"
+        "sha256": "c10d05e9629d9a3cd77572317446a34279b01fea858e4afa902f67992ed1d57d"
       },
         "standard_causal_transformer_model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "4305c0b8cb6d0e16572b87c79ccea2f28e056db6cf2b405b690456741b94280a"
+          "sha256": "8b185276966af81f5c56b8b3f2d2424e800a0ba96d60165fdfda250e75a01120"
         },
         "neural_seed_resident_runtime": {
           "path": "scripts/neural_seed_resident_runtime.py",
@@ -346,7 +346,7 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "f25484f804114c6a111453cd8bf2584d9f04a7fe5603b26618ac19223577a66a"
+          "sha256": "60e186e34be5f2abe84341f96f8c316e6df17830cf9e4923ee21e757232c5180"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
@@ -370,7 +370,7 @@
         },
         "canonical_training_loop": {
           "path": "scripts/standard_causal_transformer_survival.py",
-          "sha256": "c9edcf118c5bf180e66d32b9f0b5e8325baff6f992eddd5e271853848f11c38a"
+          "sha256": "afc3285796c748474975cc0816fd546da9cebffe28b6cc8d58e66371268021dc"
         },
         "canonical_training_objectives": {
           "path": "scripts/standard_causal_transformer_objectives.py",
@@ -574,7 +574,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "225d3450c5bfee1392e74eaf1609bcfd12051605088f1fd9f61f0818555ccdb5"
+          "sha256": "5c5c9af0ec14c2f30fcbaf32274c830cbd4c33c9b0776406e7b579cf27018473"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -634,7 +634,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "4305c0b8cb6d0e16572b87c79ccea2f28e056db6cf2b405b690456741b94280a"
+          "sha256": "8b185276966af81f5c56b8b3f2d2424e800a0ba96d60165fdfda250e75a01120"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",

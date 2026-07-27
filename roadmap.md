@@ -66,7 +66,7 @@ The current falsifiable question is:
 |---|---|---|
 | `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
 | `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
-| `T0A` Pre-training architecture upgrade closure | replacement package independently replayed and frozen | The practical first-campaign stack is fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The qualified runtime is compiled FP32, microbatch four, width quantum 64, in externally watched 32-step fresh processes; source-conditioned and supervision stages use content-bound memmaps plus eager microbatch one. The content-addressed replacement package is GREEN with 14/14 selected accelerator receipts and 7/7 independent CPU/governance replays. |
+| `T0A` Pre-training architecture upgrade closure | active; replacement package not yet frozen | The practical first-campaign stack is fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The selected current tree has 7/7 fresh independent CPU/governance replay receipts and 13/14 valid accelerator receipts. The remaining optimizer-matched accelerator shard was refused before child start because available memory was below its declared 5,120 MiB launch reserve. That refusal preserves host safety but does not close the gate. Publish a new content-addressed replacement package only after the unchanged guarded shard passes and all 14 accelerator receipts validate together. |
 | `T1` Selected neural-seed campaign | waits for the broader pre-training architecture-readiness gate | Preserve the exact 57.340M-active step-3,000 package as an immutable control. Once the remaining non-acceleration architecture prerequisites are honestly closed, train the selected practical lane and matched controls from the frozen `T0A` package. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
@@ -1399,8 +1399,11 @@ after closure requires a measured station regression or a materially new impleme
    selected successor once after `T0A`. The later final-exposure boundary supersedes the review's
    claim that KERC K4-K8 must block campaign one: KERC is now evidence-bound, zero-exposure, and
    `INCONCLUSIVE_EXPERIMENT` for finite first-campaign sequencing, with K4-K8 preserved for a
-   prospectively reopened successor campaign. Guarded replacement replay and package publication
-   are the only remaining `T0A` blockers. The criticism that the project can remain in preparation
+   prospectively reopened successor campaign. The exact current-tree binding repair and all seven
+   CPU/governance replays are green. Thirteen of fourteen selected accelerator receipts validate;
+   the optimizer-matched adequacy replay was refused before child start below its declared
+   5,120 MiB launch reserve. That unchanged guarded replay and subsequent content-addressed package
+   publication are the only remaining `T0A` blockers. The criticism that the project can remain in preparation
    without producing a capability number has teeth. Close only those named blockers; once `T0A`
    is green, do not admit another architecture-review cycle ahead of the declared matched
    five-arm plus dense-active/dense-total campaign and the single frozen direct model-only
@@ -2634,9 +2637,12 @@ generation service, KERC sidecar, or private evaluator.
    freeze requires every selected first-campaign receipt. K4-K8 remain mandatory before KERC may
    prospectively re-enter a successor campaign.
    A preflight below the operation's declared launch reserve starts no child. That refusal is a
-   safety result, not roadmap completion. The selected guarded replay and replacement freeze
-   are complete; Phase 0 reproduction remains broader roadmap work, while KERC maximum-row repair
-   and K4-K8 remain successor work.
+   safety result, not roadmap completion. The selected replacement replay is partial: thirteen of
+   fourteen accelerator receipts validate, seven of seven CPU/governance replays are current and
+   green, and the optimizer-matched adequacy child has not started under the current tree because
+   its launch reserve was unavailable. The replacement freeze therefore remains unpublished.
+   Phase 0 reproduction remains broader roadmap work, while KERC maximum-row repair and K4-K8
+   remain successor work.
 
    Ordinary CPU/governance replay is now guarded too: raw subprocess execution is forbidden, each
    command runs serially under a 1,024 MiB process-group ceiling, 3,072 MiB launch reserve, 2,048 MiB
