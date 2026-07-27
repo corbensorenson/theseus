@@ -104,9 +104,10 @@
       ]
     },
     "ane_activation_recomputation": {
-      "scope": "immediate heterogeneous training owner after direct projection offload rejection",
+      "scope": "completed exact SwiGLU gate/up schedule; retain MLX checkpoint recomputation",
       "schedule": "Recompute checkpointed forward activations on ANE while Metal executes independent backward work for a different ready station, then join only at the dependency boundary.",
-      "adoption_rule": "First measure one exact decoder activation currently retained by MLX, its bytes and backward dependency window, then implement the same generation-tagged ANE recomputation over IOSurface. Select only if recomputation plus synchronization beats Metal recomputation or the released memory enables a faster sustained batch and the complete joined step wins."
+      "result": "Six compile-once 512-channel ANE chunks reconstruct the exact batch-4 sequence-512 gate/up width-1536 activation with zero errors above 0.001 and no hot Python/NumPy bridge. The 24 MiB per-layer recompute fits inside the independent attention backward window, but concurrent Metal slows enough that the joined critical path averages 20.251 ms versus 19.377 ms for standalone MLX; mean control-over-candidate is 0.956842x and the conservative bound is 0.948546x. The exact schedule is rejected.",
+      "adoption_rule": "Retain MLX checkpoint recomputation. Reopen only if a native Metal backward can consume the IOSurface outputs without conversion and an actual full-model allocator receipt shows a faster sustained batch; the 288 MiB twelve-layer ceiling is not an observed release."
     },
     "campaign_arm_parallelism": {
       "scope": "matched neural-seed candidates with independent optimizer state",

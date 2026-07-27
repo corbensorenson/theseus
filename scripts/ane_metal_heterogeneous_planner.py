@@ -448,7 +448,9 @@ def _native_zero_copy_projection_triad_record(
         "parity_and_mechanics_green": parity_mechanics_green,
         "direct_q_proj_selected": selected,
         "activation_recomputation_is_immediate_next": (
-            parity_mechanics_green and not selected
+            parity_mechanics_green
+            and not selected
+            and not bool(evidence.get("ane_activation_recomputation"))
         ),
         "resource_receipt": triad.get("resource_receipt"),
         "gates": gates,
@@ -457,6 +459,103 @@ def _native_zero_copy_projection_triad_record(
             "Direct q_proj offload at one exact shape only. A wall-time loss "
             "does not falsify ANE recomputation, whole-microbatch work, "
             "campaign concurrency, or inference."
+        ),
+    }
+
+
+def _ane_activation_recomputation_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("ane_activation_recomputation") or {}
+    controls = [
+        float(value)
+        for value in record.get("mlx_control_milliseconds_per_iteration") or []
+    ]
+    candidates = [
+        float(value)
+        for value in record.get(
+            "concurrent_critical_path_milliseconds_per_iteration"
+        )
+        or []
+    ]
+    native = [
+        float(value)
+        for value in record.get(
+            "native_recompute_milliseconds_per_iteration"
+        )
+        or []
+    ]
+    values = controls + candidates + native
+    if record and (
+        len(controls) < 2
+        or len(candidates) < 2
+        or len(native) < 2
+        or any(not math.isfinite(value) or value <= 0 for value in values)
+    ):
+        raise PlanningFault("ane_recomputation_timings_invalid")
+    mean_speedup = (
+        statistics.fmean(controls) / statistics.fmean(candidates)
+        if controls and candidates
+        else None
+    )
+    conservative_speedup = (
+        min(controls) / max(candidates)
+        if controls and candidates
+        else None
+    )
+    recorded_mean = _finite_measurement(
+        record, "mean_speedup_mlx_over_candidate"
+    )
+    recorded_conservative = _finite_measurement(
+        record, "conservative_speedup_mlx_over_candidate"
+    )
+    if mean_speedup is not None and (
+        not math.isclose(mean_speedup, recorded_mean or -1, rel_tol=1e-6)
+        or not math.isclose(
+            conservative_speedup,
+            recorded_conservative or -1,
+            rel_tol=1e-6,
+        )
+    ):
+        raise PlanningFault("ane_recomputation_speedup_inconsistent")
+    gates = record.get("gates") or {}
+    mechanics_green = (
+        gates.get("native_mechanics") is True
+        and gates.get(
+            "ane_recompute_hidden_inside_independent_metal_window"
+        )
+        is True
+        and gates.get("resource_safety") is True
+        and gates.get("zero_swap_growth") is True
+        and int(record.get("parity_mismatch_count_above_0_001", -1)) == 0
+    )
+    selected = (
+        mechanics_green
+        and gates.get("matched_joined_wall_gain_exceeds_uncertainty") is True
+        and conservative_speedup is not None
+        and conservative_speedup > 1.0
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "native_recompute_milliseconds_per_iteration": native,
+        "mlx_control_milliseconds_per_iteration": controls,
+        "concurrent_critical_path_milliseconds_per_iteration": candidates,
+        "mean_speedup_mlx_over_candidate": mean_speedup,
+        "conservative_speedup_mlx_over_candidate": conservative_speedup,
+        "mechanics_green": mechanics_green,
+        "schedule_selected": selected,
+        "whole_microbatch_is_immediate_next": mechanics_green and not selected,
+        "memory": record.get("memory"),
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "One exact SwiGLU gate/up recomputation schedule against one "
+            "independent attention-backward window. A joined-wall loss does "
+            "not falsify other recomputation schedules, whole-microbatch "
+            "parallelism, matched-arm concurrency, or inference."
         ),
     }
 
@@ -535,6 +634,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     native_zero_copy_projection_triad = (
         _native_zero_copy_projection_triad_record(evidence)
     )
+    ane_activation_recomputation = (
+        _ane_activation_recomputation_record(evidence)
+    )
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -564,6 +666,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "native_zero_copy_projection_triad": (
             native_zero_copy_projection_triad
         ),
+        "ane_activation_recomputation": ane_activation_recomputation,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

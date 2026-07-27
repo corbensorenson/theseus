@@ -1073,10 +1073,10 @@ The training implementation order is therefore:
    [stream/async canary](https://ml-explore.github.io/mlx/build/html/usage/using_streams.html);
    do not call one model concurrently from arbitrary Python threads or add evaluation
    boundaries that serialize the lazy graph.
-4. **Test ANE recomputation immediately.** During backward, recompute a discarded forward activation
-   on ANE while Metal performs an independent ready gradient station. Adopt only if exact
-   parity holds and either joined wall falls or released activation memory enables a faster
-   sustained batch.
+4. **ANE recomputation complete; retain MLX.** The exact gate/up candidate is numerically
+   green and fits inside an independent attention-backward window, but accelerator
+   contention makes the joined critical path slower. Do not build the missing custom
+   backward for this schedule.
 5. **Then test whole-microbatch and whole-arm pipelines.** Sampler-exact ANE/Metal data
    parallel remains a strong long-window candidate. Separately, independent matched
    candidates may occupy different engines to shorten total experiment-calendar wall, but
@@ -1151,13 +1151,25 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
    `253.156 MiB` inferred unified memory, preserves `3,576.719 MiB` reclaimable memory, and
    grows swap by `0.0 MiB`.
 5. Retain MLX for this station and do not build a full decoder block on top of a losing
-   primitive. The immediate owner is ANE activation recomputation: first measure the exact
-   bytes and backward dependency window of one activation retained by the canonical MLX
-   decoder, then recompute it on ANE while Metal performs independently ready backward
-   work. Select only on complete joined-step wall or a memory-enabled sustained-batch win.
-6. After recomputation, test whole-microbatch data parallelism and concurrent matched-arm
-   execution; both use long independent work windows and avoid per-layer synchronization.
-7. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+   primitive.
+6. ANE activation recomputation is also dispositioned. The exact batch-4, sequence-512
+   SwiGLU gate/up outputs occupy `24 MiB` of FP32 activation memory per layer. The M1
+   compiler rejects fused 3,072- and 1,536-channel versions, so the faithful candidate uses
+   six compile-once 512-channel chunks. It passes full output parity with zero errors above
+   `0.001` and `0.000586331` maximum absolute delta. ANE work is fully hidden inside the
+   independent attention backward dependency window, but it increases that Metal window:
+   concurrent critical-path means are `20.190-20.312 ms` versus standalone MLX controls of
+   `19.267-19.487 ms`. Mean control-over-candidate is `0.956842x`; the conservative bound
+   is `0.948546x`. The guarded run uses `352.266 MiB` maximum inferred unified memory,
+   preserves `3,565.859 MiB` reclaimable memory, and grows swap by `0.0 MiB`.
+7. The twelve-layer `288 MiB` tensor-size ceiling is large enough to cover the historical
+   `236.656 MiB` microbatch-six live-reserve deficit only in theory. No MLX allocator
+   release or faster sustained batch was measured, and MLX autograd cannot consume the
+   private IOSurface output. Do not build a native SwiGLU backward on a losing schedule.
+8. The immediate owner is sampler-exact whole-microbatch heterogeneous execution, followed
+   by concurrent matched-arm execution. Both give ANE long independent work windows and
+   avoid the per-layer synchronization that caused this loss.
+9. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.
@@ -1172,6 +1184,11 @@ transaction is `native/ane_metal/ane_cpu_metal_projection_triad.m`; its matched 
 `scripts/native_ane_cpu_metal_projection_qualification.py`; the final hardware and resource
 receipts are `reports/native_ane_cpu_metal_projection_qualification_m1.json` and
 `reports/native_ane_cpu_metal_projection_qualification_m1.host_resource_safety.json`.
+The recomputation sources are `native/ane_metal/ane_swiglu_activation_recompute.m`,
+`scripts/mlx_attention_backward_window.py`, and
+`scripts/ane_activation_recomputation_qualification.py`; their final receipts are
+`reports/ane_activation_recomputation_m1.json` and
+`reports/ane_activation_recomputation_m1.host_resource_safety.json`.
 
 ### 2026-07-26 Acceleration-First Launch Gate
 

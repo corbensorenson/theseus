@@ -391,7 +391,7 @@ def test_exact_public_projection_triad_is_narrowly_rejected_and_redirected() -> 
     assert "no_intermediate_python_or_numpy_round_trip" in triad["failed_gates"]
 
 
-def test_native_zero_copy_triad_rejects_direct_offload_and_moves_to_recompute() -> None:
+def test_native_zero_copy_triad_rejects_direct_offload() -> None:
     evidence = json.loads(
         (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
             encoding="utf-8"
@@ -402,8 +402,26 @@ def test_native_zero_copy_triad_rejects_direct_offload_and_moves_to_recompute() 
 
     assert native["parity_and_mechanics_green"] is True
     assert native["direct_q_proj_selected"] is False
-    assert native["activation_recomputation_is_immediate_next"] is True
+    assert native["activation_recomputation_is_immediate_next"] is False
     assert native["mean_speedup_mlx_over_native"] < 1.0
     assert native["conservative_speedup_mlx_over_native"] < 1.0
     assert native["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert native["production_eligible"] is False
+
+
+def test_recomputation_result_advances_to_whole_microbatch() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    recompute = report["ane_activation_recomputation"]
+
+    assert recompute["mechanics_green"] is True
+    assert recompute["schedule_selected"] is False
+    assert recompute["whole_microbatch_is_immediate_next"] is True
+    assert recompute["mean_speedup_mlx_over_candidate"] < 1.0
+    assert recompute["conservative_speedup_mlx_over_candidate"] < 1.0
+    assert recompute["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert recompute["production_eligible"] is False

@@ -111,6 +111,18 @@ and zero-swap checks, but the native station averages `4.344–4.459 ms` versus
 selected. This does not falsify ANE recomputation, whole-microbatch work, or
 other long-window uses that avoid this station's synchronization pattern.
 
+`ane_swiglu_activation_recompute.m` closes the next dependency-ordered
+candidate. It reconstructs the batch-4, sequence-512, width-1,536 SwiGLU
+gate/up activations as six compile-once 512-channel ANE chunks while Metal
+packs FP32 inputs and weights directly into IOSurfaces. Full comparison against
+Accelerate has zero errors above `0.001`. The recompute fits inside a later-layer
+MLX attention backward window, but shared-resource contention expands the
+joined critical path to `20.251 ms` versus `19.377 ms` for standalone MLX
+(`0.956842x` mean control-over-candidate, `0.948546x` conservative). The exact
+schedule is not selected and no custom backward is authorized from it. Its
+288 MiB twelve-layer release is a tensor-size ceiling, not an observed
+allocator or larger-batch result.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

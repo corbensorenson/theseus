@@ -444,8 +444,63 @@
       "minimum_reclaimable_available_mib": 3576.719,
       "maximum_swapout_growth_mib": 0.0
     },
-    "next_gate": "Retain MLX for direct q_proj. Measure one exact retained decoder activation and its backward dependency window, then test generation-tagged ANE recomputation concurrent with independent Metal backward work. Whole-microbatch and matched-arm concurrency remain later long-window candidates.",
+    "next_gate": "Direct q_proj is closed with MLX retained. The exact SwiGLU recomputation schedule is recorded separately below; move to sampler-exact whole-microbatch heterogeneous execution.",
     "claim_scope": "The exact native direct q_proj offload passes numerical, optimizer, replay, custody, and resource mechanics but loses joined wall to MLX. This is a narrow engineering exclusion for direct q_proj offload at this shape, not an architecture falsification of ANE recomputation, data parallelism, campaign concurrency, or inference."
+  },
+  "ane_activation_recomputation": {
+    "state": "RED_RECOMPUTE_SCHEDULE_NOT_SELECTED",
+    "disposition": "RETAIN_MLX_CHECKPOINT_RECOMPUTATION",
+    "shape": {
+      "batch": 4,
+      "sequence": 512,
+      "hidden": 512,
+      "ff_dim": 1536,
+      "discarded_gate_up_fp32_mib_per_layer": 24.0
+    },
+    "topology": "Six compile-once 2048x512 by 512x512 ANE chunks reconstruct gate/up while a later-layer compiled MLX GQA/RoPE/SDPA attention forward/VJP supplies an independent Metal backward window.",
+    "native_recompute_milliseconds_per_iteration": [
+      6.315684027791666,
+      6.093857638875
+    ],
+    "mlx_control_milliseconds_per_iteration": [
+      19.48695141618373,
+      19.266661460278556
+    ],
+    "concurrent_critical_path_milliseconds_per_iteration": [
+      20.311782958742697,
+      20.189784748557333
+    ],
+    "mean_speedup_mlx_over_candidate": 0.9568422920448413,
+    "conservative_speedup_mlx_over_candidate": 0.9485460483411529,
+    "maximum_absolute_delta": 0.000586330891,
+    "parity_mismatch_count_above_0_001": 0,
+    "gates": {
+      "native_mechanics": true,
+      "ane_recompute_hidden_inside_independent_metal_window": true,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "actual_mlx_allocator_release_measured": false,
+      "larger_sustained_batch_qualified": false,
+      "resource_safety": true,
+      "zero_swap_growth": true,
+      "native_metal_backward_consumes_iosurface": false,
+      "full_step_replay_and_audit": false
+    },
+    "memory": {
+      "maximum_twelve_layer_discarded_mib_ceiling": 288.0,
+      "historical_microbatch_six_live_reserve_deficit_mib": 236.656,
+      "theoretical_ceiling_covers_gap": true,
+      "actual_release_claim": false
+    },
+    "resource_receipt": {
+      "passed": true,
+      "wall_seconds": 4.824,
+      "maximum_process_rss_mib": 120.031,
+      "maximum_inferred_unified_memory_mib": 352.266,
+      "minimum_reclaimable_available_mib": 3565.859,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "next_gate": "Do not build the missing custom backward on a losing joined schedule. Move to sampler-exact whole-microbatch heterogeneous execution, whose long independent window avoids per-layer joins; retain matched-arm concurrency as the next campaign-level candidate.",
+    "claim_scope": "Exact-shape recomputation/overlap engineering only. This rejects one six-chunk SwiGLU schedule, not ANE recomputation generally, whole-microbatch parallelism, campaign concurrency, or inference."
   },
   "three_engine_training_gates": {
     "exact_ane_forward_parity": true,
@@ -470,7 +525,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Both the public and native zero-copy direct q_proj triads are dispositioned. The native route removes Python/NumPy and host copies and passes full station/optimizer parity, replay, save/reload, custody, resource, and zero-swap gates, but averages 4.344-4.459 ms versus 3.582-3.624 ms for MLX. Retain MLX for direct q_proj and move to ANE activation recomputation over an independently ready Metal backward window."
+    "next_gate": "Direct q_proj and the exact SwiGLU activation-recomputation schedule are dispositioned with MLX retained. Move to sampler-exact whole-microbatch heterogeneous execution so ANE receives a long independent work window without a per-layer join."
   },
   "process_coexistence": {
     "state": "GREEN_MECHANICAL_OVERLAP",

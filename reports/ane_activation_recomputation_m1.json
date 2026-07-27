@@ -1,0 +1,364 @@
+{
+  "canonical_backend_changed": false,
+  "canonical_checkpoint_mutated": false,
+  "claim_scope": "Exact-shape recomputation and independent-backward overlap mechanics. No full-model memory, optimizer, training-throughput, convergence, utility, serving, or capability claim.",
+  "decision": {
+    "ane_recompute_hidden_inside_mlx_window": true,
+    "candidate_critical_path_milliseconds_per_iteration": {
+      "count": 2,
+      "maximum": 20.311782958742697,
+      "mean": 20.250783853650013,
+      "median": 20.250783853650013,
+      "minimum": 20.189784748557333
+    },
+    "concurrent_mlx_milliseconds_per_iteration": {
+      "count": 2,
+      "maximum": 20.311782958742697,
+      "mean": 20.250783853650013,
+      "median": 20.250783853650013,
+      "minimum": 20.189784748557333
+    },
+    "concurrent_native_milliseconds_per_iteration": {
+      "count": 2,
+      "maximum": 6.315684027791666,
+      "mean": 6.204770833333333,
+      "median": 6.204770833333333,
+      "minimum": 6.093857638875
+    },
+    "conservative_speedup_control_over_candidate": 0.9485460483411529,
+    "control_milliseconds_per_iteration": {
+      "count": 2,
+      "maximum": 19.48695141618373,
+      "mean": 19.376806438231142,
+      "median": 19.376806438231142,
+      "minimum": 19.266661460278556
+    },
+    "joined_wall_selected": false,
+    "mean_speedup_control_over_candidate": 0.9568422920448413,
+    "memory": {
+      "actual_mlx_allocator_release_measured": false,
+      "discarded_gate_up_fp32_mib_per_layer": 24.0,
+      "historical_microbatch_six_live_reserve_deficit_mib": 236.656,
+      "larger_sustained_batch_qualified": false,
+      "maximum_twelve_layer_discarded_mib": 288.0,
+      "retained_layer_boundary_fp32_mib": 4.0,
+      "theoretical_release_covers_historical_gap": true
+    },
+    "mlx_backward_window_green": true,
+    "native_mechanics_green": true,
+    "production_eligible": false,
+    "remaining_integration_gates": [
+      "MLX autograd cannot consume the private ANE IOSurface output.",
+      "A native Metal SwiGLU backward must consume the recomputed gate/up surfaces without host conversion.",
+      "Actual full-model allocator release and a faster sustained batch remain unmeasured.",
+      "Full-step replay, save/reload, resource, thermal, and independent audit remain open."
+    ]
+  },
+  "disposition": "RETAIN_MLX_CHECKPOINT_RECOMPUTATION",
+  "external_inference_calls": 0,
+  "policy": "project_theseus_ane_activation_recomputation_qualification_v1",
+  "public_benchmark_rows_read": 0,
+  "raw": {
+    "concurrent": [
+      {
+        "critical_path_milliseconds": 484.554833965376,
+        "joined_wall_milliseconds_including_teardown": 512.6118749612942,
+        "mlx": {
+          "canonical_checkpoint_mutated": false,
+          "claim_scope": "One exact production-shape self-attention forward/VJP window. It is independent overlap work, not a full decoder or optimizer step.",
+          "external_inference_calls": 0,
+          "mechanics": {
+            "all_gradients_finite": true,
+            "compiled_value_and_grad": true,
+            "loss_finite": true,
+            "mlx_fast_grouped_query_sdpa": true,
+            "mlx_fast_rope": true
+          },
+          "policy": "project_theseus_mlx_attention_backward_window_v1",
+          "public_benchmark_rows_read": 0,
+          "runtime": {
+            "barrier_work_milliseconds": 484.554833965376,
+            "maximum_milliseconds": 24.609041982330382,
+            "mean_milliseconds": 20.188298578432295,
+            "median_milliseconds": 19.27091646939516,
+            "minimum_milliseconds": 18.54766596807167,
+            "repetitions": 24
+          },
+          "shape": {
+            "batch": 4,
+            "heads": 8,
+            "hidden": 512,
+            "kv_heads": 2,
+            "sequence": 512
+          },
+          "trigger_state": "GREEN_ATTENTION_BACKWARD_WINDOW"
+        },
+        "native": {
+          "canonical_checkpoint_mutated": false,
+          "claim_scope": "Exact production-shape SwiGLU gate/up activation recomputation mechanics only; no MLX autograd integration, optimizer, throughput, memory-allocation, or capability claim.",
+          "compile_milliseconds": 61.014125,
+          "custody": {
+            "generation_count": 51,
+            "intermediate_python_or_numpy_round_trip": false,
+            "metal_pack_to_iosurface": true
+          },
+          "external_inference_calls": 0,
+          "memory": {
+            "discarded_gate_up_fp32_mib_per_layer": 24.0,
+            "maximum_twelve_layer_discarded_mib": 288.0,
+            "retained_layer_boundary_fp32_mib": 4.0
+          },
+          "parity": {
+            "maximum_absolute_delta": 0.000586330891,
+            "mismatch_count": 0,
+            "tolerance": 0.001
+          },
+          "policy": "project_theseus_ane_swiglu_activation_recompute_v1",
+          "public_benchmark_rows_read": 0,
+          "runtime": {
+            "ane_mean_milliseconds": 3.239536458,
+            "barrier_work_milliseconds": 151.576416667,
+            "joined_mean_milliseconds": 4.665213542,
+            "pack_mean_milliseconds": 1.411220486,
+            "repetitions": 24
+          },
+          "shape": {
+            "batch": 4,
+            "ff_dim": 1536,
+            "hidden": 512,
+            "output_channels": 3072,
+            "rows": 2048,
+            "sequence": 512
+          },
+          "trigger_state": "GREEN_RECOMPUTE_MECHANICS"
+        }
+      },
+      {
+        "critical_path_milliseconds": 487.4827910098247,
+        "joined_wall_milliseconds_including_teardown": 511.34245801949874,
+        "mlx": {
+          "canonical_checkpoint_mutated": false,
+          "claim_scope": "One exact production-shape self-attention forward/VJP window. It is independent overlap work, not a full decoder or optimizer step.",
+          "external_inference_calls": 0,
+          "mechanics": {
+            "all_gradients_finite": true,
+            "compiled_value_and_grad": true,
+            "loss_finite": true,
+            "mlx_fast_grouped_query_sdpa": true,
+            "mlx_fast_rope": true
+          },
+          "policy": "project_theseus_mlx_attention_backward_window_v1",
+          "public_benchmark_rows_read": 0,
+          "runtime": {
+            "barrier_work_milliseconds": 487.4827910098247,
+            "maximum_milliseconds": 24.987082986626774,
+            "mean_milliseconds": 20.30532124384384,
+            "median_milliseconds": 19.314187491545454,
+            "minimum_milliseconds": 18.46258295699954,
+            "repetitions": 24
+          },
+          "shape": {
+            "batch": 4,
+            "heads": 8,
+            "hidden": 512,
+            "kv_heads": 2,
+            "sequence": 512
+          },
+          "trigger_state": "GREEN_ATTENTION_BACKWARD_WINDOW"
+        },
+        "native": {
+          "canonical_checkpoint_mutated": false,
+          "claim_scope": "Exact production-shape SwiGLU gate/up activation recomputation mechanics only; no MLX autograd integration, optimizer, throughput, memory-allocation, or capability claim.",
+          "compile_milliseconds": 52.498958333,
+          "custody": {
+            "generation_count": 51,
+            "intermediate_python_or_numpy_round_trip": false,
+            "metal_pack_to_iosurface": true
+          },
+          "external_inference_calls": 0,
+          "memory": {
+            "discarded_gate_up_fp32_mib_per_layer": 24.0,
+            "maximum_twelve_layer_discarded_mib": 288.0,
+            "retained_layer_boundary_fp32_mib": 4.0
+          },
+          "parity": {
+            "maximum_absolute_delta": 0.000586330891,
+            "mismatch_count": 0,
+            "tolerance": 0.001
+          },
+          "policy": "project_theseus_ane_swiglu_activation_recompute_v1",
+          "public_benchmark_rows_read": 0,
+          "runtime": {
+            "ane_mean_milliseconds": 3.049430556,
+            "barrier_work_milliseconds": 146.252583333,
+            "joined_mean_milliseconds": 4.660060764,
+            "pack_mean_milliseconds": 1.600317708,
+            "repetitions": 24
+          },
+          "shape": {
+            "batch": 4,
+            "ff_dim": 1536,
+            "hidden": 512,
+            "output_channels": 3072,
+            "rows": 2048,
+            "sequence": 512
+          },
+          "trigger_state": "GREEN_RECOMPUTE_MECHANICS"
+        }
+      }
+    ],
+    "standalone_mlx": [
+      {
+        "canonical_checkpoint_mutated": false,
+        "claim_scope": "One exact production-shape self-attention forward/VJP window. It is independent overlap work, not a full decoder or optimizer step.",
+        "external_inference_calls": 0,
+        "mechanics": {
+          "all_gradients_finite": true,
+          "compiled_value_and_grad": true,
+          "loss_finite": true,
+          "mlx_fast_grouped_query_sdpa": true,
+          "mlx_fast_rope": true
+        },
+        "policy": "project_theseus_mlx_attention_backward_window_v1",
+        "public_benchmark_rows_read": 0,
+        "runtime": {
+          "barrier_work_milliseconds": 467.6868339884095,
+          "maximum_milliseconds": 22.260166006162763,
+          "mean_milliseconds": 19.48449474972828,
+          "median_milliseconds": 19.197229499695823,
+          "minimum_milliseconds": 18.55920802336186,
+          "repetitions": 24
+        },
+        "shape": {
+          "batch": 4,
+          "heads": 8,
+          "hidden": 512,
+          "kv_heads": 2,
+          "sequence": 512
+        },
+        "trigger_state": "GREEN_ATTENTION_BACKWARD_WINDOW"
+      },
+      {
+        "canonical_checkpoint_mutated": false,
+        "claim_scope": "One exact production-shape self-attention forward/VJP window. It is independent overlap work, not a full decoder or optimizer step.",
+        "external_inference_calls": 0,
+        "mechanics": {
+          "all_gradients_finite": true,
+          "compiled_value_and_grad": true,
+          "loss_finite": true,
+          "mlx_fast_grouped_query_sdpa": true,
+          "mlx_fast_rope": true
+        },
+        "policy": "project_theseus_mlx_attention_backward_window_v1",
+        "public_benchmark_rows_read": 0,
+        "runtime": {
+          "barrier_work_milliseconds": 462.39987504668534,
+          "maximum_milliseconds": 20.31704201363027,
+          "mean_milliseconds": 19.264881918691874,
+          "median_milliseconds": 19.05447951867245,
+          "minimum_milliseconds": 18.593667016830295,
+          "repetitions": 24
+        },
+        "shape": {
+          "batch": 4,
+          "heads": 8,
+          "hidden": 512,
+          "kv_heads": 2,
+          "sequence": 512
+        },
+        "trigger_state": "GREEN_ATTENTION_BACKWARD_WINDOW"
+      }
+    ],
+    "standalone_native": [
+      {
+        "canonical_checkpoint_mutated": false,
+        "claim_scope": "Exact production-shape SwiGLU gate/up activation recomputation mechanics only; no MLX autograd integration, optimizer, throughput, memory-allocation, or capability claim.",
+        "compile_milliseconds": 65.145125,
+        "custody": {
+          "generation_count": 51,
+          "intermediate_python_or_numpy_round_trip": false,
+          "metal_pack_to_iosurface": true
+        },
+        "external_inference_calls": 0,
+        "memory": {
+          "discarded_gate_up_fp32_mib_per_layer": 24.0,
+          "maximum_twelve_layer_discarded_mib": 288.0,
+          "retained_layer_boundary_fp32_mib": 4.0
+        },
+        "parity": {
+          "maximum_absolute_delta": 0.000586330891,
+          "mismatch_count": 0,
+          "tolerance": 0.001
+        },
+        "policy": "project_theseus_ane_swiglu_activation_recompute_v1",
+        "public_benchmark_rows_read": 0,
+        "runtime": {
+          "ane_mean_milliseconds": 2.901555556,
+          "barrier_work_milliseconds": 109.913625,
+          "joined_mean_milliseconds": 4.268381944,
+          "pack_mean_milliseconds": 1.357125,
+          "repetitions": 24
+        },
+        "shape": {
+          "batch": 4,
+          "ff_dim": 1536,
+          "hidden": 512,
+          "output_channels": 3072,
+          "rows": 2048,
+          "sequence": 512
+        },
+        "trigger_state": "GREEN_RECOMPUTE_MECHANICS"
+      },
+      {
+        "canonical_checkpoint_mutated": false,
+        "claim_scope": "Exact production-shape SwiGLU gate/up activation recomputation mechanics only; no MLX autograd integration, optimizer, throughput, memory-allocation, or capability claim.",
+        "compile_milliseconds": 57.156416667,
+        "custody": {
+          "generation_count": 51,
+          "intermediate_python_or_numpy_round_trip": false,
+          "metal_pack_to_iosurface": true
+        },
+        "external_inference_calls": 0,
+        "memory": {
+          "discarded_gate_up_fp32_mib_per_layer": 24.0,
+          "maximum_twelve_layer_discarded_mib": 288.0,
+          "retained_layer_boundary_fp32_mib": 4.0
+        },
+        "parity": {
+          "maximum_absolute_delta": 0.000586330891,
+          "mismatch_count": 0,
+          "tolerance": 0.001
+        },
+        "policy": "project_theseus_ane_swiglu_activation_recompute_v1",
+        "public_benchmark_rows_read": 0,
+        "runtime": {
+          "ane_mean_milliseconds": 2.838192708,
+          "barrier_work_milliseconds": 102.327541667,
+          "joined_mean_milliseconds": 4.146484375,
+          "pack_mean_milliseconds": 1.297065972,
+          "repetitions": 24
+        },
+        "shape": {
+          "batch": 4,
+          "ff_dim": 1536,
+          "hidden": 512,
+          "output_channels": 3072,
+          "rows": 2048,
+          "sequence": 512
+        },
+        "trigger_state": "GREEN_RECOMPUTE_MECHANICS"
+      }
+    ]
+  },
+  "repetitions": 24,
+  "rounds": 2,
+  "topology": {
+    "ane_recompute": "six compile-once 2048x512 by 512x512 private-ANE projections covering gate/up width 1536",
+    "dependency_valid": true,
+    "discarded_activation": "SwiGLU gate and up FP32 outputs for one lower decoder layer",
+    "fused_3072_and_1536_channel_mil_compile_attempts": "INCOMPATIBLE_ON_THIS_M1_EXACT_512_CHANNEL_CHUNKS_USED",
+    "independent_metal_window": "compiled production-shape GQA/RoPE/SDPA self-attention forward/VJP from a later decoder layer"
+  },
+  "trigger_state": "RED_RECOMPUTE_SCHEDULE_NOT_SELECTED",
+  "warmup": 3
+}
