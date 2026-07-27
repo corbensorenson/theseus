@@ -618,6 +618,62 @@
     "production_eligible": false,
     "claim_scope": "One native causal-attention gradient tree with contiguous KV reduction, inverse split-half RoPE, FP32 Q/K/V gradients, and attention-RMSNorm dX/scale. It does not establish a complete decoder block or training acceleration."
   },
+  "exact_decoder_block_remainder": {
+    "state": "GREEN_EXACT_BLOCK_REMAINDER_ATTENTION_JOIN_OPEN",
+    "disposition": "REMAINDER_GREEN_GENERATION_TAGGED_ATTENTION_JOIN_IMMEDIATE",
+    "shape": {
+      "batch": 1,
+      "sequence": 128,
+      "d_model": 512,
+      "ff_dim": 1536
+    },
+    "parameter_elements": 2621952,
+    "parameter_leaf_count": 5,
+    "objective_authority_mass": 64000.0,
+    "first_joined_milliseconds": 11.042083,
+    "mean_joined_64_milliseconds": 6.678012,
+    "maximum_absolute_delta_by_state": {
+      "swiglu_activation": 4.76837158e-07,
+      "swiglu_gate_gradient": 4.65661287e-10,
+      "swiglu_up_gradient": 4.65661287e-10
+    },
+    "nonzero_gradient_fraction": 1.0,
+    "remainder_green": true,
+    "complete_decoder_block": false,
+    "attention_join_is_immediate_next": true,
+    "resource_receipt": {
+      "path": "reports/exact_decoder_block_remainder_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 1.657,
+      "maximum_process_rss_mib": 171.062,
+      "maximum_inferred_unified_memory_mib": 171.062,
+      "minimum_reclaimable_available_mib": 3971.812,
+      "minimum_available_memory_floor_mib": 0.0,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "out_projection_and_unscaled_residual": true,
+      "second_rmsnorm_forward_backward": true,
+      "swiglu_forward_backward": true,
+      "down_projection": true,
+      "masked_scalar_loss": true,
+      "all_five_parameter_leaves": true,
+      "attended_and_direct_hidden_gradients": true,
+      "one_global_clip": true,
+      "one_fp32_adamw_update": true,
+      "replay_exact": true,
+      "sixty_four_step_finite": true,
+      "native_metal_elementwise_loss_reduction_update": true,
+      "single_thread_fp32_accelerate_gemms": true,
+      "complete_attention_join": false,
+      "all_nine_block_parameter_leaves": false,
+      "complete_decoder_block": false,
+      "matched_mlx_wall_control": false,
+      "production_eligible": false
+    },
+    "production_eligible": false,
+    "claim_scope": "Exact native out-projection/residual/RMSNorm/SwiGLU/down/loss/update remainder mechanics only. It does not establish the generation-tagged attention join, a complete block, or speedup."
+  },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
     "source": "native/ane_metal/ane_metal_same_surface_probe.m",

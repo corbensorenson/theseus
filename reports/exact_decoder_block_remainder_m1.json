@@ -1,0 +1,72 @@
+{
+  "policy": "project_theseus_exact_decoder_block_remainder_qualification_v1",
+  "state": "GREEN_EXACT_BLOCK_REMAINDER_ATTENTION_JOIN_OPEN",
+  "source": "native/ane_metal/exact_decoder_block_remainder.m",
+  "source_sha256": "9c5a8fb92f7948333d175bde29808c4a29e94c6a0c2d445ed3055e95246373f5",
+  "shape": {
+    "rows": 128,
+    "d_model": 512,
+    "ff_dim": 1536
+  },
+  "parameter_generation": 0,
+  "parameter_elements": 2621952,
+  "parameter_leaves": [
+    "attention.out_proj.weight",
+    "ffn_norm.weight",
+    "feed_forward.gate.weight",
+    "feed_forward.up.weight",
+    "feed_forward.down.weight"
+  ],
+  "objective_authority_mass": 64000.0,
+  "timing": {
+    "first_joined_milliseconds": 11.042083,
+    "forward_gemm_milliseconds": 1.612958,
+    "metal_elementwise_milliseconds": 2.786375,
+    "backward_gemm_milliseconds": 2.653667,
+    "metal_update_milliseconds": 3.986208,
+    "mean_joined_64_milliseconds": 6.678012
+  },
+  "comparisons": {
+    "swiglu_activation": {
+      "tolerance": 1e-05,
+      "maximum_absolute_delta": 4.76837158e-07,
+      "mismatch_count": 0
+    },
+    "swiglu_gate_gradient": {
+      "tolerance": 1e-05,
+      "maximum_absolute_delta": 4.65661287e-10,
+      "mismatch_count": 0
+    },
+    "swiglu_up_gradient": {
+      "tolerance": 1e-05,
+      "maximum_absolute_delta": 4.65661287e-10,
+      "mismatch_count": 0
+    }
+  },
+  "loss": 12.9839849,
+  "gradient_norm": 29.9981518,
+  "nonzero_gradient_fraction": 1,
+  "gates": {
+    "out_projection_and_unscaled_residual": true,
+    "second_rmsnorm_forward_backward": true,
+    "swiglu_forward_backward": true,
+    "down_projection": true,
+    "masked_scalar_loss": true,
+    "all_five_parameter_leaves": true,
+    "attended_and_direct_hidden_gradients": true,
+    "one_global_clip": true,
+    "one_fp32_adamw_update": true,
+    "replay_exact": true,
+    "sixty_four_step_finite": true,
+    "complete_attention_join": false,
+    "production_eligible": false,
+    "native_metal_elementwise_loss_reduction_update": true,
+    "single_thread_fp32_accelerate_gemms": true,
+    "all_nine_block_parameter_leaves": false,
+    "complete_decoder_block": false,
+    "matched_mlx_wall_control": false
+  },
+  "next_gate": "Join the exact ANE attention forward/backward tree to this Metal/Accelerate remainder over generation-tagged IOSurfaces, then compare the complete native block against compiled MLX.",
+  "claim_scope": "Exact native decoder-block remainder mechanics from hidden and attended boundaries through one update. No joined attention tree, complete block, full model, speedup, or capability claim.",
+  "capability_claim": "NONE_ENGINEERING_BLOCK_REMAINDER_ONLY"
+}

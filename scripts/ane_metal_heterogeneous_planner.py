@@ -859,6 +859,74 @@ def _exact_ane_attention_backward_record(
     }
 
 
+def _exact_decoder_block_remainder_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("exact_decoder_block_remainder") or {}
+    gates = record.get("gates") or {}
+    deltas = record.get("maximum_absolute_delta_by_state") or {}
+    if record and any(
+        not math.isfinite(float(deltas.get(name, float("nan"))))
+        or float(deltas.get(name, -1.0)) < 0.0
+        for name in (
+            "swiglu_activation",
+            "swiglu_gate_gradient",
+            "swiglu_up_gradient",
+        )
+    ):
+        raise PlanningFault("exact_decoder_block_remainder_invalid")
+    remainder_green = all(
+        gates.get(name) is True
+        for name in (
+            "out_projection_and_unscaled_residual",
+            "second_rmsnorm_forward_backward",
+            "swiglu_forward_backward",
+            "down_projection",
+            "masked_scalar_loss",
+            "all_five_parameter_leaves",
+            "attended_and_direct_hidden_gradients",
+            "one_global_clip",
+            "one_fp32_adamw_update",
+            "replay_exact",
+            "sixty_four_step_finite",
+            "native_metal_elementwise_loss_reduction_update",
+            "single_thread_fp32_accelerate_gemms",
+        )
+    )
+    complete_block = (
+        remainder_green
+        and gates.get("complete_attention_join") is True
+        and gates.get("all_nine_block_parameter_leaves") is True
+        and gates.get("complete_decoder_block") is True
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "parameter_elements": record.get("parameter_elements"),
+        "parameter_leaf_count": record.get("parameter_leaf_count"),
+        "objective_authority_mass": record.get("objective_authority_mass"),
+        "first_joined_milliseconds": record.get("first_joined_milliseconds"),
+        "mean_joined_64_milliseconds": record.get(
+            "mean_joined_64_milliseconds"
+        ),
+        "maximum_absolute_delta_by_state": deltas,
+        "nonzero_gradient_fraction": record.get("nonzero_gradient_fraction"),
+        "remainder_green": remainder_green,
+        "complete_decoder_block": complete_block,
+        "attention_join_is_immediate_next": remainder_green
+        and not complete_block,
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "Exact native out-projection/residual/RMSNorm/SwiGLU/down/loss/"
+            "update remainder mechanics only. It does not establish the "
+            "generation-tagged attention join, a complete block, or speedup."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -942,6 +1010,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     exact_decoder_block_reference = _exact_decoder_block_reference_record(evidence)
     exact_ane_attention_forward = _exact_ane_attention_forward_record(evidence)
     exact_ane_attention_backward = _exact_ane_attention_backward_record(evidence)
+    exact_decoder_block_remainder = _exact_decoder_block_remainder_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -978,6 +1047,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "exact_decoder_block_reference": exact_decoder_block_reference,
         "exact_ane_attention_forward": exact_ane_attention_forward,
         "exact_ane_attention_backward": exact_ane_attention_backward,
+        "exact_decoder_block_remainder": exact_decoder_block_remainder,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

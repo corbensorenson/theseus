@@ -507,3 +507,24 @@ def test_exact_ane_attention_backward_closes_gradient_tree() -> None:
     )
     assert backward["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert backward["production_eligible"] is False
+
+
+def test_exact_decoder_block_remainder_advances_to_attention_join() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    remainder = report["exact_decoder_block_remainder"]
+
+    assert remainder["remainder_green"] is True
+    assert remainder["complete_decoder_block"] is False
+    assert remainder["attention_join_is_immediate_next"] is True
+    assert remainder["parameter_elements"] == 2_621_952
+    assert remainder["parameter_leaf_count"] == 5
+    assert remainder["nonzero_gradient_fraction"] == 1.0
+    assert remainder["gates"]["replay_exact"] is True
+    assert remainder["gates"]["sixty_four_step_finite"] is True
+    assert remainder["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert remainder["production_eligible"] is False

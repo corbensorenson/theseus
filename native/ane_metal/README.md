@@ -158,14 +158,24 @@ averages `0.409 ms`, has zero registered mismatches, and has `0.00352` worst
 absolute delta. This does not yet include attention backward, out projection,
 residuals, SwiGLU, scalar loss, or an optimizer update.
 
-`ane_exact_attention_backward.m` closes the causal softmax-gradient core in one
-ANE graph. It consumes RoPE'd Q, contiguously tiled K/V, and upstream
-attention gradients, then recomputes the masked probabilities and emits
-full-query-head `dQ`, `dK`, and `dV`. The guarded slice averages `0.390 ms`;
-worst absolute delta is `2.996e-4`, with zero registered mismatches. This is
-not the complete attention gradient tree: contiguous KV reduction, inverse
-split-half RoPE, attention-RMSNorm `dX`/scale gradient, and FP32 Q/K/V
-parameter gradients remain the immediate closure.
+`ane_exact_attention_backward.m` now closes the exact attention gradient tree.
+The ANE graph emits full-head `dQ`, `dK`, and `dV`; contiguous KV reduction and
+inverse split-half RoPE feed single-thread FP32 Accelerate Q/K/V gradients and
+attention-RMSNorm `dX`/scale. The guarded ANE core averages `0.399 ms`, the six
+projection-gradient GEMMs average `0.263 ms`, and the Accelerate operator
+matches an independent scalar implementation within `1.94e-7`. Every
+ANE-originated downstream delta remains inside its analytical FP16-boundary
+propagation bound with zero registered mismatches.
+
+`exact_decoder_block_remainder.m` closes the other side of the frozen block
+boundary with native Metal elementwise/loss/reduction/update kernels and
+single-thread FP32 Accelerate GEMMs. It covers out projection, residuals, the
+second RMSNorm, SwiGLU/down, scalar loss, all five remainder parameter leaves,
+both returned boundary gradients, one global clip, and one AdamW publication.
+All `2,621,952` gradient elements participate, replay is byte-exact, and 64
+updates remain finite. The guarded mean is `6.678 ms`. The attention and
+remainder executables are not yet one generation-tagged transaction, so this
+is not a complete block or speedup claim.
 
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds

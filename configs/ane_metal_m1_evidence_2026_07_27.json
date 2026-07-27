@@ -731,6 +731,59 @@
     "next_gate": "Add the output projection and unscaled first residual, then the second RMSNorm, SwiGLU, down projection, unscaled residual, scalar loss, and one authoritative optimizer update.",
     "claim_scope": "One native causal-attention backward core with contiguous KV reduction, inverse split-half RoPE, FP32 Q/K/V parameter gradients, and attention-RMSNorm input/scale gradients. No complete decoder block, optimizer, full model, speedup, or capability claim."
   },
+  "exact_decoder_block_remainder": {
+    "state": "GREEN_EXACT_BLOCK_REMAINDER_ATTENTION_JOIN_OPEN",
+    "disposition": "REMAINDER_GREEN_GENERATION_TAGGED_ATTENTION_JOIN_IMMEDIATE",
+    "shape": {
+      "batch": 1,
+      "sequence": 128,
+      "d_model": 512,
+      "ff_dim": 1536
+    },
+    "parameter_elements": 2621952,
+    "parameter_leaf_count": 5,
+    "objective_authority_mass": 64000.0,
+    "first_joined_milliseconds": 11.042083,
+    "mean_joined_64_milliseconds": 6.678012,
+    "maximum_absolute_delta_by_state": {
+      "swiglu_activation": 4.76837158e-07,
+      "swiglu_gate_gradient": 4.65661287e-10,
+      "swiglu_up_gradient": 4.65661287e-10
+    },
+    "nonzero_gradient_fraction": 1.0,
+    "gates": {
+      "out_projection_and_unscaled_residual": true,
+      "second_rmsnorm_forward_backward": true,
+      "swiglu_forward_backward": true,
+      "down_projection": true,
+      "masked_scalar_loss": true,
+      "all_five_parameter_leaves": true,
+      "attended_and_direct_hidden_gradients": true,
+      "one_global_clip": true,
+      "one_fp32_adamw_update": true,
+      "replay_exact": true,
+      "sixty_four_step_finite": true,
+      "native_metal_elementwise_loss_reduction_update": true,
+      "single_thread_fp32_accelerate_gemms": true,
+      "complete_attention_join": false,
+      "all_nine_block_parameter_leaves": false,
+      "complete_decoder_block": false,
+      "matched_mlx_wall_control": false,
+      "production_eligible": false
+    },
+    "resource_receipt": {
+      "path": "reports/exact_decoder_block_remainder_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 1.657,
+      "maximum_process_rss_mib": 171.062,
+      "maximum_inferred_unified_memory_mib": 171.062,
+      "minimum_reclaimable_available_mib": 3971.812,
+      "minimum_available_memory_floor_mib": 0.0,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "next_gate": "Join the exact ANE attention forward/backward tree to this Metal/Accelerate remainder over generation-tagged IOSurfaces, then compare the complete native block against compiled MLX.",
+    "claim_scope": "Exact native decoder-block remainder mechanics from hidden and attended boundaries through one update. No joined attention tree, complete block, full model, speedup, or capability claim."
+  },
   "three_engine_training_gates": {
     "exact_ane_forward_parity": true,
     "exact_ane_input_gradient_parity": true,
