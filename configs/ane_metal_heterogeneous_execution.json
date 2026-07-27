@@ -84,9 +84,9 @@
       "reason": "Independent microbatches expose the most device parallelism without inserting a synchronization boundary inside every transformer layer."
     },
     "ane_forward_dx_cpu_dw_gpu_remainder_pipeline": {
-      "scope": "preferred exact projection triad before full-model ANE data parallel",
-      "schedule": "ANE computes projection forward and input gradients, single-thread Accelerate computes the corresponding FP32 weight gradients, and Metal retains attention, output/loss, pointer, reduction, and the eventual single optimizer update. Every result is tagged with one authoritative generation.",
-      "reason": "The production-shape Accelerate dW operator is exact and reaches a 1.764 ms alternating standalone mean, while the public state-backed ANE projection is slower than the matching MLX projection in isolation. The triad is eligible only when useful overlap shortens the joined critical path."
+      "scope": "immediate native zero-copy projection triad before full-model ANE data parallel",
+      "schedule": "ANE computes projection forward and input gradients over generation-tagged IOSurfaces, single-thread Accelerate computes the corresponding FP32 weight gradients directly from the sealed generation, and Metal retains attention, output/loss, pointer, reduction, and the eventual single optimizer update. Every result is tagged with one authoritative generation.",
+      "reason": "The exact public-bridge triad cleared projection output, loss, dX, dW, update, replay, save/reload, 64-step finite, placement, and zero-swap mechanics, but averaged 10.068 ms versus 4.941 ms for matched MLX and contains mandatory Python/NumPy bridges. That exact public route is rejected. Reimplement the same transaction over the proven private IOSurface transport, preserving the successful math while removing those bridges."
     },
     "critical_path_list_scheduler": {
       "scope": "all heterogeneous training and inference candidates",
@@ -244,6 +244,24 @@
     "sustained_resource_and_thermal_qualification": true,
     "independent_gate_audit": true
   },
+  "exact_projection_triad_qualification_gates": {
+    "forward_and_dx_compute_plan_prefers_ane": true,
+    "output_parity": true,
+    "loss_parity": true,
+    "input_gradient_parity": true,
+    "weight_gradient_parity": true,
+    "updated_weight_parity": true,
+    "single_generation_conservation": true,
+    "single_fp32_update": true,
+    "save_reload_exact": true,
+    "replay_exact": true,
+    "sixty_four_step_finite": true,
+    "matched_joined_wall_gain_exceeds_uncertainty": true,
+    "zero_swap_growth": true,
+    "thermal_sustainability": true,
+    "no_intermediate_python_or_numpy_round_trip": true,
+    "independent_gate_audit": true
+  },
   "fp16_range_policy": {
     "measure_before_transform": true,
     "runtime_clamping_default": false,
@@ -386,6 +404,29 @@
       "disposition": "CRITICAL_PATH_SCHEDULER_REQUIRED_ALL_ENGINES_ALWAYS_ON_REJECTED",
       "claim_scope": "Shape-related independent operators, not one matched optimizer step."
     },
+    "exact_projection_triad": {
+      "state": "INCONCLUSIVE_IMPLEMENTATION",
+      "shape": "batch4_sequence512_q_proj_512_to_512",
+      "optimizer_steps": 64,
+      "ane_forward_and_dx_preferred": true,
+      "all_numeric_mismatch_counts": 0,
+      "maximum_output_delta": 0.0006103515625,
+      "maximum_input_gradient_delta": 4.76837158203125e-7,
+      "maximum_weight_gradient_delta": 4.902460659650387e-9,
+      "maximum_updated_weight_delta": 0.00005700571637134999,
+      "save_reload_exact": true,
+      "replay_exact": true,
+      "hybrid_mean_milliseconds": 10.067682,
+      "mlx_control_mean_milliseconds": 4.940637,
+      "mean_speedup_control_over_hybrid": 0.490742,
+      "hybrid_wall_ratio_over_mlx": 2.03773,
+      "maximum_process_rss_mib": 340.141,
+      "maximum_swapout_growth_mib": 0.0,
+      "report": "reports/ane_cpu_metal_projection_triad_m1.json",
+      "resource_report": "reports/ane_cpu_metal_projection_triad_m1.host_resource_safety.json",
+      "disposition": "PUBLIC_PYTHON_NUMPY_COREML_BRIDGE_REJECTED_NATIVE_IOSURFACE_TRIAD_IMMEDIATE",
+      "claim_scope": "One deterministic q_proj-shaped optimizer transaction. This rejects only the measured public bridge; it does not falsify native zero-copy ANE training or establish a full-transformer speedup."
+    },
     "host_batch_prefetch_bound": {
       "source_report": "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
       "optimizer_steps": 64,
@@ -395,7 +436,7 @@
       "disposition": "KEEP_BOUNDED_LOOKAHEAD_NOT_A_PRIMARY_SPEED_ROUTE"
     },
     "explicit_joint_execution_measured": true,
-    "explicit_joint_execution_disposition": "THREE_ENGINE_MECHANICS_GREEN_CRITICAL_PATH_TRAINING_JOIN_OPEN",
+    "explicit_joint_execution_disposition": "PUBLIC_TRIAD_NUMERICALLY_GREEN_BUT_2_037730X_SLOWER_NATIVE_IOSURFACE_TRIAD_IMMEDIATE",
     "production_eligible": false
   },
   "public_benchmark_rows_read": 0,

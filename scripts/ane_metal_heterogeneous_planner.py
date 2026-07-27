@@ -65,6 +65,25 @@ THREE_ENGINE_TRAINING_GATES = (
     "independent_gate_audit",
 )
 
+EXACT_PROJECTION_TRIAD_GATES = (
+    "forward_and_dx_compute_plan_prefers_ane",
+    "output_parity",
+    "loss_parity",
+    "input_gradient_parity",
+    "weight_gradient_parity",
+    "updated_weight_parity",
+    "single_generation_conservation",
+    "single_fp32_update",
+    "save_reload_exact",
+    "replay_exact",
+    "sixty_four_step_finite",
+    "matched_joined_wall_gain_exceeds_uncertainty",
+    "zero_swap_growth",
+    "thermal_sustainability",
+    "no_intermediate_python_or_numpy_round_trip",
+    "independent_gate_audit",
+)
+
 
 class PlanningFault(ValueError):
     """Raised when an experiment packet cannot support a valid decision."""
@@ -275,6 +294,83 @@ def _three_engine_record(evidence: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _exact_projection_triad_record(evidence: dict[str, Any]) -> dict[str, Any]:
+    triad = evidence.get("exact_projection_triad") or {}
+    gates = triad.get("gates") or {}
+    failed_gates = [
+        gate for gate in EXACT_PROJECTION_TRIAD_GATES if gates.get(gate) is not True
+    ]
+    hybrid_mean = _finite_measurement(triad, "hybrid_mean_milliseconds")
+    control_mean = _finite_measurement(triad, "mlx_control_mean_milliseconds")
+    measured_speedup = _finite_measurement(
+        triad, "mean_speedup_control_over_hybrid"
+    )
+    if hybrid_mean is not None and control_mean is not None:
+        derived_speedup = control_mean / hybrid_mean
+        if measured_speedup is None:
+            measured_speedup = derived_speedup
+        elif not math.isclose(
+            measured_speedup, derived_speedup, rel_tol=1e-6, abs_tol=1e-9
+        ):
+            raise PlanningFault("exact_projection_triad_speedup_inconsistent")
+    mechanics_green = all(
+        gates.get(gate) is True
+        for gate in (
+            "forward_and_dx_compute_plan_prefers_ane",
+            "output_parity",
+            "loss_parity",
+            "input_gradient_parity",
+            "weight_gradient_parity",
+            "updated_weight_parity",
+            "single_generation_conservation",
+            "single_fp32_update",
+            "save_reload_exact",
+            "replay_exact",
+            "sixty_four_step_finite",
+            "zero_swap_growth",
+        )
+    )
+    public_bridge_selected = (
+        mechanics_green
+        and not failed_gates
+        and measured_speedup is not None
+        and measured_speedup > 1.0
+    )
+    return {
+        "state": triad.get("state", "NOT_MEASURED"),
+        "disposition": triad.get("disposition", "NOT_MEASURED"),
+        "shape": triad.get("shape"),
+        "hybrid_mean_milliseconds": hybrid_mean,
+        "mlx_control_mean_milliseconds": control_mean,
+        "mean_speedup_control_over_hybrid": measured_speedup,
+        "hybrid_wall_ratio_over_mlx": (
+            hybrid_mean / control_mean
+            if hybrid_mean is not None and control_mean is not None
+            else None
+        ),
+        "maximum_absolute_delta_by_station": triad.get(
+            "maximum_absolute_delta_by_station"
+        ),
+        "resource_receipt": triad.get("resource_receipt"),
+        "gates": gates,
+        "failed_gates": failed_gates,
+        "mechanics_green": mechanics_green,
+        "public_bridge_selected": public_bridge_selected,
+        "private_zero_copy_triad_is_immediate_next": (
+            mechanics_green
+            and not public_bridge_selected
+            and gates.get("matched_joined_wall_gain_exceeds_uncertainty") is False
+            and gates.get("no_intermediate_python_or_numpy_round_trip") is False
+        ),
+        "production_eligible": public_bridge_selected,
+        "claim_scope": (
+            "One deterministic q_proj-shaped optimizer transaction only. A losing "
+            "public Python/NumPy/Core ML bridge rejects that exact bridge, not ANE "
+            "training or a native IOSurface implementation."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -345,6 +441,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     incompatible_mil_attempts = evidence.get("incompatible_mil_attempts", [])
     dynamic_training = _dynamic_training_record(evidence)
     three_engine = _three_engine_record(evidence)
+    exact_projection_triad = _exact_projection_triad_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -370,6 +467,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "weight_update_path": evidence.get("weight_update_path"),
         "dynamic_training_path": dynamic_training,
         "three_engine_scheduling": three_engine,
+        "exact_projection_triad": exact_projection_triad,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

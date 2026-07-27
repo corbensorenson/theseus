@@ -28,7 +28,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Implement one exact Theseus projection triad over either public MLState or the compile-once private transport, then join ANE forward/input-gradient, Accelerate FP32 dW, and Metal remainder work into one authoritative FP32 update."
+    "next_gate": "The exact public MLState triad cleared numerical, update, replay, and resource mechanics but ran 2.037730x slower than matched MLX. Port that exact transaction to the compile-once private IOSurface transport, remove Python/NumPy bridges, join it to the real Metal remainder, then require a matched critical-path win before checkpoint mutation."
   },
   "dynamic_training_path": {
     "state": "GREEN_COMPILE_ONCE_MUTABLE_WEIGHT_TRANSPORT_INCONCLUSIVE_THESEUS_SEMANTICS",
@@ -198,32 +198,87 @@
     "scheduler_policy": "Use measured critical-path list scheduling with one weight generation. A device receives work only when joined wall improves; do not sum unmatched operator rates or force all engines on.",
     "preferred_training_probe": "ANE forward/input-gradient, single-thread Accelerate FP32 weight-gradient, and MLX/Metal attention, loss, pointer, reduction, and optimizer work joined into one sampler-exact FP32 update.",
     "training_gates": {
-      "exact_ane_forward_parity": false,
-      "exact_ane_input_gradient_parity": false,
+      "exact_ane_forward_parity": true,
+      "exact_ane_input_gradient_parity": true,
       "exact_cpu_weight_gradient_parity": true,
-      "one_authoritative_fp32_update": false,
+      "one_authoritative_fp32_update": true,
       "sampler_and_objective_mass_conservation": false,
       "no_intermediate_python_or_numpy_round_trip": false,
-      "save_reload_replay": false,
-      "sixty_four_step_stability": false,
+      "save_reload_replay": true,
+      "sixty_four_step_stability": true,
       "matched_joined_wall_gain_exceeds_uncertainty": false,
       "sustained_resource_and_thermal_qualification": false,
       "independent_gate_audit": false
     },
     "failed_training_gates": [
-      "exact_ane_forward_parity",
-      "exact_ane_input_gradient_parity",
-      "one_authoritative_fp32_update",
       "sampler_and_objective_mass_conservation",
       "no_intermediate_python_or_numpy_round_trip",
-      "save_reload_replay",
-      "sixty_four_step_stability",
       "matched_joined_wall_gain_exceeds_uncertainty",
       "sustained_resource_and_thermal_qualification",
       "independent_gate_audit"
     ],
     "production_eligible": false,
     "claim_scope": "Public state transport, isolated operator parity, and three-process coexistence mechanics only. This is not an end-to-end training speedup."
+  },
+  "exact_projection_triad": {
+    "state": "INCONCLUSIVE_IMPLEMENTATION",
+    "disposition": "PUBLIC_BRIDGE_NOT_SELECTED_PRIVATE_ZERO_COPY_TRIAD_NEXT",
+    "shape": {
+      "rows": 2048,
+      "logical_batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 512,
+      "projection": "decoder_self_attention_q_proj"
+    },
+    "hybrid_mean_milliseconds": 10.067682235785469,
+    "mlx_control_mean_milliseconds": 4.94063731184724,
+    "mean_speedup_control_over_hybrid": 0.4907422777296047,
+    "hybrid_wall_ratio_over_mlx": 2.037729466934154,
+    "maximum_absolute_delta_by_station": {
+      "input_gradient": 4.76837158203125e-07,
+      "loss": 5.373731255531311e-07,
+      "output": 0.0006103515625,
+      "updated_weight": 5.700571637134999e-05,
+      "weight_gradient": 4.902460659650387e-09
+    },
+    "resource_receipt": {
+      "path": "reports/ane_cpu_metal_projection_triad_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 3.29,
+      "maximum_process_rss_mib": 340.141,
+      "minimum_reclaimable_available_mib": 3642.562,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "forward_and_dx_compute_plan_prefers_ane": true,
+      "output_parity": true,
+      "loss_parity": true,
+      "input_gradient_parity": true,
+      "weight_gradient_parity": true,
+      "updated_weight_parity": true,
+      "single_generation_conservation": true,
+      "single_fp32_update": true,
+      "save_reload_exact": true,
+      "replay_exact": true,
+      "sixty_four_step_finite": true,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "zero_swap_growth": true,
+      "thermal_sustainability": false,
+      "no_intermediate_python_or_numpy_round_trip": false,
+      "independent_gate_audit": false
+    },
+    "failed_gates": [
+      "matched_joined_wall_gain_exceeds_uncertainty",
+      "thermal_sustainability",
+      "no_intermediate_python_or_numpy_round_trip",
+      "independent_gate_audit"
+    ],
+    "mechanics_green": true,
+    "public_bridge_selected": false,
+    "private_zero_copy_triad_is_immediate_next": true,
+    "production_eligible": false,
+    "claim_scope": "One deterministic q_proj-shaped optimizer transaction only. A losing public Python/NumPy/Core ML bridge rejects that exact bridge, not ANE training or a native IOSurface implementation."
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
@@ -267,11 +322,7 @@
     "independent_gate_audit",
     "mlx_lazy_graph_or_native_metal_gradient_integration",
     "optional_structure_aligned_partition_after_dynamic_route_disposition",
-    "exact_ane_forward_parity",
-    "exact_ane_input_gradient_parity",
-    "one_authoritative_fp32_update",
     "sampler_and_objective_mass_conservation",
-    "no_intermediate_python_or_numpy_round_trip",
-    "sixty_four_step_stability"
+    "no_intermediate_python_or_numpy_round_trip"
   ]
 }

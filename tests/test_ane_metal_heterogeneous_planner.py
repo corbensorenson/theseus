@@ -41,6 +41,9 @@ def test_config_defaults_disabled_and_covers_full_split_sweep() -> None:
     assert set(config["three_engine_training_qualification_gates"]) == set(
         planner.THREE_ENGINE_TRAINING_GATES
     )
+    assert set(config["exact_projection_triad_qualification_gates"]) == set(
+        planner.EXACT_PROJECTION_TRIAD_GATES
+    )
 
 
 def test_unstable_compiler_blocks_even_fast_candidate() -> None:
@@ -297,8 +300,18 @@ def test_current_m1_evidence_keeps_three_engine_route_mechanical_only() -> None:
     assert triad["always_on_three_engine_policy_selected"] is False
     assert triad["worst_concurrent_kernel_slowdown"] > 1.0
     assert triad["production_eligible"] is False
-    assert "exact_ane_forward_parity" in triad["failed_training_gates"]
+    assert "exact_ane_forward_parity" not in triad["failed_training_gates"]
+    assert "exact_ane_input_gradient_parity" not in triad["failed_training_gates"]
+    assert "one_authoritative_fp32_update" not in triad["failed_training_gates"]
     assert "exact_cpu_weight_gradient_parity" not in triad["failed_training_gates"]
+    assert (
+        "no_intermediate_python_or_numpy_round_trip"
+        in triad["failed_training_gates"]
+    )
+    assert (
+        "matched_joined_wall_gain_exceeds_uncertainty"
+        in triad["failed_training_gates"]
+    )
 
 
 def test_three_engine_evidence_matches_bound_operator_receipts() -> None:
@@ -341,3 +354,38 @@ def test_three_engine_evidence_matches_bound_operator_receipts() -> None:
         label: coexistence["workers"][label]["kernel_slowdown"]
         for label in ("cpu", "gpu", "ane")
     } == pytest.approx(triad["worker_kernel_slowdowns"])
+
+
+def test_exact_public_projection_triad_is_narrowly_rejected_and_redirected() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    hardware = json.loads(
+        (ROOT / "reports/ane_cpu_metal_projection_triad_m1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    resource = json.loads(
+        (
+            ROOT
+            / "reports/ane_cpu_metal_projection_triad_m1.host_resource_safety.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    report = planner.plan(load_config(), evidence)
+    triad = report["exact_projection_triad"]
+
+    assert triad["mechanics_green"] is True
+    assert triad["public_bridge_selected"] is False
+    assert triad["private_zero_copy_triad_is_immediate_next"] is True
+    assert triad["mean_speedup_control_over_hybrid"] == pytest.approx(
+        hardware["timing"]["mean_speedup_control_over_hybrid"]
+    )
+    assert triad["hybrid_wall_ratio_over_mlx"] > 2.0
+    assert triad["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert resource["maximum_swapout_growth_mib"] == 0.0
+    assert resource["passed"] is True
+    assert "matched_joined_wall_gain_exceeds_uncertainty" in triad["failed_gates"]
+    assert "no_intermediate_python_or_numpy_round_trip" in triad["failed_gates"]

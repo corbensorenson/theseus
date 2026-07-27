@@ -1,0 +1,262 @@
+{
+  "bridge_contract": {
+    "ane_dx_cpu_dw_overlap": true,
+    "coreml_numpy_input_output": true,
+    "cpu_dw_native_accelerate": true,
+    "hot_step_python_control": true,
+    "interpretation": "This measures the reproducible public route including its mandatory Python/NumPy bridges. A losing result redirects the exact transaction to the proven private IOSurface transport; it does not falsify ANE training.",
+    "mlx_numpy_input_output": true
+  },
+  "build": {
+    "accelerate_threading_value": 1,
+    "coremltools_version": "9.0",
+    "mlx_device": "Device(gpu, 0)",
+    "mlx_version": "0.32.0",
+    "seconds": 0.2525029579992406,
+    "temporary_models_removed": true
+  },
+  "claim_scope": "This is one q_proj-shaped optimizer transaction over deterministic synthetic station tensors. It is not full attention, a transformer block, the complete Theseus objective, convergence, utility, or capability evidence. The public route is not production-eligible while hot-step Python or NumPy bridges remain.",
+  "compute_plan": {
+    "forward": {
+      "all_matmuls_prefer_ane": true,
+      "matmul_count": 1,
+      "operations": [
+        {
+          "operator_name": "ios18.read_state",
+          "preferred_compute_device": "MLNeuralEngineComputeDevice",
+          "supported_compute_devices": [
+            "MLCPUComputeDevice",
+            "MLGPUComputeDevice",
+            "MLNeuralEngineComputeDevice"
+          ]
+        },
+        {
+          "operator_name": "const",
+          "preferred_compute_device": "",
+          "supported_compute_devices": []
+        },
+        {
+          "operator_name": "const",
+          "preferred_compute_device": "",
+          "supported_compute_devices": []
+        },
+        {
+          "operator_name": "ios18.matmul",
+          "preferred_compute_device": "MLNeuralEngineComputeDevice",
+          "supported_compute_devices": [
+            "MLCPUComputeDevice",
+            "MLGPUComputeDevice",
+            "MLNeuralEngineComputeDevice"
+          ]
+        }
+      ]
+    },
+    "input_gradient": {
+      "all_matmuls_prefer_ane": true,
+      "matmul_count": 1,
+      "operations": [
+        {
+          "operator_name": "ios18.read_state",
+          "preferred_compute_device": "MLNeuralEngineComputeDevice",
+          "supported_compute_devices": [
+            "MLCPUComputeDevice",
+            "MLGPUComputeDevice",
+            "MLNeuralEngineComputeDevice"
+          ]
+        },
+        {
+          "operator_name": "const",
+          "preferred_compute_device": "",
+          "supported_compute_devices": []
+        },
+        {
+          "operator_name": "const",
+          "preferred_compute_device": "",
+          "supported_compute_devices": []
+        },
+        {
+          "operator_name": "ios18.matmul",
+          "preferred_compute_device": "MLNeuralEngineComputeDevice",
+          "supported_compute_devices": [
+            "MLCPUComputeDevice",
+            "MLGPUComputeDevice",
+            "MLNeuralEngineComputeDevice"
+          ]
+        }
+      ]
+    }
+  },
+  "created_utc": "2026-07-27T20:27:15.063568+00:00",
+  "disposition": "PUBLIC_BRIDGE_NOT_SELECTED_PRIVATE_ZERO_COPY_TRIAD_NEXT",
+  "execution_contract": {
+    "alternating_route_order": true,
+    "ane_forward": "public_coreml_mlstate",
+    "ane_input_gradient": "public_coreml_mlstate_transposed_weight",
+    "cpu_weight_gradient": "single_thread_accelerate_sgemm",
+    "generation_tag_required": true,
+    "metal_remainder": "mlx_compiled_loss_clip_adamw",
+    "qualification_steps": 64,
+    "replay_steps": 1,
+    "save_reload_step": 32,
+    "single_authoritative_update": true,
+    "warmup_steps": 2
+  },
+  "failed_gates": [
+    "matched_joined_wall_gain_exceeds_uncertainty",
+    "zero_swap_growth",
+    "thermal_sustainability",
+    "no_intermediate_python_or_numpy_round_trip",
+    "independent_gate_audit"
+  ],
+  "gates": {
+    "forward_and_dx_compute_plan_prefers_ane": true,
+    "independent_gate_audit": false,
+    "input_gradient_parity": true,
+    "loss_parity": true,
+    "matched_joined_wall_gain_exceeds_uncertainty": false,
+    "no_intermediate_python_or_numpy_round_trip": false,
+    "output_parity": true,
+    "replay_exact": true,
+    "save_reload_exact": true,
+    "single_fp32_update": true,
+    "single_generation_conservation": true,
+    "sixty_four_step_finite": true,
+    "thermal_sustainability": false,
+    "updated_weight_parity": true,
+    "weight_gradient_parity": true,
+    "zero_swap_growth": false
+  },
+  "numeric_contract": {
+    "adamw_bias_correction": false,
+    "ane_compute_dtype": "float16",
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "gradient_clip_norm": 1.0,
+    "input_gradient_tolerance": 0.001,
+    "learning_rate": 3e-05,
+    "loss": "half_mean_squared_error_synthetic_station_target",
+    "loss_tolerance": 1e-05,
+    "master_dtype": "float32",
+    "output_tolerance": 0.001,
+    "updated_weight_tolerance": 0.0001,
+    "weight_decay": 0.01,
+    "weight_gradient_tolerance": 0.01
+  },
+  "parity": {
+    "loss_prefix": [
+      {
+        "control": 0.00587412528693676,
+        "hybrid": 0.005874662660062313,
+        "step": 1
+      },
+      {
+        "control": 0.0058569470420479774,
+        "hybrid": 0.00585746206343174,
+        "step": 2
+      },
+      {
+        "control": 0.005832461640238762,
+        "hybrid": 0.005832970142364502,
+        "step": 3
+      },
+      {
+        "control": 0.0058031706139445305,
+        "hybrid": 0.005803700536489487,
+        "step": 4
+      },
+      {
+        "control": 0.005770569667220116,
+        "hybrid": 0.0057710763067007065,
+        "step": 5
+      },
+      {
+        "control": 0.00573557335883379,
+        "hybrid": 0.005736084189265966,
+        "step": 6
+      },
+      {
+        "control": 0.00569887924939394,
+        "hybrid": 0.005699376109987497,
+        "step": 7
+      },
+      {
+        "control": 0.00566105404868722,
+        "hybrid": 0.005661548115313053,
+        "step": 8
+      }
+    ],
+    "maximum_absolute_delta_by_station": {
+      "input_gradient": 4.76837158203125e-07,
+      "loss": 5.373731255531311e-07,
+      "output": 0.0006103515625,
+      "updated_weight": 5.700571637134999e-05,
+      "weight_gradient": 4.902460659650387e-09
+    },
+    "mismatch_count_by_station": {
+      "input_gradient": 0,
+      "loss": 0,
+      "output": 0,
+      "updated_weight": 0,
+      "weight_gradient": 0
+    }
+  },
+  "policy": "project_theseus_ane_cpu_metal_projection_triad_v1",
+  "production_eligible": false,
+  "resource_custody": {
+    "canonical_checkpoint_mutated": false,
+    "external_inference_calls": 0,
+    "public_benchmark_rows_read": 0,
+    "temporary_only": true
+  },
+  "shape": {
+    "bias": false,
+    "input_channels": 512,
+    "logical_batch": 4,
+    "output_channels": 512,
+    "projection": "decoder_self_attention_q_proj",
+    "rows": 2048,
+    "sequence": 512
+  },
+  "stability": {
+    "all_tensors_finite": true,
+    "final_first_moment_sha256": "e9b1e73a3359ea7edb805e39dfb0afaa3da79a656e137b8787aca80b287d853f",
+    "final_generation": 64,
+    "final_second_moment_sha256": "d5c24f3dffc14c711823ff44c817e00fff3204bddbcf78cd7bb3d145d5529e73",
+    "final_weight_sha256": "efa37c3112831ef7b9ad85747bd3944f9e739c361da67b7e6b079c83fe72f652",
+    "optimizer_steps": 64,
+    "replay_exact": true,
+    "save_reload_exact": true
+  },
+  "timing": {
+    "alternating_route_order": true,
+    "conservative_speedup_control_over_hybrid": 0.2874319725578378,
+    "hybrid_joined": {
+      "count": 64,
+      "maximum_milliseconds": 14.18045797618106,
+      "mean_milliseconds": 10.067682235785469,
+      "median_milliseconds": 9.893437527352944,
+      "minimum_milliseconds": 8.728874963708222,
+      "p95_milliseconds": 11.664249992463738
+    },
+    "hybrid_station_means_milliseconds": {
+      "ane_dx": 3.4393886862744694,
+      "ane_forward": 3.302479815829429,
+      "concurrent_dx_dw": 3.4393886862744694,
+      "cpu_dw": 2.6751269415399292,
+      "metal_loss": 1.4591427243431099,
+      "metal_update": 1.178985020487744,
+      "state_write": 0.24220363684435142
+    },
+    "mean_speedup_control_over_hybrid": 0.4907422777296047,
+    "mlx_control": {
+      "count": 64,
+      "maximum_milliseconds": 6.889832962770015,
+      "mean_milliseconds": 4.94063731184724,
+      "median_milliseconds": 4.45785399642773,
+      "minimum_milliseconds": 4.075917007867247,
+      "p95_milliseconds": 6.702166981995106
+    }
+  },
+  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION"
+}

@@ -323,15 +323,68 @@
     "disposition": "GREEN_MECHANICAL_OVERLAP_CRITICAL_PATH_SCHEDULER_REQUIRED",
     "claim_scope": "Three-process CPU Accelerate, MLX/Metal, and Core ML/ANE mechanics only. The workloads are shape-related but are not one matched Theseus optimizer step, so their rates cannot be summed into a training claim."
   },
+  "exact_projection_triad": {
+    "state": "INCONCLUSIVE_IMPLEMENTATION",
+    "disposition": "PUBLIC_BRIDGE_NOT_SELECTED_PRIVATE_ZERO_COPY_TRIAD_NEXT",
+    "config": "configs/ane_cpu_metal_projection_triad.json",
+    "source": "scripts/ane_cpu_metal_projection_triad.py",
+    "report": "reports/ane_cpu_metal_projection_triad_m1.json",
+    "shape": {
+      "rows": 2048,
+      "logical_batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 512,
+      "projection": "decoder_self_attention_q_proj"
+    },
+    "hybrid_mean_milliseconds": 10.067682235785469,
+    "mlx_control_mean_milliseconds": 4.94063731184724,
+    "mean_speedup_control_over_hybrid": 0.4907422777296047,
+    "conservative_speedup_control_over_hybrid": 0.2874319725578378,
+    "maximum_absolute_delta_by_station": {
+      "input_gradient": 4.76837158203125e-7,
+      "loss": 5.373731255531311e-7,
+      "output": 0.0006103515625,
+      "updated_weight": 0.00005700571637134999,
+      "weight_gradient": 4.902460659650387e-9
+    },
+    "resource_receipt": {
+      "path": "reports/ane_cpu_metal_projection_triad_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 3.29,
+      "maximum_process_rss_mib": 340.141,
+      "minimum_reclaimable_available_mib": 3642.562,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "forward_and_dx_compute_plan_prefers_ane": true,
+      "output_parity": true,
+      "loss_parity": true,
+      "input_gradient_parity": true,
+      "weight_gradient_parity": true,
+      "updated_weight_parity": true,
+      "single_generation_conservation": true,
+      "single_fp32_update": true,
+      "save_reload_exact": true,
+      "replay_exact": true,
+      "sixty_four_step_finite": true,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "zero_swap_growth": true,
+      "thermal_sustainability": false,
+      "no_intermediate_python_or_numpy_round_trip": false,
+      "independent_gate_audit": false
+    },
+    "claim_scope": "One deterministic q_proj-shaped optimizer transaction. It is not full attention, the complete Theseus objective, convergence, utility, or capability evidence. The losing public bridge narrows the immediate implementation to the proven private IOSurface transport."
+  },
   "three_engine_training_gates": {
-    "exact_ane_forward_parity": false,
-    "exact_ane_input_gradient_parity": false,
+    "exact_ane_forward_parity": true,
+    "exact_ane_input_gradient_parity": true,
     "exact_cpu_weight_gradient_parity": true,
-    "one_authoritative_fp32_update": false,
+    "one_authoritative_fp32_update": true,
     "sampler_and_objective_mass_conservation": false,
     "no_intermediate_python_or_numpy_round_trip": false,
-    "save_reload_replay": false,
-    "sixty_four_step_stability": false,
+    "save_reload_replay": true,
+    "sixty_four_step_stability": true,
     "matched_joined_wall_gain_exceeds_uncertainty": false,
     "sustained_resource_and_thermal_qualification": false,
     "independent_gate_audit": false
@@ -346,7 +399,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Implement one exact Theseus projection triad over either public MLState or the compile-once private transport, then join ANE forward/input-gradient, Accelerate FP32 dW, and Metal remainder work into one authoritative FP32 update."
+    "next_gate": "The exact public MLState triad cleared numerical, update, replay, and resource mechanics but ran 2.037730x slower than matched MLX. Port that exact transaction to the compile-once private IOSurface transport, remove Python/NumPy bridges, join it to the real Metal remainder, then require a matched critical-path win before checkpoint mutation."
   },
   "process_coexistence": {
     "state": "GREEN_MECHANICAL_OVERLAP",
@@ -409,7 +462,7 @@
   },
   "metal_control_seconds": [],
   "split_candidates": [],
-  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and both private activation-packed weights and public Core ML MLState now prove mutable production-shape ANE weight transport without per-update model recompilation. The public state-backed 512-to-768 projection is about 2.846x slower than its matching compiled MLX control in isolation, so it is not a blind Metal replacement. Single-thread Accelerate computes the matching FP32 dW operator in a 1.764 ms alternating standalone mean, and all three engines overlap mechanically by 1.518x versus the serial process sum; CPU and ANE kernel slowdown make an always-on policy invalid. The audited research trainer is not a Theseus implementation: GQA head expansion was wrong upstream, RoPE, residual scaling, vocabulary normalization, objective, batch, source conditioning, pointer generation, and optimizer custody differ. Implement semantic parity first, then schedule ANE forward/input-gradient, CPU dW, and Metal remainder work by measured critical path under one generation and one FP32 update. No end-to-end speed claim is allowed yet.",
+  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and both private activation-packed weights and public Core ML MLState prove mutable production-shape ANE weight transport without per-update model recompilation. The new exact q_proj triad proves ANE-preferred forward/dX, single-thread Accelerate FP32 dW, MLX/Metal loss and AdamW, one generation, one update, 64 finite steps, save/reload, exact replay, and zero swap growth. Every predeclared numerical tolerance passed, but mandatory Python/NumPy/Core ML bridges make the hybrid average 10.068 ms versus 4.941 ms for matched MLX, a 2.037730x slowdown. Reject that exact public bridge and immediately port the proven transaction to private IOSurface zero-copy transport; do not falsify ANE training from this implementation. The audited research trainer still differs in residual scaling, full-vocabulary normalization, loss masks, source encoder, cross-attention, pointer generation, batch semantics, and optimizer custody. No end-to-end speed claim is allowed yet.",
   "canonical_checkpoint_mutated": false,
   "public_benchmark_rows_read": 0,
   "external_inference_calls": 0
