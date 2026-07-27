@@ -1,0 +1,350 @@
+{
+  "actual_overlap_observed": true,
+  "all_commands_green": true,
+  "canonical_checkpoint_mutated": false,
+  "claim_scope": "Three-process CPU Accelerate, MLX/Metal, and Core ML/ANE coexistence mechanics only. Workloads are shape-related but not one matched Theseus optimizer step; rates cannot be summed into a training speedup claim.",
+  "concurrent_wall_seconds": {
+    "count": 2,
+    "maximum": 5.101424833002966,
+    "mean": 5.056823811988579,
+    "median": 5.056823811988579,
+    "minimum": 5.012222790974192
+  },
+  "external_inference_calls": 0,
+  "overlap_speedup_vs_serial_sum": 1.518183393951647,
+  "policy": "project_theseus_cpu_gpu_ane_coexistence_probe_v1",
+  "public_benchmark_rows_read": 0,
+  "raw": {
+    "concurrent_rounds": [
+      {
+        "ane": {
+          "output_bytes": 4459,
+          "output_sha256": "5c49788ae51a824054e229584e2db662e5fc143e4f059ba81167cf41b2297c95",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 5.096652416978031,
+          "worker_internal_mean_milliseconds": 4.371051,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_coreml_state_weight_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512,
+            "state_elements": 393216
+          },
+          "worker_trigger_state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT"
+        },
+        "cpu": {
+          "output_bytes": 642,
+          "output_sha256": "6adefc340503688f210a25aa5ec476e5afc3298d923e8c4924b184d667c6f33b",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 3.717149292002432,
+          "worker_internal_mean_milliseconds": 3.59573417,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_cpu_accelerate_dw_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "output_channels": 768,
+            "rows": 2048
+          },
+          "worker_trigger_state": "GREEN"
+        },
+        "gpu": {
+          "output_bytes": 1145,
+          "output_sha256": "d94a37c117fc09fd41b2ed71d30bfc27eefa8fa38e45b5a0912269f25ad1d794",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 1.6253123340429738,
+          "worker_internal_mean_milliseconds": 1.221245,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_mlx_fp16_projection_control_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512
+          },
+          "worker_trigger_state": "GREEN"
+        },
+        "round": 0,
+        "wall_seconds": 5.101424833002966
+      },
+      {
+        "ane": {
+          "output_bytes": 4458,
+          "output_sha256": "2233cee67553f540147ff8a6d14d82349decba3ca0d42b66cbbc9ab881778827",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 5.010636499966495,
+          "worker_internal_mean_milliseconds": 4.201822,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_coreml_state_weight_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512,
+            "state_elements": 393216
+          },
+          "worker_trigger_state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT"
+        },
+        "cpu": {
+          "output_bytes": 641,
+          "output_sha256": "34bcc30a68b2082621860a744f521a82e34bb449b1ce1f3732831e669b0c9e93",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 3.945296582998708,
+          "worker_internal_mean_milliseconds": 3.8063881,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_cpu_accelerate_dw_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "output_channels": 768,
+            "rows": 2048
+          },
+          "worker_trigger_state": "GREEN"
+        },
+        "gpu": {
+          "output_bytes": 1146,
+          "output_sha256": "961ac7103748f36b6d3176702b15d3561110d4b966f665e7b7b59ba24acd6beb",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 1.592250666988548,
+          "worker_internal_mean_milliseconds": 1.170108,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_mlx_fp16_projection_control_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512
+          },
+          "worker_trigger_state": "GREEN"
+        },
+        "round": 1,
+        "wall_seconds": 5.012222790974192
+      }
+    ],
+    "standalone": {
+      "ane": [
+        {
+          "output_bytes": 4458,
+          "output_sha256": "464fe107e243bb71f31c58546b98a8e389ee94830af709cdc32ee9bef821df4d",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 4.217209708003793,
+          "worker_internal_mean_milliseconds": 3.187277,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_coreml_state_weight_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512,
+            "state_elements": 393216
+          },
+          "worker_trigger_state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT"
+        },
+        {
+          "output_bytes": 4457,
+          "output_sha256": "269aa630d60d644fcea247577ad82253f1da87ff8b8d5e6ddbbd44fad0a5ae3f",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 4.00298562500393,
+          "worker_internal_mean_milliseconds": 3.167188,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_coreml_state_weight_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512,
+            "state_elements": 393216
+          },
+          "worker_trigger_state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT"
+        }
+      ],
+      "cpu": [
+        {
+          "output_bytes": 640,
+          "output_sha256": "299f72ed4595baaeede7b5f462b740b2d4a46f23676d63c47851de04ea33e245",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 2.0613966250093654,
+          "worker_internal_mean_milliseconds": 1.98335937,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_cpu_accelerate_dw_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "output_channels": 768,
+            "rows": 2048
+          },
+          "worker_trigger_state": "GREEN"
+        },
+        {
+          "output_bytes": 642,
+          "output_sha256": "186067b1594eac14e8429b6225f451fda776d29bb6ebd0404eb0310af8241b9d",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 1.606866166985128,
+          "worker_internal_mean_milliseconds": 1.54457662,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_cpu_accelerate_dw_probe_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "output_channels": 768,
+            "rows": 2048
+          },
+          "worker_trigger_state": "GREEN"
+        }
+      ],
+      "gpu": [
+        {
+          "output_bytes": 1146,
+          "output_sha256": "948ce5fdb5003328bd0c78a1a1c959f177c061d6a9ac787cae2c82e3f3240514",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 1.749073957966175,
+          "worker_internal_mean_milliseconds": 1.304346,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_mlx_fp16_projection_control_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512
+          },
+          "worker_trigger_state": "GREEN"
+        },
+        {
+          "output_bytes": 1146,
+          "output_sha256": "32b271b75de6bbf318abebed349e6c3ad6b0ed071e6a89197e646058a5d5ad89",
+          "output_tail_on_error": "",
+          "returncode": 0,
+          "seconds": 1.7168397920322604,
+          "worker_internal_mean_milliseconds": 1.380335,
+          "worker_parse_error": "",
+          "worker_policy": "project_theseus_mlx_fp16_projection_control_v1",
+          "worker_shape": {
+            "input_channels": 512,
+            "logical_batch": 4,
+            "output_channels": 768,
+            "rows": 2048,
+            "sequence": 512
+          },
+          "worker_trigger_state": "GREEN"
+        }
+      ]
+    }
+  },
+  "rounds": 2,
+  "standalone_serial_median_seconds": 7.677185937500326,
+  "trigger_state": "GREEN_THREE_ENGINE_MECHANICAL_OVERLAP",
+  "workers": {
+    "ane": {
+      "concurrent_internal_mean_milliseconds": {
+        "count": 2,
+        "maximum": 4.371051,
+        "mean": 4.2864365,
+        "median": 4.2864365,
+        "minimum": 4.201822
+      },
+      "concurrent_seconds": {
+        "count": 2,
+        "maximum": 5.096652416978031,
+        "mean": 5.053644458472263,
+        "median": 5.053644458472263,
+        "minimum": 5.010636499966495
+      },
+      "kernel_slowdown": 1.349110113912029,
+      "process_slowdown": 1.2295679734469676,
+      "standalone_internal_mean_milliseconds": {
+        "count": 2,
+        "maximum": 3.187277,
+        "mean": 3.1772324999999997,
+        "median": 3.1772324999999997,
+        "minimum": 3.167188
+      },
+      "standalone_seconds": {
+        "count": 2,
+        "maximum": 4.217209708003793,
+        "mean": 4.1100976665038615,
+        "median": 4.1100976665038615,
+        "minimum": 4.00298562500393
+      }
+    },
+    "cpu": {
+      "concurrent_internal_mean_milliseconds": {
+        "count": 2,
+        "maximum": 3.8063881,
+        "mean": 3.701061135,
+        "median": 3.701061135,
+        "minimum": 3.59573417
+      },
+      "concurrent_seconds": {
+        "count": 2,
+        "maximum": 3.945296582998708,
+        "mean": 3.83122293750057,
+        "median": 3.83122293750057,
+        "minimum": 3.717149292002432
+      },
+      "kernel_slowdown": 2.0981452869273856,
+      "process_slowdown": 2.088848675651982,
+      "standalone_internal_mean_milliseconds": {
+        "count": 2,
+        "maximum": 1.98335937,
+        "mean": 1.763967995,
+        "median": 1.763967995,
+        "minimum": 1.54457662
+      },
+      "standalone_seconds": {
+        "count": 2,
+        "maximum": 2.0613966250093654,
+        "mean": 1.8341313959972467,
+        "median": 1.8341313959972467,
+        "minimum": 1.606866166985128
+      }
+    },
+    "gpu": {
+      "concurrent_internal_mean_milliseconds": {
+        "count": 2,
+        "maximum": 1.221245,
+        "mean": 1.1956764999999998,
+        "median": 1.1956764999999998,
+        "minimum": 1.170108
+      },
+      "concurrent_seconds": {
+        "count": 2,
+        "maximum": 1.6253123340429738,
+        "mean": 1.6087815005157609,
+        "median": 1.6087815005157609,
+        "minimum": 1.592250666988548
+      },
+      "kernel_slowdown": 0.890740091653347,
+      "process_slowdown": 0.9283447982607687,
+      "standalone_internal_mean_milliseconds": {
+        "count": 2,
+        "maximum": 1.380335,
+        "mean": 1.3423405000000002,
+        "median": 1.3423405000000002,
+        "minimum": 1.304346
+      },
+      "standalone_seconds": {
+        "count": 2,
+        "maximum": 1.749073957966175,
+        "mean": 1.7329568749992177,
+        "median": 1.7329568749992177,
+        "minimum": 1.7168397920322604
+      }
+    }
+  }
+}

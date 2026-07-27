@@ -71,6 +71,31 @@ xcrun clang -fobjc-arc -O2 \
 /private/tmp/theseus_ane_split_half_rope
 ```
 
+`cpu_accelerate_dw_probe.m` is the public CPU-side control for the proposed
+three-engine projection triad. It computes the production-shape FP32 weight
+gradient `X^T dY` with Accelerate SGEMM and checks deterministic output samples.
+The single-thread route is the initial candidate because it leaves CPU capacity
+for data preparation and verification while ANE and Metal work:
+
+```sh
+xcrun clang -O3 -framework Foundation -framework Accelerate \
+  native/ane_metal/cpu_accelerate_dw_probe.m \
+  -o /private/tmp/theseus_cpu_accelerate_dw_probe
+/private/tmp/theseus_cpu_accelerate_dw_probe \
+  --single-threaded --warmup 8 --repetitions 64
+```
+
+The public Core ML alternative is owned by
+`scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
+only temporary model packages, and records compute-plan placement, a
+nonidentity state transition, output parity, and state-update versus read-only
+timing. `scripts/mlx_fp16_projection_control.py` is its exact-shape MLX control.
+`scripts/cpu_gpu_ane_coexistence_probe.py` then alternates standalone order and
+launches all three workers concurrently from
+`configs/cpu_gpu_ane_coexistence_m1.json`. That receipt measures mechanics only:
+the workers are not yet one Theseus optimizer step and their rates cannot be
+summed into a training speedup.
+
 Prior art was inspected, not vendored:
 
 - `maderix/ANE` at `d91c9845c0784dec7753048954fc6d0e8411fe29`

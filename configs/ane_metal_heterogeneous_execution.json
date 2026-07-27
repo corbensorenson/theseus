@@ -83,16 +83,43 @@
       ],
       "reason": "Independent microbatches expose the most device parallelism without inserting a synchronization boundary inside every transformer layer."
     },
-    "ane_forward_dx_metal_dw_pipeline": {
-      "scope": "preferred intra-step kernel split if full-model ANE data parallel is not yet faster",
-      "schedule": "ANE computes projection forward and input gradients while Metal computes the corresponding weight gradients, output/loss, pointer operations, and the eventual single optimizer update from shared IOSurface generations.",
-      "reason": "The audited dynamic trainer already overlaps ANE work with CPU BLAS dW; moving dW to Metal targets that measured dependency while avoiding a wide activation concatenation."
+    "ane_forward_dx_cpu_dw_gpu_remainder_pipeline": {
+      "scope": "preferred exact projection triad before full-model ANE data parallel",
+      "schedule": "ANE computes projection forward and input gradients, single-thread Accelerate computes the corresponding FP32 weight gradients, and Metal retains attention, output/loss, pointer, reduction, and the eventual single optimizer update. Every result is tagged with one authoritative generation.",
+      "reason": "The production-shape Accelerate dW operator is exact and reaches a 1.764 ms alternating standalone mean, while the public state-backed ANE projection is slower than the matching MLX projection in isolation. The triad is eligible only when useful overlap shortens the joined critical path."
+    },
+    "critical_path_list_scheduler": {
+      "scope": "all heterogeneous training and inference candidates",
+      "policy": "Choose placements from alternating sustained service-time intervals, dependency readiness, shared-memory pressure, and thermal state; never force all three engines active.",
+      "single_gpu_owner": true,
+      "mlx_stream_boundary": "Use one GPU-owning thread. MLX new_stream is thread-bound and async_eval is experimental; qualify any overlap behind a deterministic canary before using it in training.",
+      "cpu_policy": "Prefer single-thread Accelerate for measured dW operators so remaining CPU cores can prepare data and verify outputs. Multithreaded BLAS must win joined wall before adoption.",
+      "forbidden": [
+        "summing_unmatched_operator_rates_into_training_speedup",
+        "fixed_device_fraction_without_shape_measurement",
+        "concurrent_writes_to_one_surface_generation",
+        "stale_or_mixed_weight_generations",
+        "python_or_numpy_tensor_round_trips_inside_the_measured_step",
+        "all_engines_always_on"
+      ]
+    },
+    "ane_activation_recomputation": {
+      "scope": "memory-and-overlap candidate after exact block parity",
+      "schedule": "Recompute checkpointed forward activations on ANE while Metal executes independent backward work for a different ready station, then join only at the dependency boundary.",
+      "adoption_rule": "Select only if recomputation plus synchronization beats Metal recomputation and the released memory enables a faster sustained batch or shorter joined wall."
+    },
+    "campaign_arm_parallelism": {
+      "scope": "matched neural-seed candidates with independent optimizer state",
+      "schedule": "Run a Metal candidate and an ANE-qualified candidate concurrently only when sampler, data, budget, and evaluation authority remain matched and total campaign wall improves.",
+      "claim_boundary": "This can reduce experiment-calendar wall but does not accelerate either model or waive matched-compute controls."
     },
     "inference_handoff": {
       "scope": "after a qualified model checkpoint exists",
       "public_baseline": "Core ML computeUnits=all with compute-plan inspection",
       "private_candidate": "ANE-prefill and stateful decode with IOSurface ping-pong buffers; keep sampling or other independent work on Metal only when joined latency and energy improve.",
       "boundary_reduction": "Evaluate in-model argmax/top-k and chunk-local reductions so full-vocabulary tensors do not cross ANE-to-host boundaries.",
+      "speculative_candidate": "Run a small ANE-resident draft/router/retrieval model while the authoritative Metal model verifies accepted tokens. The target checkpoint, not the draft, owns output authority.",
+      "multi_request_pipeline": "For independent requests, pipeline whole graph chunks across ANE and Metal only after public compute-plan and joined latency/energy measurements.",
       "training_priority": "Inference work may reuse training kernels and tensor layouts, but cannot delay the semantics-qualified training route."
     }
   },
@@ -204,6 +231,19 @@
     "matched_joined_wall_gain_exceeds_uncertainty": true,
     "independent_gate_audit": true
   },
+  "three_engine_training_qualification_gates": {
+    "exact_ane_forward_parity": true,
+    "exact_ane_input_gradient_parity": true,
+    "exact_cpu_weight_gradient_parity": true,
+    "one_authoritative_fp32_update": true,
+    "sampler_and_objective_mass_conservation": true,
+    "no_intermediate_python_or_numpy_round_trip": true,
+    "save_reload_replay": true,
+    "sixty_four_step_stability": true,
+    "matched_joined_wall_gain_exceeds_uncertainty": true,
+    "sustained_resource_and_thermal_qualification": true,
+    "independent_gate_audit": true
+  },
   "fp16_range_policy": {
     "measure_before_transform": true,
     "runtime_clamping_default": false,
@@ -312,8 +352,50 @@
       ],
       "next_topology": "PERSISTENT_ATTENTION_HEAD_OR_MLP_CHANNEL_PARTITIONS_WITH_FUSED_HIDDEN_WIDTH_REDUCTION"
     },
+    "public_coreml_state_weight_transport": {
+      "state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT",
+      "shape": "batch4_sequence512_512_to_768_fp16",
+      "matmul_prefers_ane": true,
+      "state_update_visible_without_recompile": true,
+      "output_mismatch_count_at_0_001": 0,
+      "state_update_wall_ratio_over_read_only": 1.035012,
+      "mean_milliseconds": 3.200107,
+      "matching_mlx_mean_milliseconds": 1.124343,
+      "isolated_wall_ratio_over_mlx": 2.846202,
+      "report": "reports/coreml_state_weight_m1.json",
+      "claim_scope": "Public mutable state and ANE-preferred projection mechanics only; no backward or training speedup claim."
+    },
+    "cpu_accelerate_weight_gradient": {
+      "state": "GREEN_OPERATOR_MECHANICS",
+      "shape": "2048x512_transpose_times_2048x768_fp32",
+      "threading": "single",
+      "standalone_mean_milliseconds": 1.763968,
+      "standalone_mean_gflops": 913.062,
+      "sample_mismatch_count": 0,
+      "source": "native/ane_metal/cpu_accelerate_dw_probe.m",
+      "claim_scope": "FP32 dW operator only; no joined step or training speedup claim."
+    },
+    "three_engine_coexistence": {
+      "state": "GREEN_THREE_ENGINE_MECHANICAL_OVERLAP",
+      "rounds": 2,
+      "overlap_speedup_vs_serial_sum": 1.518183,
+      "cpu_kernel_slowdown": 2.098145,
+      "ane_kernel_slowdown": 1.34911,
+      "gpu_kernel_slowdown": 0.89074,
+      "report": "reports/cpu_gpu_ane_coexistence_m1.json",
+      "disposition": "CRITICAL_PATH_SCHEDULER_REQUIRED_ALL_ENGINES_ALWAYS_ON_REJECTED",
+      "claim_scope": "Shape-related independent operators, not one matched optimizer step."
+    },
+    "host_batch_prefetch_bound": {
+      "source_report": "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
+      "optimizer_steps": 64,
+      "host_batch_preparation_seconds": 0.59247,
+      "device_step_seconds": 131.520684,
+      "perfect_prefetch_joined_wall_ceiling_fraction": 0.004485,
+      "disposition": "KEEP_BOUNDED_LOOKAHEAD_NOT_A_PRIMARY_SPEED_ROUTE"
+    },
     "explicit_joint_execution_measured": true,
-    "explicit_joint_execution_disposition": "SPLIT_MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED",
+    "explicit_joint_execution_disposition": "THREE_ENGINE_MECHANICS_GREEN_CRITICAL_PATH_TRAINING_JOIN_OPEN",
     "production_eligible": false
   },
   "public_benchmark_rows_read": 0,

@@ -1,0 +1,46 @@
+{
+  "policy": "project_theseus_cpu_gpu_ane_coexistence_commands_m1_v1",
+  "host_scope": "MacBookPro17,1 Apple M1 16GB macOS15",
+  "environment_note": "Core ML command uses the isolated coremltools 9.0 probe environment created for this host measurement; recreate it from the pinned package before replay.",
+  "replay_prerequisites": {
+    "coremltools": "9.0",
+    "python": "3.12",
+    "native_build": [
+      "xcrun",
+      "clang",
+      "-O3",
+      "-framework",
+      "Foundation",
+      "-framework",
+      "Accelerate",
+      "native/ane_metal/cpu_accelerate_dw_probe.m",
+      "-o",
+      "/private/tmp/theseus_cpu_accelerate_dw_probe"
+    ]
+  },
+  "cpu": [
+    "/private/tmp/theseus_cpu_accelerate_dw_probe",
+    "--single-threaded",
+    "--warmup",
+    "8",
+    "--repetitions",
+    "1024"
+  ],
+  "gpu": [
+    "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "scripts/mlx_fp16_projection_control.py",
+    "--warmup",
+    "8",
+    "--repetitions",
+    "1024"
+  ],
+  "ane": [
+    "/private/tmp/theseus_coremltools9_probe/bin/python",
+    "scripts/coreml_state_weight_probe.py",
+    "--warmup",
+    "8",
+    "--repetitions",
+    "512"
+  ],
+  "claim_scope": "Machine-specific three-engine mechanics packet; no canonical route or checkpoint mutation."
+}

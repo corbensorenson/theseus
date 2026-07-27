@@ -240,10 +240,101 @@
       "claim_scope": "The MLX route is the full 54.8M encoder-decoder-pointer system while the ANE route is a 38.3M decoder-only FP16 research control. The combined rate is an unmatched mechanics ceiling, not an end-to-end speedup."
     },
     "preferred_next_topology": {
-      "primary": "Synchronous heterogeneous data parallel over disjoint sampler-exact microbatches, one weight generation, one FP32 gradient accumulator, and one AdamW update.",
-      "secondary": "ANE forward/input-gradient plus Metal weight-gradient and output/loss pipeline using shared IOSurfaces.",
-      "reason": "Both preserve long independent device windows and avoid the measured losing wide physical join."
+      "primary": "Critical-path projection triad: ANE forward/input-gradient, single-thread Accelerate FP32 weight-gradient, and MLX/Metal attention, output/loss, pointer, reduction, and optimizer work under one weight generation and one AdamW update.",
+      "secondary": "Synchronous heterogeneous data parallel over disjoint sampler-exact microbatches, one weight generation, one FP32 gradient accumulator, and one AdamW update.",
+      "reason": "The new public state path removes private compilation from the weight-transport question and CPU Accelerate makes dW a credible third-engine station. Both topologies preserve long independent work windows and avoid the measured losing wide physical join."
     }
+  },
+  "public_coreml_state_weight_transport": {
+    "state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT",
+    "report": "reports/coreml_state_weight_m1.json",
+    "source": "scripts/coreml_state_weight_probe.py",
+    "coremltools_version": "9.0",
+    "shape": {
+      "rows": 2048,
+      "logical_batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 768,
+      "state_elements": 393216,
+      "dtype": "float16"
+    },
+    "state_update_visible_without_recompile": true,
+    "matmul_prefers_ane": true,
+    "read_state_prefers_ane": true,
+    "update_mul_prefers_ane": true,
+    "write_state_prefers_cpu": true,
+    "mean_milliseconds": 3.200107,
+    "read_only_mean_milliseconds": 3.091855,
+    "state_update_wall_ratio_over_read_only": 1.035012,
+    "output_mismatch_count": 0,
+    "state_transition_mismatch_count": 0,
+    "maximum_absolute_delta": 0.00054931640625,
+    "claim_scope": "Public Core ML state-backed production-shape FP16 projection and nonidentity state publication only; no backward, optimizer, transformer, checkpoint, convergence, utility, or capability claim."
+  },
+  "mlx_projection_control": {
+    "state": "GREEN",
+    "report": "reports/mlx_fp16_projection_control_m1.json",
+    "source": "scripts/mlx_fp16_projection_control.py",
+    "shape": {
+      "rows": 2048,
+      "logical_batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 768,
+      "dtype": "float16"
+    },
+    "mean_milliseconds": 1.124343,
+    "mismatch_count": 0,
+    "public_state_ane_wall_ratio_over_mlx": 2.846202,
+    "disposition": "PUBLIC_ANE_PROJECTION_NOT_A_STANDALONE_MLX_REPLACEMENT",
+    "claim_scope": "Compiled MLX projection operator control only."
+  },
+  "cpu_accelerate_dw": {
+    "state": "GREEN",
+    "source": "native/ane_metal/cpu_accelerate_dw_probe.m",
+    "shape": {
+      "rows": 2048,
+      "input_channels": 512,
+      "output_channels": 768,
+      "dtype": "float32",
+      "operation": "x_transpose_times_dy"
+    },
+    "threading": "single",
+    "mean_milliseconds": 1.763968,
+    "mean_gflops": 913.062,
+    "sample_count": 64,
+    "mismatch_count": 0,
+    "claim_scope": "Standalone Accelerate FP32 weight-gradient operator mechanics only; no joined training or speedup claim."
+  },
+  "three_engine_coexistence": {
+    "state": "GREEN_THREE_ENGINE_MECHANICAL_OVERLAP",
+    "config": "configs/cpu_gpu_ane_coexistence_m1.json",
+    "report": "reports/cpu_gpu_ane_coexistence_m1.json",
+    "source": "scripts/cpu_gpu_ane_coexistence_probe.py",
+    "rounds": 2,
+    "actual_overlap_observed": true,
+    "overlap_speedup_vs_serial_sum": 1.518183393951647,
+    "worker_kernel_slowdowns": {
+      "cpu": 2.0981452869273856,
+      "gpu": 0.890740091653347,
+      "ane": 1.349110113912029
+    },
+    "disposition": "GREEN_MECHANICAL_OVERLAP_CRITICAL_PATH_SCHEDULER_REQUIRED",
+    "claim_scope": "Three-process CPU Accelerate, MLX/Metal, and Core ML/ANE mechanics only. The workloads are shape-related but are not one matched Theseus optimizer step, so their rates cannot be summed into a training claim."
+  },
+  "three_engine_training_gates": {
+    "exact_ane_forward_parity": false,
+    "exact_ane_input_gradient_parity": false,
+    "exact_cpu_weight_gradient_parity": true,
+    "one_authoritative_fp32_update": false,
+    "sampler_and_objective_mass_conservation": false,
+    "no_intermediate_python_or_numpy_round_trip": false,
+    "save_reload_replay": false,
+    "sixty_four_step_stability": false,
+    "matched_joined_wall_gain_exceeds_uncertainty": false,
+    "sustained_resource_and_thermal_qualification": false,
+    "independent_gate_audit": false
   },
   "sandbox_diagnostic": {
     "state": "EXPECTED_ACCESS_DENIAL_NOT_COMPILER_EVIDENCE",
@@ -255,7 +346,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Implement exact Theseus semantics over the compile-once dynamic transport, then join ANE and Metal gradients into one authoritative FP32 update."
+    "next_gate": "Implement one exact Theseus projection triad over either public MLState or the compile-once private transport, then join ANE forward/input-gradient, Accelerate FP32 dW, and Metal remainder work into one authoritative FP32 update."
   },
   "process_coexistence": {
     "state": "GREEN_MECHANICAL_OVERLAP",
@@ -318,7 +409,7 @@
   },
   "metal_control_seconds": [],
   "split_candidates": [],
-  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and the full production-shaped dynamic topology proves that weights can be passed as mutable FP16 activation data and reused without recompiling after every update. The audited research trainer is not a Theseus implementation: GQA head expansion was wrong upstream, RoPE, residual scaling, vocabulary normalization, objective, batch, source conditioning, pointer generation, and optimizer custody differ. Corrected GQA expansion is bit-exact in isolation. Unmatched ANE plus MLX processes overlap by 1.571x versus their serial sum and expose a 1.451x aggregate mechanics ceiling, but no end-to-end speed claim is allowed. Implement semantic parity first, then prefer synchronous data parallel or ANE-forward/dx plus Metal-dW over the measured losing physical concatenation.",
+  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and both private activation-packed weights and public Core ML MLState now prove mutable production-shape ANE weight transport without per-update model recompilation. The public state-backed 512-to-768 projection is about 2.846x slower than its matching compiled MLX control in isolation, so it is not a blind Metal replacement. Single-thread Accelerate computes the matching FP32 dW operator in a 1.764 ms alternating standalone mean, and all three engines overlap mechanically by 1.518x versus the serial process sum; CPU and ANE kernel slowdown make an always-on policy invalid. The audited research trainer is not a Theseus implementation: GQA head expansion was wrong upstream, RoPE, residual scaling, vocabulary normalization, objective, batch, source conditioning, pointer generation, and optimizer custody differ. Implement semantic parity first, then schedule ANE forward/input-gradient, CPU dW, and Metal remainder work by measured critical path under one generation and one FP32 update. No end-to-end speed claim is allowed yet.",
   "canonical_checkpoint_mutated": false,
   "public_benchmark_rows_read": 0,
   "external_inference_calls": 0

@@ -1,0 +1,122 @@
+{
+  "build": {
+    "compiled_path_identity_sha256": "677e8a12559290dd28a7fbd95f46343802629b93c61c5e2c7375e351fd143b3f",
+    "compute_units": "ALL",
+    "conversion_seconds": 0.140361,
+    "minimum_deployment_target": "macOS15",
+    "read_only_conversion_seconds": 0.061054
+  },
+  "claim_scope": "Public Core ML production-shape state-backed FP16 projection and non-identity state-update mechanics only; no backward, optimizer, transformer, checkpoint, convergence, utility, or capability claim.",
+  "compute_plan": {
+    "operations": [
+      {
+        "operator_name": "ios18.read_state",
+        "preferred_compute_device": "MLNeuralEngineComputeDevice",
+        "supported_compute_devices": [
+          "MLCPUComputeDevice",
+          "MLGPUComputeDevice",
+          "MLNeuralEngineComputeDevice"
+        ]
+      },
+      {
+        "operator_name": "const",
+        "preferred_compute_device": "",
+        "supported_compute_devices": []
+      },
+      {
+        "operator_name": "const",
+        "preferred_compute_device": "",
+        "supported_compute_devices": []
+      },
+      {
+        "operator_name": "ios18.matmul",
+        "preferred_compute_device": "MLNeuralEngineComputeDevice",
+        "supported_compute_devices": [
+          "MLCPUComputeDevice",
+          "MLGPUComputeDevice",
+          "MLNeuralEngineComputeDevice"
+        ]
+      },
+      {
+        "operator_name": "ios18.mul",
+        "preferred_compute_device": "MLNeuralEngineComputeDevice",
+        "supported_compute_devices": [
+          "MLCPUComputeDevice",
+          "MLGPUComputeDevice",
+          "MLNeuralEngineComputeDevice"
+        ]
+      },
+      {
+        "operator_name": "ios18.write_state",
+        "preferred_compute_device": "MLCPUComputeDevice",
+        "supported_compute_devices": [
+          "MLCPUComputeDevice",
+          "MLGPUComputeDevice"
+        ]
+      }
+    ],
+    "state_matmul_operation_count": 1,
+    "state_matmul_prefers_ane": true,
+    "state_matmul_supports_ane": true
+  },
+  "created_utc": "2026-07-27T20:12:33.006070+00:00",
+  "elapsed_seconds": 0.79203,
+  "hardware": {
+    "coremltools_version": "9.0",
+    "model": "arm64",
+    "platform": "macOS-15.0-arm64-arm-64bit"
+  },
+  "nonclaims": [
+    "No proof that a full Theseus backward or AdamW update can run on ANE.",
+    "No proof that state read/write is zero-copy across Core ML and Metal.",
+    "No end-to-end training or inference speedup claim."
+  ],
+  "policy": "project_theseus_coreml_state_weight_probe_v1",
+  "resource_custody": {
+    "canonical_checkpoint_mutated": false,
+    "external_inference_calls": 0,
+    "public_benchmark_rows_read": 0,
+    "temporary_model_only": true,
+    "temporary_model_removed": true
+  },
+  "runtime": {
+    "maximum_absolute_delta": 0.00054931640625,
+    "mean_milliseconds": 3.200107,
+    "median_milliseconds": 3.185104,
+    "mismatch_count": 0,
+    "output_name": "state_weight_matmul",
+    "p95_milliseconds": 3.539042,
+    "read_only_control": {
+      "maximum_absolute_delta": 0.00054931640625,
+      "mean_milliseconds": 3.091855,
+      "median_milliseconds": 3.099875,
+      "mismatch_count": 0,
+      "p95_milliseconds": 3.391625,
+      "rows_per_second": 662385.574923
+    },
+    "repetitions": 64,
+    "rmse": 0.00011062837581402217,
+    "rows_per_second": 639978.522618,
+    "state_identity_update_mismatch_count": 0,
+    "state_nonidentity_update_bit_mismatch_count": 303,
+    "state_nonidentity_update_mismatch_count": 0,
+    "state_postupdate_output_mismatch_count": 0,
+    "state_preupdate_output_mismatch_count": 0,
+    "state_transition_maximum_absolute_delta": 5.960464477539063e-08,
+    "state_transition_scale": 0.5,
+    "state_transition_tolerance": 0.001,
+    "state_update_visible_without_recompile": true,
+    "state_update_wall_ratio_over_read_only": 1.035012,
+    "tolerance": 0.001,
+    "warmup": 8
+  },
+  "shape": {
+    "input_channels": 512,
+    "logical_batch": 4,
+    "output_channels": 768,
+    "rows": 2048,
+    "sequence": 512,
+    "state_elements": 393216
+  },
+  "trigger_state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT"
+}

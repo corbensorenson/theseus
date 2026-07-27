@@ -1013,6 +1013,103 @@ The durable evidence owner is `configs/ane_metal_m1_evidence_2026_07_27.json`; t
 fail-closed planner is `scripts/ane_metal_heterogeneous_planner.py`. Current disposition is
 `INCONCLUSIVE_IMPLEMENTATION_DYNAMIC_WEIGHT_TRANSPORT_GREEN_THESEUS_SEMANTICS_OPEN`.
 
+### 2026-07-27 Public MLState And Three-Engine Scheduling Result
+
+The public route is no longer merely a documentation lead. A Core ML 9.0 ML Program now
+holds a production-shaped `512 x 768` FP16 weight matrix in `MLState`, reads it into a
+batch-4, sequence-512 projection, mutates it in graph, and reuses the new generation
+without model recompilation. Apple's compute plan prefers the Neural Engine for
+`read_state`, `matmul`, and the update `mul`; `write_state` prefers CPU and supports CPU/GPU
+only. Across 64 repeats, the state-updating projection averages `3.200 ms`, only `1.0350x`
+the `3.092 ms` read-only control. Output has zero mismatches above `0.001`, and a nonidentity
+`0.5` state update changes both state and subsequent output with zero tolerance failures.
+This implements the public mechanism described by Apple's
+[stateful-model guide](https://apple.github.io/coremltools/docs-guides/source/stateful-models.html)
+and verifies placement through
+[MLComputePlan](https://apple.github.io/coremltools/docs-guides/source/mlmodel-utilities.html).
+It is mutable ANE weight transport, not a general backward path.
+
+The same exact shape in compiled MLX averages `1.124 ms`, making the public ANE station
+`2.846x` slower in isolation. Therefore neither public Core ML nor private ANE execution is
+allowed to replace a fast Metal operator merely because it reaches another processor. Its
+value must come from useful overlap, a longer fused graph, memory release, or work Metal
+cannot perform simultaneously.
+
+A third engine is now concrete too. Single-thread Accelerate FP32 SGEMM computes the exact
+production projection weight gradient `X^T dY` in a `1.764 ms` mean across two alternating
+standalone rounds (roughly `0.91 TFLOP/s`) with zero error in 64 deterministic samples.
+The single-thread form is preferred for the next canary because it avoids BLAS thread
+coordination and leaves CPU capacity for packing, I/O, and verification; Apple's
+[BLAS threading control](https://developer.apple.com/documentation/accelerate/blas_threading)
+still permits a matched multithread challenger. BNNS remains a public CPU training
+alternative for fused stations, not an assumed win; Apple documents both
+[BNNS](https://developer.apple.com/documentation/accelerate/bnns-library) and a
+[backward-plus-Adam training example](https://developer.apple.com/documentation/accelerate/training-a-neural-network-to-recognize-digits).
+
+All three shape-related workers can overlap. Two alternating rounds of Accelerate dW,
+compiled MLX projection, and public Core ML state projection complete in a `5.057 s`
+concurrent median versus `7.677 s` for the sum of standalone medians (`1.518x`). This is
+mechanical coexistence, not a Theseus-step speedup: the operators are related but are not
+yet one forward/backward/update dependency graph. Contention is also decisive. CPU kernel
+time slows `2.098x` and ANE `1.349x`; the apparent GPU improvement is treated as
+order/thermal variance until sustained matched evidence says otherwise.
+
+The training implementation order is therefore:
+
+1. **Build one exact projection triad.** Let ANE compute forward and input gradient,
+   single-thread Accelerate compute FP32 weight gradient, and Metal retain ready attention,
+   loss, pointer, reduction, and optimizer work. Tag every tensor with one master-weight
+   generation and publish exactly one normalized, clipped FP32 AdamW update. Compare
+   output, scalar loss, `dX`, `dW`, objective mass, sampler rows, and the update against the
+   canonical MLX control.
+2. **Schedule the dependency graph, not devices.** Maintain alternating sustained
+   service-time intervals per station and use critical-path list scheduling. Dispatch a
+   ready station to CPU, GPU, or ANE only when the predicted joined wall improves after
+   synchronization, shared-memory pressure, and thermal state. Idle silicon is correct
+   when contention costs more than its work. No fixed split, sum of unmatched rates, or
+   “all engines always on” policy is eligible.
+3. **Keep one MLX GPU owner.** MLX 0.32 exposes streams and experimental asynchronous
+   evaluation, but `new_stream` is thread-bound. First qualify one deterministic
+   [stream/async canary](https://ml-explore.github.io/mlx/build/html/usage/using_streams.html);
+   do not call one model concurrently from arbitrary Python threads or add evaluation
+   boundaries that serialize the lazy graph.
+4. **Test ANE recomputation.** During backward, recompute a discarded forward activation
+   on ANE while Metal performs an independent ready gradient station. Adopt only if exact
+   parity holds and either joined wall falls or released activation memory enables a faster
+   sustained batch.
+5. **Then test whole-microbatch and whole-arm pipelines.** Sampler-exact ANE/Metal data
+   parallel remains a strong long-window candidate. Separately, independent matched
+   candidates may occupy different engines to shorten total experiment-calendar wall, but
+   this does not accelerate either model and may not weaken matched data, compute,
+   optimizer, or evaluation authority.
+6. **Qualify the joined route.** Require no hot-step Python/NumPy tensor round trip,
+   deterministic save/reload, 64-step stability, multiple alternating sustained repeats,
+   zero resource failure, thermal evidence, and a joined wall/time-to-quality win outside
+   observed uncertainty. Until then the canonical MLX route remains authoritative.
+
+Do not over-invest in ordinary Python batch prefetch for this frozen shape. The existing
+64-step production-shaped receipt spends `0.592 s` in host batch preparation versus
+`131.521 s` in device steps, a measured ceiling of about `0.45%` even if prefetch made host
+preparation free. Keep bounded lookahead for ANE scheduling and I/O smoothness, but the
+large gains must come from tensor stations, memory-enabled batching, or fewer required
+updates—not translating already-thin Python control paths to Rust.
+
+Inference can reuse the same scheduler after a checkpoint exists. The first public baseline
+is a stateful Core ML prefill/decode graph with inspected placement, state-serial request
+lanes, and in-graph top-k/argmax to avoid returning full-vocabulary logits. The most
+promising simultaneous design is an ANE-resident small draft/router/retrieval model with
+the authoritative Metal model verifying proposed tokens; exact target distribution or the
+project's declared sampling contract must remain authoritative. A second candidate
+pipelines coarse graph chunks across independent requests, because per-token cross-device
+joins are unlikely to amortize. Both need end-to-end latency, energy, memory, and output
+parity rather than operator throughput alone.
+
+Executable evidence is in `scripts/coreml_state_weight_probe.py`,
+`scripts/mlx_fp16_projection_control.py`,
+`native/ane_metal/cpu_accelerate_dw_probe.m`,
+`scripts/cpu_gpu_ane_coexistence_probe.py`, and their bound reports. The planner disposition
+is `PUBLIC_STATE_TRANSPORT_GREEN_THREE_ENGINE_MECHANICS_GREEN_MATCHED_STEP_OPEN`.
+
 ### 2026-07-26 Acceleration-First Launch Gate
 
 The final bounded KERC exposure rung and first-campaign disposition are banked. Training

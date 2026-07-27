@@ -51,6 +51,20 @@ DYNAMIC_SEMANTIC_GATES = (
     "independent_gate_audit",
 )
 
+THREE_ENGINE_TRAINING_GATES = (
+    "exact_ane_forward_parity",
+    "exact_ane_input_gradient_parity",
+    "exact_cpu_weight_gradient_parity",
+    "one_authoritative_fp32_update",
+    "sampler_and_objective_mass_conservation",
+    "no_intermediate_python_or_numpy_round_trip",
+    "save_reload_replay",
+    "sixty_four_step_stability",
+    "matched_joined_wall_gain_exceeds_uncertainty",
+    "sustained_resource_and_thermal_qualification",
+    "independent_gate_audit",
+)
+
 
 class PlanningFault(ValueError):
     """Raised when an experiment packet cannot support a valid decision."""
@@ -160,6 +174,107 @@ def _dynamic_training_record(evidence: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _finite_measurement(record: dict[str, Any], key: str) -> float | None:
+    value = record.get(key)
+    if value is None:
+        return None
+    measured = float(value)
+    if not math.isfinite(measured) or measured <= 0:
+        raise PlanningFault(f"{key}_must_be_finite_and_positive")
+    return measured
+
+
+def _three_engine_record(evidence: dict[str, Any]) -> dict[str, Any]:
+    public_state = evidence.get("public_coreml_state_weight_transport") or {}
+    mlx_control = evidence.get("mlx_projection_control") or {}
+    cpu_dw = evidence.get("cpu_accelerate_dw") or {}
+    coexistence = evidence.get("three_engine_coexistence") or {}
+    gates = evidence.get("three_engine_training_gates") or {}
+    failed_gates = [
+        gate for gate in THREE_ENGINE_TRAINING_GATES if gates.get(gate) is not True
+    ]
+
+    ane_mean = _finite_measurement(public_state, "mean_milliseconds")
+    mlx_mean = _finite_measurement(mlx_control, "mean_milliseconds")
+    cpu_dw_mean = _finite_measurement(cpu_dw, "mean_milliseconds")
+    overlap_speedup = _finite_measurement(
+        coexistence, "overlap_speedup_vs_serial_sum"
+    )
+    ane_over_mlx = (
+        ane_mean / mlx_mean
+        if ane_mean is not None and mlx_mean is not None
+        else None
+    )
+    worker_slowdowns = coexistence.get("worker_kernel_slowdowns") or {}
+    finite_slowdowns: dict[str, float] = {}
+    for label, raw_value in worker_slowdowns.items():
+        value = float(raw_value)
+        if not math.isfinite(value) or value <= 0:
+            raise PlanningFault(f"{label}_kernel_slowdown_must_be_positive")
+        finite_slowdowns[str(label)] = value
+    worst_slowdown = max(finite_slowdowns.values(), default=None)
+
+    state_transport_green = (
+        public_state.get("state") == "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT"
+        and public_state.get("state_update_visible_without_recompile") is True
+        and public_state.get("matmul_prefers_ane") is True
+        and int(public_state.get("output_mismatch_count", -1)) == 0
+        and ane_mean is not None
+        and mlx_mean is not None
+    )
+    cpu_dw_green = (
+        cpu_dw.get("state") == "GREEN"
+        and int(cpu_dw.get("mismatch_count", -1)) == 0
+        and cpu_dw_mean is not None
+    )
+    mechanical_overlap_green = (
+        coexistence.get("state") == "GREEN_THREE_ENGINE_MECHANICAL_OVERLAP"
+        and coexistence.get("actual_overlap_observed") is True
+        and overlap_speedup is not None
+        and overlap_speedup > 1.0
+        and set(finite_slowdowns) == {"cpu", "gpu", "ane"}
+    )
+    production_eligible = (
+        state_transport_green
+        and cpu_dw_green
+        and mechanical_overlap_green
+        and not failed_gates
+    )
+    return {
+        "state_transport_green": state_transport_green,
+        "cpu_weight_gradient_operator_green": cpu_dw_green,
+        "mechanical_overlap_green": mechanical_overlap_green,
+        "public_state_weight": public_state,
+        "mlx_projection_control": mlx_control,
+        "cpu_accelerate_weight_gradient": cpu_dw,
+        "coexistence": coexistence,
+        "ane_projection_wall_ratio_over_mlx": ane_over_mlx,
+        "cpu_weight_gradient_mean_milliseconds": cpu_dw_mean,
+        "isolated_ane_projection_faster_than_mlx": (
+            ane_over_mlx < 1.0 if ane_over_mlx is not None else None
+        ),
+        "worst_concurrent_kernel_slowdown": worst_slowdown,
+        "always_on_three_engine_policy_selected": False,
+        "scheduler_policy": (
+            "Use measured critical-path list scheduling with one weight generation. "
+            "A device receives work only when joined wall improves; do not sum unmatched "
+            "operator rates or force all engines on."
+        ),
+        "preferred_training_probe": (
+            "ANE forward/input-gradient, single-thread Accelerate FP32 weight-gradient, "
+            "and MLX/Metal attention, loss, pointer, reduction, and optimizer work joined "
+            "into one sampler-exact FP32 update."
+        ),
+        "training_gates": gates,
+        "failed_training_gates": failed_gates,
+        "production_eligible": production_eligible,
+        "claim_scope": (
+            "Public state transport, isolated operator parity, and three-process "
+            "coexistence mechanics only. This is not an end-to-end training speedup."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -229,6 +344,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     )
     incompatible_mil_attempts = evidence.get("incompatible_mil_attempts", [])
     dynamic_training = _dynamic_training_record(evidence)
+    three_engine = _three_engine_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -253,6 +369,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "incompatible_mil_attempts": incompatible_mil_attempts,
         "weight_update_path": evidence.get("weight_update_path"),
         "dynamic_training_path": dynamic_training,
+        "three_engine_scheduling": three_engine,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,
@@ -298,6 +415,12 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         ):
             blockers.append(
                 "optional_structure_aligned_partition_after_dynamic_route_disposition"
+            )
+        if three_engine["state_transport_green"]:
+            blockers.extend(
+                gate
+                for gate in three_engine["failed_training_gates"]
+                if gate not in blockers
             )
         report.update(
             {

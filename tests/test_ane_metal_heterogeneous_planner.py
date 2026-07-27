@@ -38,6 +38,9 @@ def test_config_defaults_disabled_and_covers_full_split_sweep() -> None:
     assert set(config["dynamic_training_qualification_gates"]) == set(
         planner.DYNAMIC_SEMANTIC_GATES
     )
+    assert set(config["three_engine_training_qualification_gates"]) == set(
+        planner.THREE_ENGINE_TRAINING_GATES
+    )
 
 
 def test_unstable_compiler_blocks_even_fast_candidate() -> None:
@@ -274,3 +277,67 @@ def test_checked_in_rope_probe_and_receipt_bind_the_green_operator_gate() -> Non
     assert dynamic["split_half_rope_probe"]["report"] == (
         "reports/ane_split_half_rope_m1.json"
     )
+
+
+def test_current_m1_evidence_keeps_three_engine_route_mechanical_only() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    report = planner.plan(load_config(), evidence)
+    triad = report["three_engine_scheduling"]
+
+    assert triad["state_transport_green"] is True
+    assert triad["cpu_weight_gradient_operator_green"] is True
+    assert triad["mechanical_overlap_green"] is True
+    assert triad["ane_projection_wall_ratio_over_mlx"] > 1.0
+    assert triad["isolated_ane_projection_faster_than_mlx"] is False
+    assert triad["always_on_three_engine_policy_selected"] is False
+    assert triad["worst_concurrent_kernel_slowdown"] > 1.0
+    assert triad["production_eligible"] is False
+    assert "exact_ane_forward_parity" in triad["failed_training_gates"]
+    assert "exact_cpu_weight_gradient_parity" not in triad["failed_training_gates"]
+
+
+def test_three_engine_evidence_matches_bound_operator_receipts() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    coreml = json.loads(
+        (ROOT / "reports/coreml_state_weight_m1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    mlx = json.loads(
+        (ROOT / "reports/mlx_fp16_projection_control_m1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    coexistence = json.loads(
+        (ROOT / "reports/cpu_gpu_ane_coexistence_m1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    public_state = evidence["public_coreml_state_weight_transport"]
+    assert coreml["trigger_state"] == public_state["state"]
+    assert coreml["runtime"]["mean_milliseconds"] == pytest.approx(
+        public_state["mean_milliseconds"]
+    )
+    assert coreml["resource_custody"]["temporary_model_removed"] is True
+    assert mlx["runtime"]["mean_milliseconds"] == pytest.approx(
+        evidence["mlx_projection_control"]["mean_milliseconds"]
+    )
+    triad = evidence["three_engine_coexistence"]
+    assert coexistence["trigger_state"] == triad["state"]
+    assert coexistence["overlap_speedup_vs_serial_sum"] == pytest.approx(
+        triad["overlap_speedup_vs_serial_sum"]
+    )
+    assert {
+        label: coexistence["workers"][label]["kernel_slowdown"]
+        for label in ("cpu", "gpu", "ane")
+    } == pytest.approx(triad["worker_kernel_slowdowns"])

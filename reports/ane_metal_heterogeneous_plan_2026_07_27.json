@@ -28,7 +28,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Implement exact Theseus semantics over the compile-once dynamic transport, then join ANE and Metal gradients into one authoritative FP32 update."
+    "next_gate": "Implement one exact Theseus projection triad over either public MLState or the compile-once private transport, then join ANE forward/input-gradient, Accelerate FP32 dW, and Metal remainder work into one authoritative FP32 update."
   },
   "dynamic_training_path": {
     "state": "GREEN_COMPILE_ONCE_MUTABLE_WEIGHT_TRANSPORT_INCONCLUSIVE_THESEUS_SEMANTICS",
@@ -108,6 +108,123 @@
     },
     "production_eligible": false
   },
+  "three_engine_scheduling": {
+    "state_transport_green": true,
+    "cpu_weight_gradient_operator_green": true,
+    "mechanical_overlap_green": true,
+    "public_state_weight": {
+      "state": "GREEN_PUBLIC_ANE_STATE_WEIGHT_TRANSPORT",
+      "report": "reports/coreml_state_weight_m1.json",
+      "source": "scripts/coreml_state_weight_probe.py",
+      "coremltools_version": "9.0",
+      "shape": {
+        "rows": 2048,
+        "logical_batch": 4,
+        "sequence": 512,
+        "input_channels": 512,
+        "output_channels": 768,
+        "state_elements": 393216,
+        "dtype": "float16"
+      },
+      "state_update_visible_without_recompile": true,
+      "matmul_prefers_ane": true,
+      "read_state_prefers_ane": true,
+      "update_mul_prefers_ane": true,
+      "write_state_prefers_cpu": true,
+      "mean_milliseconds": 3.200107,
+      "read_only_mean_milliseconds": 3.091855,
+      "state_update_wall_ratio_over_read_only": 1.035012,
+      "output_mismatch_count": 0,
+      "state_transition_mismatch_count": 0,
+      "maximum_absolute_delta": 0.00054931640625,
+      "claim_scope": "Public Core ML state-backed production-shape FP16 projection and nonidentity state publication only; no backward, optimizer, transformer, checkpoint, convergence, utility, or capability claim."
+    },
+    "mlx_projection_control": {
+      "state": "GREEN",
+      "report": "reports/mlx_fp16_projection_control_m1.json",
+      "source": "scripts/mlx_fp16_projection_control.py",
+      "shape": {
+        "rows": 2048,
+        "logical_batch": 4,
+        "sequence": 512,
+        "input_channels": 512,
+        "output_channels": 768,
+        "dtype": "float16"
+      },
+      "mean_milliseconds": 1.124343,
+      "mismatch_count": 0,
+      "public_state_ane_wall_ratio_over_mlx": 2.846202,
+      "disposition": "PUBLIC_ANE_PROJECTION_NOT_A_STANDALONE_MLX_REPLACEMENT",
+      "claim_scope": "Compiled MLX projection operator control only."
+    },
+    "cpu_accelerate_weight_gradient": {
+      "state": "GREEN",
+      "source": "native/ane_metal/cpu_accelerate_dw_probe.m",
+      "shape": {
+        "rows": 2048,
+        "input_channels": 512,
+        "output_channels": 768,
+        "dtype": "float32",
+        "operation": "x_transpose_times_dy"
+      },
+      "threading": "single",
+      "mean_milliseconds": 1.763968,
+      "mean_gflops": 913.062,
+      "sample_count": 64,
+      "mismatch_count": 0,
+      "claim_scope": "Standalone Accelerate FP32 weight-gradient operator mechanics only; no joined training or speedup claim."
+    },
+    "coexistence": {
+      "state": "GREEN_THREE_ENGINE_MECHANICAL_OVERLAP",
+      "config": "configs/cpu_gpu_ane_coexistence_m1.json",
+      "report": "reports/cpu_gpu_ane_coexistence_m1.json",
+      "source": "scripts/cpu_gpu_ane_coexistence_probe.py",
+      "rounds": 2,
+      "actual_overlap_observed": true,
+      "overlap_speedup_vs_serial_sum": 1.518183393951647,
+      "worker_kernel_slowdowns": {
+        "cpu": 2.0981452869273856,
+        "gpu": 0.890740091653347,
+        "ane": 1.349110113912029
+      },
+      "disposition": "GREEN_MECHANICAL_OVERLAP_CRITICAL_PATH_SCHEDULER_REQUIRED",
+      "claim_scope": "Three-process CPU Accelerate, MLX/Metal, and Core ML/ANE mechanics only. The workloads are shape-related but are not one matched Theseus optimizer step, so their rates cannot be summed into a training claim."
+    },
+    "ane_projection_wall_ratio_over_mlx": 2.8462017373701793,
+    "cpu_weight_gradient_mean_milliseconds": 1.763968,
+    "isolated_ane_projection_faster_than_mlx": false,
+    "worst_concurrent_kernel_slowdown": 2.0981452869273856,
+    "always_on_three_engine_policy_selected": false,
+    "scheduler_policy": "Use measured critical-path list scheduling with one weight generation. A device receives work only when joined wall improves; do not sum unmatched operator rates or force all engines on.",
+    "preferred_training_probe": "ANE forward/input-gradient, single-thread Accelerate FP32 weight-gradient, and MLX/Metal attention, loss, pointer, reduction, and optimizer work joined into one sampler-exact FP32 update.",
+    "training_gates": {
+      "exact_ane_forward_parity": false,
+      "exact_ane_input_gradient_parity": false,
+      "exact_cpu_weight_gradient_parity": true,
+      "one_authoritative_fp32_update": false,
+      "sampler_and_objective_mass_conservation": false,
+      "no_intermediate_python_or_numpy_round_trip": false,
+      "save_reload_replay": false,
+      "sixty_four_step_stability": false,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "sustained_resource_and_thermal_qualification": false,
+      "independent_gate_audit": false
+    },
+    "failed_training_gates": [
+      "exact_ane_forward_parity",
+      "exact_ane_input_gradient_parity",
+      "one_authoritative_fp32_update",
+      "sampler_and_objective_mass_conservation",
+      "no_intermediate_python_or_numpy_round_trip",
+      "save_reload_replay",
+      "sixty_four_step_stability",
+      "matched_joined_wall_gain_exceeds_uncertainty",
+      "sustained_resource_and_thermal_qualification",
+      "independent_gate_audit"
+    ],
+    "production_eligible": false,
+    "claim_scope": "Public state transport, isolated operator parity, and three-process coexistence mechanics only. This is not an end-to-end training speedup."
+  },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
     "source": "native/ane_metal/ane_metal_same_surface_probe.m",
@@ -149,6 +266,12 @@
     "matched_joined_wall_gain_exceeds_uncertainty",
     "independent_gate_audit",
     "mlx_lazy_graph_or_native_metal_gradient_integration",
-    "optional_structure_aligned_partition_after_dynamic_route_disposition"
+    "optional_structure_aligned_partition_after_dynamic_route_disposition",
+    "exact_ane_forward_parity",
+    "exact_ane_input_gradient_parity",
+    "one_authoritative_fp32_update",
+    "sampler_and_objective_mass_conservation",
+    "no_intermediate_python_or_numpy_round_trip",
+    "sixty_four_step_stability"
   ]
 }

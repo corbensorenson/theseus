@@ -1,0 +1,46 @@
+{
+  "claim_scope": "Compiled MLX FP16 projection operator control only; no state update, backward, optimizer, transformer, or speedup claim.",
+  "created_utc": "2026-07-27T20:05:26.721495+00:00",
+  "hardware": {
+    "device": "Device(gpu, 0)",
+    "device_info": {
+      "architecture": "applegpu_g13g",
+      "device_name": "Apple M1",
+      "max_buffer_length": 8589934592,
+      "max_recommended_working_set_size": 11453251584,
+      "memory_size": 17179869184,
+      "resource_limit": 499000
+    },
+    "machine": "arm64",
+    "mlx_version": "0.32.0"
+  },
+  "mlx_memory": {
+    "active_bytes": 9175040,
+    "cache_bytes": 3145728,
+    "peak_bytes": 12320768
+  },
+  "policy": "project_theseus_mlx_fp16_projection_control_v1",
+  "resource_custody": {
+    "canonical_checkpoint_mutated": false,
+    "external_inference_calls": 0,
+    "public_benchmark_rows_read": 0
+  },
+  "runtime": {
+    "maximum_absolute_delta_vs_eager": 0.0,
+    "mean_milliseconds": 1.124343,
+    "median_milliseconds": 0.974771,
+    "mismatch_count_vs_eager": 0,
+    "p95_milliseconds": 2.264625,
+    "repetitions": 64,
+    "rows_per_second": 1821508.158246,
+    "warmup": 8
+  },
+  "shape": {
+    "input_channels": 512,
+    "logical_batch": 4,
+    "output_channels": 768,
+    "rows": 2048,
+    "sequence": 512
+  },
+  "trigger_state": "GREEN"
+}
