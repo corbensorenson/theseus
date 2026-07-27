@@ -304,6 +304,57 @@ static void PackChannelMajor(
     }
 }
 
+static void ReadChannelMajorToRows(
+    float *rows, const _Float16 *source, int channels
+) {
+    for (int channel = 0; channel < channels; ++channel) {
+        for (int position = 0; position < SEQUENCE; ++position) {
+            rows[(size_t)position * channels + channel] =
+                source[(size_t)channel * SEQUENCE + position];
+        }
+    }
+}
+
+static void ReduceContiguousKV(float *reduced, const float *tiled) {
+    memset(reduced, 0, (size_t)SEQUENCE * KV_DIM * sizeof(float));
+    for (int position = 0; position < SEQUENCE; ++position) {
+        for (int kv = 0; kv < KV_HEADS; ++kv) {
+            for (int group = 0; group < QUERY_GROUPS; ++group) {
+                const int head = kv * QUERY_GROUPS + group;
+                const float *source =
+                    tiled + ((size_t)position * QUERY_HEADS + head) * HEAD_DIM;
+                float *destination =
+                    reduced + ((size_t)position * KV_HEADS + kv) * HEAD_DIM;
+                for (int channel = 0; channel < HEAD_DIM; ++channel) {
+                    destination[channel] += source[channel];
+                }
+            }
+        }
+    }
+}
+
+static void InverseSplitHalfRoPEGradient(
+    float *gradient, int heads, const float *cosine, const float *sine
+) {
+    for (int position = 0; position < SEQUENCE; ++position) {
+        for (int head = 0; head < heads; ++head) {
+            float *row = gradient + ((size_t)position * heads + head) * HEAD_DIM;
+            float prior[HEAD_DIM];
+            memcpy(prior, row, sizeof(prior));
+            for (int channel = 0; channel < HEAD_DIM; ++channel) {
+                const int paired = channel < HALF_HEAD_DIM
+                    ? channel + HALF_HEAD_DIM
+                    : channel - HALF_HEAD_DIM;
+                const float rotated =
+                    channel < HALF_HEAD_DIM ? -prior[paired] : prior[paired];
+                row[channel] =
+                    prior[channel] * cosine[position * HEAD_DIM + channel]
+                    - rotated * sine[position * HEAD_DIM + channel];
+            }
+        }
+    }
+}
+
 int main(void) {
     @autoreleasepool {
         setbuf(stdout, NULL);
@@ -392,10 +443,58 @@ int main(void) {
         Comparison dvComparison = CompareChannelMajorToRows(
             actual + (size_t)2 * QUERY_DIM * SEQUENCE,
             dv, QUERY_DIM, 0.002f);
+        float *actualDQ = malloc(SEQUENCE * QUERY_DIM * sizeof(float));
+        float *actualDK = malloc(SEQUENCE * QUERY_DIM * sizeof(float));
+        float *actualDV = malloc(SEQUENCE * QUERY_DIM * sizeof(float));
+        ReadChannelMajorToRows(actualDQ, actual, QUERY_DIM);
+        ReadChannelMajorToRows(
+            actualDK, actual + (size_t)QUERY_DIM * SEQUENCE, QUERY_DIM);
+        ReadChannelMajorToRows(
+            actualDV, actual + (size_t)2 * QUERY_DIM * SEQUENCE, QUERY_DIM);
         IOSurfaceUnlock(output, kIOSurfaceLockReadOnly, NULL);
+        float *cosine = malloc(SEQUENCE * HEAD_DIM * sizeof(float));
+        float *sine = malloc(SEQUENCE * HEAD_DIM * sizeof(float));
+        BuildRoPE(cosine, sine);
+        float *reducedDK = malloc(SEQUENCE * KV_DIM * sizeof(float));
+        float *reducedDV = malloc(SEQUENCE * KV_DIM * sizeof(float));
+        float *expectedReducedDK = malloc(SEQUENCE * KV_DIM * sizeof(float));
+        float *expectedReducedDV = malloc(SEQUENCE * KV_DIM * sizeof(float));
+        ReduceContiguousKV(reducedDK, actualDK);
+        ReduceContiguousKV(reducedDV, actualDV);
+        ReduceContiguousKV(expectedReducedDK, dk);
+        ReduceContiguousKV(expectedReducedDV, dv);
+        InverseSplitHalfRoPEGradient(actualDQ, QUERY_HEADS, cosine, sine);
+        InverseSplitHalfRoPEGradient(reducedDK, KV_HEADS, cosine, sine);
+        InverseSplitHalfRoPEGradient(dq, QUERY_HEADS, cosine, sine);
+        InverseSplitHalfRoPEGradient(expectedReducedDK, KV_HEADS, cosine, sine);
+        Comparison inverseDQComparison = {0};
+        inverseDQComparison.elements = (size_t)SEQUENCE * QUERY_DIM;
+        for (size_t index = 0; index < inverseDQComparison.elements; ++index) {
+            const float delta = fabsf(actualDQ[index] - dq[index]);
+            if (delta > 0.002f) ++inverseDQComparison.mismatches;
+            inverseDQComparison.maximum =
+                fmaxf(inverseDQComparison.maximum, delta);
+        }
+        Comparison inverseDKComparison = {0};
+        inverseDKComparison.elements = (size_t)SEQUENCE * KV_DIM;
+        Comparison reducedDVComparison = {0};
+        reducedDVComparison.elements = (size_t)SEQUENCE * KV_DIM;
+        for (size_t index = 0; index < inverseDKComparison.elements; ++index) {
+            const float dkDelta =
+                fabsf(reducedDK[index] - expectedReducedDK[index]);
+            if (dkDelta > 0.004f) ++inverseDKComparison.mismatches;
+            inverseDKComparison.maximum =
+                fmaxf(inverseDKComparison.maximum, dkDelta);
+            const float dvDelta =
+                fabsf(reducedDV[index] - expectedReducedDV[index]);
+            if (dvDelta > 0.004f) ++reducedDVComparison.mismatches;
+            reducedDVComparison.maximum =
+                fmaxf(reducedDVComparison.maximum, dvDelta);
+        }
         const size_t mismatches =
             dqComparison.mismatches + dkComparison.mismatches
-            + dvComparison.mismatches;
+            + dvComparison.mismatches + inverseDQComparison.mismatches
+            + inverseDKComparison.mismatches + reducedDVComparison.mismatches;
         printf(
             "{\"policy\":\"project_theseus_exact_ane_attention_backward_v1\","
             "\"shape\":{\"sequence\":%d,\"query_heads\":%d,"
@@ -408,10 +507,17 @@ int main(void) {
             "\"dk_tiled_rope\":{\"tolerance\":0.002,"
             "\"maximum_absolute_delta\":%.9g,\"mismatch_count\":%zu},"
             "\"dv_tiled\":{\"tolerance\":0.002,"
+            "\"maximum_absolute_delta\":%.9g,\"mismatch_count\":%zu},"
+            "\"dq_inverse_split_half_rope\":{\"tolerance\":0.002,"
+            "\"maximum_absolute_delta\":%.9g,\"mismatch_count\":%zu},"
+            "\"dk_contiguous_reduce_inverse_split_half_rope\":{"
+            "\"tolerance\":0.004,\"maximum_absolute_delta\":%.9g,"
+            "\"mismatch_count\":%zu},"
+            "\"dv_contiguous_reduce\":{\"tolerance\":0.004,"
             "\"maximum_absolute_delta\":%.9g,\"mismatch_count\":%zu}},"
             "\"gates\":{\"causal_softmax_backward\":true,"
             "\"full_query_head_gradients\":true,"
-            "\"kv_reduction\":false,\"inverse_split_half_rope\":false,"
+            "\"kv_reduction\":true,\"inverse_split_half_rope\":true,"
             "\"input_gradient\":false,\"parameter_gradients\":false,"
             "\"complete_decoder_block\":false,"
             "\"production_eligible\":false},"
@@ -422,6 +528,9 @@ int main(void) {
             dqComparison.maximum, dqComparison.mismatches,
             dkComparison.maximum, dkComparison.mismatches,
             dvComparison.maximum, dvComparison.mismatches,
+            inverseDQComparison.maximum, inverseDQComparison.mismatches,
+            inverseDKComparison.maximum, inverseDKComparison.mismatches,
+            reducedDVComparison.maximum, reducedDVComparison.mismatches,
             mismatches, mismatches == 0 ? "GREEN" : "RED");
         ((BOOL(*)(id, SEL, unsigned int, NSError **))objc_msgSend)(
             model, @selector(unloadWithQoS:error:), 21, &error);
@@ -437,6 +546,15 @@ int main(void) {
         free(dq);
         free(dk);
         free(dv);
+        free(actualDQ);
+        free(actualDK);
+        free(actualDV);
+        free(cosine);
+        free(sine);
+        free(reducedDK);
+        free(reducedDV);
+        free(expectedReducedDK);
+        free(expectedReducedDV);
         return mismatches == 0 ? 0 : 1;
     }
 }

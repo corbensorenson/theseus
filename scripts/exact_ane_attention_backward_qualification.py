@@ -57,7 +57,14 @@ def validate(native: dict[str, Any]) -> dict[str, Any]:
         or int(native.get("mismatch_count", -1)) != 0
     ):
         raise QualificationFault("native_backward_core_not_green")
-    for name in ("dq_rope", "dk_tiled_rope", "dv_tiled"):
+    for name in (
+        "dq_rope",
+        "dk_tiled_rope",
+        "dv_tiled",
+        "dq_inverse_split_half_rope",
+        "dk_contiguous_reduce_inverse_split_half_rope",
+        "dv_contiguous_reduce",
+    ):
         item = native["comparisons"][name]
         if (
             int(item["mismatch_count"]) != 0
@@ -66,7 +73,7 @@ def validate(native: dict[str, Any]) -> dict[str, Any]:
             raise QualificationFault(f"comparison_failed:{name}")
     return {
         "policy": POLICY,
-        "state": "GREEN_EXACT_ATTENTION_BACKWARD_CORE_GRADIENT_CLOSURE_OPEN",
+        "state": "GREEN_EXACT_ATTENTION_BACKWARD_AND_GEOMETRY_QKV_RMS_GRADIENTS_OPEN",
         "source": str(SOURCE.relative_to(ROOT)),
         "source_sha256": hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
         "shape": native["shape"],
@@ -77,8 +84,8 @@ def validate(native: dict[str, Any]) -> dict[str, Any]:
             "causal_softmax_backward": True,
             "full_query_head_dq_dk_dv": True,
             "output_parity": True,
-            "contiguous_gqa_kv_reduction": False,
-            "inverse_split_half_rope": False,
+            "contiguous_gqa_kv_reduction": True,
+            "inverse_split_half_rope": True,
             "attention_rmsnorm_input_gradient": False,
             "attention_rmsnorm_scale_gradient": False,
             "qkv_parameter_gradients": False,
@@ -87,14 +94,14 @@ def validate(native: dict[str, Any]) -> dict[str, Any]:
             "production_eligible": False,
         },
         "next_gate": (
-            "Reduce dK/dV from eight tiled query heads to two contiguous KV "
-            "heads, apply inverse split-half RoPE to dQ/dK, compute FP32 "
-            "Q/K/V and attention-RMSNorm-scale gradients, and produce the "
-            "attention input gradient through the current dynamic weights."
+            "Compute FP32 Q/K/V and attention-RMSNorm-scale gradients and "
+            "produce the attention input gradient through the current "
+            "dynamic weights, preserving one generation and objective mass."
         ),
         "claim_scope": (
-            "One native causal-attention backward core over RoPE'd/tiled "
-            "intermediates. No QKV parameter gradients, block input gradient, "
+            "One native causal-attention backward core with contiguous KV "
+            "reduction and inverse split-half RoPE. No QKV parameter "
+            "gradients, block input gradient, "
             "complete decoder block, optimizer, full model, speedup, or "
             "capability claim."
         ),

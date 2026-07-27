@@ -797,7 +797,14 @@ def _exact_ane_attention_backward_record(
     if record and any(
         not math.isfinite(float(deltas.get(name, float("nan"))))
         or float(deltas.get(name, -1.0)) < 0.0
-        for name in ("dq_rope", "dk_tiled_rope", "dv_tiled")
+        for name in (
+            "dq_rope",
+            "dk_tiled_rope",
+            "dv_tiled",
+            "dq_inverse_split_half_rope",
+            "dk_contiguous_reduce_inverse_split_half_rope",
+            "dv_contiguous_reduce",
+        )
     ):
         raise PlanningFault("exact_ane_attention_backward_invalid")
     core_green = all(
@@ -833,9 +840,10 @@ def _exact_ane_attention_backward_record(
         "gates": gates,
         "production_eligible": False,
         "claim_scope": (
-            "One native causal-attention backward core. It does not establish "
-            "KV reduction, inverse RoPE, parameter gradients, block dX, a "
-            "complete decoder block, or training acceleration."
+            "One native causal-attention backward core with contiguous KV "
+            "reduction and inverse split-half RoPE. It does not establish "
+            "parameter gradients, block dX, a complete decoder block, or "
+            "training acceleration."
         ),
     }
 

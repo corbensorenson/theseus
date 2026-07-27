@@ -9,7 +9,7 @@
   "fault": "",
   "fault_observation": null,
   "first_swapout_growth_breach_observation": null,
-  "initial_reclaimable_available_mib": 4252.016,
+  "initial_reclaimable_available_mib": 4074.547,
   "limits": {
     "max_process_memory_mib": 8191.0,
     "maximum_swapout_growth_mib": 0.0,
@@ -22,44 +22,44 @@
   },
   "maximum_consecutive_reserve_breaches": 0,
   "maximum_consecutive_telemetry_failures": 0,
-  "maximum_inferred_unified_memory_mib": 169.406,
-  "maximum_process_rss_mib": 169.406,
+  "maximum_inferred_unified_memory_mib": 172.438,
+  "maximum_process_rss_mib": 172.438,
   "maximum_swapout_growth_mib": 0.0,
-  "minimum_reclaimable_available_mib": 4144.812,
+  "minimum_reclaimable_available_mib": 3975.359,
   "observation_prefix": [
     {
       "elapsed_seconds": 0.002,
       "inferred_unified_memory_mib": 3.641,
       "process_rss_mib": 3.641,
-      "reclaimable_available_mib": 4255.469,
+      "reclaimable_available_mib": 4074.922,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 0.278,
-      "inferred_unified_memory_mib": 107.406,
-      "process_rss_mib": 107.406,
-      "reclaimable_available_mib": 4186.078,
+      "elapsed_seconds": 0.275,
+      "inferred_unified_memory_mib": 107.672,
+      "process_rss_mib": 107.672,
+      "reclaimable_available_mib": 4011.5,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 0.545,
-      "inferred_unified_memory_mib": 169.406,
-      "process_rss_mib": 169.406,
-      "reclaimable_available_mib": 4169.312,
+      "elapsed_seconds": 0.55,
+      "inferred_unified_memory_mib": 172.438,
+      "process_rss_mib": 172.438,
+      "reclaimable_available_mib": 3991.469,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 0.822,
-      "inferred_unified_memory_mib": 127.828,
-      "process_rss_mib": 127.828,
-      "reclaimable_available_mib": 4144.812,
+      "elapsed_seconds": 0.828,
+      "inferred_unified_memory_mib": 99.188,
+      "process_rss_mib": 32.359,
+      "reclaimable_available_mib": 3975.359,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 1.095,
-      "inferred_unified_memory_mib": 69.078,
-      "process_rss_mib": 23.125,
-      "reclaimable_available_mib": 4182.938,
+      "elapsed_seconds": 1.106,
+      "inferred_unified_memory_mib": 49.375,
+      "process_rss_mib": 22.766,
+      "reclaimable_available_mib": 4025.172,
       "swapout_growth_mib": 0.0
     }
   ],
@@ -68,35 +68,35 @@
       "elapsed_seconds": 0.002,
       "inferred_unified_memory_mib": 3.641,
       "process_rss_mib": 3.641,
-      "reclaimable_available_mib": 4255.469,
+      "reclaimable_available_mib": 4074.922,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 0.278,
-      "inferred_unified_memory_mib": 107.406,
-      "process_rss_mib": 107.406,
-      "reclaimable_available_mib": 4186.078,
+      "elapsed_seconds": 0.275,
+      "inferred_unified_memory_mib": 107.672,
+      "process_rss_mib": 107.672,
+      "reclaimable_available_mib": 4011.5,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 0.545,
-      "inferred_unified_memory_mib": 169.406,
-      "process_rss_mib": 169.406,
-      "reclaimable_available_mib": 4169.312,
+      "elapsed_seconds": 0.55,
+      "inferred_unified_memory_mib": 172.438,
+      "process_rss_mib": 172.438,
+      "reclaimable_available_mib": 3991.469,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 0.822,
-      "inferred_unified_memory_mib": 127.828,
-      "process_rss_mib": 127.828,
-      "reclaimable_available_mib": 4144.812,
+      "elapsed_seconds": 0.828,
+      "inferred_unified_memory_mib": 99.188,
+      "process_rss_mib": 32.359,
+      "reclaimable_available_mib": 3975.359,
       "swapout_growth_mib": 0.0
     },
     {
-      "elapsed_seconds": 1.095,
-      "inferred_unified_memory_mib": 69.078,
-      "process_rss_mib": 23.125,
-      "reclaimable_available_mib": 4182.938,
+      "elapsed_seconds": 1.106,
+      "inferred_unified_memory_mib": 49.375,
+      "process_rss_mib": 22.766,
+      "reclaimable_available_mib": 4025.172,
       "swapout_growth_mib": 0.0
     }
   ],
@@ -112,5 +112,5 @@
   "telemetry_failure_observations_allowed": 2,
   "telemetry_failure_prefix": [],
   "terminated_by_guard": false,
-  "wall_seconds": 1.372
+  "wall_seconds": 1.389
 }

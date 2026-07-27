@@ -495,6 +495,14 @@ def test_exact_ane_attention_backward_advances_to_gradient_closure() -> None:
     assert backward["backward_core_green"] is True
     assert backward["complete_attention_gradient_tree"] is False
     assert backward["gradient_closure_is_immediate_next"] is True
+    assert backward["gates"]["contiguous_gqa_kv_reduction"] is True
+    assert backward["gates"]["inverse_split_half_rope"] is True
     assert backward["maximum_absolute_delta_by_state"]["dv_tiled"] < 0.001
+    assert (
+        backward["maximum_absolute_delta_by_state"][
+            "dv_contiguous_reduce"
+        ]
+        < 0.001
+    )
     assert backward["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert backward["production_eligible"] is False

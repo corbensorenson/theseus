@@ -560,8 +560,8 @@
     "claim_scope": "One exact native attention forward slice. Forward parity and runtime execution do not establish backward, a decoder block, a full model, or training acceleration."
   },
   "exact_ane_attention_backward": {
-    "state": "GREEN_EXACT_ATTENTION_BACKWARD_CORE_GRADIENT_CLOSURE_OPEN",
-    "disposition": "BACKWARD_CORE_GREEN_GRADIENT_CLOSURE_IMMEDIATE",
+    "state": "GREEN_EXACT_ATTENTION_BACKWARD_AND_GEOMETRY_QKV_RMS_GRADIENTS_OPEN",
+    "disposition": "BACKWARD_GEOMETRY_GREEN_QKV_RMS_GRADIENTS_IMMEDIATE",
     "shape": {
       "batch": 1,
       "sequence": 128,
@@ -569,11 +569,14 @@
       "kv_heads": 2,
       "head_dim": 64
     },
-    "mean_evaluation_milliseconds": 0.390391,
+    "mean_evaluation_milliseconds": 0.361203,
     "maximum_absolute_delta_by_state": {
       "dq_rope": 4.22688427e-05,
       "dk_tiled_rope": 6.34936878e-05,
-      "dv_tiled": 0.000299608917
+      "dv_tiled": 0.000299608917,
+      "dq_inverse_split_half_rope": 4.47934071e-05,
+      "dk_contiguous_reduce_inverse_split_half_rope": 0.000279209577,
+      "dv_contiguous_reduce": 0.000968804001
     },
     "backward_core_green": true,
     "complete_attention_gradient_tree": false,
@@ -581,10 +584,10 @@
     "resource_receipt": {
       "path": "reports/exact_ane_attention_backward_m1.host_resource_safety.json",
       "passed": true,
-      "wall_seconds": 1.372,
-      "maximum_process_rss_mib": 169.406,
-      "maximum_inferred_unified_memory_mib": 169.406,
-      "minimum_reclaimable_available_mib": 4144.812,
+      "wall_seconds": 1.389,
+      "maximum_process_rss_mib": 172.438,
+      "maximum_inferred_unified_memory_mib": 172.438,
+      "minimum_reclaimable_available_mib": 3975.359,
       "minimum_available_memory_floor_mib": 0.0,
       "maximum_swapout_growth_mib": 0.0
     },
@@ -592,8 +595,8 @@
       "causal_softmax_backward": true,
       "full_query_head_dq_dk_dv": true,
       "output_parity": true,
-      "contiguous_gqa_kv_reduction": false,
-      "inverse_split_half_rope": false,
+      "contiguous_gqa_kv_reduction": true,
+      "inverse_split_half_rope": true,
       "attention_rmsnorm_input_gradient": false,
       "attention_rmsnorm_scale_gradient": false,
       "qkv_parameter_gradients": false,
@@ -602,7 +605,7 @@
       "production_eligible": false
     },
     "production_eligible": false,
-    "claim_scope": "One native causal-attention backward core. It does not establish KV reduction, inverse RoPE, parameter gradients, block dX, a complete decoder block, or training acceleration."
+    "claim_scope": "One native causal-attention backward core with contiguous KV reduction and inverse split-half RoPE. It does not establish parameter gradients, block dX, a complete decoder block, or training acceleration."
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",

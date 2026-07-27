@@ -36,16 +36,25 @@ def native_receipt() -> dict:
                 "maximum_absolute_delta": 0.0003,
                 "mismatch_count": 0,
             }
-            for name in ("dq_rope", "dk_tiled_rope", "dv_tiled")
+            for name in (
+                "dq_rope",
+                "dk_tiled_rope",
+                "dv_tiled",
+                "dq_inverse_split_half_rope",
+                "dk_contiguous_reduce_inverse_split_half_rope",
+                "dv_contiguous_reduce",
+            )
         },
     }
 
 
 def test_validation_keeps_gradient_closure_open() -> None:
     report = module.validate(native_receipt())
-    assert report["state"].endswith("GRADIENT_CLOSURE_OPEN")
+    assert report["state"].endswith("QKV_RMS_GRADIENTS_OPEN")
     assert report["gates"]["causal_softmax_backward"] is True
     assert report["gates"]["full_query_head_dq_dk_dv"] is True
+    assert report["gates"]["contiguous_gqa_kv_reduction"] is True
+    assert report["gates"]["inverse_split_half_rope"] is True
     assert report["gates"]["qkv_parameter_gradients"] is False
     assert report["gates"]["complete_attention_gradient_tree"] is False
     assert report["gates"]["production_eligible"] is False
