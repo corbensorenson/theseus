@@ -28,14 +28,8 @@ def test_final_selector_binds_every_finite_candidate_disposition() -> None:
         "progressive_sequence",
         "lazy_optimizer_state",
         "bounded_dispositions",
-        "fast_sync_control_a",
-        "fast_sync_candidate_a",
-        "fast_sync_control_b",
-        "fast_sync_candidate_b",
-        "fast_sync_control_c",
-        "fast_sync_candidate_c",
-        "target_window_control",
-        "target_window_candidate",
+        "fast_sync_qualification",
+        "target_window_qualification",
         "station_attention",
         "station_swiglu",
         "station_rmsnorm",
@@ -81,8 +75,14 @@ def test_final_selector_is_green_against_current_authoritative_evidence() -> Non
         "apple_neural_accelerator_on_m1",
         "high_power_mode",
     }
-    assert report["bounded_measurements"]["fast_sync_maximum_speedup"] < 1.10
+    assert report["bounded_measurements"]["fast_sync_minimum_speedup"] < 1.0
     assert (
-        report["bounded_measurements"]["target_window_projection_speedup"]
-        < 1.10
+        report["bounded_measurements"][
+            "target_window_projection_maximum_model_delta"
+        ]
+        > 5e-6
+    )
+    assert (
+        report["campaign_disposition"]["kind"]
+        == "FINITE_ACCELERATION_SELECTOR_RETAIN_CURRENT_ROUTE"
     )

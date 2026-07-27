@@ -1,0 +1,114 @@
+{
+  "capability_claim": "NONE_ACCELERATION_DIAGNOSTIC_ONLY",
+  "claim_scope": "Four matched FP32 compiled pretraining timing pairs plus one eight-update full-model state comparison on this M1. This is execution evidence only, not convergence or capability.",
+  "config": {
+    "path": "configs/mlx_fast_sync_qualification_2026_07_27.json",
+    "sha256": "07594e7f3d9abc08bf7d95583ff7a94f6afc7928bbff7f8da5a26ffc4eb0a8b7"
+  },
+  "evidence": {
+    "candidate": {
+      "path": "reports/mlx_fast_sync_candidate8_2026_07_27.json",
+      "sha256": "a27e07f3ed0577060213f37296b2d91d4cc28e434b5dab16ab0c8e8d00006eda"
+    },
+    "candidate_resource": {
+      "path": "reports/mlx_fast_sync_candidate8_2026_07_27.host_resource_safety.json",
+      "sha256": "1ea740b926de78ff910dc85c52f0ff6ed57e178432cff915213ab1ca3394f594"
+    },
+    "control": {
+      "path": "reports/mlx_fast_sync_control8_2026_07_27.json",
+      "sha256": "348a9895c2a77e06330d7f88a0fbd75c5f2e0d5179a0a5e9094d2bea61aa7876"
+    },
+    "control_resource": {
+      "path": "reports/mlx_fast_sync_control8_2026_07_27.host_resource_safety.json",
+      "sha256": "8a8d0bb8e15f9e5f6f7177892724238f33bce4e69bc53b0d38299b2f6e34b3b9"
+    },
+    "historical_candidate_0": {
+      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16.json",
+      "sha256": "f7445a0490058c3ab4c952381ad64add892314877f0b898390179f64ae5d53ec"
+    },
+    "historical_candidate_1": {
+      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair2.json",
+      "sha256": "f38686b0d511b9efde1e355e4e42dda569f23a771e22d6072ac825ecfaea1f2c"
+    },
+    "historical_candidate_2": {
+      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair3.json",
+      "sha256": "b28dea293fb7fff8affb7f049022bdff84228ee584c1e2f4a945704e8e5d8007"
+    },
+    "historical_control_0": {
+      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_replay.json",
+      "sha256": "c51bfe4142e902cfdc45314dcd8903ce61f3186643c97f5b575d08d03b5fba0a"
+    },
+    "historical_control_1": {
+      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair2.json",
+      "sha256": "9949adaa9142c5d81eb824646290855b9e33a289a5087377437a184a2f09ae64"
+    },
+    "historical_control_2": {
+      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair3.json",
+      "sha256": "3ca2af8e95131eb3ee6e64baedc89ebb8689e307f899b698e31ea252682ad7ab"
+    }
+  },
+  "gates": {
+    "candidate_wins_every_pair": false,
+    "final_loss_exact": true,
+    "full_model_state_within_frozen_tolerance": true,
+    "matched_checkpoint_optimizer_sampler_and_cursor": true,
+    "production_eligible": false,
+    "zero_swap_growth": false
+  },
+  "next_gate": "Retain ordinary synchronization. Reopen only with an alternating no-swap pair because the fourth matched pair reversed the prior small gain; no percentage threshold is involved.",
+  "numerical_authority": {
+    "final_loss_exact": true,
+    "model_state": {
+      "absolute_tolerance": 5e-06,
+      "acceptance_semantics": "per_tensor_absolute_or_relative_tolerance_v1",
+      "left_only_names": [],
+      "maximum_absolute_delta": 1.1920928955078125e-07,
+      "maximum_relative_l2_delta": 3.6247277912448216e-08,
+      "nonfinite_tensor_count": 0,
+      "passed": true,
+      "relative_l2_tolerance": 1e-06,
+      "right_only_names": [],
+      "shape_mismatch_names": [],
+      "tensor_names_exact": true,
+      "tolerance_mismatch_names": []
+    }
+  },
+  "policy": "project_theseus_mlx_fast_sync_qualification_v1",
+  "resource_authority": {
+    "maximum_swapout_growth_mib": 698.0,
+    "receipts_complete": true,
+    "zero_swap_growth": false
+  },
+  "scratch_state_inputs": {
+    "candidate_model": {
+      "path": "/private/tmp/theseus_fast_sync_candidate8_state/model.safetensors",
+      "retention": "DISPOSABLE_AFTER_COMPARISON_REPORT_PUBLICATION",
+      "sha256": "a78cfa1ffbf470eb0a894b8a46d0ed42d26053e189eefd4b725f3b421e05d08c"
+    },
+    "control_model": {
+      "path": "/private/tmp/theseus_fast_sync_control8_state/model.safetensors",
+      "retention": "DISPOSABLE_AFTER_COMPARISON_REPORT_PUBLICATION",
+      "sha256": "ae2246cb1b6a59ce740dbe13a05c5a02f6a3db8d5217b4eafa13133532c3f409"
+    }
+  },
+  "selection": {
+    "arbitrary_percentage_hurdle": false,
+    "candidate_selected": false,
+    "production_route_changed": false,
+    "rule": "Select only if every matched pair wins, the current full model state remains within the frozen tolerance, loss and sampler authority match, and the current pair adds no swap."
+  },
+  "timing": {
+    "candidate_win_count": 3,
+    "geometric_mean_speedup": 1.0053195176438317,
+    "matched_pair_speedup_ratios": [
+      1.0219167532884625,
+      1.0266200295194947,
+      1.0014618814843115,
+      0.9722026065610784
+    ],
+    "maximum_pair_speedup": 1.0266200295194947,
+    "minimum_pair_speedup": 0.9722026065610784,
+    "pair_count": 4
+  },
+  "trigger_state": "INCONCLUSIVE_EXPERIMENT"
+}

@@ -651,6 +651,21 @@ share toward zero. Public benchmarks are calibration only.
   speedup. Physical concatenation erases the gain (`0.687x–0.820x` versus full Metal), so it
   is excluded. The successor keeps attention-head or MLP-channel partitions device-local
   through the full subgraph and fuses only a hidden-width partial-result sum.
+  The resulting exact native decoder block has now been joined and compared directly with
+  the compiled MLX control in two alternating rounds. Native means are `10.176` and
+  `10.353 ms`; MLX means are `5.809` and `5.537 ms`, leaving native at only `0.552679x`
+  pooled and `0.534825x` conservatively. The native batch-1/sequence-128 route is therefore
+  closed for production training and compiled MLX remains authoritative.
+  Two smaller MLX candidates were also requalified without arbitrary percentage hurdles.
+  `MLX_METAL_FAST_SYNCH=1` preserves exact loss and passes the frozen model-state tolerance,
+  but its four matched speed ratios are `1.021917`, `1.026620`, `1.001462`, and
+  `0.972203`; the current pair reverses direction and grows swap, so ordinary synchronization
+  remains selected. Target-window-only output projection is exact for loss and every gradient
+  in the small-model proof and reaches `590.485` positions/s against controls at `565.360`
+  and `560.908`, but the live checkpoint diverges by `7.489696e-6` in one tensor against a
+  frozen `5e-6` absolute tolerance and grows swap. It remains
+  `INCONCLUSIVE_IMPLEMENTATION` until its backward path is repaired; a modest measured wall
+  gain is not discarded merely for being below a round-number threshold.
 - **Repository hygiene:** the forward roadmap is now a compact execution map backed by
   the complete machine-readable matrix without deleting an open obligation.
   The 2026-07-23 audit caught a real regression: 1,946,857,145 governed-hot bytes and 6,375

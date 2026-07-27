@@ -278,14 +278,16 @@ Work this finite docket in order:
    checkpoint/reload, and two-segment replay clears the existing bounds; the interrupted
    scratch-state qualification earns no adoption.
 
-   **Revised disposition (2026-07-27):** the exact three pair speed ratios are `1.021918x`,
-   `1.026620x`, and `1.001462x`. The direction is positive but not yet distinguishable from
-   route-order and thermal noise, and the full-state qualification was interrupted. Keep the
-   default route until one sustained full-state replay establishes a positive lower
-   confidence bound. Do not reject a verified gain merely because it is below a fixed
-   percentage. Preserve the earlier
-   `NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT` label as historical policy,
-   not the current decision rule.
+   **Revised disposition (2026-07-27):** the first three pair speed ratios are `1.021918x`,
+   `1.026620x`, and `1.001462x`; a new exact eight-update full-state pair reversed at
+   `0.972203x`. Across all four pairs the geometric mean is only `1.005320x`, with three wins
+   and one loss. The new pair preserves final loss and stays inside the frozen model-state
+   envelope (`1.19209e-7` maximum absolute delta), so semantics are not the blocker. The host
+   added `698 MiB` and `151.062 MiB` of swap in the control and candidate processes,
+   respectively, making that reversal unsuitable as a clean thermal result. Retain ordinary
+   synchronization because the wall direction is inconsistent and the no-swap prerequisite
+   failed—not because the gain is below a fixed percentage. Reopen only with an alternating
+   no-swap pair.
 3. **Reject unsafe graph-chain fusion.** Deferring every microbatch synchronization retained
    the full dependency chain, reduced reclaimable memory to about 734 MiB, grew swap by about
    954 MiB, and was killed before a durable update. Do not retry that implementation unchanged.
@@ -298,13 +300,16 @@ Work this finite docket in order:
    remains closed. Full encoder/decoder partition compaction reached 1.73-1.77x but changed
    loss and therefore belongs to a successor architecture, not this lineage.
 
-   **Revised disposition (2026-07-27):** the exact measured speed ratio is `1.068527x`, but
-   the maximum absolute parameter delta (`7.490e-6`) still exceeds the registered `5e-6`
-   continuity bound. Stop this exact canonical-lineage implementation on semantic custody,
-   not on its percentage gain. Preserve the historical
-   `NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT` receipt, and retain compact
-   partitioning only as a fresh successor-architecture candidate with matched quality
-   evidence.
+   **Revised disposition (2026-07-27):** an independently wired target-window-only flag now
+   separates output projection from encoder/decoder partition compaction and passes exact
+   small-model output, loss, and every-gradient parity. On the live 54.8M-parameter
+   checkpoint it reaches `590.485` positions/second versus two control rates of `565.360`
+   and `560.908`, a `1.048569x` mean and `1.044441x` conservative gain. The independent
+   unchanged-control replay stays inside tolerance at `1.956e-7`, while the candidate reaches
+   `7.490e-6` maximum absolute model delta and fails the frozen `5e-6` continuity gate on one
+   tensor. The candidate process also added `328.688 MiB` of swap. Stop this exact
+   canonical-lineage implementation on numerical custody and resource evidence, not on its
+   percentage gain; repair its tied-output/pointer backward before any plan migration.
 5. **Operate the resource-aware segment scheduler.** Never suspend an in-flight Metal
    command graph. Launch a bounded 32/64-step segment at any hour when AC power is present, Low Power
    Mode is off, disk/checkpoint reserve is green, and no interactive accelerator job is active.

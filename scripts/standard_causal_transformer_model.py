@@ -532,6 +532,7 @@ def build_model(
     attention_query_chunk_size: int = 0,
     attention_key_chunk_size: int = 0,
     compact_encoder_decoder_partitions: bool = False,
+    compact_output_projection: bool = False,
     compact_partition_width_quantum: int = 0,
     parameter_initialization_dtype: str = "float32",
     exact_checkpoint_placeholder_initialization: bool = False,
@@ -1609,6 +1610,7 @@ def build_model(
             self.kerc_stage_output_isolation = False
             self.compact_output_projection = bool(
                 compact_encoder_decoder_partitions
+                or compact_output_projection
             )
             self.copy_auxiliary_loss_weight = float(
                 config.source_copy_auxiliary_loss_weight
@@ -3136,9 +3138,10 @@ def build_model(
                 output_position_stop = int(final_hidden.shape[1])
                 projected_hidden = final_hidden
                 if output_position_mask is not None:
-                    if not compact_encoder_decoder_partitions or cache is not None:
+                    if not self.compact_output_projection or cache is not None:
                         raise ValueError(
-                            "output compaction requires cache-free compact partitions"
+                            "output compaction requires the cache-free compact "
+                            "output policy"
                         )
                     active_output = output_position_mask > 0
                     active_any = mx.any(active_output, axis=0)

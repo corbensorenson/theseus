@@ -1,19 +1,22 @@
 {
   "bounded_measurements": {
     "checkpoint_fraction_at_32_steps": 0.035812,
-    "fast_sync_maximum_speedup": 1.02662,
+    "fast_sync_geometric_mean_speedup": 1.0053195176438317,
+    "fast_sync_minimum_speedup": 0.9722026065610784,
     "fast_sync_speedup_ratios": [
-      1.021917,
-      1.02662,
-      1.001462
+      1.0219167532884625,
+      1.0266200295194947,
+      1.0014618814843115,
+      0.9722026065610784
     ],
     "fused_loss_elimination_upper_bound": 0.082474,
     "packing_padding_fraction_upper_bound": 0.052704,
     "rust_host_loop_upper_bound": 0.00196,
-    "target_window_projection_speedup": 1.068527
+    "target_window_projection_maximum_model_delta": 7.489696145057678e-06,
+    "target_window_projection_speedup": 1.0485692570507197
   },
   "campaign_disposition": {
-    "kind": "FINITE_ACCELERATION_SELECTOR_CLOSED",
+    "kind": "FINITE_ACCELERATION_SELECTOR_RETAIN_CURRENT_ROUTE",
     "launch_recipe": {
       "compile_width_quantum": 64,
       "compiled_microbatch_size": 4,
@@ -34,52 +37,32 @@
     "adam_mini_mlx": "NOT_SELECTED_FIRST_CAMPAIGN",
     "ademamix_mlx": "NOT_SELECTED_FIRST_CAMPAIGN",
     "apple_neural_accelerator_on_m1": "UNAVAILABLE_ON_THIS_HARDWARE",
-    "asynchronous_checkpoint_publication": "NOT_IMPLEMENTED_64_STEP_UPSIDE_BOUND_BELOW_2_PERCENT",
-    "exact_sequence_packing": "NOT_IMPLEMENTED_MEASURED_PADDING_BOUND_5_27_PERCENT",
+    "asynchronous_checkpoint_publication": "NOT_IMPLEMENTED_IMMUTABLE_SNAPSHOT_MEMORY_AND_REPLAY_TRIGGER_ABSENT",
+    "exact_sequence_packing": "NOT_IMPLEMENTED_CURRENT_LINEAGE_REQUIRES_BLOCK_MASK_POSITION_AND_SAMPLER_PARITY_AT_94_73_PERCENT_OCCUPANCY",
     "fp16_fp32_master": "NOT_SELECTED_REPLAY_PREREQUISITE_FAILED",
-    "fused_linear_cross_entropy": "NOT_IMPLEMENTED_ELIMINATION_BOUND_8_25_PERCENT_AND_NO_FASTER_MICROBATCH_TRIGGER",
+    "fused_linear_cross_entropy": "NOT_IMPLEMENTED_NO_FASTER_MICROBATCH_MEMORY_TRIGGER_AND_NATIVE_STATION_ALREADY_RANKED",
     "high_power_mode": "UNAVAILABLE_ON_THIS_HARDWARE",
     "lazy_inactive_optimizer_state": "NOT_IMPLEMENTED_MEMORY_TO_FASTER_MICROBATCH_TRIGGER_FAILED",
     "masked_depth_conservative_v1": "NOT_SELECTED_FIRST_CAMPAIGN",
     "masked_depth_paper_shaped_v1": "NOT_SELECTED_FIRST_CAMPAIGN",
-    "mlx_metal_fast_synch": "NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT",
+    "mlx_metal_fast_synch": "NOT_SELECTED_FOURTH_PAIR_REVERSED_AND_CURRENT_PAIR_SWAPPED_STATE_PARITY_GREEN_NO_PERCENTAGE_HURDLE",
     "mlx_sdpa_blocks_on_fp32": "NOT_APPLICABLE_TO_UPSTREAM_FP32_PATH",
-    "new_custom_metal_kernel": "NOT_AUTHORIZED_NATIVE_FAST_PATHS_OR_SUB10_PERCENT_ELIMINATION_BOUNDS_RETAINED",
+    "new_custom_metal_kernel": "NOT_AUTHORIZED_NO_UNFUSED_RESIDUAL_IDENTIFIED_BY_BOUNDED_STATION_PROFILES",
     "progressive_128_256_512": "NOT_SELECTED_FIRST_CAMPAIGN",
-    "rust_training_hot_loop": "NOT_IMPLEMENTED_HOST_PREPARATION_BOUND_0_196_PERCENT",
-    "source_target_window_projection": "NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT"
+    "rust_training_hot_loop": "NOT_IMPLEMENTED_PROFILE_SHOWS_METAL_BOUND_HOST_LOOP_OUTSIDE_THE_CRITICAL_PATH",
+    "source_target_window_projection": "NOT_SELECTED_FROZEN_MODEL_STATE_TOLERANCE_FAILED_CONTROL_REPLAY_GREEN"
   },
   "capability_claim": "NONE_EXECUTION_SELECTION_ONLY",
   "config": "configs/training_acceleration_final_selector.json",
-  "config_sha256": "c0fdb87d5f777b98649403f7fb7eb7d5ede962f4a4487894461324ee35ffa593",
+  "config_sha256": "6238fdb91ce17cc3ec51e65decadd65914f2f779435deac1d98159b3eec13fb1",
   "evidence": {
     "bounded_dispositions": {
       "path": "reports/training_acceleration_research_refresh_2026_07_26.json",
       "sha256": "9e09adab28bb0422f8572d11ef9a13e40e2280bc963cd07151fe84b0763bb4a4"
     },
-    "fast_sync_candidate_a": {
-      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16.json",
-      "sha256": "f7445a0490058c3ab4c952381ad64add892314877f0b898390179f64ae5d53ec"
-    },
-    "fast_sync_candidate_b": {
-      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair2.json",
-      "sha256": "f38686b0d511b9efde1e355e4e42dda569f23a771e22d6072ac825ecfaea1f2c"
-    },
-    "fast_sync_candidate_c": {
-      "path": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair3.json",
-      "sha256": "b28dea293fb7fff8affb7f049022bdff84228ee584c1e2f4a945704e8e5d8007"
-    },
-    "fast_sync_control_a": {
-      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_replay.json",
-      "sha256": "c51bfe4142e902cfdc45314dcd8903ce61f3186643c97f5b575d08d03b5fba0a"
-    },
-    "fast_sync_control_b": {
-      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair2.json",
-      "sha256": "9949adaa9142c5d81eb824646290855b9e33a289a5087377437a184a2f09ae64"
-    },
-    "fast_sync_control_c": {
-      "path": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair3.json",
-      "sha256": "3ca2af8e95131eb3ee6e64baedc89ebb8689e307f899b698e31ea252682ad7ab"
+    "fast_sync_qualification": {
+      "path": "reports/mlx_fast_sync_qualification_2026_07_27.json",
+      "sha256": "c1f2378d8f124b22f844e4803a69a3af3ccec1a32192e8243f40016d2478f1ab"
     },
     "fp16_replay": {
       "path": "reports/resource_acceleration_fp16_repeatability_localized4_2026_07_26.json",
@@ -129,36 +112,32 @@
       "path": "reports/masked_structural_growth_qualification.json",
       "sha256": "032ff1eb4778ec688f0315a6c2902392ce0aef370a1ae498c23acbbbda372d8c"
     },
-    "target_window_candidate": {
-      "path": "reports/resource_acceleration_source_compact_output_eager_m1_steps4_state.json",
-      "sha256": "a5a3653408dc2fb86bfd5420319af193bc65bc7000944bc534f356150038ab7f"
-    },
-    "target_window_control": {
-      "path": "reports/resource_acceleration_source_full_partitions_eager_m1_steps4_state.json",
-      "sha256": "6e315f3bdef9aa86e1138b21e28dc20a9880ec5d2ae769697e587a08f0bce23a"
+    "target_window_qualification": {
+      "path": "reports/source_target_window_projection_qualification_2026_07_27.json",
+      "sha256": "3d120359bbb581f142e1699665acaa7153e4461da5f97daeee2245a5e75278c7"
     }
   },
   "gates": {
     "ambient_swap_is_diagnostic": true,
-    "asynchronous_checkpoint_bounded_below_adoption_floor": true,
+    "asynchronous_checkpoint_lacks_safe_snapshot_trigger": true,
     "custom_kernel_station_closed": true,
-    "fast_sync_below_adoption_floor": true,
+    "fast_sync_retained_control_on_reversed_pair_and_swap": true,
     "fp16_replay_not_adopted": true,
     "fp16_stability_measured": true,
-    "fused_loss_bounded_below_adoption_floor": true,
+    "fused_loss_requires_ranked_residual_or_memory_trigger": true,
     "lazy_state_trigger_failed": true,
     "optimizer_reference_selected": true,
-    "packing_bounded_below_adoption_floor": true,
+    "packing_not_semantics_free_on_current_lineage": true,
     "production_compiled_route_bound": true,
     "production_fixed_sequence_bound": true,
     "production_full_depth_bound": true,
     "production_optimizer_bound": true,
     "production_precision_bound": true,
-    "rust_host_rewrite_bounded_below_adoption_floor": true,
+    "rust_host_rewrite_rejected_by_measured_amdahl_bound": true,
     "selected_recipe_matches_config": true,
     "sequence_control_selected": true,
     "structural_control_selected": true,
-    "target_window_projection_below_adoption_floor": true
+    "target_window_projection_rejected_by_state_prerequisite": true
   },
   "non_claims": [
     "Selection is local M1 MLX engineering evidence, not model capability or cross-hardware superiority.",

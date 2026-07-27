@@ -1,0 +1,119 @@
+{
+  "capability_claim": "NONE_ACCELERATION_DIAGNOSTIC_ONLY",
+  "claim_scope": "One scratch-only four-update source-conditioned FP32 eager route on the 54.8M-parameter checkpoint. This is implementation and resource evidence only, not convergence or capability.",
+  "evidence": {
+    "candidate": {
+      "path": "reports/source_target_window_candidate4_2026_07_27.json",
+      "sha256": "a6d8be62865ebff8cf49d58cdff53878928cca7e41efa36a2f1bf60510fc3ae2"
+    },
+    "candidate_resource": {
+      "path": "reports/source_target_window_candidate4_2026_07_27.host_resource_safety.json",
+      "sha256": "8082a72825399e3f33544a21bf4c9c9f59be4e3e1a18ff4e6a09b9ec920872f2"
+    },
+    "control": {
+      "path": "reports/source_target_window_control4_2026_07_27.json",
+      "sha256": "d683531f160fe34b1239a57263160b26cd74f4b8224d3009c2feea823b813bb5"
+    },
+    "control_replay": {
+      "path": "reports/source_target_window_control4_replay_2026_07_27.json",
+      "sha256": "6e2cb9d6ef6237f643a0f3def32188120beebdd7c3f86232d15aa0f8780d5e01"
+    },
+    "control_replay_resource": {
+      "path": "reports/source_target_window_control4_replay_2026_07_27.host_resource_safety.json",
+      "sha256": "c2f70b547b26d95062cec2253da149f883687642a8eb01d5bc1dad1cc7db17f8"
+    },
+    "control_resource": {
+      "path": "reports/source_target_window_control4_2026_07_27.host_resource_safety.json",
+      "sha256": "7113f7ac10240c6caa4ce0dc9b9dd36aee5c63dea1445154347dec3371976b75"
+    }
+  },
+  "gates": {
+    "candidate_beats_faster_control": true,
+    "candidate_beats_mean_control": true,
+    "candidate_model_within_frozen_tolerance": false,
+    "independent_control_replay_within_frozen_tolerance": true,
+    "loss_and_rng_authority": true,
+    "production_eligible": false,
+    "same_checkpoint_optimizer_sampler_and_cursor": true,
+    "zero_swap_growth": false
+  },
+  "next_gate": "Repair the compact tied-output/pointer backward so the exact source-conditioned model state stays inside the frozen tolerance, then repeat alternating no-swap trials. Do not migrate the production plan from this result.",
+  "numerical_authority": {
+    "batch_identity_exact": true,
+    "candidate_model": {
+      "absolute_tolerance": 5e-06,
+      "acceptance_semantics": "per_tensor_absolute_or_relative_tolerance_v1",
+      "left_only_names": [],
+      "maximum_absolute_delta": 7.489696145057678e-06,
+      "maximum_relative_l2_delta": 1.6496043482842411e-06,
+      "nonfinite_tensor_count": 0,
+      "passed": false,
+      "relative_l2_tolerance": 1e-06,
+      "right_only_names": [],
+      "shape_mismatch_names": [],
+      "tensor_names_exact": true,
+      "tolerance_mismatch_names": [
+        "layers.2.source_attention.v_proj.weight"
+      ]
+    },
+    "control_replay_model": {
+      "absolute_tolerance": 5e-06,
+      "acceptance_semantics": "per_tensor_absolute_or_relative_tolerance_v1",
+      "left_only_names": [],
+      "maximum_absolute_delta": 1.955777406692505e-07,
+      "maximum_relative_l2_delta": 6.646480208382257e-08,
+      "nonfinite_tensor_count": 0,
+      "passed": true,
+      "relative_l2_tolerance": 1e-06,
+      "right_only_names": [],
+      "shape_mismatch_names": [],
+      "tensor_names_exact": true,
+      "tolerance_mismatch_names": []
+    },
+    "final_loss_absolute_delta": 0.0,
+    "final_loss_absolute_delta_allowed": 2e-06,
+    "rng_identity_exact": true
+  },
+  "policy": "project_theseus_source_target_window_projection_qualification_v1",
+  "resource_authority": {
+    "maximum_inferred_unified_memory_mib": 2601.797,
+    "maximum_swapout_growth_mib": 328.688,
+    "minimum_reclaimable_available_mib": 2023.547,
+    "receipts_complete": true,
+    "zero_swap_growth": false
+  },
+  "scratch_state_inputs": {
+    "candidate_model": {
+      "path": "/private/tmp/theseus_target_window_candidate4_state/model.safetensors",
+      "retention": "DISPOSABLE_AFTER_COMPARISON_REPORT_PUBLICATION",
+      "sha256": "78d426aa736211ee5f25558a839961bf114f7faae3f5b75353a4c212a79e58ca"
+    },
+    "control_model": {
+      "path": "/private/tmp/theseus_target_window_control4_state/model.safetensors",
+      "retention": "DISPOSABLE_AFTER_COMPARISON_REPORT_PUBLICATION",
+      "sha256": "83f5eebf3b816843b552f10a7c0a41f16eb116df0ed44735f86270d436769fa9"
+    },
+    "control_replay_model": {
+      "path": "/private/tmp/theseus_target_window_control4_replay_state/model.safetensors",
+      "retention": "DISPOSABLE_AFTER_COMPARISON_REPORT_PUBLICATION",
+      "sha256": "239f463b795b00708ec71451582774758e6937252958cd54dcadf6457be0f37b"
+    }
+  },
+  "selection": {
+    "arbitrary_percentage_hurdle": false,
+    "candidate_selected": false,
+    "production_route_changed": false,
+    "rule": "Select only when the candidate beats both the pooled and faster control wall rates while sampler, loss, RNG, model state, and zero-swap resource authority remain green."
+  },
+  "timing": {
+    "candidate_positions_per_second": 590.485,
+    "conservative_control_over_candidate_speedup": 1.0444407103438518,
+    "control_positions_per_second": [
+      565.36,
+      560.908
+    ],
+    "mean_control_over_candidate_speedup": 1.0485692570507197,
+    "mean_control_positions_per_second": 563.134
+  },
+  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION"
+}

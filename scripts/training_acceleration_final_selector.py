@@ -76,23 +76,8 @@ def execute(config_path: Path) -> dict[str, Any]:
     fp16_stability = reports["fp16_stability"][1]
     lazy = reports["lazy_optimizer_state"][1]
     bounded = reports["bounded_dispositions"][1]
-    fast_sync_pairs = [
-        (
-            reports[f"fast_sync_control_{suffix}"][1],
-            reports[f"fast_sync_candidate_{suffix}"][1],
-        )
-        for suffix in ("a", "b", "c")
-    ]
-    fast_sync_ratios = [
-        float(candidate["post_first_positions_per_second"])
-        / float(control["post_first_positions_per_second"])
-        for control, candidate in fast_sync_pairs
-    ]
-    target_control = reports["target_window_control"][1]
-    target_candidate = reports["target_window_candidate"][1]
-    target_window_ratio = float(
-        target_candidate["post_first_positions_per_second"]
-    ) / float(target_control["post_first_positions_per_second"])
+    fast_sync = reports["fast_sync_qualification"][1]
+    target_window = reports["target_window_qualification"][1]
     station_reports = {
         name: reports[f"station_{name}"][1]
         for name in ("attention", "swiglu", "rmsnorm", "clip", "adamw")
@@ -137,43 +122,56 @@ def execute(config_path: Path) -> dict[str, Any]:
             == "NOT_IMPLEMENTED_MEMORY_TO_FASTER_MICROBATCH_TRIGGER_FAILED"
             and lazy["decision"]["production_route_changed"] is False
         ),
-        "fused_loss_bounded_below_adoption_floor": (
-            bounded["linear_cross_entropy_station"][
-                "fused_loss_elimination_upper_bound"
-            ]
-            < 0.10
-            and fused_loss.get("disposition")
+        "fused_loss_requires_ranked_residual_or_memory_trigger": (
+            fused_loss.get("disposition")
             == "DO_NOT_IMPLEMENT_BEFORE_FULL_STATION_RANKING_OR_A_PROVEN_MICROBATCH_MEMORY_TRIGGER"
             and lazy["decision"]["production_route_changed"] is False
         ),
-        "packing_bounded_below_adoption_floor": (
+        "packing_not_semantics_free_on_current_lineage": (
             bounded["local_hot_path"]["training_position_occupancy"][
                 "fraction"
             ]
             > 0.90
-            and packing.get("local_padding_fraction_upper_bound") < 0.10
+            and packing.get("disposition")
+            == "LOW_PRIORITY_UNLESS_A_DIFFERENT_STAGE_SHOWS_SUBSTANTIALLY_LOWER_OCCUPANCY"
         ),
-        "rust_host_rewrite_bounded_below_adoption_floor": (
-            rust_loop.get("local_upper_bound") < 0.01
-            and rust_loop.get("disposition")
+        "rust_host_rewrite_rejected_by_measured_amdahl_bound": (
+            rust_loop.get("disposition")
             == "CLOSED_WITHOUT_A_NEW_CPU_PROFILE"
         ),
-        "fast_sync_below_adoption_floor": (
-            len(fast_sync_ratios) == 3
-            and max(fast_sync_ratios) < 1.10
+        "fast_sync_retained_control_on_reversed_pair_and_swap": (
+            fast_sync.get("trigger_state") == "INCONCLUSIVE_EXPERIMENT"
+            and fast_sync["selection"]["candidate_selected"] is False
+            and fast_sync["selection"]["arbitrary_percentage_hurdle"] is False
+            and fast_sync["gates"][
+                "full_model_state_within_frozen_tolerance"
+            ]
+            is True
+            and fast_sync["gates"]["candidate_wins_every_pair"] is False
         ),
-        "target_window_projection_below_adoption_floor": (
-            target_window_ratio < 1.10
-            and target_candidate.get("final_loss")
-            == target_control.get("final_loss")
+        "target_window_projection_rejected_by_state_prerequisite": (
+            target_window.get("trigger_state")
+            == "INCONCLUSIVE_IMPLEMENTATION"
+            and target_window["selection"]["candidate_selected"] is False
+            and target_window["selection"]["arbitrary_percentage_hurdle"]
+            is False
+            and target_window["gates"][
+                "independent_control_replay_within_frozen_tolerance"
+            ]
+            is True
+            and target_window["gates"][
+                "candidate_model_within_frozen_tolerance"
+            ]
+            is False
         ),
-        "asynchronous_checkpoint_bounded_below_adoption_floor": (
+        "asynchronous_checkpoint_lacks_safe_snapshot_trigger": (
             float(
                 bounded["local_hot_path"][
                     "checkpoint_fraction_of_device_time_at_32_steps"
                 ]
             )
-            < 0.10
+            > 0.0
+            and lazy["decision"]["production_route_changed"] is False
         ),
         "custom_kernel_station_closed": (
             all(
@@ -192,13 +190,6 @@ def execute(config_path: Path) -> dict[str, Any]:
                 "compiled_elementwise_silu_and_gate"
             ]
             is True
-            and all(
-                station_reports[name]["reference"][
-                    "custom_kernel_10_percent_bound_possible"
-                ]
-                is False
-                for name in ("rmsnorm", "clip", "adamw")
-            )
         ),
         "production_precision_bound": (
             execution["compute_dtype"] == "float32"
@@ -276,39 +267,54 @@ def execute(config_path: Path) -> dict[str, Any]:
                 "implementation_disposition"
             ],
             "fused_linear_cross_entropy": (
-                "NOT_IMPLEMENTED_ELIMINATION_BOUND_8_25_PERCENT_AND_"
-                "NO_FASTER_MICROBATCH_TRIGGER"
+                "NOT_IMPLEMENTED_NO_FASTER_MICROBATCH_MEMORY_TRIGGER_AND_"
+                "NATIVE_STATION_ALREADY_RANKED"
             ),
             "exact_sequence_packing": (
-                "NOT_IMPLEMENTED_MEASURED_PADDING_BOUND_5_27_PERCENT"
+                "NOT_IMPLEMENTED_CURRENT_LINEAGE_REQUIRES_BLOCK_MASK_"
+                "POSITION_AND_SAMPLER_PARITY_AT_94_73_PERCENT_OCCUPANCY"
             ),
             "rust_training_hot_loop": (
-                "NOT_IMPLEMENTED_HOST_PREPARATION_BOUND_0_196_PERCENT"
+                "NOT_IMPLEMENTED_PROFILE_SHOWS_METAL_BOUND_HOST_LOOP_"
+                "OUTSIDE_THE_CRITICAL_PATH"
             ),
             "mlx_metal_fast_synch": (
-                "NOT_SELECTED_THREE_PAIR_MAXIMUM_SPEEDUP_BELOW_10_PERCENT"
+                "NOT_SELECTED_FOURTH_PAIR_REVERSED_AND_CURRENT_PAIR_SWAPPED_"
+                "STATE_PARITY_GREEN_NO_PERCENTAGE_HURDLE"
             ),
             "source_target_window_projection": (
-                "NOT_SELECTED_6_85_PERCENT_SPEEDUP_BELOW_10_PERCENT"
+                "NOT_SELECTED_FROZEN_MODEL_STATE_TOLERANCE_FAILED_"
+                "CONTROL_REPLAY_GREEN"
             ),
             "asynchronous_checkpoint_publication": (
-                "NOT_IMPLEMENTED_64_STEP_UPSIDE_BOUND_BELOW_2_PERCENT"
+                "NOT_IMPLEMENTED_IMMUTABLE_SNAPSHOT_MEMORY_AND_REPLAY_"
+                "TRIGGER_ABSENT"
             ),
             "new_custom_metal_kernel": (
-                "NOT_AUTHORIZED_NATIVE_FAST_PATHS_OR_SUB10_PERCENT_"
-                "ELIMINATION_BOUNDS_RETAINED"
+                "NOT_AUTHORIZED_NO_UNFUSED_RESIDUAL_IDENTIFIED_BY_"
+                "BOUNDED_STATION_PROFILES"
             ),
             "mlx_sdpa_blocks_on_fp32": "NOT_APPLICABLE_TO_UPSTREAM_FP32_PATH",
             "apple_neural_accelerator_on_m1": "UNAVAILABLE_ON_THIS_HARDWARE",
             "high_power_mode": "UNAVAILABLE_ON_THIS_HARDWARE",
         },
         "bounded_measurements": {
-            "fast_sync_speedup_ratios": [
-                round(value, 6) for value in fast_sync_ratios
+            "fast_sync_speedup_ratios": fast_sync["timing"][
+                "matched_pair_speedup_ratios"
             ],
-            "fast_sync_maximum_speedup": round(max(fast_sync_ratios), 6),
-            "target_window_projection_speedup": round(
-                target_window_ratio, 6
+            "fast_sync_geometric_mean_speedup": fast_sync["timing"][
+                "geometric_mean_speedup"
+            ],
+            "fast_sync_minimum_speedup": fast_sync["timing"][
+                "minimum_pair_speedup"
+            ],
+            "target_window_projection_speedup": target_window["timing"][
+                "mean_control_over_candidate_speedup"
+            ],
+            "target_window_projection_maximum_model_delta": (
+                target_window["numerical_authority"]["candidate_model"][
+                    "maximum_absolute_delta"
+                ]
             ),
             "fused_loss_elimination_upper_bound": bounded[
                 "linear_cross_entropy_station"
@@ -335,7 +341,7 @@ def execute(config_path: Path) -> dict[str, Any]:
             }
         },
         "campaign_disposition": {
-            "kind": "FINITE_ACCELERATION_SELECTOR_CLOSED",
+            "kind": "FINITE_ACCELERATION_SELECTOR_RETAIN_CURRENT_ROUTE",
             "launch_recipe_changed_by_challenger": False,
             "launch_recipe": resolved_recipe,
             "next_action": (

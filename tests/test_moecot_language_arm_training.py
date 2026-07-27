@@ -1114,6 +1114,114 @@ def test_query_chunked_encoder_decoder_matches_outputs_loss_and_gradients() -> N
     )
 
 
+def test_target_window_output_projection_preserves_loss_and_gradients() -> None:
+    import mlx.core as mx
+    import mlx.nn as nn
+    import mlx.utils as mlx_utils
+
+    model_config = CausalTransformerConfig(
+        vocab_size=64,
+        d_model=32,
+        num_layers=2,
+        num_heads=4,
+        num_kv_heads=2,
+        ff_dim=64,
+        attention_policy="encoder_decoder",
+        source_target_separator_token_id=2,
+        source_encoder_layers=1,
+        source_copy_mode="pointer_generator",
+        source_copy_auxiliary_loss_weight=0.25,
+    )
+    lookup = np.arange(64, dtype=np.int32)
+    mx.random.seed(20260727)
+    reference = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=lookup,
+    )
+    compact = build_model(
+        model_config,
+        mx=mx,
+        nn=nn,
+        source_to_target_lookup=lookup,
+        compact_output_projection=True,
+    )
+    compact.load_weights(
+        list(mlx_utils.tree_flatten(reference.parameters())), strict=True
+    )
+    inputs = mx.array(
+        [
+            [1, 11, 12, 2, 21, 22, 23, 24, 25],
+            [1, 13, 14, 15, 16, 2, 31, 32, 33],
+        ],
+        dtype=mx.int32,
+    )
+    labels = mx.array(
+        [
+            [11, 12, 2, 21, 22, 23, 24, 25, 2],
+            [13, 14, 15, 16, 2, 31, 32, 33, 2],
+        ],
+        dtype=mx.int32,
+    )
+    mask = mx.array(
+        [
+            [0, 0, 0, 0, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 1, 1, 1],
+        ],
+        dtype=mx.float32,
+    )
+    reference_loss, reference_gradients = nn.value_and_grad(
+        reference, causal_loss
+    )(
+        reference,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        source_conditioning=True,
+    )
+    compact_loss, compact_gradients = nn.value_and_grad(
+        compact, causal_loss
+    )(
+        compact,
+        inputs,
+        labels,
+        mask,
+        mx,
+        nn,
+        source_conditioning=True,
+    )
+    compact_logits, _cache = compact(
+        inputs,
+        source_conditioning=True,
+        output_position_mask=mask,
+    )
+    mx.eval(
+        reference_loss,
+        compact_loss,
+        reference_gradients,
+        compact_gradients,
+        compact_logits,
+    )
+
+    assert tuple(compact_logits.shape) == (2, 5, 64)
+    assert float(compact_loss.item()) == pytest.approx(
+        float(reference_loss.item()), abs=1e-6
+    )
+    reference_flat = dict(mlx_utils.tree_flatten(reference_gradients))
+    compact_flat = dict(mlx_utils.tree_flatten(compact_gradients))
+    assert reference_flat.keys() == compact_flat.keys()
+    for name in reference_flat:
+        np.testing.assert_allclose(
+            np.array(compact_flat[name]),
+            np.array(reference_flat[name]),
+            rtol=2e-5,
+            atol=2e-6,
+        )
+
+
 def test_text_finalizer_never_credits_unfinished_byte_span() -> None:
     text, receipt = finalize_model_text_generation(
         beams=[

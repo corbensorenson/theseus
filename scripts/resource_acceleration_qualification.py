@@ -112,6 +112,15 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--compact-output-projection",
+        action="store_true",
+        help=(
+            "Project vocabulary/pointer logits only over positions with "
+            "nonzero token-loss authority, without compacting encoder or "
+            "decoder partitions."
+        ),
+    )
+    parser.add_argument(
         "--bf16-clear-device-cache-after-step",
         action="store_true",
         help="Clear the MLX allocator cache after each BF16 optimizer update.",
@@ -294,6 +303,7 @@ def main() -> int:
             compact_encoder_decoder_partitions=(
                 args.compact_encoder_decoder_partitions
             ),
+            compact_output_projection=args.compact_output_projection,
             route_mode=args.isolated_route_mode,
         )
         write_json(resolve(args.out), report)
@@ -818,6 +828,7 @@ def run_compiled_route_entry(
     precision_mode: str,
     diagnostic_state_root: Path | None,
     compact_encoder_decoder_partitions: bool,
+    compact_output_projection: bool,
     route_mode: str,
 ) -> dict[str, Any]:
     """Measure one compiled implementation without an eager route in-process."""
@@ -893,6 +904,7 @@ def run_compiled_route_entry(
         compact_encoder_decoder_partitions=(
             compact_encoder_decoder_partitions
         ),
+        compact_output_projection=compact_output_projection,
         eager_gradient_accumulation_microbatch_size=(
             1 if route_mode == "eager" and training_phase != "pretraining" else 0
         ),
@@ -913,6 +925,7 @@ def run_compiled_route_entry(
         "compact_encoder_decoder_partitions": bool(
             compact_encoder_decoder_partitions
         ),
+        "compact_output_projection": bool(compact_output_projection),
         "route_mode": route_mode,
         "implementation_authority": (
             "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
@@ -2902,6 +2915,7 @@ def run_training_route(
     materialize_compiled_state_after_update: bool = False,
     diagnostic_state_root: Path | None = None,
     compact_encoder_decoder_partitions: bool = False,
+    compact_output_projection: bool = False,
     reject_nonfinite_gradients_override: bool | None = None,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
@@ -2946,6 +2960,7 @@ def run_training_route(
         compact_encoder_decoder_partitions=(
             compact_encoder_decoder_partitions
         ),
+        compact_output_projection=compact_output_projection,
         compact_partition_width_quantum=(
             64 if compact_encoder_decoder_partitions else 0
         ),
@@ -2962,6 +2977,7 @@ def run_training_route(
             compact_encoder_decoder_partitions=(
                 compact_encoder_decoder_partitions
             ),
+            compact_output_projection=compact_output_projection,
             compact_partition_width_quantum=(
                 64 if compact_encoder_decoder_partitions else 0
             ),
@@ -3169,6 +3185,7 @@ def run_training_route(
         "compact_encoder_decoder_partitions": bool(
             compact_encoder_decoder_partitions
         ),
+        "compact_output_projection": bool(compact_output_projection),
         "compute_parameters": tree_numeric_receipt(
             model.trainable_parameters(), mx=mx, mlx_utils=mlx_utils
         ),

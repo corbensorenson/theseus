@@ -1,0 +1,24 @@
+{
+  "policy": "project_theseus_mlx_fast_sync_qualification_config_v1",
+  "report": "reports/mlx_fast_sync_qualification_2026_07_27.json",
+  "historical_pairs": [
+    {
+      "control": "reports/resource_acceleration_fp32_materialized_normal_synch16_replay.json",
+      "candidate": "reports/resource_acceleration_fp32_materialized_fast_synch16.json"
+    },
+    {
+      "control": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair2.json",
+      "candidate": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair2.json"
+    },
+    {
+      "control": "reports/resource_acceleration_fp32_materialized_normal_synch16_pair3.json",
+      "candidate": "reports/resource_acceleration_fp32_materialized_fast_synch16_pair3.json"
+    }
+  ],
+  "current_pair": {
+    "control": "reports/mlx_fast_sync_control8_2026_07_27.json",
+    "candidate": "reports/mlx_fast_sync_candidate8_2026_07_27.json",
+    "control_resource": "reports/mlx_fast_sync_control8_2026_07_27.host_resource_safety.json",
+    "candidate_resource": "reports/mlx_fast_sync_candidate8_2026_07_27.host_resource_safety.json"
+  }
+}

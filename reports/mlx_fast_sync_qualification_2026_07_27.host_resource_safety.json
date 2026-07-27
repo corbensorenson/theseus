@@ -1,0 +1,108 @@
+{
+  "child_started": true,
+  "command": [
+    "python3",
+    "scripts/mlx_fast_sync_qualification.py",
+    "--config",
+    "configs/mlx_fast_sync_qualification_2026_07_27.json",
+    "--control-model",
+    "/private/tmp/theseus_fast_sync_control8_state/model.safetensors",
+    "--candidate-model",
+    "/private/tmp/theseus_fast_sync_candidate8_state/model.safetensors"
+  ],
+  "fault": "",
+  "fault_observation": null,
+  "first_swapout_growth_breach_observation": null,
+  "initial_reclaimable_available_mib": 5157.344,
+  "limits": {
+    "max_process_memory_mib": 6144.0,
+    "maximum_swapout_growth_mib": 512.0,
+    "maximum_wall_seconds": 180.0,
+    "minimum_available_before_launch_mib": 0.0,
+    "minimum_available_during_run_mib": 0.0,
+    "poll_interval_seconds": 0.25,
+    "swapout_growth_action": "report_only",
+    "terminate_grace_seconds": 2.0
+  },
+  "maximum_consecutive_reserve_breaches": 0,
+  "maximum_consecutive_telemetry_failures": 3,
+  "maximum_inferred_unified_memory_mib": 420.844,
+  "maximum_process_rss_mib": 0.0,
+  "maximum_swapout_growth_mib": 0.0,
+  "minimum_reclaimable_available_mib": 4736.5,
+  "observation_prefix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 1.25,
+      "process_rss_mib": 0.0,
+      "reclaimable_available_mib": 5156.094,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.266,
+      "inferred_unified_memory_mib": 359.484,
+      "process_rss_mib": 0.0,
+      "reclaimable_available_mib": 4797.859,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.531,
+      "inferred_unified_memory_mib": 420.844,
+      "process_rss_mib": 0.0,
+      "reclaimable_available_mib": 4736.5,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "observation_suffix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 1.25,
+      "process_rss_mib": 0.0,
+      "reclaimable_available_mib": 5156.094,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.266,
+      "inferred_unified_memory_mib": 359.484,
+      "process_rss_mib": 0.0,
+      "reclaimable_available_mib": 4797.859,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.531,
+      "inferred_unified_memory_mib": 420.844,
+      "process_rss_mib": 0.0,
+      "reclaimable_available_mib": 4736.5,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "passed": true,
+  "physical_memory_mib": 16384.0,
+  "policy": "project_theseus_host_resource_safety_v1",
+  "process_rss_telemetry_state": "UNAVAILABLE_PERMISSION_HOST_PRESSURE_ACTIVE",
+  "reserve_breach_observations_required": 3,
+  "returncode": 0,
+  "swapout_growth_action": "report_only",
+  "swapout_growth_breach_observations": 0,
+  "swapout_growth_threshold_exceeded": false,
+  "telemetry_failure_observations_allowed": 2,
+  "telemetry_failure_prefix": [
+    {
+      "elapsed_seconds": 0.002,
+      "fault_type": "PermissionError",
+      "source": "process_group_rss"
+    },
+    {
+      "elapsed_seconds": 0.266,
+      "fault_type": "PermissionError",
+      "source": "process_group_rss"
+    },
+    {
+      "elapsed_seconds": 0.531,
+      "fault_type": "PermissionError",
+      "source": "process_group_rss"
+    }
+  ],
+  "terminated_by_guard": false,
+  "wall_seconds": 0.787
+}
