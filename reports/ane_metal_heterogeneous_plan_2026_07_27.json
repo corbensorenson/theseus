@@ -28,7 +28,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "The exact public MLState triad cleared numerical, update, replay, and resource mechanics but ran 2.037730x slower than matched MLX. Port that exact transaction to the compile-once private IOSurface transport, remove Python/NumPy bridges, join it to the real Metal remainder, then require a matched critical-path win before checkpoint mutation."
+    "next_gate": "Both the public and native zero-copy direct q_proj triads are dispositioned. The native route removes Python/NumPy and host copies and passes full station/optimizer parity, replay, save/reload, custody, resource, and zero-swap gates, but averages 4.344-4.459 ms versus 3.582-3.624 ms for MLX. Retain MLX for direct q_proj and move to ANE activation recomputation over an independently ready Metal backward window."
   },
   "dynamic_training_path": {
     "state": "GREEN_COMPILE_ONCE_MUTABLE_WEIGHT_TRANSPORT_INCONCLUSIVE_THESEUS_SEMANTICS",
@@ -276,9 +276,55 @@
     ],
     "mechanics_green": true,
     "public_bridge_selected": false,
-    "private_zero_copy_triad_is_immediate_next": true,
+    "private_zero_copy_triad_is_immediate_next": false,
     "production_eligible": false,
     "claim_scope": "One deterministic q_proj-shaped optimizer transaction only. A losing public Python/NumPy/Core ML bridge rejects that exact bridge, not ANE training or a native IOSurface implementation."
+  },
+  "native_zero_copy_projection_triad": {
+    "state": "RED_FALLBACK_TO_QUALIFIED_MLX",
+    "disposition": "NATIVE_ZERO_COPY_TRIAD_NOT_SELECTED",
+    "shape": {
+      "rows": 2048,
+      "logical_batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 512,
+      "projection": "decoder_self_attention_q_proj"
+    },
+    "native_round_mean_milliseconds": [
+      4.344180989583333,
+      4.4592903645833335
+    ],
+    "mlx_round_mean_milliseconds": [
+      3.5823782673105597,
+      3.623635416261095
+    ],
+    "mean_speedup_mlx_over_native": 0.818542299244384,
+    "conservative_speedup_mlx_over_native": 0.8033516488996988,
+    "parity_and_mechanics_green": true,
+    "direct_q_proj_selected": false,
+    "activation_recomputation_is_immediate_next": true,
+    "resource_receipt": {
+      "passed": true,
+      "wall_seconds": 2.822,
+      "maximum_process_rss_mib": 161.453,
+      "maximum_inferred_unified_memory_mib": 253.156,
+      "minimum_reclaimable_available_mib": 3576.719,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "full_station_parity": true,
+      "native_mechanics": true,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "resource_safety": true,
+      "zero_swap_growth": true,
+      "sustained_resource_and_thermal_qualification": false,
+      "real_metal_attention_pointer_loss_remainder": false,
+      "sampler_and_objective_mass_conservation": false,
+      "independent_gate_audit": false
+    },
+    "production_eligible": false,
+    "claim_scope": "Direct q_proj offload at one exact shape only. A wall-time loss does not falsify ANE recomputation, whole-microbatch work, campaign concurrency, or inference."
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",

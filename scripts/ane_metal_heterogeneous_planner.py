@@ -359,6 +359,7 @@ def _exact_projection_triad_record(evidence: dict[str, Any]) -> dict[str, Any]:
         "private_zero_copy_triad_is_immediate_next": (
             mechanics_green
             and not public_bridge_selected
+            and not bool(evidence.get("native_zero_copy_projection_triad"))
             and gates.get("matched_joined_wall_gain_exceeds_uncertainty") is False
             and gates.get("no_intermediate_python_or_numpy_round_trip") is False
         ),
@@ -367,6 +368,95 @@ def _exact_projection_triad_record(evidence: dict[str, Any]) -> dict[str, Any]:
             "One deterministic q_proj-shaped optimizer transaction only. A losing "
             "public Python/NumPy/Core ML bridge rejects that exact bridge, not ANE "
             "training or a native IOSurface implementation."
+        ),
+    }
+
+
+def _native_zero_copy_projection_triad_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    triad = evidence.get("native_zero_copy_projection_triad") or {}
+    native_means = [
+        float(value)
+        for value in triad.get("native_round_mean_milliseconds") or []
+    ]
+    mlx_means = [
+        float(value)
+        for value in triad.get("mlx_round_mean_milliseconds") or []
+    ]
+    if triad and (
+        len(native_means) < 2
+        or len(mlx_means) < 2
+        or any(
+            not math.isfinite(value) or value <= 0
+            for value in native_means + mlx_means
+        )
+    ):
+        raise PlanningFault("native_zero_copy_round_timings_invalid")
+    mean_speedup = (
+        statistics.fmean(mlx_means) / statistics.fmean(native_means)
+        if native_means and mlx_means
+        else None
+    )
+    conservative_speedup = (
+        min(mlx_means) / max(native_means)
+        if native_means and mlx_means
+        else None
+    )
+    recorded_mean = _finite_measurement(
+        triad, "mean_speedup_mlx_over_native"
+    )
+    recorded_conservative = _finite_measurement(
+        triad, "conservative_speedup_mlx_over_native"
+    )
+    if mean_speedup is not None and (
+        not math.isclose(mean_speedup, recorded_mean or -1, rel_tol=1e-6)
+        or not math.isclose(
+            conservative_speedup,
+            recorded_conservative or -1,
+            rel_tol=1e-6,
+        )
+    ):
+        raise PlanningFault("native_zero_copy_speedup_inconsistent")
+    gates = triad.get("gates") or {}
+    custody = triad.get("custody") or {}
+    parity_mechanics_green = (
+        gates.get("full_station_parity") is True
+        and gates.get("native_mechanics") is True
+        and gates.get("resource_safety") is True
+        and gates.get("zero_swap_growth") is True
+        and custody.get("single_generation_conserved") is True
+        and custody.get("one_fp32_gradient_accumulator") is True
+        and custody.get("one_fp32_adamw_update_per_step") is True
+        and custody.get("hot_step_python_or_numpy") is False
+        and custody.get("intermediate_host_tensor_copy") is False
+    )
+    selected = (
+        parity_mechanics_green
+        and gates.get("matched_joined_wall_gain_exceeds_uncertainty") is True
+        and conservative_speedup is not None
+        and conservative_speedup > 1.0
+    )
+    return {
+        "state": triad.get("state", "NOT_MEASURED"),
+        "disposition": triad.get("disposition", "NOT_MEASURED"),
+        "shape": triad.get("shape"),
+        "native_round_mean_milliseconds": native_means,
+        "mlx_round_mean_milliseconds": mlx_means,
+        "mean_speedup_mlx_over_native": mean_speedup,
+        "conservative_speedup_mlx_over_native": conservative_speedup,
+        "parity_and_mechanics_green": parity_mechanics_green,
+        "direct_q_proj_selected": selected,
+        "activation_recomputation_is_immediate_next": (
+            parity_mechanics_green and not selected
+        ),
+        "resource_receipt": triad.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "Direct q_proj offload at one exact shape only. A wall-time loss "
+            "does not falsify ANE recomputation, whole-microbatch work, "
+            "campaign concurrency, or inference."
         ),
     }
 
@@ -442,6 +532,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     dynamic_training = _dynamic_training_record(evidence)
     three_engine = _three_engine_record(evidence)
     exact_projection_triad = _exact_projection_triad_record(evidence)
+    native_zero_copy_projection_triad = (
+        _native_zero_copy_projection_triad_record(evidence)
+    )
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -468,6 +561,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "dynamic_training_path": dynamic_training,
         "three_engine_scheduling": three_engine,
         "exact_projection_triad": exact_projection_triad,
+        "native_zero_copy_projection_triad": (
+            native_zero_copy_projection_triad
+        ),
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

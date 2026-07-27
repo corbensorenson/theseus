@@ -85,6 +85,32 @@ xcrun clang -O3 -framework Foundation -framework Accelerate \
   --single-threaded --warmup 8 --repetitions 64
 ```
 
+`ane_cpu_metal_projection_triad.m` is the integrated native transaction. Metal
+packs the current FP32 master weight and activations directly into ANE-readable
+IOSurfaces, computes station loss and `dY`, reduces and clips the gradient, and
+applies the sole FP32 AdamW update. ANE computes forward and `dX`; single-thread
+Accelerate computes FP32 `dW` directly from shared FP32 `X`/`dY` buffers while
+ANE computes `dX`. There is no Python, NumPy, or intermediate host tensor copy
+inside the native measured step. Build it with:
+
+```sh
+xcrun clang -fobjc-arc -O3 -DACCELERATE_NEW_LAPACK \
+  -framework Foundation -framework CoreVideo -framework IOSurface \
+  -framework Metal -framework Accelerate \
+  native/ane_metal/ane_cpu_metal_projection_triad.m \
+  -o /private/tmp/theseus_native_projection_triad
+```
+
+`scripts/native_ane_cpu_metal_projection_qualification.py` freezes identical
+setup tensors for the native and compiled-MLX routes, alternates two 64-update
+rounds, compares full output/`dX`/`dW` and optimizer tensors, and rejects the
+route unless its slowest round beats MLX's fastest round. The M1 receipt passes
+all registered numerical, custody, replay, save/reload, finite-state, resource,
+and zero-swap checks, but the native station averages `4.344–4.459 ms` versus
+`3.582–3.624 ms` for MLX. The exact projection offload is therefore not
+selected. This does not falsify ANE recomputation, whole-microbatch work, or
+other long-window uses that avoid this station's synchronization pattern.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

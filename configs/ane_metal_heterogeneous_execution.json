@@ -84,9 +84,9 @@
       "reason": "Independent microbatches expose the most device parallelism without inserting a synchronization boundary inside every transformer layer."
     },
     "ane_forward_dx_cpu_dw_gpu_remainder_pipeline": {
-      "scope": "immediate native zero-copy projection triad before full-model ANE data parallel",
+      "scope": "completed exact native zero-copy projection station; direct q_proj offload not selected",
       "schedule": "ANE computes projection forward and input gradients over generation-tagged IOSurfaces, single-thread Accelerate computes the corresponding FP32 weight gradients directly from the sealed generation, and Metal retains attention, output/loss, pointer, reduction, and the eventual single optimizer update. Every result is tagged with one authoritative generation.",
-      "reason": "The exact public-bridge triad cleared projection output, loss, dX, dW, update, replay, save/reload, 64-step finite, placement, and zero-swap mechanics, but averaged 10.068 ms versus 4.941 ms for matched MLX and contains mandatory Python/NumPy bridges. That exact public route is rejected. Reimplement the same transaction over the proven private IOSurface transport, preserving the successful math while removing those bridges."
+      "reason": "Both implementations are now dispositioned. The public bridge averaged 10.068 ms versus 4.941 ms for its MLX control. The native IOSurface implementation removes all hot-step Python/NumPy and intermediate host copies, passes full output/dX/dW/final-optimizer parity, 64-step finite, replay, save/reload, custody, resource, and zero-swap checks, but its guarded alternating rounds average 4.344-4.459 ms versus 3.582-3.624 ms for MLX. Direct q_proj offload is rejected at this exact shape; retain MLX and do not build a full block on top of a losing station."
     },
     "critical_path_list_scheduler": {
       "scope": "all heterogeneous training and inference candidates",
@@ -104,9 +104,9 @@
       ]
     },
     "ane_activation_recomputation": {
-      "scope": "memory-and-overlap candidate after exact block parity",
+      "scope": "immediate heterogeneous training owner after direct projection offload rejection",
       "schedule": "Recompute checkpointed forward activations on ANE while Metal executes independent backward work for a different ready station, then join only at the dependency boundary.",
-      "adoption_rule": "Select only if recomputation plus synchronization beats Metal recomputation and the released memory enables a faster sustained batch or shorter joined wall."
+      "adoption_rule": "First measure one exact decoder activation currently retained by MLX, its bytes and backward dependency window, then implement the same generation-tagged ANE recomputation over IOSurface. Select only if recomputation plus synchronization beats Metal recomputation or the released memory enables a faster sustained batch and the complete joined step wins."
     },
     "campaign_arm_parallelism": {
       "scope": "matched neural-seed candidates with independent optimizer state",
@@ -405,7 +405,7 @@
       "claim_scope": "Shape-related independent operators, not one matched optimizer step."
     },
     "exact_projection_triad": {
-      "state": "INCONCLUSIVE_IMPLEMENTATION",
+      "state": "RED_FALLBACK_TO_QUALIFIED_MLX",
       "shape": "batch4_sequence512_q_proj_512_to_512",
       "optimizer_steps": 64,
       "ane_forward_and_dx_preferred": true,
@@ -425,7 +425,32 @@
       "report": "reports/ane_cpu_metal_projection_triad_m1.json",
       "resource_report": "reports/ane_cpu_metal_projection_triad_m1.host_resource_safety.json",
       "disposition": "PUBLIC_PYTHON_NUMPY_COREML_BRIDGE_REJECTED_NATIVE_IOSURFACE_TRIAD_IMMEDIATE",
-      "claim_scope": "One deterministic q_proj-shaped optimizer transaction. This rejects only the measured public bridge; it does not falsify native zero-copy ANE training or establish a full-transformer speedup."
+      "native_zero_copy": {
+        "state": "RED_FALLBACK_TO_QUALIFIED_MLX",
+        "full_station_parity": true,
+        "save_reload_exact": true,
+        "replay_exact": true,
+        "hot_step_python_or_numpy": false,
+        "intermediate_host_tensor_copy": false,
+        "native_round_mean_milliseconds": [
+          4.344180989583333,
+          4.4592903645833335
+        ],
+        "mlx_round_mean_milliseconds": [
+          3.5823782673105597,
+          3.623635416261095
+        ],
+        "mean_speedup_mlx_over_native": 0.818542299244384,
+        "conservative_speedup_mlx_over_native": 0.8033516488996988,
+        "maximum_final_weight_delta": 0.000055738259106874466,
+        "maximum_process_rss_mib": 161.453,
+        "maximum_inferred_unified_memory_mib": 253.156,
+        "maximum_swapout_growth_mib": 0.0,
+        "report": "reports/native_ane_cpu_metal_projection_qualification_m1.json",
+        "resource_report": "reports/native_ane_cpu_metal_projection_qualification_m1.host_resource_safety.json",
+        "disposition": "DIRECT_Q_PROJ_OFFLOAD_NOT_SELECTED_ANE_RECOMPUTATION_NEXT"
+      },
+      "claim_scope": "One deterministic q_proj-shaped optimizer transaction. Both public and native direct-offload implementations lose to matched MLX. This rejects direct q_proj offload at the measured shape; it does not falsify ANE recomputation, whole-microbatch parallelism, campaign concurrency, inference, or other long-window topologies."
     },
     "host_batch_prefetch_bound": {
       "source_report": "reports/resource_acceleration_fp16_guarded64_2026_07_26.json",
@@ -436,7 +461,7 @@
       "disposition": "KEEP_BOUNDED_LOOKAHEAD_NOT_A_PRIMARY_SPEED_ROUTE"
     },
     "explicit_joint_execution_measured": true,
-    "explicit_joint_execution_disposition": "PUBLIC_TRIAD_NUMERICALLY_GREEN_BUT_2_037730X_SLOWER_NATIVE_IOSURFACE_TRIAD_IMMEDIATE",
+    "explicit_joint_execution_disposition": "NATIVE_ZERO_COPY_TRIAD_PARITY_GREEN_BUT_1_221684X_SLOWER_BY_MEAN_MLX_RETAINED_ANE_RECOMPUTATION_IMMEDIATE",
     "production_eligible": false
   },
   "public_benchmark_rows_read": 0,

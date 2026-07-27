@@ -376,6 +376,77 @@
     },
     "claim_scope": "One deterministic q_proj-shaped optimizer transaction. It is not full attention, the complete Theseus objective, convergence, utility, or capability evidence. The losing public bridge narrows the immediate implementation to the proven private IOSurface transport."
   },
+  "native_zero_copy_projection_triad": {
+    "state": "RED_FALLBACK_TO_QUALIFIED_MLX",
+    "disposition": "NATIVE_ZERO_COPY_TRIAD_NOT_SELECTED",
+    "source": "native/ane_metal/ane_cpu_metal_projection_triad.m",
+    "qualification_source": "scripts/native_ane_cpu_metal_projection_qualification.py",
+    "report": "reports/native_ane_cpu_metal_projection_qualification_m1.json",
+    "resource_report": "reports/native_ane_cpu_metal_projection_qualification_m1.host_resource_safety.json",
+    "shape": {
+      "rows": 2048,
+      "logical_batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 512,
+      "projection": "decoder_self_attention_q_proj"
+    },
+    "rounds": 2,
+    "optimizer_steps_per_round": 64,
+    "route_order": [
+      "native",
+      "mlx",
+      "mlx",
+      "native"
+    ],
+    "native_round_mean_milliseconds": [
+      4.344180989583333,
+      4.4592903645833335
+    ],
+    "mlx_round_mean_milliseconds": [
+      3.5823782673105597,
+      3.623635416261095
+    ],
+    "mean_speedup_mlx_over_native": 0.818542299244384,
+    "conservative_speedup_mlx_over_native": 0.8033516488996988,
+    "maximum_absolute_delta_by_station": {
+      "output": 0.00054931640625,
+      "input_gradient": 4.76837158203125e-7,
+      "weight_gradient": 4.323936764194514e-9,
+      "final_weight": 0.000055738259106874466,
+      "final_first_moment": 1.981906638803821e-9,
+      "final_second_moment": 2.905661822261152e-16
+    },
+    "gates": {
+      "full_station_parity": true,
+      "native_mechanics": true,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "resource_safety": true,
+      "zero_swap_growth": true,
+      "sustained_resource_and_thermal_qualification": false,
+      "real_metal_attention_pointer_loss_remainder": false,
+      "sampler_and_objective_mass_conservation": false,
+      "independent_gate_audit": false
+    },
+    "custody": {
+      "single_generation_conserved": true,
+      "one_fp32_gradient_accumulator": true,
+      "one_fp32_adamw_update_per_step": true,
+      "hot_step_python_or_numpy": false,
+      "intermediate_host_tensor_copy": false,
+      "canonical_checkpoint_mutated": false
+    },
+    "resource_receipt": {
+      "passed": true,
+      "wall_seconds": 2.822,
+      "maximum_process_rss_mib": 161.453,
+      "maximum_inferred_unified_memory_mib": 253.156,
+      "minimum_reclaimable_available_mib": 3576.719,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "next_gate": "Retain MLX for direct q_proj. Measure one exact retained decoder activation and its backward dependency window, then test generation-tagged ANE recomputation concurrent with independent Metal backward work. Whole-microbatch and matched-arm concurrency remain later long-window candidates.",
+    "claim_scope": "The exact native direct q_proj offload passes numerical, optimizer, replay, custody, and resource mechanics but loses joined wall to MLX. This is a narrow engineering exclusion for direct q_proj offload at this shape, not an architecture falsification of ANE recomputation, data parallelism, campaign concurrency, or inference."
+  },
   "three_engine_training_gates": {
     "exact_ane_forward_parity": true,
     "exact_ane_input_gradient_parity": true,
@@ -399,7 +470,7 @@
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "The exact public MLState triad cleared numerical, update, replay, and resource mechanics but ran 2.037730x slower than matched MLX. Port that exact transaction to the compile-once private IOSurface transport, remove Python/NumPy bridges, join it to the real Metal remainder, then require a matched critical-path win before checkpoint mutation."
+    "next_gate": "Both the public and native zero-copy direct q_proj triads are dispositioned. The native route removes Python/NumPy and host copies and passes full station/optimizer parity, replay, save/reload, custody, resource, and zero-swap gates, but averages 4.344-4.459 ms versus 3.582-3.624 ms for MLX. Retain MLX for direct q_proj and move to ANE activation recomputation over an independently ready Metal backward window."
   },
   "process_coexistence": {
     "state": "GREEN_MECHANICAL_OVERLAP",
@@ -462,7 +533,7 @@
   },
   "metal_control_seconds": [],
   "split_candidates": [],
-  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and both private activation-packed weights and public Core ML MLState prove mutable production-shape ANE weight transport without per-update model recompilation. The new exact q_proj triad proves ANE-preferred forward/dX, single-thread Accelerate FP32 dW, MLX/Metal loss and AdamW, one generation, one update, 64 finite steps, save/reload, exact replay, and zero swap growth. Every predeclared numerical tolerance passed, but mandatory Python/NumPy/Core ML bridges make the hybrid average 10.068 ms versus 4.941 ms for matched MLX, a 2.037730x slowdown. Reject that exact public bridge and immediately port the proven transaction to private IOSurface zero-copy transport; do not falsify ANE training from this implementation. The audited research trainer still differs in residual scaling, full-vocabulary normalization, loss masks, source encoder, cross-attention, pointer generation, batch semantics, and optimizer custody. No end-to-end speed claim is allowed yet.",
+  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and both private activation-packed weights and public Core ML MLState prove mutable production-shape ANE weight transport without per-update model recompilation. The public q_proj triad passes numerical mechanics but its Python/NumPy/Core ML bridge averages 10.068 ms versus 4.941 ms for matched MLX. The native successor removes those bridges: Metal packs generation-tagged surfaces and owns loss/reductions/clip/AdamW, ANE computes forward/dX, and single-thread Accelerate consumes shared FP32 X/dY for dW. Across two alternating 64-update rounds it passes every registered full-array station and final-optimizer tolerance, exact replay/save-reload, finite-state, custody, resource, and zero-swap checks. It still averages 4.344-4.459 ms versus 3.582-3.624 ms for MLX, so direct q_proj offload is excluded at this shape. Retain MLX and move the ANE docket to activation recomputation with a real independent Metal backward window; do not generalize this engineering result to other ANE topologies. No end-to-end speed claim is allowed yet.",
   "canonical_checkpoint_mutated": false,
   "public_benchmark_rows_read": 0,
   "external_inference_calls": 0

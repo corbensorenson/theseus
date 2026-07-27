@@ -1056,14 +1056,12 @@ order/thermal variance until sustained matched evidence says otherwise.
 
 The training implementation order is therefore:
 
-1. **Implement the exact triad over native zero-copy transport immediately.** The public
-   MLState version is now measured and rejected, not open. Preserve its proven
-   ANE-forward/`dX`, single-thread Accelerate FP32 `dW`, generation tags, one normalized and
-   clipped FP32 AdamW update, save/reload, and replay semantics while replacing every
-   Python/NumPy/Core ML boundary with the already-proven private IOSurface transport. Metal
-   retains ready attention, loss, pointer, reduction, and optimizer work. The next receipt
-   must compare output, scalar loss, `dX`, `dW`, objective mass, sampler rows, update, and
-   joined wall against the canonical MLX control.
+1. **Direct projection triad complete; retain MLX.** Both public and native zero-copy
+   implementations are measured and rejected at the exact `q_proj` station shape. The
+   native route proves ANE forward/`dX`, single-thread Accelerate FP32 `dW`, Metal
+   loss/reduction/clip/AdamW, generation tags, one update, full-array parity, save/reload,
+   replay, and zero-copy custody. It still loses matched joined wall, so do not extend this
+   station into a full block.
 2. **Schedule the dependency graph, not devices.** Maintain alternating sustained
    service-time intervals per station and use critical-path list scheduling. Dispatch a
    ready station to CPU, GPU, or ANE only when the predicted joined wall improves after
@@ -1075,7 +1073,7 @@ The training implementation order is therefore:
    [stream/async canary](https://ml-explore.github.io/mlx/build/html/usage/using_streams.html);
    do not call one model concurrently from arbitrary Python threads or add evaluation
    boundaries that serialize the lazy graph.
-4. **Test ANE recomputation.** During backward, recompute a discarded forward activation
+4. **Test ANE recomputation immediately.** During backward, recompute a discarded forward activation
    on ANE while Metal performs an independent ready gradient station. Adopt only if exact
    parity holds and either joined wall falls or released activation memory enables a faster
    sustained batch.
@@ -1110,9 +1108,9 @@ Executable evidence is in `scripts/coreml_state_weight_probe.py`,
 `scripts/mlx_fp16_projection_control.py`,
 `native/ane_metal/cpu_accelerate_dw_probe.m`,
 `scripts/cpu_gpu_ane_coexistence_probe.py`, and their bound reports. The planner disposition
-is `PUBLIC_TRIAD_REJECTED_NATIVE_ZERO_COPY_TRIAD_IMMEDIATE`.
+is `DIRECT_Q_PROJ_OFFLOAD_REJECTED_MLX_RETAINED_ANE_RECOMPUTATION_IMMEDIATE`.
 
-### 2026-07-27 Exact Projection Triad Decision And Immediate Native Route
+### 2026-07-27 Exact Projection Triad Decision And Native Result
 
 The crucial projection experiment is now complete at the exact production station shape:
 batch 4, sequence 512, `2,048 x 512` inputs, and a `512 x 512` decoder self-attention
@@ -1135,20 +1133,31 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
 
 1. `public MLState + Python/NumPy bridge` is excluded for production training at this
    station. This is a narrow implementation result, not a falsification of ANE training.
-2. The immediate owner is the **native IOSurface exact triad**: compile once, keep
-   generation-tagged FP16 activations, weights, and upstream gradients on shared surfaces,
-   run ANE forward/`dX`, read the sealed generation directly for Accelerate FP32 `dW`, and
-   let Metal execute the real dependent remainder and sole FP32 update without an
-   intermediate host tensor conversion.
-3. After exact projection parity and a joined-wall win, extend the same transaction to one
-   full decoder block and then the complete Theseus step. If it does not win, retain MLX
-   for that station and use ANE only for ready work that shortens the measured critical
-   path.
-4. Qualify ANE activation recomputation next when it can release enough Metal activation
-   memory to sustain a larger batch. Then test whole-microbatch data parallelism and
-   concurrent matched-arm execution; both use long independent work windows and avoid
-   per-layer synchronization.
-5. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+2. The native IOSurface successor is now complete. Metal packs current FP32 master weights
+   and activations directly into generation-tagged ANE surfaces, computes loss/`dY`,
+   reduction, clipping, and the sole FP32 AdamW update; single-thread Accelerate reads
+   shared FP32 `X`/`dY` directly for `dW`; ANE and Accelerate overlap on `dX`/`dW`. There is
+   no Python, NumPy, Core ML bridge, or intermediate host tensor copy in the native hot
+   step.
+3. Two alternating 64-update native/MLX rounds pass full-array output, `dX`, `dW`,
+   final-weight, and both-moment tolerances. Maximum deltas are `0.000549316`,
+   `0.000000477`, `0.00000000432`, `0.0000557383`, `0.00000000198`, and
+   `2.91e-16`. Native save/reload and replay are exact, every tensor is finite, and
+   generation custody is conserved.
+4. Direct offload is nevertheless excluded. Native round means are `4.344 ms` and
+   `4.459 ms`; MLX means are `3.582 ms` and `3.624 ms`. The mean control-over-native
+   speedup is `0.818542x` and the conservative bound is `0.803352x`, so the native route is
+   about `1.2217x` slower by the mean. The guarded run peaks at `161.453 MiB` process RSS,
+   `253.156 MiB` inferred unified memory, preserves `3,576.719 MiB` reclaimable memory, and
+   grows swap by `0.0 MiB`.
+5. Retain MLX for this station and do not build a full decoder block on top of a losing
+   primitive. The immediate owner is ANE activation recomputation: first measure the exact
+   bytes and backward dependency window of one activation retained by the canonical MLX
+   decoder, then recompute it on ANE while Metal performs independently ready backward
+   work. Select only on complete joined-step wall or a memory-enabled sustained-batch win.
+6. After recomputation, test whole-microbatch data parallelism and concurrent matched-arm
+   execution; both use long independent work windows and avoid per-layer synchronization.
+7. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.
@@ -1158,10 +1167,11 @@ window, arbitrary percentage hurdle, or requirement to keep idle hardware busy. 
 is used exactly when alternating matched evidence shows that it shortens joined wall while
 preserving numerical, sampler, objective, replay, resource, and thermal authority.
 
-The executable contract is `configs/ane_cpu_metal_projection_triad.json`; the runner is
-`scripts/ane_cpu_metal_projection_triad.py`; the hardware and resource receipts are
-`reports/ane_cpu_metal_projection_triad_m1.json` and
-`reports/ane_cpu_metal_projection_triad_m1.host_resource_safety.json`.
+The public executable contract is `configs/ane_cpu_metal_projection_triad.json`. The native
+transaction is `native/ane_metal/ane_cpu_metal_projection_triad.m`; its matched driver is
+`scripts/native_ane_cpu_metal_projection_qualification.py`; the final hardware and resource
+receipts are `reports/native_ane_cpu_metal_projection_qualification_m1.json` and
+`reports/native_ane_cpu_metal_projection_qualification_m1.host_resource_safety.json`.
 
 ### 2026-07-26 Acceleration-First Launch Gate
 

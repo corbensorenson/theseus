@@ -379,7 +379,7 @@ def test_exact_public_projection_triad_is_narrowly_rejected_and_redirected() -> 
 
     assert triad["mechanics_green"] is True
     assert triad["public_bridge_selected"] is False
-    assert triad["private_zero_copy_triad_is_immediate_next"] is True
+    assert triad["private_zero_copy_triad_is_immediate_next"] is False
     assert triad["mean_speedup_control_over_hybrid"] == pytest.approx(
         hardware["timing"]["mean_speedup_control_over_hybrid"]
     )
@@ -389,3 +389,21 @@ def test_exact_public_projection_triad_is_narrowly_rejected_and_redirected() -> 
     assert resource["passed"] is True
     assert "matched_joined_wall_gain_exceeds_uncertainty" in triad["failed_gates"]
     assert "no_intermediate_python_or_numpy_round_trip" in triad["failed_gates"]
+
+
+def test_native_zero_copy_triad_rejects_direct_offload_and_moves_to_recompute() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    native = report["native_zero_copy_projection_triad"]
+
+    assert native["parity_and_mechanics_green"] is True
+    assert native["direct_q_proj_selected"] is False
+    assert native["activation_recomputation_is_immediate_next"] is True
+    assert native["mean_speedup_mlx_over_native"] < 1.0
+    assert native["conservative_speedup_mlx_over_native"] < 1.0
+    assert native["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert native["production_eligible"] is False

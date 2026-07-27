@@ -1,0 +1,401 @@
+{
+  "build": {
+    "command": [
+      "xcrun",
+      "clang",
+      "-fobjc-arc",
+      "-O3",
+      "-DACCELERATE_NEW_LAPACK",
+      "-Wall",
+      "-Wextra",
+      "-framework",
+      "Foundation",
+      "-framework",
+      "CoreVideo",
+      "-framework",
+      "IOSurface",
+      "-framework",
+      "Metal",
+      "-framework",
+      "Accelerate",
+      "native/ane_metal/ane_cpu_metal_projection_triad.m",
+      "-o",
+      "/private/tmp/theseus_native_projection_triad"
+    ],
+    "stderr": "",
+    "wall_seconds": 0.7167562499525957
+  },
+  "canonical_checkpoint_mutated": false,
+  "claim_scope": "One deterministic production-shape q_proj station. Selection would authorize only the next real-remainder integration gate, not checkpoint mutation or a full-training speedup claim.",
+  "decision": {
+    "conservative_speedup_mlx_over_native": 0.8033516488996988,
+    "disposition": "NATIVE_ZERO_COPY_TRIAD_NOT_SELECTED",
+    "matched_joined_wall_gain_exceeds_uncertainty": false,
+    "mean_speedup_mlx_over_native": 0.818542299244384,
+    "mlx_round_mean_milliseconds": [
+      3.5823782673105597,
+      3.623635416261095
+    ],
+    "native_mechanics_green": true,
+    "native_round_mean_milliseconds": [
+      4.344180989583333,
+      4.4592903645833335
+    ],
+    "parity_green": true,
+    "selected": false
+  },
+  "disposition": "NATIVE_ZERO_COPY_TRIAD_NOT_SELECTED",
+  "external_inference_calls": 0,
+  "gates": {
+    "full_station_parity": true,
+    "independent_gate_audit": false,
+    "matched_joined_wall_gain_exceeds_uncertainty": false,
+    "native_mechanics": true,
+    "real_metal_attention_pointer_loss_remainder": false,
+    "sampler_and_objective_mass_conservation": false,
+    "sustained_resource_and_thermal_qualification": false
+  },
+  "mlx_rounds": [
+    {
+      "loss_prefix": [
+        0.00587412528693676,
+        0.0058569470420479774,
+        0.005832461640238762,
+        0.0058031706139445305,
+        0.005770569667220116,
+        0.00573557335883379,
+        0.00569887924939394,
+        0.00566105404868722
+      ],
+      "timing": {
+        "count": 64,
+        "maximum_milliseconds": 6.763791025150567,
+        "mean_milliseconds": 3.5823782673105597,
+        "median_milliseconds": 3.1226249993778765,
+        "minimum_milliseconds": 2.885584020987153,
+        "p95_milliseconds": 5.30870899092406
+      }
+    },
+    {
+      "loss_prefix": [
+        0.00587412528693676,
+        0.0058569470420479774,
+        0.005832461640238762,
+        0.0058031706139445305,
+        0.005770569667220116,
+        0.00573557335883379,
+        0.00569887924939394,
+        0.00566105404868722
+      ],
+      "timing": {
+        "count": 64,
+        "maximum_milliseconds": 5.099707981571555,
+        "mean_milliseconds": 3.623635416261095,
+        "median_milliseconds": 3.3225840015802532,
+        "minimum_milliseconds": 2.996582945343107,
+        "p95_milliseconds": 5.016749957576394
+      }
+    }
+  ],
+  "native_rounds": [
+    {
+      "custody": {
+        "canonical_checkpoint_mutated": false,
+        "hot_step_python_or_numpy": false,
+        "intermediate_host_tensor_copy": false,
+        "metal_packs_ane_surfaces": true,
+        "one_fp32_adamw_update_per_step": true,
+        "one_fp32_gradient_accumulator": true,
+        "shared_fp32_x_dy_buffers_consumed_by_accelerate": true,
+        "single_generation_conserved": true
+      },
+      "execution": {
+        "ane_compile_milliseconds": 46.464666666666666,
+        "ane_forward": "private_compile_once_dynamic_matmul",
+        "ane_input_gradient": "private_compile_once_dynamic_matmul",
+        "blas_threading": 1,
+        "cpu_weight_gradient": "single_thread_accelerate_sgemm_shared_buffers",
+        "final_generation": 64,
+        "input_source": "frozen_setup_binaries",
+        "metal_remainder": "loss_dy_reductions_clip_adamw",
+        "optimizer_steps": 64,
+        "warmup_steps": 2
+      },
+      "stability": {
+        "all_tensors_finite": true,
+        "loss_prefix": [
+          0.0058746631257236,
+          0.00585746206343174,
+          0.005832970142364502,
+          0.005803700070828199,
+          0.005771075375378132,
+          0.005736084189265966,
+          0.00569937564432621,
+          0.0056615471839904785
+        ],
+        "replay_exact": true,
+        "save_reload_exact": true
+      },
+      "timing": {
+        "station_means_milliseconds": {
+          "ane_dx": 0.46600585937499994,
+          "ane_forward": 0.504564453125,
+          "concurrent_dx_dw": 1.5401367187500001,
+          "cpu_dw": 1.5401367187500001,
+          "joined": 4.344180989583333,
+          "loss_and_pack_dx": 1.047770833333333,
+          "metal_update": 0.579287109375,
+          "pack_forward": 0.6316425781249999
+        },
+        "summaries_milliseconds": {
+          "ane_dx": {
+            "count": 64,
+            "maximum_milliseconds": 0.94225,
+            "mean_milliseconds": 0.46600585937499994,
+            "median_milliseconds": 0.44172916666666673,
+            "minimum_milliseconds": 0.4095833333333333,
+            "p95_milliseconds": 0.5577916666666666
+          },
+          "ane_forward": {
+            "count": 64,
+            "maximum_milliseconds": 0.60925,
+            "mean_milliseconds": 0.504564453125,
+            "median_milliseconds": 0.4909375,
+            "minimum_milliseconds": 0.4395,
+            "p95_milliseconds": 0.5895833333333333
+          },
+          "concurrent_dx_dw": {
+            "count": 64,
+            "maximum_milliseconds": 2.0010833333333333,
+            "mean_milliseconds": 1.5401367187500001,
+            "median_milliseconds": 1.517958333333333,
+            "minimum_milliseconds": 1.2525833333333332,
+            "p95_milliseconds": 1.93
+          },
+          "cpu_dw": {
+            "count": 64,
+            "maximum_milliseconds": 2.0010833333333333,
+            "mean_milliseconds": 1.5401367187500001,
+            "median_milliseconds": 1.517958333333333,
+            "minimum_milliseconds": 1.2525833333333332,
+            "p95_milliseconds": 1.93
+          },
+          "joined": {
+            "count": 64,
+            "maximum_milliseconds": 6.944375,
+            "mean_milliseconds": 4.344180989583333,
+            "median_milliseconds": 3.865666666666667,
+            "minimum_milliseconds": 3.245625,
+            "p95_milliseconds": 6.365083333333333
+          },
+          "loss_and_pack_dx": {
+            "count": 64,
+            "maximum_milliseconds": 3.4561666666666664,
+            "mean_milliseconds": 1.047770833333333,
+            "median_milliseconds": 0.8249791666666666,
+            "minimum_milliseconds": 0.67025,
+            "p95_milliseconds": 3.2345416666666664
+          },
+          "metal_update": {
+            "count": 64,
+            "maximum_milliseconds": 3.1097916666666667,
+            "mean_milliseconds": 0.579287109375,
+            "median_milliseconds": 0.46929166666666666,
+            "minimum_milliseconds": 0.342,
+            "p95_milliseconds": 1.2912916666666667
+          },
+          "pack_forward": {
+            "count": 64,
+            "maximum_milliseconds": 3.1200416666666664,
+            "mean_milliseconds": 0.6316425781249999,
+            "median_milliseconds": 0.39620833333333333,
+            "minimum_milliseconds": 0.298875,
+            "p95_milliseconds": 2.6987916666666667
+          }
+        }
+      }
+    },
+    {
+      "custody": {
+        "canonical_checkpoint_mutated": false,
+        "hot_step_python_or_numpy": false,
+        "intermediate_host_tensor_copy": false,
+        "metal_packs_ane_surfaces": true,
+        "one_fp32_adamw_update_per_step": true,
+        "one_fp32_gradient_accumulator": true,
+        "shared_fp32_x_dy_buffers_consumed_by_accelerate": true,
+        "single_generation_conserved": true
+      },
+      "execution": {
+        "ane_compile_milliseconds": 55.761291666666665,
+        "ane_forward": "private_compile_once_dynamic_matmul",
+        "ane_input_gradient": "private_compile_once_dynamic_matmul",
+        "blas_threading": 1,
+        "cpu_weight_gradient": "single_thread_accelerate_sgemm_shared_buffers",
+        "final_generation": 64,
+        "input_source": "frozen_setup_binaries",
+        "metal_remainder": "loss_dy_reductions_clip_adamw",
+        "optimizer_steps": 64,
+        "warmup_steps": 2
+      },
+      "stability": {
+        "all_tensors_finite": true,
+        "loss_prefix": [
+          0.0058746631257236,
+          0.00585746206343174,
+          0.005832970142364502,
+          0.005803700070828199,
+          0.005771075375378132,
+          0.005736084189265966,
+          0.00569937564432621,
+          0.0056615471839904785
+        ],
+        "replay_exact": true,
+        "save_reload_exact": true
+      },
+      "timing": {
+        "station_means_milliseconds": {
+          "ane_dx": 0.44870312499999987,
+          "ane_forward": 0.48844791666666676,
+          "concurrent_dx_dw": 1.713246093750001,
+          "cpu_dw": 1.713246093750001,
+          "joined": 4.4592903645833335,
+          "loss_and_pack_dx": 0.9340377604166664,
+          "metal_update": 0.6724355468750001,
+          "pack_forward": 0.6130481770833334
+        },
+        "summaries_milliseconds": {
+          "ane_dx": {
+            "count": 64,
+            "maximum_milliseconds": 0.6736666666666666,
+            "mean_milliseconds": 0.44870312499999987,
+            "median_milliseconds": 0.42893749999999997,
+            "minimum_milliseconds": 0.4021666666666667,
+            "p95_milliseconds": 0.5512916666666666
+          },
+          "ane_forward": {
+            "count": 64,
+            "maximum_milliseconds": 0.5770833333333334,
+            "mean_milliseconds": 0.48844791666666676,
+            "median_milliseconds": 0.47941666666666666,
+            "minimum_milliseconds": 0.43695833333333334,
+            "p95_milliseconds": 0.5513333333333333
+          },
+          "concurrent_dx_dw": {
+            "count": 64,
+            "maximum_milliseconds": 2.4369166666666664,
+            "mean_milliseconds": 1.713246093750001,
+            "median_milliseconds": 1.6145833333333335,
+            "minimum_milliseconds": 1.4178333333333333,
+            "p95_milliseconds": 2.2188333333333334
+          },
+          "cpu_dw": {
+            "count": 64,
+            "maximum_milliseconds": 2.4369166666666664,
+            "mean_milliseconds": 1.713246093750001,
+            "median_milliseconds": 1.6145833333333335,
+            "minimum_milliseconds": 1.4178333333333333,
+            "p95_milliseconds": 2.2188333333333334
+          },
+          "joined": {
+            "count": 64,
+            "maximum_milliseconds": 7.269291666666667,
+            "mean_milliseconds": 4.4592903645833335,
+            "median_milliseconds": 3.9624791666666668,
+            "minimum_milliseconds": 3.5203333333333333,
+            "p95_milliseconds": 6.766791666666667
+          },
+          "loss_and_pack_dx": {
+            "count": 64,
+            "maximum_milliseconds": 3.4692083333333334,
+            "mean_milliseconds": 0.9340377604166664,
+            "median_milliseconds": 0.8262083333333334,
+            "minimum_milliseconds": 0.6644166666666667,
+            "p95_milliseconds": 2.1288333333333336
+          },
+          "metal_update": {
+            "count": 64,
+            "maximum_milliseconds": 2.9160416666666666,
+            "mean_milliseconds": 0.6724355468750001,
+            "median_milliseconds": 0.5040208333333334,
+            "minimum_milliseconds": 0.36775,
+            "p95_milliseconds": 1.7845416666666667
+          },
+          "pack_forward": {
+            "count": 64,
+            "maximum_milliseconds": 3.05625,
+            "mean_milliseconds": 0.6130481770833334,
+            "median_milliseconds": 0.38287499999999997,
+            "minimum_milliseconds": 0.3192916666666667,
+            "p95_milliseconds": 2.6832916666666664
+          }
+        }
+      }
+    }
+  ],
+  "optimizer_steps_per_round": 64,
+  "parity": {
+    "final_first_moment": {
+      "element_count": 262144,
+      "maximum_absolute_delta": 1.981906638803821e-09,
+      "mismatch_count": 0,
+      "rmse": 2.2644856956901e-10,
+      "tolerance": 0.0001
+    },
+    "final_second_moment": {
+      "element_count": 262144,
+      "maximum_absolute_delta": 2.905661822261152e-16,
+      "mismatch_count": 0,
+      "rmse": 2.208985563038e-17,
+      "tolerance": 0.0001
+    },
+    "final_weight": {
+      "element_count": 262144,
+      "maximum_absolute_delta": 5.5738259106874466e-05,
+      "mismatch_count": 0,
+      "rmse": 2.3662655440148007e-06,
+      "tolerance": 0.0001
+    },
+    "input_gradient": {
+      "element_count": 1048576,
+      "maximum_absolute_delta": 4.76837158203125e-07,
+      "mismatch_count": 0,
+      "rmse": 9.689489980171254e-08,
+      "tolerance": 0.001
+    },
+    "output": {
+      "element_count": 1048576,
+      "maximum_absolute_delta": 0.00054931640625,
+      "mismatch_count": 0,
+      "rmse": 0.00011067558426842054,
+      "tolerance": 0.001
+    },
+    "weight_gradient": {
+      "element_count": 262144,
+      "maximum_absolute_delta": 4.323936764194514e-09,
+      "mismatch_count": 0,
+      "rmse": 6.124052100969299e-10,
+      "tolerance": 0.01
+    }
+  },
+  "policy": "project_theseus_native_ane_cpu_metal_projection_qualification_v1",
+  "production_eligible": false,
+  "public_benchmark_rows_read": 0,
+  "rounds": 2,
+  "route_order": [
+    "native",
+    "mlx",
+    "mlx",
+    "native"
+  ],
+  "shape": {
+    "input_channels": 512,
+    "logical_batch": 4,
+    "output_channels": 512,
+    "projection": "decoder_self_attention_q_proj",
+    "rows": 2048,
+    "sequence": 512
+  },
+  "trigger_state": "RED_FALLBACK_TO_QUALIFIED_MLX",
+  "warmup_steps_per_round": 2
+}
