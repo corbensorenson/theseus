@@ -1,0 +1,38 @@
+diff --git a/training/training_dynamic/mil_dynamic.h b/training/training_dynamic/mil_dynamic.h
+index 854fa8e..c4fb061 100644
+--- a/training/training_dynamic/mil_dynamic.h
++++ b/training/training_dynamic/mil_dynamic.h
+@@ -170,10 +170,23 @@ static NSString *gen_sdpa_fwd_dynamic(void) {
+-    // GQA: tile K,V from KV_HEADS to HEADS
+-    [m appendString:@"        int32 cax = const()[name=string(\"cax\"), val=int32(1)];\n"];
+-    [m appendString:@"        bool cid = const()[name=string(\"cid\"), val=bool(false)];\n"];
+-    // For GQA_RATIO=2: concat(k_rope, k_rope) along head dim
+-    NSMutableString *k_vals = [NSMutableString string];
+-    NSMutableString *v_vals = [NSMutableString string];
+-    for (int r = 0; r < GQA_RATIO; r++) {
+-        if (r > 0) { [k_vals appendString:@","]; [v_vals appendString:@","]; }
+-        [k_vals appendString:@"k_rope"]; [v_vals appendString:@"v"];
+-    }
++    // GQA: repeat each K/V head contiguously for its query-head group.
++    // Repeating the entire tensor would produce
++    // [kv0,kv1,kv0,kv1,...], while grouped-query attention requires
++    // [kv0,kv0,...,kv1,kv1,...].  The backward reducer uses this grouped
++    // ordering too, so forward must preserve the same mapping.
++    [m appendString:@"        int32 cax = const()[name=string(\"cax\"), val=int32(1)];\n"];
++    [m appendString:@"        bool cid = const()[name=string(\"cid\"), val=bool(false)];\n"];
++    NSMutableString *k_vals = [NSMutableString string];
++    NSMutableString *v_vals = [NSMutableString string];
++    [m appendFormat:@"        tensor<int32, [4]> gqa_sz = const()[name=string(\"gqa_sz\"), val=tensor<int32, [4]>([1,1,%d,%d])];\n", SEQ, HD];
++    for (int kv = 0; kv < KV_HEADS; kv++) {
++        [m appendFormat:@"        tensor<int32, [4]> gqa_b%d = const()[name=string(\"gqa_b%d\"), val=tensor<int32, [4]>([0,%d,0,0])];\n", kv, kv, kv];
++        [m appendFormat:@"        tensor<fp16, [1,1,%d,%d]> gqa_k%d = slice_by_size(x=k_rope,begin=gqa_b%d,size=gqa_sz)[name=string(\"gqa_k%d\")];\n", SEQ, HD, kv, kv, kv];
++        [m appendFormat:@"        tensor<fp16, [1,1,%d,%d]> gqa_v%d = slice_by_size(x=v,begin=gqa_b%d,size=gqa_sz)[name=string(\"gqa_v%d\")];\n", SEQ, HD, kv, kv, kv];
++        for (int r = 0; r < GQA_RATIO; r++) {
++            if (kv > 0 || r > 0) {
++                [k_vals appendString:@","];
++                [v_vals appendString:@","];
++            }
++            [k_vals appendFormat:@"gqa_k%d", kv];
++            [v_vals appendFormat:@"gqa_v%d", kv];
++        }
++    }

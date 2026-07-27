@@ -898,6 +898,121 @@ Static-weight inference remains eligible. Training re-enters only with a dynamic
 persistent ANE weight path—or another exact-generation implementation whose production-shape
 joined wall beats MLX.
 
+### 2026-07-27 Compile-Once Dynamic ANE Training Reopening
+
+The dynamic-weight wall above is now narrower. The audited `maderix/ANE`
+`training_dynamic` path does not bake weights into the program: it packs current FP16
+weights beside activations in IOSurface inputs and feeds both to shape-specific dynamic
+matmuls. Ten kernels compile once and can be reused across weight generations. The tiny
+generic `64x64` program still fails on this M1, while the full width-512, depth-12, GQA,
+sequence-128 and sequence-512 topology compiles and steps. ANE compilation is
+shape-sensitive; the earlier tiny failure never justified a global dynamic-weight
+exclusion.
+
+The production-shaped decoder control is encouraging mechanics evidence:
+
+- sequence 128 reaches `80.3 ms` per 128-position microstep;
+- two 96-microstep sequence-512 repeats reach `222.8 ms` and `197.8 ms` per microstep;
+- guarded peak process memory is at most `1,300.234 MiB` with zero swap growth;
+- a corrected 2-KV-head to 8-query-head expansion is bit-exact over `262,144` FP16
+  elements, and the corrected short decoder replay reaches `199.7 ms` per 512 positions;
+- the production 8-head, sequence-512, head-dimension-64 split-half RoPE kernel compiles
+  and has zero errors above `0.001` over `262,144` elements against an independent FP16
+  reference (`9.765625e-4` maximum delta);
+- a two-round dynamic ANE plus full-model MLX process test has `1.571077x` overlap versus
+  the serial wall sum. Its unmatched aggregate work rate is `4,431.352` positions/s,
+  `1.451465x` the standalone MLX mean.
+
+The last number is an opportunity ceiling, not a training speedup. The MLX side computes
+the full 54.8M encoder-decoder-pointer model while the ANE side computes a 38.3M
+decoder-only research control with different FP16 math, data, batch, loss, and optimizer.
+Do not use it to shorten a campaign estimate yet.
+
+The audited trainer also contains correctness differences that must not be imported:
+
+1. Its original GQA forward alternates KV heads across query heads, while its backward
+   assumes contiguous query-head groups. Preserve the verified repair in
+   `native/ane_metal/patches/maderix_dynamic_gqa_grouping.patch`, then prove the complete
+   attention forward and backward.
+2. Its RoPE rotates adjacent pairs; Theseus uses split-half `traditional=false` RoPE.
+3. It scales each residual branch by `1/sqrt(2L)`; Theseus uses an unscaled residual add.
+4. It removes vocabulary items absent from the local token file before softmax. That
+   changes the denominator, loss, and gradients; Theseus requires the full-vocabulary
+   tied output and pointer mixture.
+5. It trains every next-token position in a decoder-only stream. Theseus requires the
+   exact loss mask, two-layer source encoder, per-layer cross-attention, pointer generator,
+   source-copy auxiliary mass, and every enabled objective.
+6. It uses batch one and a separate CPU Adam state. Theseus requires sampler-exact batch
+   conservation and one authoritative FP32 AdamW update.
+
+Work the training-first implementation in this order:
+
+1. **Port the transport, not the neighboring model.** Own a minimal native
+   Objective-C++/Metal backend at the audited source identity, keep private APIs fail-closed,
+   retain the MIT notice, bind generated MIL digests, and keep one process alive across
+   segments to amortize the observed `0.688-19.681 s` compile variance. Rust may own
+   orchestration and receipts, but moving Python control code to Rust is not itself a tensor
+   speedup; activations, weights, and gradients may not round-trip through Python or NumPy
+   inside the measured step. In parallel, run one bounded public challenger: express compute
+   weights as [Core ML state](https://developer.apple.com/documentation/coreml/mlstate),
+   mutate the state between generations, and inspect whether the matmul remains ANE-resident
+   without recompilation. Core ML state does not provide general transformer backward, so
+   this route is useful only if ANE forward plus Metal backward wins joined wall.
+2. **Close one exact decoder block before scaling depth.** The isolated split-half RoPE
+   output gate is now GREEN. Integrate it with unscaled residuals, corrected GQA, RMSNorm,
+   SwiGLU, full-vocabulary tied output, loss masking, and backward. Compare deterministic
+   FP32-reference and FP16-compute outputs,
+   scalar loss, every input gradient, and every parameter gradient, including weak-tail and
+   overflow diagnostics.
+3. **Complete the actual model.** Add the two source-encoder layers, masked source
+   attention, all 12 decoder cross-attention modules, compact-partition access semantics,
+   pointer scatter/log-mixture, copy gate, and registered auxiliary terms. Parameter names,
+   shapes, ownership, objective mass, and sampler cursor must match the canonical MLX model.
+4. **Prefer synchronous heterogeneous data parallel.** Split each existing batch into
+   disjoint sampler-exact microbatch shards. ANE and MLX/Metal read the same sealed FP32
+   master generation, produce gradient contributions tagged with that generation and
+   objective mass, accumulate in FP32, normalize once over total authority mass, clip once,
+   and publish one AdamW update. No device owns a private optimizer and no microbatch may
+   use stale weights. This gives both devices long independent work windows without a
+   per-layer join.
+5. **Test an ANE-forward/input-gradient plus Metal-weight-gradient pipeline.** The research
+   path already overlaps ANE with CPU BLAS dW. Put activations and upstream gradients in
+   IOSurfaces, let ANE compute forward and dX while Metal computes dW and the output,
+   pointer, reduction, and optimizer stations. This is the preferred intra-step split if
+   full-model ANE data parallel is not yet faster. Keep the earlier physical wide-concat
+   design excluded.
+6. **Recover the production batch shape.** Test a real MIL batch dimension first. If the
+   M1 compiler rejects it, dispatch independent batch-one requests over multiple in-flight
+   surface rings and reduce gradients once. Do not concatenate sequences behind a
+   block-diagonal attention mask unless measured: it creates quadratic masked attention
+   waste and changes position/reset handling.
+7. **Qualify a numerical route, not an exact FP32 trajectory fiction.** ANE compute is
+   FP16. Derive it from FP32 master weights, use dynamic loss scaling and overflow replay,
+   and compare against the canonical start through deterministic update, save/reload,
+   64-step stability, multiple seeds, heldout loss, weak-tail behavior, memory, energy, and
+   sustained thermals. A changed compute trajectory requires an explicit migration receipt;
+   it cannot be labeled byte-identical continuation. Measure activation ranges before
+   changing the function. If FP16 residual overflow appears, test an algebraically paired
+   weight/residual reparameterization before runtime clipping, and require forward,
+   backward, optimizer, checkpoint, and heldout equivalence.
+8. **Select only joined wall and time-to-quality.** Measure equal sampler rows, useful
+   positions, objective mass, optimizer work, checkpoint/evaluation work, and host
+   conditions. Promote the fastest semantics-qualified route when its repeat interval beats
+   the control outside uncertainty. No time-of-day gate or arbitrary percentage floor
+   applies.
+
+Inference follows the trained checkpoint. First measure public Core ML
+`MLComputeUnits.all` and inspect placement. Then reuse the qualified ANE layouts for prefill
+and stateful decode, with IOSurface ping-pong/ring buffers and serial submission per state.
+Test in-model argmax or top-k so full-vocabulary logits do not cross the ANE boundary, and
+overlap Metal sampling or independent work only when joined latency and energy improve.
+These ideas are informed by [ANEMLL](https://github.com/anemll/anemll), but its inference
+results do not qualify Theseus training.
+
+The durable evidence owner is `configs/ane_metal_m1_evidence_2026_07_27.json`; the
+fail-closed planner is `scripts/ane_metal_heterogeneous_planner.py`. Current disposition is
+`INCONCLUSIVE_IMPLEMENTATION_DYNAMIC_WEIGHT_TRANSPORT_GREEN_THESEUS_SEMANTICS_OPEN`.
+
 ### 2026-07-26 Acceleration-First Launch Gate
 
 The final bounded KERC exposure rung and first-campaign disposition are banked. Training

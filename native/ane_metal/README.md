@@ -52,6 +52,25 @@ until compilation is repeatable on the exact OS/chip, the same IOSurface
 generation is consumed without a host copy, and output/loss/gradient/replay
 parity passes. A Python thread around a copied NumPy array is not this bridge.
 
+`patches/maderix_dynamic_gqa_grouping.patch` preserves the exact repair used in
+the M1 dynamic-training audit. Upstream repeated the whole KV-head tensor,
+producing alternating KV ownership for GQA; the patch repeats each KV head
+contiguously for its query-head group. The isolated 2-KV-to-8-query-head probe
+was bit-exact over 262,144 FP16 elements. This is not complete attention,
+loss, or gradient parity.
+
+`ane_split_half_rope_probe.m` proves that the production 8-head, sequence-512,
+head-dimension-64 split-half RoPE formula used by Theseus compiles on this M1
+and matches an independent FP16 reference. Build and run it with:
+
+```sh
+xcrun clang -fobjc-arc -O2 \
+  -framework Foundation -framework IOSurface \
+  native/ane_metal/ane_split_half_rope_probe.m \
+  -o /private/tmp/theseus_ane_split_half_rope
+/private/tmp/theseus_ane_split_half_rope
+```
+
 Prior art was inspected, not vendored:
 
 - `maderix/ANE` at `d91c9845c0784dec7753048954fc6d0e8411fe29`

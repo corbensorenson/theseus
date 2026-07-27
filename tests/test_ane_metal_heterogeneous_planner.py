@@ -35,6 +35,9 @@ def test_config_defaults_disabled_and_covers_full_split_sweep() -> None:
     assert config["split_ratios"][0] == 0.0
     assert config["split_ratios"][-1] == 1.0
     assert config["fallback"]["timing"] == "before_checkpoint_mutation"
+    assert set(config["dynamic_training_qualification_gates"]) == set(
+        planner.DYNAMIC_SEMANTIC_GATES
+    )
 
 
 def test_unstable_compiler_blocks_even_fast_candidate() -> None:
@@ -170,6 +173,104 @@ def test_current_m1_evidence_routes_past_visibility_to_persistent_partition() ->
         == "GREEN_CONCURRENT_SHARED_READ_VISIBILITY"
     )
     assert "zero_copy_same_surface_visibility" not in report["blockers"]
-    assert "structure_aligned_persistent_partition_candidate" in report["blockers"]
-    assert "dynamic_or_persistent_training_weight_update_path" in report["blockers"]
+    assert (
+        report["dynamic_training_path"]["compile_once_mutable_weight_transport"]
+        is True
+    )
+    assert "dynamic_or_persistent_training_weight_update_path" not in report["blockers"]
+    assert "split_half_rope_parity" not in report["blockers"]
+    assert (
+        report["dynamic_training_path"]["split_half_rope_probe"]["state"]
+        == "GREEN_OPERATOR_PARITY"
+    )
+    assert "unscaled_residual_parity" in report["blockers"]
+    assert "full_vocabulary_softmax_parity" in report["blockers"]
+    assert (
+        "optional_structure_aligned_partition_after_dynamic_route_disposition"
+        in report["blockers"]
+    )
     assert report["checkpoint_mutation_authorized"] is False
+
+
+def test_dynamic_coexistence_is_reported_only_as_unmatched_mechanics_ceiling() -> None:
+    evidence = {
+        "shape_id": "theseus_width512_decoder_control",
+        "compiler_attempts": [{"compiled": True}, {"compiled": True}],
+        "dynamic_training_path": {
+            "state": "GREEN_TRANSPORT_INCONCLUSIVE_SEMANTICS",
+            "compile_once_mutable_weight_transport": True,
+            "semantic_gates": {
+                gate: False for gate in planner.DYNAMIC_SEMANTIC_GATES
+            },
+            "process_coexistence": {
+                "actual_process_overlap_observed": True,
+                "mlx_standalone_positions_per_second": [2820.379, 3285.661],
+                "mlx_concurrent_positions_per_second": [2332.88, 2410.994],
+                "ane_standalone_positions_per_second": [2298.025, 2588.473],
+                "ane_concurrent_positions_per_second": [1968.474, 2150.357],
+            },
+        },
+    }
+
+    report = planner.plan(load_config(), evidence)
+    dynamic = report["dynamic_training_path"]
+
+    assert dynamic["production_eligible"] is False
+    assert (
+        dynamic["coexistence"]["unmatched_combined_vs_mlx_mechanics_ceiling"]
+        == pytest.approx(1.451465, rel=1e-5)
+    )
+    assert "not an end-to-end training speedup" in dynamic["coexistence"]["claim_scope"]
+
+
+def test_dynamic_route_cannot_select_without_every_semantic_gate() -> None:
+    semantic_gates = {gate: True for gate in planner.DYNAMIC_SEMANTIC_GATES}
+    semantic_gates["pointer_generator_parity"] = False
+    evidence = {
+        "shape_id": "theseus_width512_decoder_control",
+        "compiler_attempts": [{"compiled": True}, {"compiled": True}],
+        "dynamic_training_path": {
+            "state": "GREEN_TRANSPORT_INCONCLUSIVE_SEMANTICS",
+            "compile_once_mutable_weight_transport": True,
+            "semantic_gates": semantic_gates,
+            "process_coexistence": {
+                "actual_process_overlap_observed": True,
+                "mlx_standalone_positions_per_second": [3000.0, 3000.0],
+                "mlx_concurrent_positions_per_second": [2400.0, 2400.0],
+                "ane_standalone_positions_per_second": [2500.0, 2500.0],
+                "ane_concurrent_positions_per_second": [2100.0, 2100.0],
+            },
+        },
+    }
+
+    report = planner.plan(load_config(), evidence)
+
+    assert report["dynamic_training_path"]["production_eligible"] is False
+    assert report["dynamic_training_path"]["failed_semantic_gates"] == [
+        "pointer_generator_parity"
+    ]
+    assert "pointer_generator_parity" in report["blockers"]
+
+
+def test_checked_in_rope_probe_and_receipt_bind_the_green_operator_gate() -> None:
+    source = ROOT / "native/ane_metal/ane_split_half_rope_probe.m"
+    receipt = json.loads(
+        (ROOT / "reports/ane_split_half_rope_m1.json").read_text(encoding="utf-8")
+    )
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    dynamic = evidence["dynamic_training_path"]
+
+    assert source.is_file()
+    assert "#define HEADS 8" in source.read_text(encoding="utf-8")
+    assert "#define SEQUENCE 512" in source.read_text(encoding="utf-8")
+    assert receipt["trigger_state"] == "GREEN_OPERATOR_PARITY"
+    assert receipt["mismatch_count"] == 0
+    assert receipt["maximum_absolute_delta"] <= receipt["tolerance"]
+    assert dynamic["semantic_gates"]["split_half_rope_parity"] is True
+    assert dynamic["split_half_rope_probe"]["report"] == (
+        "reports/ane_split_half_rope_m1.json"
+    )

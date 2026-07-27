@@ -7,7 +7,7 @@
     "success_count": 4,
     "failure_count": 0,
     "repeatable": true,
-    "state": "M1_STATIC_BAKED_COMPILER_REPEATABLE"
+    "state": "M1_STATIC_AND_DYNAMIC_SHAPED_COMPILER_REPEATABLE"
   },
   "incompatible_mil_attempts": [
     {
@@ -24,11 +24,89 @@
     }
   ],
   "weight_update_path": {
-    "state": "BAKED_WEIGHT_RECOMPILE_NOT_SELECTED_CURRENT_M1",
+    "state": "DYNAMIC_ACTIVATION_PACKED_WEIGHT_TRANSPORT_GREEN_SEMANTICS_OPEN",
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Implement a dynamic or persistent ANE weight path with exact generation custody, or retain ANE for static inference."
+    "next_gate": "Implement exact Theseus semantics over the compile-once dynamic transport, then join ANE and Metal gradients into one authoritative FP32 update."
+  },
+  "dynamic_training_path": {
+    "state": "GREEN_COMPILE_ONCE_MUTABLE_WEIGHT_TRANSPORT_INCONCLUSIVE_THESEUS_SEMANTICS",
+    "compile_once_mutable_weight_transport": true,
+    "gqa_grouping_probe": {
+      "state": "GREEN_BIT_EXACT_FOR_CORRECTED_HEAD_EXPANSION_ONLY",
+      "upstream_fault": "Repeating the full two-KV-head tensor yields alternating KV-head ownership, while grouped-query attention requires four contiguous query heads per KV head. Upstream backward already assumes the grouped order.",
+      "kv_heads": 2,
+      "query_heads": 8,
+      "head_dim": 64,
+      "sequence": 512,
+      "elements": 262144,
+      "bit_mismatch_count": 0,
+      "maximum_absolute_delta": 0.0,
+      "claim_boundary": "This proves only head expansion. Complete attention forward/loss/gradient parity remains open."
+    },
+    "split_half_rope_probe": {
+      "state": "GREEN_OPERATOR_PARITY",
+      "source": "native/ane_metal/ane_split_half_rope_probe.m",
+      "report": "reports/ane_split_half_rope_m1.json",
+      "heads": 8,
+      "sequence": 512,
+      "head_dim": 64,
+      "elements": 262144,
+      "tolerance": 0.001,
+      "mismatch_count": 0,
+      "maximum_absolute_delta": 0.0009765625,
+      "rmse": 0.000125502812,
+      "claim_boundary": "This proves production-shape split-half RoPE output only. Attention and backward parity remain open."
+    },
+    "semantic_gates": {
+      "gqa_forward_backward_parity": false,
+      "split_half_rope_parity": true,
+      "unscaled_residual_parity": false,
+      "full_vocabulary_softmax_parity": false,
+      "loss_mask_and_objective_mass_parity": false,
+      "source_encoder_parity": false,
+      "decoder_cross_attention_parity": false,
+      "pointer_generator_parity": false,
+      "auxiliary_objective_parity": false,
+      "fp32_master_loss_scaling_stability": false,
+      "single_synchronized_optimizer_update": false,
+      "sampler_partition_conservation": false,
+      "save_reload_replay": false,
+      "production_batch_shape": false,
+      "sustained_resource_and_thermal_qualification": false,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "independent_gate_audit": false
+    },
+    "failed_semantic_gates": [
+      "gqa_forward_backward_parity",
+      "unscaled_residual_parity",
+      "full_vocabulary_softmax_parity",
+      "loss_mask_and_objective_mass_parity",
+      "source_encoder_parity",
+      "decoder_cross_attention_parity",
+      "pointer_generator_parity",
+      "auxiliary_objective_parity",
+      "fp32_master_loss_scaling_stability",
+      "single_synchronized_optimizer_update",
+      "sampler_partition_conservation",
+      "save_reload_replay",
+      "production_batch_shape",
+      "sustained_resource_and_thermal_qualification",
+      "matched_joined_wall_gain_exceeds_uncertainty",
+      "independent_gate_audit"
+    ],
+    "coexistence": {
+      "actual_process_overlap_observed": true,
+      "mlx_standalone_mean_positions_per_second": 3053.02,
+      "mlx_concurrent_mean_positions_per_second": 2371.937,
+      "ane_standalone_mean_positions_per_second": 2443.249,
+      "ane_concurrent_mean_positions_per_second": 2059.4155,
+      "combined_concurrent_mechanics_positions_per_second": 4431.3525,
+      "unmatched_combined_vs_mlx_mechanics_ceiling": 1.4514652704535183,
+      "claim_scope": "The workloads are not yet semantically or computationally matched. This is a coexistence ceiling, not an end-to-end training speedup."
+    },
+    "production_eligible": false
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
@@ -54,8 +132,23 @@
   "candidates": [],
   "selected": null,
   "blockers": [
-    "structure_aligned_persistent_partition_candidate",
-    "mlx_lazy_graph_integration",
-    "dynamic_or_persistent_training_weight_update_path"
+    "gqa_forward_backward_parity",
+    "unscaled_residual_parity",
+    "full_vocabulary_softmax_parity",
+    "loss_mask_and_objective_mass_parity",
+    "source_encoder_parity",
+    "decoder_cross_attention_parity",
+    "pointer_generator_parity",
+    "auxiliary_objective_parity",
+    "fp32_master_loss_scaling_stability",
+    "single_synchronized_optimizer_update",
+    "sampler_partition_conservation",
+    "save_reload_replay",
+    "production_batch_shape",
+    "sustained_resource_and_thermal_qualification",
+    "matched_joined_wall_gain_exceeds_uncertainty",
+    "independent_gate_audit",
+    "mlx_lazy_graph_or_native_metal_gradient_integration",
+    "optional_structure_aligned_partition_after_dynamic_route_disposition"
   ]
 }

@@ -97,17 +97,165 @@
       "scope": "Compilation failed before reload behavior could be tested; this does not falsify reload for a compatible MIL form."
     }
   ],
+  "dynamic_training_path": {
+    "state": "GREEN_COMPILE_ONCE_MUTABLE_WEIGHT_TRANSPORT_INCONCLUSIVE_THESEUS_SEMANTICS",
+    "source_subtree": "maderix/ANE training/training_dynamic at the bound source commit",
+    "compile_once_mutable_weight_transport": true,
+    "transport": "FP16 compute weights are ordinary IOSurface activation regions consumed by dynamic matmul operators.",
+    "compiled_kernel_count": 10,
+    "fresh_process_compile_milliseconds": [
+      688,
+      1181,
+      947,
+      19681
+    ],
+    "compile_variance_interpretation": "The full topology compiles on this M1, but fresh-process compiler latency is highly variable and must be amortized and measured at segment boundaries.",
+    "shape_sensitivity": {
+      "tiny_generic_64x64": "ANE_COMPILER_FAILED",
+      "theseus_width_512_depth_12_sequence_128": "COMPILED_AND_STEPPED",
+      "theseus_width_512_depth_12_sequence_512": "COMPILED_AND_STEPPED",
+      "interpretation": "ANE compiler success is topology- and shape-specific; the tiny failure cannot falsify the production-shaped dynamic transport."
+    },
+    "decoder_control": {
+      "parameters": 38300000,
+      "semantic_scope": "Twelve-layer decoder-only control with a 4,096-token research vocabulary; excludes the source encoder, cross-attention, pointer generator, adapters, and Theseus objective.",
+      "sequence_128": {
+        "microsteps": 4,
+        "mean_microstep_milliseconds": 80.3,
+        "positions_per_second": 1594.022,
+        "maximum_process_rss_mib": 801.641,
+        "minimum_reclaimable_available_mib": 3727.859,
+        "maximum_swapout_growth_mib": 0.0
+      },
+      "sequence_512_sustained": {
+        "microsteps_per_repeat": 96,
+        "mean_microstep_milliseconds": [
+          222.8,
+          197.8
+        ],
+        "positions_per_second": [
+          2298.025,
+          2588.473
+        ],
+        "maximum_process_rss_mib": 1300.234,
+        "maximum_swapout_growth_mib": 0.0
+      },
+      "corrected_gqa_short_replay": {
+        "microsteps": 4,
+        "mean_microstep_milliseconds": 199.7,
+        "positions_per_second": 2563.846,
+        "maximum_process_rss_mib": 1261.234,
+        "minimum_reclaimable_available_mib": 5333.875,
+        "maximum_swapout_growth_mib": 0.0
+      }
+    },
+    "gqa_grouping_probe": {
+      "state": "GREEN_BIT_EXACT_FOR_CORRECTED_HEAD_EXPANSION_ONLY",
+      "upstream_fault": "Repeating the full two-KV-head tensor yields alternating KV-head ownership, while grouped-query attention requires four contiguous query heads per KV head. Upstream backward already assumes the grouped order.",
+      "kv_heads": 2,
+      "query_heads": 8,
+      "head_dim": 64,
+      "sequence": 512,
+      "elements": 262144,
+      "bit_mismatch_count": 0,
+      "maximum_absolute_delta": 0.0,
+      "claim_boundary": "This proves only head expansion. Complete attention forward/loss/gradient parity remains open."
+    },
+    "split_half_rope_probe": {
+      "state": "GREEN_OPERATOR_PARITY",
+      "source": "native/ane_metal/ane_split_half_rope_probe.m",
+      "report": "reports/ane_split_half_rope_m1.json",
+      "heads": 8,
+      "sequence": 512,
+      "head_dim": 64,
+      "elements": 262144,
+      "tolerance": 0.001,
+      "mismatch_count": 0,
+      "maximum_absolute_delta": 0.0009765625,
+      "rmse": 0.000125502812,
+      "claim_boundary": "This proves production-shape split-half RoPE output only. Attention and backward parity remain open."
+    },
+    "semantic_mismatches_found": {
+      "rope": "Upstream uses adjacent-pair interleaved rotation; Theseus uses split-half MLX RoPE with traditional=false.",
+      "residual": "Upstream scales attention and FFN residual branches by 1/sqrt(2*layers); Theseus adds both branches without scaling.",
+      "vocabulary_loss": "Upstream removes every vocabulary item absent from the local token file before softmax; Theseus loss normalizes over the full model vocabulary.",
+      "objective": "Upstream scores every next-token position; Theseus uses explicit loss masks plus pointer-copy and enabled auxiliary objective mass.",
+      "model": "Upstream is decoder-only; Theseus has a two-layer source encoder, per-decoder-layer cross-attention, tied full-vocabulary output, and pointer generator.",
+      "batch": "Upstream is batch one; the selected MLX route is sampler-exact batch 16 with compiled microbatch four.",
+      "optimizer": "Upstream owns a separate CPU Adam state; Theseus requires one authoritative FP32 AdamW state and one joined update."
+    },
+    "semantic_gates": {
+      "gqa_forward_backward_parity": false,
+      "split_half_rope_parity": true,
+      "unscaled_residual_parity": false,
+      "full_vocabulary_softmax_parity": false,
+      "loss_mask_and_objective_mass_parity": false,
+      "source_encoder_parity": false,
+      "decoder_cross_attention_parity": false,
+      "pointer_generator_parity": false,
+      "auxiliary_objective_parity": false,
+      "fp32_master_loss_scaling_stability": false,
+      "single_synchronized_optimizer_update": false,
+      "sampler_partition_conservation": false,
+      "save_reload_replay": false,
+      "production_batch_shape": false,
+      "sustained_resource_and_thermal_qualification": false,
+      "matched_joined_wall_gain_exceeds_uncertainty": false,
+      "independent_gate_audit": false
+    },
+    "process_coexistence": {
+      "state": "GREEN_UNMATCHED_PROCESS_MECHANICS",
+      "rounds": 2,
+      "actual_process_overlap_observed": true,
+      "standalone_wall_median_seconds": {
+        "mlx": 18.888012,
+        "ane": 21.715019
+      },
+      "concurrent_wall_median_seconds": 25.844077,
+      "overlap_speedup_vs_serial_sum": 1.571077,
+      "mlx_latency_slowdown": 1.320545,
+      "ane_latency_slowdown": 1.177618,
+      "mlx_standalone_positions_per_second": [
+        2820.379,
+        3285.661
+      ],
+      "mlx_concurrent_positions_per_second": [
+        2332.88,
+        2410.994
+      ],
+      "ane_standalone_positions_per_second": [
+        2298.025,
+        2588.473
+      ],
+      "ane_concurrent_positions_per_second": [
+        1968.474,
+        2150.357
+      ],
+      "unmatched_combined_concurrent_positions_per_second": 4431.352,
+      "unmatched_combined_vs_standalone_mlx_mechanics_ceiling": 1.451465,
+      "maximum_process_rss_mib": 2155.641,
+      "maximum_inferred_unified_memory_mib": 3932.688,
+      "minimum_reclaimable_available_mib": 2122.594,
+      "maximum_swapout_growth_mib": 0.0,
+      "claim_scope": "The MLX route is the full 54.8M encoder-decoder-pointer system while the ANE route is a 38.3M decoder-only FP16 research control. The combined rate is an unmatched mechanics ceiling, not an end-to-end speedup."
+    },
+    "preferred_next_topology": {
+      "primary": "Synchronous heterogeneous data parallel over disjoint sampler-exact microbatches, one weight generation, one FP32 gradient accumulator, and one AdamW update.",
+      "secondary": "ANE forward/input-gradient plus Metal weight-gradient and output/loss pipeline using shared IOSurfaces.",
+      "reason": "Both preserve long independent device windows and avoid the measured losing wide physical join."
+    }
+  },
   "sandbox_diagnostic": {
     "state": "EXPECTED_ACCESS_DENIAL_NOT_COMPILER_EVIDENCE",
     "failed_stage": "sdpaBwd2",
     "excluded_from_repeatability_count": true
   },
   "weight_update_path": {
-    "state": "BAKED_WEIGHT_RECOMPILE_NOT_SELECTED_CURRENT_M1",
+    "state": "DYNAMIC_ACTIVATION_PACKED_WEIGHT_TRANSPORT_GREEN_SEMANTICS_OPEN",
     "accumulation_four_compile_wall_fraction": 0.959,
     "accumulation_eight_compile_wall_fraction": 0.927,
     "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
-    "next_gate": "Implement a dynamic or persistent ANE weight path with exact generation custody, or retain ANE for static inference."
+    "next_gate": "Implement exact Theseus semantics over the compile-once dynamic transport, then join ANE and Metal gradients into one authoritative FP32 update."
   },
   "process_coexistence": {
     "state": "GREEN_MECHANICAL_OVERLAP",
@@ -170,7 +318,7 @@
   },
   "metal_control_seconds": [],
   "split_candidates": [],
-  "interpretation": "The public Metal-to-IOSurface half is exact, the baked-weight Theseus-width ANE training control compiles repeatably, independent useful MLX/ANE workloads mechanically overlap by 1.591x versus their serial sum, and same-generation concurrent reads are bit-exact. A real 512-to-768 split gains 1.179x-1.524x over serial partitions, but materialized concatenation reduces it to 0.687x-0.820x versus full Metal. Persist partitions through whole attention/MLP subgraphs and reduce at hidden width. Baked-weight training remains excluded until dynamic/persistent weights exist; static inference remains credible.",
+  "interpretation": "The public Metal-to-IOSurface half is exact, same-generation concurrent reads are bit-exact, and the full production-shaped dynamic topology proves that weights can be passed as mutable FP16 activation data and reused without recompiling after every update. The audited research trainer is not a Theseus implementation: GQA head expansion was wrong upstream, RoPE, residual scaling, vocabulary normalization, objective, batch, source conditioning, pointer generation, and optimizer custody differ. Corrected GQA expansion is bit-exact in isolation. Unmatched ANE plus MLX processes overlap by 1.571x versus their serial sum and expose a 1.451x aggregate mechanics ceiling, but no end-to-end speed claim is allowed. Implement semantic parity first, then prefer synchronous data parallel or ANE-forward/dx plus Metal-dW over the measured losing physical concatenation.",
   "canonical_checkpoint_mutated": false,
   "public_benchmark_rows_read": 0,
   "external_inference_calls": 0

@@ -31,6 +31,26 @@ REQUIRED_GATES = (
     "independent_gate_audit",
 )
 
+DYNAMIC_SEMANTIC_GATES = (
+    "gqa_forward_backward_parity",
+    "split_half_rope_parity",
+    "unscaled_residual_parity",
+    "full_vocabulary_softmax_parity",
+    "loss_mask_and_objective_mass_parity",
+    "source_encoder_parity",
+    "decoder_cross_attention_parity",
+    "pointer_generator_parity",
+    "auxiliary_objective_parity",
+    "fp32_master_loss_scaling_stability",
+    "single_synchronized_optimizer_update",
+    "sampler_partition_conservation",
+    "save_reload_replay",
+    "production_batch_shape",
+    "sustained_resource_and_thermal_qualification",
+    "matched_joined_wall_gain_exceeds_uncertainty",
+    "independent_gate_audit",
+)
+
 
 class PlanningFault(ValueError):
     """Raised when an experiment packet cannot support a valid decision."""
@@ -70,6 +90,74 @@ def validate_config(config: dict[str, Any]) -> None:
         raise PlanningFault("split_ratio_out_of_range")
     if config.get("canonical_enabled") is not False:
         raise PlanningFault("experimental_backend_must_default_disabled")
+
+
+def _positive_mean(values: Any, label: str) -> float | None:
+    if values is None:
+        return None
+    samples = _finite_positive(values, label)
+    return statistics.fmean(samples)
+
+
+def _dynamic_training_record(evidence: dict[str, Any]) -> dict[str, Any]:
+    dynamic = evidence.get("dynamic_training_path") or {}
+    semantic_gates = dynamic.get("semantic_gates") or {}
+    failed_semantic_gates = [
+        gate for gate in DYNAMIC_SEMANTIC_GATES if semantic_gates.get(gate) is not True
+    ]
+    coexistence = dynamic.get("process_coexistence") or {}
+    mlx_standalone = _positive_mean(
+        coexistence.get("mlx_standalone_positions_per_second"),
+        "dynamic_mlx_standalone_positions_per_second",
+    )
+    mlx_concurrent = _positive_mean(
+        coexistence.get("mlx_concurrent_positions_per_second"),
+        "dynamic_mlx_concurrent_positions_per_second",
+    )
+    ane_standalone = _positive_mean(
+        coexistence.get("ane_standalone_positions_per_second"),
+        "dynamic_ane_standalone_positions_per_second",
+    )
+    ane_concurrent = _positive_mean(
+        coexistence.get("ane_concurrent_positions_per_second"),
+        "dynamic_ane_concurrent_positions_per_second",
+    )
+    mechanics_ceiling = None
+    combined_concurrent = None
+    if mlx_concurrent is not None and ane_concurrent is not None:
+        combined_concurrent = mlx_concurrent + ane_concurrent
+    if combined_concurrent is not None and mlx_standalone is not None:
+        mechanics_ceiling = combined_concurrent / mlx_standalone
+    return {
+        "state": dynamic.get("state", "NOT_MEASURED"),
+        "compile_once_mutable_weight_transport": (
+            dynamic.get("compile_once_mutable_weight_transport") is True
+        ),
+        "gqa_grouping_probe": dynamic.get("gqa_grouping_probe"),
+        "split_half_rope_probe": dynamic.get("split_half_rope_probe"),
+        "semantic_gates": semantic_gates,
+        "failed_semantic_gates": failed_semantic_gates,
+        "coexistence": {
+            "actual_process_overlap_observed": (
+                coexistence.get("actual_process_overlap_observed") is True
+            ),
+            "mlx_standalone_mean_positions_per_second": mlx_standalone,
+            "mlx_concurrent_mean_positions_per_second": mlx_concurrent,
+            "ane_standalone_mean_positions_per_second": ane_standalone,
+            "ane_concurrent_mean_positions_per_second": ane_concurrent,
+            "combined_concurrent_mechanics_positions_per_second": combined_concurrent,
+            "unmatched_combined_vs_mlx_mechanics_ceiling": mechanics_ceiling,
+            "claim_scope": (
+                "The workloads are not yet semantically or computationally matched. "
+                "This is a coexistence ceiling, not an end-to-end training speedup."
+            ),
+        },
+        "production_eligible": (
+            dynamic.get("compile_once_mutable_weight_transport") is True
+            and not failed_semantic_gates
+            and coexistence.get("actual_process_overlap_observed") is True
+        ),
+    }
 
 
 def _candidate_record(
@@ -140,6 +228,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         len(compiler_attempts) >= 2 and compiler_failures == 0
     )
     incompatible_mil_attempts = evidence.get("incompatible_mil_attempts", [])
+    dynamic_training = _dynamic_training_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -151,7 +240,10 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
             "failure_count": compiler_failures,
             "repeatable": compiler_repeatable,
             "state": (
-                "M1_STATIC_BAKED_COMPILER_REPEATABLE"
+                "M1_STATIC_AND_DYNAMIC_SHAPED_COMPILER_REPEATABLE"
+                if compiler_repeatable
+                and dynamic_training["compile_once_mutable_weight_transport"]
+                else "M1_STATIC_BAKED_COMPILER_REPEATABLE"
                 if compiler_repeatable
                 else "M1_PRIVATE_COMPILER_UNSTABLE"
                 if compiler_successes and compiler_failures
@@ -160,6 +252,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         },
         "incompatible_mil_attempts": incompatible_mil_attempts,
         "weight_update_path": evidence.get("weight_update_path"),
+        "dynamic_training_path": dynamic_training,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,
@@ -171,22 +264,41 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     candidates = evidence.get("split_candidates", [])
     if not metal_samples or not candidates:
         split_state = evidence.get("split_linear_station", {}).get("state")
-        blockers = [
-            (
-                "structure_aligned_persistent_partition_candidate"
-                if split_state == "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED"
-                else "measured_metal_control_and_joint_candidates"
-            ),
-            "mlx_lazy_graph_integration",
-        ]
+        dynamic_transport_green = (
+            dynamic_training["compile_once_mutable_weight_transport"] is True
+        )
+        blockers = []
+        if dynamic_transport_green:
+            blockers.extend(dynamic_training["failed_semantic_gates"])
+            blockers.append("mlx_lazy_graph_or_native_metal_gradient_integration")
+        else:
+            blockers.extend(
+                [
+                    (
+                        "structure_aligned_persistent_partition_candidate"
+                        if split_state == "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED"
+                        else "measured_metal_control_and_joint_candidates"
+                    ),
+                    "mlx_lazy_graph_integration",
+                ]
+            )
         if evidence.get("same_surface_bridge", {}).get("state") != (
             "GREEN_CONCURRENT_SHARED_READ_VISIBILITY"
         ):
             blockers.insert(1, "zero_copy_same_surface_visibility")
         if not compiler_repeatable:
             blockers.insert(0, "repeatable_private_ane_compile")
-        if evidence.get("weight_update_path", {}).get("state") != "QUALIFIED":
+        if (
+            evidence.get("weight_update_path", {}).get("state") != "QUALIFIED"
+            and not dynamic_transport_green
+        ):
             blockers.append("dynamic_or_persistent_training_weight_update_path")
+        if dynamic_transport_green and split_state == (
+            "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED"
+        ):
+            blockers.append(
+                "optional_structure_aligned_partition_after_dynamic_route_disposition"
+            )
         report.update(
             {
                 "trigger_state": "INCONCLUSIVE_IMPLEMENTATION",

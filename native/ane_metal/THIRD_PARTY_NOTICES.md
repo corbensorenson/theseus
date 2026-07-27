@@ -1,8 +1,10 @@
 # Third-party notices
 
-The private Apple Neural Engine runtime invocation, weight-blob layout, and MIL
-RMSNorm-backward formulation in `ane_metal_same_surface_probe.m` are derived
-from `maderix/ANE` at commit
+The private Apple Neural Engine runtime invocation, weight-blob layout, MIL
+RMSNorm-backward formulation in `ane_metal_same_surface_probe.m`, split-half
+RoPE probe runtime in `ane_split_half_rope_probe.m`, and the auditable GQA
+repair in `patches/maderix_dynamic_gqa_grouping.patch` are derived from or
+modify `maderix/ANE` at commit
 `d91c9845c0784dec7753048954fc6d0e8411fe29`.
 
 Copyright (c) maderix

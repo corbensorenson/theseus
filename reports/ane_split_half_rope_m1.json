@@ -1,0 +1,30 @@
+{
+  "policy": "theseus_ane_split_half_rope_v1",
+  "created_utc": "2026-07-27T19:23:41Z",
+  "trigger_state": "GREEN_OPERATOR_PARITY",
+  "source": "native/ane_metal/ane_split_half_rope_probe.m",
+  "host": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "macos_build": "24A5320a"
+  },
+  "operator": {
+    "heads": 8,
+    "sequence": 512,
+    "head_dim": 64,
+    "rope_base": 10000.0,
+    "layout": "split_half_traditional_false",
+    "dtype": "float16",
+    "elements": 262144
+  },
+  "reference": "Independent host FP16 split-half rotation with FP16-rounded cosine, sine, products, and sum.",
+  "tolerance": 0.001,
+  "mismatch_count": 0,
+  "maximum_absolute_delta": 0.0009765625,
+  "rmse": 0.000125502812,
+  "claim_scope": "Production-shape split-half RoPE operator output only. This does not prove attention, loss, backward, full-block, or training parity.",
+  "canonical_backend_changed": false,
+  "canonical_checkpoint_mutated": false,
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0
+}

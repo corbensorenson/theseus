@@ -22,6 +22,12 @@
       "commit": "4d91fcee9439f7aea17ae6e965271d9536c604a0",
       "license": "MIT",
       "use": "Output-channel ANE+GPU split reference and negative evidence that eager synchronization and host copies erase end-to-end gains; no source imported."
+    },
+    {
+      "repository": "https://github.com/anemll/anemll",
+      "commit": "UNPINNED_RESEARCH_REFERENCE_ONLY",
+      "license": "MIT",
+      "use": "Inference-only reference for IOSurface-backed buffers, serial ANE submission, ping-pong state, graph chunking, and moving argmax/top-k before the device boundary; no training or source-import claim."
     }
   ],
   "execution_modes": {
@@ -46,7 +52,67 @@
       "scope": "training overlap candidate after split-linear parity",
       "schedule": "Overlap ANE forward/input-gradient work for one microbatch with Metal weight-gradient, optimizer, or independent microbatch work.",
       "requirement": "Versioned weights and gradients must prevent stale-read or mixed-generation publication."
+    },
+    "compile_once_dynamic_ane": {
+      "scope": "training-first candidate",
+      "transport": "Pack the current FP16 compute weights beside activations in IOSurface inputs so one shape-specific MIL graph can be compiled once and reused across optimizer generations.",
+      "authority": "One FP32 master parameter generation remains authoritative; every ANE input surface is tagged with that generation and may not survive publication of the next generation.",
+      "claim_boundary": "Mutable-weight transport is proven on this M1. The audited research trainer's model, loss, vocabulary, optimizer, and batching semantics are not Theseus semantics."
+    },
+    "public_coreml_state_weight_probe": {
+      "scope": "bounded fail-stable alternative to private mutable-weight transport",
+      "mechanism": "Represent FP16 compute weights as Core ML state tensors, update one MLState per authoritative generation, and inspect the compute plan plus runtime placement for ANE-resident matmul.",
+      "adoption_requirements": [
+        "state_write_visible_without_model_recompile",
+        "compute_plan_and_runtime_place_the_target_matmul_on_ane",
+        "output_parity",
+        "no_state_read_or_write_while_prediction_is_in_flight",
+        "joined_forward_plus_metal_backward_wall_beats_the_private_and_mlx_controls"
+      ],
+      "claim_boundary": "Core ML state is public and mutable, but Apple documents it as prediction state and provides no general transformer backward. This is a forward/input transport probe, not a training solution by itself."
+    },
+    "synchronous_heterogeneous_data_parallel": {
+      "scope": "preferred end-to-end training topology after exact ANE model parity",
+      "schedule": "Dispatch disjoint microbatch shards from one sampler/update batch to MLX/Metal and ANE concurrently, accumulate both gradient trees in FP32, apply one global normalization and clip, then publish one AdamW update.",
+      "forbidden": [
+        "stale_weight_microbatches",
+        "per_device_optimizer_updates",
+        "different sampler rows or objective weights",
+        "loss normalization by device rather than total authority mass",
+        "checkpoint publication before both gradient contributions join"
+      ],
+      "reason": "Independent microbatches expose the most device parallelism without inserting a synchronization boundary inside every transformer layer."
+    },
+    "ane_forward_dx_metal_dw_pipeline": {
+      "scope": "preferred intra-step kernel split if full-model ANE data parallel is not yet faster",
+      "schedule": "ANE computes projection forward and input gradients while Metal computes the corresponding weight gradients, output/loss, pointer operations, and the eventual single optimizer update from shared IOSurface generations.",
+      "reason": "The audited dynamic trainer already overlaps ANE work with CPU BLAS dW; moving dW to Metal targets that measured dependency while avoiding a wide activation concatenation."
+    },
+    "inference_handoff": {
+      "scope": "after a qualified model checkpoint exists",
+      "public_baseline": "Core ML computeUnits=all with compute-plan inspection",
+      "private_candidate": "ANE-prefill and stateful decode with IOSurface ping-pong buffers; keep sampling or other independent work on Metal only when joined latency and energy improve.",
+      "boundary_reduction": "Evaluate in-model argmax/top-k and chunk-local reductions so full-vocabulary tensors do not cross ANE-to-host boundaries.",
+      "training_priority": "Inference work may reuse training kernels and tensor layouts, but cannot delay the semantics-qualified training route."
     }
+  },
+    "canonical_semantics": {
+    "model": "moecot_mlx_57m_active_preregistered_v1",
+    "d_model": 512,
+    "decoder_layers": 12,
+    "source_encoder_layers": 2,
+    "query_heads": 8,
+    "kv_heads": 2,
+    "head_dim": 64,
+    "ff_dim": 1536,
+    "rope": "split_half_traditional_false_base_10000",
+    "residual": "unscaled_add",
+    "rms_norm_epsilon": 1e-05,
+    "attention": "decoder_causal_plus_source_masked_encoder_and_per_layer_cross_attention",
+    "output": "full_vocabulary_tied_embedding_plus_pointer_generator",
+    "objective": "masked_token_loss_plus_preregistered_copy_and_enabled_auxiliary_terms",
+    "optimizer": "one_authoritative_fp32_adamw_state",
+    "batch": "sampler_exact_batch16_with_compiled_microbatch4_control"
   },
   "shape_candidates": [
     {
@@ -119,6 +185,31 @@
     "independent_gate_audit": true,
     "checkpoint_mutation_after_all_gates_only": true
   },
+  "dynamic_training_qualification_gates": {
+    "gqa_forward_backward_parity": true,
+    "split_half_rope_parity": true,
+    "unscaled_residual_parity": true,
+    "full_vocabulary_softmax_parity": true,
+    "loss_mask_and_objective_mass_parity": true,
+    "source_encoder_parity": true,
+    "decoder_cross_attention_parity": true,
+    "pointer_generator_parity": true,
+    "auxiliary_objective_parity": true,
+    "fp32_master_loss_scaling_stability": true,
+    "single_synchronized_optimizer_update": true,
+    "sampler_partition_conservation": true,
+    "save_reload_replay": true,
+    "production_batch_shape": true,
+    "sustained_resource_and_thermal_qualification": true,
+    "matched_joined_wall_gain_exceeds_uncertainty": true,
+    "independent_gate_audit": true
+  },
+  "fp16_range_policy": {
+    "measure_before_transform": true,
+    "runtime_clamping_default": false,
+    "function_preserving_reparameterization_candidate": "Only if a preregistered activation-range probe observes an FP16 overflow risk; require forward, backward, optimizer, checkpoint, and heldout equivalence before adoption.",
+    "reason": "ANE compute is FP16. A paired weight/residual reparameterization may preserve the function while reducing peak activations, whereas runtime clipping changes the function."
+  },
   "fallback": {
     "route": "qualified_mlx_metal",
     "timing": "before_checkpoint_mutation",
@@ -136,16 +227,56 @@
     ]
   },
   "current_evidence": {
-    "ane_compiler_state": "M1_STATIC_BAKED_TRAINING_CONTROL_REPEATABLE",
+    "ane_compiler_state": "M1_STATIC_BAKED_AND_PRODUCTION_SHAPED_DYNAMIC_TOPOLOGIES_REPEATABLE",
     "successful_training_smokes": 4,
-    "dynamic_weight_mil_state": "M1_UNSUPPORTED_IN_TESTED_FORM",
+    "dynamic_weight_mil_state": "GREEN_COMPILE_ONCE_ACTIVATION_PACKED_WEIGHTS_FOR_PRODUCTION_SHAPED_GRAPH",
     "single_blob_small_shape_state": "M1_MIL_INCOMPATIBLE_BEFORE_RELOAD_TEST",
     "weight_update_path": {
       "static_inference": "ELIGIBLE_FOR_FURTHER_QUALIFICATION",
       "baked_weight_recompile_training": "NOT_SELECTED_CURRENT_M1",
       "accumulation_four_compile_wall_fraction": 0.959,
       "accumulation_eight_compile_wall_fraction": 0.927,
-      "training_reentry": "DYNAMIC_OR_PERSISTENT_WEIGHT_PATH_WITH_EXACT_GENERATION_CUSTODY"
+      "dynamic_activation_packed_weights": "GREEN_TRANSPORT_MECHANICS",
+      "training_reentry": "EXACT_THESEUS_SEMANTICS_AND_SYNCHRONIZED_UPDATE_OVER_DYNAMIC_WEIGHT_TRANSPORT"
+    },
+    "dynamic_training": {
+      "state": "GREEN_TRANSPORT_INCONCLUSIVE_IMPLEMENTATION",
+      "compiled_kernels_reused_across_weight_generations": 10,
+      "sequence_128_microstep_milliseconds": 80.3,
+      "sequence_512_sustained_microstep_milliseconds": [
+        222.8,
+        197.8
+      ],
+      "corrected_gqa_short_microstep_milliseconds": 199.7,
+      "gqa_grouping_probe": {
+        "kv_heads": 2,
+        "query_heads": 8,
+        "elements": 262144,
+        "bit_mismatch_count": 0,
+        "maximum_absolute_delta": 0.0
+      },
+      "split_half_rope_probe": {
+        "state": "GREEN_OPERATOR_PARITY",
+        "heads": 8,
+        "sequence": 512,
+        "head_dim": 64,
+        "elements": 262144,
+        "tolerance": 0.001,
+        "mismatch_count": 0,
+        "maximum_absolute_delta": 0.0009765625,
+        "report": "reports/ane_split_half_rope_m1.json"
+      },
+      "unmatched_concurrent_mechanics_ceiling_vs_standalone_mlx": 1.451465,
+      "semantic_walls": [
+        "upstream_interleaved_pair_rope_vs_theseus_split_half_rope",
+        "upstream_scaled_residuals_vs_theseus_unscaled_residuals",
+        "upstream_active-token-vocabulary_compaction_vs_theseus_full-vocabulary-softmax",
+        "decoder_only_vs_source_encoder_cross_attention_pointer_generator",
+        "unmasked_next-token-loss-vs-theseus-loss-mask-and-auxiliary-objective",
+        "batch-one-vs-sampler-exact-batch16-microbatch4",
+        "separate_cpu_adam-vs-one-authoritative-fp32-adamw-update"
+      ],
+      "claim_scope": "Compiler, mutable-weight transport, finite-gradient, resource, GQA-grouping, and process-overlap mechanics only."
     },
     "process_coexistence": {
       "state": "GREEN_MECHANICAL_OVERLAP",

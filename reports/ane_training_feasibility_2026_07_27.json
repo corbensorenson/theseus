@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_ane_training_feasibility_v1",
   "created_utc": "2026-07-27T17:24:00Z",
-  "updated_utc": "2026-07-27T20:05:00Z",
-  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION_BAKED_WEIGHT_CONTROL_REPEATABLE_JOINT_EXECUTION_UNMEASURED",
+  "updated_utc": "2026-07-27T19:23:41Z",
+  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION_DYNAMIC_WEIGHT_TRANSPORT_GREEN_THESEUS_SEMANTICS_OPEN",
   "claim_scope": "Local M1 private-API mechanics and MLX projection-station evidence only; no full-model, campaign, convergence, utility, capability, or production-backend claim.",
   "source": {
     "repository": "https://github.com/maderix/ANE",
@@ -122,7 +122,93 @@
           "scope": "failed before reload behavior; reload is untested for compatible MIL"
         }
       ],
-      "interpretation": "The compatible baked-weight control is repeatable across four fresh executions, including a guarded zero-swap run. Generic dynamic weights are unsupported in the tested M1 MIL form, so safe recompilation amortization/overlap is the training owner."
+      "interpretation": "The compatible baked-weight control is repeatable across four fresh executions, including a guarded zero-swap run. The 64x64 generic dynamic-weight form is an incompatible shape, not a general dynamic-weight result; the production-shaped compile-once transport below supersedes that inference."
+    },
+    "compile_once_dynamic_training": {
+      "state": "GREEN_MUTABLE_WEIGHT_TRANSPORT_INCONCLUSIVE_MODEL_SEMANTICS",
+      "mechanism": "FP16 weights are packed into IOSurface inputs as ordinary activation data and consumed by shape-specific dynamic matmul operators. Ten kernels compile once and can be reused after weights change.",
+      "production_shaped_decoder_control": {
+        "d_model": 512,
+        "ff_dim": 1536,
+        "decoder_layers": 12,
+        "query_heads": 8,
+        "kv_heads": 2,
+        "sequence_lengths": [
+          128,
+          512
+        ],
+        "parameters": 38300000,
+        "scope": "Decoder-only research control; not the 54.8M Theseus encoder-decoder-pointer model."
+      },
+      "fresh_compile_milliseconds": [
+        688,
+        1181,
+        947,
+        19681
+      ],
+      "timing": {
+        "sequence_128_mean_microstep_milliseconds": 80.3,
+        "sequence_512_sustained_mean_microstep_milliseconds": [
+          222.8,
+          197.8
+        ],
+        "corrected_gqa_sequence_512_short_mean_microstep_milliseconds": 199.7
+      },
+      "gqa_fault_and_repair": {
+        "upstream_fault": "The forward path alternated two KV heads across eight query heads; the backward path assumed four contiguous query heads per KV head.",
+        "corrected_grouping_elements": 262144,
+        "bit_mismatch_count": 0,
+        "maximum_absolute_delta": 0.0,
+        "claim_scope": "Head-expansion parity only; full attention forward and backward remain unqualified."
+      },
+      "split_half_rope": {
+        "state": "GREEN_OPERATOR_PARITY",
+        "source": "native/ane_metal/ane_split_half_rope_probe.m",
+        "report": "reports/ane_split_half_rope_m1.json",
+        "heads": 8,
+        "sequence": 512,
+        "head_dim": 64,
+        "elements": 262144,
+        "tolerance": 0.001,
+        "mismatch_count": 0,
+        "maximum_absolute_delta": 0.0009765625,
+        "rmse": 0.000125502812,
+        "claim_scope": "Theseus split-half RoPE output only; full attention and backward remain open."
+      },
+      "resource": {
+        "maximum_process_rss_mib": 1300.234,
+        "maximum_inferred_unified_memory_mib": 1300.234,
+        "minimum_reclaimable_available_mib": 3727.859,
+        "maximum_swapout_growth_mib": 0.0
+      },
+      "semantic_mismatches": [
+        "interleaved-pair RoPE instead of Theseus split-half traditional=false RoPE",
+        "1/sqrt(2L) residual scaling instead of unscaled residual addition",
+        "active-token vocabulary compaction instead of full-vocabulary softmax",
+        "all-position next-token loss instead of explicit loss masks and registered auxiliary mass",
+        "decoder-only model instead of source encoder, per-layer cross-attention, and pointer generator",
+        "batch one instead of sampler-exact batch 16 with compiled microbatch four",
+        "separate CPU Adam instead of one authoritative FP32 AdamW update"
+      ],
+      "disposition": "PORT_TRANSPORT_AND_KERNEL_IDEAS_ONLY_THEN_REQUIRE_EXACT_PARITY"
+    },
+    "dynamic_ane_mlx_process_coexistence": {
+      "state": "GREEN_UNMATCHED_MECHANICS_ONLY",
+      "rounds": 2,
+      "standalone_wall_median_seconds": {
+        "mlx": 18.888012,
+        "ane": 21.715019
+      },
+      "concurrent_wall_median_seconds": 25.844077,
+      "overlap_speedup_vs_serial_sum": 1.571077,
+      "mlx_latency_slowdown": 1.320545,
+      "ane_latency_slowdown": 1.177618,
+      "combined_concurrent_positions_per_second": 4431.352,
+      "combined_vs_standalone_mlx_mechanics_ceiling": 1.451465,
+      "maximum_inferred_unified_memory_mib": 3932.688,
+      "minimum_reclaimable_available_mib": 2122.594,
+      "maximum_swapout_growth_mib": 0.0,
+      "claim_scope": "The MLX side is a full-model diagnostic and the ANE side is a smaller decoder-only control. This proves simultaneous useful execution and bounds an opportunity; it is not a matched training speedup."
     },
     "public_metal_iosurface_bridge": {
       "state": "GREEN",
@@ -239,8 +325,8 @@
   },
   "backend_disposition": {
     "mlx_production_route": "RETAINED",
-    "direct_ane_training": "BAKED_WEIGHT_RECOMPILE_NOT_SELECTED_CURRENT_M1_DYNAMIC_OR_PERSISTENT_WEIGHTS_REQUIRED",
-    "hybrid_metal_ane": "SPLIT_LINEAR_MECHANICS_GREEN_PHYSICAL_JOIN_REJECTED_PERSISTENT_SUBGRAPH_PARTITION_NEXT",
+    "direct_ane_training": "DYNAMIC_WEIGHT_TRANSPORT_GREEN_EXACT_THESEUS_SEMANTICS_REQUIRED",
+    "hybrid_metal_ane": "PREFER_SYNCHRONOUS_DATA_PARALLEL_OR_ANE_FORWARD_DX_PLUS_METAL_DW_AFTER_PARITY",
     "automatic_fallback_before_checkpoint_mutation_required": true,
     "capability_claim": "NONE"
   },
