@@ -792,6 +792,74 @@ Port the useful concepts in this order:
 The durable audit is `reports/ane_training_feasibility_2026_07_27.json`; the reproducible
 MLX station owner is `scripts/mlx_projection_fusion_probe.py`.
 
+### 2026-07-27 Explicit ANE + Metal Execution Contract
+
+The target is no longer “an ANE backend beside a GPU backend.” It is one heterogeneous
+execution plan that uses both devices when the dependency graph and measured overlap make
+that faster. Two primary-source findings bound the implementation:
+
+- Core ML with `MLComputeUnits.all` can automatically partition inference graphs across
+  CPU, GPU, and Neural Engine, so exported Theseus inference must measure that public,
+  fail-stable baseline before private scheduling. The placement remains opaque and is not
+  evidence of simultaneous device use.
+- Cider's experimental output-channel split demonstrates the right tensor-parallel shape
+  on M4—ANE and MLX compute disjoint linear output channels concurrently—but reports no
+  end-to-end benefit because eager MLX synchronization and host copies break lazy execution.
+  Copying that wrapper would reproduce its wall, not solve it.
+
+Theseus now owns the stricter design in
+`configs/ane_metal_heterogeneous_execution.json`:
+
+1. **Partition large expansion projections by output channel.** Sweep the ANE fraction for
+   each exact production shape instead of adopting a fixed 65/35 rule. QKV and gate/up enter
+   first; down projections, short sequences, and token-at-a-time decode remain Metal controls
+   until their own data says otherwise.
+2. **Use IOSurface as the interop allocation.** Metal and ANE may concurrently read one
+   sealed generation; every output partition has one writer. No host round trip is allowed
+   between partitions in an adoption measurement. The native public-side probe imports an
+   IOSurface into Metal on this M1 and returns exact output over 4,096 elements with zero
+   intermediate host copy.
+3. **Make backward heterogeneous too.** Each device retains its partition-local weight
+   gradient; the two input gradients sum before upstream use. Then test a versioned
+   microbatch schedule that overlaps ANE forward/input-gradient work with Metal
+   weight-gradient, optimizer, or independent-microbatch work. Mixed weight generations
+   invalidate the run.
+4. **Select from raw timing bounds, not flags or thresholds.** The planner independently
+   derives actual overlap, canonical-GPU slowdown, and worst-candidate versus best-control
+   speedup. Selection requires all numerical, replay, zero-copy, resource, thermal, and
+   independent-audit gates and a gain outside observed timing uncertainty. There is no
+   arbitrary percentage or clock-of-day condition.
+5. **Fail before custody changes.** Private class absence, compiler instability, OS/chip
+   drift, host-copy detection, numerical drift, or uncertain/negative joined wall returns
+   to qualified MLX/Metal before checkpoint mutation.
+
+Fresh process isolation changes the first diagnosis. The Theseus-width baked-weight
+per-matrix training control compiles and steps in four executions. The latest guarded run
+compiles five weight-bearing kernels in 451 ms and trains one step in 4.6 ms with 67.656 MiB
+peak process RSS, 99.297 MiB maximum inferred unified memory, 3,320.344 MiB minimum
+reclaimable memory, and zero swap growth. A
+sandboxed `sdpaBwd2` failure is access-denial evidence and is excluded. The M1 compiler wall
+is narrower but still material: the tested generic dynamic-weight 64x64 form fails, and a
+small single-blob static probe fails before its reload behavior can be tested. Do not
+translate those incompatible MIL forms into a general ANE failure.
+
+Explicit joint execution remains `INCONCLUSIVE_IMPLEMENTATION` because training currently
+depends on baked-weight recompilation and no same-generation ANE/Metal zero-copy timeline
+exists. Independent useful work does overlap: three guarded rounds pair the
+production-shaped compiled MLX QKV station with the width-512 ANE training control. Median
+combined wall is 0.557 s versus a 0.886 s serial median sum (`1.591x` mechanical overlap);
+GPU median latency rises `1.052x`, ANE `1.027x`, maximum inferred unified memory is
+219.547 MiB, and swap growth is zero. This proves simultaneous useful execution, not tensor
+interop or end-to-end training acceleration.
+
+Next, wire the compatible per-matrix ANE form to the IOSurface contract, measure
+gradient-accumulation amortization and background compilation without mixed weight
+generations, prove real concurrent timelines, run the shape/ratio sweep, add
+output/loss/gradient and save/reload parity, and only then evaluate sustained training and
+Core ML `.all` inference. The executable owners are
+`scripts/ane_metal_heterogeneous_planner.py`,
+`scripts/ane_metal_coexistence_probe.py`, and `native/ane_metal/`.
+
 ### 2026-07-26 Acceleration-First Launch Gate
 
 The final bounded KERC exposure rung and first-campaign disposition are banked. Training

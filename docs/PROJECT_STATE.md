@@ -616,6 +616,25 @@ share toward zero. Public benchmarks are calibration only.
   `standard_causal_transformer_survival.py` is 7,374 lines against the 7,000-line cap.
   The control plane remains RED from stale historical control reports and unresolved model
   capability/promotion state, not from the acceleration integration.
+- **ANE + Metal acceleration:** the intended route is explicit heterogeneous execution, not
+  two isolated backends. The public Metal half of an IOSurface bridge is locally GREEN on
+  Apple M1 with exact output over 4,096 elements and no intermediate host copy. Output-channel
+  partitioning, backward input-gradient reduction, a versioned microbatch pipeline, raw-timing
+  ratio selection, and fail-before-checkpoint custody are now executable contracts. The
+  compatible baked-weight ANE control is repeatable on this host: four width-512 fresh
+  executions compiled and stepped, including a guarded run with zero swap growth. A
+  sandboxed `sdpaBwd2` failure is excluded from compiler
+  evidence. The tested generic dynamic-weight 64x64 MIL fails, and a small single-blob
+  static probe fails before reload can be evaluated, so training is presently limited to
+  baked-weight recompilation. State is `INCONCLUSIVE_IMPLEMENTATION`; canonical MLX/Metal
+  remains unchanged. Three guarded process-coexistence rounds nevertheless prove useful
+  simultaneous work: MLX QKV plus ANE training reaches `1.591x` versus the serial median sum,
+  with `1.052x` GPU and `1.027x` ANE median latency, 219.547 MiB maximum inferred unified
+  memory, and zero swap growth. This is mechanical overlap, not same-tensor or end-to-end
+  acceleration. Core ML
+  `.all` is the public automatic-partition inference baseline, while explicit joint
+  placement must independently prove overlap, zero-copy integration, parity, replay, and
+  sustained wall benefit.
 - **Repository hygiene:** the forward roadmap is now a compact execution map backed by
   the complete machine-readable matrix without deleting an open obligation.
   The 2026-07-23 audit caught a real regression: 1,946,857,145 governed-hot bytes and 6,375
@@ -797,6 +816,9 @@ share toward zero. Public benchmarks are calibration only.
 - `configs/evaluation_history/neural_seed_v8_candidate_packet.json`
 - `reports/pretraining_architecture_freeze_package.json`
 - `reports/resource_acceleration_qualification.json`
+- `reports/ane_training_feasibility_2026_07_27.json`
+- `reports/ane_metal_heterogeneous_plan_2026_07_27.json`
+- `configs/ane_metal_heterogeneous_execution.json`
 - `configs/neural_seed_architecture_review.json`
 - `configs/neural_seed_architecture_review_freeze.json`
 - `reports/neural_seed_architecture_review_status.json`

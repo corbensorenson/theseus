@@ -1,7 +1,8 @@
 {
   "policy": "project_theseus_ane_training_feasibility_v1",
   "created_utc": "2026-07-27T17:24:00Z",
-  "trigger_state": "PARTIAL_RESEARCH_BACKEND_MECHANICS_GREEN_PRODUCTION_NOT_ELIGIBLE",
+  "updated_utc": "2026-07-27T20:05:00Z",
+  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION_BAKED_WEIGHT_CONTROL_REPEATABLE_JOINT_EXECUTION_UNMEASURED",
   "claim_scope": "Local M1 private-API mechanics and MLX projection-station evidence only; no full-model, campaign, convergence, utility, capability, or production-backend claim.",
   "source": {
     "repository": "https://github.com/maderix/ANE",
@@ -38,7 +39,7 @@
       "interpretation": "Matches upstream M1-family evidence that standalone/single-blob probes fail while the per-matrix training path works; not evidence that ANE hardware is absent."
     },
     "per_matrix_training_smoke": {
-      "state": "GREEN",
+      "state": "GREEN_FOUR_FRESH_EXECUTIONS",
       "shape": {
         "d_model": 512,
         "ff_dim": 1536,
@@ -66,6 +67,88 @@
         "maximum_swapout_growth_mib": 0.0
       },
       "checkpoint_authority": "NONE_SCRATCH_MECHANICS_ONLY"
+    },
+    "repeatability_followup": {
+      "state": "GREEN_FOR_COMPATIBLE_BAKED_WEIGHT_CONTROL",
+      "attempts": [
+        {
+          "id": "theseus_width512_decoder_repeat_2",
+          "compiled": true,
+          "compile_milliseconds": 383,
+          "train_milliseconds": 5.7,
+          "loss": 5.74821
+        },
+        {
+          "id": "theseus_width512_decoder_repeat_3",
+          "compiled": true,
+          "compile_milliseconds": 374,
+          "train_milliseconds": 4.6,
+          "loss": 5.74821
+        },
+        {
+          "id": "theseus_width512_decoder_repeat_4_guarded",
+          "compiled": true,
+          "compile_milliseconds": 451,
+          "train_milliseconds": 4.6,
+          "loss": 5.74821,
+          "resource_receipt": {
+            "path": "reports/ane_training_repeat3.host_resource_safety.json",
+            "passed": true,
+            "wall_seconds": 0.879,
+            "maximum_process_rss_mib": 67.656,
+            "maximum_inferred_unified_memory_mib": 99.297,
+            "minimum_reclaimable_available_mib": 3320.344,
+            "maximum_swapout_growth_mib": 0.0
+          }
+        }
+      ],
+      "sandbox_diagnostic": {
+        "id": "theseus_width512_decoder_sandboxed",
+        "compiled": false,
+        "error": "sdpaBwd2 compile failed",
+        "classification": "EXPECTED_PRIVATE_ACCELERATOR_ACCESS_DENIAL_EXCLUDED_FROM_COMPILER_REPEATABILITY"
+      },
+      "incompatible_mil_attempts": [
+        {
+          "id": "dynamic_weight_matmul_64x64",
+          "compiled": false,
+          "error": "_ANECompiler : ANECCompile() FAILED",
+          "scope": "tested generic dynamic-weight MIL only"
+        },
+        {
+          "id": "single_blob_static_reload_probe_64x64",
+          "compiled": false,
+          "error": "_ANECompiler : ANECCompile() FAILED",
+          "scope": "failed before reload behavior; reload is untested for compatible MIL"
+        }
+      ],
+      "interpretation": "The compatible baked-weight control is repeatable across four fresh executions, including a guarded zero-swap run. Generic dynamic weights are unsupported in the tested M1 MIL form, so safe recompilation amortization/overlap is the training owner."
+    },
+    "public_metal_iosurface_bridge": {
+      "state": "GREEN",
+      "device": "Apple M1",
+      "elements": 4096,
+      "maximum_absolute_delta": 0.0,
+      "intermediate_host_round_trip": false,
+      "host_verification_read": true,
+      "claim_scope": "Public Metal-to-IOSurface import and compute only; no ANE interop or joint timing claim."
+    },
+    "metal_ane_process_coexistence": {
+      "state": "GREEN_MECHANICAL_OVERLAP",
+      "rounds": 3,
+      "standalone_gpu_median_seconds": 0.3466774999978952,
+      "standalone_ane_median_seconds": 0.5392641670187004,
+      "concurrent_wall_median_seconds": 0.5569946659961715,
+      "overlap_speedup_vs_serial_sum": 1.59057477764551,
+      "gpu_latency_slowdown": 1.0522855046671127,
+      "ane_latency_slowdown": 1.0274477405825773,
+      "resource_receipt": {
+        "path": "reports/ane_metal_coexistence_m1.host_resource_safety.json",
+        "maximum_inferred_unified_memory_mib": 219.547,
+        "minimum_reclaimable_available_mib": 3555.266,
+        "maximum_swapout_growth_mib": 0.0
+      },
+      "claim_scope": "Independent useful-work process coexistence only; no same-tensor, zero-copy, split-linear, replay, or end-to-end training claim."
     }
   },
   "upstream_m1_context": {
@@ -117,8 +200,8 @@
   },
   "backend_disposition": {
     "mlx_production_route": "RETAINED",
-    "direct_ane_training": "ISOLATED_PROSPECTIVE_BACKEND",
-    "hybrid_metal_ane": "PROSPECTIVE_REQUIRES_COEXISTENCE_BENCHMARK",
+    "direct_ane_training": "ISOLATED_BAKED_WEIGHT_CONTROL_REPEATABLE_RECOMPILE_ROUTE_UNQUALIFIED",
+    "hybrid_metal_ane": "MECHANICAL_PROCESS_OVERLAP_GREEN_SHARED_TENSOR_ZERO_COPY_INCONCLUSIVE",
     "automatic_fallback_before_checkpoint_mutation_required": true,
     "capability_claim": "NONE"
   },

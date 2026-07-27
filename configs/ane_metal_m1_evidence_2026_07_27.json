@@ -1,0 +1,145 @@
+{
+  "policy": "project_theseus_ane_metal_m1_evidence_v1",
+  "shape_id": "theseus_width512_decoder_control",
+  "host": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "memory_gib": 16,
+    "macos_build": "24A5320a"
+  },
+  "source_commit": "d91c9845c0784dec7753048954fc6d0e8411fe29",
+  "compiler_attempts": [
+    {
+      "id": "per_matrix_training_smoke",
+      "compiled": true,
+      "shape": {
+        "d_model": 512,
+        "ff_dim": 1536,
+        "heads": 8,
+        "sequence": 64,
+        "layers": 1
+      },
+      "compiled_weight_bearing_kernels": 5,
+      "compile_milliseconds": 408,
+      "optimizer_steps": 1,
+      "step_milliseconds": 6.2,
+      "loss_finite": true
+    },
+    {
+      "id": "per_matrix_training_smoke_repeat_2",
+      "compiled": true,
+      "shape": {
+        "d_model": 512,
+        "ff_dim": 1536,
+        "heads": 8,
+        "sequence": 64,
+        "layers": 1
+      },
+      "compiled_weight_bearing_kernels": 5,
+      "compile_milliseconds": 383,
+      "optimizer_steps": 1,
+      "step_milliseconds": 5.7,
+      "loss_finite": true
+    },
+    {
+      "id": "per_matrix_training_smoke_repeat_3",
+      "compiled": true,
+      "shape": {
+        "d_model": 512,
+        "ff_dim": 1536,
+        "heads": 8,
+        "sequence": 64,
+        "layers": 1
+      },
+      "compiled_weight_bearing_kernels": 5,
+      "compile_milliseconds": 374,
+      "optimizer_steps": 1,
+      "step_milliseconds": 4.6,
+      "loss_finite": true
+    },
+    {
+      "id": "per_matrix_training_smoke_repeat_4_guarded",
+      "compiled": true,
+      "shape": {
+        "d_model": 512,
+        "ff_dim": 1536,
+        "heads": 8,
+        "sequence": 64,
+        "layers": 1
+      },
+      "compiled_weight_bearing_kernels": 5,
+      "compile_milliseconds": 451,
+      "optimizer_steps": 1,
+      "step_milliseconds": 4.6,
+      "loss_finite": true,
+      "resource_receipt": {
+        "path": "reports/ane_training_repeat3.host_resource_safety.json",
+        "passed": true,
+        "wall_seconds": 0.879,
+        "maximum_process_rss_mib": 67.656,
+        "maximum_inferred_unified_memory_mib": 99.297,
+        "minimum_reclaimable_available_mib": 3320.344,
+        "maximum_swapout_growth_mib": 0.0
+      }
+    }
+  ],
+  "incompatible_mil_attempts": [
+    {
+      "id": "dynamic_weight_matmul_64x64",
+      "compiled": false,
+      "error": "_ANECompiler : ANECCompile() FAILED",
+      "scope": "The tested generic dynamic-weight MIL form only."
+    },
+    {
+      "id": "single_blob_static_reload_probe_64x64",
+      "compiled": false,
+      "error": "_ANECompiler : ANECCompile() FAILED",
+      "scope": "Compilation failed before reload behavior could be tested; this does not falsify reload for a compatible MIL form."
+    }
+  ],
+  "sandbox_diagnostic": {
+    "state": "EXPECTED_ACCESS_DENIAL_NOT_COMPILER_EVIDENCE",
+    "failed_stage": "sdpaBwd2",
+    "excluded_from_repeatability_count": true
+  },
+  "weight_update_path": {
+    "state": "BAKED_WEIGHT_RECOMPILE_ONLY",
+    "next_gate": "Measure gradient-accumulation amortization and background compilation overlap without mixed weight generations."
+  },
+  "process_coexistence": {
+    "state": "GREEN_MECHANICAL_OVERLAP",
+    "rounds": 3,
+    "gpu_workload": "production-shaped compiled MLX QKV output/loss/gradient station",
+    "ane_workload": "width-512 baked-weight one-step ANE training control",
+    "standalone_gpu_median_seconds": 0.3466774999978952,
+    "standalone_ane_median_seconds": 0.5392641670187004,
+    "concurrent_wall_median_seconds": 0.5569946659961715,
+    "overlap_speedup_vs_serial_sum": 1.59057477764551,
+    "gpu_latency_slowdown": 1.0522855046671127,
+    "ane_latency_slowdown": 1.0274477405825773,
+    "resource_receipt": {
+      "path": "reports/ane_metal_coexistence_m1.host_resource_safety.json",
+      "passed": true,
+      "maximum_process_rss_mib": 127.031,
+      "maximum_inferred_unified_memory_mib": 219.547,
+      "minimum_reclaimable_available_mib": 3555.266,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "claim_scope": "Independent-process useful-work coexistence only; no shared-tensor, zero-copy, split-linear, replay, or end-to-end training gain."
+  },
+  "public_metal_iosurface_probe": {
+    "state": "GREEN",
+    "device": "Apple M1",
+    "elements": 4096,
+    "maximum_absolute_delta": 0.0,
+    "intermediate_host_round_trip": false,
+    "host_verification_read": true,
+    "source": "native/ane_metal/metal_iosurface_probe.m"
+  },
+  "metal_control_seconds": [],
+  "split_candidates": [],
+  "interpretation": "The public Metal-to-IOSurface half is exact, the baked-weight Theseus-width ANE training control compiles repeatably, and independent useful MLX/ANE workloads mechanically overlap by 1.591x versus their serial sum. Generic dynamic weights remain unsupported in the tested M1 MIL form, so training must qualify safe recompilation and explicit same-tensor zero-copy execution before a split or end-to-end timing claim.",
+  "canonical_checkpoint_mutated": false,
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0
+}

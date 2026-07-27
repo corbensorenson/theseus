@@ -1,0 +1,43 @@
+{
+  "policy": "project_theseus_ane_metal_heterogeneous_plan_v1",
+  "config_policy": "project_theseus_ane_metal_heterogeneous_execution_v1",
+  "shape_id": "theseus_width512_decoder_control",
+  "compiler": {
+    "attempt_count": 4,
+    "success_count": 4,
+    "failure_count": 0,
+    "repeatable": true,
+    "state": "M1_STATIC_BAKED_COMPILER_REPEATABLE"
+  },
+  "incompatible_mil_attempts": [
+    {
+      "id": "dynamic_weight_matmul_64x64",
+      "compiled": false,
+      "error": "_ANECompiler : ANECCompile() FAILED",
+      "scope": "The tested generic dynamic-weight MIL form only."
+    },
+    {
+      "id": "single_blob_static_reload_probe_64x64",
+      "compiled": false,
+      "error": "_ANECompiler : ANECCompile() FAILED",
+      "scope": "Compilation failed before reload behavior could be tested; this does not falsify reload for a compatible MIL form."
+    }
+  ],
+  "weight_update_path": {
+    "state": "BAKED_WEIGHT_RECOMPILE_ONLY",
+    "next_gate": "Measure gradient-accumulation amortization and background compilation overlap without mixed weight generations."
+  },
+  "canonical_backend_changed": false,
+  "checkpoint_mutation_authorized": false,
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0,
+  "trigger_state": "INCONCLUSIVE_IMPLEMENTATION",
+  "control": null,
+  "candidates": [],
+  "selected": null,
+  "blockers": [
+    "measured_metal_control_and_joint_candidates",
+    "zero_copy_lazy_compatible_surface_bridge",
+    "qualified_training_weight_update_path"
+  ]
+}

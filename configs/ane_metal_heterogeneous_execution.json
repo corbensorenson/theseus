@@ -1,0 +1,158 @@
+{
+  "policy": "project_theseus_ane_metal_heterogeneous_execution_v1",
+  "canonical_enabled": false,
+  "purpose": "Measure explicit joint Apple Neural Engine and Metal execution without weakening MLX checkpoint, replay, numerical, or host-safety authority.",
+  "host_scope": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "memory_gib": 16,
+    "macos_build": "24A5320a",
+    "xcode_version": "16.2",
+    "mlx_version": "0.32.0"
+  },
+  "source_prior_art": [
+    {
+      "repository": "https://github.com/maderix/ANE",
+      "commit": "d91c9845c0784dec7753048954fc6d0e8411fe29",
+      "license": "MIT",
+      "use": "Private-API ANE kernel, dynamic-weight, backward, IOSurface, and CPU-gradient research reference; no source imported."
+    },
+    {
+      "repository": "https://github.com/Mininglamp-AI/cider",
+      "commit": "4d91fcee9439f7aea17ae6e965271d9536c604a0",
+      "license": "MIT",
+      "use": "Output-channel ANE+GPU split reference and negative evidence that eager synchronization and host copies erase end-to-end gains; no source imported."
+    }
+  ],
+  "execution_modes": {
+    "coreml_all_inference_baseline": {
+      "scope": "exported inference-only subgraphs",
+      "compute_units": [
+        "all",
+        "cpuAndGPU",
+        "cpuAndNeuralEngine"
+      ],
+      "placement_authority": "Core ML compute plan and runtime profiling",
+      "claim_boundary": "Automatic graph partitioning is opaque and does not establish simultaneous ANE+GPU execution."
+    },
+    "explicit_output_channel_split": {
+      "scope": "large expansion projections only",
+      "forward": "ANE and Metal compute disjoint output-channel partitions concurrently, then concatenate without a host round trip.",
+      "backward": "Partition-local weight gradients retain exact parameter ownership; input-gradient partitions are summed before upstream use.",
+      "split_axis": "output_channels",
+      "ratio_authority": "shape-specific measured sweep"
+    },
+    "microbatch_pipeline": {
+      "scope": "training overlap candidate after split-linear parity",
+      "schedule": "Overlap ANE forward/input-gradient work for one microbatch with Metal weight-gradient, optimizer, or independent microbatch work.",
+      "requirement": "Versioned weights and gradients must prevent stale-read or mixed-generation publication."
+    }
+  },
+  "shape_candidates": [
+    {
+      "id": "qkv_projection",
+      "batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 768,
+      "route": "candidate"
+    },
+    {
+      "id": "gate_up_projection",
+      "batch": 4,
+      "sequence": 512,
+      "input_channels": 512,
+      "output_channels": 3072,
+      "route": "candidate"
+    },
+    {
+      "id": "down_projection",
+      "batch": 4,
+      "sequence": 512,
+      "input_channels": 1536,
+      "output_channels": 512,
+      "route": "metal_control_until_measured"
+    },
+    {
+      "id": "single_token_decode",
+      "batch": 1,
+      "sequence": 1,
+      "input_channels": 512,
+      "output_channels": 768,
+      "route": "metal_control_until_measured"
+    }
+  ],
+  "split_ratios": [
+    0.0,
+    0.125,
+    0.25,
+    0.375,
+    0.5,
+    0.625,
+    0.75,
+    0.875,
+    1.0
+  ],
+  "shared_surface_contract": {
+    "allocation": "IOSurface",
+    "metal_import": "newTextureWithDescriptor:iosurface:plane:",
+    "ane_import": "_ANEIOSurfaceObject",
+    "host_round_trip_allowed_in_adoption_measurement": false,
+    "writer_rule": "Exactly one of host, Metal, or ANE may write a surface generation, and no reader may be active while a writer is active.",
+    "reader_rule": "Metal and ANE may concurrently read a sealed immutable generation.",
+    "publication_rule": "Only a fully joined, parity-checked generation may become checkpoint-visible."
+  },
+  "qualification_gates": {
+    "private_classes_present": true,
+    "mil_compile_repeatable": true,
+    "output_parity": true,
+    "loss_parity": true,
+    "gradient_parity": true,
+    "save_reload_replay": true,
+    "no_host_round_trip": true,
+    "actual_overlap_proven": true,
+    "gpu_latency_not_regressed_beyond_uncertainty": true,
+    "joined_wall_gain_exceeds_uncertainty": true,
+    "zero_swap_growth": true,
+    "resource_reserve_preserved": true,
+    "thermal_sustainability": true,
+    "independent_gate_audit": true,
+    "checkpoint_mutation_after_all_gates_only": true
+  },
+  "fallback": {
+    "route": "qualified_mlx_metal",
+    "timing": "before_checkpoint_mutation",
+    "triggers": [
+      "private_api_missing",
+      "compiler_failure",
+      "compiler_nonrepeatability",
+      "parity_failure",
+      "surface_ownership_violation",
+      "host_copy_detected",
+      "negative_or_uncertain_joined_wall_gain",
+      "gpu_slowdown",
+      "resource_or_thermal_stop",
+      "os_or_chip_identity_change"
+    ]
+  },
+  "current_evidence": {
+    "ane_compiler_state": "M1_STATIC_BAKED_TRAINING_CONTROL_REPEATABLE",
+    "successful_training_smokes": 4,
+    "dynamic_weight_mil_state": "M1_UNSUPPORTED_IN_TESTED_FORM",
+    "single_blob_small_shape_state": "M1_MIL_INCOMPATIBLE_BEFORE_RELOAD_TEST",
+    "weight_update_path": "BAKED_WEIGHT_RECOMPILE_ONLY_PENDING_OVERLAP_AND_AMORTIZATION",
+    "process_coexistence": {
+      "state": "GREEN_MECHANICAL_OVERLAP",
+      "rounds": 3,
+      "overlap_speedup_vs_serial_sum": 1.59057477764551,
+      "gpu_latency_slowdown": 1.0522855046671127,
+      "ane_latency_slowdown": 1.0274477405825773,
+      "maximum_swapout_growth_mib": 0.0,
+      "claim_scope": "Independent useful workloads only; no shared tensor or end-to-end training claim."
+    },
+    "explicit_joint_execution_measured": false,
+    "production_eligible": false
+  },
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0
+}

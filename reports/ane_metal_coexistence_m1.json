@@ -1,0 +1,158 @@
+{
+  "policy": "project_theseus_ane_metal_coexistence_probe_v1",
+  "trigger_state": "GREEN_MECHANICAL_OVERLAP",
+  "rounds": 3,
+  "standalone": {
+    "gpu": {
+      "count": 3,
+      "minimum_seconds": 0.3396809579571709,
+      "median_seconds": 0.3466774999978952,
+      "maximum_seconds": 0.42592508398229256,
+      "mean_seconds": 0.3707611806457862
+    },
+    "ane": {
+      "count": 3,
+      "minimum_seconds": 0.5290097499964759,
+      "median_seconds": 0.5392641670187004,
+      "maximum_seconds": 0.607919333036989,
+      "mean_seconds": 0.5587310833507217
+    }
+  },
+  "concurrent": {
+    "wall": {
+      "count": 3,
+      "minimum_seconds": 0.5519764170167036,
+      "median_seconds": 0.5569946659961715,
+      "maximum_seconds": 0.6486435419647023,
+      "mean_seconds": 0.5858715416591925
+    },
+    "gpu": {
+      "count": 3,
+      "minimum_seconds": 0.36316554102813825,
+      "median_seconds": 0.3648037080420181,
+      "maximum_seconds": 0.3655270410235971,
+      "mean_seconds": 0.3644987633645845
+    },
+    "ane": {
+      "count": 3,
+      "minimum_seconds": 0.5514339169603772,
+      "median_seconds": 0.5540657499805093,
+      "maximum_seconds": 0.6482059170375578,
+      "mean_seconds": 0.5845685279928148
+    }
+  },
+  "overlap_speedup_vs_serial_sum": 1.59057477764551,
+  "gpu_latency_slowdown": 1.0522855046671127,
+  "ane_latency_slowdown": 1.0274477405825773,
+  "actual_overlap_observed": true,
+  "all_commands_green": true,
+  "raw": {
+    "standalone": {
+      "gpu": [
+        {
+          "seconds": 0.42592508398229256,
+          "returncode": 0,
+          "output_bytes": 2557,
+          "output_sha256": "d68dc197c435f2684d2c6546a1d8620c6590d28644e9f6d19ccbc81e8cd97159",
+          "output_tail": "d_utc\": \"2026-07-27T18:35:08.891743+00:00\",\n  \"decision\": {\n    \"adopted_in_production\": false,\n    \"requires_full_route_replay_before_adoption\": true,\n    \"station_candidate_faster\": false\n  },\n  \"execution\": {\n    \"alternating_pairs\": 6,\n    \"compiled\": true,\n    \"compute_dtype\": \"float32\",\n    \"externally_guarded\": true,\n    \"warmup\": 2\n  },\n  \"external_inference_calls\": 0,\n  \"hardware\": {\n    \"machine\": \"arm64\",\n    \"mlx_version\": \"0.32.0\",\n    \"processor\": \"arm\"\n  },\n  \"integrity\": {\n    \"all_candidate_gradients_finite\": true,\n    \"gradient_maximum_absolute_deltas\": [\n      1.9326762412674725e-12,\n      2.546585164964199e-10,\n      2.6921043172478676e-10,\n      1.9281287677586079e-10\n    ],\n    \"gradient_relative_l2\": [\n      3.883606081533698e-07,\n      7.71530289941542e-07,\n      7.808197823312386e-07,\n      7.701055403107255e-07\n    ],\n    \"loss_absolute_delta\": 0.0,\n    \"output_maximum_absolute_delta\": 0.0,\n    \"output_relative_l2\": 0.0,\n    \"parameter_names_and_shapes_can_remain_separate\": true,\n    \"retained_parameter_shapes\": [\n      [\n        512,\n        512\n      ],\n      [\n        128,\n        512\n      ],\n      [\n        128,\n        512\n      ]\n    ]\n  },\n  \"mlx_memory\": {\n    \"active_bytes\": 16,\n    \"cache_bytes\": 89851220,\n    \"peak_bytes\": 88605752\n  },\n  \"policy\": \"project_theseus_mlx_projection_fusion_probe_v1\",\n  \"projected_full_microbatch_saved_fraction_upper_bound\": 0.0,\n  \"projected_full_microbatch_saved_percent_upper_bound\": 0.0,\n  \"public_benchmark_rows_read\": 0,\n  \"shape\": {\n    \"batch_size\": 4,\n    \"ff_size\": 1536,\n    \"head_count\": 8,\n    \"hidden_size\": 512,\n    \"kv_head_count\": 2,\n    \"layer_count\": 12,\n    \"sequence_length\": 512\n  },\n  \"source_concept\": {\n    \"audited_commit\": \"d91c9845c0784dec7753048954fc6d0e8411fe29\",\n    \"concepts\": [\n      \"fused QKV projection dispatch\",\n      \"fused SwiGLU gate/up projection dispatch\"\n    ],\n    \"repository\": \"https://github.com/maderix/ANE\",\n    \"source_code_imported\": false\n  },\n  \"station\": \"qkv_projection\",\n  \"trigger_state\": \"GREEN\"\n}\n"
+        },
+        {
+          "seconds": 0.3396809579571709,
+          "returncode": 0,
+          "output_bytes": 2563,
+          "output_sha256": "5cd3e1c0ffcd69fdd393472388ad72eb7cd67722d44ed4909526a1190b9632b3",
+          "output_tail": " \"2026-07-27T18:35:10.860798+00:00\",\n  \"decision\": {\n    \"adopted_in_production\": false,\n    \"requires_full_route_replay_before_adoption\": true,\n    \"station_candidate_faster\": true\n  },\n  \"execution\": {\n    \"alternating_pairs\": 6,\n    \"compiled\": true,\n    \"compute_dtype\": \"float32\",\n    \"externally_guarded\": true,\n    \"warmup\": 2\n  },\n  \"external_inference_calls\": 0,\n  \"hardware\": {\n    \"machine\": \"arm64\",\n    \"mlx_version\": \"0.32.0\",\n    \"processor\": \"arm\"\n  },\n  \"integrity\": {\n    \"all_candidate_gradients_finite\": true,\n    \"gradient_maximum_absolute_deltas\": [\n      1.9326762412674725e-12,\n      2.546585164964199e-10,\n      2.6921043172478676e-10,\n      1.9281287677586079e-10\n    ],\n    \"gradient_relative_l2\": [\n      3.883606081533698e-07,\n      7.71530289941542e-07,\n      7.808197823312386e-07,\n      7.701055403107255e-07\n    ],\n    \"loss_absolute_delta\": 0.0,\n    \"output_maximum_absolute_delta\": 0.0,\n    \"output_relative_l2\": 0.0,\n    \"parameter_names_and_shapes_can_remain_separate\": true,\n    \"retained_parameter_shapes\": [\n      [\n        512,\n        512\n      ],\n      [\n        128,\n        512\n      ],\n      [\n        128,\n        512\n      ]\n    ]\n  },\n  \"mlx_memory\": {\n    \"active_bytes\": 16,\n    \"cache_bytes\": 89916756,\n    \"peak_bytes\": 88605752\n  },\n  \"policy\": \"project_theseus_mlx_projection_fusion_probe_v1\",\n  \"projected_full_microbatch_saved_fraction_upper_bound\": 0.013567,\n  \"projected_full_microbatch_saved_percent_upper_bound\": 1.3567,\n  \"public_benchmark_rows_read\": 0,\n  \"shape\": {\n    \"batch_size\": 4,\n    \"ff_size\": 1536,\n    \"head_count\": 8,\n    \"hidden_size\": 512,\n    \"kv_head_count\": 2,\n    \"layer_count\": 12,\n    \"sequence_length\": 512\n  },\n  \"source_concept\": {\n    \"audited_commit\": \"d91c9845c0784dec7753048954fc6d0e8411fe29\",\n    \"concepts\": [\n      \"fused QKV projection dispatch\",\n      \"fused SwiGLU gate/up projection dispatch\"\n    ],\n    \"repository\": \"https://github.com/maderix/ANE\",\n    \"source_code_imported\": false\n  },\n  \"station\": \"qkv_projection\",\n  \"trigger_state\": \"GREEN\"\n}\n"
+        },
+        {
+          "seconds": 0.3466774999978952,
+          "returncode": 0,
+          "output_bytes": 2557,
+          "output_sha256": "d44674c86ed96cb0965cdefb0b2c789d5729c9f921444789150de091df57e5a4",
+          "output_tail": "d_utc\": \"2026-07-27T18:35:11.759418+00:00\",\n  \"decision\": {\n    \"adopted_in_production\": false,\n    \"requires_full_route_replay_before_adoption\": true,\n    \"station_candidate_faster\": false\n  },\n  \"execution\": {\n    \"alternating_pairs\": 6,\n    \"compiled\": true,\n    \"compute_dtype\": \"float32\",\n    \"externally_guarded\": true,\n    \"warmup\": 2\n  },\n  \"external_inference_calls\": 0,\n  \"hardware\": {\n    \"machine\": \"arm64\",\n    \"mlx_version\": \"0.32.0\",\n    \"processor\": \"arm\"\n  },\n  \"integrity\": {\n    \"all_candidate_gradients_finite\": true,\n    \"gradient_maximum_absolute_deltas\": [\n      1.9326762412674725e-12,\n      2.546585164964199e-10,\n      2.6921043172478676e-10,\n      1.9281287677586079e-10\n    ],\n    \"gradient_relative_l2\": [\n      3.883606081533698e-07,\n      7.71530289941542e-07,\n      7.808197823312386e-07,\n      7.701055403107255e-07\n    ],\n    \"loss_absolute_delta\": 0.0,\n    \"output_maximum_absolute_delta\": 0.0,\n    \"output_relative_l2\": 0.0,\n    \"parameter_names_and_shapes_can_remain_separate\": true,\n    \"retained_parameter_shapes\": [\n      [\n        512,\n        512\n      ],\n      [\n        128,\n        512\n      ],\n      [\n        128,\n        512\n      ]\n    ]\n  },\n  \"mlx_memory\": {\n    \"active_bytes\": 16,\n    \"cache_bytes\": 91489620,\n    \"peak_bytes\": 88605752\n  },\n  \"policy\": \"project_theseus_mlx_projection_fusion_probe_v1\",\n  \"projected_full_microbatch_saved_fraction_upper_bound\": 0.0,\n  \"projected_full_microbatch_saved_percent_upper_bound\": 0.0,\n  \"public_benchmark_rows_read\": 0,\n  \"shape\": {\n    \"batch_size\": 4,\n    \"ff_size\": 1536,\n    \"head_count\": 8,\n    \"hidden_size\": 512,\n    \"kv_head_count\": 2,\n    \"layer_count\": 12,\n    \"sequence_length\": 512\n  },\n  \"source_concept\": {\n    \"audited_commit\": \"d91c9845c0784dec7753048954fc6d0e8411fe29\",\n    \"concepts\": [\n      \"fused QKV projection dispatch\",\n      \"fused SwiGLU gate/up projection dispatch\"\n    ],\n    \"repository\": \"https://github.com/maderix/ANE\",\n    \"source_code_imported\": false\n  },\n  \"station\": \"qkv_projection\",\n  \"trigger_state\": \"GREEN\"\n}\n"
+        }
+      ],
+      "ane": [
+        {
+          "seconds": 0.5392641670187004,
+          "returncode": 0,
+          "output_bytes": 1289,
+          "output_sha256": "c212a92c4374518a32455d1d37efd4df09636070bb138d8a647a8b2026b846e8",
+          "output_tail": "=== ANE Training: Stories110M (12 layers) ===\ndim=512 hidden=1536 heads=8 seq=64 vocab=512 layers=1\nCannot open stories110M.bin\nPretrained load failed, using random init\nParams: 3.67M (transformer 3.41M + embed 0.26M)\nKernels: 6 (5 weight-bearing + 1 static sdpaBwd2)\nAccum 1 steps per recompile | Adam LR=3.0e-04 b1=0.9 b2=0.999\nFLOPs/step: fwd=436M bwd_dx=436M bwd_dW=436M sdpa_bwd=21M total=1430M\nANE FLOPs/step: 893M (fwd+bwd_dx+sdpa_bwd) | CPU: dW+cls (cblas)\n\nToken data: 524288 tokens (1.0 MB)\n  Compiling layer 1/1... (1 compiles)\r  Compiled 5 kernels in 392ms                    \nstep 0    loss=5.7482\n{\"type\":\"step\",\"step\":0,\"loss\":5.748210,\"t_ane\":0.805,\"t_io\":0.173,\"t_cls\":0.228,\"t_elem\":0.205,\"t_rms\":0.029,\"t_cblas_wait\":0.000,\"compiles\":6}\n  [batch 1: compile=392ms train=4.4ms (4.4ms/step) compiles=6]\n    ane=0.8 io=0.2 cls=0.2 elem=0.2 rms=0.0 cblas_wait=0.0 ms/step\n{\"type\":\"batch\",\"batch\":1,\"compile_ms\":392.2,\"train_ms\":4.4,\"ms_per_step\":4.4}\n{\"type\":\"perf\",\"ane_tflops\":0.204,\"ane_util_pct\":1.29}\n\n=== Efficiency Report ===\nTotal steps:     1\nWall time:       400 ms (0.4 s)\nCompile time:    392 ms (98.1%)\nTrain time:      4 ms (1.1%)\nAvg train:       4.4 ms/step\nANE TFLOPS:      0.20 sustained\nTotal TFLOPS:    0.33 (ANE+CPU)\nANE utilization: 1.3% of 15.8 TFLOPS\n"
+        },
+        {
+          "seconds": 0.5290097499964759,
+          "returncode": 0,
+          "output_bytes": 1289,
+          "output_sha256": "e1bd3e85c5bc794c656cb1e62617f8a0c819ad19ddef91d57c18d3f3d6d2251d",
+          "output_tail": "=== ANE Training: Stories110M (12 layers) ===\ndim=512 hidden=1536 heads=8 seq=64 vocab=512 layers=1\nCannot open stories110M.bin\nPretrained load failed, using random init\nParams: 3.67M (transformer 3.41M + embed 0.26M)\nKernels: 6 (5 weight-bearing + 1 static sdpaBwd2)\nAccum 1 steps per recompile | Adam LR=3.0e-04 b1=0.9 b2=0.999\nFLOPs/step: fwd=436M bwd_dx=436M bwd_dW=436M sdpa_bwd=21M total=1430M\nANE FLOPs/step: 893M (fwd+bwd_dx+sdpa_bwd) | CPU: dW+cls (cblas)\n\nToken data: 524288 tokens (1.0 MB)\n  Compiling layer 1/1... (1 compiles)\r  Compiled 5 kernels in 391ms                    \nstep 0    loss=5.7482\n{\"type\":\"step\",\"step\":0,\"loss\":5.748210,\"t_ane\":0.780,\"t_io\":0.201,\"t_cls\":0.195,\"t_elem\":0.200,\"t_rms\":0.029,\"t_cblas_wait\":0.000,\"compiles\":6}\n  [batch 1: compile=391ms train=4.0ms (4.0ms/step) compiles=6]\n    ane=0.8 io=0.2 cls=0.2 elem=0.2 rms=0.0 cblas_wait=0.0 ms/step\n{\"type\":\"batch\",\"batch\":1,\"compile_ms\":391.0,\"train_ms\":4.0,\"ms_per_step\":4.0}\n{\"type\":\"perf\",\"ane_tflops\":0.223,\"ane_util_pct\":1.41}\n\n=== Efficiency Report ===\nTotal steps:     1\nWall time:       399 ms (0.4 s)\nCompile time:    391 ms (98.1%)\nTrain time:      4 ms (1.0%)\nAvg train:       4.0 ms/step\nANE TFLOPS:      0.22 sustained\nTotal TFLOPS:    0.36 (ANE+CPU)\nANE utilization: 1.4% of 15.8 TFLOPS\n"
+        },
+        {
+          "seconds": 0.607919333036989,
+          "returncode": 0,
+          "output_bytes": 1289,
+          "output_sha256": "328ad74ab6668184902543fd8b983d59ed99ab5c17a5c5a0b91ab1cc98ac5383",
+          "output_tail": "=== ANE Training: Stories110M (12 layers) ===\ndim=512 hidden=1536 heads=8 seq=64 vocab=512 layers=1\nCannot open stories110M.bin\nPretrained load failed, using random init\nParams: 3.67M (transformer 3.41M + embed 0.26M)\nKernels: 6 (5 weight-bearing + 1 static sdpaBwd2)\nAccum 1 steps per recompile | Adam LR=3.0e-04 b1=0.9 b2=0.999\nFLOPs/step: fwd=436M bwd_dx=436M bwd_dW=436M sdpa_bwd=21M total=1430M\nANE FLOPs/step: 893M (fwd+bwd_dx+sdpa_bwd) | CPU: dW+cls (cblas)\n\nToken data: 524288 tokens (1.0 MB)\n  Compiling layer 1/1... (1 compiles)\r  Compiled 5 kernels in 470ms                    \nstep 0    loss=5.7482\n{\"type\":\"step\",\"step\":0,\"loss\":5.748210,\"t_ane\":0.679,\"t_io\":0.141,\"t_cls\":0.239,\"t_elem\":0.189,\"t_rms\":0.030,\"t_cblas_wait\":0.000,\"compiles\":6}\n  [batch 1: compile=470ms train=4.5ms (4.5ms/step) compiles=6]\n    ane=0.7 io=0.1 cls=0.2 elem=0.2 rms=0.0 cblas_wait=0.0 ms/step\n{\"type\":\"batch\",\"batch\":1,\"compile_ms\":470.2,\"train_ms\":4.5,\"ms_per_step\":4.5}\n{\"type\":\"perf\",\"ane_tflops\":0.197,\"ane_util_pct\":1.25}\n\n=== Efficiency Report ===\nTotal steps:     1\nWall time:       478 ms (0.5 s)\nCompile time:    470 ms (98.3%)\nTrain time:      5 ms (0.9%)\nAvg train:       4.5 ms/step\nANE TFLOPS:      0.20 sustained\nTotal TFLOPS:    0.32 (ANE+CPU)\nANE utilization: 1.2% of 15.8 TFLOPS\n"
+        }
+      ]
+    },
+    "concurrent_pairs": [
+      {
+        "round": 0,
+        "wall_seconds": 0.5569946659961715,
+        "gpu": {
+          "seconds": 0.3648037080420181,
+          "returncode": 0,
+          "output_bytes": 2563,
+          "output_sha256": "537b44d14c5ef0f99c21cb90163dc734acf9bbb100b7925d844adc0be0d727da",
+          "output_tail": " \"2026-07-27T18:35:09.799213+00:00\",\n  \"decision\": {\n    \"adopted_in_production\": false,\n    \"requires_full_route_replay_before_adoption\": true,\n    \"station_candidate_faster\": true\n  },\n  \"execution\": {\n    \"alternating_pairs\": 6,\n    \"compiled\": true,\n    \"compute_dtype\": \"float32\",\n    \"externally_guarded\": true,\n    \"warmup\": 2\n  },\n  \"external_inference_calls\": 0,\n  \"hardware\": {\n    \"machine\": \"arm64\",\n    \"mlx_version\": \"0.32.0\",\n    \"processor\": \"arm\"\n  },\n  \"integrity\": {\n    \"all_candidate_gradients_finite\": true,\n    \"gradient_maximum_absolute_deltas\": [\n      1.9326762412674725e-12,\n      2.546585164964199e-10,\n      2.6921043172478676e-10,\n      1.9281287677586079e-10\n    ],\n    \"gradient_relative_l2\": [\n      3.883606081533698e-07,\n      7.71530289941542e-07,\n      7.808197823312386e-07,\n      7.701055403107255e-07\n    ],\n    \"loss_absolute_delta\": 0.0,\n    \"output_maximum_absolute_delta\": 0.0,\n    \"output_relative_l2\": 0.0,\n    \"parameter_names_and_shapes_can_remain_separate\": true,\n    \"retained_parameter_shapes\": [\n      [\n        512,\n        512\n      ],\n      [\n        128,\n        512\n      ],\n      [\n        128,\n        512\n      ]\n    ]\n  },\n  \"mlx_memory\": {\n    \"active_bytes\": 16,\n    \"cache_bytes\": 89589076,\n    \"peak_bytes\": 88605752\n  },\n  \"policy\": \"project_theseus_mlx_projection_fusion_probe_v1\",\n  \"projected_full_microbatch_saved_fraction_upper_bound\": 0.022361,\n  \"projected_full_microbatch_saved_percent_upper_bound\": 2.2361,\n  \"public_benchmark_rows_read\": 0,\n  \"shape\": {\n    \"batch_size\": 4,\n    \"ff_size\": 1536,\n    \"head_count\": 8,\n    \"hidden_size\": 512,\n    \"kv_head_count\": 2,\n    \"layer_count\": 12,\n    \"sequence_length\": 512\n  },\n  \"source_concept\": {\n    \"audited_commit\": \"d91c9845c0784dec7753048954fc6d0e8411fe29\",\n    \"concepts\": [\n      \"fused QKV projection dispatch\",\n      \"fused SwiGLU gate/up projection dispatch\"\n    ],\n    \"repository\": \"https://github.com/maderix/ANE\",\n    \"source_code_imported\": false\n  },\n  \"station\": \"qkv_projection\",\n  \"trigger_state\": \"GREEN\"\n}\n"
+        },
+        "ane": {
+          "seconds": 0.5540657499805093,
+          "returncode": 0,
+          "output_bytes": 1289,
+          "output_sha256": "abdaf80f61ebd12649d5d4e1fcebc3e5256f47eeb94f7d55dce5d4dab34d6b20",
+          "output_tail": "=== ANE Training: Stories110M (12 layers) ===\ndim=512 hidden=1536 heads=8 seq=64 vocab=512 layers=1\nCannot open stories110M.bin\nPretrained load failed, using random init\nParams: 3.67M (transformer 3.41M + embed 0.26M)\nKernels: 6 (5 weight-bearing + 1 static sdpaBwd2)\nAccum 1 steps per recompile | Adam LR=3.0e-04 b1=0.9 b2=0.999\nFLOPs/step: fwd=436M bwd_dx=436M bwd_dW=436M sdpa_bwd=21M total=1430M\nANE FLOPs/step: 893M (fwd+bwd_dx+sdpa_bwd) | CPU: dW+cls (cblas)\n\nToken data: 524288 tokens (1.0 MB)\n  Compiling layer 1/1... (1 compiles)\r  Compiled 5 kernels in 410ms                    \nstep 0    loss=5.7482\n{\"type\":\"step\",\"step\":0,\"loss\":5.748210,\"t_ane\":0.698,\"t_io\":0.139,\"t_cls\":0.161,\"t_elem\":0.188,\"t_rms\":0.029,\"t_cblas_wait\":0.003,\"compiles\":6}\n  [batch 1: compile=410ms train=4.4ms (4.4ms/step) compiles=6]\n    ane=0.7 io=0.1 cls=0.2 elem=0.2 rms=0.0 cblas_wait=0.0 ms/step\n{\"type\":\"batch\",\"batch\":1,\"compile_ms\":409.8,\"train_ms\":4.4,\"ms_per_step\":4.4}\n{\"type\":\"perf\",\"ane_tflops\":0.202,\"ane_util_pct\":1.28}\n\n=== Efficiency Report ===\nTotal steps:     1\nWall time:       419 ms (0.4 s)\nCompile time:    410 ms (97.8%)\nTrain time:      4 ms (1.1%)\nAvg train:       4.4 ms/step\nANE TFLOPS:      0.20 sustained\nTotal TFLOPS:    0.32 (ANE+CPU)\nANE utilization: 1.3% of 15.8 TFLOPS\n"
+        }
+      },
+      {
+        "round": 1,
+        "wall_seconds": 0.5519764170167036,
+        "gpu": {
+          "seconds": 0.36316554102813825,
+          "returncode": 0,
+          "output_bytes": 2565,
+          "output_sha256": "a729a719e97bdb73dc0bcce156d0b3c5d8d86254d6e4ceae05d0d2272a0d13e2",
+          "output_tail": " \"2026-07-27T18:35:11.222840+00:00\",\n  \"decision\": {\n    \"adopted_in_production\": false,\n    \"requires_full_route_replay_before_adoption\": true,\n    \"station_candidate_faster\": true\n  },\n  \"execution\": {\n    \"alternating_pairs\": 6,\n    \"compiled\": true,\n    \"compute_dtype\": \"float32\",\n    \"externally_guarded\": true,\n    \"warmup\": 2\n  },\n  \"external_inference_calls\": 0,\n  \"hardware\": {\n    \"machine\": \"arm64\",\n    \"mlx_version\": \"0.32.0\",\n    \"processor\": \"arm\"\n  },\n  \"integrity\": {\n    \"all_candidate_gradients_finite\": true,\n    \"gradient_maximum_absolute_deltas\": [\n      1.9326762412674725e-12,\n      2.546585164964199e-10,\n      2.6921043172478676e-10,\n      1.9281287677586079e-10\n    ],\n    \"gradient_relative_l2\": [\n      3.883606081533698e-07,\n      7.71530289941542e-07,\n      7.808197823312386e-07,\n      7.701055403107255e-07\n    ],\n    \"loss_absolute_delta\": 0.0,\n    \"output_maximum_absolute_delta\": 0.0,\n    \"output_relative_l2\": 0.0,\n    \"parameter_names_and_shapes_can_remain_separate\": true,\n    \"retained_parameter_shapes\": [\n      [\n        512,\n        512\n      ],\n      [\n        128,\n        512\n      ],\n      [\n        128,\n        512\n      ]\n    ]\n  },\n  \"mlx_memory\": {\n    \"active_bytes\": 16,\n    \"cache_bytes\": 91161940,\n    \"peak_bytes\": 88605752\n  },\n  \"policy\": \"project_theseus_mlx_projection_fusion_probe_v1\",\n  \"projected_full_microbatch_saved_fraction_upper_bound\": 0.015152,\n  \"projected_full_microbatch_saved_percent_upper_bound\": 1.5152,\n  \"public_benchmark_rows_read\": 0,\n  \"shape\": {\n    \"batch_size\": 4,\n    \"ff_size\": 1536,\n    \"head_count\": 8,\n    \"hidden_size\": 512,\n    \"kv_head_count\": 2,\n    \"layer_count\": 12,\n    \"sequence_length\": 512\n  },\n  \"source_concept\": {\n    \"audited_commit\": \"d91c9845c0784dec7753048954fc6d0e8411fe29\",\n    \"concepts\": [\n      \"fused QKV projection dispatch\",\n      \"fused SwiGLU gate/up projection dispatch\"\n    ],\n    \"repository\": \"https://github.com/maderix/ANE\",\n    \"source_code_imported\": false\n  },\n  \"station\": \"qkv_projection\",\n  \"trigger_state\": \"GREEN\"\n}\n"
+        },
+        "ane": {
+          "seconds": 0.5514339169603772,
+          "returncode": 0,
+          "output_bytes": 1289,
+          "output_sha256": "4d8e690e2ecc5e7ddb5698de840a76382490f8c3c4895dd4c0ccba988e32d196",
+          "output_tail": "=== ANE Training: Stories110M (12 layers) ===\ndim=512 hidden=1536 heads=8 seq=64 vocab=512 layers=1\nCannot open stories110M.bin\nPretrained load failed, using random init\nParams: 3.67M (transformer 3.41M + embed 0.26M)\nKernels: 6 (5 weight-bearing + 1 static sdpaBwd2)\nAccum 1 steps per recompile | Adam LR=3.0e-04 b1=0.9 b2=0.999\nFLOPs/step: fwd=436M bwd_dx=436M bwd_dW=436M sdpa_bwd=21M total=1430M\nANE FLOPs/step: 893M (fwd+bwd_dx+sdpa_bwd) | CPU: dW+cls (cblas)\n\nToken data: 524288 tokens (1.0 MB)\n  Compiling layer 1/1... (1 compiles)\r  Compiled 5 kernels in 409ms                    \nstep 0    loss=5.7482\n{\"type\":\"step\",\"step\":0,\"loss\":5.748210,\"t_ane\":0.734,\"t_io\":0.154,\"t_cls\":0.179,\"t_elem\":0.190,\"t_rms\":0.028,\"t_cblas_wait\":0.000,\"compiles\":6}\n  [batch 1: compile=409ms train=4.0ms (4.0ms/step) compiles=6]\n    ane=0.7 io=0.2 cls=0.2 elem=0.2 rms=0.0 cblas_wait=0.0 ms/step\n{\"type\":\"batch\",\"batch\":1,\"compile_ms\":408.5,\"train_ms\":4.0,\"ms_per_step\":4.0}\n{\"type\":\"perf\",\"ane_tflops\":0.225,\"ane_util_pct\":1.42}\n\n=== Efficiency Report ===\nTotal steps:     1\nWall time:       417 ms (0.4 s)\nCompile time:    409 ms (97.9%)\nTrain time:      4 ms (1.0%)\nAvg train:       4.0 ms/step\nANE TFLOPS:      0.23 sustained\nTotal TFLOPS:    0.36 (ANE+CPU)\nANE utilization: 1.4% of 15.8 TFLOPS\n"
+        }
+      },
+      {
+        "round": 2,
+        "wall_seconds": 0.6486435419647023,
+        "gpu": {
+          "seconds": 0.3655270410235971,
+          "returncode": 0,
+          "output_bytes": 2564,
+          "output_sha256": "c471a13624a336117ef3e80c479f88069898db34b184894ad15050929ee835b9",
+          "output_tail": " \"2026-07-27T18:35:12.727566+00:00\",\n  \"decision\": {\n    \"adopted_in_production\": false,\n    \"requires_full_route_replay_before_adoption\": true,\n    \"station_candidate_faster\": true\n  },\n  \"execution\": {\n    \"alternating_pairs\": 6,\n    \"compiled\": true,\n    \"compute_dtype\": \"float32\",\n    \"externally_guarded\": true,\n    \"warmup\": 2\n  },\n  \"external_inference_calls\": 0,\n  \"hardware\": {\n    \"machine\": \"arm64\",\n    \"mlx_version\": \"0.32.0\",\n    \"processor\": \"arm\"\n  },\n  \"integrity\": {\n    \"all_candidate_gradients_finite\": true,\n    \"gradient_maximum_absolute_deltas\": [\n      1.9326762412674725e-12,\n      2.546585164964199e-10,\n      2.6921043172478676e-10,\n      1.9281287677586079e-10\n    ],\n    \"gradient_relative_l2\": [\n      3.883606081533698e-07,\n      7.71530289941542e-07,\n      7.808197823312386e-07,\n      7.701055403107255e-07\n    ],\n    \"loss_absolute_delta\": 0.0,\n    \"output_maximum_absolute_delta\": 0.0,\n    \"output_relative_l2\": 0.0,\n    \"parameter_names_and_shapes_can_remain_separate\": true,\n    \"retained_parameter_shapes\": [\n      [\n        512,\n        512\n      ],\n      [\n        128,\n        512\n      ],\n      [\n        128,\n        512\n      ]\n    ]\n  },\n  \"mlx_memory\": {\n    \"active_bytes\": 16,\n    \"cache_bytes\": 89851220,\n    \"peak_bytes\": 88605752\n  },\n  \"policy\": \"project_theseus_mlx_projection_fusion_probe_v1\",\n  \"projected_full_microbatch_saved_fraction_upper_bound\": 0.028231,\n  \"projected_full_microbatch_saved_percent_upper_bound\": 2.8231,\n  \"public_benchmark_rows_read\": 0,\n  \"shape\": {\n    \"batch_size\": 4,\n    \"ff_size\": 1536,\n    \"head_count\": 8,\n    \"hidden_size\": 512,\n    \"kv_head_count\": 2,\n    \"layer_count\": 12,\n    \"sequence_length\": 512\n  },\n  \"source_concept\": {\n    \"audited_commit\": \"d91c9845c0784dec7753048954fc6d0e8411fe29\",\n    \"concepts\": [\n      \"fused QKV projection dispatch\",\n      \"fused SwiGLU gate/up projection dispatch\"\n    ],\n    \"repository\": \"https://github.com/maderix/ANE\",\n    \"source_code_imported\": false\n  },\n  \"station\": \"qkv_projection\",\n  \"trigger_state\": \"GREEN\"\n}\n"
+        },
+        "ane": {
+          "seconds": 0.6482059170375578,
+          "returncode": 0,
+          "output_bytes": 1289,
+          "output_sha256": "f43bc814c24de850000e0a071c09f4f6c4ea22e98f33351e963535d039515378",
+          "output_tail": "=== ANE Training: Stories110M (12 layers) ===\ndim=512 hidden=1536 heads=8 seq=64 vocab=512 layers=1\nCannot open stories110M.bin\nPretrained load failed, using random init\nParams: 3.67M (transformer 3.41M + embed 0.26M)\nKernels: 6 (5 weight-bearing + 1 static sdpaBwd2)\nAccum 1 steps per recompile | Adam LR=3.0e-04 b1=0.9 b2=0.999\nFLOPs/step: fwd=436M bwd_dx=436M bwd_dW=436M sdpa_bwd=21M total=1430M\nANE FLOPs/step: 893M (fwd+bwd_dx+sdpa_bwd) | CPU: dW+cls (cblas)\n\nToken data: 524288 tokens (1.0 MB)\n  Compiling layer 1/1... (1 compiles)\r  Compiled 5 kernels in 506ms                    \nstep 0    loss=5.7482\n{\"type\":\"step\",\"step\":0,\"loss\":5.748210,\"t_ane\":0.690,\"t_io\":0.138,\"t_cls\":0.155,\"t_elem\":0.178,\"t_rms\":0.027,\"t_cblas_wait\":0.000,\"compiles\":6}\n  [batch 1: compile=506ms train=3.6ms (3.6ms/step) compiles=6]\n    ane=0.7 io=0.1 cls=0.2 elem=0.2 rms=0.0 cblas_wait=0.0 ms/step\n{\"type\":\"batch\",\"batch\":1,\"compile_ms\":506.2,\"train_ms\":3.6,\"ms_per_step\":3.6}\n{\"type\":\"perf\",\"ane_tflops\":0.245,\"ane_util_pct\":1.55}\n\n=== Efficiency Report ===\nTotal steps:     1\nWall time:       515 ms (0.5 s)\nCompile time:    506 ms (98.3%)\nTrain time:      4 ms (0.7%)\nAvg train:       3.6 ms/step\nANE TFLOPS:      0.25 sustained\nTotal TFLOPS:    0.39 (ANE+CPU)\nANE utilization: 1.6% of 15.8 TFLOPS\n"
+        }
+      }
+    ]
+  },
+  "claim_scope": "Process coexistence only. This does not prove zero-copy tensor interop, numerical parity, training replay, or end-to-end gain.",
+  "canonical_backend_changed": false,
+  "checkpoint_mutated": false
+}
