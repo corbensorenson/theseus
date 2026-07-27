@@ -1,0 +1,57 @@
+{
+  "policy": "project_theseus_ane_metal_same_surface_probe_v1",
+  "created_utc": "2026-07-27T21:10:00Z",
+  "trigger_state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
+  "host": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "macos_build": "24A5320a"
+  },
+  "source": "native/ane_metal/ane_metal_same_surface_probe.m",
+  "kernel": "rmsnorm_backward",
+  "shape": {
+    "dtype": "float16",
+    "input_channels": 1024,
+    "output_channels": 512,
+    "sequence": 64,
+    "input_elements": 65536,
+    "output_elements": 32768
+  },
+  "guarded_measurement": {
+    "compile_milliseconds": 67.796,
+    "metal_write_milliseconds": 1.821,
+    "ane_after_metal_milliseconds": 0.358,
+    "ane_after_host_control_milliseconds": 0.235,
+    "bit_mismatch_count": 0,
+    "maximum_absolute_delta": 0.0,
+    "intermediate_host_round_trip": false,
+    "host_verification_read": true
+  },
+  "concurrent_shared_read": {
+    "metal_iterations": 2048,
+    "ane_repeats": 64,
+    "metal_standalone_milliseconds": 2.285,
+    "ane_standalone_milliseconds": 15.697,
+    "serial_sum_milliseconds": 17.982,
+    "concurrent_milliseconds": 13.966,
+    "speedup_vs_serial_sum": 1.287489,
+    "overlap_observed": true,
+    "ane_bit_mismatch_count": 0,
+    "metal_nonfinite_output_count": 0,
+    "ownership": "Metal and ANE concurrently read one immutable generation and write distinct output surfaces."
+  },
+  "resource_receipt": {
+    "path": "reports/ane_metal_same_surface_concurrent_m1.host_resource_safety.json",
+    "passed": true,
+    "wall_seconds": 0.268,
+    "maximum_process_rss_mib": 3.734,
+    "maximum_inferred_unified_memory_mib": 5.812,
+    "minimum_reclaimable_available_mib": 4302.672,
+    "maximum_swapout_growth_mib": 0.0
+  },
+  "claim_scope": "Metal-write to ANE-read visibility plus concurrent Metal/ANE reads of one immutable IOSurface generation with disjoint outputs. This does not prove partitioned linear parity, no-copy joining, MLX lazy-graph integration, sustained training speed, replay, convergence, utility, or capability.",
+  "canonical_backend_changed": false,
+  "checkpoint_mutated": false,
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0
+}

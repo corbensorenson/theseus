@@ -24,8 +24,26 @@
     }
   ],
   "weight_update_path": {
-    "state": "BAKED_WEIGHT_RECOMPILE_ONLY",
-    "next_gate": "Measure gradient-accumulation amortization and background compilation overlap without mixed weight generations."
+    "state": "BAKED_WEIGHT_RECOMPILE_NOT_SELECTED_CURRENT_M1",
+    "accumulation_four_compile_wall_fraction": 0.959,
+    "accumulation_eight_compile_wall_fraction": 0.927,
+    "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
+    "next_gate": "Implement a dynamic or persistent ANE weight path with exact generation custody, or retain ANE for static inference."
+  },
+  "same_surface_bridge": {
+    "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
+    "source": "native/ane_metal/ane_metal_same_surface_probe.m",
+    "dtype": "float16",
+    "input_elements": 65536,
+    "output_elements": 32768,
+    "bit_mismatch_count": 0,
+    "maximum_absolute_delta": 0.0,
+    "intermediate_host_round_trip": false,
+    "concurrent_read_speedup_vs_serial_sum": 1.287489,
+    "concurrent_ane_bit_mismatch_count": 0,
+    "concurrent_metal_nonfinite_output_count": 0,
+    "resource_receipt": "reports/ane_metal_same_surface_concurrent_m1.host_resource_safety.json",
+    "claim_scope": "The ANE consumed the Metal-written generation before any host read, then Metal and ANE concurrently read that immutable generation into distinct outputs. Partitioned linear parity, no-copy join, and MLX lazy integration remain open."
   },
   "canonical_backend_changed": false,
   "checkpoint_mutation_authorized": false,
@@ -36,8 +54,8 @@
   "candidates": [],
   "selected": null,
   "blockers": [
-    "measured_metal_control_and_joint_candidates",
-    "zero_copy_lazy_compatible_surface_bridge",
-    "qualified_training_weight_update_path"
+    "structure_aligned_persistent_partition_candidate",
+    "mlx_lazy_graph_integration",
+    "dynamic_or_persistent_training_weight_update_path"
   ]
 }

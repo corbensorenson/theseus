@@ -103,8 +103,11 @@
     "excluded_from_repeatability_count": true
   },
   "weight_update_path": {
-    "state": "BAKED_WEIGHT_RECOMPILE_ONLY",
-    "next_gate": "Measure gradient-accumulation amortization and background compilation overlap without mixed weight generations."
+    "state": "BAKED_WEIGHT_RECOMPILE_NOT_SELECTED_CURRENT_M1",
+    "accumulation_four_compile_wall_fraction": 0.959,
+    "accumulation_eight_compile_wall_fraction": 0.927,
+    "background_compile_with_stale_weight_microsteps": "REJECTED_SEMANTIC_DRIFT",
+    "next_gate": "Implement a dynamic or persistent ANE weight path with exact generation custody, or retain ANE for static inference."
   },
   "process_coexistence": {
     "state": "GREEN_MECHANICAL_OVERLAP",
@@ -127,6 +130,35 @@
     },
     "claim_scope": "Independent-process useful-work coexistence only; no shared-tensor, zero-copy, split-linear, replay, or end-to-end training gain."
   },
+  "same_surface_bridge": {
+    "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
+    "source": "native/ane_metal/ane_metal_same_surface_probe.m",
+    "dtype": "float16",
+    "input_elements": 65536,
+    "output_elements": 32768,
+    "bit_mismatch_count": 0,
+    "maximum_absolute_delta": 0.0,
+    "intermediate_host_round_trip": false,
+    "concurrent_read_speedup_vs_serial_sum": 1.287489,
+    "concurrent_ane_bit_mismatch_count": 0,
+    "concurrent_metal_nonfinite_output_count": 0,
+    "resource_receipt": "reports/ane_metal_same_surface_concurrent_m1.host_resource_safety.json",
+    "claim_scope": "The ANE consumed the Metal-written generation before any host read, then Metal and ANE concurrently read that immutable generation into distinct outputs. Partitioned linear parity, no-copy join, and MLX lazy integration remain open."
+  },
+  "split_linear_station": {
+    "state": "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED",
+    "partition_speedup_range_vs_serial_sum": [
+      1.178741,
+      1.524134
+    ],
+    "joined_speedup_range_vs_full_metal": [
+      0.68744,
+      0.820132
+    ],
+    "maximum_absolute_delta_vs_full_metal": 0.000295639038,
+    "report": "reports/ane_metal_split_linear_m1.json",
+    "next_candidate": "Structure-aligned persistent partitions through attention or MLP with fused hidden-width reduction."
+  },
   "public_metal_iosurface_probe": {
     "state": "GREEN",
     "device": "Apple M1",
@@ -138,7 +170,7 @@
   },
   "metal_control_seconds": [],
   "split_candidates": [],
-  "interpretation": "The public Metal-to-IOSurface half is exact, the baked-weight Theseus-width ANE training control compiles repeatably, and independent useful MLX/ANE workloads mechanically overlap by 1.591x versus their serial sum. Generic dynamic weights remain unsupported in the tested M1 MIL form, so training must qualify safe recompilation and explicit same-tensor zero-copy execution before a split or end-to-end timing claim.",
+  "interpretation": "The public Metal-to-IOSurface half is exact, the baked-weight Theseus-width ANE training control compiles repeatably, independent useful MLX/ANE workloads mechanically overlap by 1.591x versus their serial sum, and same-generation concurrent reads are bit-exact. A real 512-to-768 split gains 1.179x-1.524x over serial partitions, but materialized concatenation reduces it to 0.687x-0.820x versus full Metal. Persist partitions through whole attention/MLP subgraphs and reduce at hidden width. Baked-weight training remains excluded until dynamic/persistent weights exist; static inference remains credible.",
   "canonical_checkpoint_mutated": false,
   "public_benchmark_rows_read": 0,
   "external_inference_calls": 0

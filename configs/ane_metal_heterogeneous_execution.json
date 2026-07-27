@@ -140,7 +140,13 @@
     "successful_training_smokes": 4,
     "dynamic_weight_mil_state": "M1_UNSUPPORTED_IN_TESTED_FORM",
     "single_blob_small_shape_state": "M1_MIL_INCOMPATIBLE_BEFORE_RELOAD_TEST",
-    "weight_update_path": "BAKED_WEIGHT_RECOMPILE_ONLY_PENDING_OVERLAP_AND_AMORTIZATION",
+    "weight_update_path": {
+      "static_inference": "ELIGIBLE_FOR_FURTHER_QUALIFICATION",
+      "baked_weight_recompile_training": "NOT_SELECTED_CURRENT_M1",
+      "accumulation_four_compile_wall_fraction": 0.959,
+      "accumulation_eight_compile_wall_fraction": 0.927,
+      "training_reentry": "DYNAMIC_OR_PERSISTENT_WEIGHT_PATH_WITH_EXACT_GENERATION_CUSTODY"
+    },
     "process_coexistence": {
       "state": "GREEN_MECHANICAL_OVERLAP",
       "rounds": 3,
@@ -150,7 +156,33 @@
       "maximum_swapout_growth_mib": 0.0,
       "claim_scope": "Independent useful workloads only; no shared tensor or end-to-end training claim."
     },
-    "explicit_joint_execution_measured": false,
+    "same_surface_visibility": {
+      "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
+      "input_elements": 65536,
+      "output_elements": 32768,
+      "bit_mismatch_count": 0,
+      "maximum_absolute_delta": 0.0,
+      "intermediate_host_round_trip": false,
+      "concurrent_read_speedup_vs_serial_sum": 1.287489,
+      "concurrent_ane_bit_mismatch_count": 0,
+      "concurrent_metal_nonfinite_output_count": 0,
+      "claim_scope": "Metal-write to ANE-read plus concurrent immutable reads on one IOSurface generation; partitioned linear math, no-copy join, and MLX lazy integration remain open."
+    },
+    "split_linear_station": {
+      "state": "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED",
+      "shape": "512_to_768_sequence64_half_ane_half_metal",
+      "partition_speedup_range_vs_serial_sum": [
+        1.178741,
+        1.524134
+      ],
+      "joined_speedup_range_vs_full_metal": [
+        0.68744,
+        0.820132
+      ],
+      "next_topology": "PERSISTENT_ATTENTION_HEAD_OR_MLP_CHANNEL_PARTITIONS_WITH_FUSED_HIDDEN_WIDTH_REDUCTION"
+    },
+    "explicit_joint_execution_measured": true,
+    "explicit_joint_execution_disposition": "SPLIT_MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED",
     "production_eligible": false
   },
   "public_benchmark_rows_read": 0,

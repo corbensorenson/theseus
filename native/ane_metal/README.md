@@ -30,6 +30,23 @@ xcrun clang -fobjc-arc -O2 \
 /private/tmp/theseus_metal_iosurface_probe
 ```
 
+`ane_metal_same_surface_probe.m` is the next, private-API proof: Metal writes a
+half-precision IOSurface texture and a compatible ANE RMSNorm-backward kernel
+consumes that exact surface generation before any host read. Its output is
+compared bit-for-bit with a host-populated control. The same binary also tests
+concurrent immutable reads and a 512-to-768 output-channel split with disjoint
+ANE/Metal outputs, a no-host-copy join, and a full-Metal station control. Build
+it with the same frameworks plus Core ML:
+
+```sh
+xcrun clang -fobjc-arc -O2 \
+  -framework Foundation -framework CoreVideo -framework CoreML \
+  -framework IOSurface -framework Metal \
+  native/ane_metal/ane_metal_same_surface_probe.m \
+  -o /private/tmp/theseus_ane_metal_same_surface_probe
+/private/tmp/theseus_ane_metal_same_surface_probe
+```
+
 The ANE half necessarily uses undocumented private APIs. It remains isolated
 until compilation is repeatable on the exact OS/chip, the same IOSurface
 generation is consumed without a host copy, and output/loss/gradient/replay

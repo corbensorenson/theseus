@@ -852,13 +852,51 @@ GPU median latency rises `1.052x`, ANE `1.027x`, maximum inferred unified memory
 219.547 MiB, and swap growth is zero. This proves simultaneous useful execution, not tensor
 interop or end-to-end training acceleration.
 
-Next, wire the compatible per-matrix ANE form to the IOSurface contract, measure
-gradient-accumulation amortization and background compilation without mixed weight
-generations, prove real concurrent timelines, run the shape/ratio sweep, add
-output/loss/gradient and save/reload parity, and only then evaluate sustained training and
-Core ML `.all` inference. The executable owners are
+Next, replace the measured losing wide join with a structure-aligned persistent partition,
+find a dynamic or persistent-weight training route, run production-shape ratios, add
+full-block output/loss/gradient and save/reload parity, and evaluate sustained training and
+Core ML `.all` inference independently. The executable owners are
 `scripts/ane_metal_heterogeneous_planner.py`,
 `scripts/ane_metal_coexistence_probe.py`, and `native/ane_metal/`.
+
+The first same-generation bridge is now GREEN rather than merely designed. Metal writes
+65,536 FP16 values into an IOSurface-backed texture; a compatible ANE RMSNorm-backward
+kernel consumes that exact surface before any host read; all 32,768 outputs match the
+host-populated control bit-for-bit with zero maximum delta. It then runs a sustained Metal
+read and 64 ANE evaluations concurrently over the same sealed input generation into distinct
+output surfaces. The guarded serial sum is 17.982 ms, concurrent wall is 13.966 ms
+(`1.287489x`), ANE output remains bit-exact, Metal has zero non-finite outputs, and swap
+growth is zero. This closes zero-copy visibility and concurrent shared reads. Partitioned
+linear parity, a no-copy join, MLX lazy-graph integration, production-shape split timing,
+and training replay remain open.
+
+The first literal split-linear station is also complete and prevents a seductive mistake.
+At width `512 -> 768`, sequence 64, ANE and Metal each own 384 output channels, read the
+same sealed input concurrently, and a Metal kernel joins the two IOSurface outputs without
+a host copy. All three trials have zero partition and joined-control mismatches; the joined
+result differs from the full-Metal arithmetic path by at most `2.9564e-4`. Concurrent
+partition work beats serial partitions by `1.178741x` to `1.524134x`, but materializing the
+wide concatenation makes joined wall only `0.687440x` to `0.820132x` as fast as the full
+Metal control. Reject physical concat for this shape.
+
+The next topology must preserve structure-aligned partitions instead of paying a wide join:
+keep MLP expansion channels device-local through gate/up, activation, and their down-
+projection contribution, then sum two hidden-width partial outputs inside the residual
+kernel. For attention, partition complete GQA head groups through QKV, SDPA, and output-
+projection contribution, duplicating or assigning KV heads only where group semantics
+require it, then perform the same fused hidden-width reduction. This makes the reduction
+`d_model` wide rather than FFN/QKV wide and gives each device a longer useful subgraph over
+which to amortize launch and synchronization.
+
+Baked-weight training recompilation is now dispositioned rather than left as a scheduling
+idea. Over eight microsteps, accumulation one spends 3,230 of 3,289 ms compiling (`98.2%`).
+The natural batch-four analogue reduces that to 765 of 798 ms but compilation still owns
+`95.9%` of joined wall. Accumulation eight is only an amortization bound because it changes
+the update contract, and still spends `92.7%` compiling. Do not hide compilation by running
+new microsteps on stale post-update weights; that changes the weight-generation contract.
+Static-weight inference remains eligible. Training re-enters only with a dynamic or
+persistent ANE weight path—or another exact-generation implementation whose production-shape
+joined wall beats MLX.
 
 ### 2026-07-26 Acceleration-First Launch Gate
 

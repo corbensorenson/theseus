@@ -153,3 +153,23 @@ def test_no_timings_preserves_inconclusive_implementation() -> None:
     assert report["trigger_state"] == "INCONCLUSIVE_IMPLEMENTATION"
     assert report["selected"] is None
     assert report["canonical_backend_changed"] is False
+
+
+def test_current_m1_evidence_routes_past_visibility_to_persistent_partition() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    report = planner.plan(load_config(), evidence)
+
+    assert report["compiler"]["repeatable"] is True
+    assert (
+        report["same_surface_bridge"]["state"]
+        == "GREEN_CONCURRENT_SHARED_READ_VISIBILITY"
+    )
+    assert "zero_copy_same_surface_visibility" not in report["blockers"]
+    assert "structure_aligned_persistent_partition_candidate" in report["blockers"]
+    assert "dynamic_or_persistent_training_weight_update_path" in report["blockers"]
+    assert report["checkpoint_mutation_authorized"] is False

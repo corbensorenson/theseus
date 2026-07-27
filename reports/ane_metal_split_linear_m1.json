@@ -1,0 +1,81 @@
+{
+  "policy": "project_theseus_ane_metal_split_linear_v1",
+  "created_utc": "2026-07-27T21:45:00Z",
+  "trigger_state": "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED",
+  "host": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "macos_build": "24A5320a"
+  },
+  "source": "native/ane_metal/ane_metal_same_surface_probe.m",
+  "shape": {
+    "dtype": "float16",
+    "input_channels": 512,
+    "ane_output_channels": 384,
+    "metal_output_channels": 384,
+    "joined_output_channels": 768,
+    "sequence": 64,
+    "split_axis": "output_channels"
+  },
+  "integrity": {
+    "ane_partition_mismatch_count": 0,
+    "metal_partition_mismatch_count": 0,
+    "joined_partition_mismatch_count": 0,
+    "joined_vs_full_metal_maximum_absolute_delta": 0.000295639038,
+    "joined_vs_full_metal_mean_absolute_delta": 0.0000609785978,
+    "intermediate_host_round_trip": false,
+    "host_verification_read_after_join": true
+  },
+  "trials": [
+    {
+      "id": "a",
+      "partition_serial_sum_milliseconds": 1.834,
+      "partition_concurrent_milliseconds": 1.556,
+      "partition_speedup_vs_serial_sum": 1.178741,
+      "join_milliseconds": 1.056,
+      "joined_milliseconds": 2.611,
+      "full_metal_control_milliseconds": 1.795,
+      "joined_speedup_vs_full_metal_control": 0.68744,
+      "resource_receipt": "reports/ane_metal_split_linear_m1_a.host_resource_safety.json"
+    },
+    {
+      "id": "b",
+      "partition_serial_sum_milliseconds": 2.235,
+      "partition_concurrent_milliseconds": 1.467,
+      "partition_speedup_vs_serial_sum": 1.524134,
+      "join_milliseconds": 0.823,
+      "joined_milliseconds": 2.29,
+      "full_metal_control_milliseconds": 1.772,
+      "joined_speedup_vs_full_metal_control": 0.773567,
+      "resource_receipt": "reports/ane_metal_split_linear_m1_b.host_resource_safety.json"
+    },
+    {
+      "id": "c",
+      "partition_serial_sum_milliseconds": 1.648,
+      "partition_concurrent_milliseconds": 1.39,
+      "partition_speedup_vs_serial_sum": 1.185866,
+      "join_milliseconds": 0.751,
+      "joined_milliseconds": 2.14,
+      "full_metal_control_milliseconds": 1.755,
+      "joined_speedup_vs_full_metal_control": 0.820132,
+      "resource_receipt": "reports/ane_metal_split_linear_m1_c.host_resource_safety.json"
+    }
+  ],
+  "resource_summary": {
+    "all_trials_passed": true,
+    "maximum_inferred_unified_memory_mib": 106.266,
+    "minimum_reclaimable_available_mib": 3923.266,
+    "maximum_swapout_growth_mib": 0.0
+  },
+  "disposition": {
+    "concurrent_output_channel_partition": "GREEN_MECHANICS",
+    "materialized_concat_join": "NOT_SELECTED_SLOWER_THAN_FULL_METAL",
+    "production_route": "UNCHANGED",
+    "next_candidate": "Keep attention heads or MLP expansion channels partition-local through the complete subgraph, then fuse the hidden-width partial-result sum into the output projection/residual instead of materializing a wide concatenation.",
+    "scientific_falsification": false
+  },
+  "claim_scope": "Synthetic width-512 to width-768 sequence-64 native station with a custom Metal control. It is not MLX production-kernel parity, full-block timing, sustained inference/training speed, replay, convergence, utility, or capability.",
+  "canonical_checkpoint_mutated": false,
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0
+}

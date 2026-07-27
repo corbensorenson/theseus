@@ -1,0 +1,71 @@
+{
+  "child_started": true,
+  "command": [
+    "/private/tmp/theseus_ane_metal_same_surface_probe"
+  ],
+  "fault": "",
+  "fault_observation": null,
+  "first_swapout_growth_breach_observation": null,
+  "initial_reclaimable_available_mib": 4029.531,
+  "limits": {
+    "max_process_memory_mib": 2048.0,
+    "maximum_swapout_growth_mib": 64.0,
+    "maximum_wall_seconds": 60.0,
+    "minimum_available_before_launch_mib": 2048.0,
+    "minimum_available_during_run_mib": 1024.0,
+    "poll_interval_seconds": 0.25,
+    "swapout_growth_action": "hard_stop",
+    "terminate_grace_seconds": 2.0
+  },
+  "maximum_consecutive_reserve_breaches": 0,
+  "maximum_consecutive_telemetry_failures": 0,
+  "maximum_inferred_unified_memory_mib": 106.266,
+  "maximum_process_rss_mib": 14.031,
+  "maximum_swapout_growth_mib": 0.0,
+  "minimum_reclaimable_available_mib": 3923.266,
+  "observation_prefix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 0.547,
+      "process_rss_mib": 0.031,
+      "reclaimable_available_mib": 4028.984,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.272,
+      "inferred_unified_memory_mib": 106.266,
+      "process_rss_mib": 14.031,
+      "reclaimable_available_mib": 3923.266,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "observation_suffix": [
+    {
+      "elapsed_seconds": 0.002,
+      "inferred_unified_memory_mib": 0.547,
+      "process_rss_mib": 0.031,
+      "reclaimable_available_mib": 4028.984,
+      "swapout_growth_mib": 0.0
+    },
+    {
+      "elapsed_seconds": 0.272,
+      "inferred_unified_memory_mib": 106.266,
+      "process_rss_mib": 14.031,
+      "reclaimable_available_mib": 3923.266,
+      "swapout_growth_mib": 0.0
+    }
+  ],
+  "passed": true,
+  "physical_memory_mib": 16384.0,
+  "policy": "project_theseus_host_resource_safety_v1",
+  "process_rss_telemetry_state": "AVAILABLE",
+  "reserve_breach_observations_required": 3,
+  "returncode": 0,
+  "swapout_growth_action": "hard_stop",
+  "swapout_growth_breach_observations": 0,
+  "swapout_growth_threshold_exceeded": false,
+  "telemetry_failure_observations_allowed": 2,
+  "telemetry_failure_prefix": [],
+  "terminated_by_guard": false,
+  "wall_seconds": 0.547
+}

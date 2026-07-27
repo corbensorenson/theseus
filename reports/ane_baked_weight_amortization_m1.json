@@ -1,0 +1,76 @@
+{
+  "policy": "project_theseus_ane_baked_weight_amortization_v1",
+  "created_utc": "2026-07-27T21:25:00Z",
+  "trigger_state": "GREEN_MEASUREMENT_RED_FOR_PRODUCTION_TRAINING_SELECTION",
+  "source": {
+    "repository": "https://github.com/maderix/ANE",
+    "commit": "d91c9845c0784dec7753048954fc6d0e8411fe29",
+    "license": "MIT",
+    "source_code_imported_for_this_measurement": false
+  },
+  "host": {
+    "model": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "memory_gib": 16,
+    "macos_build": "24A5320a"
+  },
+  "shape": {
+    "parameters": 3670000,
+    "layers": 1,
+    "d_model": 512,
+    "ff_dim": 1536,
+    "heads": 8,
+    "sequence": 64,
+    "batch_per_microstep": 1,
+    "microsteps": 8,
+    "weight_bearing_kernels_per_compile": 5
+  },
+  "variants": [
+    {
+      "accumulation_steps": 1,
+      "optimizer_updates": 8,
+      "compile_milliseconds": 3230,
+      "train_milliseconds": 38,
+      "joined_wall_milliseconds": 3289,
+      "compile_wall_fraction": 0.982,
+      "mean_train_milliseconds_per_microstep": 4.7,
+      "joined_wall_milliseconds_per_microstep": 411.125,
+      "resource_receipt": "reports/ane_baked_weight_accum1_steps8.host_resource_safety.json"
+    },
+    {
+      "accumulation_steps": 4,
+      "optimizer_updates": 2,
+      "compile_milliseconds": 765,
+      "train_milliseconds": 27,
+      "joined_wall_milliseconds": 798,
+      "compile_wall_fraction": 0.959,
+      "mean_train_milliseconds_per_microstep": 3.3,
+      "joined_wall_milliseconds_per_microstep": 99.75,
+      "resource_receipt": "reports/ane_baked_weight_accum4_steps8.host_resource_safety.json",
+      "contract_scope": "Natural batch-four timing analogue only; not full Theseus topology or sequence parity."
+    },
+    {
+      "accumulation_steps": 8,
+      "optimizer_updates": 1,
+      "compile_milliseconds": 383,
+      "train_milliseconds": 27,
+      "joined_wall_milliseconds": 413,
+      "compile_wall_fraction": 0.927,
+      "mean_train_milliseconds_per_microstep": 3.4,
+      "joined_wall_milliseconds_per_microstep": 51.625,
+      "resource_receipt": "reports/ane_baked_weight_accum8_steps8.host_resource_safety.json",
+      "contract_scope": "Amortization bound only; changes the update contract relative to batch four."
+    }
+  ],
+  "disposition": {
+    "static_weight_inference": "ELIGIBLE_FOR_FURTHER_QUALIFICATION",
+    "baked_weight_recompile_training": "NOT_SELECTED_CURRENT_M1",
+    "background_compile_with_stale_weight_microsteps": "REJECTED_FOR_SEMANTIC_DRIFT",
+    "training_reentry_condition": "A dynamic or persistent ANE weight path, or another path that preserves exact weight generations and proves joined-wall gain at the production shape.",
+    "scientific_falsification": false
+  },
+  "claim_scope": "Exact implementation/shape timing and weight-generation mechanics only. It is not full-topology speed, convergence, utility, capability, or a general ANE-training falsification.",
+  "canonical_checkpoint_mutated": false,
+  "public_benchmark_rows_read": 0,
+  "external_inference_calls": 0
+}

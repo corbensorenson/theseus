@@ -635,6 +635,22 @@ share toward zero. Public benchmarks are calibration only.
   `.all` is the public automatic-partition inference baseline, while explicit joint
   placement must independently prove overlap, zero-copy integration, parity, replay, and
   sustained wall benefit.
+  Same-surface visibility is now independently GREEN: Metal writes 65,536 FP16
+  values and ANE consumes that IOSurface generation before any host read; 32,768 outputs
+  match the host-populated control bit-for-bit. Metal and ANE then concurrently read the same
+  sealed generation into distinct outputs at `1.287489x` versus serial work, still with
+  bit-exact ANE output and zero swap. This removes device visibility and shared-read
+  concurrency from the wall, but not full-block partition parity, MLX integration, weight
+  update custody, or sustained end-to-end gain.
+  Baked-weight recompilation is measured and excluded for current M1 production training:
+  it occupies `95.9%` of the batch-four-analogue wall and `92.7%` even at an
+  update-contract-changing accumulation eight. Static inference remains open; training now
+  requires dynamic/persistent weights with exact generation custody.
+  A native `512 -> 768` output-channel split is mechanically GREEN and exact against its
+  isolated partition controls, with `1.179x–1.524x` concurrent-versus-serial partition
+  speedup. Physical concatenation erases the gain (`0.687x–0.820x` versus full Metal), so it
+  is excluded. The successor keeps attention-head or MLP-channel partitions device-local
+  through the full subgraph and fuses only a hidden-width partial-result sum.
 - **Repository hygiene:** the forward roadmap is now a compact execution map backed by
   the complete machine-readable matrix without deleting an open obligation.
   The 2026-07-23 audit caught a real regression: 1,946,857,145 governed-hot bytes and 6,375
@@ -818,6 +834,9 @@ share toward zero. Public benchmarks are calibration only.
 - `reports/resource_acceleration_qualification.json`
 - `reports/ane_training_feasibility_2026_07_27.json`
 - `reports/ane_metal_heterogeneous_plan_2026_07_27.json`
+- `reports/ane_metal_same_surface_m1.json`
+- `reports/ane_baked_weight_amortization_m1.json`
+- `reports/ane_metal_split_linear_m1.json`
 - `configs/ane_metal_heterogeneous_execution.json`
 - `configs/neural_seed_architecture_review.json`
 - `configs/neural_seed_architecture_review_freeze.json`

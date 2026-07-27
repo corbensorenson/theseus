@@ -160,6 +160,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         },
         "incompatible_mil_attempts": incompatible_mil_attempts,
         "weight_update_path": evidence.get("weight_update_path"),
+        "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,
         "public_benchmark_rows_read": 0,
@@ -169,14 +170,23 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     metal_samples = evidence.get("metal_control_seconds", [])
     candidates = evidence.get("split_candidates", [])
     if not metal_samples or not candidates:
+        split_state = evidence.get("split_linear_station", {}).get("state")
         blockers = [
-            "measured_metal_control_and_joint_candidates",
-            "zero_copy_lazy_compatible_surface_bridge",
+            (
+                "structure_aligned_persistent_partition_candidate"
+                if split_state == "MECHANICS_GREEN_PHYSICAL_JOIN_NOT_SELECTED"
+                else "measured_metal_control_and_joint_candidates"
+            ),
+            "mlx_lazy_graph_integration",
         ]
+        if evidence.get("same_surface_bridge", {}).get("state") != (
+            "GREEN_CONCURRENT_SHARED_READ_VISIBILITY"
+        ):
+            blockers.insert(1, "zero_copy_same_surface_visibility")
         if not compiler_repeatable:
             blockers.insert(0, "repeatable_private_ane_compile")
         if evidence.get("weight_update_path", {}).get("state") != "QUALIFIED":
-            blockers.append("qualified_training_weight_update_path")
+            blockers.append("dynamic_or_persistent_training_weight_update_path")
         report.update(
             {
                 "trigger_state": "INCONCLUSIVE_IMPLEMENTATION",
