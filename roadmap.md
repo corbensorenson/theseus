@@ -1204,18 +1204,20 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
     `512 x 1024` surface, after which passthrough, RMSNorm, QKV, RoPE, and full attention
     all execute. The guarded full slice averages `0.409 ms`, has zero registered
     mismatches, and has `0.00352` worst absolute delta. This exact-shape finding does not
-    establish a universal ANE alignment rule. Attention backward is now the immediate
-    owner: inverse split-half rotation, contiguous GQA gradient reduction, `dX`,
-    RMSNorm-scale gradient, and Q/K/V parameter gradients.
-13. The native causal-attention backward core and its gradient geometry are also
-    GREEN. One ANE graph consumes RoPE'd Q, contiguously tiled K/V, and upstream
-    `dA`; recomputes the masked probabilities; and emits full-head `dQ`, `dK`, and
-    `dV`. It averages `0.361 ms`; the core has zero registered mismatches and
-    `2.996e-4` worst absolute delta. Exact contiguous 8-to-2 KV reduction and inverse
-    split-half RoPE also have zero registered mismatches, with `9.688e-4` worst
-    absolute delta. This is not yet the attention gradient tree. Immediately compute
-    attention RMSNorm `dX`/scale plus FP32 Q/K/V parameter gradients through the
-    current dynamic weights.
+    establish a universal ANE alignment rule. The attention gradient tree is now
+    GREEN; the output projection and block remainder are the immediate owner.
+13. The native causal-attention gradient tree is also GREEN. One ANE graph consumes
+    forward-coherent RoPE'd Q, contiguously tiled K/V, and upstream `dA`; recomputes
+    masked probabilities; and emits full-head `dQ`, `dK`, and `dV`. Exact contiguous
+    8-to-2 KV reduction and inverse split-half RoPE feed single-thread FP32 Accelerate
+    Q/K/V weight and activation gradients, followed by attention-RMSNorm input/scale
+    gradients. The guarded ANE core averages `0.399 ms`, and the six FP32 projection
+    gradient GEMMs average `0.263 ms`. The Accelerate operator differs from the
+    independent scalar reference by at most `1.94e-7`; every ANE-originated downstream
+    difference is inside its analytical FP16-boundary propagation bound, with zero
+    registered mismatches. This is still not a decoder block or speedup claim.
+    Immediately add out projection plus the first unscaled residual, then second
+    RMSNorm, SwiGLU/down projection, second residual, scalar loss, and one update.
 14. The resource observer now accepts an explicit zero available-memory reserve. This
     removes the old hidden positive floor while retaining independently configurable
     process-memory, swap-growth, wall, and telemetry fail-safes. The exact-block receipt

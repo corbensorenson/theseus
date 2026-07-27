@@ -560,8 +560,8 @@
     "claim_scope": "One exact native attention forward slice. Forward parity and runtime execution do not establish backward, a decoder block, a full model, or training acceleration."
   },
   "exact_ane_attention_backward": {
-    "state": "GREEN_EXACT_ATTENTION_BACKWARD_AND_GEOMETRY_QKV_RMS_GRADIENTS_OPEN",
-    "disposition": "BACKWARD_GEOMETRY_GREEN_QKV_RMS_GRADIENTS_IMMEDIATE",
+    "state": "GREEN_EXACT_ATTENTION_GRADIENT_TREE_BLOCK_REMAINDER_OPEN",
+    "disposition": "ATTENTION_GRADIENT_TREE_GREEN_BLOCK_REMAINDER_IMMEDIATE",
     "shape": {
       "batch": 1,
       "sequence": 128,
@@ -569,25 +569,34 @@
       "kv_heads": 2,
       "head_dim": 64
     },
-    "mean_evaluation_milliseconds": 0.361203,
+    "mean_evaluation_milliseconds": 0.399458,
+    "mean_cpu_projection_gradient_milliseconds": 0.262948,
     "maximum_absolute_delta_by_state": {
-      "dq_rope": 4.22688427e-05,
-      "dk_tiled_rope": 6.34936878e-05,
-      "dv_tiled": 0.000299608917,
-      "dq_inverse_split_half_rope": 4.47934071e-05,
-      "dk_contiguous_reduce_inverse_split_half_rope": 0.000279209577,
-      "dv_contiguous_reduce": 0.000968804001
+      "dq_rope": 0.000563960988,
+      "dk_tiled_rope": 0.000526531425,
+      "dv_tiled": 0.000554275117,
+      "dq_inverse_split_half_rope": 0.000545733608,
+      "dk_contiguous_reduce_inverse_split_half_rope": 0.000923486426,
+      "dv_contiguous_reduce": 0.00132227479,
+      "accelerate_projection_operator": 1.93715096e-07,
+      "q_proj_weight_gradient": 0.0106218625,
+      "k_proj_weight_gradient": 0.0212205723,
+      "v_proj_weight_gradient": 0.0240660012,
+      "projection_input_gradient": 0.00235043606,
+      "attention_norm_input_gradient": 0.0267038643,
+      "attention_norm_scale_gradient": 0.0168890655
     },
     "backward_core_green": true,
-    "complete_attention_gradient_tree": false,
-    "gradient_closure_is_immediate_next": true,
+    "complete_attention_gradient_tree": true,
+    "gradient_closure_is_immediate_next": false,
+    "block_remainder_is_immediate_next": true,
     "resource_receipt": {
       "path": "reports/exact_ane_attention_backward_m1.host_resource_safety.json",
       "passed": true,
-      "wall_seconds": 1.389,
-      "maximum_process_rss_mib": 172.438,
-      "maximum_inferred_unified_memory_mib": 172.438,
-      "minimum_reclaimable_available_mib": 3975.359,
+      "wall_seconds": 1.968,
+      "maximum_process_rss_mib": 175.906,
+      "maximum_inferred_unified_memory_mib": 175.906,
+      "minimum_reclaimable_available_mib": 3909.688,
       "minimum_available_memory_floor_mib": 0.0,
       "maximum_swapout_growth_mib": 0.0
     },
@@ -597,15 +606,17 @@
       "output_parity": true,
       "contiguous_gqa_kv_reduction": true,
       "inverse_split_half_rope": true,
-      "attention_rmsnorm_input_gradient": false,
-      "attention_rmsnorm_scale_gradient": false,
-      "qkv_parameter_gradients": false,
-      "complete_attention_gradient_tree": false,
+      "attention_rmsnorm_input_gradient": true,
+      "attention_rmsnorm_scale_gradient": true,
+      "qkv_parameter_gradients": true,
+      "fp32_gradient_accumulation": true,
+      "single_thread_accelerate": true,
+      "complete_attention_gradient_tree": true,
       "complete_decoder_block": false,
       "production_eligible": false
     },
     "production_eligible": false,
-    "claim_scope": "One native causal-attention backward core with contiguous KV reduction and inverse split-half RoPE. It does not establish parameter gradients, block dX, a complete decoder block, or training acceleration."
+    "claim_scope": "One native causal-attention gradient tree with contiguous KV reduction, inverse split-half RoPE, FP32 Q/K/V gradients, and attention-RMSNorm dX/scale. It does not establish a complete decoder block or training acceleration."
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",

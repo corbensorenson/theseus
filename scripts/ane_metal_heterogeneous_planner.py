@@ -804,6 +804,13 @@ def _exact_ane_attention_backward_record(
             "dq_inverse_split_half_rope",
             "dk_contiguous_reduce_inverse_split_half_rope",
             "dv_contiguous_reduce",
+            "accelerate_projection_operator",
+            "q_proj_weight_gradient",
+            "k_proj_weight_gradient",
+            "v_proj_weight_gradient",
+            "projection_input_gradient",
+            "attention_norm_input_gradient",
+            "attention_norm_scale_gradient",
         )
     ):
         raise PlanningFault("exact_ane_attention_backward_invalid")
@@ -831,19 +838,23 @@ def _exact_ane_attention_backward_record(
         "mean_evaluation_milliseconds": record.get(
             "mean_evaluation_milliseconds"
         ),
+        "mean_cpu_projection_gradient_milliseconds": record.get(
+            "mean_cpu_projection_gradient_milliseconds"
+        ),
         "maximum_absolute_delta_by_state": deltas,
         "backward_core_green": core_green,
         "complete_attention_gradient_tree": gradient_tree_green,
         "gradient_closure_is_immediate_next": core_green
         and not gradient_tree_green,
+        "block_remainder_is_immediate_next": gradient_tree_green,
         "resource_receipt": record.get("resource_receipt"),
         "gates": gates,
         "production_eligible": False,
         "claim_scope": (
-            "One native causal-attention backward core with contiguous KV "
-            "reduction and inverse split-half RoPE. It does not establish "
-            "parameter gradients, block dX, a complete decoder block, or "
-            "training acceleration."
+            "One native causal-attention gradient tree with contiguous KV "
+            "reduction, inverse split-half RoPE, FP32 Q/K/V gradients, and "
+            "attention-RMSNorm dX/scale. It does not establish a complete "
+            "decoder block or training acceleration."
         ),
     }
 

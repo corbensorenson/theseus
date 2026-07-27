@@ -71,14 +71,42 @@ def validate(native: dict[str, Any]) -> dict[str, Any]:
             or float(item["maximum_absolute_delta"]) > float(item["tolerance"])
         ):
             raise QualificationFault(f"comparison_failed:{name}")
+    operator = native["comparisons"]["accelerate_projection_operator"]
+    if (
+        int(operator["mismatch_count"]) != 0
+        or float(operator["maximum_absolute_delta"])
+        > float(operator["tolerance"])
+    ):
+        raise QualificationFault("comparison_failed:accelerate_projection_operator")
+    for name in (
+        "q_proj_weight_gradient",
+        "k_proj_weight_gradient",
+        "v_proj_weight_gradient",
+        "projection_input_gradient",
+        "attention_norm_input_gradient",
+        "attention_norm_scale_gradient",
+    ):
+        item = native["comparisons"][name]
+        if (
+            item.get("tolerance_policy")
+            != "analytical_fp16_boundary_propagation"
+            or int(item["mismatch_count"]) != 0
+            or float(item["maximum_absolute_delta"])
+            > float(item["maximum_allowed_delta"])
+        ):
+            raise QualificationFault(f"comparison_failed:{name}")
     return {
         "policy": POLICY,
-        "state": "GREEN_EXACT_ATTENTION_BACKWARD_AND_GEOMETRY_QKV_RMS_GRADIENTS_OPEN",
+        "state": "GREEN_EXACT_ATTENTION_GRADIENT_TREE_BLOCK_REMAINDER_OPEN",
         "source": str(SOURCE.relative_to(ROOT)),
         "source_sha256": hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
         "shape": native["shape"],
+        "parameter_generation": native["parameter_generation"],
         "compile_milliseconds": native["compile_milliseconds"],
         "mean_evaluation_milliseconds": native["mean_evaluation_milliseconds"],
+        "mean_cpu_projection_gradient_milliseconds": native[
+            "mean_cpu_projection_gradient_milliseconds"
+        ],
         "comparisons": native["comparisons"],
         "gates": {
             "causal_softmax_backward": True,
@@ -86,26 +114,28 @@ def validate(native: dict[str, Any]) -> dict[str, Any]:
             "output_parity": True,
             "contiguous_gqa_kv_reduction": True,
             "inverse_split_half_rope": True,
-            "attention_rmsnorm_input_gradient": False,
-            "attention_rmsnorm_scale_gradient": False,
-            "qkv_parameter_gradients": False,
-            "complete_attention_gradient_tree": False,
+            "attention_rmsnorm_input_gradient": True,
+            "attention_rmsnorm_scale_gradient": True,
+            "qkv_parameter_gradients": True,
+            "fp32_gradient_accumulation": True,
+            "single_thread_accelerate": True,
+            "complete_attention_gradient_tree": True,
             "complete_decoder_block": False,
             "production_eligible": False,
         },
         "next_gate": (
-            "Compute FP32 Q/K/V and attention-RMSNorm-scale gradients and "
-            "produce the attention input gradient through the current "
-            "dynamic weights, preserving one generation and objective mass."
+            "Add the output projection and unscaled first residual, then the "
+            "second RMSNorm, SwiGLU, down projection, unscaled residual, "
+            "scalar loss, and one authoritative optimizer update."
         ),
         "claim_scope": (
             "One native causal-attention backward core with contiguous KV "
-            "reduction and inverse split-half RoPE. No QKV parameter "
-            "gradients, block input gradient, "
+            "reduction, inverse split-half RoPE, FP32 Q/K/V parameter "
+            "gradients, and attention-RMSNorm input/scale gradients. No "
             "complete decoder block, optimizer, full model, speedup, or "
             "capability claim."
         ),
-        "capability_claim": "NONE_ENGINEERING_BACKWARD_CORE_ONLY",
+        "capability_claim": "NONE_ENGINEERING_ATTENTION_GRADIENT_ONLY",
     }
 
 

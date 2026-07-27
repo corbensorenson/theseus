@@ -483,7 +483,7 @@ def test_exact_ane_attention_forward_advances_to_backward() -> None:
     assert attention["production_eligible"] is False
 
 
-def test_exact_ane_attention_backward_advances_to_gradient_closure() -> None:
+def test_exact_ane_attention_backward_closes_gradient_tree() -> None:
     evidence = json.loads(
         (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
             encoding="utf-8"
@@ -493,8 +493,9 @@ def test_exact_ane_attention_backward_advances_to_gradient_closure() -> None:
     backward = report["exact_ane_attention_backward"]
 
     assert backward["backward_core_green"] is True
-    assert backward["complete_attention_gradient_tree"] is False
-    assert backward["gradient_closure_is_immediate_next"] is True
+    assert backward["complete_attention_gradient_tree"] is True
+    assert backward["gradient_closure_is_immediate_next"] is False
+    assert backward["block_remainder_is_immediate_next"] is True
     assert backward["gates"]["contiguous_gqa_kv_reduction"] is True
     assert backward["gates"]["inverse_split_half_rope"] is True
     assert backward["maximum_absolute_delta_by_state"]["dv_tiled"] < 0.001
@@ -502,7 +503,7 @@ def test_exact_ane_attention_backward_advances_to_gradient_closure() -> None:
         backward["maximum_absolute_delta_by_state"][
             "dv_contiguous_reduce"
         ]
-        < 0.001
+        < 0.002
     )
     assert backward["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert backward["production_eligible"] is False

@@ -1,45 +1,88 @@
 {
   "policy": "project_theseus_exact_ane_attention_backward_qualification_v1",
-  "state": "GREEN_EXACT_ATTENTION_BACKWARD_AND_GEOMETRY_QKV_RMS_GRADIENTS_OPEN",
+  "state": "GREEN_EXACT_ATTENTION_GRADIENT_TREE_BLOCK_REMAINDER_OPEN",
   "source": "native/ane_metal/ane_exact_attention_backward.m",
-  "source_sha256": "a9d75ca10900402218706b0efd3731c10b6f45922773dc52260a5b027015fac9",
+  "source_sha256": "423b2bf4b02da4c419f4585aa4957c77f7eb4f10a2a52f2110b868cbde182927",
   "shape": {
     "sequence": 128,
     "query_heads": 8,
     "kv_heads": 2,
     "head_dim": 64
   },
-  "compile_milliseconds": 193.869792,
-  "mean_evaluation_milliseconds": 0.361203,
+  "parameter_generation": 0,
+  "compile_milliseconds": 184.481375,
+  "mean_evaluation_milliseconds": 0.399458,
+  "mean_cpu_projection_gradient_milliseconds": 0.262948,
   "comparisons": {
     "dq_rope": {
       "tolerance": 0.002,
-      "maximum_absolute_delta": 4.22688427e-05,
+      "maximum_absolute_delta": 0.000563960988,
       "mismatch_count": 0
     },
     "dk_tiled_rope": {
       "tolerance": 0.002,
-      "maximum_absolute_delta": 6.34936878e-05,
+      "maximum_absolute_delta": 0.000526531425,
       "mismatch_count": 0
     },
     "dv_tiled": {
       "tolerance": 0.002,
-      "maximum_absolute_delta": 0.000299608917,
+      "maximum_absolute_delta": 0.000554275117,
       "mismatch_count": 0
     },
     "dq_inverse_split_half_rope": {
       "tolerance": 0.002,
-      "maximum_absolute_delta": 4.47934071e-05,
+      "maximum_absolute_delta": 0.000545733608,
       "mismatch_count": 0
     },
     "dk_contiguous_reduce_inverse_split_half_rope": {
       "tolerance": 0.004,
-      "maximum_absolute_delta": 0.000279209577,
+      "maximum_absolute_delta": 0.000923486426,
       "mismatch_count": 0
     },
     "dv_contiguous_reduce": {
       "tolerance": 0.004,
-      "maximum_absolute_delta": 0.000968804001,
+      "maximum_absolute_delta": 0.00132227479,
+      "mismatch_count": 0
+    },
+    "accelerate_projection_operator": {
+      "tolerance": 0.0001,
+      "maximum_absolute_delta": 1.93715096e-07,
+      "mismatch_count": 0
+    },
+    "q_proj_weight_gradient": {
+      "tolerance_policy": "analytical_fp16_boundary_propagation",
+      "maximum_allowed_delta": 0.019469291,
+      "maximum_absolute_delta": 0.0106218625,
+      "mismatch_count": 0
+    },
+    "k_proj_weight_gradient": {
+      "tolerance_policy": "analytical_fp16_boundary_propagation",
+      "maximum_allowed_delta": 0.0217131805,
+      "maximum_absolute_delta": 0.0212205723,
+      "mismatch_count": 0
+    },
+    "v_proj_weight_gradient": {
+      "tolerance_policy": "analytical_fp16_boundary_propagation",
+      "maximum_allowed_delta": 0.0488943048,
+      "maximum_absolute_delta": 0.0240660012,
+      "mismatch_count": 0
+    },
+    "projection_input_gradient": {
+      "tolerance_policy": "analytical_fp16_boundary_propagation",
+      "maximum_allowed_delta": 0.00320090936,
+      "maximum_absolute_delta": 0.00235043606,
+      "mismatch_count": 0
+    },
+    "attention_norm_input_gradient": {
+      "tolerance_policy": "analytical_fp16_boundary_propagation",
+      "maximum_allowed_delta": 0.0497700758,
+      "maximum_absolute_delta": 0.0267038643,
+      "mismatch_count": 0
+    },
+    "attention_norm_scale_gradient": {
+      "tolerance_policy": "analytical_fp16_boundary_propagation",
+      "maximum_allowed_delta": 0.0967886224,
+      "maximum_absolute_delta": 0.0168890655,
       "mismatch_count": 0
     }
   },
@@ -49,14 +92,16 @@
     "output_parity": true,
     "contiguous_gqa_kv_reduction": true,
     "inverse_split_half_rope": true,
-    "attention_rmsnorm_input_gradient": false,
-    "attention_rmsnorm_scale_gradient": false,
-    "qkv_parameter_gradients": false,
-    "complete_attention_gradient_tree": false,
+    "attention_rmsnorm_input_gradient": true,
+    "attention_rmsnorm_scale_gradient": true,
+    "qkv_parameter_gradients": true,
+    "fp32_gradient_accumulation": true,
+    "single_thread_accelerate": true,
+    "complete_attention_gradient_tree": true,
     "complete_decoder_block": false,
     "production_eligible": false
   },
-  "next_gate": "Compute FP32 Q/K/V and attention-RMSNorm-scale gradients and produce the attention input gradient through the current dynamic weights, preserving one generation and objective mass.",
-  "claim_scope": "One native causal-attention backward core with contiguous KV reduction and inverse split-half RoPE. No QKV parameter gradients, block input gradient, complete decoder block, optimizer, full model, speedup, or capability claim.",
-  "capability_claim": "NONE_ENGINEERING_BACKWARD_CORE_ONLY"
+  "next_gate": "Add the output projection and unscaled first residual, then the second RMSNorm, SwiGLU, down projection, unscaled residual, scalar loss, and one authoritative optimizer update.",
+  "claim_scope": "One native causal-attention backward core with contiguous KV reduction, inverse split-half RoPE, FP32 Q/K/V parameter gradients, and attention-RMSNorm input/scale gradients. No complete decoder block, optimizer, full model, speedup, or capability claim.",
+  "capability_claim": "NONE_ENGINEERING_ATTENTION_GRADIENT_ONLY"
 }
