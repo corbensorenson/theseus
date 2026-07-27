@@ -146,6 +146,18 @@ gate is GREEN with `4.18e-6` maximum output delta, `1.50e-8` loss delta,
 exact replay. This is the numerical ABI for the native port, not evidence that
 the native ANE block exists or is faster.
 
+`ane_exact_attention_forward.m` implements the first native slice against that
+ABI. It fuses dynamic attention-RMSNorm scale, mutable Q/K/V weights,
+split-half RoPE, corrected contiguous 4:1 GQA, causal softmax, and the Q/K/V
+and normalized-input taps required for backward. A runtime bisect found an
+exact-shape M1 constraint: the natural `512 × 897` packed surface compiles but
+fails evaluation with status `0x1d`; padding the one-position norm-scale
+segment to 128 positions produces `512 × 1024`, after which passthrough,
+RMSNorm, QKV, RoPE, and full attention all execute. The guarded full slice
+averages `0.409 ms`, has zero registered mismatches, and has `0.00352` worst
+absolute delta. This does not yet include attention backward, out projection,
+residuals, SwiGLU, scalar loss, or an optimizer update.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

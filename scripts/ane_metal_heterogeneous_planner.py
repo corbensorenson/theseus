@@ -721,6 +721,73 @@ def _exact_decoder_block_reference_record(
     }
 
 
+def _exact_ane_attention_forward_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("exact_ane_attention_forward") or {}
+    gates = record.get("gates") or {}
+    deltas = record.get("maximum_absolute_delta_by_state") or {}
+    if record and any(
+        not math.isfinite(float(deltas.get(name, float("nan"))))
+        or float(deltas.get(name, -1.0)) < 0.0
+        for name in (
+            "attended",
+            "query_rope",
+            "key_rope",
+            "value",
+            "attention_norm",
+        )
+    ):
+        raise PlanningFault("exact_ane_attention_forward_invalid")
+    forward_green = all(
+        gates.get(gate) is True
+        for gate in (
+            "aligned_surface_runtime",
+            "dynamic_rmsnorm_scale",
+            "dynamic_qkv_weights",
+            "split_half_rope",
+            "contiguous_gqa",
+            "causal_attention",
+            "forward_taps_for_backward",
+            "output_parity",
+        )
+    )
+    backward_green = (
+        forward_green
+        and gates.get("input_gradient") is True
+        and gates.get("every_parameter_gradient") is True
+    )
+    complete_block = (
+        backward_green
+        and gates.get("out_projection_and_unscaled_residual") is True
+        and gates.get("swiglu_and_second_residual") is True
+        and gates.get("scalar_loss_and_optimizer_update") is True
+        and gates.get("complete_decoder_block") is True
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "packed_surface": record.get("packed_surface"),
+        "mean_evaluation_milliseconds": record.get(
+            "mean_evaluation_milliseconds"
+        ),
+        "maximum_absolute_delta_by_state": deltas,
+        "forward_green": forward_green,
+        "backward_green": backward_green,
+        "complete_block": complete_block,
+        "attention_backward_is_immediate_next": forward_green and not backward_green,
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "One exact native attention forward slice. Forward parity and "
+            "runtime execution do not establish backward, a decoder block, "
+            "a full model, or training acceleration."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -802,6 +869,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         _heterogeneous_microbatch_projection_record(evidence)
     )
     exact_decoder_block_reference = _exact_decoder_block_reference_record(evidence)
+    exact_ane_attention_forward = _exact_ane_attention_forward_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -836,6 +904,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
             heterogeneous_microbatch_projection
         ),
         "exact_decoder_block_reference": exact_decoder_block_reference,
+        "exact_ane_attention_forward": exact_ane_attention_forward,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

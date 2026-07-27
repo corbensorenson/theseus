@@ -1196,12 +1196,23 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
     replay digests are exact. This is a GREEN numerical ABI, not native ANE execution or
     a speed claim. Port the native transport against this ABI rather than the neighboring
     research model.
-12. The resource observer now accepts an explicit zero available-memory reserve. This
+12. The first native block slice is now GREEN. One compile-once graph executes dynamic
+    attention-RMSNorm scale, mutable Q/K/V weights, split-half RoPE, corrected contiguous
+    4:1 GQA, causal attention, and the Q/K/V plus normalized-input taps needed for
+    backward. The natural `512 x 897` packed surface compiles but fails evaluation with
+    ANE status `0x1d`; padding the norm-scale segment to 128 positions creates an aligned
+    `512 x 1024` surface, after which passthrough, RMSNorm, QKV, RoPE, and full attention
+    all execute. The guarded full slice averages `0.409 ms`, has zero registered
+    mismatches, and has `0.00352` worst absolute delta. This exact-shape finding does not
+    establish a universal ANE alignment rule. Attention backward is now the immediate
+    owner: inverse split-half rotation, contiguous GQA gradient reduction, `dX`,
+    RMSNorm-scale gradient, and Q/K/V parameter gradients.
+13. The resource observer now accepts an explicit zero available-memory reserve. This
     removes the old hidden positive floor while retaining independently configurable
     process-memory, swap-growth, wall, and telemetry fail-safes. The exact-block receipt
     used a zero reserve floor, observed `347 MiB` maximum process/inferred unified memory,
     retained `3,684.5 MiB` minimum reclaimable memory, and grew swap by `0 MiB`.
-13. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+14. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.

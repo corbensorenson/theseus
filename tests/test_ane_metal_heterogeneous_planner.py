@@ -462,3 +462,22 @@ def test_exact_decoder_block_reference_freezes_native_target() -> None:
     assert block["parameter_count"] == 3_015_680
     assert block["resource_receipt"]["minimum_available_memory_floor_mib"] == 0.0
     assert block["production_eligible"] is False
+
+
+def test_exact_ane_attention_forward_advances_to_backward() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    attention = report["exact_ane_attention_forward"]
+
+    assert attention["forward_green"] is True
+    assert attention["backward_green"] is False
+    assert attention["complete_block"] is False
+    assert attention["attention_backward_is_immediate_next"] is True
+    assert attention["packed_surface"]["unaligned_runtime_status"] == "0x1d"
+    assert attention["packed_surface"]["aligned_spatial_extent"] == 1024
+    assert attention["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert attention["production_eligible"] is False

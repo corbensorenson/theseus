@@ -497,6 +497,68 @@
     "production_eligible": false,
     "claim_scope": "One exact independent-framework decoder-block numerical ABI. It freezes the native target but does not establish ANE execution, full-model parity, acceleration, convergence, or capability."
   },
+  "exact_ane_attention_forward": {
+    "state": "GREEN_EXACT_ATTENTION_FORWARD_NATIVE_BACKWARD_OPEN",
+    "disposition": "FORWARD_SLICE_GREEN_ATTENTION_BACKWARD_IMMEDIATE",
+    "shape": {
+      "batch": 1,
+      "sequence": 128,
+      "d_model": 512,
+      "query_heads": 8,
+      "kv_heads": 2,
+      "head_dim": 64
+    },
+    "packed_surface": {
+      "unaligned_spatial_extent": 897,
+      "unaligned_compile_succeeded": true,
+      "unaligned_evaluation_returncode": 5,
+      "unaligned_runtime_status": "0x1d",
+      "aligned_norm_scale_span": 128,
+      "aligned_spatial_extent": 1024,
+      "aligned_all_runtime_stages_green": true
+    },
+    "mean_evaluation_milliseconds": 0.409135,
+    "maximum_absolute_delta_by_state": {
+      "attended": 0.00158131123,
+      "query_rope": 0.00281441212,
+      "key_rope": 0.00250184536,
+      "value": 0.00181925297,
+      "attention_norm": 0.00351929665
+    },
+    "forward_green": true,
+    "backward_green": false,
+    "complete_block": false,
+    "attention_backward_is_immediate_next": true,
+    "resource_receipt": {
+      "path": "reports/exact_ane_attention_forward_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 4.971,
+      "maximum_process_rss_mib": 175.875,
+      "maximum_inferred_unified_memory_mib": 175.875,
+      "minimum_reclaimable_available_mib": 4018.703,
+      "minimum_available_memory_floor_mib": 0.0,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "aligned_surface_runtime": true,
+      "dynamic_rmsnorm_scale": true,
+      "dynamic_qkv_weights": true,
+      "split_half_rope": true,
+      "contiguous_gqa": true,
+      "causal_attention": true,
+      "forward_taps_for_backward": true,
+      "output_parity": true,
+      "input_gradient": false,
+      "every_parameter_gradient": false,
+      "out_projection_and_unscaled_residual": false,
+      "swiglu_and_second_residual": false,
+      "scalar_loss_and_optimizer_update": false,
+      "complete_decoder_block": false,
+      "production_eligible": false
+    },
+    "production_eligible": false,
+    "claim_scope": "One exact native attention forward slice. Forward parity and runtime execution do not establish backward, a decoder block, a full model, or training acceleration."
+  },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",
     "source": "native/ane_metal/ane_metal_same_surface_probe.m",
