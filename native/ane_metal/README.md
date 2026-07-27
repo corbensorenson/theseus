@@ -158,6 +158,15 @@ averages `0.409 ms`, has zero registered mismatches, and has `0.00352` worst
 absolute delta. This does not yet include attention backward, out projection,
 residuals, SwiGLU, scalar loss, or an optimizer update.
 
+`ane_exact_attention_backward.m` closes the causal softmax-gradient core in one
+ANE graph. It consumes RoPE'd Q, contiguously tiled K/V, and upstream
+attention gradients, then recomputes the masked probabilities and emits
+full-query-head `dQ`, `dK`, and `dV`. The guarded slice averages `0.390 ms`;
+worst absolute delta is `2.996e-4`, with zero registered mismatches. This is
+not the complete attention gradient tree: contiguous KV reduction, inverse
+split-half RoPE, attention-RMSNorm `dX`/scale gradient, and FP32 Q/K/V
+parameter gradients remain the immediate closure.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a

@@ -788,6 +788,58 @@ def _exact_ane_attention_forward_record(
     }
 
 
+def _exact_ane_attention_backward_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("exact_ane_attention_backward") or {}
+    gates = record.get("gates") or {}
+    deltas = record.get("maximum_absolute_delta_by_state") or {}
+    if record and any(
+        not math.isfinite(float(deltas.get(name, float("nan"))))
+        or float(deltas.get(name, -1.0)) < 0.0
+        for name in ("dq_rope", "dk_tiled_rope", "dv_tiled")
+    ):
+        raise PlanningFault("exact_ane_attention_backward_invalid")
+    core_green = all(
+        gates.get(gate) is True
+        for gate in (
+            "causal_softmax_backward",
+            "full_query_head_dq_dk_dv",
+            "output_parity",
+        )
+    )
+    gradient_tree_green = (
+        core_green
+        and gates.get("contiguous_gqa_kv_reduction") is True
+        and gates.get("inverse_split_half_rope") is True
+        and gates.get("attention_rmsnorm_input_gradient") is True
+        and gates.get("attention_rmsnorm_scale_gradient") is True
+        and gates.get("qkv_parameter_gradients") is True
+        and gates.get("complete_attention_gradient_tree") is True
+    )
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "shape": record.get("shape"),
+        "mean_evaluation_milliseconds": record.get(
+            "mean_evaluation_milliseconds"
+        ),
+        "maximum_absolute_delta_by_state": deltas,
+        "backward_core_green": core_green,
+        "complete_attention_gradient_tree": gradient_tree_green,
+        "gradient_closure_is_immediate_next": core_green
+        and not gradient_tree_green,
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "production_eligible": False,
+        "claim_scope": (
+            "One native causal-attention backward core. It does not establish "
+            "KV reduction, inverse RoPE, parameter gradients, block dX, a "
+            "complete decoder block, or training acceleration."
+        ),
+    }
+
+
 def _candidate_record(
     record: dict[str, Any], control: dict[str, float | int]
 ) -> dict[str, Any]:
@@ -870,6 +922,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     )
     exact_decoder_block_reference = _exact_decoder_block_reference_record(evidence)
     exact_ane_attention_forward = _exact_ane_attention_forward_record(evidence)
+    exact_ane_attention_backward = _exact_ane_attention_backward_record(evidence)
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -905,6 +958,7 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         ),
         "exact_decoder_block_reference": exact_decoder_block_reference,
         "exact_ane_attention_forward": exact_ane_attention_forward,
+        "exact_ane_attention_backward": exact_ane_attention_backward,
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

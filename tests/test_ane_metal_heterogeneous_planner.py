@@ -481,3 +481,20 @@ def test_exact_ane_attention_forward_advances_to_backward() -> None:
     assert attention["packed_surface"]["aligned_spatial_extent"] == 1024
     assert attention["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert attention["production_eligible"] is False
+
+
+def test_exact_ane_attention_backward_advances_to_gradient_closure() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    backward = report["exact_ane_attention_backward"]
+
+    assert backward["backward_core_green"] is True
+    assert backward["complete_attention_gradient_tree"] is False
+    assert backward["gradient_closure_is_immediate_next"] is True
+    assert backward["maximum_absolute_delta_by_state"]["dv_tiled"] < 0.001
+    assert backward["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
+    assert backward["production_eligible"] is False

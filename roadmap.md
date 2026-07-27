@@ -1207,12 +1207,19 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
     establish a universal ANE alignment rule. Attention backward is now the immediate
     owner: inverse split-half rotation, contiguous GQA gradient reduction, `dX`,
     RMSNorm-scale gradient, and Q/K/V parameter gradients.
-13. The resource observer now accepts an explicit zero available-memory reserve. This
+13. The native causal-attention backward core is also GREEN. One ANE graph consumes
+    RoPE'd Q, contiguously tiled K/V, and upstream `dA`; recomputes the masked
+    probabilities; and emits full-head `dQ`, `dK`, and `dV`. It averages `0.390 ms`,
+    has zero registered mismatches, and has `2.996e-4` worst absolute delta. This is
+    not yet the attention gradient tree. Immediately reduce tiled K/V gradients to the
+    two authoritative KV heads, apply inverse split-half RoPE, and compute attention
+    RMSNorm `dX`/scale plus FP32 Q/K/V parameter gradients.
+14. The resource observer now accepts an explicit zero available-memory reserve. This
     removes the old hidden positive floor while retaining independently configurable
     process-memory, swap-growth, wall, and telemetry fail-safes. The exact-block receipt
     used a zero reserve floor, observed `347 MiB` maximum process/inferred unified memory,
     retained `3,684.5 MiB` minimum reclaimable memory, and grew swap by `0 MiB`.
-14. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
+15. Once a useful checkpoint exists, reuse the qualified stateful layouts for ANE
    prefill/decode, in-graph top-k before crossing the boundary, and an ANE-resident
    draft/router/retrieval model whose tokens remain subject to authoritative Metal-model
    verification.
