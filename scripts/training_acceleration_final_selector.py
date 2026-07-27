@@ -213,12 +213,24 @@ def execute(config_path: Path) -> dict[str, Any]:
         "ambient_swap_is_diagnostic": (
             trainer["host_resource_safety"]["swapout_growth_action"]
             == "report_only"
+            and trainer["host_resource_safety"]["memory_guard_mode"]
+            == "predicted_exhaustion"
+            and float(
+                trainer["host_resource_safety"][
+                    "minimum_available_before_launch_mib"
+                ]
+            )
+            == 0.0
             and float(
                 trainer["host_resource_safety"][
                     "minimum_available_during_run_mib"
                 ]
             )
-            >= 2048.0
+            == 0.0
+            and float(
+                trainer["host_resource_safety"]["maximum_wall_seconds"]
+            )
+            == 0.0
         ),
     }
     selected = config["selected_recipe"]

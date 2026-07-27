@@ -83,6 +83,8 @@ def training_host_policy(
         "maximum_process_memory_mib",
         "minimum_available_before_launch_mib",
         "minimum_available_during_run_mib",
+        "memory_guard_mode",
+        "memory_guard_calibration_report",
         "maximum_swapout_growth_mib",
         "maximum_wall_seconds",
         "poll_interval_seconds",
@@ -111,6 +113,27 @@ def training_host_policy(
         or not qualified_python.is_file()
     ):
         raise ValueError("host resource safety contract invalid")
+    calibration_path = resolve(
+        str(contract["memory_guard_calibration_report"])
+    )
+    if not calibration_path.is_file():
+        raise ValueError("host resource safety calibration is missing")
+    calibration = read_json(calibration_path)
+    if isinstance(calibration.get("host_resource_safety"), dict):
+        calibration = calibration["host_resource_safety"]
+    calibrated_peak = float(
+        calibration.get("maximum_inferred_unified_memory_mib") or 0.0
+    )
+    if calibration.get("passed") is not True or calibrated_peak <= 0.0:
+        raise ValueError("host resource safety calibration is invalid")
+    calibrated_peak = max(
+        calibrated_peak,
+        float(
+            contract.get(
+                "qualified_peak_inferred_unified_memory_mib", 0.0
+            )
+        ),
+    )
     policy = host_resource_safety.HostSafetyPolicy(
         max_process_memory_mib=float(contract["maximum_process_memory_mib"]),
         minimum_available_before_launch_mib=float(
@@ -126,6 +149,8 @@ def training_host_policy(
         swapout_growth_action=str(
             contract.get("swapout_growth_action") or "hard_stop"
         ),
+        memory_guard_mode=str(contract["memory_guard_mode"]),
+        qualified_peak_inferred_unified_memory_mib=calibrated_peak,
     )
     policy.validate(physical_memory_mib=host_resource_safety.physical_memory_mib())
     return policy

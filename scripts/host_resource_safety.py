@@ -27,6 +27,7 @@ MIB = 1024 * 1024
 MINIMUM_CONSECUTIVE_RESERVE_BREACHES = 3
 MAXIMUM_CONSECUTIVE_TELEMETRY_FAILURES = 3
 SWAPOUT_GROWTH_ACTIONS = frozenset({"hard_stop", "report_only"})
+MEMORY_GUARD_MODES = frozenset({"fixed_reserve", "predicted_exhaustion"})
 VM_STAT_PATTERN = re.compile(r'^\"?([^\"]+?)\"?:\s+([0-9]+)\.?$')
 
 
@@ -50,11 +51,12 @@ class HostSafetyPolicy:
     poll_interval_seconds: float = 0.25
     terminate_grace_seconds: float = 2.0
     swapout_growth_action: str = "hard_stop"
+    memory_guard_mode: str = "fixed_reserve"
+    qualified_peak_inferred_unified_memory_mib: float = 0.0
 
     def validate(self, *, physical_memory_mib: float) -> None:
         strictly_positive_values = (
             self.max_process_memory_mib,
-            self.maximum_wall_seconds,
             self.poll_interval_seconds,
             self.terminate_grace_seconds,
         )
@@ -62,6 +64,8 @@ class HostSafetyPolicy:
             self.minimum_available_before_launch_mib,
             self.minimum_available_during_run_mib,
             self.maximum_swapout_growth_mib,
+            self.maximum_wall_seconds,
+            self.qualified_peak_inferred_unified_memory_mib,
         )
         if any(float(value) <= 0 for value in strictly_positive_values):
             raise HostResourceSafetyFault("host_safety_policy_nonpositive")
@@ -69,6 +73,15 @@ class HostSafetyPolicy:
             raise HostResourceSafetyFault("host_safety_policy_negative_threshold")
         if self.swapout_growth_action not in SWAPOUT_GROWTH_ACTIONS:
             raise HostResourceSafetyFault("swapout_growth_action_invalid")
+        if self.memory_guard_mode not in MEMORY_GUARD_MODES:
+            raise HostResourceSafetyFault("memory_guard_mode_invalid")
+        if self.memory_guard_mode == "predicted_exhaustion" and (
+            self.minimum_available_before_launch_mib != 0.0
+            or self.minimum_available_during_run_mib != 0.0
+        ):
+            raise HostResourceSafetyFault(
+                "predicted_exhaustion_guard_cannot_hide_a_fixed_reserve"
+            )
         if self.max_process_memory_mib > physical_memory_mib * 0.5:
             raise HostResourceSafetyFault("process_limit_exceeds_half_physical_memory")
         if self.minimum_available_before_launch_mib < self.minimum_available_during_run_mib:
@@ -170,6 +183,7 @@ def policy_with_overrides(
     minimum_available_during_run_mib: float | None = None,
     maximum_swapout_growth_mib: float | None = None,
     swapout_growth_action: str | None = None,
+    memory_guard_mode: str | None = None,
 ) -> HostSafetyPolicy:
     """Apply explicit workload-sized limits without weakening validation."""
 
@@ -202,6 +216,14 @@ def policy_with_overrides(
             if swapout_growth_action is None
             else str(swapout_growth_action)
         ),
+        memory_guard_mode=(
+            policy.memory_guard_mode
+            if memory_guard_mode is None
+            else str(memory_guard_mode)
+        ),
+        qualified_peak_inferred_unified_memory_mib=(
+            policy.qualified_peak_inferred_unified_memory_mib
+        ),
     )
     overridden.validate(physical_memory_mib=physical_memory_mib())
     return overridden
@@ -216,10 +238,14 @@ def policy_from_mapping(
     policy = HostSafetyPolicy(
         max_process_memory_mib=min(hard_cap, physical * fraction),
         minimum_available_before_launch_mib=float(
-            value.get("minimum_available_before_launch_mib") or 6144.0
+            value["minimum_available_before_launch_mib"]
+            if "minimum_available_before_launch_mib" in value
+            else 6144.0
         ),
         minimum_available_during_run_mib=float(
-            value.get("minimum_available_during_run_mib") or 4096.0
+            value["minimum_available_during_run_mib"]
+            if "minimum_available_during_run_mib" in value
+            else 4096.0
         ),
         maximum_swapout_growth_mib=float(
             value.get("maximum_swapout_growth_mib") or 64.0
@@ -229,6 +255,12 @@ def policy_from_mapping(
         terminate_grace_seconds=float(value.get("terminate_grace_seconds") or 2.0),
         swapout_growth_action=str(
             value.get("swapout_growth_action") or "hard_stop"
+        ),
+        memory_guard_mode=str(
+            value.get("memory_guard_mode") or "fixed_reserve"
+        ),
+        qualified_peak_inferred_unified_memory_mib=float(
+            value.get("qualified_peak_inferred_unified_memory_mib") or 0.0
         ),
     )
     policy.validate(physical_memory_mib=physical)
@@ -347,6 +379,11 @@ def run_guarded(
     first_swap_growth_breach_observation: dict[str, Any] | None = None
     reserve_breach_streak = 0
     maximum_reserve_breach_streak = 0
+    predicted_exhaustion_streak = 0
+    maximum_predicted_exhaustion_streak = 0
+    maximum_predicted_termination_headroom_mib = 0.0
+    previous_available = initial.reclaimable_available_mib
+    previous_elapsed = 0.0
     telemetry_failure_streak = 0
     maximum_telemetry_failure_streak = 0
     telemetry_failure_prefix: list[dict[str, Any]] = []
@@ -389,7 +426,10 @@ def run_guarded(
                             "fault_type": telemetry_fault_type,
                         }
                     )
-                if elapsed > policy.maximum_wall_seconds:
+                if (
+                    policy.maximum_wall_seconds > 0.0
+                    and elapsed > policy.maximum_wall_seconds
+                ):
                     fault = "wall_limit_exceeded"
                     break
                 if (
@@ -441,7 +481,10 @@ def run_guarded(
                                 "UNAVAILABLE_PERMISSION_HOST_PRESSURE_ACTIVE"
                             )
                     else:
-                        if elapsed > policy.maximum_wall_seconds:
+                        if (
+                            policy.maximum_wall_seconds > 0.0
+                            and elapsed > policy.maximum_wall_seconds
+                        ):
                             fault = "wall_limit_exceeded"
                             break
                         if (
@@ -472,6 +515,42 @@ def run_guarded(
                 minimum_available, snapshot.reclaimable_available_mib
             )
             maximum_swap_growth = max(maximum_swap_growth, swap_growth)
+            observation_seconds = max(
+                elapsed - previous_elapsed,
+                policy.poll_interval_seconds,
+            )
+            reclaimable_decline_rate = max(
+                0.0,
+                (previous_available - snapshot.reclaimable_available_mib)
+                / observation_seconds,
+            )
+            termination_horizon_seconds = (
+                policy.terminate_grace_seconds
+                + policy.poll_interval_seconds
+                * (MINIMUM_CONSECUTIVE_RESERVE_BREACHES + 1)
+            )
+            predicted_termination_headroom = (
+                reclaimable_decline_rate * termination_horizon_seconds
+            )
+            maximum_predicted_termination_headroom_mib = max(
+                maximum_predicted_termination_headroom_mib,
+                predicted_termination_headroom,
+            )
+            exhaustion_predicted = bool(
+                reclaimable_decline_rate > 0.0
+                and snapshot.reclaimable_available_mib
+                <= predicted_termination_headroom
+            )
+            qualified_peak = (
+                policy.qualified_peak_inferred_unified_memory_mib
+            )
+            within_qualified_working_set = bool(
+                qualified_peak > 0.0
+                and initial.reclaimable_available_mib > qualified_peak
+                and inferred_unified_memory <= qualified_peak
+            )
+            if within_qualified_working_set:
+                exhaustion_predicted = False
             observation = {
                 "elapsed_seconds": round(elapsed, 3),
                 "process_rss_mib": round(rss, 3),
@@ -482,7 +561,19 @@ def run_guarded(
                     snapshot.reclaimable_available_mib, 3
                 ),
                 "swapout_growth_mib": round(swap_growth, 3),
+                "reclaimable_decline_rate_mib_per_second": round(
+                    reclaimable_decline_rate, 3
+                ),
+                "predicted_termination_headroom_mib": round(
+                    predicted_termination_headroom, 3
+                ),
+                "exhaustion_predicted": exhaustion_predicted,
+                "within_qualified_working_set": (
+                    within_qualified_working_set
+                ),
             }
+            previous_available = snapshot.reclaimable_available_mib
+            previous_elapsed = elapsed
             if len(observation_prefix) < 64:
                 observation_prefix.append(observation)
             observation_suffix.append(observation)
@@ -497,24 +588,44 @@ def run_guarded(
                 and policy.swapout_growth_action == "hard_stop"
             ):
                 fault = "swap_growth_limit_exceeded"
-            elif elapsed > policy.maximum_wall_seconds:
+            elif (
+                policy.maximum_wall_seconds > 0.0
+                and elapsed > policy.maximum_wall_seconds
+            ):
                 fault = "wall_limit_exceeded"
             else:
-                if (
-                    snapshot.reclaimable_available_mib
-                    < policy.minimum_available_during_run_mib
-                ):
-                    reserve_breach_streak += 1
-                else:
+                if policy.memory_guard_mode == "predicted_exhaustion":
                     reserve_breach_streak = 0
-                maximum_reserve_breach_streak = max(
-                    maximum_reserve_breach_streak, reserve_breach_streak
-                )
-                if (
-                    reserve_breach_streak
-                    >= MINIMUM_CONSECUTIVE_RESERVE_BREACHES
-                ):
-                    fault = "host_memory_reserve_breached"
+                    if exhaustion_predicted:
+                        predicted_exhaustion_streak += 1
+                    else:
+                        predicted_exhaustion_streak = 0
+                    maximum_predicted_exhaustion_streak = max(
+                        maximum_predicted_exhaustion_streak,
+                        predicted_exhaustion_streak,
+                    )
+                    if (
+                        predicted_exhaustion_streak
+                        >= MINIMUM_CONSECUTIVE_RESERVE_BREACHES
+                    ):
+                        fault = "host_memory_exhaustion_predicted"
+                else:
+                    if (
+                        snapshot.reclaimable_available_mib
+                        < policy.minimum_available_during_run_mib
+                    ):
+                        reserve_breach_streak += 1
+                    else:
+                        reserve_breach_streak = 0
+                    maximum_reserve_breach_streak = max(
+                        maximum_reserve_breach_streak,
+                        reserve_breach_streak,
+                    )
+                    if (
+                        reserve_breach_streak
+                        >= MINIMUM_CONSECUTIVE_RESERVE_BREACHES
+                    ):
+                        fault = "host_memory_reserve_breached"
             if fault:
                 fault_observation = observation
                 break
@@ -558,6 +669,14 @@ def run_guarded(
         ),
         "reserve_breach_observations_required": MINIMUM_CONSECUTIVE_RESERVE_BREACHES,
         "maximum_consecutive_reserve_breaches": maximum_reserve_breach_streak,
+        "memory_guard_mode": policy.memory_guard_mode,
+        "maximum_consecutive_predicted_exhaustion_observations": (
+            maximum_predicted_exhaustion_streak
+        ),
+        "maximum_predicted_termination_headroom_mib": round(
+            maximum_predicted_termination_headroom_mib, 3
+        ),
+        "wall_limit_disabled": policy.maximum_wall_seconds == 0.0,
         "telemetry_failure_observations_allowed": (
             MAXIMUM_CONSECUTIVE_TELEMETRY_FAILURES - 1
         ),
@@ -590,6 +709,11 @@ def main() -> int:
         choices=sorted(SWAPOUT_GROWTH_ACTIONS),
         default=None,
     )
+    parser.add_argument(
+        "--memory-guard-mode",
+        choices=sorted(MEMORY_GUARD_MODES),
+        default=None,
+    )
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = list(args.command)
@@ -609,6 +733,7 @@ def main() -> int:
             ),
             maximum_swapout_growth_mib=args.maximum_swapout_growth_mib,
             swapout_growth_action=args.swapout_growth_action,
+            memory_guard_mode=args.memory_guard_mode,
         )
         receipt_path = Path(args.receipt).expanduser()
         if not receipt_path.is_absolute():

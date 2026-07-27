@@ -666,6 +666,29 @@ share toward zero. Public benchmarks are calibration only.
   frozen `5e-6` absolute tolerance and grows swap. It remains
   `INCONCLUSIVE_IMPLEMENTATION` until its backward path is repaired; a modest measured wall
   gain is not discarded merely for being below a round-number threshold.
+- **Evidence-driven host qualification:** the selected compiled FP32 route no longer has a
+  fixed launch/runtime reclaimable-memory floor, a round-number disk floor, an unrelated
+  wall deadline, or a two-hour/85% sustained gate. The external watchdog derives only the
+  termination headroom implied by consecutive measured memory decline and its real
+  termination latency. The exact selected route also binds two independently completed
+  64-step receipts into a `4,797.484 MiB` finite working-set envelope, preventing a known
+  allocation ramp from being extrapolated as an infinite decline; one allocation transient
+  or a stable low plateau is not a fault.
+  Disk authority is the byte size of two complete live checkpoint transactions
+  (`1,316,246,632` bytes at step 3,480). Sustained qualification uses adjacent
+  three-replicate thermal windows and stops when their observed pairwise wall-rate
+  uncertainty overlaps, or immediately on clear degradation or an available system thermal
+  warning. System-wide swap remains diagnostic, process-group memory remains bounded, every
+  segment remains transactional and exact-resumable, and no canonical checkpoint is mutated
+  by qualification.
+  The first live attempt completed three exact 64-step scratch segments at `3,069.398`,
+  `3,095.936`, and `3,121.711` joined positions/s. An uncalibrated fourth launch exposed a
+  false predictor extrapolation during the finite startup ramp; that implementation is
+  superseded by the durable two-receipt envelope above. A later resume then correctly refused
+  the old scratch plan identity after the watchdog implementation changed. The clean v2
+  namespace must restart from canonical step 3,480. It was not launched in this turn because
+  the app rejected further accelerator approval after its usage-credit limit was reached.
+  Qualification is `INCOMPLETE`; this is neither a training nor capability failure.
 - **Repository hygiene:** the forward roadmap is now a compact execution map backed by
   the complete machine-readable matrix without deleting an open obligation.
   The 2026-07-23 audit caught a real regression: 1,946,857,145 governed-hot bytes and 6,375

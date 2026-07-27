@@ -15,7 +15,7 @@ if str(SCRIPTS) not in sys.path:
 import selected_route_sustained_qualification as sustained
 
 
-def test_sustained_config_requires_real_two_hour_window() -> None:
+def test_sustained_config_uses_evidence_not_elapsed_hours_or_percentage() -> None:
     config = json.loads(
         (ROOT / "configs" / "selected_route_sustained_qualification.json").read_text()
     )
@@ -24,13 +24,15 @@ def test_sustained_config_requires_real_two_hour_window() -> None:
     assert config["availability_config"] == (
         "configs/neural_seed_training_availability.json"
     )
-    config["minimum_contiguous_child_wall_seconds"] = 7199
+    assert "minimum_contiguous_child_wall_seconds" not in config
+    assert "minimum_last_to_first_joined_throughput_ratio" not in config
+    config["minimum_contiguous_child_wall_seconds"] = 7200
     try:
         sustained.validate_config(config)
     except ValueError as exc:
-        assert "two hours" in str(exc)
+        assert "arbitrary time or percentage" in str(exc)
     else:
-        raise AssertionError("short sustained window was accepted")
+        raise AssertionError("elapsed-time gate was accepted")
 
 
 def test_first_middle_last_uses_joined_position_throughput() -> None:
@@ -56,10 +58,45 @@ def test_first_middle_last_uses_joined_position_throughput() -> None:
                 },
             }
         )
-    windows = sustained.first_middle_last(rows, 0.2)
+    windows = sustained.first_middle_last(rows, 1)
     assert windows["first"]["joined_positions_per_second"] == 100.0
     assert windows["middle"]["joined_positions_per_second"] == 80.0
     assert windows["last"]["joined_positions_per_second"] == 60.0
+
+
+def test_adjacent_windows_stop_when_observed_uncertainty_overlaps() -> None:
+    rows = [
+        {
+            "joined_positions_per_second": rate,
+            "machine_state_after": {
+                "thermal": {"warning_detected": False}
+            },
+        }
+        for rate in (100.0, 102.0, 98.0, 101.0, 99.0, 100.5)
+    ]
+    evidence = sustained.adjacent_window_stability(rows, 3)
+    assert evidence["terminal"] is True
+    assert evidence["state"] == (
+        "STABLE_WITHIN_OBSERVED_REPLICATE_UNCERTAINTY"
+    )
+    assert evidence["arbitrary_percentage_tolerance"] is None
+    assert evidence["elapsed_time_requirement"] is None
+
+
+def test_adjacent_windows_stop_on_clear_degradation_without_a_percent_floor() -> None:
+    rows = [
+        {
+            "joined_positions_per_second": rate,
+            "machine_state_after": {
+                "thermal": {"warning_detected": False}
+            },
+        }
+        for rate in (102.0, 101.0, 100.0, 99.0, 98.0, 97.0)
+    ]
+    evidence = sustained.adjacent_window_stability(rows, 3)
+    assert evidence["terminal"] is True
+    assert evidence["state"] == "CLEAR_DEGRADATION"
+    assert evidence["clear_degradation"] is True
 
 
 def test_selected_recipe_matches_canonical_training_config() -> None:

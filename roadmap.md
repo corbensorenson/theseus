@@ -189,11 +189,12 @@ positions/second and also holds memory flat, but two independent processes still
 (`1.43e-4` model and `5.43e-5` optimizer maximum absolute delta). BF16 remains rejected
 until the first disagreeing update is localized and the full-state repeatability gate passes.
 
-The first 64-step fresh-process adoption attempt was blocked by current host pressure before
+The first 64-step fresh-process adoption attempt was historically blocked by host pressure before
 an optimizer update: reclaimable memory began at 4,712 MiB, the MLX compile/load transient
-reduced it to 1,867 MiB, zero swap grew, and the existing 2,048 MiB live-reserve rule stopped
-the child. Do not weaken that reserve from one observation. Repeat when the host has adequate
-headroom and preserve every failure receipt. The production route remains stopped and the
+reduced it to 1,867 MiB, zero swap grew, and the then-current 2,048 MiB live-reserve rule
+stopped the child. That observation is preserved, but the round-number floor is no longer
+the decision rule; the watchdog now derives termination headroom from the measured decline
+rate and its actual termination latency. Preserve every failure receipt. The production route remains stopped and the
 64-step policy remains unqualified until two contiguous segments and an independent replay
 pass state, cursor, numeric, publication, and zero-swap checks.
 
@@ -322,11 +323,29 @@ Work this finite docket in order:
    **Implemented (2026-07-26):** the existing neural-seed campaign controller now evaluates
    these gates before every transactional 64-step launch and returns `PAUSED`, rather than
    failure, when AC/Low Power state,
-   10 GiB disk reserve, competing-accelerator inventory, or
+   the bytes required for two complete checkpoint transactions, competing-accelerator inventory, or
    explicit yield file is not ready. An in-flight Metal segment is never suspended; it finishes
    and publishes through the existing exact-resume transaction before availability is checked
-   again. There is no outer launch-memory floor; the external child watchdog continuously
-   enforces the unchanged 2 GiB live reserve, process ceiling, swap treatment, and wall bound.
+   again. There is no outer launch-memory floor; the external child watchdog uses measured
+   decline-rate exhaustion prediction, a process ceiling, and diagnostic swap telemetry.
+   Step-bounded children have no unrelated wall-clock deadline.
+   Two independently completed exact 64-step receipts calibrate the selected route's finite
+   working-set envelope at `4,797.484 MiB`; the predictor may suppress extrapolation only
+   while a current run remains inside that measured envelope and initial reclaimable memory
+   exceeds it. This repaired a real false positive during the finite compile/load ramp
+   without creating a remaining-memory floor.
+
+   **Current execution evidence (2026-07-27):** the first evidence-driven attempt completed
+   three exact 64-step scratch segments at `3,069.398`, `3,095.936`, and `3,121.711`
+   joined positions/second before the uncalibrated predictor stopped segment four during a
+   known finite startup ramp. The old 2 GiB rule would already have killed segment one at
+   `1,715.656 MiB` reclaimable; allowing it to finish was correct. Two completed receipts
+   independently establish the `4,797.484 MiB` finite envelope above. A subsequent resume
+   correctly failed closed because the scratch receipt carried the immediately previous
+   implementation plan hash. Do not weaken plan custody: the clean `selected_route_sustained_v2`
+   namespace restarts from canonical step 3,480 under the new migration. Its launch is ready
+   but the Codex app approval-credit boundary prevented this turn from starting another
+   accelerator child. Sustained qualification therefore remains incomplete, not failed.
 6. **Make review-point racing executable before cutting compute.** At each already frozen
    private-development review, continue every candidate unless a preregistered confidence-bound
    rule establishes practical domination across aggregate loss, weak-language tails, direct
@@ -616,8 +635,11 @@ Therefore:
    **Executable closure (2026-07-26):** the scratch-only
    `selected_route_sustained_qualification.py` harness now binds the GREEN finite selector to
    the canonical compiled FP32/microbatch-four route, advances only exact-resumable 64-step
-   generations, preserves the registered step-3,480 lineage byte-for-byte, and requires a
-   genuinely contiguous 7,200-second child window. It records first/middle/last joined and
+   generations, and preserves the registered step-3,480 lineage byte-for-byte. Its stopping
+   rule is now evidence-driven: replicated adjacent thermal windows continue until their
+   observed pairwise throughput uncertainty overlaps, or stop immediately on a clear
+   degradation or an available system thermal warning. It has no elapsed-hour requirement
+   and no fixed throughput percentage tolerance. It records first/middle/last joined and
    device throughput, final loss, AC state, available `pmset` thermal/performance warnings,
    causal child RSS, inferred unified memory, live reserve, and diagnostic swap growth. A
    guard interruption is durable and cannot be silently counted across a later invocation.
@@ -629,12 +651,16 @@ Therefore:
    directory, no hard gap, and an unchanged canonical lineage. The initial implementation
    also exposed and fixed a scratch initialization-order defect that would have prevented a
    brand-new sustained run from starting.
-   Two current fresh-process attempts correctly stopped on the unchanged 2,048 MiB live-reserve
-   floor: one second segment reached 2,003 MiB reclaimable after about 194 seconds with zero
-   swap growth, and a later launch began with only 4,720.672 MiB reclaimable before reaching
-   1,723.359 MiB. These are host-pressure walls, not training failures. Retry only when the
-   measured reclaimable working set can cover the observed roughly 5.18 GiB route plus the
-   live reserve; do not lower the reserve or kill unrelated user work to manufacture GREEN.
+   Two historical fresh-process attempts stopped on the old 2,048 MiB live-reserve floor:
+   one second segment reached 2,003 MiB reclaimable after about 194 seconds with zero swap
+   growth, and a later launch began with only 4,720.672 MiB reclaimable before reaching
+   1,723.359 MiB. That fixed floor is retired. The canonical watchdog now uses consecutive
+   measured reclaimable-memory decline to derive only the headroom needed to terminate
+   before predicted exhaustion; a single allocation transient or a stable low plateau does
+   not trip it. The step-bounded child has no arbitrary wall-clock deadline. System-wide
+   swap remains diagnostic, exact process-group memory still has a circuit breaker, and all
+   resource receipts remain durable. Disk launch reserve is likewise derived from the bytes
+   of two complete live checkpoint transactions rather than a round-number GiB floor.
 
 The larger remaining opportunity is **time to heldout quality**, not raw seconds per frozen
 AdamW update. Keep that search finite:

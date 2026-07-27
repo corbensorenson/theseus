@@ -281,8 +281,13 @@ def test_canonical_heavy_operations_require_the_external_host_guard() -> None:
     policy = training_host_policy(config)
 
     assert policy.max_process_memory_mib == 5120
-    assert policy.minimum_available_before_launch_mib == 4096
-    assert policy.minimum_available_during_run_mib == 2048
+    assert policy.minimum_available_before_launch_mib == 0
+    assert policy.minimum_available_during_run_mib == 0
+    assert policy.memory_guard_mode == "predicted_exhaustion"
+    assert policy.qualified_peak_inferred_unified_memory_mib == pytest.approx(
+        4797.484
+    )
+    assert policy.maximum_wall_seconds == 0
     assert policy.maximum_swapout_growth_mib == 16
     assert policy.swapout_growth_action == "report_only"
     assert training_operation(SimpleNamespace(execute=True)) == "training"

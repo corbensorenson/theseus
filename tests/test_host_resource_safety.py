@@ -83,6 +83,41 @@ def test_explicit_zero_reserve_floor_is_observation_only(
     assert policy.maximum_swapout_growth_mib == 0
 
 
+def test_mapping_preserves_explicit_zero_and_predicted_exhaustion_mode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(safety, "physical_memory_mib", lambda: 16384.0)
+    policy = safety.policy_from_mapping(
+        {
+            "minimum_available_before_launch_mib": 0,
+            "minimum_available_during_run_mib": 0,
+            "memory_guard_mode": "predicted_exhaustion",
+            "maximum_swapout_growth_mib": 0,
+        },
+        maximum_wall_seconds=0,
+    )
+    assert policy.minimum_available_before_launch_mib == 0
+    assert policy.minimum_available_during_run_mib == 0
+    assert policy.memory_guard_mode == "predicted_exhaustion"
+    assert policy.maximum_wall_seconds == 0
+
+
+def test_predicted_exhaustion_mode_rejects_a_hidden_fixed_floor() -> None:
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=1,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+        maximum_wall_seconds=0,
+        memory_guard_mode="predicted_exhaustion",
+    )
+    with pytest.raises(
+        safety.HostResourceSafetyFault,
+        match="cannot_hide_a_fixed_reserve",
+    ):
+        policy.validate(physical_memory_mib=16384)
+
+
 def test_negative_reserve_threshold_remains_invalid(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -352,6 +387,112 @@ def test_guard_terminates_on_three_consecutive_reserve_samples() -> None:
     assert result.receipt["passed"] is False
     assert result.receipt["fault"] == "host_memory_reserve_breached"
     assert result.receipt["maximum_consecutive_reserve_breaches"] == 3
+
+
+def test_predicted_exhaustion_guard_uses_measured_decline_not_a_floor() -> None:
+    calls = 0
+
+    def snapshot() -> safety.HostMemorySnapshot:
+        nonlocal calls
+        calls += 1
+        available = [9000, 2000, 1000, 500, 250][min(calls - 1, 4)]
+        return safety.HostMemorySnapshot(16384, available, 10, 16384)
+
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=0,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+        maximum_wall_seconds=0,
+        poll_interval_seconds=0.01,
+        terminate_grace_seconds=1,
+        swapout_growth_action="report_only",
+        memory_guard_mode="predicted_exhaustion",
+    )
+    result = safety.run_guarded(
+        [sys.executable, "-c", "import time; time.sleep(5)"],
+        cwd=ROOT,
+        policy=policy,
+        snapshot_fn=snapshot,
+        rss_fn=lambda _pid: 64.0,
+    )
+    assert result.receipt["passed"] is False
+    assert result.receipt["fault"] == "host_memory_exhaustion_predicted"
+    assert result.receipt["minimum_reclaimable_available_mib"] == 500
+    assert result.receipt["memory_guard_mode"] == "predicted_exhaustion"
+    assert result.receipt["wall_limit_disabled"] is True
+
+
+def test_predicted_exhaustion_guard_does_not_kill_a_stable_low_plateau() -> None:
+    calls = 0
+
+    def snapshot() -> safety.HostMemorySnapshot:
+        nonlocal calls
+        calls += 1
+        available = 9000 if calls == 1 else 500
+        return safety.HostMemorySnapshot(16384, available, 10, 16384)
+
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=0,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+        maximum_wall_seconds=0,
+        poll_interval_seconds=0.01,
+        terminate_grace_seconds=1,
+        swapout_growth_action="report_only",
+        memory_guard_mode="predicted_exhaustion",
+    )
+    result = safety.run_guarded(
+        [sys.executable, "-c", "import time; time.sleep(.06)"],
+        cwd=ROOT,
+        policy=policy,
+        snapshot_fn=snapshot,
+        rss_fn=lambda _pid: 64.0,
+    )
+    assert result.receipt["passed"] is True
+    assert (
+        result.receipt[
+            "maximum_consecutive_predicted_exhaustion_observations"
+        ]
+        == 1
+    )
+
+
+def test_qualified_working_set_suppresses_a_known_finite_allocation_ramp() -> None:
+    calls = 0
+
+    def snapshot() -> safety.HostMemorySnapshot:
+        nonlocal calls
+        calls += 1
+        values = [7000, 4820, 4386, 3141, 3100]
+        available = values[min(calls - 1, len(values) - 1)]
+        return safety.HostMemorySnapshot(16384, available, 10, 16384)
+
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=0,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+        maximum_wall_seconds=0,
+        poll_interval_seconds=0.01,
+        terminate_grace_seconds=1,
+        swapout_growth_action="report_only",
+        memory_guard_mode="predicted_exhaustion",
+        qualified_peak_inferred_unified_memory_mib=4800,
+    )
+    result = safety.run_guarded(
+        [sys.executable, "-c", "import time; time.sleep(.07)"],
+        cwd=ROOT,
+        policy=policy,
+        snapshot_fn=snapshot,
+        rss_fn=lambda _pid: 64.0,
+    )
+    assert result.receipt["passed"] is True
+    assert any(
+        row["within_qualified_working_set"]
+        for row in result.receipt["observation_prefix"]
+    )
 
 
 def test_guard_tolerates_two_transient_telemetry_failures() -> None:

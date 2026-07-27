@@ -27,6 +27,9 @@ def green_snapshot() -> dict:
         "on_ac_power": True,
         "low_power_mode": False,
         "disk_free_gib": 20.0,
+        "disk_free_bytes": 20 * 1024**3,
+        "disk_required_bytes": 2 * 1024**3,
+        "checkpoint_transaction_requirement_available": True,
         "reclaimable_available_mib": 8000.0,
         "active_accelerator_jobs": [],
         "yield_requested": False,
@@ -57,7 +60,7 @@ def test_availability_gate_requires_every_laptop_safety_condition() -> None:
     for key, value, failed_gate in (
         ("on_ac_power", False, "ac_power"),
         ("low_power_mode", True, "low_power_mode_off"),
-        ("disk_free_gib", 1.0, "disk_reserve"),
+        ("disk_free_bytes", 1, "disk_reserve"),
         (
             "active_accelerator_jobs",
             [{"pid": 7}],
@@ -70,6 +73,20 @@ def test_availability_gate_requires_every_laptop_safety_condition() -> None:
         report = campaign.evaluate_availability(config, snapshot)
         assert report["trigger_state"] == "PAUSED"
         assert failed_gate in report["failed_gates"]
+
+
+def test_disk_reserve_is_derived_from_live_checkpoint_transaction() -> None:
+    config = policy()
+    requirement = campaign.checkpoint_transaction_requirement(config)
+    assert requirement["available"] is True
+    assert requirement["complete_transactions_required"] == 2
+    assert requirement["required_bytes"] == (
+        2 * requirement["transaction_bytes"]
+    )
+    assert requirement["transaction_bytes"] == sum(
+        item["bytes"] for item in requirement["files"]
+    )
+    assert "minimum_disk_free_gib" not in config
 
 
 def test_availability_policy_never_suspends_inflight_graph() -> None:
@@ -102,3 +119,26 @@ def test_process_inventory_failure_pauses_instead_of_authorizing(
     report = campaign.evaluate_availability(policy(), snapshot)
     assert report["trigger_state"] == "PAUSED"
     assert "no_interactive_accelerator_job" in report["failed_gates"]
+
+
+def test_process_inventory_excludes_the_current_launcher_ancestry(
+    monkeypatch,
+) -> None:
+    class Result:
+        returncode = 0
+        stdout = (
+            "10 1 zsh python3 scripts/selected_route_sustained_qualification.py --execute\n"
+            "20 10 python3 scripts/selected_route_sustained_qualification.py --execute\n"
+            "30 1 python3 scripts/optimizer_update_efficiency_qualification.py --execute\n"
+        )
+        stderr = ""
+
+    monkeypatch.setattr(subprocess, "run", lambda *_args, **_kwargs: Result())
+    monkeypatch.setattr(campaign.os, "getpid", lambda: 20)
+    jobs = campaign.active_accelerator_jobs(
+        [
+            "selected_route_sustained_qualification.py --execute",
+            "optimizer_update_efficiency_qualification.py --execute",
+        ]
+    )
+    assert [row["pid"] for row in jobs] == [30]

@@ -3,7 +3,11 @@
   "enabled": true,
   "require_ac_power": true,
   "require_low_power_mode_off": true,
-  "minimum_disk_free_gib": 10,
+  "disk_reserve": {
+    "policy": "two_complete_checkpoint_transactions_v1",
+    "training_config": "configs/moecot_language_arm_training.json",
+    "complete_transactions_required": 2
+  },
   "yield_after_segment_control": "runtime/control/neural_seed_yield_after_segment",
   "interactive_accelerator_process_patterns": [
     "moecot_language_arm_training.py --execute",

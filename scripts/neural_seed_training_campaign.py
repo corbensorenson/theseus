@@ -40,8 +40,17 @@ def validate_availability_policy(policy: dict[str, Any]) -> None:
         raise ValueError("training availability scheduler must remain enabled")
     if "launch_windows" in policy:
         raise ValueError("clock-based launch windows are forbidden")
-    if float(policy.get("minimum_disk_free_gib") or 0.0) <= 0.0:
-        raise ValueError("positive disk reserve is required")
+    if "minimum_disk_free_gib" in policy:
+        raise ValueError("arbitrary fixed disk floors are forbidden")
+    disk = policy.get("disk_reserve") or {}
+    if (
+        disk.get("policy") != "two_complete_checkpoint_transactions_v1"
+        or int(disk.get("complete_transactions_required") or 0) < 2
+        or not str(disk.get("training_config") or "")
+    ):
+        raise ValueError(
+            "disk reserve must derive from two complete checkpoint transactions"
+        )
     behavior = policy.get("segment_behavior") or {}
     if not all(
         behavior.get(key) is True
@@ -106,13 +115,24 @@ def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
     if result.returncode != 0:
         return [{"telemetry_fault": "process_inventory_unavailable"}]
     own_pid = os.getpid()
-    rows = []
+    inventory: list[tuple[int, int, str]] = []
     for line in result.stdout.splitlines():
         parts = line.strip().split(maxsplit=2)
         if len(parts) != 3:
             continue
         pid, ppid, command = int(parts[0]), int(parts[1]), parts[2]
-        if pid == own_pid:
+        inventory.append((pid, ppid, command))
+    parents = {pid: ppid for pid, ppid, _command in inventory}
+    own_process_tree = {own_pid}
+    cursor = own_pid
+    while cursor in parents and parents[cursor] > 0:
+        cursor = parents[cursor]
+        if cursor in own_process_tree:
+            break
+        own_process_tree.add(cursor)
+    rows = []
+    for pid, ppid, command in inventory:
+        if pid in own_process_tree:
             continue
         matched = [pattern for pattern in patterns if pattern in command]
         if matched:
@@ -141,8 +161,12 @@ def evaluate_availability(
             if policy["require_low_power_mode_off"]
             else True
         ),
-        "disk_reserve": float(snapshot["disk_free_gib"])
-        >= float(policy["minimum_disk_free_gib"]),
+        "disk_reserve": (
+            snapshot.get("checkpoint_transaction_requirement_available")
+            is True
+            and int(snapshot["disk_free_bytes"])
+            >= int(snapshot["disk_required_bytes"])
+        ),
         "no_interactive_accelerator_job": not bool(
             snapshot["active_accelerator_jobs"]
         ),
@@ -163,6 +187,22 @@ def availability_state(policy: dict[str, Any]) -> dict[str, Any]:
     on_ac, low_power_mode, power_receipt = mac_power_state()
     memory = host_resource_safety.host_memory_snapshot()
     disk = shutil.disk_usage(ROOT)
+    try:
+        disk_requirement = checkpoint_transaction_requirement(policy)
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
+        disk_requirement = {
+            "available": False,
+            "error": type(exc).__name__,
+            "transaction_bytes": 0,
+            "required_bytes": 0,
+            "complete_transactions_required": int(
+                (policy.get("disk_reserve") or {}).get(
+                    "complete_transactions_required"
+                )
+                or 0
+            ),
+            "files": [],
+        }
     yield_path = training.resolve(
         str(policy["yield_after_segment_control"])
     )
@@ -171,6 +211,12 @@ def availability_state(policy: dict[str, Any]) -> dict[str, Any]:
         "low_power_mode": low_power_mode,
         "power_receipt": power_receipt,
         "disk_free_gib": round(disk.free / (1024**3), 6),
+        "disk_free_bytes": int(disk.free),
+        "disk_required_bytes": int(disk_requirement["required_bytes"]),
+        "checkpoint_transaction_requirement_available": bool(
+            disk_requirement["available"]
+        ),
+        "checkpoint_transaction_requirement": disk_requirement,
         "reclaimable_available_mib": round(
             memory.reclaimable_available_mib, 3
         ),
@@ -182,6 +228,44 @@ def availability_state(policy: dict[str, Any]) -> dict[str, Any]:
         "yield_control": training.relative(yield_path),
     }
     return evaluate_availability(policy, snapshot)
+
+
+def checkpoint_transaction_requirement(
+    policy: dict[str, Any],
+) -> dict[str, Any]:
+    """Derive disk headroom from the live atomic checkpoint transaction."""
+
+    validate_availability_policy(policy)
+    reserve = dict(policy["disk_reserve"])
+    training_config_path = training.resolve(str(reserve["training_config"]))
+    training_config = json.loads(training_config_path.read_text(encoding="utf-8"))
+    checkpoint_root = training.resolve(str(training_config["checkpoint_root"]))
+    receipt_path = checkpoint_root / "shared_trunk" / "training_receipt.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    transaction_paths = [
+        training.resolve(str(receipt[key]))
+        for key in ("checkpoint", "optimizer_state", "mlx_rng_state")
+    ] + [receipt_path]
+    if any(not path.is_file() for path in transaction_paths):
+        raise ValueError("checkpoint transaction source file missing")
+    files = [
+        {
+            "path": training.relative(path),
+            "bytes": path.stat().st_size,
+        }
+        for path in transaction_paths
+    ]
+    transaction_bytes = sum(int(item["bytes"]) for item in files)
+    copies = int(reserve["complete_transactions_required"])
+    return {
+        "available": True,
+        "policy": reserve["policy"],
+        "training_config": training.relative(training_config_path),
+        "complete_transactions_required": copies,
+        "transaction_bytes": transaction_bytes,
+        "required_bytes": transaction_bytes * copies,
+        "files": files,
+    }
 
 
 def campaign_state(

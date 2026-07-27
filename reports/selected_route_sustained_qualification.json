@@ -1,13 +1,12 @@
 {
   "all_segments_on_ac_power": true,
+  "arbitrary_percentage_tolerance": null,
   "availability_checks": [
     {
-      "captured_utc": "2026-07-26T22:45:37.469112Z",
-      "failed_gates": [
-        "ac_power"
-      ],
+      "captured_utc": "2026-07-27T23:03:06.436809Z",
+      "failed_gates": [],
       "gates": {
-        "ac_power": false,
+        "ac_power": true,
         "disk_reserve": true,
         "low_power_mode_off": true,
         "no_interactive_accelerator_job": true,
@@ -16,19 +15,104 @@
       "policy": "project_theseus_resource_aware_training_segments_v2",
       "snapshot": {
         "active_accelerator_jobs": [],
-        "disk_free_gib": 14.699738,
+        "checkpoint_transaction_requirement": {
+          "available": true,
+          "complete_transactions_required": 2,
+          "files": [
+            {
+              "bytes": 219367889,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.step-00003480.safetensors"
+            },
+            {
+              "bytes": 438736910,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00003480.safetensors"
+            },
+            {
+              "bytes": 137,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00003480.mlx-rng.safetensors"
+            },
+            {
+              "bytes": 18380,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json"
+            }
+          ],
+          "policy": "two_complete_checkpoint_transactions_v1",
+          "required_bytes": 1316246632,
+          "training_config": "configs/moecot_language_arm_training.json",
+          "transaction_bytes": 658123316
+        },
+        "checkpoint_transaction_requirement_available": true,
+        "disk_free_bytes": 7943688192,
+        "disk_free_gib": 7.398136,
+        "disk_required_bytes": 1316246632,
         "low_power_mode": false,
-        "on_ac_power": false,
+        "on_ac_power": true,
         "power_receipt": {
-          "battery": "Now drawing from 'Battery Power'\n -InternalBattery-0 (id=43516003)\t100%; discharging; 2:42 remaining present: true",
+          "battery": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=43516003)\t100%; charged; 0:00 remaining present: true",
           "custom": "Battery Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         60\n womp                 0\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n lessbright           1\n disksleep            10\nAC Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         0\n womp                 1\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n disksleep            10"
         },
-        "reclaimable_available_mib": 2986.75,
-        "swapouts_mib": 66414.938,
+        "reclaimable_available_mib": 4908.125,
+        "swapouts_mib": 98077.25,
         "yield_control": "runtime/control/neural_seed_yield_after_segment",
         "yield_requested": false
       },
-      "trigger_state": "PAUSED"
+      "trigger_state": "GREEN"
+    },
+    {
+      "captured_utc": "2026-07-27T23:03:06.480707Z",
+      "failed_gates": [],
+      "gates": {
+        "ac_power": true,
+        "disk_reserve": true,
+        "low_power_mode_off": true,
+        "no_interactive_accelerator_job": true,
+        "yield_control_absent": true
+      },
+      "policy": "project_theseus_resource_aware_training_segments_v2",
+      "snapshot": {
+        "active_accelerator_jobs": [],
+        "checkpoint_transaction_requirement": {
+          "available": true,
+          "complete_transactions_required": 2,
+          "files": [
+            {
+              "bytes": 219367889,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.step-00003480.safetensors"
+            },
+            {
+              "bytes": 438736910,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00003480.safetensors"
+            },
+            {
+              "bytes": 137,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00003480.mlx-rng.safetensors"
+            },
+            {
+              "bytes": 18380,
+              "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json"
+            }
+          ],
+          "policy": "two_complete_checkpoint_transactions_v1",
+          "required_bytes": 1316246632,
+          "training_config": "configs/moecot_language_arm_training.json",
+          "transaction_bytes": 658123316
+        },
+        "checkpoint_transaction_requirement_available": true,
+        "disk_free_bytes": 7943688192,
+        "disk_free_gib": 7.398136,
+        "disk_required_bytes": 1316246632,
+        "low_power_mode": false,
+        "on_ac_power": true,
+        "power_receipt": {
+          "battery": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=43516003)\t100%; charged; 0:00 remaining present: true",
+          "custom": "Battery Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         60\n womp                 0\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n lessbright           1\n disksleep            10\nAC Power:\n Sleep On Power Button 1\n lowpowermode         0\n standby              1\n ttyskeepawake        1\n hibernatemode        3\n powernap             1\n hibernatefile        /var/vm/sleepimage\n displaysleep         0\n womp                 1\n networkoversleep     0\n sleep                1\n tcpkeepalive         1\n disksleep            10"
+        },
+        "reclaimable_available_mib": 4906.828,
+        "swapouts_mib": 98077.25,
+        "yield_control": "runtime/control/neural_seed_yield_after_segment",
+        "yield_requested": false
+      },
+      "trigger_state": "GREEN"
     }
   ],
   "canonical_after": {
@@ -46,22 +130,21 @@
   "canonical_lineage_unchanged": true,
   "capability_claim": "NONE_SUSTAINED_EXECUTION_QUALIFICATION_ONLY",
   "config": "configs/selected_route_sustained_qualification.json",
-  "config_sha256": "1f2a215b459a78039513ac2c619e5da3b6cdb9a30908c8e027c7785afd2ae993",
-  "contiguous_child_wall_seconds": 0,
-  "created_utc": "2026-07-26T22:45:38.668308Z",
+  "config_sha256": "13dcf0dbed4294a3a6abbef48a0e2abff73f8724a26b5507c72eca2b507372ca",
+  "created_utc": "2026-07-27T23:03:12.551374Z",
+  "elapsed_time_requirement": null,
   "exact_resume_each_segment": true,
   "first_middle_last": {},
-  "hard_gaps": [],
+  "hard_gaps": [
+    "replicated_thermal_evidence_incomplete",
+    "sustained_window_interrupted"
+  ],
   "interruption": {
-    "failed_gates": [
-      "ac_power"
-    ],
-    "fault": "availability_paused",
+    "fault": "fresh-process child failed: orenson/Documents/Theseus-Hive/scripts/fresh_process_pretraining_qualification.py\", line 611, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/fresh_process_pretraining_qualification.py\", line 574, in main\n    return run_child(\n           ^^^^^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/fresh_process_pretraining_qualification.py\", line 266, in run_child\n    receipt = training.train_target(\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/moecot_language_arm_training.py\", line 10160, in train_target\n    resume_plan_identity_migration = validate_resume(\n                                     ^^^^^^^^^^^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/moecot_language_arm_training.py\", line 12163, in validate_resume\n    raise ValueError(\"resume denied: \" + \",\".join(faults))\nValueError: resume denied: plan_identity_mismatch\n",
     "segment_index": 1
   },
-  "last_to_first_joined_throughput_ratio": 0.0,
-  "minimum_contiguous_child_wall_seconds": 7200.0,
-  "plan_sha256": "9be51efc6bb8dca93ed85db5f788610ea42c12f313af4e5b51c8fd563f193e72",
+  "observed_child_wall_seconds": 0,
+  "plan_sha256": "7db8483b1a04bfc280d3ca29953592f0d1acd96c289b9a5695ad34bcfe18e271",
   "policy": "project_theseus_selected_route_sustained_qualification_v1",
   "segment_optimizer_steps": 64,
   "segments": [],
@@ -80,15 +163,22 @@
   },
   "selector": {
     "path": "reports/training_acceleration_final_selector.json",
-    "sha256": "3a347abe77866a8f9e9665bdb4b2fed26c34445561497102ea313145add1b1b2",
+    "sha256": "38acef7cf93eac6425961336ae99251238253f0f7092fcb05342d25a3c717825",
     "trigger_state": "GREEN"
   },
+  "stopping_rule": "adjacent_replicated_window_uncertainty_overlap_or_clear_degradation_v1",
   "successful_segment_count": 0,
   "support_state": "INCOMPLETE",
   "system_swap_growth_treatment": "DIAGNOSTIC_ONLY",
+  "thermal_stability": {
+    "observed_segment_count": 0,
+    "required_segment_count": 6,
+    "state": "MORE_REPLICATES_REQUIRED",
+    "terminal": false
+  },
   "training_config": {
     "path": "configs/moecot_language_arm_training.json",
-    "sha256": "0777b2f577251fbdbb2bc0f31267f67c84be821ceb7c9639fa183734304a0526"
+    "sha256": "1d02e5865df851b8a1143070a274c9e79f6144f8d0e61b5751328e137d22b5b2"
   },
-  "trigger_state": "PAUSED"
+  "trigger_state": "RED"
 }

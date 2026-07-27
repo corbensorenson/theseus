@@ -4,10 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
-import math
 import re
+import statistics
 import subprocess
 import time
 from pathlib import Path
@@ -121,16 +122,27 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("unexpected sustained qualification policy")
     if int(config.get("segment_optimizer_steps") or 0) != 64:
         raise ValueError("selected route must retain qualified 64-step segments")
-    if float(config.get("minimum_contiguous_child_wall_seconds") or 0.0) < 7200:
-        raise ValueError("sustained qualification must cover at least two hours")
-    if int(config.get("minimum_successful_segments") or 0) < 3:
-        raise ValueError("first/middle/last qualification requires three segments")
-    if not 0.0 < float(config.get("window_fraction") or 0.0) <= 1.0 / 3.0:
-        raise ValueError("window fraction must be in (0, 1/3]")
-    if not 0.0 < float(
-        config.get("minimum_last_to_first_joined_throughput_ratio") or 0.0
-    ) <= 1.0:
-        raise ValueError("invalid sustained throughput retention gate")
+    if int(config.get("replicates_per_thermal_window") or 0) < 3:
+        raise ValueError(
+            "a thermal window needs at least three replicates for a median "
+            "and an observed uncertainty range"
+        )
+    if config.get("stopping_rule") != (
+        "adjacent_replicated_window_uncertainty_overlap_or_clear_"
+        "degradation_v1"
+    ):
+        raise ValueError("unexpected evidence-driven stopping rule")
+    forbidden = {
+        "minimum_contiguous_child_wall_seconds",
+        "maximum_intersegment_wall_seconds",
+        "minimum_last_to_first_joined_throughput_ratio",
+    }
+    present = sorted(forbidden.intersection(config))
+    if present:
+        raise ValueError(
+            "arbitrary time or percentage gates are forbidden:"
+            + ",".join(present)
+        )
     for key in (
         "require_ac_power",
         "require_resource_availability",
@@ -184,8 +196,10 @@ def summarize_window(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def first_middle_last(rows: list[dict[str, Any]], fraction: float) -> dict[str, Any]:
-    count = max(1, math.ceil(len(rows) * fraction))
+def first_middle_last(
+    rows: list[dict[str, Any]], window_size: int
+) -> dict[str, Any]:
+    count = min(len(rows), window_size)
     midpoint = len(rows) // 2
     middle_start = max(0, midpoint - count // 2)
     middle_start = min(middle_start, len(rows) - count)
@@ -193,6 +207,85 @@ def first_middle_last(rows: list[dict[str, Any]], fraction: float) -> dict[str, 
         "first": summarize_window(rows[:count]),
         "middle": summarize_window(rows[middle_start : middle_start + count]),
         "last": summarize_window(rows[-count:]),
+    }
+
+
+def adjacent_window_stability(
+    rows: list[dict[str, Any]], window_size: int
+) -> dict[str, Any]:
+    """Stop from replicated wall evidence, never from elapsed clock time."""
+
+    required = 2 * window_size
+    if len(rows) < required:
+        return {
+            "terminal": False,
+            "state": "MORE_REPLICATES_REQUIRED",
+            "required_segment_count": required,
+            "observed_segment_count": len(rows),
+        }
+    previous_rows = rows[-required:-window_size]
+    current_rows = rows[-window_size:]
+    previous = [
+        float(row["joined_positions_per_second"])
+        for row in previous_rows
+    ]
+    current = [
+        float(row["joined_positions_per_second"])
+        for row in current_rows
+    ]
+    ratios = [
+        candidate / control
+        for candidate in current
+        for control in previous
+    ]
+    uncertainty_low = min(ratios)
+    uncertainty_high = max(ratios)
+    uncertainty_overlap = uncertainty_low <= 1.0 <= uncertainty_high
+    clearly_degraded = max(current) < min(previous)
+    clearly_improved = min(current) > max(previous)
+    thermal_warning = any(
+        bool(
+            (row["machine_state_after"].get("thermal") or {}).get(
+                "warning_detected"
+            )
+        )
+        for row in previous_rows + current_rows
+    )
+    terminal = thermal_warning or uncertainty_overlap or clearly_degraded
+    state = (
+        "THERMAL_WARNING_OBSERVED"
+        if thermal_warning
+        else "STABLE_WITHIN_OBSERVED_REPLICATE_UNCERTAINTY"
+        if uncertainty_overlap
+        else "CLEAR_DEGRADATION"
+        if clearly_degraded
+        else "CLEAR_IMPROVEMENT_CONTINUE_TO_PLATEAU"
+        if clearly_improved
+        else "MORE_REPLICATES_REQUIRED"
+    )
+    return {
+        "terminal": terminal,
+        "state": state,
+        "required_segment_count": required,
+        "observed_segment_count": len(rows),
+        "window_size": window_size,
+        "previous_joined_positions_per_second": previous,
+        "current_joined_positions_per_second": current,
+        "previous_median": statistics.median(previous),
+        "current_median": statistics.median(current),
+        "current_over_previous_median_ratio": (
+            statistics.median(current) / statistics.median(previous)
+        ),
+        "replicate_ratio_uncertainty_interval": [
+            uncertainty_low,
+            uncertainty_high,
+        ],
+        "uncertainty_interval_contains_one": uncertainty_overlap,
+        "clear_degradation": clearly_degraded,
+        "clear_improvement": clearly_improved,
+        "thermal_warning_observed": thermal_warning,
+        "arbitrary_percentage_tolerance": None,
+        "elapsed_time_requirement": None,
     }
 
 
@@ -212,12 +305,12 @@ def report_for(
     interruption: dict[str, Any] | None,
 ) -> dict[str, Any]:
     joined_wall = sum(float(row["child_wall_seconds"]) for row in rows)
-    minimum_segments = int(config["minimum_successful_segments"])
-    minimum_wall = float(config["minimum_contiguous_child_wall_seconds"])
-    completed = len(rows) >= minimum_segments and joined_wall >= minimum_wall
+    window_size = int(config["replicates_per_thermal_window"])
+    stability = adjacent_window_stability(rows, window_size)
+    completed = bool(stability["terminal"])
     windows = (
-        first_middle_last(rows, float(config["window_fraction"]))
-        if len(rows) >= minimum_segments
+        first_middle_last(rows, window_size)
+        if len(rows) >= 2 * window_size
         else {}
     )
     canonical_unchanged = canonical_before == canonical_after
@@ -228,12 +321,6 @@ def report_for(
         bool((row["machine_state_after"].get("power") or {}).get("on_ac_power"))
         for row in rows
     )
-    retention = (
-        float((windows.get("last") or {}).get("joined_positions_per_second") or 0.0)
-        / float((windows.get("first") or {}).get("joined_positions_per_second") or 1.0)
-        if windows
-        else 0.0
-    )
     availability_paused = bool(
         interruption
         and interruption.get("fault") == "availability_paused"
@@ -242,7 +329,7 @@ def report_for(
     if interruption is not None and not availability_paused:
         hard_gaps.append("sustained_window_interrupted")
     if not completed and not availability_paused:
-        hard_gaps.append("two_hour_contiguous_window_incomplete")
+        hard_gaps.append("replicated_thermal_evidence_incomplete")
     if selector.get("trigger_state") != "GREEN" or selector_recipe != recipe:
         hard_gaps.append("selected_recipe_identity_mismatch")
     if not exact_resume:
@@ -251,10 +338,10 @@ def report_for(
         hard_gaps.append("ac_power_requirement_failed")
     if config["require_canonical_lineage_unchanged"] and not canonical_unchanged:
         hard_gaps.append("canonical_lineage_mutated")
-    if completed and retention < float(
-        config["minimum_last_to_first_joined_throughput_ratio"]
-    ):
-        hard_gaps.append("sustained_throughput_retention_failed")
+    if stability.get("clear_degradation") is True:
+        hard_gaps.append("sustained_throughput_degradation_observed")
+    if stability.get("thermal_warning_observed") is True:
+        hard_gaps.append("thermal_warning_observed")
     trigger_state = (
         "PAUSED"
         if availability_paused and not hard_gaps
@@ -283,15 +370,17 @@ def report_for(
         "selected_recipe": recipe,
         "segment_optimizer_steps": int(config["segment_optimizer_steps"]),
         "successful_segment_count": len(rows),
-        "contiguous_child_wall_seconds": round(joined_wall, 6),
-        "minimum_contiguous_child_wall_seconds": minimum_wall,
+        "observed_child_wall_seconds": round(joined_wall, 6),
+        "elapsed_time_requirement": None,
+        "arbitrary_percentage_tolerance": None,
+        "stopping_rule": config["stopping_rule"],
+        "thermal_stability": stability,
         "exact_resume_each_segment": exact_resume,
         "canonical_lineage_unchanged": canonical_unchanged,
         "canonical_before": canonical_before,
         "canonical_after": canonical_after,
         "all_segments_on_ac_power": all_ac,
         "first_middle_last": windows,
-        "last_to_first_joined_throughput_ratio": round(retention, 6),
         "availability_checks": availability_checks,
         "interruption": interruption,
         "segments": rows,
@@ -349,16 +438,31 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
         progress = read_json(progress_path)
         rows = list(progress.get("segments") or [])
         canonical_before = dict(progress["canonical_before"])
+        prior_qualified_peak = max(
+            [
+                float(
+                    progress.get(
+                        "qualified_peak_inferred_unified_memory_mib"
+                    )
+                    or 0.0
+                )
+            ]
+            + [
+                float(
+                    row["host_resource_safety"].get(
+                        "maximum_inferred_unified_memory_mib"
+                    )
+                    or 0.0
+                )
+                for row in rows
+            ]
+        )
+        progress[
+            "qualified_peak_inferred_unified_memory_mib"
+        ] = prior_qualified_peak
         if not scratch_paths["receipt"].is_file():
             raise ValueError("sustained progress exists without scratch receipt")
-        prior_finished = float(progress.get("last_segment_finished_epoch") or 0.0)
-        prior_interruption = progress.get("interruption")
-        if rows and (
-            prior_interruption is not None
-            or prior_finished <= 0.0
-            or time.time() - prior_finished
-            > float(config["maximum_intersegment_wall_seconds"])
-        ):
+        if rows:
             attempts = list(progress.get("prior_windows") or [])
             attempts.append(
                 {
@@ -368,9 +472,15 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
                         sum(float(row["child_wall_seconds"]) for row in rows),
                         6,
                     ),
-                    "reason": (
-                        prior_interruption
-                        or {"fault": "intersegment_wall_limit_exceeded"}
+                    "reason": {
+                        "fault": "fresh_process_invocation_boundary",
+                        "explanation": (
+                            "Thermal windows never span an invocation boundary; "
+                            "the exact scratch lineage may continue."
+                        ),
+                    },
+                    "qualified_peak_inferred_unified_memory_mib": (
+                        prior_qualified_peak
                     ),
                 }
             )
@@ -389,15 +499,14 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
             "canonical_before": canonical_before,
             "segments": rows,
             "prior_windows": [],
+            "qualified_peak_inferred_unified_memory_mib": 0.0,
         }
     segment_dir.mkdir(parents=True, exist_ok=True)
     last_finished = time.time()
     interruption: dict[str, Any] | None = None
-    while (
-        sum(float(row["child_wall_seconds"]) for row in rows)
-        < float(config["minimum_contiguous_child_wall_seconds"])
-        or len(rows) < int(config["minimum_successful_segments"])
-    ):
+    while not adjacent_window_stability(
+        rows, int(config["replicates_per_thermal_window"])
+    )["terminal"]:
         availability = campaign.availability_state(availability_policy)
         availability_checks.append(availability)
         if availability["trigger_state"] != "GREEN":
@@ -415,21 +524,37 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
             )
             training.write_json_atomic(progress_path, progress)
             break
-        if rows:
-            gap = time.time() - last_finished
-            if gap > float(config["maximum_intersegment_wall_seconds"]):
-                interruption = {
-                    "fault": "intersegment_wall_limit_exceeded",
-                    "gap_seconds": round(gap, 6),
-                }
-                break
         index = len(rows) + 1
         prior_receipt = read_json(scratch_paths["receipt"])
         prior_positions = int(prior_receipt.get("optimizer_positions") or 0)
         state_before = machine_state()
+        guard_config = copy.deepcopy(training_config)
+        qualified_peak = max(
+            [
+                float(
+                    progress.get(
+                        "qualified_peak_inferred_unified_memory_mib"
+                    )
+                    or 0.0
+                )
+            ]
+            + [
+                float(
+                    row["host_resource_safety"].get(
+                        "maximum_inferred_unified_memory_mib"
+                    )
+                    or 0.0
+                )
+                for row in rows
+            ]
+        )
+        if qualified_peak > 0.0:
+            guard_config["host_resource_safety"][
+                "qualified_peak_inferred_unified_memory_mib"
+            ] = qualified_peak
         try:
             child, host = fresh.guarded_child(
-                config=training_config,
+                config=guard_config,
                 config_path=training_config_path,
                 scratch_root=scratch_root,
                 steps=int(config["segment_optimizer_steps"]),
@@ -489,6 +614,14 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
                 "host_resource_safety": host,
             }
         )
+        progress[
+            "qualified_peak_inferred_unified_memory_mib"
+        ] = max(
+            qualified_peak,
+            float(
+                host.get("maximum_inferred_unified_memory_mib") or 0.0
+            ),
+        )
         last_finished = time.time()
         progress.update(
             {
@@ -542,11 +675,11 @@ def main() -> int:
                 "successful_segment_count": report[
                     "successful_segment_count"
                 ],
-                "contiguous_child_wall_seconds": report[
-                    "contiguous_child_wall_seconds"
+                "observed_child_wall_seconds": report[
+                    "observed_child_wall_seconds"
                 ],
-                "last_to_first_joined_throughput_ratio": report[
-                    "last_to_first_joined_throughput_ratio"
+                "thermal_stability_state": report["thermal_stability"][
+                    "state"
                 ],
                 "hard_gaps": report["hard_gaps"],
             },
