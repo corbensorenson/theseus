@@ -979,8 +979,9 @@ def _exact_decoder_block_join_record(
         ),
         "gradient_coverage": coverage,
         "complete_block_mechanics_green": mechanics_green,
-        "matched_mlx_control_is_immediate_next": mechanics_green
-        and not production_green,
+        "matched_mlx_control_is_immediate_next": (
+            mechanics_green and gates.get("matched_mlx_wall_control") is not True
+        ),
         "resource_receipt": record.get("resource_receipt"),
         "gates": gates,
         "production_eligible": production_green,
@@ -988,6 +989,49 @@ def _exact_decoder_block_join_record(
             "One complete exact decoder-block optimizer transaction. It does "
             "not establish a speedup, full-model integration, convergence, "
             "or capability."
+        ),
+    }
+
+
+def _exact_decoder_block_backend_bakeoff_record(
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = evidence.get("exact_decoder_block_backend_bakeoff") or {}
+    selection = record.get("selection") or {}
+    gates = record.get("gates") or {}
+    mean_speedup = float(record.get("mean_control_over_candidate_speedup", 0.0))
+    conservative = float(
+        record.get("conservative_control_over_candidate_speedup", 0.0)
+    )
+    if record and (
+        not math.isfinite(mean_speedup)
+        or not math.isfinite(conservative)
+        or mean_speedup <= 0.0
+        or conservative <= 0.0
+        or gates.get("alternating_order") is not True
+        or gates.get("matched_parameter_and_objective_authority") is not True
+        or gates.get("replay_and_stability") is not True
+    ):
+        raise PlanningFault("exact_decoder_block_backend_bakeoff_invalid")
+    retained = selection.get("retained_backend", "NOT_MEASURED")
+    return {
+        "state": record.get("state", "NOT_MEASURED"),
+        "disposition": record.get("disposition", "NOT_MEASURED"),
+        "alternating_rounds": record.get("alternating_rounds"),
+        "native_mean_milliseconds": record.get("native_mean_milliseconds"),
+        "mlx_mean_milliseconds": record.get("mlx_mean_milliseconds"),
+        "mean_control_over_candidate_speedup": mean_speedup,
+        "conservative_control_over_candidate_speedup": conservative,
+        "selection": selection,
+        "compiled_mlx_retained": retained == "compiled_mlx",
+        "exact_native_route_closed": retained == "compiled_mlx",
+        "resource_receipt": record.get("resource_receipt"),
+        "gates": gates,
+        "canonical_backend_changed": selection.get("native_selected") is True,
+        "claim_scope": (
+            "Exact batch-one sequence-128 block selection only; larger-shape, "
+            "whole-microbatch, concurrent-arm, and inference ANE candidates "
+            "remain separately scoped."
         ),
     }
 
@@ -1077,6 +1121,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
     exact_ane_attention_backward = _exact_ane_attention_backward_record(evidence)
     exact_decoder_block_remainder = _exact_decoder_block_remainder_record(evidence)
     exact_decoder_block_join = _exact_decoder_block_join_record(evidence)
+    exact_decoder_block_backend_bakeoff = (
+        _exact_decoder_block_backend_bakeoff_record(evidence)
+    )
 
     report: dict[str, Any] = {
         "policy": POLICY,
@@ -1115,6 +1162,9 @@ def plan(config: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
         "exact_ane_attention_backward": exact_ane_attention_backward,
         "exact_decoder_block_remainder": exact_decoder_block_remainder,
         "exact_decoder_block_join": exact_decoder_block_join,
+        "exact_decoder_block_backend_bakeoff": (
+            exact_decoder_block_backend_bakeoff
+        ),
         "same_surface_bridge": evidence.get("same_surface_bridge"),
         "canonical_backend_changed": False,
         "checkpoint_mutation_authorized": False,

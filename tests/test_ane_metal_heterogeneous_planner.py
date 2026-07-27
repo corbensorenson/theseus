@@ -530,7 +530,7 @@ def test_exact_decoder_block_remainder_advances_to_attention_join() -> None:
     assert remainder["production_eligible"] is False
 
 
-def test_exact_decoder_block_join_advances_to_matched_mlx_control() -> None:
+def test_exact_decoder_block_join_records_completed_mlx_control() -> None:
     evidence = json.loads(
         (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
             encoding="utf-8"
@@ -540,12 +540,29 @@ def test_exact_decoder_block_join_advances_to_matched_mlx_control() -> None:
     joined = report["exact_decoder_block_join"]
 
     assert joined["complete_block_mechanics_green"] is True
-    assert joined["matched_mlx_control_is_immediate_next"] is True
+    assert joined["matched_mlx_control_is_immediate_next"] is False
     assert joined["parameter_elements"] == 3_015_680
     assert joined["parameter_leaf_count"] == 9
     assert joined["gradient_coverage"]["minimum_leaf_nonzero_fraction"] == 1.0
     assert joined["gates"]["one_fp32_adamw_publication"] is True
     assert joined["gates"]["sixty_four_step_finite"] is True
-    assert joined["gates"]["matched_mlx_wall_control"] is False
+    assert joined["gates"]["matched_mlx_wall_control"] is True
     assert joined["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0
     assert joined["production_eligible"] is False
+
+
+def test_exact_decoder_block_bakeoff_retains_compiled_mlx() -> None:
+    evidence = json.loads(
+        (ROOT / "configs/ane_metal_m1_evidence_2026_07_27.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    report = planner.plan(load_config(), evidence)
+    bakeoff = report["exact_decoder_block_backend_bakeoff"]
+
+    assert bakeoff["compiled_mlx_retained"] is True
+    assert bakeoff["exact_native_route_closed"] is True
+    assert bakeoff["mean_control_over_candidate_speedup"] < 1.0
+    assert bakeoff["conservative_control_over_candidate_speedup"] < 1.0
+    assert bakeoff["canonical_backend_changed"] is False
+    assert bakeoff["resource_receipt"]["maximum_swapout_growth_mib"] == 0.0

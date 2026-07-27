@@ -1241,9 +1241,15 @@ Mandatory hot-step Python and NumPy bridges are present. Therefore:
     The guarded first joined wall is `12.811 ms` and the 64-update mean is
     `10.334 ms`; peak process RSS is `184.453 MiB`, peak inferred unified memory is
     `204.391 MiB`, minimum reclaimable memory is `4,020.75 MiB`, and swap growth is
-    zero. This closes complete-block mechanics only. The immediate owner is an
-    alternating matched compiled-MLX FP32/FP16 wall control plus file save/reload and
-    sustained thermal qualification; retain MLX unless that evidence selects native.
+    zero. The matched control is now complete as well: two alternating rounds put the
+    native 64-update means at `10.176` and `10.353 ms` versus `5.809` and `5.537 ms`
+    for compiled MLX with the same FP16-attention/FP32-remainder precision split,
+    parameter count, objective mass, clip, update, replay, and stability authority.
+    Native reaches only `0.552679x` of MLX by pooled mean and `0.534825x`
+    conservatively. Compiled MLX remains selected; do not spend more time adding
+    save/reload or thermal qualification to this losing exact native route. This
+    engineering disposition is scoped to batch one, sequence 128 and does not falsify
+    larger-shape, whole-microbatch, concurrent-arm, or inference ANE topologies.
 16. The resource observer now accepts an explicit zero available-memory reserve. This
     removes the old hidden positive floor while retaining independently configurable
     process-memory, swap-growth, wall, and telemetry fail-safes. The exact-block receipt

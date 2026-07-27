@@ -675,8 +675,8 @@
     "claim_scope": "Exact native out-projection/residual/RMSNorm/SwiGLU/down/loss/update remainder mechanics only. It does not establish the generation-tagged attention join, a complete block, or speedup."
   },
   "exact_decoder_block_join": {
-    "state": "GREEN_EXACT_DECODER_BLOCK_JOIN_MLX_CONTROL_OPEN",
-    "disposition": "COMPLETE_BLOCK_MECHANICS_GREEN_MATCHED_MLX_CONTROL_IMMEDIATE",
+    "state": "GREEN_EXACT_DECODER_BLOCK_JOIN_MLX_RETAINED",
+    "disposition": "COMPLETE_BLOCK_GREEN_EXACT_NATIVE_ROUTE_NOT_SELECTED",
     "shape": {
       "batch": 1,
       "sequence": 128,
@@ -697,7 +697,7 @@
       "frozen_minimum": 0.95
     },
     "complete_block_mechanics_green": true,
-    "matched_mlx_control_is_immediate_next": true,
+    "matched_mlx_control_is_immediate_next": false,
     "resource_receipt": {
       "path": "reports/exact_decoder_block_join_m1.host_resource_safety.json",
       "passed": true,
@@ -723,13 +723,51 @@
       "all_finite": true,
       "sixty_four_step_finite": true,
       "complete_decoder_block_mechanics": true,
-      "matched_mlx_wall_control": false,
+      "matched_mlx_wall_control": true,
       "save_reload_file_roundtrip": false,
       "sustained_thermal_qualification": false,
       "production_eligible": false
     },
     "production_eligible": false,
     "claim_scope": "One complete exact decoder-block optimizer transaction. It does not establish a speedup, full-model integration, convergence, or capability."
+  },
+  "exact_decoder_block_backend_bakeoff": {
+    "state": "GREEN_MATCHED_BAKEOFF_RETAIN_MLX",
+    "disposition": "RETAIN_COMPILED_MLX_EXACT_NATIVE_BLOCK_NOT_SELECTED",
+    "alternating_rounds": 2,
+    "native_mean_milliseconds": 10.2646865,
+    "mlx_mean_milliseconds": 5.673075178947329,
+    "mean_control_over_candidate_speedup": 0.5526788547265743,
+    "conservative_control_over_candidate_speedup": 0.534825104008706,
+    "selection": {
+      "native_selected": false,
+      "retained_backend": "compiled_mlx",
+      "arbitrary_percentage_hurdle": false
+    },
+    "compiled_mlx_retained": true,
+    "exact_native_route_closed": true,
+    "resource_receipt": {
+      "path": "reports/exact_decoder_block_backend_bakeoff_m1.host_resource_safety.json",
+      "passed": true,
+      "wall_seconds": 5.493,
+      "maximum_process_rss_mib": 225.359,
+      "maximum_inferred_unified_memory_mib": 411.453,
+      "minimum_reclaimable_available_mib": 3877.469,
+      "minimum_available_memory_floor_mib": 0.0,
+      "maximum_swapout_growth_mib": 0.0
+    },
+    "gates": {
+      "alternating_order": true,
+      "matched_shape": true,
+      "matched_parameter_and_objective_authority": true,
+      "matched_precision_split": true,
+      "replay_and_stability": true,
+      "native_joined_wall_beats_mlx_mean": false,
+      "native_joined_wall_beats_mlx_conservative": false,
+      "native_production_eligible": false
+    },
+    "canonical_backend_changed": false,
+    "claim_scope": "Exact batch-one sequence-128 block selection only; larger-shape, whole-microbatch, concurrent-arm, and inference ANE candidates remain separately scoped."
   },
   "same_surface_bridge": {
     "state": "GREEN_CONCURRENT_SHARED_READ_VISIBILITY",

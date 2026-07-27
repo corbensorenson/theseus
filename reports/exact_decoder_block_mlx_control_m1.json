@@ -1,0 +1,46 @@
+{
+  "policy": "project_theseus_exact_decoder_block_mlx_control_v1",
+  "state": "GREEN_MATCHED_COMPILED_MLX_CONTROL",
+  "shape": {
+    "batch": 1,
+    "sequence": 128,
+    "d_model": 512,
+    "ff_dim": 1536,
+    "query_heads": 8,
+    "kv_heads": 2
+  },
+  "precision": {
+    "attention_compute": "float16",
+    "remainder_compute": "float32",
+    "master_parameters": "float32",
+    "optimizer_state": "float32"
+  },
+  "parameter_elements": 3015680,
+  "parameter_leaf_count": 9,
+  "objective_authority_mass": 64000.0,
+  "timing": {
+    "first_milliseconds": 8.437416981905699,
+    "mean_milliseconds": 5.508001330781553,
+    "median_milliseconds": 5.390167032601312,
+    "minimum_milliseconds": 4.9168329569511116,
+    "maximum_milliseconds": 7.311249966733158,
+    "steps": 64
+  },
+  "first_loss": 1554.377685546875,
+  "first_gradient_norm": 2221.468994140625,
+  "final_loss": 0.010542471893131733,
+  "final_gradient_norm": 0.07024507224559784,
+  "gates": {
+    "matched_shape": true,
+    "matched_precision_split": true,
+    "one_objective_mass_normalization": true,
+    "one_global_norm_and_clip": true,
+    "one_fp32_adamw_publication": true,
+    "replay_exact": true,
+    "sixty_four_step_finite": true,
+    "initialization_numpy_only": true,
+    "numpy_tensor_round_trip_in_timed_step": false,
+    "production_eligible": false
+  },
+  "capability_claim": "NONE_ENGINEERING_MLX_CONTROL_ONLY"
+}

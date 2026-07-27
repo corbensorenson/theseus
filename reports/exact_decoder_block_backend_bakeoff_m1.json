@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_exact_decoder_block_backend_bakeoff_v1",
+  "state": "GREEN_MATCHED_BAKEOFF_RETAIN_MLX",
+  "shape": {
+    "batch": 1,
+    "sequence": 128,
+    "d_model": 512,
+    "ff_dim": 1536,
+    "query_heads": 8,
+    "kv_heads": 2
+  },
+  "parameter_elements": 3015680,
+  "parameter_leaf_count": 9,
+  "objective_authority_mass": 64000.0,
+  "alternating_rounds": 2,
+  "native_mean_joined_milliseconds_by_round": [
+    10.176445,
+    10.352928
+  ],
+  "mlx_mean_joined_milliseconds_by_round": [
+    5.809144563500013,
+    5.537005794394645
+  ],
+  "native_mean_milliseconds": 10.2646865,
+  "mlx_mean_milliseconds": 5.673075178947329,
+  "mean_control_over_candidate_speedup": 0.5526788547265743,
+  "conservative_control_over_candidate_speedup": 0.534825104008706,
+  "first_step_numerical_delta": {
+    "absolute_loss": 0.17541554687500138,
+    "absolute_gradient_norm": 0.6420858593751291,
+    "scope": "Descriptive mixed-FP16 implementation delta; component-level analytical propagation and exact-ABI gates remain authoritative."
+  },
+  "selection": {
+    "native_selected": false,
+    "retained_backend": "compiled_mlx",
+    "rule": "Select native only when both the pooled mean and the worst-native versus best-control comparison beat MLX while all authority gates remain green.",
+    "arbitrary_percentage_hurdle": false
+  },
+  "gates": {
+    "alternating_order": true,
+    "matched_shape": true,
+    "matched_parameter_and_objective_authority": true,
+    "matched_precision_split": true,
+    "replay_and_stability": true,
+    "native_joined_wall_beats_mlx_mean": false,
+    "native_joined_wall_beats_mlx_conservative": false,
+    "native_production_eligible": false
+  },
+  "canonical_backend_changed": false,
+  "next_gate": "If native is retained, add file save/reload and sustained thermal qualification. If MLX is retained, stop this exact native route and continue the source-conditioned model on compiled MLX.",
+  "claim_scope": "Exact batch-one sequence-128 decoder-block backend selection only. This does not falsify other ANE shapes/topologies or establish full-model, convergence, utility, or capability results.",
+  "capability_claim": "NONE_ENGINEERING_BACKEND_SELECTION_ONLY"
+}

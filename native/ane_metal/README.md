@@ -187,6 +187,14 @@ and 64 joined updates remain finite. The guarded 64-update mean is `10.334 ms`
 with zero swap growth. A matched compiled-MLX control, file save/reload, and
 sustained thermal evidence remain mandatory before selection.
 
+The alternating matched selector has now closed this exact route. Two native
+64-update means (`10.176`, `10.353 ms`) lose to compiled MLX (`5.809`,
+`5.537 ms`) under the same mixed-precision, parameter, objective, clip,
+update, replay, and stability authority. Mean and conservative control-over-
+candidate ratios are `0.552679x` and `0.534825x`, so compiled MLX remains
+selected. This is an exact batch-one/sequence-128 engineering disposition,
+not a broad ANE falsification.
+
 The public Core ML alternative is owned by
 `scripts/coreml_state_weight_probe.py`. It requires `coremltools==9.0`, builds
 only temporary model packages, and records compute-plan placement, a
