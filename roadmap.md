@@ -66,7 +66,7 @@ The current falsifiable question is:
 |---|---|---|
 | `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
 | `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
-| `T0A` Pre-training architecture upgrade closure | active; replacement package not yet frozen | The practical first-campaign stack is fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The selected current tree has 7/7 fresh independent CPU/governance replay receipts and 13/14 valid accelerator receipts. On the latest optimizer-matched accelerator attempt, the 5,120 MiB launch reserve was available and the child started, but the external guard stopped it after reclaimable memory fell to 3,708.391 MiB, below the declared 4,096 MiB live reserve. Maximum inferred unified memory was 1,529.766 MiB, maximum process RSS was 231.75 MiB, and swapout growth was zero. The safety stop is not optimizer or architecture counterevidence and does not close the gate. Publish a new content-addressed replacement package only after the unchanged guarded shard passes and all 14 accelerator receipts validate together. |
+| `T0A` Pre-training architecture upgrade closure | active; replacement package not yet frozen | The practical first-campaign stack is fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The selected current tree has 7/7 fresh independent CPU/governance replay receipts and 13/14 valid accelerator receipts. On the latest optimizer-matched accelerator attempt, the 5,120 MiB launch reserve was available and the child started, but the external guard stopped it after reclaimable memory fell to 3,708.391 MiB, below the declared 4,096 MiB live reserve. Maximum inferred unified memory was 1,529.766 MiB, maximum process RSS was 231.75 MiB, and swapout growth was zero. That safety stop is not optimizer or architecture counterevidence and does not close the gate; it is now calibration evidence for a prospective 6,144 MiB launch floor, derived from the 4,096 MiB live reserve plus the 1,529.766 MiB observed peak plus a 512 MiB safety margin. Publish a new content-addressed replacement package only after the same workload passes under the corrected guard and all 14 accelerator receipts validate together. |
 | `T1` Selected neural-seed campaign | waits for the broader pre-training architecture-readiness gate | Preserve the exact 57.340M-active step-3,000 package as an immutable control. Once the remaining non-acceleration architecture prerequisites are honestly closed, train the selected practical lane and matched controls from the frozen `T0A` package. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
@@ -1401,9 +1401,12 @@ after closure requires a measured station regression or a materially new impleme
    `INCONCLUSIVE_EXPERIMENT` for finite first-campaign sequencing, with K4-K8 preserved for a
    prospectively reopened successor campaign. The exact current-tree binding repair and all seven
    CPU/governance replays are green. Thirteen of fourteen selected accelerator receipts validate.
-   The optimizer-matched adequacy child started after its 5,120 MiB launch reserve passed, then
+   The optimizer-matched adequacy child started after its former 5,120 MiB launch reserve passed, then
    the external guard stopped it when reclaimable memory fell to 3,708.391 MiB below its declared
-   4,096 MiB live reserve; swapout growth remained zero. That unchanged guarded replay and subsequent content-addressed package
+   4,096 MiB live reserve; swapout growth remained zero. The stop is calibration-only evidence:
+   4,096 MiB live reserve + 1,529.766 MiB observed peak + 512 MiB safety margin requires
+   6,137.766 MiB, rounded prospectively to a 6,144 MiB launch floor and bound by rejecting
+   controls. The same workload under that corrected guard and subsequent content-addressed package
    publication are the only remaining `T0A` blockers. The criticism that the project can remain in preparation
    without producing a capability number has teeth. Close only those named blockers; once `T0A`
    is green, do not admit another architecture-review cycle ahead of the declared matched
@@ -2612,7 +2615,9 @@ generation service, KERC sidecar, or private evaluator.
    CPU/governance replay are complete. Each current shard has a source-justified risk class and a
    tighter 1,024-2,048 MiB RSS, operation-specific launch/live reserves, 16 MiB swap-growth, and
    100 ms polling envelope rather than inheriting the global emergency ceiling. The optimizer
-   mechanics and matched-selection shards use 5,120/4,096 MiB launch/live reserves; the SOAP probe
+   mechanics shard uses a 5,120/4,096 MiB launch/live reserve; the optimizer matched-selection
+   shard uses a measured 6,144/4,096 MiB launch/live reserve, with the failed 5,120 MiB admission
+   retained as non-qualifying calibration evidence; the SOAP probe
    uses 5,632/4,096 MiB. The query/KV parity shard's prior 160.297 MiB inferred peak now binds it
    to the existing 3,072/2,048 MiB tiny-KERC parity class instead of the former 5,632/4,096 MiB
    inherited floor. A sandbox-only probe correctly sees no Metal device; the host-Metal replay

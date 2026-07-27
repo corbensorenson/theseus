@@ -211,6 +211,21 @@ def test_every_accelerator_shard_has_a_tighter_source_justified_envelope() -> No
                 == policy.minimum_available_during_run_mib
                 + policy.max_process_memory_mib
             )
+        if shard["id"] == "optimizer_matched_adequacy":
+            calibration = shard["measured_launch_calibration"]
+            assert policy.minimum_available_before_launch_mib == 6144
+            assert policy.minimum_available_during_run_mib == 4096
+            assert calibration["qualification_authority"] is False
+            assert calibration["source_receipt"] == shard["receipt"]
+            assert calibration["required_launch_floor_mib"] == (
+                calibration["minimum_live_reserve_mib"]
+                + calibration["observed_maximum_inferred_unified_memory_mib"]
+                + calibration["minimum_safety_margin_mib"]
+            )
+            assert (
+                calibration["selected_launch_floor_mib"]
+                >= calibration["required_launch_floor_mib"]
+            )
 
 
 def test_operation_specific_launch_reserve_cannot_fall_below_live_reserve() -> None:
@@ -225,6 +240,28 @@ def test_operation_specific_launch_reserve_cannot_fall_below_live_reserve() -> N
     with pytest.raises(
         freeze.ArchitectureFreezeFault,
         match="accelerator_shard_launch_reserve_below_live_reserve",
+    ):
+        freeze.validate_accelerator_shard_contract(contract, shard)
+
+
+def test_measured_optimizer_launch_calibration_cannot_be_weakened() -> None:
+    config = copy.deepcopy(freeze.load_config())
+    contract = config["accelerator_replay"]
+    shard = next(
+        row for row in contract["shards"] if row["id"] == "optimizer_matched_adequacy"
+    )
+    shard["minimum_available_before_launch_mib"] = 5120
+    with pytest.raises(
+        freeze.ArchitectureFreezeFault,
+        match="accelerator_shard_launch_calibration_weakened",
+    ):
+        freeze.validate_accelerator_shard_contract(contract, shard)
+
+    shard["minimum_available_before_launch_mib"] = 6144
+    shard["measured_launch_calibration"]["qualification_authority"] = True
+    with pytest.raises(
+        freeze.ArchitectureFreezeFault,
+        match="accelerator_shard_launch_calibration_authority_invalid",
     ):
         freeze.validate_accelerator_shard_contract(contract, shard)
 

@@ -353,6 +353,62 @@ def validate_accelerator_shard_contract(
             "accelerator_shard_launch_reserve_below_live_reserve:"
             + str(shard.get("id") or "missing")
         )
+    calibration = shard.get("measured_launch_calibration")
+    if calibration is not None:
+        required_calibration_fields = {
+            "source_attempt_commit",
+            "source_receipt",
+            "qualification_authority",
+            "observed_maximum_inferred_unified_memory_mib",
+            "minimum_live_reserve_mib",
+            "minimum_safety_margin_mib",
+            "required_launch_floor_mib",
+            "selected_launch_floor_mib",
+        }
+        if not isinstance(calibration, dict) or (
+            required_calibration_fields - set(calibration)
+        ):
+            raise ArchitectureFreezeFault(
+                "accelerator_shard_launch_calibration_incomplete:" + shard_id
+            )
+        source_commit = str(calibration["source_attempt_commit"])
+        if len(source_commit) != 40 or any(
+            value not in "0123456789abcdef" for value in source_commit
+        ):
+            raise ArchitectureFreezeFault(
+                "accelerator_shard_launch_calibration_commit_invalid:" + shard_id
+            )
+        if (
+            str(calibration["source_receipt"]) != receipt
+            or calibration["qualification_authority"] is not False
+        ):
+            raise ArchitectureFreezeFault(
+                "accelerator_shard_launch_calibration_authority_invalid:" + shard_id
+            )
+        observed_peak = float(
+            calibration["observed_maximum_inferred_unified_memory_mib"]
+        )
+        live_reserve = float(calibration["minimum_live_reserve_mib"])
+        safety_margin = float(calibration["minimum_safety_margin_mib"])
+        required_launch_floor = float(calibration["required_launch_floor_mib"])
+        selected_launch_floor = float(calibration["selected_launch_floor_mib"])
+        derived_launch_floor = live_reserve + observed_peak + safety_margin
+        if (
+            observed_peak <= 0
+            or safety_margin <= 0
+            or abs(live_reserve - float(shard["minimum_available_memory_mib"]))
+            > 1e-6
+            or abs(required_launch_floor - derived_launch_floor) > 1e-6
+            or selected_launch_floor < required_launch_floor
+            or abs(
+                selected_launch_floor
+                - float(shard["minimum_available_before_launch_mib"])
+            )
+            > 1e-6
+        ):
+            raise ArchitectureFreezeFault(
+                "accelerator_shard_launch_calibration_weakened:" + shard_id
+            )
     if (
         float(shard["maximum_process_memory_mib"])
         > float(contract["maximum_process_memory_mib"])
