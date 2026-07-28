@@ -152,6 +152,151 @@ def test_availability_pause_is_incomplete_not_training_failure(
     assert report["hard_gaps"] == []
 
 
+def test_post_segment_ac_transition_archives_window_without_red_failure() -> None:
+    config_path = ROOT / "configs" / "selected_route_sustained_qualification.json"
+    config = json.loads(config_path.read_text())
+    selector_path = ROOT / config["selector_report"]
+    selector = json.loads(selector_path.read_text())
+    training_config_path = ROOT / config["training_config"]
+    training_config = json.loads(training_config_path.read_text())
+    canonical = {
+        "checkpoint": {"sha256": "a" * 64},
+        "optimizer": {"sha256": "b" * 64},
+        "receipt": {"sha256": "c" * 64},
+    }
+    rows = [
+        {
+            "optimizer_position_delta": 512,
+            "child_wall_seconds": 1.0,
+            "device_step_seconds": 0.9,
+            "joined_positions_per_second": 512.0,
+            "host_resource_safety": {
+                "minimum_reclaimable_available_mib": 1024.0,
+                "maximum_process_rss_mib": 512.0,
+                "maximum_inferred_unified_memory_mib": 768.0,
+                "maximum_swapout_growth_mib": 0.0,
+            },
+            "machine_state_after": {
+                "power": {"on_ac_power": False},
+                "thermal": {"warning_detected": False},
+            },
+            "resume_validation": "GREEN",
+        }
+    ]
+    report = sustained.report_for(
+        config_path=config_path,
+        config=config,
+        selector_path=selector_path,
+        selector=selector,
+        training_config_path=training_config_path,
+        training_config=training_config,
+        plan={"plan_sha256": "d" * 64},
+        canonical_before=canonical,
+        canonical_after=canonical,
+        rows=rows,
+        availability_checks=[
+            {"trigger_state": "PAUSED", "failed_gates": ["ac_power"]}
+        ],
+        interruption={
+            "fault": "availability_paused",
+            "segment_index": 2,
+            "failed_gates": ["ac_power"],
+        },
+    )
+    assert report["trigger_state"] == "PAUSED"
+    assert report["support_state"] == "INCOMPLETE"
+    assert report["hard_gaps"] == []
+    assert report["all_segments_on_ac_power"] is False
+    assert report["paused_window"] == {
+        "qualifying": False,
+        "segment_count": 1,
+        "reason": ["ac_power"],
+        "resume_disposition": "archive_window_and_continue_exact_scratch_lineage",
+    }
+
+
+def test_initial_pause_reports_preserved_scratch_rows(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = json.loads(
+        (
+            ROOT / "configs" / "selected_route_sustained_qualification.json"
+        ).read_text()
+    )
+    config["scratch_root"] = str(tmp_path / "scratch")
+    config["report"] = str(tmp_path / "report.json")
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    scratch = Path(config["scratch_root"])
+    scratch.mkdir(parents=True)
+    canonical = {
+        "checkpoint_sha256": "a" * 64,
+        "optimizer_state_sha256": "b" * 64,
+        "mlx_rng_state_sha256": "c" * 64,
+        "receipt_sha256": "d" * 64,
+    }
+    preserved_row = {
+        "optimizer_position_delta": 512,
+        "child_wall_seconds": 1.0,
+        "device_step_seconds": 0.9,
+        "joined_positions_per_second": 512.0,
+        "host_resource_safety": {
+            "minimum_reclaimable_available_mib": 1024.0,
+            "maximum_process_rss_mib": 512.0,
+            "maximum_inferred_unified_memory_mib": 768.0,
+            "maximum_swapout_growth_mib": 0.0,
+        },
+        "machine_state_after": {
+            "power": {"on_ac_power": True},
+            "thermal": {"warning_detected": False},
+        },
+        "resume_validation": "GREEN",
+    }
+    (scratch / "sustained_progress.json").write_text(
+        json.dumps(
+            {
+                "canonical_before": canonical,
+                "segments": [preserved_row],
+            }
+        ),
+        encoding="utf-8",
+    )
+    training_config = json.loads(
+        (ROOT / config["training_config"]).read_text()
+    )
+    target = {"target_id": "shared_trunk"}
+    monkeypatch.setattr(
+        sustained.fresh,
+        "canonical_contract",
+        lambda _path: (
+            training_config,
+            {"plan_sha256": "e" * 64},
+            target,
+        ),
+    )
+    monkeypatch.setattr(
+        sustained.fresh, "target_paths", lambda _target: {"receipt": tmp_path}
+    )
+    monkeypatch.setattr(
+        sustained.fresh, "identities", lambda _paths: canonical
+    )
+    monkeypatch.setattr(
+        sustained.campaign,
+        "availability_state",
+        lambda _policy: {
+            "trigger_state": "PAUSED",
+            "failed_gates": ["ac_power"],
+        },
+    )
+    report = sustained.execute(config_path, Path(config["report"]))
+    assert report["trigger_state"] == "PAUSED"
+    assert report["successful_segment_count"] == 1
+    assert report["segments"] == [preserved_row]
+    assert report["paused_window"]["segment_count"] == 1
+    assert report["paused_window"]["qualifying"] is False
+
+
 def test_new_sustained_namespace_initializes_before_resolving_paths(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

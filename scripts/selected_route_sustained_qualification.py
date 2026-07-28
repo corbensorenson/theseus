@@ -334,7 +334,11 @@ def report_for(
         hard_gaps.append("selected_recipe_identity_mismatch")
     if not exact_resume:
         hard_gaps.append("exact_resume_validation_failed")
-    if config["require_ac_power"] and not all_ac:
+    # A resource-policy transition after an atomic segment is an availability
+    # pause, not a training failure. The current invocation's rows remain
+    # durable but are archived as a nonqualifying thermal window on resume.
+    # A completed window may never hide a battery-powered segment.
+    if config["require_ac_power"] and not all_ac and not availability_paused:
         hard_gaps.append("ac_power_requirement_failed")
     if config["require_canonical_lineage_unchanged"] and not canonical_unchanged:
         hard_gaps.append("canonical_lineage_mutated")
@@ -383,6 +387,18 @@ def report_for(
         "first_middle_last": windows,
         "availability_checks": availability_checks,
         "interruption": interruption,
+        "paused_window": (
+            {
+                "qualifying": False,
+                "segment_count": len(rows),
+                "reason": list(interruption.get("failed_gates") or []),
+                "resume_disposition": (
+                    "archive_window_and_continue_exact_scratch_lineage"
+                ),
+            }
+            if availability_paused
+            else None
+        ),
         "segments": rows,
         "system_swap_growth_treatment": "DIAGNOSTIC_ONLY",
         "capability_claim": "NONE_SUSTAINED_EXECUTION_QUALIFICATION_ONLY",
@@ -407,10 +423,17 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
     initial_availability = campaign.availability_state(availability_policy)
     availability_checks.append(initial_availability)
     if initial_availability["trigger_state"] != "GREEN":
+        preserved_rows: list[dict[str, Any]] = []
         canonical_before = fresh.identities(canonical_paths)
+        if progress_path.is_file():
+            preserved_progress = read_json(progress_path)
+            preserved_rows = list(preserved_progress.get("segments") or [])
+            canonical_before = dict(
+                preserved_progress.get("canonical_before") or canonical_before
+            )
         interruption = {
             "fault": "availability_paused",
-            "segment_index": 1,
+            "segment_index": len(preserved_rows) + 1,
             "failed_gates": initial_availability["failed_gates"],
         }
         report = report_for(
@@ -423,7 +446,7 @@ def execute(config_path: Path, out: Path) -> dict[str, Any]:
             plan=plan,
             canonical_before=canonical_before,
             canonical_after=fresh.identities(canonical_paths),
-            rows=[],
+            rows=preserved_rows,
             availability_checks=availability_checks,
             interruption=interruption,
         )
