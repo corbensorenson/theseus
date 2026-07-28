@@ -3492,6 +3492,115 @@
     },
     "no_claim_boundary": "External review agreement, a commit, or a GREEN mechanics receipt is not implementation or capability evidence. Rejected review claims do not erase real open performance, KERC, serving, evaluation, or repository-health obligations; accepted execution pressure does not authorize bypassing T0A, and accepted hygiene repair does not establish model capability."
   },
+  "latest_ane_acceleration_external_review_reconciliation": {
+    "date": "2026-07-28",
+    "policy": "project_theseus_ane_execution_review_reconciliation_v1",
+    "review_scope": "attached third-party review reconciled against the canonical training call graph, exact ANE/Accelerate/Metal decoder-block bakeoff, selected-route qualification receipts, midscale matched-selection reports, and durable checkpoint state",
+    "decisions": [
+      {
+        "claim": "the production train step still does not use mx.compile",
+        "disposition": "REJECTED_WRONG_MODULE_AUDIT",
+        "facts": {
+          "canonical_training_step_mode": "compiled",
+          "compiled_microbatch_size": 4,
+          "compile_width_quantum": 64,
+          "orchestrator": "scripts/moecot_language_arm_training.py",
+          "compiled_step_owner": "scripts/standard_causal_transformer_survival.py",
+          "compiled_state_authority": [
+            "model.state",
+            "optimizer.state",
+            "mx.random.state"
+          ]
+        },
+        "evidence": [
+          "configs/moecot_language_arm_training.json",
+          "scripts/moecot_language_arm_training.py",
+          "scripts/standard_causal_transformer_survival.py",
+          "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch",
+          "reports/resource_acceleration_compiled_route_materialized64.json"
+        ],
+        "roadmap_action": "preserve a source-bound canonical config-to-compiled-step regression and exact replay; do not create a duplicate compile implementation"
+      },
+      {
+        "claim": "the batch-one branch at moecot_language_arm_training.py throttles the live 57M run",
+        "disposition": "REJECTED_SCOPE_ERROR_CONDITIONAL_KERC_OPTIMIZATION_RETAINED",
+        "facts": {
+          "branch_owner": "RaggedRows.batch_indices",
+          "branch_threshold_tokens": 8192,
+          "selected_trunk_width_tokens": 512,
+          "first_campaign_kerc_optimizer_exposure": 0
+        },
+        "roadmap_action": "preserve the long-row isolation guard; only after prospective KERC re-entry compare token-area or length-compatible batching on exact long rows with output/loss/gradient parity, joined wall, peak memory, and watchdog evidence"
+      },
+      {
+        "claim": "ANE is denied and all accelerator work should stop",
+        "disposition": "ACCEPTED_FOR_CAMPAIGN_ONE_NARROWED_TO_EXACT_TESTED_ROUTE",
+        "facts": {
+          "bakeoff_state": "GREEN_MATCHED_BAKEOFF_RETAIN_MLX",
+          "native_pooled_control_over_candidate_speedup": 0.552679,
+          "native_conservative_control_over_candidate_speedup": 0.534825,
+          "retained_backend": "compiled_mlx"
+        },
+        "evidence": [
+          "reports/exact_decoder_block_backend_bakeoff_m1.json",
+          "reports/ane_metal_heterogeneous_plan.json"
+        ],
+        "roadmap_action": "freeze new campaign-critical backend research; finish selected compiled-MLX sustained qualification and proceed to matched training. Distinct ANE inference or whole-microbatch hypotheses receive no campaign-critical work and require a new critical-path prediction plus matched end-to-end evidence to re-enter.",
+        "negative_evidence_boundary": "the result rejects the exact native decoder-block training transaction on this host and shape; it does not scientifically falsify every ANE topology or inference use"
+      },
+      {
+        "claim": "there are still no matched 5-10M architecture-selection probes",
+        "disposition": "REJECTED_STALE_IN_AGGREGATE_ACCEPTED_OUTCOME_PRESSURE",
+        "facts": {
+          "matched_parameter_count": 6623232,
+          "seed_count": 3,
+          "completed_candidate_families": [
+            "AdamW_vs_Adam-mini_vs_AdEMAMix",
+            "full_depth_vs_masked_structural_growth",
+            "fixed_512_vs_progressive_sequence_length"
+          ],
+          "historical_moecot_dense_rung": "10.8M_non_discriminating_0_of_160",
+          "next_selection_scale": "preregistered_matched_57M_class_campaign"
+        },
+        "evidence": [
+          "reports/optimizer_update_efficiency_qualification.json",
+          "reports/masked_structural_growth_qualification.json",
+          "reports/progressive_sequence_length_qualification.json"
+        ],
+        "roadmap_action": "do not add another generic midscale lane; complete the selected-route gate, then train the matched MoECOT, dense-active, and dense-total candidates and consume the frozen direct model-only evaluation"
+      },
+      {
+        "claim": "training is blocked by app approval credits rather than architecture",
+        "disposition": "ACCEPTED_AS_EXTERNAL_EXECUTION_DEPENDENCY_WITH_TECHNICAL_GATE_STILL_OPEN",
+        "facts": {
+          "durable_checkpoint_step": 3480,
+          "canonical_lineage_mutated_by_scratch": false,
+          "selected_route_sustained_state": "INCOMPLETE",
+          "successful_scratch_segments": 3,
+          "remaining_technical_evidence": [
+            "clean_v2_scratch_sequence",
+            "replicated_thermal_stability",
+            "independent_exact_replay",
+            "replacement_freeze_publication"
+          ]
+        },
+        "evidence": [
+          "reports/selected_route_sustained_qualification.json",
+          "reports/selected_route_working_set_calibration_2026_07_27.json"
+        ],
+        "roadmap_action": "preserve exact next-command readiness and resume the guarded v2 qualification when execution authority exists; the refusal grants no failure or completion credit and does not authorize another preparation lane"
+      }
+    ],
+    "ordered_next_actions": [
+      "resume_clean_v2_selected_route_sustained_qualification_when_execution_authority_exists",
+      "complete_replicated_thermal_stability_and_independent_exact_replay",
+      "publish_and_replay_the_content_addressed_T0A_replacement_package",
+      "execute_preregistered_matched_57M_class_MoECOT_dense_active_dense_total_campaign",
+      "consume_frozen_direct_model_only_evaluation_once_and_report_zero_if_zero",
+      "advance_dogfood_teacher_share_repo_health_and_private_serving_gates"
+    ],
+    "no_claim_boundary": "This reconciliation changes sequencing only. It does not qualify the sustained MLX route, establish ANE as universally useless, falsify KERC, transfer midscale results to 57M, resolve the external approval limit, or establish student capability."
+  },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
     "roadmap_source": "roadmap.md#asi-stack-to-theseus-completion-program",

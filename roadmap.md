@@ -66,7 +66,7 @@ The current falsifiable question is:
 |---|---|---|
 | `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
 | `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
-| `T0A` Pre-training architecture upgrade closure | active; replacement package not yet frozen | The practical first-campaign stack is fixed open-vocabulary AR, AdamW, canonical KV, Semantic-IR control, and an independent verifier. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The selected current tree has 7/7 fresh independent CPU/governance replay receipts and 13/14 valid accelerator receipts. On the latest optimizer-matched accelerator attempt, the 5,120 MiB launch reserve was available and the child started, but the external guard stopped it after reclaimable memory fell to 3,708.391 MiB, below the declared 4,096 MiB live reserve. Maximum inferred unified memory was 1,529.766 MiB, maximum process RSS was 231.75 MiB, and swapout growth was zero. That safety stop is not optimizer or architecture counterevidence and does not close the gate; it is now calibration evidence for a prospective 6,144 MiB launch floor, derived from the 4,096 MiB live reserve plus the 1,529.766 MiB observed peak plus a 512 MiB safety margin. Publish a new content-addressed replacement package only after the same workload passes under the corrected guard and all 14 accelerator receipts validate together. |
+| `T0A` Pre-training architecture upgrade closure | active; selected-route sustained qualification incomplete | The practical first-campaign stack is fixed open-vocabulary AR, compiled FP32 MLX, AdamW, full depth, fixed 512-token maximum sequence policy, canonical KV, Semantic-IR control, and an independent verifier. The exact native ANE/Accelerate/Metal decoder-block challenger passed authority and parity gates but lost joined wall time to compiled MLX (`0.552679x` pooled, `0.534825x` conservative), so MLX remains authoritative for this campaign. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. Three exact 64-step scratch segments completed at 3,069.398, 3,095.936, and 3,121.711 joined positions/second with zero canonical-lineage mutation. The first evidence-driven memory predictor then produced a finite-startup false positive; two successful receipts now bind a 4,797.484 MiB qualified working-set envelope without reinstating a fixed free-memory floor. The clean v2 scratch lineage still needs replicated thermal/stability evidence and an independent replay. Its launch was externally prevented by the app approval-credit limit, which is an execution dependency rather than architecture evidence. Publish the replacement package only after that exact step-bounded qualification turns GREEN; then transition directly to `T1` without another elective backend or architecture-intake cycle. |
 | `T1` Selected neural-seed campaign | waits for the broader pre-training architecture-readiness gate | Preserve the exact 57.340M-active step-3,000 package as an immutable control. Once the remaining non-acceleration architecture prerequisites are honestly closed, train the selected practical lane and matched controls from the frozen `T0A` package. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
@@ -1405,6 +1405,69 @@ replacement freeze are regenerated and independently replayed. Do not restore BF
 1.26x speed advantage unless a new implementation removes both retained-state growth and
 cross-process trajectory divergence under the same parity and host gates.
 
+### 2026-07-28 ANE And Execution Review Reconciliation
+
+The attached external review was checked against the canonical config, the actual trainer
+call graph, the matched ANE bakeoff, and the completed midscale selection reports. Its
+useful pressure is to stop substituting acceleration research for the selected campaign.
+Two headline implementation claims are stale or scope-invalid and must not create duplicate
+work:
+
+1. **Compiled MLX is already the production training route.** The canonical
+   `configs/moecot_language_arm_training.json` binds pretraining to
+   `training_step_mode: compiled`, microbatch four, and width quantum 64.
+   `scripts/moecot_language_arm_training.py` imports and calls `train_phase` with that
+   policy; `scripts/standard_causal_transformer_survival.py` owns the stateful
+   `mx.compile` token step, including model, optimizer, and MLX RNG state. Exact eager versus
+   compiled parity, real-checkpoint resume, state materialization, and sustained receipts
+   remain the authority. A literal grep of only the orchestration module is not execution
+   evidence. Preserve a source-bound regression that fails if the canonical config-to-
+   compiled-step call path or its replay receipt disappears; do not add a second compile
+   implementation.
+2. **The cited batch-one branch does not throttle the 57M trunk.** It belongs to
+   `RaggedRows` and isolates KERC rows above the 8,192-token standard width. The selected
+   dense trunk is fixed width 512, and the first-campaign KERC route is zero-exposure.
+   Do not weaken this memory-safety behavior as a proxy speed fix. If KERC prospectively
+   re-enters, compare token-area/length-compatible batching against singleton execution on
+   the exact long-row distribution, with parity, joined wall, peak memory, and watchdog
+   evidence; adopt it only if it wins that scoped path.
+
+The review findings with teeth change execution order as follows:
+
+1. **Close the backend search for campaign one.** The exact native
+   ANE-forward/dX + Accelerate-FP32-dW + Metal-remainder block passed its mechanics gates but
+   achieved only `0.552679x` pooled and `0.534825x` conservative control-over-candidate
+   speed, so compiled MLX is retained. This rejects that exact production training route,
+   not every possible ANE inference topology or scientifically distinct whole-microbatch
+   design. Those ideas may not consume campaign-critical work and may re-enter only after a
+   materially different critical-path model predicts a win and the selected campaign reaches
+   its frozen review point.
+2. **Finish only the selected-route sustained qualification.** Complete the clean v2
+   scratch sequence, replicated thermal/stability stopping rule, independent exact replay,
+   and content-addressed replacement freeze. The app approval-credit refusal is recorded as
+   an external execution dependency: it grants no failure, completion, or architecture
+   credit and must not be filled with another preparation lane. Resume the exact next guarded
+   command when execution authority is available; do not mutate the durable step-3,480
+   lineage meanwhile.
+3. **Do not create a generic 5-10M selection lane.** Selection-grade work already exists:
+   three-seed 6.623M matched studies cover AdamW versus Adam-mini/AdEMAMix, full depth versus
+   faithful structural growth, and fixed width versus progressive sequence length, with
+   source-disjoint heldouts, weak-arm rules, exact reload, and prewritten time-to-quality
+   decisions. The historical 10.8M MoECOT/dense result was non-discriminating at 0/160.
+   These scoped results neither transfer universal negatives nor justify another indefinite
+   proxy cycle. The next architecture evidence is the preregistered matched 57M-class
+   MoECOT, dense-active, and dense-total campaign, followed by the frozen direct model-only
+   evaluation.
+4. **Keep capability progress as the outcome.** After `T0A` turns GREEN, train the shared
+   trunk and five arms through the frozen review ladder, train both matched dense controls,
+   and report direct behavior, including an honest zero. No additional backend report,
+   mechanics canary, commit count, or usage-credit explanation substitutes for that result.
+
+This reconciliation does not claim that ANE is universally useless, KERC is scientifically
+falsified, the sustained MLX route is qualified, or the student has capability. It narrows
+the campaign critical path to the remaining evidence that can actually change launch
+authority.
+
 ### 2026-07-25 Deep Technical And ASI Stack Review Reconciliation
 
 Two external reviews were checked against the live source, the committed 84-chapter ASI
@@ -2010,7 +2073,10 @@ after closure requires a measured station regression or a materially new impleme
    4,096 MiB live reserve + 1,529.766 MiB observed peak + 512 MiB safety margin requires
    6,137.766 MiB, rounded prospectively to a 6,144 MiB launch floor and bound by rejecting
    controls. The same workload under that corrected guard and subsequent content-addressed package
-   publication are the only remaining `T0A` blockers. The criticism that the project can remain in preparation
+   publication were the only remaining `T0A` blockers at that review point. This paragraph is
+   historical: the fixed launch/live rule was subsequently replaced by the evidence-driven
+   predicted-exhaustion and qualified-working-set policy described in the current `T0A` row and
+   sustained-qualification section. The criticism that the project can remain in preparation
    without producing a capability number has teeth. Close only those named blockers; once `T0A`
    is green, do not admit another architecture-review cycle ahead of the declared matched
    five-arm plus dense-active/dense-total campaign and the single frozen direct model-only
