@@ -19,10 +19,12 @@ import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import host_resource_safety
 import moecot_language_arm_training as training
 import neural_seed_local_english_raters as local_raters
 from neural_seed_functional_cases import ARMS, materialize_cases, stable_hash
@@ -46,6 +48,11 @@ def main() -> int:
     parser.add_argument("--review-positions", type=int, default=100_000_000)
     parser.add_argument("--freeze", action="store_true")
     parser.add_argument("--execute-training", action="store_true")
+    parser.add_argument(
+        "--guarded-training-child",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     parser.add_argument("--evaluate", action="store_true")
     parser.add_argument("--target", action="append", choices=COMPONENT_IDS)
     parser.add_argument(
@@ -60,6 +67,16 @@ def main() -> int:
         parser.error("--max-steps cannot be negative")
     if args.freeze and (args.execute_training or args.evaluate):
         parser.error("--freeze cannot be combined with execution or evaluation")
+    if args.guarded_training_child and (
+        not args.execute_training
+        or args.evaluate
+        or args.freeze
+        or len(args.target or []) != 1
+        or args.max_steps <= 0
+    ):
+        parser.error(
+            "--guarded-training-child requires one bounded training target"
+        )
 
     config_path = resolve(args.config)
     config = read_json(config_path)
@@ -67,11 +84,19 @@ def main() -> int:
     if args.freeze:
         report = freeze_contract(contract)
     elif args.execute_training:
-        report = execute_training(
-            contract,
-            targets=list(dict.fromkeys(args.target or [])),
-            max_steps=args.max_steps,
-        )
+        if args.guarded_training_child:
+            report = execute_training_local(
+                contract,
+                targets=list(dict.fromkeys(args.target or [])),
+                max_steps=args.max_steps,
+                authority_max_steps=0,
+            )
+        else:
+            report = execute_training(
+                contract,
+                targets=list(dict.fromkeys(args.target or [])),
+                max_steps=args.max_steps,
+            )
     elif args.evaluate:
         report = evaluate_all(contract)
     else:
@@ -158,10 +183,12 @@ def build_contract(
         phase_allocation,
         review_positions,
     )
+    gaps.extend(validate_execution_policy(config.get("execution") or {}))
     freeze_path = resolve(str(config.get("freeze") or ""))
     freeze = read_json(freeze_path) if freeze_path.is_file() else {}
     semantic = semantic_identity(
         config,
+        config_path,
         training_path,
         scale_path,
         functional_path,
@@ -358,6 +385,7 @@ def review_functional_config(
 
 def semantic_identity(
     config: dict[str, Any],
+    config_path: Path,
     training_path: Path,
     scale_path: Path,
     functional_path: Path,
@@ -367,7 +395,7 @@ def semantic_identity(
     packet: dict[str, Any],
 ) -> dict[str, Any]:
     paths = {
-        "review_config": resolve(DEFAULT_CONFIG),
+        "review_config": config_path.resolve(),
         "review_runner": Path(__file__).resolve(),
         "training_config": training_path,
         "training_runner": ROOT / "scripts/moecot_language_arm_training.py",
@@ -391,7 +419,33 @@ def semantic_identity(
         "case_contract_sha256": stable_hash(case_contract),
         "candidate_packet_sha256": stable_hash(packet),
         "verifier_budget_sha256": verifier_budget_sha(config),
+        "execution_policy_sha256": stable_hash(config.get("execution") or {}),
     }
+
+
+def validate_execution_policy(value: dict[str, Any]) -> list[str]:
+    gaps: list[str] = []
+    fresh = value.get("fresh_process_training") or {}
+    if (
+        fresh.get("policy")
+        != "project_theseus_architecture_review_fresh_process_training_v1"
+        or fresh.get("required") is not True
+        or fresh.get("one_target_per_child") is not True
+        or fresh.get("external_watchdog_required") is not True
+        or fresh.get("exact_resume_required") is not True
+        or fresh.get("atomic_checkpoint_before_relaunch") is not True
+    ):
+        gaps.append("review_fresh_process_training_policy_invalid")
+    segment_steps = int(fresh.get("maximum_optimizer_steps_per_child") or 0)
+    if segment_steps <= 0:
+        gaps.append("review_fresh_process_step_bound_invalid")
+    if float(fresh.get("maximum_wall_seconds") or 0) != 0:
+        gaps.append("review_arbitrary_wall_limit_forbidden")
+    if fresh.get("watchdog_policy_source") != (
+        "training_config.host_resource_safety"
+    ):
+        gaps.append("review_watchdog_policy_source_invalid")
+    return gaps
 
 
 def freeze_contract(contract: dict[str, Any]) -> dict[str, Any]:
@@ -529,6 +583,12 @@ def execute_training(
     invalid_order = [item for item in selected if item not in order]
     if invalid_order:
         raise ValueError("unknown review targets: " + ",".join(invalid_order))
+    fresh = contract["config_payload"]["execution"]["fresh_process_training"]
+    segment_steps = (
+        max_steps
+        if max_steps > 0
+        else int(fresh["maximum_optimizer_steps_per_child"])
+    )
     reports = []
     gaps = []
     for target_id in order:
@@ -539,37 +599,48 @@ def execute_training(
             if shared["state"] != "COMPLETE":
                 gaps.append(f"dependency_incomplete:{target_id}:shared_trunk")
                 break
-        current = component_row(component_progress(contract), target_id)
-        if current["state"] == "COMPLETE":
-            continue
-        invocation_started = time.perf_counter()
-        fault = ""
-        report: dict[str, Any] = {}
-        try:
-            report = training.execute_targets(
-                config,
-                plan,
-                targets=[target_id],
-                max_steps=max_steps,
-                resume=current["state"] == "IN_PROGRESS",
-            )
-        except BaseException as exc:
-            fault = f"{type(exc).__name__}:{exc}"
-            raise
-        finally:
-            refreshed = component_row(component_progress(contract), target_id)
-            append_training_invocation(
+        while True:
+            current = component_row(component_progress(contract), target_id)
+            if current["state"] == "COMPLETE":
+                break
+            invocation_started = time.perf_counter()
+            guarded = launch_guarded_training_segment(
                 contract,
                 target_id=target_id,
-                optimizer_positions_before=int(current["optimizer_positions"]),
-                optimizer_positions_after=int(refreshed["optimizer_positions"]),
-                wall_seconds=time.perf_counter() - invocation_started,
-                max_steps=max_steps,
-                fault=fault,
+                max_steps=segment_steps,
             )
-        reports.append(compact_training_report(report, target_id))
-        if report.get("trigger_state") == "RED":
-            gaps.extend(f"{target_id}:{gap}" for gap in report.get("hard_gaps") or [])
+            refreshed = component_row(component_progress(contract), target_id)
+            reports.append(
+                {
+                    "target_id": target_id,
+                    "optimizer_positions_before": int(
+                        current["optimizer_positions"]
+                    ),
+                    "optimizer_positions_after": int(
+                        refreshed["optimizer_positions"]
+                    ),
+                    "wall_seconds": round(
+                        time.perf_counter() - invocation_started, 6
+                    ),
+                    "host_resource_safety": guarded["receipt"],
+                    "child_report": guarded["child_report"],
+                }
+            )
+            if not guarded["passed"]:
+                gaps.append(
+                    f"{target_id}:guarded_child_failed:"
+                    f"{guarded['receipt'].get('fault') or guarded['receipt'].get('returncode')}"
+                )
+                break
+            if (
+                int(refreshed["optimizer_positions"])
+                <= int(current["optimizer_positions"])
+            ):
+                gaps.append(f"{target_id}:guarded_child_made_no_progress")
+                break
+            if max_steps > 0:
+                break
+        if gaps:
             break
     final = component_progress(contract)
     return {
@@ -580,10 +651,168 @@ def execute_training(
         "architecture_training_authority": authority,
         "selected_targets": selected,
         "max_steps_per_target": max_steps,
+        "maximum_optimizer_steps_per_fresh_process": segment_steps,
+        "fresh_process_training": True,
         "component_progress": final,
         "execution_reports": reports,
         "hard_gaps": gaps,
         "boundaries": contract["boundaries"],
+    }
+
+
+def execute_training_local(
+    contract: dict[str, Any],
+    *,
+    targets: list[str],
+    max_steps: int,
+    authority_max_steps: int,
+) -> dict[str, Any]:
+    """Execute exactly one externally guarded review child."""
+
+    if (
+        os.environ.get("THESEUS_GUARDED_ACCELERATOR_CHILD") != "1"
+        or os.environ.get("THESEUS_GUARDED_ARCHITECTURE_REVIEW_CHILD")
+        != "1"
+    ):
+        return {
+            "policy": "project_theseus_architecture_review_training_execution_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": ["unguarded_architecture_review_child_denied"],
+        }
+    if (
+        contract.get("trigger_state") == "RED"
+        or len(targets) != 1
+        or max_steps <= 0
+    ):
+        return {
+            "policy": "project_theseus_architecture_review_training_execution_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "hard_gaps": ["architecture_review_child_contract_invalid"],
+        }
+    config = contract["training_config"]
+    authority = training.architecture_training_authority(
+        config, max_steps=authority_max_steps
+    )
+    if authority.get("trigger_state") != "GREEN":
+        return {
+            "policy": "project_theseus_architecture_review_training_execution_v1",
+            "created_utc": now(),
+            "trigger_state": "RED",
+            "architecture_training_authority": authority,
+            "hard_gaps": ["architecture_training_authority_denied"],
+        }
+    target_id = targets[0]
+    current = component_row(component_progress(contract), target_id)
+    invocation_started = time.perf_counter()
+    fault = ""
+    report: dict[str, Any] = {}
+    try:
+        report = training.execute_targets(
+            config,
+            contract["review_plan"],
+            config_path=resolve(contract["training_config_path"]),
+            targets=[target_id],
+            max_steps=max_steps,
+            resume=current["state"] == "IN_PROGRESS",
+        )
+    except BaseException as exc:
+        fault = f"{type(exc).__name__}:{exc}"
+        raise
+    finally:
+        refreshed = component_row(component_progress(contract), target_id)
+        append_training_invocation(
+            contract,
+            target_id=target_id,
+            optimizer_positions_before=int(current["optimizer_positions"]),
+            optimizer_positions_after=int(refreshed["optimizer_positions"]),
+            wall_seconds=time.perf_counter() - invocation_started,
+            max_steps=max_steps,
+            fault=fault,
+        )
+    return {
+        "policy": "project_theseus_architecture_review_training_execution_v1",
+        "created_utc": now(),
+        "trigger_state": report.get("trigger_state", "RED"),
+        "architecture_training_authority": authority,
+        "selected_targets": [target_id],
+        "max_steps_per_target": max_steps,
+        "component_progress": component_progress(contract),
+        "execution_reports": [compact_training_report(report, target_id)],
+        "hard_gaps": report.get("hard_gaps") or [],
+        "boundaries": contract["boundaries"],
+    }
+
+
+def launch_guarded_training_segment(
+    contract: dict[str, Any], *, target_id: str, max_steps: int
+) -> dict[str, Any]:
+    config = contract["training_config"]
+    resource = dict(config["host_resource_safety"])
+    policy = training.training_host_policy(config)
+    qualified_python = resolve(str(resource["qualified_python"]))
+    child_root = (
+        resolve(str(contract["config_payload"]["review_directory"]))
+        / str(contract["review_optimizer_positions"])
+        / "fresh_process_training"
+    )
+    nonce = f"{target_id}-{time.time_ns()}-{os.getpid()}"
+    child_report_path = child_root / f"{nonce}.child.json"
+    command = [
+        str(qualified_python),
+        str(Path(__file__).resolve()),
+        "--config",
+        str(resolve(contract["config"])),
+        "--review-positions",
+        str(contract["review_optimizer_positions"]),
+        "--execute-training",
+        "--guarded-training-child",
+        "--target",
+        target_id,
+        "--max-steps",
+        str(max_steps),
+        "--out",
+        str(child_report_path),
+    ]
+    try:
+        result = host_resource_safety.run_guarded(
+            command,
+            cwd=ROOT,
+            policy=policy,
+            env={
+                "THESEUS_GUARDED_ACCELERATOR_CHILD": "1",
+                "THESEUS_GUARDED_ARCHITECTURE_REVIEW_CHILD": "1",
+            },
+        )
+        receipt = result.receipt
+    except host_resource_safety.HostResourceSafetyFault as exc:
+        result = None
+        receipt = {
+            "policy": host_resource_safety.POLICY,
+            "command": command,
+            "passed": False,
+            "child_started": False,
+            "terminated_by_guard": False,
+            "fault": str(exc),
+            "returncode": None,
+            "limits": asdict(policy),
+        }
+    receipt_path = child_root / f"{nonce}.host_resource_safety.json"
+    write_json(receipt_path, receipt)
+    child_report = (
+        read_json(child_report_path)
+        if child_report_path.is_file()
+        else {}
+    )
+    return {
+        "passed": bool(receipt.get("passed"))
+        and child_report.get("trigger_state") != "RED",
+        "receipt": {
+            **receipt,
+            "receipt_path": relative(receipt_path),
+        },
+        "child_report": relative(child_report_path),
     }
 
 

@@ -13,12 +13,20 @@ if str(SCRIPTS) not in sys.path:
 
 from neural_seed_campaign_controller import (  # noqa: E402
     ARM_IDS,
+    DEFAULT_REVIEW_DIR,
     SYSTEM_IDS,
     build_campaign_status,
     decide_review,
     validate_review_receipt,
     wilson_interval,
 )
+
+
+def test_default_review_directory_tracks_the_active_review_config() -> None:
+    config = json.loads(
+        (ROOT / "configs/neural_seed_architecture_review.json").read_text()
+    )
+    assert DEFAULT_REVIEW_DIR == ROOT / config["review_directory"]
 
 
 def review(candidate: str, *, passed: int, arm_passed: int, position: int = 100_000_000) -> dict:

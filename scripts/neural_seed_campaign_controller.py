@@ -20,10 +20,14 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCALE_CONFIG = ROOT / "configs/neural_seed_50m_scale_preregistration.json"
 DEFAULT_TRAINING_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
-DEFAULT_REVIEW_DIR = ROOT / "reports/neural_seed_57m_architecture_reviews"
 DEFAULT_OUT = ROOT / "reports/neural_seed_campaign_controller.json"
 DEFAULT_REVIEW_PRODUCER = ROOT / "scripts/neural_seed_architecture_review.py"
 DEFAULT_REVIEW_CONFIG = ROOT / "configs/neural_seed_architecture_review.json"
+DEFAULT_REVIEW_DIR = ROOT / str(
+    json.loads(DEFAULT_REVIEW_CONFIG.read_text(encoding="utf-8"))[
+        "review_directory"
+    ]
+)
 SYSTEM_IDS = ("moecot_system", "dense_active_parameter", "dense_total_parameter")
 ARM_IDS = ("english", "python", "javascript_typescript", "html_css", "rust")
 REVIEW_POLICY = "project_theseus_architecture_review_receipt_v1"

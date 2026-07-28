@@ -73,7 +73,7 @@ def test_review_plan_is_isolated_and_preserves_canonical_architecture() -> None:
         assert target["review_only"] is True
         assert target["plan_sha256"] == planned["plan_sha256"]
         assert target["checkpoint"].startswith(
-            "checkpoints/neural_seed_57m_architecture_review_v3/100000000/"
+            "checkpoints/neural_seed_57m_architecture_review_v4/100000000/"
         )
         assert target["checkpoint"] != canonical["targets"][target_id]["checkpoint"]
         assert target["review_component_total_optimizer_positions"] == phases[target_id]["total"]
@@ -112,6 +112,101 @@ def test_freeze_rejects_semantic_mutation() -> None:
     assert "review_semantic_identity_mismatch" in review.validate_freeze(
         frozen, changed, 100_000_000
     )
+
+
+def test_review_training_policy_is_fresh_guarded_and_has_no_wall_limit() -> None:
+    config = json.loads(
+        (ROOT / "configs/neural_seed_architecture_review.json").read_text()
+    )
+    execution = config["execution"]
+    assert review.validate_execution_policy(execution) == []
+    fresh = execution["fresh_process_training"]
+    assert fresh["maximum_optimizer_steps_per_child"] == 64
+    assert fresh["maximum_wall_seconds"] == 0
+    assert fresh["one_target_per_child"] is True
+    assert fresh["external_watchdog_required"] is True
+
+
+def test_guarded_child_denies_direct_in_process_execution(monkeypatch) -> None:
+    monkeypatch.delenv("THESEUS_GUARDED_ACCELERATOR_CHILD", raising=False)
+    monkeypatch.delenv(
+        "THESEUS_GUARDED_ARCHITECTURE_REVIEW_CHILD", raising=False
+    )
+    observed = review.execute_training_local(
+        {"trigger_state": "GREEN"},
+        targets=[training.SHARED_TRUNK_ID],
+        max_steps=1,
+        authority_max_steps=0,
+    )
+    assert observed["trigger_state"] == "RED"
+    assert observed["hard_gaps"] == [
+        "unguarded_architecture_review_child_denied"
+    ]
+
+
+def test_full_review_repeats_bounded_fresh_children_until_complete(
+    monkeypatch,
+) -> None:
+    positions = 0
+    launches: list[tuple[str, int]] = []
+
+    def fake_progress(_contract):
+        return [
+            {
+                "target_id": training.SHARED_TRUNK_ID,
+                "state": "COMPLETE" if positions >= 128 else (
+                    "IN_PROGRESS" if positions else "NOT_STARTED"
+                ),
+                "optimizer_positions": positions,
+                "target_optimizer_positions": 128,
+                "faults": [],
+            }
+        ]
+
+    def fake_launch(_contract, *, target_id, max_steps):
+        nonlocal positions
+        launches.append((target_id, max_steps))
+        positions += max_steps
+        return {
+            "passed": True,
+            "receipt": {"passed": True},
+            "child_report": "child.json",
+        }
+
+    monkeypatch.setattr(
+        training,
+        "architecture_training_authority",
+        lambda *_args, **_kwargs: {
+            "trigger_state": "GREEN",
+            "authority": "ARCHITECTURE_FREEZE_GREEN",
+        },
+    )
+    monkeypatch.setattr(review, "component_progress", fake_progress)
+    monkeypatch.setattr(review, "launch_guarded_training_segment", fake_launch)
+    contract = {
+        "trigger_state": "GREEN",
+        "training_config": {},
+        "review_plan": {},
+        "review_optimizer_positions": 100_000_000,
+        "config_payload": {
+            "execution": {
+                "dependency_order": [training.SHARED_TRUNK_ID],
+                "fresh_process_training": {
+                    "maximum_optimizer_steps_per_child": 64
+                },
+            }
+        },
+        "boundaries": {},
+    }
+
+    observed = review.execute_training(contract, targets=[], max_steps=0)
+
+    assert observed["trigger_state"] == "GREEN"
+    assert launches == [
+        (training.SHARED_TRUNK_ID, 64),
+        (training.SHARED_TRUNK_ID, 64),
+    ]
+    assert observed["component_progress"][0]["state"] == "COMPLETE"
 
 
 def test_next_action_respects_shared_trunk_dependency() -> None:

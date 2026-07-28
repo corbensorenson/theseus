@@ -1,15 +1,15 @@
 {
   "policy": "project_theseus_neural_seed_architecture_review_v1",
-  "review_id": "neural_seed_57m_private_dev_rung_v3",
-  "supersedes_freeze_sha256": "5b5dffb766da9437104ddc07d101f1e5c474554f32e26f98391b92db1e629621",
+  "review_id": "neural_seed_57m_private_dev_rung_v4",
+  "supersedes_freeze_sha256": "8832341b8c23b04c9bef9d0e82e58eb1d30f5a2b44343748fdbd81ced42ca990",
   "training_config": "configs/moecot_language_arm_training.json",
   "scale_config": "configs/neural_seed_50m_scale_preregistration.json",
   "functional_config": "configs/neural_seed_functional_utility.json",
   "local_rater_config": "configs/neural_seed_local_english_raters.json",
-  "checkpoint_root": "checkpoints/neural_seed_57m_architecture_review_v3",
-  "review_directory": "reports/neural_seed_57m_architecture_reviews",
-  "candidate_directory": "runtime/neural_seed_57m_architecture_review_candidates",
-  "freeze": "configs/neural_seed_architecture_review_freeze.json",
+  "checkpoint_root": "checkpoints/neural_seed_57m_architecture_review_v4",
+  "review_directory": "reports/neural_seed_57m_architecture_reviews_v4",
+  "candidate_directory": "runtime/neural_seed_57m_architecture_review_candidates_v4",
+  "freeze": "configs/neural_seed_architecture_review_freeze_v4.json",
   "development_surface": {
     "split": "private_dev",
     "seed": 20260721,
@@ -123,7 +123,19 @@
     ],
     "checkpoint_every_steps": 500,
     "one_candidate_per_device": true,
-    "parallelize_on_single_unified_memory_device": false
+    "parallelize_on_single_unified_memory_device": false,
+    "fresh_process_training": {
+      "policy": "project_theseus_architecture_review_fresh_process_training_v1",
+      "required": true,
+      "one_target_per_child": true,
+      "maximum_optimizer_steps_per_child": 64,
+      "external_watchdog_required": true,
+      "watchdog_policy_source": "training_config.host_resource_safety",
+      "exact_resume_required": true,
+      "atomic_checkpoint_before_relaunch": true,
+      "maximum_wall_seconds": 0,
+      "bound_interpretation": "Crash and memory containment only. Repeat fresh children until the frozen component allocation is complete; this is not a total-training or clock limit."
+    }
   },
   "evaluation": {
     "generator_visible_fields": [

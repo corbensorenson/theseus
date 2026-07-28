@@ -2005,8 +2005,13 @@ after closure requires a measured station regression or a materially new impleme
    source-conditioned, and supervision optimizer positions rather than hiding the latter
    phases outside the matched budget; raw positions, owned-parameter-token product, wall
    time, weak tails, and verified-output throughput remain separate views. Its isolated
-   checkpoint lineage passed fresh and resumed one-step execution while the production
-   step-3,000 digest remained unchanged. One all-zero pilot now continues rather than
+   v3 checkpoint lineage passed fresh and resumed one-step execution while the production
+   digest remained unchanged. The superseding immutable v4 contract preserves that
+   isolation and now requires every component to execute as exact-resume, one-target,
+   externally watched fresh children of at most 64 optimizer steps. The bound contains
+   crashes and unified-memory growth; it repeats until the frozen allocation is complete
+   and imposes neither a total-training cap nor a clock deadline. One all-zero pilot now
+   continues rather than
    retiring the rung; two consecutive all-zero reviews may stop only the exact
    scale/data/objective regime. A single review may halt a candidate only under the frozen,
    stringent aggregate and every-arm confidence separation, and never claims broad

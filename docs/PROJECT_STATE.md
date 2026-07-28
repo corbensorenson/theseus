@@ -878,7 +878,7 @@ share toward zero. Public benchmarks are calibration only.
 - `reports/ane_metal_split_linear_m1.json`
 - `configs/ane_metal_heterogeneous_execution.json`
 - `configs/neural_seed_architecture_review.json`
-- `configs/neural_seed_architecture_review_freeze.json`
+- `configs/neural_seed_architecture_review_freeze_v4.json`
 - `reports/neural_seed_architecture_review_status.json`
 - `reports/neural_seed_campaign_controller.json`
 - `reports/theseus_artifact_budget_gate_current.json`
