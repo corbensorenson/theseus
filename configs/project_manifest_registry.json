@@ -314,15 +314,15 @@
         },
       "moecot_training_config": {
         "path": "configs/moecot_language_arm_training.json",
-        "sha256": "0777b2f577251fbdbb2bc0f31267f67c84be821ceb7c9639fa183734304a0526"
+        "sha256": "79b53569c849a83150d451413f77e5b947d3669dd089af8ed530a2c28e45096b"
       },
       "moecot_training_implementation": {
         "path": "scripts/moecot_language_arm_training.py",
-        "sha256": "5f1afc1c612d196ec50f779a0eba608f81a4cca1aeda66975a340122ed5d1243"
+        "sha256": "c2b7adfee7c2c549236364286d0227ac3800780af072e3203c75e3602b2271e6"
       },
       "moecot_training_tests": {
         "path": "tests/test_moecot_language_arm_training.py",
-        "sha256": "e8400f1e12333eef53c8f3ad1d0eb07b7f6e745f3312d57ad442337355165544"
+        "sha256": "a5ca8046d589ef457ecd95d9b9d2a2732963a2f9ca13865cb2f956aee2f447ca"
       },
       "canonical_pretraining_optimizers": {
         "path": "scripts/pretraining_optimizers.py",
@@ -334,7 +334,7 @@
       },
         "standard_causal_transformer_model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "8b185276966af81f5c56b8b3f2d2424e800a0ba96d60165fdfda250e75a01120"
+          "sha256": "b436544243a8cb40ab762c4b35096560ace3c66a27c601feffd45cb447f62f7a"
         },
         "neural_seed_resident_runtime": {
           "path": "scripts/neural_seed_resident_runtime.py",
@@ -346,7 +346,7 @@
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
-          "sha256": "60e186e34be5f2abe84341f96f8c316e6df17830cf9e4923ee21e757232c5180"
+          "sha256": "cbf1a416da96d5fccda0b0921b4bde30a3ef2cfc5b3e52382665149871c8a47c"
         },
         "resource_acceleration_qualification_tests": {
           "path": "tests/test_resource_acceleration_qualification.py",
@@ -574,7 +574,7 @@
         },
         "canonical_training_loop_tests": {
           "path": "tests/test_standard_causal_transformer_survival.py",
-          "sha256": "5c5c9af0ec14c2f30fcbaf32274c830cbd4c33c9b0776406e7b579cf27018473"
+          "sha256": "95b635d8740b74a578f1cb70d0b891f58e46f3c5d12f0fd118ea5c6d2029fb5c"
         },
         "corpus_implementation": {
           "path": "scripts/standard_causal_transformer_corpus.py",
@@ -634,7 +634,7 @@
         },
         "model": {
           "path": "scripts/standard_causal_transformer_model.py",
-          "sha256": "8b185276966af81f5c56b8b3f2d2424e800a0ba96d60165fdfda250e75a01120"
+          "sha256": "b436544243a8cb40ab762c4b35096560ace3c66a27c601feffd45cb447f62f7a"
         },
         "preference": {
           "path": "scripts/standard_causal_transformer_preference.py",

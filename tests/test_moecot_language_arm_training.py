@@ -1680,7 +1680,9 @@ def test_training_authority_requires_candidate_bound_canaries_and_gates_long_run
             "canonical_lineage_unchanged": True,
             "exact_resume_validation": True,
             "independent_segmented_replay_numeric_parity": True,
-            "zero_swap_growth": True,
+            "zero_swap_growth": False,
+            "swap_growth_treatment": "DIAGNOSTIC_ONLY",
+            "host_resource_guard_passed": True,
         },
     )
     campaign_segment = architecture_training_authority(
@@ -1698,6 +1700,34 @@ def test_training_authority_requires_candidate_bound_canaries_and_gates_long_run
         == "QUALIFIED_FRESH_PROCESS_CAMPAIGN_SEGMENT"
     )
     assert calls == []
+
+    training_module.write_json(
+        segment_report,
+        {
+            "policy": (
+                "project_theseus_fresh_process_pretraining_qualification_v1"
+            ),
+            "trigger_state": "GREEN",
+            "contiguous_segment_count": 2,
+            "qualified_execution_policy": segment_policy,
+            "canonical_lineage_unchanged": True,
+            "exact_resume_validation": True,
+            "independent_segmented_replay_numeric_parity": True,
+            "zero_swap_growth": False,
+            "swap_growth_treatment": "HARD_GAP",
+            "host_resource_guard_passed": True,
+        },
+    )
+    rejected_swap_mismatch = architecture_training_authority(
+        cfg,
+        max_steps=64,
+        targets=["shared_trunk"],
+        phase="pretraining",
+        resume=True,
+        campaign_segment=True,
+        runner=denied_runner,
+    )
+    assert rejected_swap_mismatch["trigger_state"] == "RED"
 
     scratch = ROOT / "runtime" / "t0a_canaries" / "immutable_control_review" / "unit-test"
     canary = architecture_training_authority(
@@ -2861,6 +2891,35 @@ def test_step3480_receipt_accepts_final_acceleration_disposition_migration() -> 
     assert migration is not None
     assert migration["migration_id"] == (
         "shared_trunk_step3480_final_acceleration_and_availability_controller_v1"
+    )
+
+
+def test_step3480_receipt_accepts_replay_swap_policy_alignment_migration() -> None:
+    config = json.loads(
+        (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
+    )
+    receipt = json.loads(
+        (
+            ROOT
+            / "checkpoints"
+            / "moecot_mlx_57m_active_preregistered_v1"
+            / "shared_trunk"
+            / "training_receipt.json"
+        ).read_text()
+    )
+    stage_signature = "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9"
+    migration = accepted_plan_identity_migration(
+        receipt,
+        {
+            "plan_identity": config["plan_identity"],
+            "plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+            "stage": {"stage_signature": stage_signature},
+        },
+        {"target_id": "shared_trunk"},
+    )
+    assert migration is not None
+    assert migration["migration_id"] == (
+        "shared_trunk_step3480_replay_swap_policy_alignment_v1"
     )
 
 

@@ -50,7 +50,8 @@ def test_final_selector_binds_every_finite_candidate_disposition() -> None:
 
 def test_final_selector_is_green_against_current_authoritative_evidence() -> None:
     report = selector.execute(
-        ROOT / "configs/training_acceleration_final_selector.json"
+        ROOT / "configs/training_acceleration_final_selector.json",
+        publish_report=False,
     )
 
     assert report["trigger_state"] == "GREEN"

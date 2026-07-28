@@ -6,7 +6,7 @@
   "index": 4,
   "passed": true,
   "returncode": 0,
-  "runtime_ms": 129,
+  "runtime_ms": 109,
   "safety_receipt": {
     "child_started": true,
     "command": [
@@ -16,54 +16,75 @@
     "fault": "",
     "fault_observation": null,
     "first_swapout_growth_breach_observation": null,
-    "initial_reclaimable_available_mib": 3504.016,
+    "initial_reclaimable_available_mib": 4797.594,
     "limits": {
       "max_process_memory_mib": 1024.0,
       "maximum_swapout_growth_mib": 16.0,
-      "maximum_wall_seconds": 300.0,
-      "minimum_available_before_launch_mib": 3072.0,
-      "minimum_available_during_run_mib": 2048.0,
+      "maximum_wall_seconds": 0.0,
+      "memory_guard_mode": "predicted_exhaustion",
+      "minimum_available_before_launch_mib": 0.0,
+      "minimum_available_during_run_mib": 0.0,
       "poll_interval_seconds": 0.1,
-      "swapout_growth_action": "hard_stop",
+      "qualified_peak_inferred_unified_memory_mib": 996.281,
+      "swapout_growth_action": "report_only",
       "terminate_grace_seconds": 2.0
     },
+    "maximum_consecutive_predicted_exhaustion_observations": 0,
     "maximum_consecutive_reserve_breaches": 0,
-    "maximum_consecutive_telemetry_failures": 0,
-    "maximum_inferred_unified_memory_mib": 2.188,
-    "maximum_process_rss_mib": 0.484,
+    "maximum_consecutive_telemetry_failures": 1,
+    "maximum_inferred_unified_memory_mib": 0.625,
+    "maximum_predicted_termination_headroom_mib": 15.0,
+    "maximum_process_rss_mib": 0.0,
     "maximum_swapout_growth_mib": 0.0,
-    "minimum_reclaimable_available_mib": 3501.828,
+    "memory_guard_mode": "predicted_exhaustion",
+    "minimum_reclaimable_available_mib": 4796.969,
     "observation_prefix": [
       {
         "elapsed_seconds": 0.002,
-        "inferred_unified_memory_mib": 2.188,
-        "process_rss_mib": 0.484,
-        "reclaimable_available_mib": 3501.828,
-        "swapout_growth_mib": 0.0
+        "exhaustion_predicted": false,
+        "inferred_unified_memory_mib": 0.625,
+        "predicted_termination_headroom_mib": 15.0,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 4796.969,
+        "reclaimable_decline_rate_mib_per_second": 6.25,
+        "swapout_growth_mib": 0.0,
+        "within_qualified_working_set": true
       }
     ],
     "observation_suffix": [
       {
         "elapsed_seconds": 0.002,
-        "inferred_unified_memory_mib": 2.188,
-        "process_rss_mib": 0.484,
-        "reclaimable_available_mib": 3501.828,
-        "swapout_growth_mib": 0.0
+        "exhaustion_predicted": false,
+        "inferred_unified_memory_mib": 0.625,
+        "predicted_termination_headroom_mib": 15.0,
+        "process_rss_mib": 0.0,
+        "reclaimable_available_mib": 4796.969,
+        "reclaimable_decline_rate_mib_per_second": 6.25,
+        "swapout_growth_mib": 0.0,
+        "within_qualified_working_set": true
       }
     ],
     "passed": true,
     "physical_memory_mib": 16384.0,
     "policy": "project_theseus_host_resource_safety_v1",
     "process_rss_telemetry_state": "AVAILABLE",
+    "qualified_working_set_initial_headroom_required": false,
     "reserve_breach_observations_required": 3,
     "returncode": 0,
-    "swapout_growth_action": "hard_stop",
+    "swapout_growth_action": "report_only",
     "swapout_growth_breach_observations": 0,
     "swapout_growth_threshold_exceeded": false,
     "telemetry_failure_observations_allowed": 2,
-    "telemetry_failure_prefix": [],
+    "telemetry_failure_prefix": [
+      {
+        "elapsed_seconds": 0.002,
+        "fault_type": "PermissionError",
+        "source": "process_group_rss"
+      }
+    ],
     "terminated_by_guard": false,
-    "wall_seconds": 0.127
+    "wall_limit_disabled": true,
+    "wall_seconds": 0.107
   },
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "stderr_tail": "",

@@ -3,7 +3,7 @@
   "training_config": "configs/moecot_language_arm_training.json",
   "selector_report": "reports/training_acceleration_final_selector.json",
   "availability_config": "configs/neural_seed_training_availability.json",
-  "scratch_root": "runtime/t0a_canaries/selected_route_sustained_v2",
+  "scratch_root": "runtime/t0a_canaries/selected_route_sustained_v4",
   "report": "reports/selected_route_sustained_qualification.json",
   "segment_optimizer_steps": 64,
   "replicates_per_thermal_window": 3,

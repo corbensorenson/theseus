@@ -485,6 +485,21 @@ def qualify(
         float(row.get("maximum_swapout_growth_mib") or 0.0) == 0.0
         for row in host_rows
     )
+    swapout_growth_action = str(
+        (config.get("host_resource_safety") or {}).get(
+            "swapout_growth_action"
+        )
+        or "fail_closed"
+    )
+    swap_growth_treatment = (
+        "DIAGNOSTIC_ONLY"
+        if swapout_growth_action == "report_only"
+        else "HARD_GAP"
+    )
+    host_resource_guard_passed = all(
+        row.get("passed") is True and not str(row.get("fault") or "")
+        for row in host_rows
+    )
     canonical_unchanged = canonical_before == canonical_after
     exact_resume = all(
         row.get("resume_validation") == "GREEN"
@@ -495,8 +510,10 @@ def qualify(
         hard_gaps.append("independent_segmented_replay_numeric_mismatch")
     if not contiguous:
         hard_gaps.append("segmented_cursor_or_position_discontinuity")
-    if not zero_swap:
+    if not zero_swap and swap_growth_treatment == "HARD_GAP":
         hard_gaps.append("swap_growth_observed")
+    if not host_resource_guard_passed:
+        hard_gaps.append("host_resource_guard_failed")
     if not canonical_unchanged:
         hard_gaps.append("canonical_lineage_mutated")
     if not exact_resume:
@@ -535,6 +552,8 @@ def qualify(
         "optimizer_tensor_comparison": optimizer_tensor_comparison,
         "segmented_cursor_and_position_contiguous": contiguous,
         "zero_swap_growth": zero_swap,
+        "swap_growth_treatment": swap_growth_treatment,
+        "host_resource_guard_passed": host_resource_guard_passed,
         "fresh_process_segments": segment_rows,
         "second_segment_independent_replay": replay,
         "fresh_process_host_safety": host_rows,

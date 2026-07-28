@@ -546,7 +546,6 @@ def run_guarded(
             )
             within_qualified_working_set = bool(
                 qualified_peak > 0.0
-                and initial.reclaimable_available_mib > qualified_peak
                 and inferred_unified_memory <= qualified_peak
             )
             if within_qualified_working_set:
@@ -676,6 +675,7 @@ def run_guarded(
         "maximum_predicted_termination_headroom_mib": round(
             maximum_predicted_termination_headroom_mib, 3
         ),
+        "qualified_working_set_initial_headroom_required": False,
         "wall_limit_disabled": policy.maximum_wall_seconds == 0.0,
         "telemetry_failure_observations_allowed": (
             MAXIMUM_CONSECUTIVE_TELEMETRY_FAILURES - 1

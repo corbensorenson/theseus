@@ -89,6 +89,7 @@
       "scripts/moecot_language_arm_training.py",
       "scripts/moecot_auxiliary_stage_cache.py",
       "scripts/fresh_process_pretraining_qualification.py",
+      "scripts/host_resource_safety.py",
       "scripts/neural_seed_training_campaign.py",
       "scripts/kerc_checkpoint_schema.py",
       "scripts/kerc_concept_registry.py",
@@ -148,6 +149,19 @@
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "tests/test_host_resource_safety.py tests/test_neural_seed_training_campaign.py tests/test_selected_route_sustained_qualification.py reports/training_acceleration_final_selector.json",
         "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while replacing only arbitrary host scheduling thresholds. The watchdog uses consecutive measured reclaimable-memory decline and its termination latency to predict exhaustion, with no fixed launch/runtime memory floor and no unrelated wall deadline for the already step-bounded child. A single allocation transient or stable low plateau is not a fault. Disk headroom is derived from two complete live checkpoint transactions. Sustained qualification stops from replicated adjacent-window uncertainty, clear degradation, or an available system thermal warning rather than elapsed hours or a fixed percentage. Process-group memory remains bounded, system swap remains diagnostic, canonical state remains scratch-isolated, and this migration changes no model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract."
+      },
+      {
+        "migration_id": "shared_trunk_step3480_replay_swap_policy_alignment_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_optimizer_positions": 26680656,
+        "required_current_plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/selected_route_sustained_qualification.json reports/fresh_process_pretraining_qualification.json tests/test_host_resource_safety.py tests/test_selected_route_sustained_qualification.py tests/test_moecot_language_arm_training.py",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while making the independent fresh-process replay owner consume the already-selected host swap policy and binding the imported watchdog implementation into the training-plan closure. Exact two-segment replay matched an independently resumed second segment with 2.384185791015625e-07 maximum model delta, 6.9267116487026215e-09 maximum optimizer delta, identical RNG state, contiguous cursor and positions, and no causal watchdog fault. Machine-wide swapout counters remain visible but diagnostic under report_only; process-group RSS, measured working-set-envelope overrun, and predicted-exhaustion faults remain hard. The independently completed 4797.484 MiB route envelope suppresses sub-second decline extrapolation whenever observed route use remains inside that envelope, without requiring an arbitrary amount of initially free memory. Training authority requires the causal host guard to pass and rejects a report whose swap treatment disagrees with the frozen config. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract changes."
       },
       {
         "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
@@ -635,7 +649,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "fc67b745170c5a0b51c78368164c8512d88f9db79befbb279657f0daef91d913",
+        "required_current_plan_sha256": "a0bcc8b6dfe43cd5e40db9943211bfa83b1a06d68b858172d2bf078505c86b21",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -650,7 +664,7 @@
         "legacy_optimizer_state_sha256": "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197",
         "legacy_optimizer_steps": 4786,
         "legacy_optimizer_positions": 488090,
-        "required_current_plan_sha256": "4badfda08b36fcfc684e1ad915ce92b5610fba31ded582c2dc4674df6128aed0",
+        "required_current_plan_sha256": "48e89b87ca3d4be387479161c3dfac03301f1746fb0d2f30ec80eeb045501ef8",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_generation_rows16_seed_20260722.json",
         "reason": "Continue the exact step-4786 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-2 batch-2 sampler cursor after 128 updates gave every bounded population row two exposures but left the v4 root top-1 at 0/16 and raw admitted-row validity at 0/16. The next rung doubles minimum exposure from two to four using another 128 updates at the unchanged 3e-5 rate, v4 objective, same seed, same admitted rows, and same hard host gates. Preserve the sampler cursor: this migration intentionally has no reset_data_cursor_phase. Require teacher-forced root movement and raw admitted-row validity before any source-disjoint surface. This is an underfit-regime diagnostic, not a capability or architecture-falsification claim."
@@ -663,7 +677,7 @@
         "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
         "legacy_optimizer_steps": 4914,
         "legacy_optimizer_positions": 519165,
-        "required_current_plan_sha256": "4badfda08b36fcfc684e1ad915ce92b5610fba31ded582c2dc4674df6128aed0",
+        "required_current_plan_sha256": "48e89b87ca3d4be387479161c3dfac03301f1746fb0d2f30ec80eeb045501ef8",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
         "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed."

@@ -57,7 +57,11 @@ def disposition_row(report: dict[str, Any], candidate: str) -> dict[str, Any]:
     )
 
 
-def execute(config_path: Path) -> dict[str, Any]:
+def execute(
+    config_path: Path,
+    *,
+    publish_report: bool = True,
+) -> dict[str, Any]:
     config = read_json(config_path)
     if config.get("policy") != POLICY:
         raise FinalSelectorFault("config_policy_invalid")
@@ -368,12 +372,13 @@ def execute(config_path: Path) -> dict[str, Any]:
             "Candidate exclusions are scoped engineering dispositions, not scientific falsifications.",
         ],
     }
-    report_path = resolve(config["report"])
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(
-        json.dumps(report, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    if publish_report:
+        report_path = resolve(config["report"])
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
     return report
 
 

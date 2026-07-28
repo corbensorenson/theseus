@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 import time
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -16,6 +17,13 @@ import host_resource_safety
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+import moecot_language_arm_training as training  # noqa: E402
+
+
 DEFAULT_CONFIG = ROOT / "configs" / "pretraining_architecture_freeze.json"
 DEFAULT_REPORT = ROOT / "reports" / "pretraining_architecture_freeze_package.json"
 
@@ -30,7 +38,11 @@ def resolve(value: str | Path) -> Path:
 
 
 def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    value = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            value.update(chunk)
+    return value.hexdigest()
 
 
 def canonical(value: Any) -> str:
@@ -197,6 +209,249 @@ def factorized_selection(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def selected_route_execution_qualification(
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    contract = config.get("selected_route_execution_qualification") or {}
+    required = {
+        "policy",
+        "training_config",
+        "required_plan_sha256",
+        "sustained_report",
+        "sustained_policy",
+        "fresh_process_report",
+        "fresh_process_policy",
+        "canonical_receipt",
+    }
+    missing = sorted(required - set(contract))
+    if missing:
+        raise ArchitectureFreezeFault(
+            "selected_route_execution_contract_incomplete:" + ",".join(missing)
+        )
+    if contract.get("policy") != (
+        "project_theseus_selected_route_execution_qualification_v1"
+    ):
+        raise ArchitectureFreezeFault(
+            "selected_route_execution_contract_invalid"
+        )
+
+    training_config_path = resolve(str(contract["training_config"]))
+    training_config = training.bind_scale_preregistration(
+        training.read_json(training_config_path)
+    )
+    plan = training.build_plan(
+        training_config,
+        config_path=training_config_path,
+    )
+    required_plan = str(contract["required_plan_sha256"])
+    if (
+        plan.get("trigger_state") != "GREEN"
+        or plan.get("hard_gaps")
+        or plan.get("plan_sha256") != required_plan
+    ):
+        raise ArchitectureFreezeFault(
+            "selected_route_training_plan_not_green_or_identity_mismatch"
+        )
+
+    sustained_path = resolve(str(contract["sustained_report"]))
+    fresh_path = resolve(str(contract["fresh_process_report"]))
+    canonical_receipt_path = resolve(str(contract["canonical_receipt"]))
+    for label, path in (
+        ("sustained", sustained_path),
+        ("fresh_process", fresh_path),
+        ("canonical_receipt", canonical_receipt_path),
+    ):
+        if not path.is_file():
+            raise ArchitectureFreezeFault(
+                f"selected_route_{label}_artifact_missing"
+            )
+    sustained = json.loads(sustained_path.read_text(encoding="utf-8"))
+    fresh = json.loads(fresh_path.read_text(encoding="utf-8"))
+    canonical_receipt = json.loads(
+        canonical_receipt_path.read_text(encoding="utf-8")
+    )
+    target = plan["targets"][training.SHARED_TRUNK_ID]
+    expected_receipt_path = training.resolve(str(target["receipt"]))
+    if expected_receipt_path != canonical_receipt_path:
+        raise ArchitectureFreezeFault(
+            "selected_route_canonical_receipt_path_mismatch"
+        )
+    migration = None
+    if canonical_receipt.get("plan_sha256") != required_plan:
+        migration = training.accepted_plan_identity_migration(
+            canonical_receipt,
+            plan,
+            target,
+        )
+        if migration is None:
+            raise ArchitectureFreezeFault(
+                "selected_route_canonical_plan_migration_missing"
+            )
+
+    canonical_paths = {
+        "checkpoint": training.resolve(str(canonical_receipt["checkpoint"])),
+        "optimizer_state": training.resolve(
+            str(canonical_receipt["optimizer_state"])
+        ),
+        "mlx_rng_state": training.resolve(
+            str(canonical_receipt["mlx_rng_state"])
+        ),
+        "receipt": canonical_receipt_path,
+    }
+    for label, path in canonical_paths.items():
+        if not path.is_file():
+            raise ArchitectureFreezeFault(
+                f"selected_route_canonical_{label}_missing"
+            )
+    canonical_identity = {
+        "checkpoint_sha256": sha256(canonical_paths["checkpoint"]),
+        "optimizer_state_sha256": sha256(
+            canonical_paths["optimizer_state"]
+        ),
+        "mlx_rng_state_sha256": sha256(
+            canonical_paths["mlx_rng_state"]
+        ),
+        "receipt_sha256": sha256(canonical_paths["receipt"]),
+    }
+    receipt_identity = {
+        "checkpoint_sha256": canonical_receipt.get("checkpoint_sha256"),
+        "optimizer_state_sha256": canonical_receipt.get(
+            "optimizer_state_sha256"
+        ),
+        "mlx_rng_state_sha256": canonical_receipt.get(
+            "mlx_rng_state_sha256"
+        ),
+        "receipt_sha256": canonical_identity["receipt_sha256"],
+    }
+    if canonical_identity != receipt_identity:
+        raise ArchitectureFreezeFault(
+            "selected_route_canonical_artifact_identity_mismatch"
+        )
+
+    training_config_sha256 = sha256(training_config_path)
+    sustained_training_config = sustained.get("training_config") or {}
+    fresh_training_config = fresh.get("training_config") or {}
+    report_training_config_sha256 = sustained_training_config.get("sha256")
+    if (
+        sustained_training_config.get("path") != str(contract["training_config"])
+        or fresh_training_config.get("path") != str(contract["training_config"])
+        or not report_training_config_sha256
+        or fresh_training_config.get("sha256")
+        != report_training_config_sha256
+    ):
+        raise ArchitectureFreezeFault(
+            "selected_route_report_training_config_identity_mismatch"
+        )
+    sustained_thermal = sustained.get("thermal_stability") or {}
+    sustained_valid = bool(
+        sustained.get("policy") == contract["sustained_policy"]
+        and sustained.get("trigger_state") == "GREEN"
+        and sustained.get("support_state") == "SUPPORTED"
+        and not sustained.get("hard_gaps")
+        and sustained.get("plan_sha256") == required_plan
+        and int(sustained.get("successful_segment_count") or 0) >= 6
+        and sustained.get("exact_resume_each_segment") is True
+        and sustained.get("canonical_lineage_unchanged") is True
+        and sustained.get("all_segments_on_ac_power") is True
+        and sustained.get("system_swap_growth_treatment")
+        == "DIAGNOSTIC_ONLY"
+        and sustained.get("arbitrary_percentage_tolerance") is None
+        and sustained.get("elapsed_time_requirement") is None
+        and sustained_thermal.get("state")
+        == "STABLE_WITHIN_OBSERVED_REPLICATE_UNCERTAINTY"
+        and sustained_thermal.get("terminal") is True
+        and sustained_thermal.get("uncertainty_interval_contains_one")
+        is True
+        and sustained.get("canonical_before") == canonical_identity
+        and sustained.get("canonical_after") == canonical_identity
+    )
+    if not sustained_valid:
+        raise ArchitectureFreezeFault(
+            "selected_route_sustained_qualification_invalid"
+        )
+
+    fresh_valid = bool(
+        fresh.get("policy") == contract["fresh_process_policy"]
+        and fresh.get("trigger_state") == "GREEN"
+        and not fresh.get("hard_gaps")
+        and fresh.get("plan_sha256") == required_plan
+        and int(fresh.get("contiguous_segment_count") or 0) >= 2
+        and fresh.get("canonical_lineage_unchanged") is True
+        and fresh.get("exact_resume_validation") is True
+        and fresh.get("independent_segmented_replay_numeric_parity")
+        is True
+        and fresh.get("segmented_cursor_and_position_contiguous") is True
+        and fresh.get("host_resource_guard_passed") is True
+        and fresh.get("swap_growth_treatment") == "DIAGNOSTIC_ONLY"
+        and fresh.get("canonical_before") == canonical_identity
+        and fresh.get("canonical_after") == canonical_identity
+        and (fresh.get("model_tensor_comparison") or {}).get("passed")
+        is True
+        and (fresh.get("optimizer_tensor_comparison") or {}).get("passed")
+        is True
+    )
+    if not fresh_valid:
+        raise ArchitectureFreezeFault(
+            "selected_route_fresh_process_qualification_invalid"
+        )
+    host_policy = training_config.get("host_resource_safety") or {}
+    if (
+        host_policy.get("swapout_growth_action") != "report_only"
+        or float(host_policy.get("minimum_available_before_launch_mib") or 0)
+        != 0.0
+        or float(host_policy.get("minimum_available_during_run_mib") or 0)
+        != 0.0
+        or float(host_policy.get("maximum_wall_seconds") or 0) != 0.0
+        or host_policy.get("memory_guard_mode") != "predicted_exhaustion"
+    ):
+        raise ArchitectureFreezeFault(
+            "selected_route_evidence_driven_host_policy_mismatch"
+        )
+    return {
+        "policy": contract["policy"],
+        "training_config": {
+            "path": str(contract["training_config"]),
+            "sha256": training_config_sha256,
+            "qualification_report_source_sha256": (
+                report_training_config_sha256
+            ),
+            "semantic_plan_identity_unchanged": True,
+        },
+        "training_plan_sha256": required_plan,
+        "canonical_receipt": {
+            "path": str(contract["canonical_receipt"]),
+            "sha256": canonical_identity["receipt_sha256"],
+            "optimizer_steps": canonical_receipt.get("optimizer_steps"),
+            "optimizer_positions": canonical_receipt.get(
+                "optimizer_positions"
+            ),
+            "resume_plan_identity_migration": migration,
+        },
+        "canonical_identity": canonical_identity,
+        "sustained_report": {
+            "path": str(contract["sustained_report"]),
+            "sha256": sha256(sustained_path),
+            "successful_segment_count": sustained[
+                "successful_segment_count"
+            ],
+            "thermal_stability": sustained_thermal,
+        },
+        "fresh_process_report": {
+            "path": str(contract["fresh_process_report"]),
+            "sha256": sha256(fresh_path),
+            "contiguous_segment_count": fresh[
+                "contiguous_segment_count"
+            ],
+            "numeric_replay_parity": fresh[
+                "independent_segmented_replay_numeric_parity"
+            ],
+            "zero_swap_growth": fresh["zero_swap_growth"],
+            "swap_growth_treatment": fresh["swap_growth_treatment"],
+        },
+        "capability_claim": "NONE_EXECUTION_QUALIFICATION_ONLY",
+    }
+
+
 def atomic_write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
@@ -226,6 +481,15 @@ def accelerator_shard_policy(
         terminate_grace_seconds=float(
             contract.get("terminate_grace_seconds") or 2.0
         ),
+        swapout_growth_action=str(
+            shard.get("swapout_growth_action") or "hard_stop"
+        ),
+        memory_guard_mode=str(
+            shard.get("memory_guard_mode") or "fixed_reserve"
+        ),
+        qualified_peak_inferred_unified_memory_mib=float(
+            shard.get("qualified_peak_inferred_unified_memory_mib") or 0.0
+        ),
     )
     policy.validate(
         physical_memory_mib=host_resource_safety.physical_memory_mib()
@@ -247,6 +511,9 @@ def replay_safety_policy(config: dict[str, Any]) -> host_resource_safety.HostSaf
         "maximum_wall_seconds",
         "poll_interval_seconds",
         "terminate_grace_seconds",
+        "swapout_growth_action",
+        "memory_guard_mode",
+        "qualified_peak_inferred_unified_memory_mib",
         "accelerator_authorization_allowed",
     }
     missing = sorted(required - set(contract))
@@ -278,6 +545,11 @@ def replay_safety_policy(config: dict[str, Any]) -> host_resource_safety.HostSaf
         maximum_wall_seconds=float(contract["maximum_wall_seconds"]),
         poll_interval_seconds=float(contract["poll_interval_seconds"]),
         terminate_grace_seconds=float(contract["terminate_grace_seconds"]),
+        swapout_growth_action=str(contract["swapout_growth_action"]),
+        memory_guard_mode=str(contract["memory_guard_mode"]),
+        qualified_peak_inferred_unified_memory_mib=float(
+            contract["qualified_peak_inferred_unified_memory_mib"]
+        ),
     )
     policy.validate(
         physical_memory_mib=host_resource_safety.physical_memory_mib()
@@ -303,7 +575,13 @@ def validate_accelerator_shard_contract(
             "accelerator_shard_receipt_path_invalid:"
             + str(shard.get("id") or "missing")
         )
-    if float(shard.get("max_wall_seconds") or 0) <= 0:
+    memory_guard_mode = str(
+        shard.get("memory_guard_mode") or "fixed_reserve"
+    )
+    if float(shard.get("max_wall_seconds") or 0) < 0 or (
+        memory_guard_mode == "fixed_reserve"
+        and float(shard.get("max_wall_seconds") or 0) == 0
+    ):
         raise ArchitectureFreezeFault(
             "accelerator_shard_wall_limit_invalid:"
             + str(shard.get("id") or "missing")
@@ -346,7 +624,7 @@ def validate_accelerator_shard_contract(
             + ":"
             + ",".join(missing)
         )
-    if "minimum_available_before_launch_mib" in shard and float(
+    if memory_guard_mode == "fixed_reserve" and "minimum_available_before_launch_mib" in shard and float(
         shard["minimum_available_before_launch_mib"]
     ) < float(shard["minimum_available_memory_mib"]):
         raise ArchitectureFreezeFault(
@@ -393,7 +671,25 @@ def validate_accelerator_shard_contract(
         required_launch_floor = float(calibration["required_launch_floor_mib"])
         selected_launch_floor = float(calibration["selected_launch_floor_mib"])
         derived_launch_floor = live_reserve + observed_peak + safety_margin
-        if (
+        if memory_guard_mode == "predicted_exhaustion":
+            if (
+                float(shard["minimum_available_before_launch_mib"]) != 0.0
+                or float(shard["minimum_available_memory_mib"]) != 0.0
+                or float(shard.get("max_wall_seconds") or 0) != 0.0
+                or shard.get("swapout_growth_action") != "report_only"
+                or float(
+                    shard.get(
+                        "qualified_peak_inferred_unified_memory_mib"
+                    )
+                    or 0.0
+                )
+                < observed_peak
+            ):
+                raise ArchitectureFreezeFault(
+                    "accelerator_shard_launch_calibration_weakened:"
+                    + shard_id
+                )
+        elif (
             observed_peak <= 0
             or safety_margin <= 0
             or abs(live_reserve - float(shard["minimum_available_memory_mib"]))
@@ -412,8 +708,11 @@ def validate_accelerator_shard_contract(
     if (
         float(shard["maximum_process_memory_mib"])
         > float(contract["maximum_process_memory_mib"])
-        or float(shard["minimum_available_memory_mib"])
-        < float(contract["minimum_available_memory_mib"])
+        or (
+            memory_guard_mode == "fixed_reserve"
+            and float(shard["minimum_available_memory_mib"])
+            < float(contract["minimum_available_memory_mib"])
+        )
         or float(shard["maximum_swapout_growth_mib"])
         > float(contract["maximum_swapout_growth_mib"])
         or float(shard["poll_interval_seconds"])
@@ -511,6 +810,19 @@ def accelerator_receipt_valid(
 ) -> bool:
     limits = receipt.get("limits") or {}
     expected_limits = asdict(accelerator_shard_policy(contract, shard))
+
+    def limit_matches(key: str, expected: Any) -> bool:
+        if key not in limits:
+            if key == "memory_guard_mode":
+                return expected == "fixed_reserve"
+            if key == "qualified_peak_inferred_unified_memory_mib":
+                return float(expected) == 0.0
+            return False
+        actual = limits[key]
+        if isinstance(expected, str):
+            return actual == expected
+        return float(actual) == float(expected)
+
     try:
         expected_artifacts = shard_generated_artifact_manifest(shard)
         expected_implementation = shard_implementation_artifact_manifest(shard)
@@ -529,14 +841,7 @@ def accelerator_receipt_valid(
         and (receipt.get("implementation_artifacts") or {})
         == expected_implementation
         and (receipt.get("dependency_receipts") or {}) == expected_dependencies
-        and all(
-            (
-                limits.get(key) == expected
-                if isinstance(expected, str)
-                else float(limits.get(key) or 0) == float(expected)
-            )
-            for key, expected in expected_limits.items()
-        )
+        and all(limit_matches(key, expected) for key, expected in expected_limits.items())
     )
 
 
@@ -771,6 +1076,7 @@ def run_replays(config: dict[str, Any]) -> list[dict[str, Any]]:
 
 def build_report(config: dict[str, Any], *, execute_replays: bool) -> dict[str, Any]:
     dispositions = architecture_dispositions(config)
+    selected_route = selected_route_execution_qualification(config)
     replays = run_replays(config) if execute_replays else []
     if not execute_replays:
         raise ArchitectureFreezeFault("independent_replay_required")
@@ -785,6 +1091,7 @@ def build_report(config: dict[str, Any], *, execute_replays: bool) -> dict[str, 
         "accelerator_replay_receipts": accelerator_receipts,
         "dispositions": dispositions,
         "factorized_selection": selection,
+        "selected_route_execution_qualification": selected_route,
         "commands": config["replay_commands"],
         "replay_safety": config["replay_safety"],
         "boundaries": config["boundaries"],
@@ -801,6 +1108,7 @@ def build_report(config: dict[str, Any], *, execute_replays: bool) -> dict[str, 
         "generated_receipts": receipts,
         "architecture_dispositions": dispositions,
         "factorized_selection": selection,
+        "selected_route_execution_qualification": selected_route,
         "replay_receipts": replays,
         "replay_safety": config["replay_safety"],
         "summary": {

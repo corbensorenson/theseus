@@ -495,6 +495,82 @@ def test_qualified_working_set_suppresses_a_known_finite_allocation_ramp() -> No
     )
 
 
+def test_qualified_working_set_has_no_hidden_initial_memory_floor() -> None:
+    calls = 0
+
+    def snapshot() -> safety.HostMemorySnapshot:
+        nonlocal calls
+        calls += 1
+        values = [3700, 3000, 2500, 2000, 3800, 3000, 2500, 2000, 3800]
+        available = values[min(calls - 1, len(values) - 1)]
+        return safety.HostMemorySnapshot(16384, available, 10, 16384)
+
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=0,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+        maximum_wall_seconds=0,
+        poll_interval_seconds=0.01,
+        terminate_grace_seconds=1,
+        swapout_growth_action="report_only",
+        memory_guard_mode="predicted_exhaustion",
+        qualified_peak_inferred_unified_memory_mib=4800,
+    )
+    result = safety.run_guarded(
+        [sys.executable, "-c", "import time; time.sleep(.07)"],
+        cwd=ROOT,
+        policy=policy,
+        snapshot_fn=snapshot,
+        rss_fn=lambda _pid: 64.0,
+    )
+    assert result.receipt["passed"] is True
+    assert result.receipt["initial_reclaimable_available_mib"] == 3700
+    assert (
+        result.receipt["qualified_working_set_initial_headroom_required"]
+        is False
+    )
+    assert all(
+        row["within_qualified_working_set"]
+        for row in result.receipt["observation_prefix"]
+    )
+
+
+def test_qualified_working_set_does_not_suppress_an_envelope_overrun() -> None:
+    calls = 0
+
+    def snapshot() -> safety.HostMemorySnapshot:
+        nonlocal calls
+        calls += 1
+        values = [9000, 7000, 5500, 4000, 2500, 1000]
+        available = values[min(calls - 1, len(values) - 1)]
+        return safety.HostMemorySnapshot(16384, available, 10, 16384)
+
+    policy = safety.HostSafetyPolicy(
+        max_process_memory_mib=512,
+        minimum_available_before_launch_mib=0,
+        minimum_available_during_run_mib=0,
+        maximum_swapout_growth_mib=0,
+        maximum_wall_seconds=0,
+        poll_interval_seconds=0.01,
+        terminate_grace_seconds=1,
+        swapout_growth_action="report_only",
+        memory_guard_mode="predicted_exhaustion",
+        qualified_peak_inferred_unified_memory_mib=4800,
+    )
+    result = safety.run_guarded(
+        [sys.executable, "-c", "import time; time.sleep(5)"],
+        cwd=ROOT,
+        policy=policy,
+        snapshot_fn=snapshot,
+        rss_fn=lambda _pid: 64.0,
+    )
+    assert result.receipt["passed"] is False
+    assert result.receipt["fault"] == "host_memory_exhaustion_predicted"
+    assert result.receipt["fault_observation"]["within_qualified_working_set"] is False
+    assert result.receipt["maximum_inferred_unified_memory_mib"] > 4800
+
+
 def test_guard_tolerates_two_transient_telemetry_failures() -> None:
     calls = 0
 

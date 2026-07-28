@@ -66,8 +66,8 @@ The current falsifiable question is:
 |---|---|---|
 | `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
 | `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
-| `T0A` Pre-training architecture upgrade closure | active; selected-route sustained qualification paused | The practical first-campaign stack is fixed open-vocabulary AR, compiled FP32 MLX, AdamW, full depth, fixed 512-token maximum sequence policy, canonical KV, Semantic-IR control, and an independent verifier. The exact native ANE/Accelerate/Metal decoder-block challenger passed authority and parity gates but lost joined wall time to compiled MLX (`0.552679x` pooled, `0.534825x` conservative), so MLX remains authoritative for this campaign. KERC’s final same-seed exposure is frozen `INCONCLUSIVE_EXPERIMENT`: it receives zero optimizer exposure and no route authority in campaign one, while K4-K8 remain a prospectively reopened successor-campaign discovery contract rather than a scientific negative. The clean v2 scratch lineage has published four exact 64-step segments at 2,817.693, 2,844.904, 3,021.339, and 3,089.663 joined positions/second. AC power changed after segment four, so the harness correctly stopped before segment five and the mixed-condition window receives no qualification credit. The pause-report state machine now records this as `PAUSED`, archives the window on resume, and preserves exact scratch progress rather than mislabeling an availability transition as training failure. The canonical step-3,480 model, optimizer, RNG, and receipt identities remain byte-unchanged. Replicated same-condition thermal/stability evidence and an independent replay remain open. Publish the replacement package only after that exact step-bounded qualification turns GREEN; then transition directly to `T1` without another elective backend or architecture-intake cycle. |
-| `T1` Selected neural-seed campaign | waits for the broader pre-training architecture-readiness gate | Preserve the exact 57.340M-active step-3,000 package as an immutable control. Once the remaining non-acceleration architecture prerequisites are honestly closed, train the selected practical lane and matched controls from the frozen `T0A` package. Do not spend the long campaign budget on the superseded package merely because its old freeze is replayable. |
+| `T0A` Pre-training architecture upgrade closure | complete; replacement package content-addressed and independently replayed | The first-campaign stack is fixed open-vocabulary AR, compiled FP32 MLX, AdamW, full depth, fixed 512-token maximum sequence policy, canonical KV, Semantic-IR control, and an independent verifier. The exact native ANE/Accelerate/Metal decoder-block challenger passed authority and parity gates but lost joined wall time to compiled MLX (`0.552679x` pooled, `0.534825x` conservative), so MLX remains authoritative for this campaign. KERC is frozen `INCONCLUSIVE_EXPERIMENT`, receives zero campaign-one optimizer exposure, and preserves K4-K8 for prospective successor re-entry without a scientific negative. Six exact 64-step scratch segments completed in adjacent three-replicate windows: joined-throughput medians were 3,042.702 and 3,017.356 positions/second, their ratio was `0.991670`, and the replicate interval `[0.944840, 1.025765]` contains one with no thermal warning. Independent two-segment replay preserved cursor and RNG and matched every model/optimizer tensor under the frozen absolute-or-relative contract (maximum model delta `2.3841858e-7`; optimizer delta `3.608875e-9`). System-wide swap growth was observed and remains diagnostic under `report_only`; every causal host guard passed. The canonical step-3,480 model, optimizer, RNG, and receipt are byte-unchanged. |
+| `T1` Selected neural-seed campaign | next active gate | Train the selected practical MoECOT lane and matched dense-active/dense-total controls from the content-addressed `T0A` package, using the exact 64-step compiled FP32 continuation contract. Preserve the old 57M package only as an immutable control. No elective backend or architecture-intake cycle may substitute for the preregistered campaign and frozen direct model-only evaluation. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -1457,13 +1457,11 @@ The review findings with teeth change execution order as follows:
    design. Those ideas may not consume campaign-critical work and may re-enter only after a
    materially different critical-path model predicts a win and the selected campaign reaches
    its frozen review point.
-2. **Finish only the selected-route sustained qualification.** Complete the clean v2
-   scratch sequence, replicated thermal/stability stopping rule, independent exact replay,
-   and content-addressed replacement freeze. The app approval-credit refusal is recorded as
-   an external execution dependency: it grants no failure, completion, or architecture
-   credit and must not be filled with another preparation lane. Resume the exact next guarded
-   command when execution authority is available; do not mutate the durable step-3,480
-   lineage meanwhile.
+2. **Selected-route qualification is complete.** Six exact 64-step scratch segments passed
+   causal host guards and adjacent-window thermal comparison; independent two-segment replay
+   preserved cursor/RNG and matched all model/optimizer tensors. The content-addressed
+   replacement freeze binds plan `1c7c859e...b1c098f` and the byte-unchanged durable
+   step-3,480 lineage. Move directly to the matched 57M campaign.
 3. **Do not create a generic 5-10M selection lane.** Selection-grade work already exists:
    three-seed 6.623M matched studies cover AdamW versus Adam-mini/AdEMAMix, full depth versus
    faithful structural growth, and fixed width versus progressive sequence length, with
@@ -1473,15 +1471,14 @@ The review findings with teeth change execution order as follows:
    proxy cycle. The next architecture evidence is the preregistered matched 57M-class
    MoECOT, dense-active, and dense-total campaign, followed by the frozen direct model-only
    evaluation.
-4. **Keep capability progress as the outcome.** After `T0A` turns GREEN, train the shared
+4. **Keep capability progress as the outcome.** With `T0A` GREEN, train the shared
    trunk and five arms through the frozen review ladder, train both matched dense controls,
    and report direct behavior, including an honest zero. No additional backend report,
    mechanics canary, commit count, or usage-credit explanation substitutes for that result.
 
 This reconciliation does not claim that ANE is universally useless, KERC is scientifically
-falsified, the sustained MLX route is qualified, or the student has capability. It narrows
-the campaign critical path to the remaining evidence that can actually change launch
-authority.
+falsified, or the student has capability. It qualifies only the exact compiled-MLX execution,
+resume, resource, and custody contract and narrows the critical path to trained capability.
 
 ### 2026-07-25 Deep Technical And ASI Stack Review Reconciliation
 

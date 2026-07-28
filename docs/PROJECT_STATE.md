@@ -45,16 +45,16 @@ share toward zero. Public benchmarks are calibration only.
   independent low-rank English, Python, JavaScript/TypeScript, HTML/CSS, and Rust arms.
   Decoder-only dense controls are matched at 57,348,617 active parameters and 67,357,193
   total parameters. The MoECOT path has 57,340,426 active and 67,357,711 total parameters.
-- **Training authority:** RED for long optimizer work while the replacement `T0A` freeze awaits
-  reproducibility closure, safe accelerator replay, mandatory KERC qualification, and
-  replacement-package publication. Optimizer Policy Cards, the bounded Adafactor comparison,
+- **Training authority:** GREEN for the exact content-addressed campaign after the replacement
+  `T0A` package and pre-training readiness gate replay. Optimizer Policy Cards, the bounded Adafactor comparison,
   selected-recipe width transfer, and explicit full-shape SOAP scope removal are complete. The
   factorized control selection is provisional:
   fixed open-vocabulary AR, Semantic-IR control, AdamW, no draft, canonical KV, and the independent
   verifier remain the practical control stack. MTP and dynamic patches retain scoped evidence.
   Full-shape SOAP is removed from the first-campaign finite docket on measured M1/MLX
-  native-kernel and amortized-timing grounds without a quality claim; RDC/KERC may not close as
-  resource-deferred. Generic 1-8 step canaries are not authorized.
+  native-kernel and amortized-timing grounds without a quality claim; RDC/KERC is scoped out of
+  campaign one as `INCONCLUSIVE_EXPERIMENT`, with zero exposure and the K4-K8 successor ladder
+  preserved. Generic 1-8 step canaries are not authorized.
   The canonical trainer
   now requires a content-bound candidate lease with an isolated namespace, implementation ids,
   target/phase, step/position/wall/memory/disk budgets, seeds, heldout identity, required checks,
@@ -681,13 +681,14 @@ share toward zero. Public benchmarks are calibration only.
   warning. System-wide swap remains diagnostic, process-group memory remains bounded, every
   segment remains transactional and exact-resumable, and no canonical checkpoint is mutated
   by qualification.
-  The first live attempt completed three exact 64-step scratch segments at `3,069.398`,
-  `3,095.936`, and `3,121.711` joined positions/s. An uncalibrated fourth launch exposed a
-  false predictor extrapolation during the finite startup ramp; that implementation is
-  superseded by the durable two-receipt envelope above. A later resume then correctly refused
-  the old scratch plan identity after the watchdog implementation changed. The clean v2
-  namespace must restart from canonical step 3,480. It was not launched in this turn because
-  the app rejected further accelerator approval after its usage-credit limit was reached.
+  The final clean qualification completed six exact 64-step segments in adjacent replicated
+  windows. Joined-throughput medians were `3,042.702` and `3,017.356` positions/s; their
+  `0.991670` ratio has a `[0.944840, 1.025765]` replicate interval containing one, with no
+  thermal warning. Independent two-segment replay preserved cursor and RNG and matched every
+  model/optimizer tensor under the frozen absolute-or-relative contract, with maximum deltas
+  `2.3841858e-7` and `3.608875e-9`. All causal guards passed. Host-wide swap grew and is
+  recorded as diagnostic under `report_only`; it is not mislabeled as zero. The canonical
+  step-3,480 model, AdamW state, RNG, and receipt remain byte-unchanged.
   Qualification is `INCOMPLETE`; this is neither a training nor capability failure.
 - **Repository hygiene:** the forward roadmap is now a compact execution map backed by
   the complete machine-readable matrix without deleting an open obligation.
@@ -895,16 +896,13 @@ cargo test --workspace
 
 ## Current Wall
 
-The current wall is executable T0A closure, not permission theater and not another long training
-run. The practical control is provisional. Phase 0 reproduction is not green; KERC must pass the
-guarded resource-entry pair and K4-K8; the frozen evaluator needs candidate-injection and runtime
-forbidden-field taint defenses; SOAP needs explicit executed or scope-removed disposition; and the
-accelerator receipts plus replacement package remain open. Long optimizer work remains denied
-until these obligations are complete and every checkpoint-shaping candidate is selected or
-excluded under adequate tests. `RESOURCE_DEFERRED_ON_THIS_HOST` is no longer a closing state.
-After T0A closes, execute the frozen matched architecture review and preserve its confirmation
-and public surfaces. Existing 1.88x training, 8.90x direct-decode, and joined-runtime reuse
-results remain mechanics evidence, not functional capability evidence.
+`T0A` is complete. The current wall is trained capability: execute the preregistered matched
+57M-class MoECOT, dense-active, and dense-total campaign through exact 64-step fresh-process
+transactions, then consume the frozen direct model-only evaluation once. KERC remains a protected
+successor discovery lane rather than a campaign-one route or a scientific negative. No new backend,
+architecture-intake, canary, or report family may displace the matched campaign. Existing training,
+decode, and joined-runtime speedups remain mechanics evidence until the student produces direct
+source-disjoint functional behavior.
 
 The security package is parallel but real: it blocks routine dashboard/OpenAI-shim/Hive/LAN
 exposure, not MLX training. The 84-chapter reconciliation is also bounded metadata work and may

@@ -74,14 +74,47 @@ def test_replacement_freeze_requires_factorized_selection() -> None:
     assert len(selection["selected_implementation_ids"]) == 7
 
 
+def test_replacement_freeze_binds_green_selected_route_execution() -> None:
+    qualification = freeze.selected_route_execution_qualification(
+        freeze.load_config()
+    )
+
+    assert qualification["training_plan_sha256"] == (
+        "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f"
+    )
+    assert qualification["canonical_receipt"]["optimizer_steps"] == 3480
+    assert qualification["canonical_receipt"][
+        "resume_plan_identity_migration"
+    ]["migration_id"] == (
+        "shared_trunk_step3480_replay_swap_policy_alignment_v1"
+    )
+    assert (
+        qualification["sustained_report"]["successful_segment_count"] == 6
+    )
+    assert qualification["sustained_report"]["thermal_stability"]["terminal"]
+    assert qualification["fresh_process_report"]["contiguous_segment_count"] == 2
+    assert qualification["fresh_process_report"]["numeric_replay_parity"]
+    assert qualification["fresh_process_report"]["zero_swap_growth"] is False
+    assert (
+        qualification["fresh_process_report"]["swap_growth_treatment"]
+        == "DIAGNOSTIC_ONLY"
+    )
+
+
 def test_cpu_replay_contract_is_externally_guarded_without_accelerator_authority() -> None:
     config = freeze.load_config()
     policy = freeze.replay_safety_policy(config)
 
     assert config["replay_safety"]["accelerator_authorization_allowed"] is False
     assert policy.max_process_memory_mib == 1024
-    assert policy.minimum_available_before_launch_mib == 3072
-    assert policy.minimum_available_during_run_mib == 2048
+    assert policy.minimum_available_before_launch_mib == 0
+    assert policy.minimum_available_during_run_mib == 0
+    assert policy.maximum_wall_seconds == 0
+    assert policy.memory_guard_mode == "predicted_exhaustion"
+    assert policy.swapout_growth_action == "report_only"
+    assert policy.qualified_peak_inferred_unified_memory_mib == pytest.approx(
+        996.281
+    )
     assert policy.maximum_swapout_growth_mib == 16
 
 
@@ -194,13 +227,17 @@ def test_every_accelerator_shard_has_a_tighter_source_justified_envelope() -> No
             ]
         else:
             assert shard["maximum_process_memory_mib"] <= 2048
-        assert shard["minimum_available_memory_mib"] >= contract[
-            "minimum_available_memory_mib"
-        ]
         assert "minimum_available_before_launch_mib" in shard
-        assert shard["minimum_available_before_launch_mib"] >= shard[
-            "minimum_available_memory_mib"
-        ]
+        if shard["id"] == "optimizer_matched_adequacy":
+            assert shard["minimum_available_memory_mib"] == 0
+            assert shard["minimum_available_before_launch_mib"] == 0
+        else:
+            assert shard["minimum_available_memory_mib"] >= contract[
+                "minimum_available_memory_mib"
+            ]
+            assert shard["minimum_available_before_launch_mib"] >= shard[
+                "minimum_available_memory_mib"
+            ]
         assert shard["maximum_swapout_growth_mib"] <= 16
         assert shard["poll_interval_seconds"] <= 0.1
         policy = freeze.accelerator_shard_policy(contract, shard)
@@ -213,8 +250,15 @@ def test_every_accelerator_shard_has_a_tighter_source_justified_envelope() -> No
             )
         if shard["id"] == "optimizer_matched_adequacy":
             calibration = shard["measured_launch_calibration"]
-            assert policy.minimum_available_before_launch_mib == 6144
-            assert policy.minimum_available_during_run_mib == 4096
+            assert policy.minimum_available_before_launch_mib == 0
+            assert policy.minimum_available_during_run_mib == 0
+            assert policy.maximum_wall_seconds == 0
+            assert policy.memory_guard_mode == "predicted_exhaustion"
+            assert policy.swapout_growth_action == "report_only"
+            assert (
+                policy.qualified_peak_inferred_unified_memory_mib
+                == pytest.approx(1529.766)
+            )
             assert calibration["qualification_authority"] is False
             assert calibration["source_receipt"] == shard["receipt"]
             assert calibration["required_launch_floor_mib"] == (
@@ -222,9 +266,8 @@ def test_every_accelerator_shard_has_a_tighter_source_justified_envelope() -> No
                 + calibration["observed_maximum_inferred_unified_memory_mib"]
                 + calibration["minimum_safety_margin_mib"]
             )
-            assert (
-                calibration["selected_launch_floor_mib"]
-                >= calibration["required_launch_floor_mib"]
+            assert calibration["observed_maximum_inferred_unified_memory_mib"] == (
+                policy.qualified_peak_inferred_unified_memory_mib
             )
 
 
@@ -250,14 +293,14 @@ def test_measured_optimizer_launch_calibration_cannot_be_weakened() -> None:
     shard = next(
         row for row in contract["shards"] if row["id"] == "optimizer_matched_adequacy"
     )
-    shard["minimum_available_before_launch_mib"] = 5120
+    shard["qualified_peak_inferred_unified_memory_mib"] = 1529
     with pytest.raises(
         freeze.ArchitectureFreezeFault,
         match="accelerator_shard_launch_calibration_weakened",
     ):
         freeze.validate_accelerator_shard_contract(contract, shard)
 
-    shard["minimum_available_before_launch_mib"] = 6144
+    shard["qualified_peak_inferred_unified_memory_mib"] = 1529.766
     shard["measured_launch_calibration"]["qualification_authority"] = True
     with pytest.raises(
         freeze.ArchitectureFreezeFault,
@@ -708,4 +751,28 @@ def test_accelerator_receipt_binds_generated_gate_artifacts(
 
     assert freeze.accelerator_receipt_valid(contract, shard, receipt) is True
     output.write_text('{"trigger_state":"RED"}\n', encoding="utf-8")
+    assert freeze.accelerator_receipt_valid(contract, shard, receipt) is False
+
+
+def test_accelerator_receipt_accepts_only_legacy_default_guard_fields() -> None:
+    config = _runner_config()
+    contract = config["accelerator_replay"]
+    shard = contract["shards"][0]
+    receipt = {
+        "policy": contract["watchdog_policy"],
+        "command": shard["command"],
+        "passed": True,
+        "child_started": True,
+        "terminated_by_guard": False,
+        "fault": "",
+        "returncode": 0,
+        "maximum_inferred_unified_memory_mib": 128.0,
+        "limits": asdict(freeze.accelerator_shard_policy(contract, shard)),
+    }
+    receipt["limits"].pop("memory_guard_mode")
+    receipt["limits"].pop("qualified_peak_inferred_unified_memory_mib")
+
+    assert freeze.accelerator_receipt_valid(contract, shard, receipt) is True
+
+    receipt["limits"]["memory_guard_mode"] = "predicted_exhaustion"
     assert freeze.accelerator_receipt_valid(contract, shard, receipt) is False

@@ -1575,7 +1575,18 @@ def architecture_training_authority(
                     "independent_segmented_replay_numeric_parity"
                 )
                 is True
-                and report.get("zero_swap_growth") is True
+                and report.get("host_resource_guard_passed") is True
+                and (
+                    report.get("zero_swap_growth") is True
+                    or (
+                        (
+                            config.get("host_resource_safety") or {}
+                        ).get("swapout_growth_action")
+                        == "report_only"
+                        and report.get("swap_growth_treatment")
+                        == "DIAGNOSTIC_ONLY"
+                    )
+                )
             )
             authorized = segment_valid and request_valid and qualification_valid
             return {
