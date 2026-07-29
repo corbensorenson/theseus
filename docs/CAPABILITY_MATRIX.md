@@ -2,7 +2,12 @@
 
 Generated: `2026-05-12T14:36:24.014522+00:00`
 
-This is generated from local reports plus source-backed market baseline configuration.
+> Historical generated snapshot. It is not current capability or market state
+> and must not be used as a promotion claim. Current learned capability is
+> `NOT_EVALUATED`; see [Project State](PROJECT_STATE.md).
+
+This was generated from then-current local reports plus source-backed market
+baseline configuration.
 
 ## Summary
 

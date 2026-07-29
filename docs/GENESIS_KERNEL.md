@@ -1,5 +1,9 @@
 # Genesis Kernel For Theseus
 
+> Research architecture background. Genesis is not an independent active lane
+> and this page does not override the project registry, roadmap, or current
+> [Project State](PROJECT_STATE.md).
+
 Genesis is now treated as the artifact substrate around Theseus rather than a separate platform. RMI, Benchmaxxing, Cognitive Loop Closure, Octopus Router, and SymLiquid keep their jobs; Genesis compiles their live evidence into typed artifacts that can be checked, released, reused, and improved.
 
 The local vertical slice is:

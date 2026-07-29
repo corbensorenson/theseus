@@ -1,5 +1,9 @@
 # Data And Artifacts
 
+> Canonical artifact-boundary reference. Embedded inventories are snapshots;
+> current corpus and checkpoint state is summarized in
+> [Project State](PROJECT_STATE.md).
+
 This repository is intended to publish the project source, configuration,
 documentation, small first-party fixtures, and reproducible scripts.
 

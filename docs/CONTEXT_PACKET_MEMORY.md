@@ -1,5 +1,9 @@
 # Context And Virtual Context Memory
 
+> Architecture and retained measurement reference. Embedded status snapshots
+> are historical evidence, not current route or capability authority. See
+> [Project State](PROJECT_STATE.md).
+
 Theseus now treats the old context packet ledger as the ingest adapter and
 Virtual Context Memory v1 as the durable governed memory substrate.
 

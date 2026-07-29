@@ -1,5 +1,9 @@
 # Arm-Sucker Transfer Hierarchy
 
+> Architecture terminology, not current route or capability authority.
+> Selection and activation come from the project registry and roadmap; current
+> learned state is in [Project State](PROJECT_STATE.md).
+
 Project Theseus uses the Octopus router to keep capability modular. An arm is a high-transfer specialist that should help many related tasks. A sucker is a small, loadable specialization attached to an arm for low-transfer details such as one game, simulator, controller schema, local asset contract, or benchmark adapter.
 
 The purpose is to avoid spawning a new top-level arm every time Theseus sees a new game or environment. The head routes to a durable parent arm, the parent arm loads its shared skills, and then only the needed sucker is attached for the current frontier.

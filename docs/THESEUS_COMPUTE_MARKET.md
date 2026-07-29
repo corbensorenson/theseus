@@ -1,5 +1,9 @@
 # Theseus Compute Market
 
+> Internal accounting and future architecture reference. It does not authorize
+> public tokens, public compute brokerage, untrusted remote execution, or
+> current LAN/public exposure. See [Project State](PROJECT_STATE.md).
+
 The Theseus Compute Market is the accounting layer for rented Hive compute.
 It lets a weak client quote a stronger node before sending work, lets a worker
 return a signed-style work receipt after bounded execution, and lets the local

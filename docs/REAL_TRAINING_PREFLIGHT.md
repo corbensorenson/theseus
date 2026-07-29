@@ -1,232 +1,179 @@
 # Real Training Preflight
 
-SymLiquid should not start long training until the real-training gate is green.
-The architecture gate proves the RMI/ORA ratchet is coherent; the preflight gate
-proves the local training path is fast, measured, and safe enough to spend time on.
+This runbook defines the checks before a state-changing neural training action.
+It does not authorize training. Current state is in
+[Project State](PROJECT_STATE.md); execution order is in the
+[roadmap](../roadmap.md).
 
-## Required Gate
+## Current Posture
 
-Run:
+As of 2026-07-29:
 
-```powershell
-py -3.13 scripts\training_preflight.py --run-build-check --run-smokes --run-split-check --run-candidate-gate --out reports\training_preflight_report.json
-```
+- the exact shared trunk is at step 11,416 and 87,441,996 optimizer positions;
+- model, AdamW, MLX RNG, cursor, and the 37-manifest prospective lineage are
+  custody-green;
+- the operator hold is installed;
+- the model is `NOT_EVALUATED`;
+- both matched dense controls are untrained;
+- the selected route is compiled FP32 MLX;
+- KERC/RDC and ANE are not campaign-one training paths;
+- the current pre-training architecture gate is not ready after legitimate
+  source changes.
 
-For a hard CI-style block, add `--strict`.
+Therefore no long run should launch from the current source state.
 
-Current status from the latest report:
+## Required State Transition
 
-```text
-heavy_training_allowed=true
-passed=23/24
-blockers=0
-warnings=1
-warning=split_strict_quality strict_ok=False sentence_overlaps=9
-```
-
-This means training is allowed by the preflight gate, but seed55 should be
-treated honestly as a mutated frontier with a split-quality warning, not as a
-pristine private holdout.
-
-## Hardware Policy
-
-The RTX 2060 Super profile lives in:
+The only valid sequence is:
 
 ```text
-configs/training_profiles_rtx2060super.json
+documentation/source transaction committed
+  -> source-bound architecture freeze replay
+  -> independent readiness audit
+  -> exact replacement package
+  -> roadmap pre-training gate passes
+  -> operator reviews evidence
+  -> operator explicitly removes hold
+  -> one bounded fresh-process segment
+  -> exact transactional checkpoint
+  -> review before another segment
 ```
 
-The profile defines:
+A GREEN report cannot remove the hold.
 
-- `smoke`
-- `inner_loop`
-- `candidate`
-- `seed_sweep`
+## Invariants
 
-Each profile fixes `hv_dim`, rollout batch size, samples per launch, sequence
-length, max VRAM, expected runtime, and promotion gates. Do not tune long runs by
-guesswork; change the profile and let the preflight report record why.
+Before every launch, verify:
 
-The resource governor is part of the current training policy:
+1. **Exact candidate identity**
+   - `moecot_mlx_57m_active_preregistered_v1`;
+   - expected model/data/objective/schedule/evaluation identities;
+   - no unreviewed topology or vocabulary change.
+2. **Exact checkpoint custody**
+   - model, optimizer, RNG, cursor, receipt, and lineage digests match;
+   - the prospective anchor gap remains explicit;
+   - no missing or rewritten append-only manifest.
+3. **Training authority**
+   - current architecture freeze passes;
+   - current independent audit passes;
+   - current replacement package passes;
+   - roadmap gate passes with `--require-pre-training-ready`;
+   - candidate-specific lease is valid.
+4. **Operator authority**
+   - the runtime hold was explicitly removed for this campaign action;
+   - no inherited teacher, network, or remote-execution authority.
+5. **Data**
+   - frozen admitted corpus identity matches;
+   - public benchmark payloads are absent;
+   - provenance, licenses, deduplication, contamination, privacy, retention,
+     tokenizer, and synthetic-share gates pass;
+   - teacher share and optimizer-sampling caps pass.
+6. **Evaluator**
+   - functional freeze identity matches;
+   - consumed case count is still zero before final campaign evaluation;
+   - forbidden-field runtime enforcement and independent integrity checks pass.
+7. **Resources**
+   - disk reserve is derived from two complete measured checkpoint
+     transactions;
+   - host telemetry is available;
+   - no arbitrary memory or disk floor is introduced;
+   - causal process, swap, predicted-exhaustion, thermal, and write checks pass;
+   - no competing accelerator job makes the observation uninterpretable.
+8. **Execution**
+   - fresh process;
+   - external watchdog;
+   - transactional segment boundary;
+   - atomic checkpoint before yield;
+   - no suspension of an in-flight Metal graph;
+   - exact before/after child and host-guard receipts.
+9. **Claims**
+   - no capability, support, or utility claim from training progress;
+   - any failure remains scoped to the exact run;
+   - no nearby green artifact substitutes for a blocked owner.
 
-```powershell
-py -3.13 scripts\resource_governor.py --profile inner_loop --out reports\resource_governor.json
+## Readiness Commands
+
+Run only after the documentation/source transaction is committed:
+
+```bash
+python3 scripts/pretraining_architecture_freeze.py --execute-replays
+python3 scripts/pre_long_run_independent_readiness_audit.py
+python3 scripts/pre_long_run_replacement_freeze.py
+python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready
 ```
 
-It currently detects the RTX 2060 Super and allows the configured profile with
-no throttle reasons. If the governor throttles a requested profile, run a
-smaller profile or fix the resource condition before continuing.
+Then verify the repository and hold state:
 
-## Current Backend Policy
-
-Puffer/Ocean serious training is Rust/CUDA-owned for now.
-
-Reason:
-
-- the local `.venv-puffer` torch stack is CPU-only;
-- the Puffer compiled backend is not available in this shell;
-- Rust/CUDA can own env stepping, rollout state, scoring, rewards, and reporting.
-
-Python should orchestrate and analyze. Hot loops belong in Rust/CUDA.
-
-If native Python or Puffer extensions need MSVC, load the installed Visual
-Studio Developer environment in the current PowerShell process with:
-
-```powershell
-.\scripts\use_msvc_dev_shell.ps1
+```bash
+git status --short
+test -f runtime/control/neural_seed_yield_after_segment
 ```
 
-## Promotion Policy
+At this point the hold should still exist. A passing readiness package means
+`TRAINING_READY_BUT_HELD`.
 
-A real candidate promotes only if:
+## Bounded Qualification
 
-- architecture gate is green;
-- RMI score is `1.0`;
-- public BLIMP/BabyLM comparator does not regress;
-- seed49 mutated holdout remains regression;
-- seed55 mutated holdout exists and clears the frontier floor;
-- residual escrow is active and not hiding critical regressions;
-- CUDA runtime, timing, launch, and GPU telemetry are reported;
-- CUDA fallback did not occur.
+When the operator can dedicate the laptop and explicitly authorizes the next
+step, run one bounded campaign invocation rather than an unobserved open-ended
+process:
 
-The candidate gate is:
-
-```powershell
-py -3.13 scripts\candidate_promotion_gate.py --runtime-report reports\preflight_cuda_rollout_smoke.json --out reports\candidate_promotion_gate.json
+```bash
+python3 scripts/neural_seed_training_campaign.py --execute --max-segments 1
 ```
 
-Current candidate status:
+This command is valid only after the registered hold-removal procedure and all
+current gates pass. Do not copy it into automation that bypasses those checks.
 
-```text
-promote=false
-active_family=coding_local_sandbox
-best_public_calibration_card=source_human_eval_wide_32_tasks_pass_rate_0.78125
-active_public_calibration_card=source_evalplus_source_bigcodebench_source_livecodebench_below_floor
-latest_mbpp_evalplus_cards=MBPP_32_tasks_0.71875_above_floor_EvalPlus_32_tasks_0.59375_below_floor
-next_code_rotation_card=source_agnostic_type_edge_interface_algorithmic_pressure
-transfer_interleave=same_family_code_first_then_broader_transfer_if_wall_persists
-broad_transfer_matrix=YELLOW_160_public_calibration_tasks_aggregate_pass_rate_0.5125_sts_delta_0.28125
-public_task_pass_rate=0.5125
-required_public_task_floor=0.70
-token_level_student_generation_valid=true
-template_like_candidate_count=0
-loop_closure_candidate_count=0
-score_semantics=student_code_lm_checkpoint_public_task_calibration_only
-```
+After the segment:
 
-This means the current candidate gate is intentionally not promoting. The
-remaining failed gate is public code transfer below the floor. Promotion claims
-still must preserve score semantics:
-the public code number is calibration evidence for the learned student
-checkpoint, not a broad claim of public-code mastery.
+- verify optimizer positions rather than only nominal steps;
+- rehash model, optimizer, RNG, cursor, and receipt;
+- verify the appended lineage manifest;
+- inspect host/swap/thermal/write evidence;
+- confirm the functional surface remains unconsumed;
+- restore or retain the hold before unrelated work.
 
-## Leakage Policy
+## Full Campaign Order
 
-Before BabyLM candidate training, run:
+After the bounded qualification:
 
-```powershell
-py -3.13 scripts\check_babylm_splits.py --out reports\babylm_split_leakage_report.json
-```
+1. complete the modular shared-trunk candidate;
+2. train the dense-active-parameter control;
+3. train the dense-total-parameter control;
+4. verify matched raw data, compute, tuning, inference, verifier, and total
+   system cost;
+5. consume the frozen 160-case private functional evaluation once;
+6. record model-only and assisted outcomes separately;
+7. make the architecture decision from paired utility and cost.
 
-Exact minimal-pair overlap blocks training. Sentence overlap is reported as a
-quality warning because mutated examples can intentionally reuse some grammar
-shape while still preserving private pair separation.
+Do not change the recipe based on intermediate numbers. A changed recipe is a
+new candidate and lineage.
 
-## BabyLM Cache
+## Stop Conditions
 
-The Rust BabyLM JSONL loader caches parsed minimal-pair cases under:
+Stop and preserve state on:
 
-```text
-data/.cache/babylm
-```
+- digest, cursor, plan, lease, or lineage mismatch;
+- nonfinite loss or gradients;
+- checkpoint transaction failure;
+- unavailable telemetry;
+- causal resource-policy stop;
+- unexpected evaluation consumption;
+- public-data or forbidden-field fault;
+- authority widening;
+- integrity or verifier failure.
 
-The cache key includes source path, file size, modified time, and limit, so
-changing a source file or limit naturally creates a new cache entry. Override the
-cache directory with `SYMLIQUID_BABYLM_CACHE_DIR` when running larger sweeps on a
-faster disk.
+Elapsed hours, time of day, a round-number free-memory floor, or a desire for a
+green report are not stop conditions.
 
-## Ablations
+## Non-Claims
 
-The matched ablation matrix lives in:
+Preflight proves only that a specific training transaction is permitted and
+observable. It does not prove:
 
-```text
-configs/ablation_matrix_rtx2060super.json
-```
-
-It defines matched comparisons for CPU baseline, CUDA readout, frozen rollout
-state, learned state, task heads, residual adapters, bridge benchmarks, and
-public-only versus public-plus-mutated evaluation.
-
-Run the whole matrix with:
-
-```powershell
-py -3.13 scripts\run_ablation_matrix.py --out reports\ablation_matrix_rtx2060super_report.json
-```
-
-## One-Command Profile Runner
-
-After smoke is green, use the profile runner for repeatable local ratchets:
-
-```powershell
-py -3.13 scripts\run_training_ratchet_profile.py --profile inner_loop --out reports\training_ratchet_profile_run.json
-```
-
-The runner snapshots residual escrow, prepares the governed synthetic-data
-blend, trains the seed55 frontier report, runs matched ablations, runs VRAM
-stress probes, refreshes the RMI/ORA ledgers, reruns promotion gates, and
-appends real workflow routing traces.
-
-## Synthetic Data Gate
-
-The local curator is:
-
-```powershell
-py -3.13 scripts\synthetic_data_curator.py --policy configs\synthetic_data_policy.json --out reports\synthetic_data_curator.json
-```
-
-It is allowed to feed BabyLM profile runs only when:
-
-- exact pair and sentence overlap with eval/holdouts is zero;
-- mean quality clears policy;
-- per-rule concentration stays bounded;
-- synthetic share remains capped;
-- public comparator, seed49 regression, seed55 frontier, and residual delta
-  gates still decide promotion.
-
-## VRAM Stress
-
-Before long runs, verify the configured dimensions fit the RTX 2060 Super:
-
-```powershell
-py -3.13 scripts\profile_vram_stress.py --profile inner_loop --profile candidate --out reports\profile_vram_stress_report.json
-```
-
-The stress probe uses each profile's rollout dimensions with tiny case counts so
-it tests memory shape without becoming a long training run.
-
-## Residual Delta Gate
-
-Candidate promotion compares the current escrow ledger against:
-
-```text
-reports/residual_escrow_pre_candidate_baseline.json
-```
-
-Create or refresh the snapshot before a candidate/frontier run with:
-
-```powershell
-py -3.13 scripts\snapshot_residual_escrow.py
-```
-
-The promotion gate blocks candidates that add too many residual clusters,
-reactivated diagnostics, critical clusters, or large max-residual increases.
-
-## Hard Rule
-
-Do not start long training while `reports/training_preflight_report.json` says:
-
-```json
-{"heavy_training_allowed": false}
-```
-
-The frontier moves only when the floor holds and the hot path is measured.
+- that the model will be useful;
+- that MoECOT will beat dense controls;
+- that the selected route is fastest possible on every host;
+- that KERC, ANE, or SymLiquid is invalid;
+- that local security is adequate for LAN or internet exposure.

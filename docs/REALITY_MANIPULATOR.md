@@ -1,5 +1,9 @@
 # Reality Manipulator MVP
 
+> Deterministic concept prototype, not learned generation and not an active
+> product-expansion lane. Current state and capability-credit boundaries are in
+> [Project State](PROJECT_STATE.md).
+
 The Reality Manipulator is now represented in the local Theseus runtime as a
 deterministic intent-to-artifact compiler. It is not VR, fabrication, chip
 deployment, or proof of ASI. It is the first practical kernel for the idea that

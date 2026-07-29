@@ -1,5 +1,9 @@
 # Octopus Router Architecture in SymLiquid
 
+> Architecture reference. The router is wired, but a learned routing verdict
+> awaits trained candidates and frozen route-versus-answer evaluation. See
+> [Project State](PROJECT_STATE.md).
+
 SymLiquid now has a system-level modular router layer. The resident head/router
 selects bounded specialist arms, grants scoped memory and permissions, measures
 dynamic loading, and returns structured routing decisions for verification.

@@ -1,336 +1,265 @@
 # Project Theseus Replication Guide
 
-Last consolidated: 2026-05-20.
+Last consolidated: 2026-07-29.
 
-This guide is the practical runbook for recreating the current local Project
-Theseus / SymLiquid / SparkStream system from the repository. It is written for
-a new operator who has the repo but not the chat history.
-
-The system is a local research harness, not a finished foundation model. Its
-goal is to make learning, routing, verification, residual pressure, teacher
-guidance, and promotion gates explicit enough that progress can be reproduced
-and audited.
+This guide rebuilds the public-safe source and local control plane. Private
+corpora, checkpoints, runtime ledgers, user traces, and decisive evidence are
+not reconstructed from Git. Current state is in
+[Project State](PROJECT_STATE.md); terminology is in
+[Glossary](GLOSSARY.md).
 
 ## 1. What You Are Rebuilding
 
-Project Theseus currently has these major planes:
+Project Theseus has five practical planes:
 
-| Plane | Purpose | Main entrypoints |
+| Plane | Purpose | Canonical owners |
 | --- | --- | --- |
-| SparkStream control plane | Dashboard, daemon, autonomy cycles, watchdogs, launch readiness, reports, checkpoints, sparse teacher queue. | `scripts/start_sparkstream.ps1`, `scripts/sparkstream_dashboard.py`, `scripts/sparkstream_daemon.py`, `scripts/autonomy_cycle.py`, `scripts/autonomy_watchdog.py` |
-| SymLiquid / Code LM learning plane | Rust-first learning and evaluation lanes, including full-body code generation, STS conditioning, residual training, and private/public calibration separation. | `crates/symliquid-cli`, `scripts/code_lm_closure.py`, `reports/code_lm_closure*.json`, `reports/real_code_benchmark_graduation.json` |
-| Benchmark ratchet plane | Keeps benchmark surfaces staged, rotates frontiers, records residuals, preserves mastered surfaces as regressions, and blocks promotion when evidence is insufficient. | `scripts/benchmaxx_curriculum.py`, `scripts/candidate_promotion_gate.py`, `scripts/real_code_benchmark_graduation.py`, `reports/benchmark_ledger.json`, `reports/residual_escrow.json` |
-| Deterministic taming plane | Linters, grammar suckers, schema validators, provenance checks, AST/syntax checks, and other rule systems that constrain outputs without providing benchmark answers. | `configs/grammar_suckers.json`, `scripts/grammar_suckers.py`, `scripts/deterministic_taming_stack.py`, `scripts/student_first_evidence_audit.py` |
-| Octopus / Hive plane | Specialist arms, local/distributed device runtime, peer discovery, safe task routing, CLI, and future app shell. | `scripts/start_theseus_hive.ps1`, `scripts/theseus_cli.py`, `scripts/hive_node.py`, `reports/hive_*.json` |
-| Governance plane | Anti-cheat rules, teacher budget, licensing, resources, cell lifecycle, arm/sucker expiry, update offers, and source-gated self-editing. | `configs/*.json`, `scripts/teacher_budget_audit.py`, `scripts/resource_governor.py`, `scripts/cell_lifecycle.py`, `scripts/arm_sucker_registry.py`, `scripts/license_manager.py` |
-| Personality / context plane | User-owned personality cards, runtime context, VCM semantic memory, long-horizon context packets, drift checks, and checkpoint chat context loading. | `scripts/personality_context_builder.py`, `scripts/personality_runtime_audit.py`, `scripts/context_packet_ledger.py`, `scripts/virtual_context_memory.py`, `scripts/checkpoint_chat.py` |
+| Neural experiment | MoECOT candidate, matched dense controls, MLX training, exact custody | `configs/moecot_language_arm_training.json`, `scripts/neural_seed_training_campaign.py` |
+| Intent and runtime | VIEA, SCF, Octopus, local assistant, deterministic tools | `scripts/theseus_assistant_runtime.py`, `scripts/theseus_cli.py` |
+| Memory and evidence | VCM, artifact graph, candidate integrity, consumption ledgers | `scripts/virtual_context_memory.py`, `scripts/blind_runtime_guard.py` |
+| Governance | Data/teacher policy, authority, security, registry, roadmap gates | `AGENTS.md`, `configs/project_manifest_registry.json`, `configs/roadmap_implementation_matrix.json` |
+| Discovery | SymLiquid/CGS/VSA/liquid substrate and bounded comparators | `crates/symliquid-*` |
 
-The current promotion-facing learning wall is broad public code transfer. The
-latest report state is:
+SparkStream and Hive are operational shells around these planes. They do not
+own model capability or scientific truth.
 
-```text
-best clean single card: source_human_eval, 32 tasks, pass rate 0.78125
-currently selected receiver pressures: source-agnostic type/return-shape, edge-condition, admissibility/interface, and BigCodeBench-heavy algorithmic-planning residuals, with cooled concepts revisited after rotation
-below-floor receiver cards: EvalPlus 0.59375, BigCodeBench 0.25, LiveCodeBench 0.21875; MBPP is above floor at 0.71875
-broad matrix: 160 public calibration tasks across HumanEval/MBPP/EvalPlus/BigCodeBench/LiveCodeBench, aggregate pass rate 0.5125
-promotion floor: 0.70
-candidate gate: promote=false
-failed gate family: broad_public_code_transfer_ready
-candidate source: student_code_lm_checkpoint_v1
-token-level learned generation: true
-template-like benchmark candidates: 0
-loop-closure benchmark candidates: 0
-BigCodeBench/LiveCodeBench: real D:-staged public tasks with clean task-matched candidates; both have 32-task clean slices and remain below floor
-STS public ablation: positive but still below maturity; aggregate broad delta 0.28125,
-latest board-run 4-card 128-task high-transfer closure delta 0.242187, no regressions
-teacher status: proposal-only architecture diagnosis, no public answers
-VIEA action executor: approved local queue actions run with step budgets,
-pause/resume/block state, and `reports/viea_action_execution_ledger.jsonl`
-resume evidence
-```
+## 2. Supported Environments
 
-Treat these numbers as a snapshot. Before quoting current status, refresh or
-read the JSON reports listed in section 8.
+The repository contains:
 
-## 2. Requirements
+- Apple Silicon MLX/Metal training and inference;
+- cross-platform Python control-plane code;
+- Rust CPU reference crates;
+- optional CUDA crates and Windows/Hive packaging;
+- Linux public-safe CI;
+- guarded Mac MLX qualification.
 
-Primary supported environment:
+Not every host supports every lane. A replicated source checkout can validate
+governance, deterministic tests, Rust logic, and the public capsule without
+private model/data artifacts.
 
-- Windows 10/11 with PowerShell.
-- Rust stable MSVC toolchain.
-- Python 3.11+ or 3.13. Existing scripts prefer `.venv-puffer\Scripts\python.exe`
-  when present, then `python` or `py`.
-- Git.
-- Optional CUDA-capable GPU. The local reference machine uses an RTX 2060 Super,
-  but CPU smoke paths are still useful.
-- Optional `D:` drive for large governed data, private curricula, and ignored
-  training artifacts.
+Recommended tools:
 
-Recommended storage layout:
+- Git;
+- Python 3.12;
+- Rust stable with rustfmt and clippy;
+- Apple Silicon plus the pinned local MLX environment for the active campaign;
+- optional CUDA host for CUDA-specific qualification.
 
-```text
-D:\ProjectTheseus\repo                      preferred tracked repository on Windows
-C:\Users\<you>\Documents\New project        optional compatibility junction to D:\ProjectTheseus\repo
-D:\ProjectTheseus                           ignored large data/artifact root
-D:\ProjectTheseus\training_data             governed private/open data
-D:\ProjectTheseus\resource_pantry           cloned/staged external resources
-D:\ProjectTheseus\runs                      longer run outputs when needed
-```
+Do not bulk-copy private corpora, user traces, credentials, or checkpoints into
+the tracked tree.
 
-Do not place bulk downloaded training data in the Git repo. Keep generated
-reports under `reports/` and large datasets/checkpoints under ignored storage.
+## 3. Clone And Inspect
 
-On this Windows workstation, `C:` is space-constrained and `D:` is the safer
-canonical home. To migrate an existing checkout without breaking old launchers,
-use:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\migrate_project_home_to_d.ps1
-```
-
-The default dry run writes `reports/project_home_migration_plan.json`, estimates
-the source footprint excluding existing junctions, and previews the `robocopy`
-plus junction plan. The real migration should be run only after committing or
-allowing intentional dirty files and closing dashboards, daemons, editors, and
-terminals pointed at the old path:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\migrate_project_home_to_d.ps1 -Execute -CreateCompatibilityJunction
-```
-
-The default execution keeps a timestamped `New project.pre-d-migration-*`
-backup on C:. After verifying the D: checkout, free the old C: copy by deleting
-that backup manually. Use `-RemoveBackupAfterJunction` during the first
-execution only if you intentionally want immediate cleanup after the junction is
-created.
-
-## 3. First-Time Setup
-
-From the repository root:
-
-```powershell
+```bash
+git clone https://github.com/corbensorenson/theseus.git
+cd theseus
 git status --short
-rustup show
-cargo check -p symliquid-cli
-powershell -ExecutionPolicy Bypass -File scripts\setup_coding_runtime.ps1
-powershell -ExecutionPolicy Bypass -File scripts\install_theseus_cli.ps1
 ```
 
-If `cargo check` fails because a previous Rust executable is still running,
-inspect and stop only the stale Theseus process:
-
-```powershell
-Get-CimInstance Win32_Process |
-  Where-Object { $_.CommandLine -like '*symliquid-cli*' } |
-  Select-Object ProcessId, CommandLine
-```
-
-Avoid broad process killing. Long-running training may be legitimate.
-
-## 4. Start The Local System
-
-Start Hive and SparkStream:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\start_theseus_hive.ps1 -Restart -NoDashboard
-powershell -ExecutionPolicy Bypass -File scripts\start_sparkstream.ps1 -StartDaemon -Profile inner_loop -Execute -AllowTeacher -AllowNetworkFetch -DurationHours 10 -Port 8787 -Restart
-```
-
-Dashboard:
+Read:
 
 ```text
-http://127.0.0.1:8787
+AGENTS.md
+docs/PROJECT_STATE.md
+roadmap.md
+docs/GLOSSARY.md
+docs/TOP_TO_BOTTOM_ARCHITECTURE.md
 ```
 
-Optional Hive status:
+The public repository may lag the private/local operational state. Never infer
+checkpoint availability or training authority from source alone.
 
-```text
-http://127.0.0.1:8791/api/hive/status
+## 4. Python And Rust Checks
+
+Install the public-safe test tools:
+
+```bash
+python3 -m pip install pytest==8.3.5 ruff==0.15.0
 ```
 
-Optional local OpenAI-compatible endpoint, when enabled from dashboard/CLI:
+Run the scoped public-safe Python slice defined in
+`.github/workflows/ci.yml`. For local broad checks:
 
-```text
-http://127.0.0.1:8789/v1
+```bash
+python3 -m pytest -q
 ```
 
-## 5. Refresh The Truth Layer
+Some tests are hardware-, private-artifact-, or environment-guarded. A skip is
+not a pass; read its reason.
 
-Run these before making claims about health, learning, or promotion:
+Run Rust checks:
 
-```powershell
-python scripts\learning_scoreboard.py --out reports\learning_scoreboard.json --markdown-out reports\learning_scoreboard.md
-python scripts\candidate_promotion_gate.py --out reports\candidate_promotion_gate.json
-python scripts\autonomy_watchdog.py --fix --out reports\autonomy_watchdog.json
+```bash
+cargo fmt --all -- --check
+cargo check --workspace --locked --exclude symliquid-metal --exclude symliquid-cli
+cargo clippy --workspace --all-targets --locked \
+  --exclude symliquid-metal --exclude symliquid-cli -- -D warnings
+cargo test --workspace --locked \
+  --exclude symliquid-metal --exclude symliquid-cli
 ```
 
-`candidate_promotion_gate.py` may exit nonzero when `promote=false`. That is
-expected when the student is below floor. A blocked gate is not a failed script
-if the JSON explains the honest blocker.
+Mac- and CUDA-specific crates require their qualified hosts.
 
-For overnight readiness:
+## 5. Public Reproducibility Capsule
 
-```powershell
-python scripts\overnight_learning_readiness.py --out reports\overnight_learning_readiness.json
+The tiny capsule verifies evidence protocol rather than capability:
+
+```bash
+python3 scripts/public_reproducibility_capsule.py \
+  --out-dir /tmp/theseus-public-repro \
+  --gate
 ```
 
-## 6. Run The Current Code Learning Lane
+It deterministically trains a tiny authored fixture, checkpoints model,
+optimizer, and cursor state, resumes exactly, emits a candidate packet, and
+verifies artifact digests. It contains no private row, public benchmark,
+teacher call, user trace, or production performance claim.
 
-The current canonical Code LM closure smoke path is step-budgeted. Wall-clock
-timeouts are safety fuses; `--max-rust-work-steps` is the primary bound, and
-the wrapper writes partial progress plus reusable Rust artifacts so interrupted
-runs can resume without orphan locks:
+## 6. Refresh The Control-Plane Truth
 
-```powershell
-python scripts\code_lm_closure.py `
-  --seed 211 `
-  --private-count 220 `
-  --public-cards source_human_eval `
-  --max-public-cases-per-card 8 `
-  --epochs 3 `
-  --lr 0.08 `
-  --candidates-per-task 6 `
-  --max-extra-private-train 0 `
-  --max-residual-private-train 180 `
-  --sts-timeout-seconds 7200 `
-  --rust-timeout-seconds 0 `
-  --public-timeout-seconds 7200 `
-  --max-rust-work-steps 240000 `
-  --hv-dim 256 `
-  --max-vocab 384 `
-  --out reports\code_lm_closure.json `
-  --rust-report-out reports\code_lm_closure_rust.json `
-  --public-report-out reports\real_code_benchmark_graduation.json `
-  --public-trace-out reports\real_code_benchmark_traces.jsonl `
-  --public-transfer-artifact-out reports\transfer_artifacts\code\real_code_benchmark_graduation_transfer_artifact.json
+Run:
+
+```bash
+python3 scripts/repository_license_gate.py --gate
+python3 scripts/theseus_doc_link_audit.py
+python3 scripts/theseus_project_registry.py --gate
+python3 scripts/roadmap_implementation_gate.py --gate
 ```
 
-Then refresh the public STS and evidence audits:
+Interpretation:
 
-```powershell
-python scripts\sts_repair_ablation.py --out reports\sts_repair_ablation.json
-python scripts\student_first_evidence_audit.py --out reports\student_first_evidence_audit.json
-python scripts\learning_scoreboard.py --out reports\learning_scoreboard.json --markdown-out reports\learning_scoreboard.md
-python scripts\candidate_promotion_gate.py --out reports\candidate_promotion_gate.json
-python scripts\autonomy_watchdog.py --fix --out reports\autonomy_watchdog.json
-```
+- registry GREEN means canonical routing evidence is internally consistent;
+- roadmap YELLOW may represent intentionally partial or frozen phases;
+- neither state is learned capability;
+- `--require-pre-training-ready` is a separate stricter gate;
+- generated reports are local evidence and normally remain untracked.
 
-The student is allowed to learn from private hidden-test tasks, local approved
-code, old approved Corben data, and governed permissive corpora. Public
-HumanEval/MBPP/EvalPlus solutions and hidden public tests are evaluation-only
-and must not enter training.
+## 7. Local Assistant
 
-To stage public BigCodeBench/LiveCodeBench calibration payloads on `D:` without
-admitting them to training, run:
+Install or invoke the local CLI using the platform-specific scripts already in
+the repository. Before use:
 
-```powershell
-python scripts\stage_public_code_benchmark_data.py --live-shards 1 --out reports\public_code_benchmark_data_stage.json
-```
+- keep authority surfaces loopback-only;
+- use generated tokens rather than tokenless defaults;
+- keep teacher and network authority request-local and false unless explicitly
+  needed;
+- never expose the dashboard, OpenAI-compatible shim, or Hive publicly based
+  only on local tests.
 
-Expected eval-only staging roots:
+The assistant can use VCM, deterministic tools, reports, and registered routes.
+Those contributions make the result assisted. Record genuine dogfood outcomes
+without assigning learned-model credit.
 
-```text
-D:\ProjectTheseus\resource_pantry\datasets\bigcodebench
-D:\ProjectTheseus\resource_pantry\datasets\livecodebench
-```
+## 8. Data And Teacher Reconstruction
 
-## 7. Anti-Cheat Contract
+Public source does not include the private frozen corpus. A local operator must
+reconstruct data only from approved source manifests and run the full admission
+pipeline.
 
-Promotion-facing code evidence must satisfy all of these:
+Required dimensions:
 
-- Candidate source is an actual student checkpoint.
-- The student emits token-level code candidates.
-- Public benchmark solutions are not in the training corpus.
-- Hidden public tests are not used for training or repair.
-- Template-like candidates are not counted as learning evidence.
-- Loop-closure tools do not solve benchmark tasks.
-- Task-id lookup, exact-answer memory, and benchmark-specific shortcuts are
-  forbidden.
-- External proprietary inference is not counted as local model capability.
-- Deterministic grammar suckers may reject invalid form, but may not provide
-  benchmark answers.
-- Teacher output may diagnose architecture or propose experiments, but may not
-  solve public benchmark tasks or become distillation data.
+- training rights and license;
+- provenance and permitted use;
+- English and supported programming-language scope;
+- exact and semantic deduplication;
+- public/evaluation contamination;
+- privacy;
+- retention;
+- tokenizer identity;
+- synthetic share;
+- teacher-row share and optimizer sampling.
 
-Private synthetic and private public-shaped curricula are allowed only as
-training pressure. Public scores are calibration and promotion evidence only
-when the anti-cheat reports stay clean.
+Public benchmark prompts, tests, hidden tests, solutions, traces, labels, and
+answer templates remain evaluation-only.
 
-## 8. Source Of Truth Reports
+Live teacher calls are OpenAI-only, governed training pressure. They are never
+runtime serving.
 
-| Question | Read this first |
-| --- | --- |
-| Is the system operationally healthy? | `reports/autonomy_watchdog.json`, `reports/sparkstream_status.json` |
-| Did the student actually learn? | `reports/learning_scoreboard.json`, `reports/code_lm_closure.json`, `reports/code_lm_closure_rust.json` |
-| Is public code transfer good enough? | `reports/broad_transfer_matrix.json`, `reports/real_code_benchmark_graduation.json`, `reports/sts_repair_ablation.json` |
-| Can the candidate promote? | `reports/candidate_promotion_gate.json` |
-| What should run next? | `reports/benchmaxx_curriculum.json`, `reports/frontier_policy_status.json`, `reports/learning_scoreboard.json` |
-| Are teacher calls allowed and scoped correctly? | `reports/teacher_budget_last.json`, `reports/teacher_oracle_last.json` |
-| Are rule/verifier layers healthy? | `reports/deterministic_taming_stack.json`, `reports/grammar_suckers.json`, `reports/student_first_evidence_audit.json` |
-| Are arms/suckers/tools bloating or expiring? | `reports/cell_lifecycle.json`, `reports/arm_sucker_registry.json` |
-| Is personality context wired? | `reports/personality_runtime_audit.json`, `reports/personality_context_last.json` |
-| Is large data governed? | `reports/training_data_inventory.json`, `reports/resource_pantry.json` |
+## 9. Private Checkpoint Restoration
 
-## 9. Overnight Run Checklist
+If the private checkpoint is available, validate it through the registered
+lineage rather than copying weights alone.
 
-Before leaving the system unattended:
+Required state:
 
-1. Commit or stash intentional source/config changes.
-2. Confirm dirty files are reports/data you are comfortable regenerating.
-3. Refresh the truth layer from section 5.
-4. Confirm `reports/overnight_learning_readiness.json` has
-   `overnight_launch_ready=true`.
-5. Confirm the candidate gate is blocked only by honest learning evidence, not
-   stale profiles or missing reports.
-6. Start Hive and SparkStream with the commands in section 4.
-7. Leave the dashboard open or inspect `reports/autonomy_ledger.jsonl` and
-   `reports/sparkstream_daemon_ledger.jsonl` later.
+- model;
+- optimizer;
+- MLX RNG;
+- data cursor;
+- training receipt;
+- child and host-guard receipts;
+- append-only segment manifests;
+- training config and plan migration;
+- frozen evaluation identity.
 
-If the watchdog is RED because an operational service is down, fix or restart
-it. If the watchdog is YELLOW/RED because public transfer is below floor, keep
-promotion blocked and continue the curriculum instead of changing the gate.
+The current private reference state is described in Project State. A public
+replicator should expect `NOT_AVAILABLE`, not fabricate a substitute and call
+it equivalent.
 
-## 10. Teacher Policy
+## 10. Training
 
-The teacher exists to save time on architecture diagnosis, not to replace
-learning. Acceptable teacher tasks:
+Read [Real Training Preflight](REAL_TRAINING_PREFLIGHT.md) before any
+state-changing run.
 
-- diagnose residual clusters;
-- propose decoder, routing, memory, STS, or verifier experiments;
-- identify likely missing capabilities such as recursion, loop planning,
-  syntax structure, type handling, or long-horizon repo repair;
-- review local source bugs after the candidate-bottleneck reducer has exhausted
-  safe local fixes.
+Important:
 
-Forbidden teacher tasks:
+- source checkout is not training authority;
+- a historically GREEN freeze can become stale after legitimate source edits;
+- the operator hold must remain until every current gate passes and the
+  operator explicitly removes it;
+- one bounded fresh-process segment comes before a long continuation;
+- exact transactional custody is mandatory;
+- capability evaluation remains unconsumed until the candidate and matched
+  controls complete.
 
-- answer public benchmark problems;
-- generate public benchmark training solutions;
-- use hidden public tests;
-- apply broad source changes without a guarded branch/gate flow;
-- bypass license, safety, data, or privacy constraints.
+Do not use old Code-LM, overnight, KERC, ANE, or autonomous-weeks commands as a
+shortcut around the current campaign.
 
-## 11. Current Best Next Work
+## 11. Hive And Distributed Work
 
-As of this consolidation, the strongest replication target is not more
-scaffolding. It is better learned broad public transfer:
+Hive is a registered bounded-task runtime, not a remote shell.
 
-1. Continue the selected source-agnostic high-transfer pressure, currently
-   `admissibility_and_interface` after clean edge-condition and
-   type/return-shape recalibrations produced no broad/public lift. Keep public
-   benchmark solutions and hidden tests out of training.
-2. Keep EvalPlus in same-family rotation pressure after it remained below floor
-   at `0.59375`, without public EvalPlus solutions or hidden tests.
-3. Improve clean MBPP/EvalPlus transfer toward the promotion floor while
-   keeping public solutions and hidden tests eval-only. Repeated MBPP reruns
-   after fresh residual-private curriculum held at `0.59375`, so the next
-   useful work is decoder/architecture improvement rather than only row
-   weighting.
-4. Keep BigCodeBench and LiveCodeBench at 32+ clean tasks; both are now clean
-   32-task receiver cards below floor, so failures should drive semantic
-   decoder work rather than adapter expansion work.
-5. Train the full-body SymLiquid/state decoder only on private or approved data.
-6. Require STS-on to beat STS-off on the same seed/tasks across wider suites
-   and improve private repair delta before calling STS repair mature.
-7. Promote only if the learned checkpoint clears the floor without leakage or
-   regressions.
+Defaults:
+
+- loopback/local;
+- signed discovery;
+- separate coordinator, worker, and discovery credentials;
+- header-only credentials;
+- task-kind allowlist;
+- fail-closed remote execution without sandbox qualification.
+
+A real multi-node claim requires a trusted reachable peer and a bounded task
+receipt. Dry-run plans, stale peers, or synthetic fixtures do not count.
+
+## 12. What A Successful Replication Proves
+
+A public-safe replication can prove:
+
+- source builds;
+- deterministic tests pass;
+- governance schemas and gates execute;
+- Rust reference components behave as tested;
+- the public evidence capsule exactly resumes;
+- local authority defaults fail closed.
+
+It cannot prove:
+
+- access to the private corpus or checkpoint;
+- useful learned capability;
+- MoECOT superiority;
+- private evaluation results;
+- fastest-possible hardware performance;
+- LAN/internet security;
+- long-run reproducibility without private custody artifacts.
+
+## 13. Troubleshooting Order
+
+1. Check `git status`.
+2. Confirm Python/Rust versions.
+3. Read the failing gate’s structured faults.
+4. Verify referenced source and report identities.
+5. Distinguish missing private artifacts from source bugs.
+6. Fix the canonical owner.
+7. Do not lower gates or create a parallel report family.
+8. Preserve the failure as scoped evidence.

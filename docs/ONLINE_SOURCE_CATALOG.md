@@ -1,5 +1,9 @@
 # Online Source Catalog
 
+> Candidate-source reference. A catalog entry is not data admission, download
+> authority, or training permission. Current corpus state is in
+> [Project State](PROJECT_STATE.md).
+
 The online source catalog is the governed intake layer for external RL
 environments, benchmark frameworks, and training-data candidates.
 

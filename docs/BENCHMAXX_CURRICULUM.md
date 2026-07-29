@@ -1,5 +1,9 @@
 # Benchmaxx Curriculum
 
+> Long-range curriculum reference. It does not activate a benchmark, data, RL,
+> or product lane and remains subordinate to the breadth freeze and current
+> [roadmap](../roadmap.md).
+
 The Benchmaxx curriculum is the long-range course map for growing SparkStream/RMI into a broader agentic local system. It makes the next capability lane explicit so the teacher does not have to invent the path on every wall.
 
 Machine-readable source of truth:

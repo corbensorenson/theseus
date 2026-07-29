@@ -1,5 +1,9 @@
 # Cognitive Loop Closure
 
+> Conceptual architecture and public white paper. It does not establish current
+> learned capability or activate a training lane. See
+> [Project State](PROJECT_STATE.md).
+
 ## Compiling Repeated AI Reasoning Trajectories into Verified Parameterized Tools
 
 **White Paper**  

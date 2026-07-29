@@ -1,5 +1,9 @@
 # SymLiquid Architecture Gate
 
+> Historical discovery-lane framing. It does not describe the current practical
+> neural campaign or provide a SymLiquid selection claim. See
+> [Project State](PROJECT_STATE.md).
+
 The architecture gate is the pre-training promotion check. It keeps heavy local
 training from starting until the ratchet, RMI audit, ORA router, learned head,
 safety ledger, residual escrow, bridge benchmarks, public calibration, routing

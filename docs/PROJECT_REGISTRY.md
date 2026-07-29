@@ -1,5 +1,9 @@
 # Project Registry
 
+> Canonical ownership and routing contract. Registry `GREEN` means registered
+> mechanics and governance are coherent; it does not mean training, capability,
+> utility, or deployment is green. See [Project State](PROJECT_STATE.md).
+
 The project registry is the governance kernel for Theseus' active identity. It
 exists to prevent new scripts, reports, generated payloads, compatibility
 wrappers, model routes, and tool paths from accumulating without a stable

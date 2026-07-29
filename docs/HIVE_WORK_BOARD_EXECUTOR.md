@@ -1,5 +1,9 @@
 # Hive Work Board Executor
 
+> Local bounded-execution reference. Queue presence is not execution authority,
+> and this page does not authorize untrusted remote work or public exposure.
+> See [Project State](PROJECT_STATE.md).
+
 The Hive Work Board Executor makes the SQLite work board the source of truth for
 unattended work.
 

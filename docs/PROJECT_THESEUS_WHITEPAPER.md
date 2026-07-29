@@ -1,5 +1,10 @@
 # Project Theseus
 
+> Narrative architecture and research thesis. It is not launch authority and
+> may contain illustrative historical snapshots. Use
+> [Project State](PROJECT_STATE.md) for current facts and
+> [Glossary](GLOSSARY.md) for evidence-state meanings.
+
 ## A Ratcheting Modular Intelligence System Built From SymLiquid, SparkStream, Octopus Routing, and the Theseus Hive
 
 Whitepaper  
@@ -716,7 +721,11 @@ Key reports include:
 
 The dashboard is the human control surface. The reports are the contract.
 
-## 20. Current Implementation Snapshot
+## 20. Historical Implementation Snapshot
+
+> This implementation snapshot predates the step-11,416 campaign hold and
+> current documentation consolidation. Use
+> [Project State](PROJECT_STATE.md) for live facts.
 
 As of the current consolidated docs, the local reports describe the system as:
 
@@ -764,7 +773,9 @@ The architecture explicitly tracks failure modes:
 | Compute ceiling | Efficient Rust/CUDA/MLX paths and future Hive expansion. |
 | Unsafe public compute | Registered task kinds, secrets, licensing, sandbox plan, public gateway disabled. |
 
-## 22. Roadmap
+## 22. Historical Roadmap Discussion
+
+> The compact authoritative forward plan is [roadmap.md](../roadmap.md).
 
 Near-term priorities:
 

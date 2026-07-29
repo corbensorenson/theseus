@@ -1,5 +1,9 @@
 # ROM, RL, Data, and Benchmark Growth Lanes
 
+> Frozen breadth-expansion options. These are not immediate lanes and may not
+> displace the selected neural experiment, genuine dogfood, or repository
+> consolidation. See the [roadmap](../roadmap.md).
+
 Last updated: 2026-05-11.
 
 This document describes the governed expansion lanes that let SparkStream/RMI

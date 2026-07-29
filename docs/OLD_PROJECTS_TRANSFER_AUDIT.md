@@ -1,5 +1,9 @@
 # Old Projects Transfer Audit
 
+> Legacy concept-disposition reference. “Materialized” means mapped into a
+> current owner, not behavior-positive or promotion-ready. Current state is in
+> [Project State](PROJECT_STATE.md).
+
 Updated: 2026-05-29
 
 This is the canonical documentation page for the six predecessor projects in

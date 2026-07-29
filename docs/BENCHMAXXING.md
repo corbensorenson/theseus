@@ -1,5 +1,9 @@
 # Benchmaxxing in SymLiquid
 
+> Research background on benchmark ratcheting. Public benchmarks remain
+> calibration-only and this page does not authorize a new benchmark family.
+> Current evaluation state is in [Project State](PROJECT_STATE.md).
+
 Benchmaxxing is now the benchmark ratchet inside the broader Capability
 Ratchet. It owns benchmark lifecycle, saturation, wall diagnosis, and frontier
 pressure. The Capability Ratchet adds procedural loop closure and tool-registry

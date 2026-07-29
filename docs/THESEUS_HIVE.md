@@ -1,5 +1,9 @@
 # Project Theseus Hive
 
+> Local/private distributed-runtime reference. Hive is not a remote shell and
+> is not authorized for LAN or public exposure by this document. Current
+> security and route state is in [Project State](PROJECT_STATE.md).
+
 Project Theseus Hive is the trusted-device runtime for Project Theseus. It
 turns home, workshop, travel, phone, NAS, Raspberry Pi, old Mac, Windows, Linux,
 and Apple Silicon machines into one private operator and compute fabric.
@@ -10,69 +14,29 @@ the Mac/operator packaging work and the Windows CUDA/board-executor runtime.
 
 ## Current State
 
-Implemented:
+The local runtime, work board, registered task scheduler, CLI, peer registry,
+operator-role machinery, packaging scaffolds, and bounded task receipts exist.
+The canonical project registry route is GREEN on local evidence.
 
-- `scripts/hive_operator_os.py` provides the shared operator contract: one
-  command vocabulary for dashboard, mobile, CLI, tray/menu bar, relay, and
-  future chat-channel adapters; a durable SQLite work board; background tasks;
-  persistent goals; Hive Skills; tool hooks; feedback routing; and execution
-  safety reports;
-- `scripts/hive_work_board_executor.py` consumes that board as the unattended
-  work source of truth, assigns tasks to the current best node, runs bounded
-  work, writes hook/run/feedback ledgers, retries once, and blocks stale or
-  unsupported work with evidence;
-- `scripts/high_transfer_curriculum_scheduler.py` keeps benchmark work
-  generalized by queuing transferable concept pressure before benchmark-name
-  pressure;
-- cross-platform Hive node daemon and HTTP API on port `8791`;
-- signed LAN peer discovery, Bonjour/DNS-SD advertisement where available,
-  durable peer registry, coordinator URLs, and authenticated
-  relay/private-tunnel operation;
-- Hive Network Doctor for local API, coordinator, firewall, stale-peer, and
-  roaming path diagnosis;
-- setup wizard, CLI, Windows tray, macOS menu bar app, PWA operator, native iOS
-  shell, native Apple Watch companion, native Android shell, and shared spatial
-  operator contract for visionOS/Quest clients;
-- per-user operator tokens with roles for family/shared Hives;
-- bounded registered remote task kinds only, never arbitrary shell;
-- storage shares for explicit folders, mounted NAS paths, and peer file
-  previews/downloads;
-- governed remote-control handoffs for RDP, VNC/macOS Screen Sharing, RustDesk,
-  and Sunshine/Moonlight;
-- room-aware voice-following presence and listen/respond routing without raw
-  audio relay;
-- decentralized bounded training orchestration across CPU, CUDA, MLX, and
-  Apple Silicon nodes;
-- always-busy private utilization sweeps for safe idle slots;
-- dry-run-first rented compute/storage planning;
-- verified Hive-version catalogs and soft update convergence;
-- macOS `.app`, `.zip`, `.pkg`, and unsigned `.dmg` artifacts that target Intel
-  and Apple Silicon Macs.
-- scheduler placements include internal work-credit gas quotes, and accepted
-  worker chunks emit receipts that settle through the compute-market ledger;
-- remote task execution is limited to registered task kinds in
-  `configs/hive_policy.json`;
-- arbitrary shell, teacher calls, git pushes, ROM imports, and bulk data
-  downloads are never accepted as remote Hive tasks, and hard app/source
-  updates are not remotely forced;
-- remote task submission requires `THESEUS_HIVE_SECRET` unless the request is
-  loopback.
+The qualified posture is narrower than the source inventory:
 
-Important limits:
+- default bind is loopback;
+- status reads and mutations require authentication;
+- credentials are accepted from headers, not query strings;
+- coordinator, worker, and discovery credentials are separate;
+- multicast discovery must be signed;
+- legacy shared join-token role inheritance is disabled;
+- remote tasks are allowlisted and require a qualified sandbox;
+- arbitrary shell, teacher calls, git pushes, ROM import, and bulk data
+  download are forbidden remote task kinds;
+- origin, body, rate, concurrency, and job limits fail closed;
+- no trusted reachable multi-node execution has yet established an empirical
+  distributed-compute claim.
 
-- Signing/notarization is not configured yet. macOS artifacts are unsigned and
-  Gatekeeper may reject them until an Apple signing identity and notarization
-  flow is added.
-- Phones and watches are operator clients, not training workers.
-- Public contribution is still worker-only design/scaffold; private data,
-  teacher access, arbitrary filesystem access, ROMs, and raw shell are outside
-  public authority.
-- A phone cannot reach a private home LAN over cellular without a tunnel or
-  relay. Use a self-hosted WireGuard/private tunnel first, or an HTTPS-protected
-  Hive relay.
-- Background push to iPhone/Apple Watch is not APNs-backed yet. Native apps can
-  poll and relay the authenticated Hive notification feed while active; true
-  always-on remote notifications require signing plus an APNs or relay bridge.
+Mobile, watch, spatial, voice-following, remote-control, compute-market,
+rented-compute, packaging, and public-worker source may exist as scaffolding.
+They are not active priorities, production claims, or authority to expose Hive.
+Signing/notarization and a separate exposure qualification remain open.
 
 ## Trust Model
 
@@ -83,9 +47,9 @@ Hive has two separate access concepts:
 | Machine join token | Trusted nodes that join the Hive. | `configs/hive_join.local.json` or active Hive profile. | Node-to-node trust and owner-level compatibility. |
 | User/operator token | People and phones. | Hashed in `configs/hive_users.local.json`; plaintext only in generated invite output. | Role-scoped operator access. |
 
-Legacy invite tokens still authenticate as `owner` so existing nodes and phone
-profiles continue to work. New family/shared setups should create per-user
-operator tokens instead of sharing the machine join token everywhere.
+Legacy shared join-token role inheritance is disabled. Existing devices must
+use the current separately scoped coordinator/worker/discovery or per-user
+credentials rather than relying on an implicit owner mapping.
 
 Default roles:
 

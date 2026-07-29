@@ -1,5 +1,9 @@
 # PufferLib 4 RL Lane
 
+> Prospective research reference. This lane is not active and cannot expand the
+> current breadth without a roadmap decision tied to measured product or model
+> residuals.
+
 Theseus should use PufferLib 4 as a fast RL pressure lane when the runtime is
 ready, but the lane is governed by the same evidence and licensing rules as the
 rest of the hive.

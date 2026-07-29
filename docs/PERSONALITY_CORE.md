@@ -1,5 +1,9 @@
 # Theseus Personality Core
 
+> Personality-context contract and historical snapshot. It is not bulk
+> training authorization or current capability evidence. See
+> [Project State](PROJECT_STATE.md).
+
 The personality core is a governed local memory layer built from
 `personality-documents/`. It is meant to capture the user's best durable
 patterns without reducing the system to one large prompt.

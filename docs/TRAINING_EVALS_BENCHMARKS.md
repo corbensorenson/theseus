@@ -1,5 +1,10 @@
 # Theseus Training, Evaluation, And Benchmarking
 
+> Comprehensive technical reference. Static commands and measurements here may
+> describe historical lanes. The current campaign is `TRAINING_HELD` and
+> `NOT_EVALUATED`; use [Project State](PROJECT_STATE.md) and
+> [Real Training Preflight](REAL_TRAINING_PREFLIGHT.md) before acting.
+
 2026-07-10 current data-authority note: source-level admission is no longer
 sufficient for the canonical survival lane. Every selected training row must
 match an `admit` receipt in

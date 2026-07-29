@@ -1,5 +1,8 @@
 # Compact Generative Systems
 
+> Stable discovery-track design frame. CGS coverage is not a selection,
+> capability, or current training claim. See [Project State](PROJECT_STATE.md).
+
 Compact Generative Systems, or CGS, is the design frame used by this repository.
 
 The short definition:

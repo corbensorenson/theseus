@@ -1,5 +1,9 @@
 # Theseus Mac Handoff - 2026-06-03
 
+> Historical handoff snapshot. It is preserved for provenance and must not be
+> used as current launch, capability, or repository-state authority. See
+> `docs/PROJECT_STATE.md`.
+
 This is the current handoff note for moving Project Theseus / SparkStream from
 the Windows CUDA workstation to Apple Silicon Codex.
 

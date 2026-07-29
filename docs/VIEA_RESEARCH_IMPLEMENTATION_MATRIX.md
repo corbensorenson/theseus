@@ -1,5 +1,9 @@
 # VIEA Research Implementation Matrix
 
+> Research-to-owner crosswalk, not current route, capability, or training
+> authority. Machine ownership comes from the project registry; live state is
+> in [Project State](PROJECT_STATE.md).
+
 This matrix tracks how the recent planning, memory, tool-use, and deterministic
 solver research is being ported into Theseus. It is intentionally terse; report
 JSON files are the evidence source.

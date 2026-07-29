@@ -1,5 +1,10 @@
 # SparkStream Autonomous Weeks Runbook
 
+> Historical unattended-operation reference. It is not current authority for
+> long training, unbounded self-update, teacher/network use, public exposure,
+> or remote execution. Follow `docs/PROJECT_STATE.md`, `roadmap.md`, and
+> current policies.
+
 This project can run in a long-lived local autonomy loop while keeping the user
 in control of expensive or risky boundaries.
 
@@ -315,7 +320,7 @@ status`, `theseus status`, and a smoke command.
 
 The detailed Hive setup, user access, Mac packaging, phone roaming, storage,
 remote-control, voice-following, utilization, rented compute, and update flow
-now lives in [Project Theseus Hive](THESEUS_HIVE.md). Keep this runbook focused
+now lives in [Project Theseus Hive](../THESEUS_HIVE.md). Keep this runbook focused
 on unattended operation.
 
 Before leaving the fleet unattended, check the Hive at a high level:

@@ -1,5 +1,9 @@
 # Project Theseus Licensing System
 
+> Prototype product-policy reference. It does not establish production
+> security, legal sufficiency, public-network readiness, or current learned
+> capability. See [Project State](PROJECT_STATE.md).
+
 The Project Theseus licensing layer is a local-first product gate for the app,
 Hive, distributed worker chunks, compute-market accounting, company hives, and
 public-network operation.

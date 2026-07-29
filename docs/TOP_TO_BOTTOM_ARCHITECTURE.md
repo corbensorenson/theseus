@@ -1,6 +1,12 @@
 # Top-To-Bottom System Architecture
 
-Last reviewed: 2026-05-20.
+> Canonical architecture reference. It explains stable ownership and data flow,
+> not live capability, training authority, or route health. For current facts
+> use [Project State](PROJECT_STATE.md); for next work use the
+> [roadmap](../roadmap.md).
+
+Architecture reviewed: 2026-05-20. Live-state sections from that review are
+retained as historical examples and are not current authority.
 
 This document describes the current local SymLiquid / SparkStream / RMI system as it exists in the repository. It is the operational architecture, not just the conceptual whitepaper architecture.
 
@@ -8,7 +14,12 @@ This document describes the current local SymLiquid / SparkStream / RMI system a
 
 SymLiquid is a Rust-first cognitive substrate wrapped by SparkStream, a local Ratcheting Modular Intelligence control plane organized under Verified Intent-to-Execution Architecture (VIEA). It observes benchmark pressure, routes work through Octopus specialist arms, runs bounded training profiles, records residuals, curates synthetic and governed external data, checkpoints state, compiles raw intent into artifact-backed worlds through the Reality Manipulator MVP, and asks a sparse Codex teacher for proposal-oriented guidance or guarded branch-and-gate source edits when local evidence says it is stuck.
 
-## 2. Current Runtime Snapshot
+## 2. Historical Runtime Snapshot (2026-05-20)
+
+> This section is retained to explain the architecture as it was exercised at
+> that review. Do not quote it as current state. The current model is
+> `TRAINING_HELD` and `NOT_EVALUATED`; see
+> [Project State](PROJECT_STATE.md).
 
 At the time of this review:
 

@@ -2,6 +2,10 @@
 
 Last updated: 2026-05-15.
 
+> Architecture reference for bounded candidate generation and evaluation. It
+> does not authorize unbounded self-update, create a current lane, or imply that
+> a candidate was promoted. See [Project State](PROJECT_STATE.md).
+
 This document describes the new self-evolution lane for SparkStream/RMI. The goal is not to let the project mutate itself randomly. The goal is to let the local system keep improving automatically, with a sparse teacher allowed to implement small changes only when local evidence reaches a real wall.
 
 ## Principle

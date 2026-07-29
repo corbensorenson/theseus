@@ -1,5 +1,9 @@
 # VIEA Execution Spine And Deterministic Tool Substrate
 
+> Architecture checklist. Deterministic tools and execution coverage are
+> assisted mechanics and receive no learned-model capability credit. Current
+> state is in [Project State](PROJECT_STATE.md).
+
 This document is the implementation checklist for wiring the planning, memory,
 evidence, tool, and feedback organs into one execution spine.
 

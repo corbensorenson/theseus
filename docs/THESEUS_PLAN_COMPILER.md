@@ -1,5 +1,9 @@
 # Theseus Plan Compiler
 
+> Canonical planning architecture. A compiled plan is not execution authority,
+> evidence that work ran, or learned capability. Current route and product state
+> is in [Project State](PROJECT_STATE.md).
+
 The Theseus Plan Compiler is the canonical planning layer for Project Theseus.
 It converts a goal into a typed contract, semantic IR DAG, VCM context slices,
 executor routes, claim/evidence targets, and replay traces.

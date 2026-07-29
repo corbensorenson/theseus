@@ -5291,14 +5291,14 @@
         "shared archive resolution follows inline or retention-sidecar pointers, prefers live originals, and makes the T2 readiness gate recompute archived checkpoint and live vocabulary hashes; corrupted archived bytes fail closed"
       ],
       "missing_items": [
-        "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
+        "recompute the exact source-bound step-11,416 architecture/readiness package after the 2026-07-29 security, evaluator, registry, and documentation transaction is banked, without changing model/data/objective/evaluation semantics",
         "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
       ],
       "pre_training_readiness": {
         "state": "READY_FOR_FROZEN_CAMPAIGN",
         "acceptance_boundary": "The registry, roadmap matrix, exact training implementation, and replacement freeze are content-bound and independently replayed. Fresh-environment refresh and superseded-family retirement remain repository maintenance; they do not change the selected checkpoint, optimizer, data, objective, evaluator, or runtime policy.",
         "nonblocking_residuals": [
-          "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
+          "recompute the exact source-bound step-11,416 architecture/readiness package after the 2026-07-29 security, evaluator, registry, and documentation transaction is banked, without changing model/data/objective/evaluation semantics",
           "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
         ],
         "evidence": {
@@ -5326,7 +5326,7 @@
         "formal strict-generator/code_lm_closure retirement proof: active imports and gate dependencies removed or extracted into canonical owners, retained comparators non-routeable, superseded reports archived with verified replay pointers, and reference-only source deleted or moved under deprecated with git history as recovery",
         "roadmap entropy enforcement: keep forward requirements in roadmap.md, move run narratives and inventories to matrix/registry/state/history, and hold the live roadmap below 1100 lines without dropping unresolved obligations"
       ],
-      "smallest_next_patch": "Bank the independently replayed T0A acceleration transaction as a coherent reviewed checkpoint with bound source/config/report/replay identities, leaving unrelated user changes outside it; committing is custody, not qualification. Then complete Phase 0 reproduction and audit and retire the superseded strict-generator/code_lm_closure family, extract live mechanisms into canonical owners, remove retired imports from active gates, archive reports through verified retention pointers, and compact roadmap evidence prose. Real signed release/custody evidence remains a separate post-checkpoint task.",
+      "smallest_next_patch": "Bank the consolidated documentation transaction, then regenerate the source-bound architecture freeze, independent readiness audit, and exact step-11,416 replacement package without removing the operator hold. Reconcile the Phase-8 selected-route predicate so nonblocking cross-platform work cannot make the Mac campaign simultaneously authorized and not ready. Then continue duplicate-family cleanup and evidence-preserving strict-generator/code_lm_closure retirement. Committing and documentation agreement are custody, not capability or training authorization.",
       "integration_smoke": [
         "python3 scripts/python_environment_gate.py --profile cpu --gate",
         "python3 scripts/phase0_reproducibility_gate.py --gate",
@@ -6087,6 +6087,7 @@
       "phase": 8,
       "title": "Resource, Cost, And Mac Acceleration Routing",
       "status": "partial",
+      "campaign_specific_state": "selected_m1_mlx_route_closed_global_cross_platform_follow_through_nonblocking",
       "priority": "critical",
       "roadmap_section": "roadmap.md#phase-8",
       "ai_book_source_basis": [
@@ -6381,7 +6382,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Keep compiled FP32 MLX authoritative. The exact native ANE decoder block is complete and not selected at 0.552679x of MLX; target-window projection is not selected because one live tensor exceeds the frozen continuity tolerance, and MLX fast synchronization is not selected because the fourth pair reverses while the host swaps despite green state parity. These are semantics/resource dispositions with no percentage hurdle. Run the sustained selected-route qualification and corrected compiled-state fresh-process amendment when the host can produce a no-swap receipt, then freeze the replacement package and continue the matched 57M campaign. Preserve whole-microbatch and matched-arm ANE concurrency as separate candidates, extend checkpoint reference accounting, and use no clock-of-day, arbitrary memory-floor, or arbitrary percentage rule.",
+      "smallest_next_patch": "Keep compiled FP32 MLX authoritative for the exact campaign. Treat cross-platform CUDA/Windows/Linux parity, production serving, continuous batching, and energy measurement as nonblocking global follow-through. After the documentation transaction is banked, repair the source-bound currentness and Phase-8 readiness predicate, then run one bounded fresh-process exact step-11,416 selected-route qualification. Preserve ANE and whole-microbatch ideas as frozen candidates with named re-entry conditions; do not reopen generic acceleration work.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -6749,7 +6750,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Preserve the consumed v8 rung and frozen 57.315M proposal unchanged. Close its measured governed-data shortfalls with additional task-complete licensed product data, rerun admission and resource receipts, and authorize training only when unique-position and every-arm coverage floors are simultaneously satisfied. Do not spend confirmation/public calibration or add a same-scale patch.",
+      "smallest_next_patch": "Preserve the frozen 57.315M proposal, corpus, objective, schedule, and unconsumed 160-case functional surface unchanged. After documentation and source-bound readiness repair, run one bounded exact step-11,416 qualification; with explicit operator approval, complete the modular candidate and both matched dense controls, then consume the private functional evaluation once. Add no broad data, same-scale patch, public calibration, preference/RL lane, or generation-mode experiment before the matched verdict exposes a measured residual.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -7161,7 +7162,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Preserve K0-K3 and all accepted guarded KERC resource, population, checkpoint, exact-once, v5-v7 rejection, and v8 compiler-ownership evidence. V8 removes prompt-hidden residual IDs and duplicated allocator fidelity from all 12886 admitted compiler targets. V4 typed source spans pass exact fail-closed zero-credit materialization across all 12886 rows / 25772 targets, and the bounded one-row control passes 97/97 teacher forcing plus exact independently valid raw generation. Begin same-seed admitted-row population exposure from immutable step 4658 with exact sampler accounting, weakest-row reporting, admitted-panel raw validity, checkpoint/reload, and source-disjoint behavior gates. Bind proposer/qualifier learning to real source-disjoint relation rows, route structured-unit heads through canonical target KV authority, continue separate K7 repair for 629+ and decode throughput, and complete K4-K8. Keep the result INCONCLUSIVE_EXPERIMENT, not KERC falsification.",
+      "smallest_next_patch": "Freeze KERC/RDC as a protected successor discovery lane with zero campaign-one optimizer exposure and preserve all K0-K3, resource, population, checkpoint, transport, and negative-control evidence as INCONCLUSIVE_EXPERIMENT. Do not run another KERC canary before the practical modular-versus-dense verdict. Prospective re-entry must complete the existing K4-K8 causal, learned-stage, source-disjoint behavior, maximum-row/resource, canonical-path, matched-control, weak-tail, and total-cost obligations.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -7729,7 +7730,7 @@
       "external_followups": [
         "Prove the same inter-stack identity/delegation/budget/exchange contract against a real trusted-peer Hive endpoint when another node is reachable; the local transport-independent contract is wired and Phase 9 owns remote proof."
       ],
-      "smallest_next_patch": "Close ASI-31 on the existing local authority surfaces before routine exposure: request-local false-by-default teacher/network authority, mutation auth, Origin/CSRF/JSON/body/rate/concurrency controls, tokened non-wildcard-CORS OpenAI defaults, loopback signed-discovery header-only Hive credentials, worker and untrusted-code isolation, fixed safety-grade floors, attempted-transmission accounting, and adversarial denials. This security repair may run beside KERC and does not create a product lane.",
+      "smallest_next_patch": "Maintain the completed local authority package under adversarial regression coverage: request-local false-by-default teacher/network authority, authenticated mutations, Origin/CSRF/JSON/body/rate/concurrency limits, tokened exact-CORS OpenAI defaults, and loopback signed-discovery header-only Hive credentials. Keep remote untrusted-code execution fail-closed. Any LAN/public exposure requires a separate threat model, deployment qualification, and review; local tests are not an internet-security claim.",
       "integration_smoke": [
         "python3 scripts/governance_rights_receipt_suite.py",
         "reports/governance_rights_receipt_suite.json summary.passed_fixture_count=4",
@@ -7811,7 +7812,7 @@
         "configs/project_steward.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Keep the historical 54-row pin authoritative while ASI-00 reconciles committed book revision df0b675230c73e1a749f7d48f3263d126023f692 and its 84 chapters in one reviewed transaction. Map the 30 missing IDs into existing capability fields with one disposition, maturity/evidence/route state, activation gate, tests, residuals, and non-claims; create no new registry or automatic runtime/support-state effect. This intake is nonblocking unless it exposes a concrete campaign correctness or evaluator-integrity defect.",
+      "smallest_next_patch": "Keep the reviewed 54-chapter pin authoritative while the live ASI Stack manifest differs. Reconcile the live book in one reviewed pin transaction by mapping every new or changed chapter into existing capability fields with a disposition, maturity/evidence/route state, activation gate, owner, tests, residuals, and non-claims. Create no new registry and grant no automatic runtime or support-state effect. This remains nonblocking unless it exposes a concrete campaign correctness or evaluator-integrity defect.",
       "integration_smoke": [
         "python3 scripts/roadmap_implementation_gate.py --gate",
         "python3 scripts/module_definition_of_done_gate.py",

@@ -1,134 +1,103 @@
-# Project Theseus Travel Demo Runbook
+# Project Theseus Travel Demo
 
-Audience: parents or curious non-specialists who use a little AI and want to
-understand what this project is.
+Audience: curious non-specialists.
 
-Target machine: Apple Silicon MacBook Pro with 16 GB unified memory.
+Purpose: show the project honestly without long training, capability-surface
+consumption, external inference, LAN exposure, or resource stress.
 
 ## Demo Promise
 
-Show Theseus as an honest self-improvement research system:
+Show four things:
 
-- It checks whether its own evidence is current.
-- It refuses to promote itself when the gates are not satisfied.
-- It names the remaining walls instead of pretending they are solved.
-- It can show a private A/B improvement without using public benchmark answers.
+1. Theseus has a clear private/local mission.
+2. It preserves exact model and experiment custody.
+3. It separates infrastructure health from learned capability.
+4. It records failures and blocks unsupported claims.
 
-Do not present it as ASI. Present it as a serious local learning scaffold that
-is being engineered toward stronger self-improvement.
+Do not present Theseus as AGI, ASI, a production assistant, or a model that has
+already beaten its controls.
 
-## Mac Setup
+## Current Honest State
 
-Run these from the project root on the MacBook:
+Say:
 
-```bash
-python3 -m venv .venv-demo
-source .venv-demo/bin/activate
-python3 -m pip install --upgrade pip
-python3 -m pip install mlx
-python3 scripts/travel_demo_preflight.py --mode parents_demo --target apple_mlx
-```
-
-MLX is the preferred Apple Silicon path. CUDA remains the Windows/NVIDIA hot
-path. On the 16 GB M1, use MLX for tiny local tensor/inference checks and use
-cached Theseus reports for the demo. Do not start long training.
+> Theseus is a local AI research system with an exact resumable 57M-parameter
+> training campaign, strong evidence and safety machinery, and a real assisted
+> runtime. Training is currently held, the model has not consumed its frozen
+> functional evaluation, the matched controls are untrained, and daily
+> usefulness is not yet proven.
 
 ## Five-Minute Demo
 
-1. Run:
+From the repository root:
 
 ```bash
-python3 scripts/travel_demo_preflight.py --mode parents_demo --target apple_mlx
+git status --short
+python3 scripts/theseus_project_registry.py --gate
+python3 scripts/roadmap_implementation_gate.py --gate
 ```
 
-2. Open:
+Open:
 
-```text
-reports/travel_demo_preflight.md
-```
+- `docs/PROJECT_STATE.md`;
+- `roadmap.md`;
+- `docs/GLOSSARY.md`.
 
-3. Say:
+Explain:
 
-> This is Theseus checking itself before I show it to you. It knows whether the
-> Mac backend is ready, whether its code-transfer evidence is fresh, and whether
-> the dangerous switches like public calibration, model growth, and promotion
-> are locked.
+- registry GREEN means the project’s canonical routes and evidence are
+  internally consistent;
+- roadmap YELLOW means some phases remain partial or frozen;
+- neither is a model-capability score;
+- the active model is `TRAINING_HELD` and `NOT_EVALUATED`.
 
-4. Open:
-
-```text
-reports/code_transfer_governance_remaining_walls.md
-```
-
-5. Say:
-
-> The interesting part is not that it claims to be done. It says exactly what is
-> not done. The current walls are adapter/runtime handling, interface fidelity,
-> return-shape contracts, algorithm planning, and verifier quality.
-
-6. Show the private A/B numbers from the preflight or remaining-wall report:
-
-```text
-private A/B pass delta: +0.375
-private A/B no-admissible delta: -0.375
-```
-
-7. Say:
-
-> That means a source-level private fix changed behavior in the intended
-> direction, without training on public benchmark answers.
-
-## Twenty-Minute Demo
-
-Use the five-minute path, then add:
-
-- `reports/public_calibration_readiness_packet.md`
-- `reports/decoder_v2_private_ablation_gate.md`
-- `reports/private_public_transfer_proof.md`
-- `reports/maturity_integrity_audit.md`
-
-Talk track:
-
-- Readiness packet: canonical broad-floor v2 evidence and lock state.
-- Decoder gate: candidate coverage, STS-conditioned candidates, no-admissible
-  rate.
-- Transfer proof: private-to-public receiver coverage improved, still without
-  executing public benchmark training.
-- Maturity audit: the system stays YELLOW because broad public transfer is not
-  above the floor yet.
-
-## What Not To Run Live
-
-Avoid these during the parent demo:
-
-- Public calibration.
-- Long Code LM training.
-- Model growth.
-- Candidate promotion.
-- GPU/MLX stress tests.
-- Large local LLMs on the 16 GB M1 while screen-sharing.
-
-The MacBook demo should feel fast and calm. It should not make the fans, memory
-pressure, or terminal errors become the star of the room.
-
-## If MLX Is Not Ready
-
-If the preflight says `mlx_not_importable`, run:
+Then show the public reproducibility capsule:
 
 ```bash
-python3 -m pip install mlx
-python3 scripts/travel_demo_preflight.py --mode parents_demo --target apple_mlx
+python3 scripts/public_reproducibility_capsule.py \
+  --out-dir /tmp/theseus-public-repro-demo \
+  --gate
 ```
 
-If MLX still fails, use the offline fallback:
+Explain that it proves exact evidence protocol on a tiny authored fixture, not
+useful model capability or production speed.
 
-- Open `reports/travel_demo_preflight.md`.
-- Open `reports/code_transfer_governance_remaining_walls.md`.
-- Explain that the Mac backend setup is separate from the governance evidence.
+## Assisted Product Demo
 
-## Good One-Sentence Explanation
+Use one low-risk local CLI request that can be checked immediately, such as:
 
-> Theseus is my local research system for making AI improve itself honestly:
-> it runs experiments, checks its own evidence, blocks itself from cheating, and
-> turns failures into the next private architecture fixes.
+- summarize the current training hold from named local artifacts;
+- locate the canonical owner of a project term;
+- explain a GREEN/YELLOW gate without changing state;
+- identify one safe next action from the roadmap.
 
+Record the outcome honestly. If it misses the request, show that the miss is
+useful product evidence rather than hiding it.
+
+Do not award learned-model credit when VCM, tools, reports, rules, retrieval, or
+templates contributed.
+
+## What Not To Run
+
+- long or resumed neural training;
+- KERC, ANE, optimizer, or architecture canaries;
+- private functional evaluation;
+- public calibration;
+- bulk data ingress;
+- live teacher calls;
+- dashboard/OpenAI-shim/Hive LAN exposure;
+- remote work or arbitrary execution;
+- MLX stress tests while presenting.
+
+## Security
+
+Keep every service loopback-only. Do not share credentials, invite files,
+private reports, checkpoints, user traces, or ignored local configuration.
+
+Local adversarial tests are not an internet-security audit.
+
+## One-Sentence Explanation
+
+> Theseus is my private local research system for training and comparing a
+> useful AI honestly: it preserves exact state, separates learned behavior from
+> tools, and refuses to turn infrastructure success into a capability claim.

@@ -1,5 +1,9 @@
 # Verified Intent-To-Execution Architecture
 
+> Canonical architecture contract, not a current-state or capability page.
+> Route authority comes from the project registry and current facts come from
+> [Project State](PROJECT_STATE.md).
+
 VIEA is the canonical north-star architecture for Project Theseus. It is the
 systems-language version of the Reality Manipulator / Grimoire / Genesis /
 Octopus / Capability Ratchet ideas:

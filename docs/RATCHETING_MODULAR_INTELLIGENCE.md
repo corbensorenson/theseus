@@ -1,5 +1,9 @@
 # Ratcheting Modular Intelligence in SymLiquid
 
+> Discovery-track architecture background. Executable coverage is not a learned
+> capability or selection claim. Current practical experiment state is in
+> [Project State](PROJECT_STATE.md).
+
 Ratcheting Modular Intelligence is now an executable audit layer over the full
 SymLiquid architecture. It unifies the benchmark ratchet, loop closure, ORA
 router, routing memory, arm lifecycle governance, safety layer, and public

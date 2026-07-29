@@ -1,5 +1,9 @@
 # Project Theseus Candidate Updates
 
+> Candidate-replacement architecture. It does not authorize installation,
+> promotion, or Hive propagation without the current promotion and exposure
+> gates. See [Project State](PROJECT_STATE.md).
+
 Project Theseus updates are tied to accepted candidates, not ordinary
 experiments. A candidate becomes installable only after the promotion gate
 passes and a promoted checkpoint exists.

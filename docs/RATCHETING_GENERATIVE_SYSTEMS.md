@@ -1,5 +1,8 @@
 # Ratcheting Generative Systems in SymLiquid
 
+> Research background. Component coverage in this document is not learned
+> capability, active-lane authority, or current project state.
+
 Ratcheting Generative Systems is now an executable audit layer around
 SymLiquid's development loop. It verifies that the system is not just training
 models, but turning pressure into structure:
