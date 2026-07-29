@@ -20,6 +20,7 @@ OPTIMIZER_IDS = {
     "adamw_bfloat16_moments_mlx",
     "ademamix_mlx",
     "muon_mlx",
+    "per_head_muon_mlx",
     "schedule_free_adamw_mlx",
 }
 
@@ -42,6 +43,15 @@ ADAM_MINI_ATTENTION_OUTPUT_NAMES = {
     "attn.proj",
 }
 ADAM_MINI_MLP_NAMES = {"feed_forward", "linear", "mlp"}
+PER_HEAD_MUON_QUERY_NAMES = {"q_proj", "wq", "query"}
+PER_HEAD_MUON_KEY_VALUE_NAMES = {
+    "k_proj",
+    "v_proj",
+    "wk",
+    "wv",
+    "key",
+    "value",
+}
 
 
 def ademamix_alpha_for_step(
@@ -130,9 +140,30 @@ def muon_hidden_matrix_filter(path: str, value: Any) -> bool:
         "norm",
         "bias",
     )
+    normalized = path.lower()
     return int(getattr(value, "ndim", 0)) == 2 and not any(
-        fragment in path for fragment in excluded
+        fragment in normalized for fragment in excluded
     )
+
+
+def per_head_muon_partition(path: str, value: Any) -> str:
+    """Return the content-bound Kimi K3 Per-Head Muon partition.
+
+    Only attention Q/K/V projection matrices are orthogonalized per head.
+    Other Muon-eligible hidden matrices retain the existing full-matrix
+    treatment, and all remaining tensors stay on the AdamW fallback.
+    """
+
+    if int(getattr(value, "ndim", 0)) != 2:
+        return "adamw"
+    components = set(path.lower().split("."))
+    if components & PER_HEAD_MUON_QUERY_NAMES:
+        return "query_heads"
+    if components & PER_HEAD_MUON_KEY_VALUE_NAMES:
+        return "key_value_heads"
+    if muon_hidden_matrix_filter(path, value):
+        return "full_matrix"
+    return "adamw"
 
 
 def build_optimizer(
@@ -150,6 +181,8 @@ def build_optimizer(
     muon_learning_rate: float | None = None,
     muon_momentum: float = 0.95,
     muon_ns_steps: int = 5,
+    per_head_muon_num_heads: int | None = None,
+    per_head_muon_num_kv_heads: int | None = None,
     adafactor_eps1: float = 1e-30,
     adafactor_eps2: float = 1e-3,
     adafactor_clip_threshold: float = 1.0,
@@ -299,6 +332,41 @@ def build_optimizer(
             bias_correction=adamw_bias_correction,
         )
         return optim.MultiOptimizer([muon, fallback], [muon_hidden_matrix_filter])
+    if optimizer_id == "per_head_muon_mlx":
+        if callable(learning_rate):
+            raise OptimizerContractFault(
+                "per_head_muon_requires_content_bound_scalar_learning_rate"
+            )
+        if (
+            per_head_muon_num_heads is None
+            or per_head_muon_num_kv_heads is None
+            or int(per_head_muon_num_heads) <= 0
+            or int(per_head_muon_num_kv_heads) <= 0
+            or int(per_head_muon_num_heads) % int(per_head_muon_num_kv_heads)
+        ):
+            raise OptimizerContractFault(
+                "per_head_muon_dimension_contract_invalid"
+            )
+        return PerHeadMuon(
+            learning_rate=learning_rate,
+            muon_learning_rate=(
+                float(muon_learning_rate)
+                if muon_learning_rate is not None
+                else float(learning_rate)
+            ),
+            momentum=float(muon_momentum),
+            weight_decay=weight_decay,
+            nesterov=True,
+            ns_steps=int(muon_ns_steps),
+            num_heads=int(per_head_muon_num_heads),
+            num_kv_heads=int(per_head_muon_num_kv_heads),
+            beta1=beta1,
+            beta2=beta2,
+            eps=eps,
+            adamw_bias_correction=adamw_bias_correction,
+            optim=optim,
+            mx=mx,
+        )
     if callable(learning_rate):
         raise OptimizerContractFault(
             "schedule_free_candidate_owns_its_schedule_and_requires_scalar_learning_rate"
@@ -313,6 +381,170 @@ def build_optimizer(
         mx=mx,
         optim=optim,
     )
+
+
+def PerHeadMuon(
+    *,
+    learning_rate: Any,
+    muon_learning_rate: float,
+    momentum: float,
+    weight_decay: float,
+    nesterov: bool,
+    ns_steps: int,
+    num_heads: int,
+    num_kv_heads: int,
+    beta1: float,
+    beta2: float,
+    eps: float,
+    adamw_bias_correction: bool,
+    optim: Any,
+    mx: Any,
+) -> Any:
+    """Create Kimi K3-style per-head Q/K/V Muon with matched fallbacks."""
+
+    from mlx.utils import tree_flatten, tree_merge
+
+    class _PerHeadMuonPartition(optim.Optimizer):
+        def __init__(self, head_count: int, partition_name: str) -> None:
+            super().__init__()
+            self._maybe_schedule("learning_rate", muon_learning_rate)
+            self.momentum = float(momentum)
+            self.weight_decay = float(weight_decay)
+            self.nesterov = bool(nesterov)
+            self.ns_steps = int(ns_steps)
+            self.head_count = int(head_count)
+            self.partition_name = partition_name
+
+        def init_single(self, parameter: Any, state: dict[str, Any]) -> None:
+            if (
+                int(parameter.ndim) != 2
+                or int(parameter.shape[0]) % self.head_count
+            ):
+                raise OptimizerContractFault(
+                    f"per_head_muon_projection_shape_invalid:{self.partition_name}:"
+                    f"{tuple(int(size) for size in parameter.shape)}:"
+                    f"heads={self.head_count}"
+                )
+            state["v"] = mx.zeros_like(parameter)
+
+        def _zeropower_via_newtonschulz5(
+            self, matrix: Any, steps: int
+        ) -> Any:
+            if (
+                int(matrix.ndim) != 2
+                or int(matrix.shape[0]) % self.head_count
+            ):
+                raise OptimizerContractFault(
+                    f"per_head_muon_orthogonalization_shape_invalid:"
+                    f"{self.partition_name}"
+                )
+            original_shape = matrix.shape
+            head_rows = int(matrix.shape[0]) // self.head_count
+            value = matrix.reshape(
+                self.head_count, head_rows, int(matrix.shape[1])
+            )
+            transpose_needed = head_rows > int(matrix.shape[1])
+            if transpose_needed:
+                value = mx.swapaxes(value, -2, -1)
+            norm = mx.sqrt(
+                mx.sum(mx.square(value), axis=(-2, -1), keepdims=True)
+            )
+            value = value / (norm + 1e-7)
+            a, b, c = (3.4445, -4.7750, 2.0315)
+            for _ in range(int(steps)):
+                gram = value @ mx.swapaxes(value, -2, -1)
+                polynomial = b * gram + c * (
+                    gram @ gram
+                )
+                value = a * value + polynomial @ value
+            if transpose_needed:
+                value = mx.swapaxes(value, -2, -1)
+            return value.reshape(original_shape)
+
+        def apply_single(
+            self, gradient: Any, parameter: Any, state: dict[str, Any]
+        ) -> Any:
+            if self.weight_decay:
+                gradient = gradient + self.weight_decay * parameter
+            velocity = self.momentum * state["v"] + (
+                1.0 - self.momentum
+            ) * gradient
+            state["v"] = velocity
+            update = (
+                (1.0 - self.momentum) * gradient
+                + self.momentum * velocity
+                if self.nesterov
+                else velocity
+            )
+            update = self._zeropower_via_newtonschulz5(
+                update, self.ns_steps
+            )
+            head_rows = int(update.shape[0]) // self.head_count
+            scale = max(1.0, head_rows / int(update.shape[1])) ** 0.5
+            rate = self.learning_rate.astype(gradient.dtype) * scale
+            return parameter - rate * update
+
+    class _NonEmptyMultiOptimizer(optim.MultiOptimizer):
+        """MultiOptimizer that does not initialize or step empty partitions."""
+
+        def init(self, parameters: dict) -> None:
+            for child, partition in zip(
+                self.optimizers, self._split_dictionary(parameters)
+            ):
+                if tree_flatten(partition):
+                    child.init(partition)
+
+        def apply_gradients(self, gradients: dict, parameters: dict) -> dict:
+            updated: dict[str, Any] = {}
+            for child, partition in zip(
+                self.optimizers, self._split_dictionary(gradients)
+            ):
+                if tree_flatten(partition):
+                    updated = tree_merge(
+                        updated,
+                        child.apply_gradients(partition, parameters),
+                    )
+            return updated
+
+    query = _PerHeadMuonPartition(num_heads, "query_heads")
+    key_value = _PerHeadMuonPartition(
+        num_kv_heads, "key_value_heads"
+    )
+    full_matrix = optim.Muon(
+        learning_rate=muon_learning_rate,
+        momentum=momentum,
+        weight_decay=weight_decay,
+        nesterov=nesterov,
+        ns_steps=ns_steps,
+    )
+    fallback = optim.AdamW(
+        learning_rate=learning_rate,
+        betas=[beta1, beta2],
+        eps=eps,
+        weight_decay=weight_decay,
+        bias_correction=adamw_bias_correction,
+    )
+    partitions = ("query_heads", "key_value_heads", "full_matrix")
+    optimizer = _NonEmptyMultiOptimizer(
+        [query, key_value, full_matrix, fallback],
+        [
+            lambda path, value, expected=expected: per_head_muon_partition(
+                path, value
+            )
+            == expected
+            for expected in partitions
+        ],
+    )
+    optimizer.theseus_policy_id = "kimi_k3_per_head_muon_qkv_v1"
+    optimizer.per_head_muon_num_heads = int(num_heads)
+    optimizer.per_head_muon_num_kv_heads = int(num_kv_heads)
+    optimizer.per_head_muon_partition_policy = {
+        "query_heads": sorted(PER_HEAD_MUON_QUERY_NAMES),
+        "key_value_heads": sorted(PER_HEAD_MUON_KEY_VALUE_NAMES),
+        "full_matrix": "remaining_muon_hidden_matrix_filter",
+        "adamw": "fallback",
+    }
+    return optimizer
 
 
 def AdEMAMix(
@@ -832,6 +1064,11 @@ def optimizer_state_kind(optimizer: Any) -> str:
         return "adafactor_factored_matrices_unfactored_vectors_scalars"
     if getattr(optimizer, "persistent_moment_dtype", "") == "bfloat16":
         return "adamw_bfloat16_moments_fp32_transactional_update_math"
+    if (
+        getattr(optimizer, "theseus_policy_id", "")
+        == "kimi_k3_per_head_muon_qkv_v1"
+    ):
+        return "per_head_qkv_muon_hidden_matrix_muon_adamw_fallback"
     if hasattr(optimizer, "set_evaluation_iterate"):
         return "schedule_free_x_y_z"
     if optimizer.__class__.__name__ == "MultiOptimizer":

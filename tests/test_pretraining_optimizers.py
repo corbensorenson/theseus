@@ -54,6 +54,8 @@ def train(optimizer_id: str, steps: int = 48):
         adam_mini_dim=4,
         adam_mini_num_heads=1,
         adam_mini_num_kv_heads=1,
+        per_head_muon_num_heads=1,
+        per_head_muon_num_kv_heads=1,
         optim=optim,
         mx=mx,
     )
@@ -90,6 +92,86 @@ def test_muon_routes_only_hidden_matrices() -> None:
     )
     assert not candidate_optimizers.muon_hidden_matrix_filter(
         "output.bias", flat["output.bias"]
+    )
+
+
+def test_per_head_muon_partition_is_qkv_specific_and_content_bound() -> None:
+    matrix = mx.zeros((4, 4))
+    vector = mx.zeros((4,))
+    expected = {
+        "layers.0.attention.q_proj.weight": "query_heads",
+        "layers.0.attention.k_proj.weight": "key_value_heads",
+        "layers.0.attention.v_proj.weight": "key_value_heads",
+        "layers.0.attention.out_proj.weight": "full_matrix",
+        "layers.0.feed_forward.up.weight": "full_matrix",
+        "token_embedding.weight": "adamw",
+    }
+    assert {
+        path: candidate_optimizers.per_head_muon_partition(path, matrix)
+        for path in expected
+    } == expected
+    assert (
+        candidate_optimizers.per_head_muon_partition(
+            "layers.0.attention.q_proj.bias", vector
+        )
+        == "adamw"
+    )
+
+
+def test_per_head_muon_orthogonalizes_qkv_heads_independently() -> None:
+    optimizer = candidate_optimizers.build_optimizer(
+        "per_head_muon_mlx",
+        learning_rate=3e-4,
+        muon_learning_rate=0.01,
+        weight_decay=0.01,
+        per_head_muon_num_heads=2,
+        per_head_muon_num_kv_heads=1,
+        optim=optim,
+        mx=mx,
+    )
+    parameters = {
+        "layers": [
+            {
+                "attention": {
+                    "q_proj": {
+                        "weight": mx.arange(16, dtype=mx.float32).reshape(
+                            4, 4
+                        )
+                        + 1.0
+                    },
+                    "k_proj": {"weight": mx.ones((2, 4))},
+                    "v_proj": {"weight": mx.ones((2, 4)) * 2.0},
+                    "out_proj": {"weight": mx.ones((4, 4))},
+                }
+            }
+        ],
+        "token_embedding": {"weight": mx.ones((8, 4))},
+    }
+    optimizer.init(parameters)
+    states = optimizer.state["states"]
+    query_state = dict(mlx_utils.tree_flatten(states[0]))
+    key_value_state = dict(mlx_utils.tree_flatten(states[1]))
+    full_matrix_state = dict(mlx_utils.tree_flatten(states[2]))
+    fallback_state = dict(mlx_utils.tree_flatten(states[3]))
+    assert "layers.0.attention.q_proj.weight.v" in query_state
+    assert "layers.0.attention.k_proj.weight.v" in key_value_state
+    assert "layers.0.attention.v_proj.weight.v" in key_value_state
+    assert "layers.0.attention.out_proj.weight.v" in full_matrix_state
+    assert "token_embedding.weight.m" in fallback_state
+
+    query = parameters["layers"][0]["attention"]["q_proj"]["weight"]
+    per_head = optimizer.optimizers[0]._zeropower_via_newtonschulz5(
+        query, steps=5
+    )
+    full_matrix = optim.Muon(0.01)._zeropower_via_newtonschulz5(
+        query, steps=5
+    )
+    mx.eval(per_head, full_matrix)
+    assert per_head.shape == query.shape
+    assert float(mx.max(mx.abs(per_head - full_matrix)).item()) > 1e-4
+    assert (
+        candidate_optimizers.optimizer_state_kind(optimizer)
+        == "per_head_qkv_muon_hidden_matrix_muon_adamw_fallback"
     )
 
 
@@ -200,7 +282,7 @@ def test_schedule_free_optimizer_state_roundtrips_for_exact_next_update() -> Non
 
 @pytest.mark.parametrize(
     "optimizer_id",
-    ["ademamix_mlx", "adam_mini_mlx"],
+    ["ademamix_mlx", "adam_mini_mlx", "per_head_muon_mlx"],
 )
 def test_new_update_efficiency_optimizer_state_roundtrips_exactly(
     optimizer_id: str,
@@ -220,6 +302,8 @@ def test_new_update_efficiency_optimizer_state_roundtrips_exactly(
         adam_mini_dim=4,
         adam_mini_num_heads=1,
         adam_mini_num_kv_heads=1,
+        per_head_muon_num_heads=1,
+        per_head_muon_num_kv_heads=1,
         optim=optim,
         mx=mx,
     )
@@ -415,3 +499,16 @@ def test_invalid_optimizer_contracts_fail_closed() -> None:
         assert "optimizer_unknown" in str(exc)
     else:
         raise AssertionError("unknown optimizer was accepted")
+    with pytest.raises(
+        candidate_optimizers.OptimizerContractFault,
+        match="per_head_muon_dimension_contract_invalid",
+    ):
+        candidate_optimizers.build_optimizer(
+            "per_head_muon_mlx",
+            learning_rate=0.1,
+            weight_decay=0.0,
+            per_head_muon_num_heads=8,
+            per_head_muon_num_kv_heads=3,
+            optim=optim,
+            mx=mx,
+        )

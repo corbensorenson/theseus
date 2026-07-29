@@ -79,6 +79,42 @@ def test_update_efficiency_config_is_six_million_parameter_matched_rung() -> Non
     ] == "official_v1.1_with_theseus_names"
 
 
+def test_per_head_muon_config_reuses_six_million_matched_rung() -> None:
+    config = adequacy.load_config(
+        ROOT / "configs/per_head_muon_qualification.json"
+    )
+    assert {row["id"] for row in config["candidates"]} == {
+        "adamw_mlx",
+        "muon_mlx",
+        "per_head_muon_mlx",
+    }
+    assert config["model"] == {
+        "d_model": 256,
+        "num_layers": 6,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "ff_dim": 768,
+        "attention_policy": "prefix_lm",
+    }
+    assert config["seeds"] == [20260722, 20260723, 20260724]
+    assert {len(row["profiles"]) for row in config["candidates"]} == {3}
+    assert (
+        config["prospective_decision"][
+            "maximum_mean_time_to_reference_quality_ratio"
+        ]
+        == 0.85
+    )
+    cards = adequacy.optimizer_policy_cards(config)
+    assert adequacy.validate_optimizer_policy_cards(cards, config) == []
+    card = cards["per_head_muon_mlx"]
+    assert card["parameterization"]["num_query_heads"] == 8
+    assert card["parameterization"]["num_key_value_heads"] == 2
+    assert (
+        card["parameterization"]["partition_version"]
+        == "kimi_k3_qkv_per_head_v1"
+    )
+
+
 def test_tune_split_is_deterministic_and_disjoint() -> None:
     rows = {
         arm: [{"source_identity": f"{arm}-{index}"} for index in range(8)]

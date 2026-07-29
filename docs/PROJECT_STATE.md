@@ -904,6 +904,11 @@ custody from the prospective step-9,048 anchor. The review does not reopen gener
 it reconciles completed compiled-MLX, auxiliary-phase, BF16, and exact ANE evidence and admits
 only Per-Head Muon, AttnRes, and SiTU-GLU as bounded Kimi K3-derived canaries. KERC remains a
 protected successor discovery lane rather than campaign-one work or a scientific negative.
+Per-Head Muon is complete and not selected: on the exact 6.623M, three-profile, three-seed
+rung it regressed mean heldout loss 8.2798%, never reached AdamW final quality, used
+1.213938x AdamW training wall, and reached 21.8135% weak-arm regression. Exact checkpoint
+and next-update replay passed. This result is scoped to that implementation and regime;
+AttnRes and SiTU-GLU remain the only open Kimi K3 candidates.
 
 T1 is paused at shared-trunk step 11,416 and 87,441,996 of 1,096,734,920
 pretraining positions. The live canonical path advanced after the committed T0A freeze, but the

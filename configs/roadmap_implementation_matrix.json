@@ -3632,8 +3632,15 @@
         "id": "kimi_k3_per_head_muon",
         "priority": 1,
         "owner": "optimizer",
-        "decision": "Implement and compare against AdamW and existing full-matrix Muon on the already established 6.623M, three-profile, three-seed source-disjoint matched rung.",
-        "why_prior_evidence_does_not_close_it": "The prior Muon implementation orthogonalizes whole eligible matrices; K3 partitions attention Q/K/V momentum matrices by head before Newton-Schulz orthogonalization."
+        "decision": "COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN: the exact 6.623M, three-profile, three-seed source-disjoint rung retained AdamW; Per-Head Muon regressed mean heldout loss 8.2798 percent, never reached AdamW final quality, used 1.213938x wall, and reached 21.8135 percent weak-arm regression while exact replay passed.",
+        "why_prior_evidence_does_not_close_it": "The prior Muon implementation orthogonalized whole eligible matrices; this completed candidate partitioned Q by query head and K/V by key-value head before Newton-Schulz orthogonalization.",
+        "evidence": [
+          "reports/per_head_muon_qualification.json",
+          "reports/accelerator_replay/per_head_muon_unit_guard.json",
+          "reports/accelerator_replay/per_head_muon_qualification_guard.json",
+          "reports/accelerator_replay/per_head_muon_qualification_resume_guard.json"
+        ],
+        "scientific_falsification_claimed": false
       },
       {
         "id": "kimi_k3_attention_residuals",

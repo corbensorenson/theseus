@@ -153,7 +153,10 @@ def load_config(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             if profile["id"] in profile_ids:
                 raise OptimizerAdequacyFault("optimizer_profile_duplicate")
             profile_ids.add(profile["id"])
-            if candidate["id"] == "muon_mlx" and float(profile.get("muon_learning_rate") or 0.0) <= 0.0:
+            if candidate["id"] in {
+                "muon_mlx",
+                "per_head_muon_mlx",
+            } and float(profile.get("muon_learning_rate") or 0.0) <= 0.0:
                 raise OptimizerAdequacyFault("muon_matrix_rate_missing")
     policy_card = config.get("policy_card_contract") or {}
     for field in (
@@ -447,6 +450,94 @@ def optimizer_policy_cards(
                 "every Muon momentum buffer",
                 "every fallback AdamW m and v",
                 "content-bound parameter partition",
+            ],
+        },
+        "per_head_muon_mlx": {
+            **common,
+            "card_id": "optimizer_policy.per_head_muon_mlx.v1",
+            "parameterization": {
+                "momentum": 0.95,
+                "nesterov": True,
+                "newton_schulz_steps": 5,
+                "num_query_heads": int(config["model"]["num_heads"]),
+                "num_key_value_heads": int(
+                    config["model"]["num_kv_heads"]
+                ),
+                "partition_version": "kimi_k3_qkv_per_head_v1",
+            },
+            "eligibility_groups_and_fallback": {
+                "per_head_muon": (
+                    "attention Q matrices split by query head and K/V matrices "
+                    "split by key-value head"
+                ),
+                "full_matrix_muon": (
+                    "remaining hidden 2D weights excluding embeddings, "
+                    "readouts, classifiers, pointers, registers, norms, and biases"
+                ),
+                "adamw_fallback": "every remaining trainable tensor",
+            },
+            "state_tensors_and_dtypes": {
+                "per_head_qkv": ["momentum_buffer:parameter_dtype"],
+                "full_matrix_muon": ["momentum_buffer:parameter_dtype"],
+                "adamw_fallback": [
+                    "m:same_as_parameter",
+                    "v:same_as_parameter",
+                ],
+                "global": (
+                    "independent Q-head, KV-head, full-matrix Muon, and "
+                    "AdamW steps and learning rates"
+                ),
+            },
+            "exact_update_order": [
+                "clip global gradient norm before every child update",
+                "partition by content-bound parameter path",
+                "split Q momentum by query head and K/V momentum by key-value head",
+                "Newton-Schulz orthogonalize every Q/K/V head independently",
+                "full-matrix Muon update remaining eligible hidden matrices",
+                "AdamW update fallback tensors",
+                "merge disjoint updated trees",
+            ],
+            "learning_rate_and_warmup": {
+                "profiles": candidate_profiles.get(
+                    "per_head_muon_mlx", []
+                ),
+                "warmup": "none in the matched fixed-rate rung",
+            },
+            "decay": {
+                "kind": "optimizer_native_decoupled",
+                "weight_decay": float(config["training"]["weight_decay"]),
+            },
+            "clipping": {
+                "global_gradient_norm_before_update": float(
+                    config["training"]["gradient_clip_norm"]
+                ),
+                "optimizer_internal": "none",
+            },
+            "epsilon_and_stabilizers": {
+                "adamw_eps": 1e-8,
+                "newton_schulz_normalization_eps": 1e-7,
+                "newton_schulz_steps": 5,
+            },
+            "approximation_cadence_and_precision": {
+                "approximation": (
+                    "independent per-head Q/K/V Newton-Schulz "
+                    "orthogonalization plus full-matrix Muon elsewhere"
+                ),
+                "cadence": "every eligible-matrix update",
+                "precision": "parameter_dtype",
+                "required_observations": [
+                    "per_head_orthogonalization_residual",
+                    "head_partition_shape",
+                    "spectral_norm_estimate",
+                    "joined_update_wall_time",
+                ],
+            },
+            "full_checkpoint_state": [
+                "all four child optimizer steps and learning rates",
+                "every per-head Q/K/V source momentum matrix",
+                "every full-matrix Muon momentum buffer",
+                "every fallback AdamW m and v",
+                "content-bound partition and query/KV head counts",
             ],
         },
         "schedule_free_adamw_mlx": {
@@ -812,42 +903,75 @@ def optimizer_state_inventory(optimizer: Any, mlx_utils: Any) -> list[dict[str, 
 
 
 def muon_matrix_diagnostics(optimizer: Any, mlx_utils: Any) -> dict[str, Any] | None:
-    if optimizer.__class__.__name__ != "MultiOptimizer":
+    children = getattr(optimizer, "optimizers", None)
+    if not children:
         return None
-    muon = optimizer.optimizers[0]
     rows = []
-    for name, value in mlx_utils.tree_flatten(muon.state):
-        if not name.endswith(".v") or int(getattr(value, "ndim", 0)) != 2:
+    for child_index, muon in enumerate(children):
+        if not hasattr(muon, "_zeropower_via_newtonschulz5"):
             continue
-        matrix = np.asarray(value, dtype=np.float64)
-        norm = np.linalg.norm(matrix)
-        if norm == 0.0:
-            continue
-        # This calls the exact candidate orthogonalizer and audits its result
-        # independently in NumPy; the diagnostic is never used by generation.
-        orthogonalized = np.asarray(
-            muon._zeropower_via_newtonschulz5(value, steps=muon.ns_steps),
-            dtype=np.float64,
-        )
-        if orthogonalized.shape[0] <= orthogonalized.shape[1]:
-            gram = orthogonalized @ orthogonalized.T
-        else:
-            gram = orthogonalized.T @ orthogonalized
-        identity = np.eye(gram.shape[0], dtype=np.float64)
-        rows.append(
-            {
-                "state": name,
-                "shape": list(matrix.shape),
-                "input_spectral_norm": float(np.linalg.norm(matrix, ord=2)),
-                "orthogonalized_spectral_norm": float(
-                    np.linalg.norm(orthogonalized, ord=2)
+        for name, value in mlx_utils.tree_flatten(muon.state):
+            if not name.endswith(".v") or int(getattr(value, "ndim", 0)) != 2:
+                continue
+            matrix = np.asarray(value, dtype=np.float64)
+            norm = np.linalg.norm(matrix)
+            if norm == 0.0:
+                continue
+            # This calls the exact candidate orthogonalizer and audits its
+            # result independently in NumPy. Diagnostics never affect updates.
+            orthogonalized = np.asarray(
+                muon._zeropower_via_newtonschulz5(
+                    value, steps=muon.ns_steps
                 ),
-                "orthogonalization_residual_frobenius_per_dimension": float(
-                    np.linalg.norm(gram - identity, ord="fro")
-                    / max(gram.shape[0], 1)
-                ),
-            }
-        )
+                dtype=np.float64,
+            )
+            head_count = int(getattr(muon, "head_count", 1))
+            head_rows = int(orthogonalized.shape[0]) // head_count
+            head_matrices = orthogonalized.reshape(
+                head_count, head_rows, orthogonalized.shape[1]
+            )
+            residuals = []
+            spectral_norms = []
+            for head in head_matrices:
+                if head.shape[0] <= head.shape[1]:
+                    gram = head @ head.T
+                else:
+                    gram = head.T @ head
+                identity = np.eye(gram.shape[0], dtype=np.float64)
+                residuals.append(
+                    float(
+                        np.linalg.norm(gram - identity, ord="fro")
+                        / max(gram.shape[0], 1)
+                    )
+                )
+                spectral_norms.append(
+                    float(np.linalg.norm(head, ord=2))
+                )
+            rows.append(
+                {
+                    "state": name,
+                    "child_index": child_index,
+                    "partition": getattr(
+                        muon, "partition_name", "full_matrix"
+                    ),
+                    "shape": list(matrix.shape),
+                    "head_count": head_count,
+                    "head_shape": [
+                        head_rows,
+                        int(orthogonalized.shape[1]),
+                    ],
+                    "input_spectral_norm": float(
+                        np.linalg.norm(matrix, ord=2)
+                    ),
+                    "maximum_orthogonalized_head_spectral_norm": max(
+                        spectral_norms
+                    ),
+                    "head_orthogonalization_residuals": residuals,
+                    "orthogonalization_residual_frobenius_per_dimension": max(
+                        residuals
+                    ),
+                }
+            )
     return {
         "matrix_count": len(rows),
         "matrices": rows,
@@ -898,6 +1022,8 @@ def build_candidate_optimizer(
         adam_mini_dim=int(model.d_model),
         adam_mini_num_heads=int(model.num_heads),
         adam_mini_num_kv_heads=int(model.num_kv_heads),
+        per_head_muon_num_heads=int(model.num_heads),
+        per_head_muon_num_kv_heads=int(model.num_kv_heads),
         optim=optim,
         mx=mx,
     )

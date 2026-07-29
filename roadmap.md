@@ -212,6 +212,18 @@ review reaches these dispositions:
    2.8 measured device-hours, so they are not the multi-day wall. BF16 remains rejected for
    retained-state and independent-process replay failures despite its raw speed.
 
+Per-Head Muon is now complete and not selected for campaign one. The exact 6.623M,
+three-profile, three-seed source-disjoint rung retained AdamW. The selected Per-Head Muon
+profile regressed mean heldout loss by 8.2798%, never reached matched AdamW final quality,
+used 1.213938x AdamW training wall, and reached 21.8135% weak-arm regression. Its optimizer
+state was 0.658628x AdamW and checkpoint-next-update replay error stayed at or below
+`3.725290298461914e-09`, so the result is an adequate scoped engineering disposition rather
+than an implementation failure. The first host wrapper stopped at an arbitrary 64 MiB swap
+growth threshold despite roughly 9.8 GiB predicted headroom; the journaled resume disabled
+the wall clock limit, made swap telemetry report-only, retained predictive-exhaustion and
+process-memory protection, and completed green. This does not falsify Per-Head Muon outside
+the exact implementation, data, scale, objective, tuning grid, and evaluator.
+
 This is a finite reopening, not a standing architecture search. Every candidate has a
 prewritten control, scale, adequacy checks, adoption rule, and negative-inference boundary
 in `configs/neural_seed_pre_long_run_review.json`. No public or frozen functional surface is
@@ -3491,7 +3503,7 @@ and 87,441,996 of 1,096,734,920 pretraining positions while the finite Kimi K3-d
 pre-long-run review closes. The 10.8M rung is closed at 0/160 across MoECOT and both dense
 controls; that result does not transfer to the current rung.
 
-Next: execute only the Per-Head Muon, AttnRes, and SiTU-GLU matched canaries frozen in
+Next: execute only the remaining AttnRes and SiTU-GLU matched canaries frozen in
 `configs/neural_seed_pre_long_run_review.json`, publish one replacement selection receipt,
 then either resume the exact step-11,416 checkpoint unchanged or start a new incompatible
 lineage if a topology earns the restart. Train the selected model and matched controls and

@@ -83,7 +83,7 @@
     {
       "id": "kimi_k3_per_head_muon",
       "priority": 1,
-      "state": "REQUIRED_BOUNDED_MATCHED_CANARY",
+      "state": "COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN",
       "why_it_has_teeth": "The existing Theseus Muon negative used full projection matrices. Kimi K3 partitions attention Q/K/V momentum matrices by head before Newton-Schulz orthogonalization, so the old result does not test this implementation.",
       "control": "adamw_mlx",
       "secondary_control": "existing_full_matrix_muon_mlx",
@@ -99,7 +99,21 @@
         "total joined wall and resource accounting"
       ],
       "adoption_rule": "Adopt only if Per-Head Muon improves predeclared time-to-quality over AdamW, stays within every weak-arm regression ceiling, passes exact checkpoint/reload and finite-state gates, and retains its advantage after orthogonalization overhead.",
-      "negative_inference_boundary": "A loss cannot falsify Muon generally and applies only to this per-head implementation, rung, data, tuning, and evaluator."
+      "negative_inference_boundary": "A loss cannot falsify Muon generally and applies only to this per-head implementation, rung, data, tuning, and evaluator.",
+      "result": {
+        "report": "reports/per_head_muon_qualification.json",
+        "trigger_state": "GREEN",
+        "selected_optimizer": "adamw_mlx",
+        "selected_profile": "per_head_muon_lr_020",
+        "mean_relative_loss_improvement_vs_adamw": -0.08279791944106958,
+        "maximum_weak_arm_relative_loss_regression": 0.2181352099992201,
+        "mean_wall_time_ratio_vs_adamw": 1.2139381411007725,
+        "optimizer_state_ratio_vs_adamw": 0.6586278439375571,
+        "reached_adamw_final_quality": false,
+        "checkpoint_next_update_max_absolute_error": 3.725290298461914e-09,
+        "disposition": "NOT_SELECTED_FIRST_CAMPAIGN",
+        "scientific_falsification_claimed": false
+      }
     },
     {
       "id": "kimi_k3_attention_residuals",
