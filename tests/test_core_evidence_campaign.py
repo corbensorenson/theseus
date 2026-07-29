@@ -13,6 +13,7 @@ if str(SCRIPTS) not in sys.path:
 
 import core_evidence_campaign as campaign  # noqa: E402
 import core_evidence_worker as worker  # noqa: E402
+import core_evidence_synthesis as synthesis  # noqa: E402
 
 
 def load_config() -> dict:
@@ -426,3 +427,32 @@ def test_least_sufficient_policy_holds_when_no_variant_meets_quality() -> None:
     assert least["selected_variant_id"] is None
     assert least["held_for_quality_wall"] is True
     assert least["total_lifecycle_cost_units"] == 0
+
+
+def test_e4_dispositions_preserve_efficacy_wall_and_mechanics_scope() -> None:
+    reports = {
+        name: json.loads(path.read_text(encoding="utf-8"))
+        for name, path in {
+            "E0": ROOT / "reports" / "core_evidence_e0_preregistration.json",
+            "E1": ROOT / "reports" / "core_evidence_e1_replay.json",
+            "E2": ROOT / "reports" / "core_evidence_e2_governed_comparison.json",
+            "E3": ROOT / "reports" / "core_evidence_e3_mechanism_comparison.json",
+        }.items()
+    }
+
+    report = synthesis.build_disposition(reports)
+    by_claim = {row["claim_id"]: row for row in report["claim_dispositions"]}
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["hard_gaps"] == []
+    assert len(by_claim) == 9
+    assert by_claim["asi-is-a-stack-not-a-model.core"]["terminal_state"] == (
+        "INCONCLUSIVE_WORKER_INADEQUATE"
+    )
+    assert by_claim["planning-as-a-control-layer.core"]["terminal_state"] == (
+        "INCONCLUSIVE_WORKER_INADEQUATE"
+    )
+    assert by_claim["system-boundaries-and-authority.core"]["terminal_state"] == (
+        "POSITIVE_SCOPED"
+    )
+    assert all(row["book_support_state_changed"] is False for row in by_claim.values())
