@@ -3753,6 +3753,17 @@
       "optimizer_positions": 87441996,
       "claim_boundary": "This authorizes semantic plan identity only for the exact unchanged state. It cannot reinterpret incompatible model, optimizer, RNG, cursor, data, objective, schedule, or evaluation state."
     },
+    "replacement_freeze": {
+      "state": "GREEN_OPERATOR_HOLD_REMAINS",
+      "evidence": "reports/pre_long_run_replacement_freeze.json",
+      "package_identity": "sha256:c7c251c5117efdb5c9a71a529ee3893dabe45d4a9425656820f8c917c5f005b9",
+      "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD",
+      "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
+      "operator_hold_present": true,
+      "long_training_authorized_now": false,
+      "long_training_started_or_resumed": false,
+      "incompatible_state_policy": "Any model topology, tensor, optimizer, RNG, cursor, data, objective, schedule, or evaluation mismatch requires a new content-addressed lineage."
+    },
     "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
     "resource_rule": "No clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor. Use finite prewritten workloads, transactional boundaries, and causal thermal/swap/disk/nonfinite/parity stops.",
     "no_claim_boundary": "Source review, roadmap admission, canary completion, loss reduction, or throughput does not establish Kimi K3 reproduction, Theseus capability, architecture superiority, public transfer, support, or release."

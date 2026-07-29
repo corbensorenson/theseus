@@ -100,12 +100,15 @@ still pass, and it cannot support a completion claim until the real receipt exis
 The previous practical architecture remains frozen as an immutable comparator, not as the
 next long-run launch target:
 
-The live campaign is currently held at exact step 11,416 while a finite pre-long-run review
-closes. This does not erase the qualified compiled-MLX route or reopen every historical
-candidate. It reconciles completed source-conditioned, supervision, BF16, and exact
-ANE/Accelerate/Metal evidence, then runs only three newly justified Kimi K3-derived matched
-canaries. The hold and all release conditions are machine-readable in
-`configs/neural_seed_pre_long_run_review.json`.
+The live campaign is currently held at exact step 11,416 after the finite pre-long-run review
+closed GREEN. This did not erase the qualified compiled-MLX route or reopen every historical
+candidate. It reconciled completed source-conditioned, supervision, BF16, and exact
+ANE/Accelerate/Metal evidence; completed the three newly justified Kimi K3-derived matched
+canaries; closed the fused-QKV full-route residual; removed legacy fixed-memory floors; passed
+separate residual and independent readiness audits; and published the content-addressed
+replacement freeze. The hold and release conditions remain machine-readable in
+`configs/neural_seed_pre_long_run_review.json` and
+`reports/pre_long_run_replacement_freeze.json`.
 
 - MoECOT: a shared encoder-decoder transformer trunk plus independently owned low-rank
   English, Python, JS/TS, HTML/CSS, and Rust arms; 57,340,426 active parameters and
@@ -286,7 +289,7 @@ two-transaction disk requirement, searches the functional-consumption registry f
 non-capability, and non-falsifying. The exact 160-case functional surface remains immutable,
 source-disjoint, `0/160` consumed, and `NOT_EVALUATED`. This closes the independent-audit
 prerequisite only; the content-addressed replacement freeze and operator-controlled hold still
-stand between this evidence and any long run.
+stood between this evidence and any long run.
 
 Freeze preflight also caught and repaired a semantic plan-identity gap rather than papering it
 over. The held step-11,416 receipt carries plan `4f18bd17...`, while the completed default-off
@@ -297,6 +300,17 @@ An exact receipt-bound migration now authorizes that transition only for checkpo
 isolated and unselected and that the active production graph, tensor state, data, cursor,
 objective, schedule, and evaluation surface are unchanged. The production resume validator
 now accepts this exact migration and would still reject any other state.
+
+The replacement freeze is now GREEN with package identity
+`sha256:c7c251c5117efdb5c9a71a529ee3893dabe45d4a9425656820f8c917c5f005b9`.
+It supersedes the historical step-3,480 package for present-tense resume authority while
+preserving that package as valid evidence for its exact past transaction. The selected route is
+compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, and
+sequential unscaled residuals. The decision is
+`AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD`. The freeze does
+not remove `runtime/control/neural_seed_yield_after_segment`, authorize training now, or start
+training. Any model, optimizer, RNG, cursor, data, objective, schedule, or evaluation mismatch
+requires a new content-addressed lineage.
 
 ### 2026-07-26 Production Training Hot-Path Audit
 

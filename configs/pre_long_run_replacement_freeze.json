@@ -1,0 +1,70 @@
+{
+  "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
+  "report": "reports/pre_long_run_replacement_freeze.json",
+  "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+  "supersedes": "reports/pretraining_architecture_freeze_package.json",
+  "production_trainer_config": "configs/moecot_language_arm_training.json",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "pre_long_run_review": "configs/neural_seed_pre_long_run_review.json",
+  "factorized_bakeoff": "reports/pretraining_factorized_bakeoff.json",
+  "acceleration_residual_audit": "reports/pre_long_run_acceleration_residual_audit.json",
+  "independent_readiness_audit": "reports/pre_long_run_independent_readiness_audit.json",
+  "functional_freeze": "configs/neural_seed_57m_functional_utility_freeze.json",
+  "functional_consumption_registry": "reports/private_functional_consumption_registry.jsonl",
+  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "lineage_root": "reports/neural_seed_training_campaign_lineage",
+  "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
+  "candidate_reports": {
+    "per_head_muon": "reports/per_head_muon_qualification.json",
+    "attention_residuals": "reports/kimi_k3_attnres_qualification.json",
+    "situ_glu": "reports/kimi_k3_situ_glu_qualification.json",
+    "fused_qkv": "reports/fused_qkv_full_route_qualification.json"
+  },
+  "expected": {
+    "optimizer_steps": 11416,
+    "optimizer_positions": 87441996,
+    "capability_claim": "NOT_EVALUATED",
+    "receipt_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
+    "current_plan_sha256": "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d",
+    "migration_id": "shared_trunk_step11416_finite_candidate_and_guard_closure_v1",
+    "prospective_anchor_step": 9048,
+    "lineage_manifest_count": 37,
+    "functional_case_count": 160,
+    "functional_consumed_case_count": 0,
+    "selected_recipe": {
+      "compute_dtype": "float32",
+      "fp32_master": false,
+      "token_loss_compute_dtype": "float32",
+      "training_step_mode": "compiled",
+      "compiled_microbatch_size": 4,
+      "compile_width_quantum": 64,
+      "optimizer_id": "adamw_mlx",
+      "training_rope_kernel": "mlx_fast",
+      "self_attention_projection": "separate",
+      "feed_forward_activation": "swiglu",
+      "residual_policy": "sequential_unscaled",
+      "per_head_muon": false
+    }
+  },
+  "required_gates": [
+    "authoritative_audits",
+    "semantic_plan_resume",
+    "checkpoint_custody",
+    "prospective_lineage",
+    "functional_surface",
+    "architecture_selection",
+    "candidate_dispositions",
+    "resource_policy",
+    "operator_hold"
+  ],
+  "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD",
+  "boundaries": {
+    "long_training_started_or_resumed": false,
+    "hold_removed_by_freeze": false,
+    "public_training_rows": 0,
+    "external_inference_calls": 0,
+    "fallback_template_router_tool_credit": 0,
+    "capability_or_utility_claim": false,
+    "scientific_falsification_claim": false
+  }
+}
