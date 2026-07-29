@@ -899,7 +899,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 8051236864,
+      "disk_free_bytes": 8040824832,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -920,11 +920,11 @@
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4b2a263c0b34da6abe7fda07c5617228868547f65f8e8c7fd5eb21ad17cdfd00"
+      "sha256": "3e124d4087af0002ebee23d368ddbce4067100d525154917d57541803368f56f"
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "87236d56420cf8e508d8b4981ef91f3da667d3b578c79e7feaca8e2c3649e88f"
+      "sha256": "f30382b08cd211a4376d308ac2794d5953a11ef27c5f0318d5dd914d78c2ddb6"
     }
   },
   "capability_claim": "NONE_INDEPENDENT_READINESS_AUDIT_ONLY",

@@ -10,7 +10,7 @@
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4b2a263c0b34da6abe7fda07c5617228868547f65f8e8c7fd5eb21ad17cdfd00"
+      "sha256": "3e124d4087af0002ebee23d368ddbce4067100d525154917d57541803368f56f"
     },
     "yield_control": {
       "path": "runtime/control/neural_seed_yield_after_segment",
@@ -321,7 +321,7 @@
     },
     "memory_disk": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 8051195904,
+      "disk_free_bytes": 8040783872,
       "disposition": "predicted_exhaustion_and_derived_two_transaction_disk_custody",
       "fixed_available_memory_floor_mib": 0,
       "passed": true,

@@ -302,7 +302,7 @@ objective, schedule, and evaluation surface are unchanged. The production resume
 now accepts this exact migration and would still reject any other state.
 
 The replacement freeze is now GREEN with package identity
-`sha256:c7c251c5117efdb5c9a71a529ee3893dabe45d4a9425656820f8c917c5f005b9`.
+`sha256:957eef550046e66d3ced190e25e2dd747bd0f3af40057e1b89bca44157b0e914`.
 It supersedes the historical step-3,480 package for present-tense resume authority while
 preserving that package as valid evidence for its exact past transaction. The selected route is
 compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, and
@@ -311,6 +311,13 @@ sequential unscaled residuals. The decision is
 not remove `runtime/control/neural_seed_yield_after_segment`, authorize training now, or start
 training. Any model, optimizer, RNG, cursor, data, objective, schedule, or evaluation mismatch
 requires a new content-addressed lineage.
+
+The final broad regression pass caught two stale semantic hashes for the frozen KERC
+candidate overlays after fixed-reserve removal. Their current plan identities are now rebound
+to the same exact candidate state under zero-reserve predicted-exhaustion governance; this
+does not reopen KERC or change its model/data/objective authority. The two failing migration
+tests now pass, and because the trainer config is package authority the audits and replacement
+freeze were regenerated rather than leaving a stale content address.
 
 ### 2026-07-26 Production Training Hot-Path Audit
 

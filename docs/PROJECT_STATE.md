@@ -36,9 +36,12 @@ share toward zero. Public benchmarks are calibration only.
   production graph, data, cursor, objective, schedule, and evaluation surface remain unchanged.
   Resume validation passes only for that exact identity. The deterministic replacement freeze
   is GREEN at package
-  `sha256:c7c251c5117efdb5c9a71a529ee3893dabe45d4a9425656820f8c917c5f005b9`
+  `sha256:957eef550046e66d3ced190e25e2dd747bd0f3af40057e1b89bca44157b0e914`
   and authorizes the exact unchanged step-11,416 resume only after operator hold removal. It
   leaves the hold installed, does not authorize training now, and did not start training.
+  Final regression also rebound two stale frozen-KERC overlay plan hashes caused solely by
+  fixed-reserve removal; both migration tests pass and all content-bound audits were
+  regenerated afterward.
 - **Deep-review reconciliation:** the 2026-07-25 source audit accepts the external review's
   authority-surface, evaluator-integrity, benchmark-validity, status-semantics,
   reproducibility, maintainability, and Rust/CUDA correctness criticisms. The dashboard

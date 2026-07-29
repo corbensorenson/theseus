@@ -3,7 +3,7 @@
     "acceleration_residual_audit": {
       "bytes": 18278,
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "87236d56420cf8e508d8b4981ef91f3da667d3b578c79e7feaca8e2c3649e88f"
+      "sha256": "f30382b08cd211a4376d308ac2794d5953a11ef27c5f0318d5dd914d78c2ddb6"
     },
     "candidate_contract": {
       "bytes": 40694,
@@ -33,7 +33,7 @@
     "independent_readiness_audit": {
       "bytes": 58249,
       "path": "reports/pre_long_run_independent_readiness_audit.json",
-      "sha256": "6f754a0b2c9a95fd21fe9f80355a64043654d80cc8996835b006d5d904f6eed5"
+      "sha256": "6206828ca1b8eac638a5de00e7710908c8688525612f0fc884792c0afe9c5a1e"
     },
     "pre_long_run_review": {
       "bytes": 16070,
@@ -41,9 +41,9 @@
       "sha256": "c7bd59a5c2323ee8421bcbff1356a1f1b9fd5ca0ca75785e140b28861d41cc2f"
     },
     "production_trainer_config": {
-      "bytes": 139965,
+      "bytes": 140653,
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4b2a263c0b34da6abe7fda07c5617228868547f65f8e8c7fd5eb21ad17cdfd00"
+      "sha256": "3e124d4087af0002ebee23d368ddbce4067100d525154917d57541803368f56f"
     },
     "yield_control": {
       "bytes": 77,
@@ -1973,7 +1973,7 @@
     "Scoped candidate dispositions are not broad scientific falsifications.",
     "This package does not remove the operator hold or start long training."
   ],
-  "package_identity": "sha256:c7c251c5117efdb5c9a71a529ee3893dabe45d4a9425656820f8c917c5f005b9",
+  "package_identity": "sha256:957eef550046e66d3ced190e25e2dd747bd0f3af40057e1b89bca44157b0e914",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",

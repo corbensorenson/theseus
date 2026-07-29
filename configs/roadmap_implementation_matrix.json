@@ -3756,7 +3756,7 @@
     "replacement_freeze": {
       "state": "GREEN_OPERATOR_HOLD_REMAINS",
       "evidence": "reports/pre_long_run_replacement_freeze.json",
-      "package_identity": "sha256:c7c251c5117efdb5c9a71a529ee3893dabe45d4a9425656820f8c917c5f005b9",
+      "package_identity": "sha256:957eef550046e66d3ced190e25e2dd747bd0f3af40057e1b89bca44157b0e914",
       "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD",
       "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
       "operator_hold_present": true,
