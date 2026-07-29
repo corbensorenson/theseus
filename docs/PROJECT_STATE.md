@@ -25,7 +25,11 @@ share toward zero. Public benchmarks are calibration only.
   custody is derived from two complete checkpoint transactions rather than a round-number
   floor. This is finite execution-selection evidence, not a fastest-possible, capability,
   utility, or scientific-falsification claim. The long-run hold remains installed pending
-  independent claim-boundary review and the content-addressed replacement freeze.
+  the content-addressed replacement freeze. A separately implemented independent audit has
+  now re-hashed every residual-audit input, reconstructed all prospective lineage and artifact
+  edges, verified fresh-process replay/resource policy, found no consumption row matching the
+  current 57M functional freeze identity, and confirmed every candidate negative is scoped.
+  It is GREEN and explicitly does not authorize training.
 - **Deep-review reconciliation:** the 2026-07-25 source audit accepts the external review's
   authority-surface, evaluator-integrity, benchmark-validity, status-semantics,
   reproducibility, maintainability, and Rust/CUDA correctness criticisms. The dashboard

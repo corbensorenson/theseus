@@ -3709,7 +3709,7 @@
       "cosine decay is already present"
     ],
     "acceleration_residual_closure": {
-      "state": "GREEN_PENDING_INDEPENDENT_AUDITS_AND_REPLACEMENT_FREEZE",
+      "state": "GREEN_PENDING_REPLACEMENT_FREEZE",
       "evidence": "reports/pre_long_run_acceleration_residual_audit.json",
       "domains": [
         "mlx_metal",
@@ -3726,6 +3726,21 @@
       "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
       "claim_boundary": "No currently source- or measured-profile-justified open acceleration residual remains among tested eligible routes. This does not prove the route is physically fastest possible.",
       "reentry_rule": "A materially new source, mechanism, hardware capability, or measured critical-path residual must justify one bounded prospectively registered matched candidate."
+    },
+    "independent_readiness_audit": {
+      "state": "GREEN_PENDING_REPLACEMENT_FREEZE",
+      "evidence": "reports/pre_long_run_independent_readiness_audit.json",
+      "independent_checks": [
+        "evidence_integrity",
+        "lineage_custody",
+        "replay_integrity",
+        "resource_integrity",
+        "evaluation_nonconsumption",
+        "negative_evidence_scope",
+        "claim_boundary",
+        "execution_hold"
+      ],
+      "claim_boundary": "The audit supports readiness for a content-addressed replacement freeze only. It does not authorize long training, prove physical optimality, evaluate utility, or broaden any scoped negative."
     },
     "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
     "resource_rule": "No clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor. Use finite prewritten workloads, transactional boundaries, and causal thermal/swap/disk/nonfinite/parity stops.",

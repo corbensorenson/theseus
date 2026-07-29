@@ -277,6 +277,17 @@ materially new source, mechanism, hardware capability, or measured critical-path
 reopen one bounded matched candidate prospectively. The final independent claim-boundary and
 replacement-freeze transaction remains before any long training authorization.
 
+The separate independent readiness audit is also GREEN. It does not import the residual-audit
+implementation: it reopens and hashes every asserted evidence and authority file, reconstructs
+the 37-manifest prospective lineage and every artifact edge, verifies canonical/versioned
+model, AdamW, and MLX RNG identity, checks fresh-process and sustained replay, recomputes the
+two-transaction disk requirement, searches the functional-consumption registry for the current
+57M freeze identity, and checks that every candidate negative remains source-disjoint,
+non-capability, and non-falsifying. The exact 160-case functional surface remains immutable,
+source-disjoint, `0/160` consumed, and `NOT_EVALUATED`. This closes the independent-audit
+prerequisite only; the content-addressed replacement freeze and operator-controlled hold still
+stand between this evidence and any long run.
+
 ### 2026-07-26 Production Training Hot-Path Audit
 
 The system is **not yet entitled to claim that training is as fast as possible**. It is

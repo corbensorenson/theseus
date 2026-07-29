@@ -1,0 +1,55 @@
+{
+  "policy": "project_theseus_pre_long_run_independent_readiness_audit_v1",
+  "report": "reports/pre_long_run_independent_readiness_audit.json",
+  "residual_audit": "reports/pre_long_run_acceleration_residual_audit.json",
+  "residual_audit_config": "configs/pre_long_run_acceleration_residual_audit.json",
+  "production_trainer_config": "configs/moecot_language_arm_training.json",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "pre_long_run_review": "configs/neural_seed_pre_long_run_review.json",
+  "functional_freeze": "configs/neural_seed_57m_functional_utility_freeze.json",
+  "functional_consumption_registry": "reports/private_functional_consumption_registry.jsonl",
+  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "lineage_root": "reports/neural_seed_training_campaign_lineage",
+  "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
+  "candidate_reports": {
+    "per_head_muon": "reports/per_head_muon_qualification.json",
+    "attention_residuals": "reports/kimi_k3_attnres_qualification.json",
+    "situ_glu": "reports/kimi_k3_situ_glu_qualification.json",
+    "fused_qkv": "reports/fused_qkv_full_route_qualification.json"
+  },
+  "replay_reports": {
+    "fresh_process": "reports/fresh_process_pretraining_qualification.json",
+    "sustained_route": "reports/selected_route_sustained_qualification.json"
+  },
+  "expected": {
+    "optimizer_steps": 11416,
+    "optimizer_positions": 87441996,
+    "capability_claim": "NOT_EVALUATED",
+    "prospective_anchor_step": 9048,
+    "lineage_manifest_count": 37,
+    "selected_recipe": {
+      "compute_dtype": "float32",
+      "fp32_master": false,
+      "token_loss_compute_dtype": "float32",
+      "training_step_mode": "compiled",
+      "compiled_microbatch_size": 4,
+      "compile_width_quantum": 64,
+      "optimizer_id": "adamw_mlx",
+      "training_rope_kernel": "mlx_fast",
+      "self_attention_projection": "separate",
+      "feed_forward_activation": "swiglu",
+      "residual_policy": "sequential_unscaled",
+      "per_head_muon": false
+    }
+  },
+  "required_audits": [
+    "evidence_integrity",
+    "lineage_custody",
+    "replay_integrity",
+    "resource_integrity",
+    "evaluation_nonconsumption",
+    "negative_evidence_scope",
+    "claim_boundary",
+    "execution_hold"
+  ]
+}

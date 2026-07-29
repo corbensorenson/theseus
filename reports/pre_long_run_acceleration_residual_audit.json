@@ -6,7 +6,7 @@
     },
     "pre_long_run_review": {
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "b264f2dbfe7fd95322e855e1ed6ffa8b938e315968e6653bba082d8028126285"
+      "sha256": "d03ea9c758be5eea805ab3eebdef75c5f73a216e800a2dc67d6bf9e4ffdffc61"
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
@@ -321,7 +321,7 @@
     },
     "memory_disk": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 6954872832,
+      "disk_free_bytes": 8050024448,
       "disposition": "predicted_exhaustion_and_derived_two_transaction_disk_custody",
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
