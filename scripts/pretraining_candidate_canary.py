@@ -603,6 +603,9 @@ def candidate_host_safety_mapping(
         mapping["minimum_available_before_launch_mib"] = (
             configured_launch_reserve_mib
         )
+        predicted_exhaustion_mode = (
+            mapping.get("memory_guard_mode") == "predicted_exhaustion"
+        )
         mapping["measured_launch_preflight"] = {
             "path": relative(receipt_path),
             "sha256": expected_sha256,
@@ -636,11 +639,24 @@ def candidate_host_safety_mapping(
             "measured_peak_role": (
                 "advisory_capacity_projection_not_launch_gate"
             ),
-            "launch_gate": "configured_live_reserve_only",
+            "launch_gate": (
+                "predicted_exhaustion_only_no_fixed_reserve"
+                if predicted_exhaustion_mode
+                else "configured_live_reserve_only"
+            ),
             "runtime_enforcement": (
-                "external_live_reserve_watchdog_with_swap_growth_telemetry"
-                if mapping.get("swapout_growth_action") == "report_only"
-                else "external_live_reserve_and_swap_growth_watchdog"
+                "external_predicted_exhaustion_watchdog_with_swap_growth_telemetry"
+                if predicted_exhaustion_mode
+                and mapping.get("swapout_growth_action") == "report_only"
+                else (
+                    "external_predicted_exhaustion_and_swap_growth_watchdog"
+                    if predicted_exhaustion_mode
+                    else (
+                        "external_live_reserve_watchdog_with_swap_growth_telemetry"
+                        if mapping.get("swapout_growth_action") == "report_only"
+                        else "external_live_reserve_and_swap_growth_watchdog"
+                    )
+                )
             ),
         }
     host_resource_safety.policy_from_mapping(

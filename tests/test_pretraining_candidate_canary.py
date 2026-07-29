@@ -49,9 +49,11 @@ def test_kerc_lease_binds_matched_control_and_behavior_panel() -> None:
     assert lease["selected_seed"] == 20260722
     assert lease["seed_execution_mode"] == "single_bound_seed"
     assert lease["targets"] == ["english_kerc", "english_surface_control"]
-    assert lease["host_safety_policy"]["minimum_available_before_launch_mib"] == 2048
-    assert lease["host_safety_policy"]["minimum_available_during_run_mib"] == 2048
+    assert lease["host_safety_policy"]["minimum_available_before_launch_mib"] == 0
+    assert lease["host_safety_policy"]["minimum_available_during_run_mib"] == 0
     assert lease["host_safety_policy"]["maximum_swapout_growth_mib"] == 16
+    assert lease["host_safety_policy"]["swapout_growth_action"] == "report_only"
+    assert lease["host_safety_policy"]["memory_guard_mode"] == "predicted_exhaustion"
     assert lease["execution_policy"]["objective_gradient_checkpointing"] is True
     assert lease["execution_policy"]["objective_gradient_decomposition"] is True
     assert lease["execution_policy"]["token_loss_position_chunk_size"] == 64
@@ -72,22 +74,24 @@ def test_kerc_lease_binds_matched_control_and_behavior_panel() -> None:
     assert "seed_not_authorized" in denied["faults"]
 
 
-def test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate() -> None:
+def test_k5_measured_peak_is_advisory_and_predicted_exhaustion_is_the_gate() -> None:
     mapping = canary.candidate_host_safety_mapping("rdc_kerc_k5_adequacy")
     assert mapping["maximum_swapout_growth_mib"] == 320
     assert mapping["swapout_growth_action"] == "report_only"
     preflight = mapping["measured_launch_preflight"]
     assert preflight["maximum_inferred_unified_memory_mib"] == 6268.875
-    assert preflight["required_live_reserve_mib"] == 2048
-    assert mapping["minimum_available_before_launch_mib"] == 2048
-    assert preflight["resolved_minimum_available_before_launch_mib"] == 2048
-    assert preflight["advisory_projected_available_mib"] == 8316.875
+    assert preflight["required_live_reserve_mib"] == 0
+    assert mapping["minimum_available_before_launch_mib"] == 0
+    assert preflight["resolved_minimum_available_before_launch_mib"] == 0
+    assert preflight["advisory_projected_available_mib"] == 6268.875
     assert preflight["measured_peak_role"] == (
         "advisory_capacity_projection_not_launch_gate"
     )
-    assert preflight["launch_gate"] == "configured_live_reserve_only"
+    assert preflight["launch_gate"] == (
+        "predicted_exhaustion_only_no_fixed_reserve"
+    )
     assert preflight["runtime_enforcement"] == (
-        "external_live_reserve_watchdog_with_swap_growth_telemetry"
+        "external_predicted_exhaustion_watchdog_with_swap_growth_telemetry"
     )
     assert preflight["qualified_maximum_training_sequence_tokens"] == 1005
     assert preflight["current_maximum_training_sequence_tokens"] == 628
