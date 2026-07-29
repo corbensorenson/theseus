@@ -331,6 +331,16 @@ def materialize_e1_evidence_capsule(source_root: Path, checkout_root: Path) -> d
     for relative_path in sorted(source_timestamp_paths):
         source = source_root / relative_path
         destination = checkout_root / relative_path
+        if source.is_file() and not destination.is_file():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, destination)
+            entries.append({
+                "path": relative_path,
+                "bytes": source.stat().st_size,
+                "sha256": sha256_bytes(source.read_bytes()),
+                "raw_content_embedded_in_public_packet": False,
+                "sensitivity": "local_source_dependency_digest_only",
+            })
         if not source.is_file() or not destination.is_file():
             source_timestamp_faults.append(relative_path)
             continue
