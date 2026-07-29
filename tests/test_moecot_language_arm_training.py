@@ -262,6 +262,14 @@ def test_fresh_process_campaign_does_not_spawn_after_target_completion(
             "remaining_pretrain_optimizer_positions": 0
         },
     )
+    monkeypatch.setattr(
+        campaign_module,
+        "lineage_state",
+        lambda *_args, **_kwargs: {
+            "trigger_state": "GREEN",
+            "head_identity": {},
+        },
+    )
 
     report = campaign_module.run_campaign(
         config_path=tmp_path / "config.json",
@@ -2836,19 +2844,22 @@ def test_planning_parameter_accounting_never_imports_mlx(
     assert models["moecot_system"]["active_parameter_count_per_request"] == 57_340_426
 
 
+def frozen_step3480_receipt() -> dict:
+    return {
+        "plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "optimizer_steps": 3480,
+        "optimizer_positions": 26680656,
+        "stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+    }
+
+
 def test_step3480_receipt_accepts_compiled_state_detachment_migration() -> None:
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
-    receipt = json.loads(
-        (
-            ROOT
-            / "checkpoints"
-            / "moecot_mlx_57m_active_preregistered_v1"
-            / "shared_trunk"
-            / "training_receipt.json"
-        ).read_text()
-    )
+    receipt = frozen_step3480_receipt()
     stage_signature = "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9"
     migration = accepted_plan_identity_migration(
         receipt,
@@ -2869,15 +2880,7 @@ def test_step3480_receipt_accepts_final_acceleration_disposition_migration() -> 
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
-    receipt = json.loads(
-        (
-            ROOT
-            / "checkpoints"
-            / "moecot_mlx_57m_active_preregistered_v1"
-            / "shared_trunk"
-            / "training_receipt.json"
-        ).read_text()
-    )
+    receipt = frozen_step3480_receipt()
     stage_signature = "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9"
     migration = accepted_plan_identity_migration(
         receipt,
@@ -2898,15 +2901,7 @@ def test_step3480_receipt_accepts_replay_swap_policy_alignment_migration() -> No
     config = json.loads(
         (ROOT / "configs" / "moecot_language_arm_training.json").read_text()
     )
-    receipt = json.loads(
-        (
-            ROOT
-            / "checkpoints"
-            / "moecot_mlx_57m_active_preregistered_v1"
-            / "shared_trunk"
-            / "training_receipt.json"
-        ).read_text()
-    )
+    receipt = frozen_step3480_receipt()
     stage_signature = "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9"
     migration = accepted_plan_identity_migration(
         receipt,

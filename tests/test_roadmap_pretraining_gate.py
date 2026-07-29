@@ -43,6 +43,35 @@ def matrix(required_status: str = "qualified") -> dict:
 
 
 class PreTrainingArchitectureGateTests(unittest.TestCase):
+    def test_active_t1_currentness_replaces_no_historical_t0a_claims(self) -> None:
+        payload = json.loads(
+            (
+                ROOT / "configs/roadmap_implementation_matrix.json"
+            ).read_text(encoding="utf-8")
+        )
+        contract = payload["pre_training_architecture_contract"][
+            "freeze_package_evidence"
+        ]
+        report = gate.audit_pre_training_backlog_evidence(contract)
+        currentness = report["post_activation_currentness"]
+
+        self.assertTrue(report["ready"])
+        self.assertGreater(
+            report["historical_source_artifact_drift_count"], 0
+        )
+        self.assertTrue(
+            report[
+                "historical_source_artifact_drift_accepted_after_activation"
+            ]
+        )
+        self.assertTrue(currentness["ready"])
+        self.assertFalse(currentness["pre_anchor_full_chain_available"])
+        self.assertEqual(currentness["capability_claim"], "NOT_EVALUATED")
+        self.assertEqual(
+            currentness["migration_id"],
+            "shared_trunk_step9048_append_only_lineage_custody_v1",
+        )
+
     def test_deferred_kerc_campaign_exclusion_is_machine_checked(self) -> None:
         import tempfile
 

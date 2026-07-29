@@ -164,6 +164,19 @@
         "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while making the independent fresh-process replay owner consume the already-selected host swap policy and binding the imported watchdog implementation into the training-plan closure. Exact two-segment replay matched an independently resumed second segment with 2.384185791015625e-07 maximum model delta, 6.9267116487026215e-09 maximum optimizer delta, identical RNG state, contiguous cursor and positions, and no causal watchdog fault. Machine-wide swapout counters remain visible but diagnostic under report_only; process-group RSS, measured working-set-envelope overrun, and predicted-exhaustion faults remain hard. The independently completed 4797.484 MiB route envelope suppresses sub-second decline extrapolation whenever observed route use remains inside that envelope, without requiring an arbitrary amount of initially free memory. Training authority requires the causal host guard to pass and rejects a report whose swap treatment disagrees with the frozen config. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract changes."
       },
       {
+        "migration_id": "shared_trunk_step9048_append_only_lineage_custody_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+        "legacy_checkpoint_sha256": "ed28acc8cc9a82b4bd00dbd8487f17b8131157df3c828f66eb458902d4e3c16d",
+        "legacy_optimizer_state_sha256": "7b19ceb6880954a845bdb79914d84a6d388992abe45e98d63dfdfa3a2ed6c829",
+        "legacy_optimizer_steps": 9048,
+        "legacy_optimizer_positions": 69310840,
+        "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "configs/neural_seed_t1_lineage_anchor.json configs/neural_seed_training_availability.json scripts/neural_seed_training_campaign.py tests/test_neural_seed_training_campaign.py tests/test_moecot_language_arm_training.py",
+        "reason": "Continue the exact step-9048 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while adding a prospective append-only segment lineage ledger to the outer campaign controller. The anchor explicitly records that the complete step-3480-to-9048 predecessor chain and the exact step-3480 payload are not locally available, so it cannot launder that gap into a replay claim. Before any later segment launches, the live receipt must match the anchor or the terminal ledger identity; every state-changing segment archives exact before/after receipts plus child and host-guard identities before another launch. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, evaluation contract, or capability state changes."
+      },
+      {
         "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
         "target_id": "shared_trunk",
         "legacy_plan_sha256": "b55e7ae19ed5956b0e02ecc73809846fc0d51a867c20c83d15198daec4eeab9e",
@@ -649,7 +662,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "a0bcc8b6dfe43cd5e40db9943211bfa83b1a06d68b858172d2bf078505c86b21",
+        "required_current_plan_sha256": "c144d253fee6d619032cd756d6d962ca337a5e98261d5d6323ed0eaf5cec26bc",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -677,7 +690,7 @@
         "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
         "legacy_optimizer_steps": 4914,
         "legacy_optimizer_positions": 519165,
-        "required_current_plan_sha256": "48e89b87ca3d4be387479161c3dfac03301f1746fb0d2f30ec80eeb045501ef8",
+        "required_current_plan_sha256": "12cde4025eac93520a4e8d856d6502aa43ea6aea48b93eb0f25d0efe7cc4107d",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
         "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed."

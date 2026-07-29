@@ -314,7 +314,7 @@
         },
       "moecot_training_config": {
         "path": "configs/moecot_language_arm_training.json",
-        "sha256": "79b53569c849a83150d451413f77e5b947d3669dd089af8ed530a2c28e45096b"
+        "sha256": "2e4eecf854e19cac493455caf61dd30110433a9eb782ed59dc0a575b1382d2a6"
       },
       "moecot_training_implementation": {
         "path": "scripts/moecot_language_arm_training.py",
@@ -322,7 +322,7 @@
       },
       "moecot_training_tests": {
         "path": "tests/test_moecot_language_arm_training.py",
-        "sha256": "a5ca8046d589ef457ecd95d9b9d2a2732963a2f9ca13865cb2f956aee2f447ca"
+        "sha256": "92087a49ab06e6d5c892504c17b7ad06f1dbdb3450fc3d64d51cda858f0e15fe"
       },
       "canonical_pretraining_optimizers": {
         "path": "scripts/pretraining_optimizers.py",
@@ -7103,9 +7103,13 @@
         "configs/neural_seed_architecture_review.json",
         "configs/neural_seed_architecture_review_freeze.json",
         "configs/neural_seed_architecture_review_freeze_v4.json",
+        "configs/neural_seed_architecture_review_freeze_v5.json",
+        "configs/neural_seed_t1_lineage_anchor.json",
+        "configs/neural_seed_training_availability.json",
         "configs/evaluation_history/neural_seed_architecture_review_freeze_pre_total_budget_v0.json",
         "scripts/neural_seed_architecture_review.py",
         "scripts/neural_seed_campaign_controller.py",
+        "scripts/neural_seed_training_campaign.py",
         "scripts/resource_acceleration_assembly_line.py",
         "scripts/resource_acceleration_qualification.py",
         "scripts/mlx_training_operator_station_probe.py",
@@ -7227,9 +7231,13 @@
             "configs/neural_seed_architecture_review.json",
             "configs/neural_seed_architecture_review_freeze.json",
             "configs/neural_seed_architecture_review_freeze_v4.json",
+            "configs/neural_seed_architecture_review_freeze_v5.json",
+            "configs/neural_seed_t1_lineage_anchor.json",
+            "configs/neural_seed_training_availability.json",
             "configs/evaluation_history/neural_seed_architecture_review_freeze_pre_total_budget_v0.json",
             "scripts/neural_seed_architecture_review.py",
             "scripts/neural_seed_campaign_controller.py",
+            "scripts/neural_seed_training_campaign.py",
             "scripts/resource_acceleration_assembly_line.py",
             "scripts/resource_acceleration_qualification.py",
             "scripts/mlx_training_operator_station_probe.py",

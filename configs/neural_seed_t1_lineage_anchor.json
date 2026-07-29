@@ -1,0 +1,39 @@
+{
+  "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
+  "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+  "target_id": "shared_trunk",
+  "created_utc": "2026-07-29T00:55:32.437536Z",
+  "anchor_kind": "prospective_reconciliation_after_predecessor_chain_gap",
+  "plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+  "stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+  "anchor_identity": {
+    "optimizer_steps": 9048,
+    "optimizer_positions": 69310840,
+    "pretrain_optimizer_positions": 69310840,
+    "checkpoint_sha256": "ed28acc8cc9a82b4bd00dbd8487f17b8131157df3c828f66eb458902d4e3c16d",
+    "optimizer_state_sha256": "7b19ceb6880954a845bdb79914d84a6d388992abe45e98d63dfdfa3a2ed6c829",
+    "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+    "receipt_sha256": "e46683967238fd79c328bd7465bf7030e30bb5127f0afee7b02fbf936b0fed06"
+  },
+  "t0a_freeze": {
+    "source_commit": "2bd2f0b1f240b826c1606556313926084e9f3592",
+    "package_path": "reports/pretraining_architecture_freeze_package.json",
+    "package_identity": "sha256:0b83c4b55616679d636df84ec14dea5825e79357b228fe441f399241acc9ae9c",
+    "optimizer_steps": 3480,
+    "optimizer_positions": 26680656,
+    "checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+    "optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+    "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+    "receipt_sha256": "3f4c4ced2c610f08dc62b9cc3c02e2f3a22222a1c467e5264c75546b451e007a"
+  },
+  "pre_anchor_custody": {
+    "full_segment_predecessor_chain_available": false,
+    "t0a_payload_still_materialized_at_frozen_identity": false,
+    "observed_issue": "The live canonical checkpoint path advanced from the T0A step-3480 identity to T1 step 9048 while retaining only the latest step-named payload. The committed T0A package and qualification receipts preserve the historical identity, but the exact step-3480 payload and a complete immutable segment-by-segment predecessor chain are not locally available.",
+    "maximum_inference": "T0A architecture and execution qualification was green at its committed freeze transaction, and the exact T1 step-9048 state is locally identified. This anchor does not independently prove every optimizer transition between those two states and cannot support a full-chain replay claim."
+  },
+  "prospective_rule": "Before any later T1 segment launches, the live receipt must equal this anchor or the terminal identity of the complete append-only lineage ledger. Every successful state-changing segment must archive exact before/after receipts and checkpoint, optimizer, RNG, child-report, and host-guard identities before another segment can launch.",
+  "capability_claim": "NOT_EVALUATED",
+  "support_state_effect": "none",
+  "release_effect": "none"
+}

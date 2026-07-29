@@ -878,7 +878,7 @@ share toward zero. Public benchmarks are calibration only.
 - `reports/ane_metal_split_linear_m1.json`
 - `configs/ane_metal_heterogeneous_execution.json`
 - `configs/neural_seed_architecture_review.json`
-- `configs/neural_seed_architecture_review_freeze_v4.json`
+- `configs/neural_seed_architecture_review_freeze_v5.json`
 - `reports/neural_seed_architecture_review_status.json`
 - `reports/neural_seed_campaign_controller.json`
 - `reports/theseus_artifact_budget_gate_current.json`
@@ -903,6 +903,15 @@ successor discovery lane rather than a campaign-one route or a scientific negati
 architecture-intake, canary, or report family may displace the matched campaign. Existing training,
 decode, and joined-runtime speedups remain mechanics evidence until the student produces direct
 source-disjoint functional behavior.
+
+T1 is active at shared-trunk step 9,048 and 69,310,840 of 1,096,734,920
+pretraining positions. The live canonical path advanced after the committed T0A freeze, but the
+exact step-3,480 payload and a complete immutable step-by-step predecessor chain were not retained.
+`configs/neural_seed_t1_lineage_anchor.json` therefore records an explicit prospective anchor at
+step 9,048 and the pre-anchor custody gap. Every later state-changing segment must archive exact
+before/after receipts plus child and host-guard identities in the append-only lineage ledger before
+another segment can launch. This preserves current work without laundering the missing predecessor
+chain into a replay, capability, or support claim.
 
 The security package is parallel but real: it blocks routine dashboard/OpenAI-shim/Hive/LAN
 exposure, not MLX training. The 84-chapter reconciliation is also bounded metadata work and may

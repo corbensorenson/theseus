@@ -1845,7 +1845,15 @@
       "path": "reports/pretraining_architecture_freeze_package.json",
       "policy": "project_theseus_pretraining_architecture_freeze_v1",
       "required_trigger_state": "GREEN",
-      "required_disposition": "architecture_frozen_training_not_started"
+      "required_disposition": "architecture_frozen_training_not_started",
+      "post_activation_currentness": {
+        "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
+        "path": "configs/neural_seed_t1_lineage_anchor.json",
+        "availability_policy": "configs/neural_seed_training_availability.json",
+        "training_config": "configs/moecot_language_arm_training.json",
+        "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+        "allow_historical_source_artifact_drift": true
+      }
     },
     "allowed_before_freeze": "Implementation, integration, deterministic replay, negative testing, migration testing, checkpoint round trips, and isolated candidate-specific adequacy runs are allowed. The existing eight-step guard remains the fail-closed default until T0A implements a preregistered canary authority with hard position, wall-time, seed, memory, disk, and heldout boundaries. Full-corpus optimizer work, mutation of the durable control checkpoint, public calibration, confirmation-surface consumption, and capability claims are not.",
     "no_shortcut": "A phase or backlog item may postpone only evidence that intrinsically requires a prerequisite behavior, exact-once public calibration, real-use time, or a literally unavailable external peer/device. Resource pressure on a critical local model, data, KERC, memory, routing, verifier, checkpoint, evaluation, or serving path creates an optimization or redesign blocker and cannot close as deferred. Missing contracts, authority, memory, evidence, deterministic tooling, runtime, migration, security, checkpoint lineage, campaign preregistration, objective plumbing, reproducibility, or governance remain architecture blockers. A speculative item may be adequately scope-retired before training; it may not remain vaguely planned and then silently invalidate the frozen run.",
@@ -5128,7 +5136,15 @@
           "path": "reports/pretraining_architecture_freeze_package.json",
           "policy": "project_theseus_pretraining_architecture_freeze_v1",
           "required_trigger_state": "GREEN",
-          "required_disposition": "architecture_frozen_training_not_started"
+          "required_disposition": "architecture_frozen_training_not_started",
+          "post_activation_currentness": {
+            "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
+            "path": "configs/neural_seed_t1_lineage_anchor.json",
+            "availability_policy": "configs/neural_seed_training_availability.json",
+            "training_config": "configs/moecot_language_arm_training.json",
+            "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+            "allow_historical_source_artifact_drift": true
+          }
         },
         "required_source_artifact_paths": [
           "configs/project_manifest_registry.json",
@@ -6113,7 +6129,15 @@
           "path": "reports/pretraining_architecture_freeze_package.json",
           "policy": "project_theseus_pretraining_architecture_freeze_v1",
           "required_trigger_state": "GREEN",
-          "required_disposition": "architecture_frozen_training_not_started"
+          "required_disposition": "architecture_frozen_training_not_started",
+          "post_activation_currentness": {
+            "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
+            "path": "configs/neural_seed_t1_lineage_anchor.json",
+            "availability_policy": "configs/neural_seed_training_availability.json",
+            "training_config": "configs/moecot_language_arm_training.json",
+            "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+            "allow_historical_source_artifact_drift": true
+          }
         },
         "required_source_artifact_paths": [
           "configs/moecot_language_arm_training.json",
@@ -7728,13 +7752,13 @@
       },
       {
         "id": "T0A",
-        "state": "active",
+        "state": "complete_with_prospective_T1_custody_residual",
         "depends_on": ["T0"],
         "exit": "Adequate MTP, target-authoritative drafting, learned dynamic byte patches, RDC-enhanced KERC, optimizer challengers, candidate-specific canaries, frozen evaluator prompt-injection/runtime-taint integrity, and the matched factorized bakeoff are implemented through existing owners; every finite candidate is adopted or adequately dispositioned; a replacement content-addressed architecture freeze is published."
       },
       {
         "id": "T1",
-        "state": "blocked_by_T0A",
+        "state": "active_step_9048_prospectively_anchored_not_evaluated",
         "depends_on": ["T0A"],
         "exit": "The preregistration, executable topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then the five frozen arms and matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
       },

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import asdict
+import json
 import sys
 from pathlib import Path
 
@@ -60,6 +61,11 @@ def test_freeze_refuses_to_claim_replay_without_executing_it(
         "architecture_dispositions",
         lambda _config: {"required_count": 1, "ready_count": 1, "rows": {}},
     )
+    monkeypatch.setattr(
+        freeze,
+        "selected_route_execution_qualification",
+        lambda _config: {"historical_fixture": True},
+    )
     with pytest.raises(freeze.ArchitectureFreezeFault, match="independent_replay_required"):
         freeze.build_report(freeze.load_config(), execute_replays=False)
 
@@ -75,10 +81,15 @@ def test_replacement_freeze_requires_factorized_selection() -> None:
 
 
 def test_replacement_freeze_binds_green_selected_route_execution() -> None:
-    qualification = freeze.selected_route_execution_qualification(
-        freeze.load_config()
+    package = json.loads(
+        (
+            ROOT / "reports/pretraining_architecture_freeze_package.json"
+        ).read_text(encoding="utf-8")
     )
+    qualification = package["selected_route_execution_qualification"]
 
+    assert package["trigger_state"] == "GREEN"
+    assert package["disposition"] == "architecture_frozen_training_not_started"
     assert qualification["training_plan_sha256"] == (
         "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f"
     )

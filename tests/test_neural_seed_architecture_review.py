@@ -73,7 +73,7 @@ def test_review_plan_is_isolated_and_preserves_canonical_architecture() -> None:
         assert target["review_only"] is True
         assert target["plan_sha256"] == planned["plan_sha256"]
         assert target["checkpoint"].startswith(
-            "checkpoints/neural_seed_57m_architecture_review_v4/100000000/"
+            "checkpoints/neural_seed_57m_architecture_review_v5/100000000/"
         )
         assert target["checkpoint"] != canonical["targets"][target_id]["checkpoint"]
         assert target["review_component_total_optimizer_positions"] == phases[target_id]["total"]

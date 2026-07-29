@@ -8,6 +8,15 @@
     "training_config": "configs/moecot_language_arm_training.json",
     "complete_transactions_required": 2
   },
+  "lineage_custody": {
+    "policy": "project_theseus_append_only_training_segment_lineage_v1",
+    "anchor": "configs/neural_seed_t1_lineage_anchor.json",
+    "ledger_directory": "reports/neural_seed_training_campaign_lineage",
+    "archive_before_and_after_receipts": true,
+    "archive_child_and_host_guard_receipts": true,
+    "require_contiguous_identity_before_launch": true,
+    "manifest_written_last": true
+  },
   "yield_after_segment_control": "runtime/control/neural_seed_yield_after_segment",
   "interactive_accelerator_process_patterns": [
     "moecot_language_arm_training.py --execute",

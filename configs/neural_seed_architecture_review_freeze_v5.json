@@ -1,0 +1,68 @@
+{
+  "confirmation_surface_consumed": false,
+  "development_surface_reusable": true,
+  "frozen_utc": "2026-07-29T01:31:16.815127Z",
+  "hard_gaps": [],
+  "immutable": true,
+  "policy": "project_theseus_neural_seed_architecture_review_freeze_v1",
+  "public_surface_consumed": false,
+  "review_id": "neural_seed_57m_private_dev_rung_v5",
+  "review_optimizer_positions": [
+    100000000
+  ],
+  "semantic_identity": {
+    "artifacts": {
+      "case_compiler": {
+        "path": "scripts/neural_seed_functional_cases.py",
+        "sha256": "9076444f1a6618b22b92fc2693b57be2c260182a45b15baa2915d8bf711bb181"
+      },
+      "functional_config": {
+        "path": "configs/neural_seed_functional_utility.json",
+        "sha256": "f7d65b888e555c2504b35116fce74f84619feb2179600fb8e780427548c89b3f"
+      },
+      "local_rater_config": {
+        "path": "configs/neural_seed_local_english_raters.json",
+        "sha256": "48ce47f0351d49660afacc6bddb02b6c196a5590a9982b1177c10eb0e22fecf6"
+      },
+      "local_rater_runner": {
+        "path": "scripts/neural_seed_local_english_raters.py",
+        "sha256": "e28663f7e7660fdc79c79cfbddfa8ac8eec45e1edb8cbb5ad7d0d230552d692b"
+      },
+      "review_config": {
+        "path": "configs/neural_seed_architecture_review.json",
+        "sha256": "7a4b96d91c1137a1d9d4aed31971e355fac732a7505e4e8ee7e7dfb91eb44635"
+      },
+      "review_runner": {
+        "path": "scripts/neural_seed_architecture_review.py",
+        "sha256": "ea34395b2fdb4c4d403fc22ff80d2d3d7ef79a5662cceb02cd4168b7dc2eab1c"
+      },
+      "scale_config": {
+        "path": "configs/neural_seed_50m_scale_preregistration.json",
+        "sha256": "164527919ec1cb94a2f2d6f714f67af2db9d0f811aba147e8291c21a735c7c4e"
+      },
+      "training_config": {
+        "path": "configs/moecot_language_arm_training.json",
+        "sha256": "2e4eecf854e19cac493455caf61dd30110433a9eb782ed59dc0a575b1382d2a6"
+      },
+      "training_runner": {
+        "path": "scripts/moecot_language_arm_training.py",
+        "sha256": "c2b7adfee7c2c549236364286d0227ac3800780af072e3203c75e3602b2271e6"
+      },
+      "verifier": {
+        "path": "scripts/neural_seed_functional_verifiers.py",
+        "sha256": "6825ee8bd40b2bb8329959f3ae9c7cc75e4de46bf9bee3313ea2d7affbb3869b"
+      }
+    },
+    "candidate_packet_sha256": "b93c7d2593d1f989112ea4c1c02f5d42eecc5983755cdaba57d197d19efe7376",
+    "case_contract_sha256": "3b17c30d6bfc1f5c563fab10b6d5d57de842fd5027e8945f202ae9e193d6502d",
+    "execution_policy_sha256": "df25beee074b4ed7a6e65f484f32dadcedb5d72981f0183d8d9ba2ec0cb4951d",
+    "plan_sha256": "239caa65fadd0956a59c914eaefa9d47c17d45dcecee1d5b3396792d697ca315",
+    "policy": "project_theseus_architecture_review_semantic_identity_v1",
+    "review_id": "neural_seed_57m_private_dev_rung_v5",
+    "stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+    "verifier_budget_sha256": "b9dfbd93f3c0f5d88429d516a0811150aa8d69983bb17d756ebea3dda3b00c51"
+  },
+  "supersedes_freeze_sha256": "fc237502fd7a0b79841320a200a48d741067bb37c740a74fdce9b62f75284728",
+  "training_eligible": false,
+  "trigger_state": "GREEN"
+}

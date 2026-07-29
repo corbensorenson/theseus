@@ -2090,7 +2090,19 @@ def audit_pre_training_backlog_evidence(
         actual = hashlib.sha256(source_path.read_bytes()).hexdigest() if source_path.is_file() else ""
         if not expected or actual != expected:
             stale_refs.append(str(ref_id))
-    if stale_refs:
+    currentness_contract = dict_value(
+        contract.get("post_activation_currentness")
+    )
+    currentness = audit_post_activation_currentness(currentness_contract)
+    historical_drift_allowed = bool(
+        stale_refs
+        and currentness_contract.get(
+            "allow_historical_source_artifact_drift"
+        )
+        is True
+        and currentness["ready"]
+    )
+    if stale_refs and not historical_drift_allowed:
         faults.append("source_artifacts_stale:" + ",".join(sorted(stale_refs)))
     acceptance_faults, acceptance_observed = audit_acceptance_predicates(
         report, acceptance
@@ -2104,7 +2116,82 @@ def audit_pre_training_backlog_evidence(
         "trigger_state": report.get("trigger_state"),
         "disposition": report.get("disposition"),
         "source_artifact_count": len(refs),
+        "historical_source_artifact_drift_count": len(stale_refs),
+        "historical_source_artifact_drift_accepted_after_activation": (
+            historical_drift_allowed
+        ),
+        "post_activation_currentness": currentness,
         "acceptance_observed": acceptance_observed,
+        "faults": faults,
+    }
+
+
+def audit_post_activation_currentness(
+    contract: dict[str, Any],
+) -> dict[str, Any]:
+    if not contract:
+        return {"declared": False, "ready": False, "faults": []}
+    faults: list[str] = []
+    anchor_path = resolve(str(contract.get("path") or ""))
+    availability_path = resolve(
+        str(contract.get("availability_policy") or "")
+    )
+    training_config_path = resolve(
+        str(contract.get("training_config") or "")
+    )
+    anchor = read_json(anchor_path)
+    if anchor.get("policy") != contract.get("policy"):
+        faults.append("anchor_policy_mismatch")
+    if (
+        (anchor.get("pre_anchor_custody") or {}).get(
+            "full_segment_predecessor_chain_available"
+        )
+        is not False
+    ):
+        faults.append("pre_anchor_custody_gap_not_explicit")
+    if anchor.get("capability_claim") != "NOT_EVALUATED":
+        faults.append("anchor_capability_boundary_missing")
+    lineage: dict[str, Any] = {}
+    plan_sha256 = ""
+    migration_id = ""
+    try:
+        import neural_seed_training_campaign as campaign
+        import moecot_language_arm_training as training
+
+        availability = read_json(availability_path)
+        _config, plan, target, receipt = campaign.campaign_state(
+            training_config_path
+        )
+        lineage = campaign.lineage_state(availability, receipt)
+        plan_sha256 = str(plan.get("plan_sha256") or "")
+        migration = training.accepted_plan_identity_migration(
+            receipt, plan, target
+        )
+        migration_id = str((migration or {}).get("migration_id") or "")
+        if receipt.get("capability_claim") != "NOT_EVALUATED":
+            faults.append("live_capability_boundary_missing")
+    except (OSError, ValueError, KeyError, RuntimeError) as exc:
+        faults.append(
+            "post_activation_lineage_invalid:" + type(exc).__name__
+        )
+    if plan_sha256 != str(
+        contract.get("required_current_plan_sha256") or ""
+    ):
+        faults.append("current_plan_identity_mismatch")
+    if not migration_id:
+        faults.append("current_plan_migration_missing")
+    if lineage.get("trigger_state") != "GREEN":
+        faults.append("lineage_head_not_green")
+    return {
+        "declared": True,
+        "ready": not faults,
+        "path": rel(anchor_path),
+        "policy": anchor.get("policy"),
+        "plan_sha256": plan_sha256,
+        "migration_id": migration_id,
+        "lineage": lineage,
+        "pre_anchor_full_chain_available": False,
+        "capability_claim": anchor.get("capability_claim"),
         "faults": faults,
     }
 

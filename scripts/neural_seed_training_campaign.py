@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -31,6 +32,8 @@ DEFAULT_AVAILABILITY_CONFIG = (
 )
 POLICY = "project_theseus_fresh_process_training_campaign_v1"
 AVAILABILITY_POLICY = "project_theseus_resource_aware_training_segments_v2"
+LINEAGE_POLICY = "project_theseus_append_only_training_segment_lineage_v1"
+LINEAGE_ANCHOR_POLICY = "project_theseus_t1_prospective_lineage_anchor_v1"
 
 
 def validate_availability_policy(policy: dict[str, Any]) -> None:
@@ -51,6 +54,22 @@ def validate_availability_policy(policy: dict[str, Any]) -> None:
         raise ValueError(
             "disk reserve must derive from two complete checkpoint transactions"
         )
+    lineage = policy.get("lineage_custody") or {}
+    if (
+        lineage.get("policy") != LINEAGE_POLICY
+        or not str(lineage.get("anchor") or "")
+        or not str(lineage.get("ledger_directory") or "")
+        or any(
+            lineage.get(key) is not True
+            for key in (
+                "archive_before_and_after_receipts",
+                "archive_child_and_host_guard_receipts",
+                "require_contiguous_identity_before_launch",
+                "manifest_written_last",
+            )
+        )
+    ):
+        raise ValueError("append-only segment lineage custody is required")
     behavior = policy.get("segment_behavior") or {}
     if not all(
         behavior.get(key) is True
@@ -62,6 +81,176 @@ def validate_availability_policy(policy: dict[str, Any]) -> None:
         )
     ):
         raise ValueError("transactional segment behavior must remain fail closed")
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def receipt_identity(receipt: dict[str, Any]) -> dict[str, Any]:
+    required = (
+        "optimizer_steps",
+        "optimizer_positions",
+        "pretrain_optimizer_positions",
+        "checkpoint_sha256",
+        "optimizer_state_sha256",
+        "mlx_rng_state_sha256",
+    )
+    missing = [key for key in required if receipt.get(key) is None]
+    if missing:
+        raise ValueError(
+            "training receipt identity incomplete:" + ",".join(missing)
+        )
+    checkpoint_path = training.resolve(str(receipt.get("checkpoint") or ""))
+    receipt_path = checkpoint_path.parent / "training_receipt.json"
+    receipt_sha256 = receipt.get("receipt_sha256")
+    if receipt_path.is_file():
+        receipt_sha256 = file_sha256(receipt_path)
+    return {
+        "optimizer_steps": int(receipt["optimizer_steps"]),
+        "optimizer_positions": int(receipt["optimizer_positions"]),
+        "pretrain_optimizer_positions": int(
+            receipt["pretrain_optimizer_positions"]
+        ),
+        "checkpoint_sha256": str(receipt["checkpoint_sha256"]),
+        "optimizer_state_sha256": str(receipt["optimizer_state_sha256"]),
+        "mlx_rng_state_sha256": str(receipt["mlx_rng_state_sha256"]),
+        "receipt_sha256": str(receipt_sha256 or ""),
+    }
+
+
+def load_lineage_anchor(policy: dict[str, Any]) -> dict[str, Any]:
+    lineage = dict(policy["lineage_custody"])
+    anchor_path = training.resolve(str(lineage["anchor"]))
+    anchor = training.read_json(anchor_path)
+    if (
+        anchor.get("policy") != LINEAGE_ANCHOR_POLICY
+        or anchor.get("campaign_id")
+        != "moecot_mlx_57m_active_preregistered_v1"
+        or anchor.get("target_id") != training.SHARED_TRUNK_ID
+        or not isinstance(anchor.get("anchor_identity"), dict)
+        or (anchor.get("pre_anchor_custody") or {}).get(
+            "full_segment_predecessor_chain_available"
+        )
+        is not False
+    ):
+        raise ValueError("T1 lineage anchor is invalid")
+    return anchor
+
+
+def lineage_state(
+    policy: dict[str, Any], current_receipt: dict[str, Any]
+) -> dict[str, Any]:
+    anchor = load_lineage_anchor(policy)
+    expected = dict(anchor["anchor_identity"])
+    ledger_root = training.resolve(
+        str(policy["lineage_custody"]["ledger_directory"])
+    )
+    manifests = sorted(ledger_root.glob("step-*_to_*/manifest.json"))
+    previous_steps = int(expected["optimizer_steps"])
+    for path in manifests:
+        row = training.read_json(path)
+        if (
+            row.get("policy") != LINEAGE_POLICY
+            or row.get("before_identity") != expected
+            or int((row.get("after_identity") or {}).get("optimizer_steps") or 0)
+            <= previous_steps
+        ):
+            raise ValueError(
+                "append-only training lineage is noncontiguous:"
+                + training.relative(path)
+            )
+        expected = dict(row["after_identity"])
+        previous_steps = int(expected["optimizer_steps"])
+    current = receipt_identity(current_receipt)
+    if current != expected:
+        raise ValueError(
+            "live training receipt does not match the append-only lineage head"
+        )
+    return {
+        "policy": LINEAGE_POLICY,
+        "anchor": training.relative(
+            training.resolve(str(policy["lineage_custody"]["anchor"]))
+        ),
+        "ledger_directory": training.relative(ledger_root),
+        "manifest_count": len(manifests),
+        "head_identity": expected,
+        "pre_anchor_full_chain_available": False,
+        "trigger_state": "GREEN",
+    }
+
+
+def archive_segment_lineage(
+    policy: dict[str, Any],
+    *,
+    before: dict[str, Any],
+    after: dict[str, Any],
+    command: list[str],
+    returncode: int,
+    segment_out: Path,
+) -> str:
+    before_identity = receipt_identity(before)
+    after_identity = receipt_identity(after)
+    before_steps = int(before_identity["optimizer_steps"])
+    after_steps = int(after_identity["optimizer_steps"])
+    if after_steps <= before_steps:
+        raise ValueError("a lineage segment must advance optimizer steps")
+    ledger_root = training.resolve(
+        str(policy["lineage_custody"]["ledger_directory"])
+    )
+    segment_dir = ledger_root / (
+        f"step-{before_steps:08d}_to_{after_steps:08d}"
+    )
+    manifest_path = segment_dir / "manifest.json"
+    if manifest_path.exists():
+        raise ValueError("append-only lineage segment already exists")
+    segment_dir.mkdir(parents=True, exist_ok=False)
+    before_path = segment_dir / "before_receipt.json"
+    after_path = segment_dir / "after_receipt.json"
+    training.write_json_atomic(before_path, before)
+    training.write_json_atomic(after_path, after)
+    artifacts = {
+        "before_receipt": {
+            "path": training.relative(before_path),
+            "sha256": file_sha256(before_path),
+        },
+        "after_receipt": {
+            "path": training.relative(after_path),
+            "sha256": file_sha256(after_path),
+        },
+    }
+    host_path = segment_out.with_suffix(".host_resource_safety.json")
+    for name, path in (
+        ("child_report", segment_out),
+        ("host_resource_safety", host_path),
+    ):
+        if not path.is_file():
+            raise ValueError(f"segment lineage artifact missing:{name}")
+        destination = segment_dir / path.name
+        shutil.copy2(path, destination)
+        artifacts[name] = {
+            "path": training.relative(destination),
+            "sha256": file_sha256(destination),
+        }
+    manifest = {
+        "policy": LINEAGE_POLICY,
+        "created_utc": training.now(),
+        "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+        "target_id": training.SHARED_TRUNK_ID,
+        "before_identity": before_identity,
+        "after_identity": after_identity,
+        "command": command,
+        "returncode": int(returncode),
+        "artifacts": artifacts,
+        "capability_claim": "NOT_EVALUATED",
+        "support_state_effect": "none",
+    }
+    training.write_json_atomic(manifest_path, manifest)
+    return training.relative(manifest_path)
 
 
 def mac_power_state() -> tuple[bool | None, bool | None, dict[str, str]]:
@@ -367,6 +556,7 @@ def run_campaign(
         )
     validate_availability_policy(availability_policy)
     config, plan, target, receipt = campaign_state(config_path)
+    lineage = lineage_state(availability_policy, receipt)
     policy = dict(
         config["architecture_training_authority"]["fresh_process_segments"]
     )
@@ -390,6 +580,7 @@ def run_campaign(
     started = time.perf_counter()
     while True:
         _, _, target, before = campaign_state(config_path)
+        lineage = lineage_state(availability_policy, before)
         remaining = max(
             0,
             int(target["optimizer_target_positions"])
@@ -404,6 +595,7 @@ def run_campaign(
         if availability["trigger_state"] != "GREEN":
             paused_reason = ",".join(availability["failed_gates"])
             break
+        segment_out = out.with_name(out.stem + ".segment-latest.json")
         command = [
             str(
                 training.resolve(
@@ -414,7 +606,7 @@ def run_campaign(
             "--config",
             str(config_path),
             "--out",
-            str(out.with_name(out.stem + ".segment-latest.json")),
+            str(segment_out),
             "--guarded",
             "--execute",
             "--target",
@@ -436,6 +628,17 @@ def run_campaign(
         _, _, _, after = campaign_state(config_path)
         before_steps = int(before.get("optimizer_steps") or 0)
         after_steps = int(after.get("optimizer_steps") or 0)
+        lineage_manifest = ""
+        if completed.returncode == 0 and after_steps > before_steps:
+            lineage_manifest = archive_segment_lineage(
+                availability_policy,
+                before=before,
+                after=after,
+                command=command,
+                returncode=completed.returncode,
+                segment_out=segment_out,
+            )
+            lineage = lineage_state(availability_policy, after)
         row = {
             "segment_index": len(segment_rows) + 1,
             "command": command,
@@ -456,6 +659,7 @@ def run_campaign(
             "mlx_rng_state_sha256_after": after.get(
                 "mlx_rng_state_sha256"
             ),
+            "lineage_manifest": lineage_manifest,
             "stdout_tail": completed.stdout[-1000:],
             "stderr_tail": completed.stderr[-1000:],
         }
@@ -474,6 +678,7 @@ def run_campaign(
             "segment_policy": policy,
             "segments": segment_rows,
             "availability": availability_rows,
+            "lineage": lineage,
             "progress": estimate(config, target, after),
         }
         training.write_json_atomic(out, interim)
@@ -498,6 +703,7 @@ def run_campaign(
         "segments": segment_rows,
         "availability_policy": availability_policy,
         "availability": availability_rows,
+        "lineage": lineage_state(availability_policy, final_receipt),
         "paused_reason": paused_reason,
         "progress": estimate(config, final_target, final_receipt),
         "pretraining_complete": (
@@ -551,6 +757,7 @@ def main() -> int:
             "plan_sha256": plan["plan_sha256"],
             "progress": estimate(config, target, receipt),
             "availability": availability_state(availability_policy),
+            "lineage": lineage_state(availability_policy, receipt),
             "capability_claim": "NOT_EVALUATED",
         }
     training.write_json_atomic(out, report)

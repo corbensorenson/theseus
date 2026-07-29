@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import copy
 import subprocess
 import sys
 from pathlib import Path
@@ -98,6 +99,53 @@ def test_availability_policy_never_suspends_inflight_graph() -> None:
         "stop_launching_when_gate_closes": True,
         "atomic_checkpoint_before_yield": True,
     }
+
+
+def test_availability_policy_requires_append_only_lineage_custody() -> None:
+    config = policy()
+    campaign.validate_availability_policy(config)
+    assert config["lineage_custody"]["policy"] == campaign.LINEAGE_POLICY
+    for field in (
+        "archive_before_and_after_receipts",
+        "archive_child_and_host_guard_receipts",
+        "require_contiguous_identity_before_launch",
+        "manifest_written_last",
+    ):
+        broken = copy.deepcopy(config)
+        broken["lineage_custody"][field] = False
+        try:
+            campaign.validate_availability_policy(broken)
+        except ValueError as exc:
+            assert "append-only segment lineage custody" in str(exc)
+        else:
+            raise AssertionError(f"lineage custody accepted {field}=false")
+
+
+def test_current_t1_receipt_matches_prospective_lineage_anchor() -> None:
+    config = policy()
+    _training, _plan, _target, receipt = campaign.campaign_state(
+        ROOT / "configs/moecot_language_arm_training.json"
+    )
+    state = campaign.lineage_state(config, receipt)
+    assert state["trigger_state"] == "GREEN"
+    assert state["manifest_count"] == 0
+    assert state["head_identity"]["optimizer_steps"] == 9048
+    assert state["pre_anchor_full_chain_available"] is False
+
+
+def test_lineage_rejects_live_identity_drift_without_manifest() -> None:
+    config = policy()
+    _training, _plan, _target, receipt = campaign.campaign_state(
+        ROOT / "configs/moecot_language_arm_training.json"
+    )
+    changed = copy.deepcopy(receipt)
+    changed["optimizer_steps"] = int(changed["optimizer_steps"]) + 1
+    try:
+        campaign.lineage_state(config, changed)
+    except ValueError as exc:
+        assert "does not match the append-only lineage head" in str(exc)
+    else:
+        raise AssertionError("unledgered T1 identity drift was accepted")
 
 
 def test_process_inventory_failure_pauses_instead_of_authorizing(
