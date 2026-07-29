@@ -3604,6 +3604,65 @@
     ],
     "no_claim_boundary": "This reconciliation qualifies only the exact selected-route execution, resume, custody, and sustained-throughput contract. It does not establish ANE as universally useless, falsify KERC, transfer midscale results to 57M, or establish student capability."
   },
+  "latest_kimi_k3_pre_long_run_reconciliation": {
+    "date": "2026-07-28",
+    "policy": "project_theseus_kimi_k3_finite_pre_long_run_reconciliation_v1",
+    "source": {
+      "title": "Kimi K3: Open Frontier Intelligence",
+      "primary_report": "https://arxiv.org/abs/2607.24653",
+      "official_repository": "https://github.com/MoonshotAI/Kimi-K3",
+      "source_reported_architecture": "2.8T total / 104B active MoE; 69 KDA plus 24 Gated-MLA layers; Attention Residuals; Stable LatentMoE with 16 of 896 routed experts and two shared experts; SiTU-GLU; Per-Head Muon; 1,048,576-token context; MXFP4/MXFP8 quantization-aware post-training",
+      "evidence_boundary": "The approximately 2.5x aggregate scaling-efficiency result is provider-reported for the integrated architecture, data, training, and systems stack. It supplies no locally reproduced component attribution and does not transfer to the 57M, 512-token M1 campaign."
+    },
+    "campaign_state": {
+      "trigger_state": "PAUSED_AFTER_TRANSACTION",
+      "target": "shared_trunk",
+      "optimizer_steps": 11416,
+      "system_positions_seen": 87441996,
+      "system_positions_target": 1096734920,
+      "lineage_anchor_step": 9048,
+      "append_only_manifest_count": 37,
+      "pre_anchor_full_chain_available": false,
+      "capability_claim": "NOT_EVALUATED",
+      "control": "runtime/control/neural_seed_yield_after_segment"
+    },
+    "contract": "configs/neural_seed_pre_long_run_review.json",
+    "required_candidates": [
+      {
+        "id": "kimi_k3_per_head_muon",
+        "priority": 1,
+        "owner": "optimizer",
+        "decision": "Implement and compare against AdamW and existing full-matrix Muon on the already established 6.623M, three-profile, three-seed source-disjoint matched rung.",
+        "why_prior_evidence_does_not_close_it": "The prior Muon implementation orthogonalizes whole eligible matrices; K3 partitions attention Q/K/V momentum matrices by head before Newton-Schulz orthogonalization."
+      },
+      {
+        "id": "kimi_k3_attention_residuals",
+        "priority": 2,
+        "owner": "architecture_topology",
+        "decision": "Run one isolated block-level AttnRes successor canary with reduction-to-control, gradient, intervention, ablation, exact reload, activation-memory, time-to-quality, and weak-arm gates.",
+        "checkpoint_boundary": "Adoption invalidates step-11416 topology and requires a new content-addressed lineage."
+      },
+      {
+        "id": "kimi_k3_situ_glu",
+        "priority": 3,
+        "owner": "activation_and_numerics",
+        "decision": "Run one separately matched SiTU-GLU versus SwiGLU canary and adopt only for a repeatable quality/time-to-quality win or an observed stability repair without weak-arm or joined-wall regression."
+      }
+    ],
+    "closed_or_scope_dispositioned": [
+      "compiled FP32 MLX remains the qualified base route",
+      "the later exact nine-leaf ANE/Accelerate/Metal decoder-block join supersedes the earlier incomplete projection reports and is not selected on joined wall time",
+      "source-conditioned and supervision execution already have exact joined replay, zero-swap qualification, and only about 2.8 measured device-hours of total work",
+      "BF16 remains not selected because its raw speed does not repair retained-state and independent-process replay failures",
+      "KDA/Gated MLA is out of campaign-one scope until a registered long-context wall exists",
+      "Stable LatentMoE and Quantile Balancing are topology-incompatible until Theseus owns a learned many-expert router",
+      "MXFP4/MXFP8 lacks a qualified M1 MLX training route",
+      "cosine decay is already present"
+    ],
+    "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
+    "resource_rule": "No clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor. Use finite prewritten workloads, transactional boundaries, and causal thermal/swap/disk/nonfinite/parity stops.",
+    "no_claim_boundary": "Source review, roadmap admission, canary completion, loss reduction, or throughput does not establish Kimi K3 reproduction, Theseus capability, architecture superiority, public transfer, support, or release."
+  },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
     "roadmap_source": "roadmap.md#asi-stack-to-theseus-completion-program",

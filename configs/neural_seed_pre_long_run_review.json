@@ -1,0 +1,173 @@
+{
+  "policy": "project_theseus_finite_pre_long_run_review_v1",
+  "state": "HOLD_FOR_FINITE_REVIEW",
+  "requested_by": "operator",
+  "requested_at_utc": "2026-07-28",
+  "reason": "Pause the selected campaign at the next transactional boundary while reconciling whether any unclosed canary or newly published architecture mechanism can materially improve the long-run design or joined wall time.",
+  "checkpoint": {
+    "target": "shared_trunk",
+    "optimizer_steps": 11416,
+    "system_positions_seen": 87441996,
+    "system_positions_target": 1096734920,
+    "capability_claim": "NOT_EVALUATED",
+    "lineage_anchor": "configs/neural_seed_t1_lineage_anchor.json",
+    "lineage_manifest_count": 37,
+    "pre_anchor_full_chain_available": false
+  },
+  "execution_hold": {
+    "control": "runtime/control/neural_seed_yield_after_segment",
+    "in_flight_transaction_interrupted": false,
+    "new_long_segment_authorized": false,
+    "new_architecture_may_touch_live_checkpoint": false
+  },
+  "completed_evidence_reconciliations": [
+    {
+      "id": "compiled_mlx_pretraining",
+      "state": "QUALIFIED_SELECTED",
+      "evidence": [
+        "reports/training_acceleration_final_selector.json",
+        "reports/selected_route_sustained_qualification.json",
+        "reports/pretraining_architecture_freeze_package.json"
+      ],
+      "decision": "Do not rerun the generic backend, packing, Rust-host-loop, fused-loss, lazy-state, progressive-length, structural-growth, or full-matrix optimizer searches without a new measured residual or materially different mechanism."
+    },
+    {
+      "id": "source_conditioned_and_supervision_execution",
+      "state": "QUALIFIED_SAFE_NOT_CALENDAR_DOMINANT",
+      "evidence": [
+        "reports/resource_acceleration_joined_campaign_path_bf16_m8_aux_m1_steps64_8_8_retry6.json",
+        "reports/moecot_language_arm_training_acceleration_500step_qualification.json"
+      ],
+      "decision": "Retain eager microbatch one plus isolated memory-mapped phase caches. The two auxiliary corpora total 4,973,780 positions and about 2.8 measured device-hours, so further work cannot materially shorten the multi-day base campaign unless a new profile contradicts this bound."
+    },
+    {
+      "id": "ane_accelerate_metal_exact_block",
+      "state": "QUALIFIED_NOT_SELECTED",
+      "evidence": [
+        "reports/exact_decoder_block_join_m1.json",
+        "reports/exact_decoder_block_backend_bakeoff_m1.json"
+      ],
+      "supersedes": [
+        "reports/ane_cpu_metal_projection_triad_m1.json",
+        "reports/native_ane_cpu_metal_projection_qualification_m1.json"
+      ],
+      "decision": "The later exact nine-leaf decoder-block join supplies the real native remainder missing from the earlier projection reports. It passed complete block mechanics but lost to compiled MLX at 0.552679 pooled and 0.534825 conservative control-over-candidate speed. Do not reopen the same topology."
+    },
+    {
+      "id": "bf16_compute_fp32_master",
+      "state": "QUALIFIED_NOT_SELECTED",
+      "evidence": [
+        "reports/training_acceleration_final_selector.json"
+      ],
+      "decision": "The raw sustained speed gain does not override retained-state and independent-process replay failures. FP32 remains authoritative unless a materially different implementation removes both failures."
+    }
+  ],
+  "new_source": {
+    "id": "kimi_k3_2026",
+    "primary_report": "https://arxiv.org/abs/2607.24653",
+    "official_repository": "https://github.com/MoonshotAI/Kimi-K3",
+    "source_reported_system": {
+      "total_parameters": 2800000000000,
+      "active_parameters": 104000000000,
+      "context_length": 1048576,
+      "attention_layers": {
+        "kda": 69,
+        "gated_mla": 24
+      },
+      "experts": 896,
+      "selected_experts_per_token": 16
+    },
+    "transfer_boundary": "Kimi K3 reports one integrated result at radically different scale, context, sparsity, hardware, and data. Its approximately 2.5x aggregate scaling-efficiency result is not component attribution or local evidence."
+  },
+  "finite_candidate_docket": [
+    {
+      "id": "kimi_k3_per_head_muon",
+      "priority": 1,
+      "state": "REQUIRED_BOUNDED_MATCHED_CANARY",
+      "why_it_has_teeth": "The existing Theseus Muon negative used full projection matrices. Kimi K3 partitions attention Q/K/V momentum matrices by head before Newton-Schulz orthogonalization, so the old result does not test this implementation.",
+      "control": "adamw_mlx",
+      "secondary_control": "existing_full_matrix_muon_mlx",
+      "required_scale": "reuse the existing 6.623M matched optimizer rung and source-disjoint three-profile three-seed heldouts",
+      "frozen_matches": [
+        "initial weights",
+        "training rows and order",
+        "optimizer positions",
+        "schedule and clipping",
+        "tuning opportunity",
+        "heldout evaluator",
+        "checkpoint and replay requirements",
+        "total joined wall and resource accounting"
+      ],
+      "adoption_rule": "Adopt only if Per-Head Muon improves predeclared time-to-quality over AdamW, stays within every weak-arm regression ceiling, passes exact checkpoint/reload and finite-state gates, and retains its advantage after orthogonalization overhead.",
+      "negative_inference_boundary": "A loss cannot falsify Muon generally and applies only to this per-head implementation, rung, data, tuning, and evaluator."
+    },
+    {
+      "id": "kimi_k3_attention_residuals",
+      "priority": 2,
+      "state": "REQUIRED_ISOLATED_SUCCESSOR_CANARY",
+      "why_it_has_teeth": "AttnRes changes depthwise information flow rather than merely changing execution. It may improve small-model optimization, but adopting it would invalidate the live checkpoint.",
+      "candidate": "block-level Attention Residuals with bounded learned mixing over prior block outputs",
+      "control": "current sequential residual stream",
+      "required_scale": "matched 6.623M topology rung with at least three seeds, source-disjoint heldouts, and exact parameter/compute accounting",
+      "pre_admission_mechanics": [
+        "gradient flow to every eligible predecessor block",
+        "zero-weight reduction to the control",
+        "mixing intervention and ablation",
+        "checkpoint/reload and migration refusal",
+        "activation-memory and bandwidth profile"
+      ],
+      "adoption_rule": "Restart campaign topology only for a repeatable time-to-quality or heldout Pareto win beyond uncertainty, with no weak-arm regression and a material joined-cost gain large enough to repay discarded step-11416 work.",
+      "negative_inference_boundary": "A small-rung loss is a campaign-one engineering disposition, not broad AttnRes falsification."
+    },
+    {
+      "id": "kimi_k3_situ_glu",
+      "priority": 3,
+      "state": "REQUIRED_BOUNDED_STABILITY_CANARY",
+      "why_it_has_teeth": "SiTU-GLU is a smooth bounded replacement for the current SwiGLU pathway and could change stability or finite-precision behavior, but Theseus has no present activation-explosion wall.",
+      "control": "current SwiGLU",
+      "required_scale": "matched 6.623M rung using the same seeds, data, parameter accounting, and time-to-quality evaluator as the AttnRes control",
+      "adoption_rule": "Adopt only for a repeatable heldout/time-to-quality win or a demonstrated stability improvement on an actually observed failure, with no joined-wall or weak-arm regression.",
+      "negative_inference_boundary": "No result transfers beyond the tested bounds or establishes a universal activation choice."
+    }
+  ],
+  "explicit_scope_dispositions": [
+    {
+      "id": "kimi_delta_attention_and_gated_mla",
+      "state": "SCOPE_DEFERRED_CAMPAIGN_ONE",
+      "reason": "The source mechanism targets million-token context. The current campaign is fixed at 512 tokens, so a faithful custom-kernel implementation cannot plausibly repay topology and checkpoint invalidation without a longer-context requirement.",
+      "reentry": "A registered Theseus workload whose qualified context target makes attention a measured critical-path wall."
+    },
+    {
+      "id": "stable_latent_moe_and_quantile_balancing",
+      "state": "SCOPE_DEFERRED_CAMPAIGN_ONE",
+      "reason": "The K3 design balances 896 learned routed experts. Campaign-one Theseus has independently owned language arms and no trained token-level expert router, so the mechanism is not topology-compatible.",
+      "reentry": "A selected learned sparse-router topology with enough experts for imbalance to be a measured wall."
+    },
+    {
+      "id": "mxfp4_mxfp8_qat",
+      "state": "SCOPE_DEFERRED_CAMPAIGN_ONE",
+      "reason": "No qualified M1 MLX training path implements the source's numeric formats, and deployment-specific compression cannot support a training-speed claim on this host.",
+      "reentry": "Native Apple/MLX support or a measured compatible kernel with replay, stability, and quality qualification."
+    },
+    {
+      "id": "cosine_schedule",
+      "state": "ALREADY_PRESENT_NO_NEW_EXPERIMENT",
+      "reason": "The current Theseus campaign already binds cosine decay."
+    }
+  ],
+  "release_criteria": [
+    "Every required finite candidate has one retained matched receipt and an explicit adopt or do-not-adopt disposition.",
+    "No candidate consumes the live checkpoint, frozen functional surface, or public benchmark payload.",
+    "The selected full-campaign architecture and execution recipe are rebound in one replacement freeze.",
+    "If no topology candidate wins, resume the exact step-11416 lineage without changing model, AdamW, RNG, cursor, data order, objective mass, or evaluation.",
+    "If a topology candidate wins, archive step 11416 as a non-capability control and restart only through a new content-addressed lineage; never reinterpret incompatible optimizer state.",
+    "The operator removes the yield control only after reviewing the replacement freeze."
+  ],
+  "resource_policy": {
+    "clock_of_day_windows_allowed": false,
+    "arbitrary_hour_limit_allowed": false,
+    "arbitrary_memory_floor_allowed": false,
+    "required": "Use transactional boundaries and causal host telemetry for finite, preregistered work. Stop on measured thermal, swap-growth, disk-custody, nonfinite-state, or parity failures, not a round-number calendar or allocator rule."
+  },
+  "capability_claim": "NONE_REVIEW_AND_EXPERIMENT_FREEZE_ONLY"
+}

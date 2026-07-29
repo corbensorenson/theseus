@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last consolidated: 2026-07-26 UTC.
+Last consolidated: 2026-07-28 UTC.
 
 This is the forward-only human execution map. The complete machine-readable obligation
 set is `configs/roadmap_implementation_matrix.json`; implementation identity and route
@@ -67,7 +67,7 @@ The current falsifiable question is:
 | `T0` Historical architecture closure | complete as an immutable control only | The 70-artifact package passes 10 independent replays. Its zero-exposure KERC, OneCell, and optional-mode dispositions describe the preserved old campaign; they do not satisfy the replacement architecture or KERC evidence obligations. |
 | `T0P` Legacy performance closure | complete for the preserved control | The selected FP32 MLX route passes exact resume and a bounded no-swap resource canary. Corpus, decode, batching, checkpoint, and reuse gains are banked. This closes the old route only; successor KERC, representation, training, evaluation, and serving paths must earn their own end-to-end performance receipts. |
 | `T0A` Pre-training architecture upgrade closure | complete at the committed freeze transaction; later T1 custody residual explicit | The first-campaign stack is fixed open-vocabulary AR, compiled FP32 MLX, AdamW, full depth, fixed 512-token maximum sequence policy, canonical KV, Semantic-IR control, and an independent verifier. The exact native ANE/Accelerate/Metal decoder-block challenger passed authority and parity gates but lost joined wall time to compiled MLX (`0.552679x` pooled, `0.534825x` conservative), so MLX remains authoritative for this campaign. KERC is frozen `INCONCLUSIVE_EXPERIMENT`, receives zero campaign-one optimizer exposure, and preserves K4-K8 for prospective successor re-entry without a scientific negative. Six exact 64-step scratch segments completed in adjacent three-replicate windows: joined-throughput medians were 3,042.702 and 3,017.356 positions/second, their ratio was `0.991670`, and the replicate interval `[0.944840, 1.025765]` contains one with no thermal warning. Independent two-segment replay preserved cursor and RNG and matched every model/optimizer tensor under the frozen absolute-or-relative contract (maximum model delta `2.3841858e-7`; optimizer delta `3.608875e-9`). System-wide swap growth was observed and remains diagnostic under `report_only`; every causal host guard passed. The committed package binds the exact step-3,480 identity. After T1 advanced the live path, the exact step-3,480 payload and a complete immutable segment chain were no longer locally present. This does not rewrite the historical GREEN transaction, but it forbids a present-tense full-chain replay claim. |
-| `T1` Selected neural-seed campaign | active at step 9,112; ledgered from the step-9,048 prospective anchor; not evaluated | The shared trunk has consumed 69,801,984 of 1,096,734,920 frozen pretraining positions. Its exact model, AdamW, RNG, and receipt identities are chained from `configs/neural_seed_t1_lineage_anchor.json` through the append-only before/after ledger. The anchor honestly records that the complete step-3,480-to-9,048 predecessor chain is unavailable, so later evidence can claim only the exact prospective lineage it earns. The first ledger writer incorrectly resolved the before-receipt digest through the already-advanced live path; the archived receipt remained exact, the manifest preserves the invalid-manifest hash and corrected digest, and the verifier now independently re-hashes every archived artifact. Continue the selected practical MoECOT lane and matched dense-active/dense-total controls under the 64-step compiled FP32 contract. No capability, source-disjoint behavior, T2 numerator, or support movement has been observed. |
+| `T1` Selected neural-seed campaign | transactionally paused at step 11,416 for finite pre-long-run review; ledgered from the step-9,048 prospective anchor; not evaluated | The shared trunk has consumed 87,441,996 of 1,096,734,920 frozen pretraining positions. Its exact model, AdamW, RNG, cursor, receipt, child, and host-guard identities are chained through 37 append-only segment manifests. The anchor honestly records that the complete step-3,480-to-9,048 predecessor chain is unavailable, so later evidence can claim only the exact prospective lineage it earns. The campaign yielded after a complete 64-step transaction; no in-flight Metal graph was suspended. `configs/neural_seed_pre_long_run_review.json` binds the finite reopened canary docket and the runtime yield control blocks another long segment. Resume the exact step-11,416 lineage only if no candidate wins; any topology winner requires a new content-addressed lineage rather than reinterpretation of the current checkpoint. No capability, source-disjoint behavior, T2 numerator, or support movement has been observed. |
 | `T2` Honest behavioral numerator | waits for `T1` | At least one lineage-bound checkpoint produces nonzero direct model-only behavior on the frozen source-disjoint functional surface. Zero earns only its exact scoped verdict. |
 | `T3` Real daily-use lane | assisted use ready; learned credit waits for `T2` | At least five distinct days of accepted, missed, ignored, corrected, completed, failed, or abstained real outcomes with effect and governance-cost records. |
 | `T4` Joined governed vertical | waits for `T2` and `T3` | A natural success and a blocked/rollback path join intent, VCM, plan, route, generation, verification, authority, effect observation, residual, and dogfood outcome without orphan state. |
@@ -99,6 +99,13 @@ still pass, and it cannot support a completion claim until the real receipt exis
 
 The previous practical architecture remains frozen as an immutable comparator, not as the
 next long-run launch target:
+
+The live campaign is currently held at exact step 11,416 while a finite pre-long-run review
+closes. This does not erase the qualified compiled-MLX route or reopen every historical
+candidate. It reconciles completed source-conditioned, supervision, BF16, and exact
+ANE/Accelerate/Metal evidence, then runs only three newly justified Kimi K3-derived matched
+canaries. The hold and all release conditions are machine-readable in
+`configs/neural_seed_pre_long_run_review.json`.
 
 - MoECOT: a shared encoder-decoder transformer trunk plus independently owned low-rank
   English, Python, JS/TS, HTML/CSS, and Rust arms; 57,340,426 active parameters and
@@ -135,10 +142,11 @@ next long-run launch target:
   about 3.3k end-to-end positions/second including publication/startup overhead, with
   zero swap and independently replayed model/optimizer tolerances of `1.19e-7` and
   `4.31e-9` maximum absolute delta.
-- Current run: the shared trunk is at checkpoint step 9,112 and 69,801,984 of
-  1,096,734,920 frozen pretraining positions. Its exact model, AdamW, RNG, and receipt
-  identities are chained from the step-9,048 `configs/neural_seed_t1_lineage_anchor.json`
-  through the first independently re-hashed append-only segment. The historical
+- Current run: the shared trunk is transactionally paused at checkpoint step 11,416 and
+  87,441,996 of 1,096,734,920 frozen pretraining positions. Its exact model, AdamW, RNG,
+  cursor, receipt, child, and host-guard identities are chained from the step-9,048
+  `configs/neural_seed_t1_lineage_anchor.json` through 37 independently re-hashed
+  append-only segments. The historical
   T0A package still records the qualified step-3,480 transaction, but the exact step-3,480
   payload and a complete immutable segment chain from 3,480 to 9,048 are not locally
   available. That custody gap forbids a present-tense full-chain replay claim; it does not
@@ -147,13 +155,69 @@ next long-run launch target:
   the terminal identity in the append-only segment ledger.
 
 At the last qualified fresh-process effective rate, the remaining shared-trunk pretraining
-budget is about 3.96 continuous device-days. A serial 4.05B-position campaign is about 14.2
+budget is about 3.89 continuous device-days. A serial 4.05B-position campaign is about 14.2
 pretraining-equivalent compute-days before slower auxiliary phases, review/evaluation,
 thermal interruptions, and lifecycle work; plan roughly 16-19 calendar days on this M1.
 Preserve the exact step-9,048 anchor and every later segment through the append-only ledger.
 `T0A` is complete at its historical freeze transaction; `T1` is the one active campaign.
 Training progress alone provides no capability, source-disjoint behavior, `T2` numerator,
 support, release, or public-calibration authority.
+
+### 2026-07-28 Kimi K3 Architecture Intake And Finite Reopening
+
+The [Kimi K3 technical report](https://arxiv.org/abs/2607.24653) and
+[official architecture summary](https://github.com/MoonshotAI/Kimi-K3) were reviewed as
+external design evidence only. The source reports a 2.8T-total/104B-active MoE with 69 KDA
+and 24 Gated-MLA layers, Attention Residuals, 896 routed experts with 16 selected per token,
+two shared experts, SiTU-GLU, Per-Head Muon, and a 1,048,576-token context. It attributes an
+approximately 2.5x aggregate scaling-efficiency improvement over Kimi K2 to the combined
+architecture, data, training, and systems stack. That result is provider-reported,
+unreproduced, and does not identify a component effect that transfers to a 57M,
+512-token M1 campaign.
+
+The exact step-11,416 T1 transaction is paused before another long segment. The bounded
+review reaches these dispositions:
+
+1. **Per-Head Muon is the one immediate optimizer canary.** The previous Theseus Muon
+   candidate orthogonalized eligible full matrices and regressed on its exact matched rung.
+   K3 instead partitions attention Q/K/V momentum matrices by head before Newton-Schulz
+   orthogonalization. Reuse the existing 6.623M three-profile/three-seed optimizer rung and
+   compare AdamW, full-matrix Muon, and Per-Head Muon with identical initialization, data
+   order, positions, schedule, clipping, tuning opportunity, heldouts, replay, and joined
+   resource accounting. Adopt only for a predeclared time-to-quality win with every weak-arm
+   floor intact.
+2. **AttnRes receives one isolated successor-topology canary.** Implement block-level learned
+   mixing over prior block outputs with zero-weight reduction to the current residual path,
+   gradient/intervention/ablation checks, exact reload, and activation-memory accounting.
+   Run the same 6.623M source-disjoint three-seed topology rung. Because adoption discards
+   step-11,416 compatibility, require a repeatable benefit beyond uncertainty and large
+   enough to repay the restart. A loss is a campaign-one disposition, not broad
+   falsification.
+3. **SiTU-GLU receives one lower-priority stability canary.** Compare it separately with the
+   current SwiGLU on the matched rung. Adopt only for a repeatable quality/time-to-quality
+   win or a stability benefit on an observed failure, without weak-arm or joined-wall
+   regression. Do not manufacture activation-instability pressure merely to favor it.
+4. **KDA/Gated MLA is scope-deferred, not falsified.** Its million-token purpose does not
+   match the fixed 512-token campaign, so a custom-kernel topology rewrite cannot delay this
+   run absent a registered long-context wall. Stable LatentMoE and Quantile Balancing are
+   likewise incompatible with the current independently trained arms and absent token-level
+   many-expert router. MXFP4/MXFP8 QAT lacks a qualified M1 MLX training route. The cosine
+   schedule is already present.
+5. **Completed acceleration evidence stays closed.** Compiled FP32 MLX remains the qualified
+   base route. The later exact nine-leaf ANE/Accelerate/Metal decoder-block join supersedes
+   the earlier incomplete projection reports, passes complete block mechanics, and still
+   loses joined wall time at `0.552679x` pooled and `0.534825x` conservative
+   control-over-candidate speed. Source-conditioned and supervision execution already passed
+   exact joined replay and zero-swap qualification; their 4,973,780 total positions are about
+   2.8 measured device-hours, so they are not the multi-day wall. BF16 remains rejected for
+   retained-state and independent-process replay failures despite its raw speed.
+
+This is a finite reopening, not a standing architecture search. Every candidate has a
+prewritten control, scale, adequacy checks, adoption rule, and negative-inference boundary
+in `configs/neural_seed_pre_long_run_review.json`. No public or frozen functional surface is
+consumed. If none wins, resume the exact step-11,416 lineage. If a topology wins, preserve
+step 11,416 as non-capability evidence and start a new content-addressed campaign lineage.
+There is no clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor.
 
 ### 2026-07-26 Production Training Hot-Path Audit
 
@@ -3422,15 +3486,17 @@ gateway authority.
 
 ### Phase 10: Practical Neural Seed
 
-State: `partial`, with the first 57M shared trunk preserved at durable step 3,000 while
-long continuation waits for `T0A`. The 10.8M rung is closed at 0/160 across MoECOT and both
-dense controls; that result does not transfer to the current rung.
+State: `partial`, with the 57M shared trunk transactionally paused at durable step 11,416
+and 87,441,996 of 1,096,734,920 pretraining positions while the finite Kimi K3-derived
+pre-long-run review closes. The 10.8M rung is closed at 0/160 across MoECOT and both dense
+controls; that result does not transfer to the current rung.
 
-Next: preserve exact resume and its unconsumed evaluation surface as a control while Phase 8
-and Phase 13 complete `T0A`. Select and refreeze the practical architecture, then train the
-selected model and matched controls and consume a newly bound fresh functional surface once.
-Preference/RL, GVR, and search still require direct behavior; MTP objectives, dynamic patches,
-KERC/RDC, optimizer choice, and checkpoint-shaping generation heads are pre-training work.
+Next: execute only the Per-Head Muon, AttnRes, and SiTU-GLU matched canaries frozen in
+`configs/neural_seed_pre_long_run_review.json`, publish one replacement selection receipt,
+then either resume the exact step-11,416 checkpoint unchanged or start a new incompatible
+lineage if a topology earns the restart. Train the selected model and matched controls and
+consume the frozen functional surface once. Preference/RL, GVR, and search still require
+direct behavior; no other architecture intake may delay this finite decision.
 
 ### Phase 11: Cognitive Kernel Discovery
 
