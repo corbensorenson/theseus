@@ -2,15 +2,15 @@
   "allowed_effect_trace": {
     "dispatch_bound": true,
     "dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
-    "dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+    "dispatch_trace_id": "reflex-trace:893d8320abd76f22647fe174",
     "effect_inventory": [
       {
-        "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
-        "effect_id": "declared_effect-da2847a77ee908ff",
-        "intended_content_sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+        "before_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
+        "effect_id": "declared_effect-3801200711da3b33",
+        "intended_content_sha256": "f7544bddba287ff46a67019e0cf6a5b52f467e9085837ee72584261218cadbdc",
         "intended_mode": "0o600",
         "operation": "create",
-        "path": "runtime/assistant_effects/core-evidence-e1-ucqerlev/allowed/route_authority.json",
+        "path": "runtime/assistant_effects/core-evidence-e1-v6p1mpz1/allowed/route_authority.json",
         "rollback_obligation": "remove created path"
       }
     ],
@@ -23,11 +23,11 @@
     ],
     "observation": {
       "exists": true,
-      "expected_content_sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+      "expected_content_sha256": "f7544bddba287ff46a67019e0cf6a5b52f467e9085837ee72584261218cadbdc",
       "expected_dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
-      "expected_dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+      "expected_dispatch_trace_id": "reflex-trace:893d8320abd76f22647fe174",
       "expected_route_id": "assistant.route_authority_effect",
-      "identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+      "identity": "f82aa48fc616f691ea3f58326b230e29eb179cf05af27a52235cbc35223288ef",
       "matches_intent": true,
       "mode": 384,
       "observer_id": "theseus_filesystem_effect_observer_v1",
@@ -38,17 +38,17 @@
         ],
         "capability_id": "assistant.route_authority_effect",
         "dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
-        "dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+        "dispatch_trace_id": "reflex-trace:893d8320abd76f22647fe174",
         "external_inference_calls": 0,
         "fallback_return_count": 0,
         "intent": "planning",
         "policy": "project_theseus_local_route_authority_canary_v1",
         "public_training_rows_written": 0,
         "route_id": "assistant.route_authority_effect",
-        "transaction_id": "assistant_effect_transaction-e6b754381e292b00"
+        "transaction_id": "assistant_effect_transaction-098978e1c7096b50"
       },
-      "path": "runtime/assistant_effects/core-evidence-e1-ucqerlev/allowed/route_authority.json",
-      "sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+      "path": "runtime/assistant_effects/core-evidence-e1-v6p1mpz1/allowed/route_authority.json",
+      "sha256": "f7544bddba287ff46a67019e0cf6a5b52f467e9085837ee72584261218cadbdc",
       "size_bytes": 640,
       "write_fault": ""
     },
@@ -59,11 +59,11 @@
     "ready": true,
     "residuals": [],
     "rollback": {
-      "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+      "before_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
       "complete": true,
       "fault": "",
-      "final_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
-      "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+      "final_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
+      "first_effect_identity": "f82aa48fc616f691ea3f58326b230e29eb179cf05af27a52235cbc35223288ef",
       "prior_path_existed": false,
       "removed_new_path": true,
       "residual_count": 0,
@@ -73,7 +73,7 @@
     "selected_capability_ids": [
       "assistant.route_authority_effect"
     ],
-    "transaction_id": "assistant_effect_transaction-e6b754381e292b00"
+    "transaction_id": "assistant_effect_transaction-098978e1c7096b50"
   },
   "artifact_gaps": [
     {
@@ -103,7 +103,7 @@
   "blocked_effect_trace": {
     "dispatch_bound": false,
     "dispatch_decision_digest": "sha256:90949be31e9cc476976183a109514ac43814055e4fbdc2a0fab5a53e98361b85",
-    "dispatch_trace_id": "reflex-trace:00d792960a5fb5f8f41511db",
+    "dispatch_trace_id": "reflex-trace:0a4c8902e06ea7f69b0d93cc",
     "effect_inventory": [],
     "evaluator_id": "theseus_effect_rollback_evaluator_v1",
     "external_inference_calls": 0,
@@ -129,7 +129,7 @@
     },
     "route_id": "",
     "selected_capability_ids": [],
-    "transaction_id": "assistant_effect_transaction-75301a2fdb1bfe6d"
+    "transaction_id": "assistant_effect_transaction-90253f672711ee32"
   },
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
   "checks": [
@@ -139,7 +139,7 @@
       "passed": true
     },
     {
-      "evidence": "0d0bc5ea615cf842410c55692b754a18571b53cf",
+      "evidence": "dd25a443c135020e45df25fa21dd78b11e22b67b",
       "name": "source_commit_present",
       "passed": true
     },
@@ -155,8 +155,8 @@
     },
     {
       "evidence": {
-        "expected": "f60722a18b718b99cb90f991d482fb11115c35487e70054d4298a03aa1adf4cf",
-        "observed": "f60722a18b718b99cb90f991d482fb11115c35487e70054d4298a03aa1adf4cf"
+        "expected": "51795a85792edffc8fccc8b1eaa744a785ebd864d416a5abe065bca7877d911d",
+        "observed": "51795a85792edffc8fccc8b1eaa744a785ebd864d416a5abe065bca7877d911d"
       },
       "name": "E0_config_identity",
       "passed": true
@@ -164,10 +164,10 @@
     {
       "evidence": {
         "hard_gap_count": 0,
-        "report_sha256": "44a8c89613ac05a6f445dca86ecec9d0b55394ab1f1f182fa2dbf017be739b6a",
+        "report_sha256": "f47a002c678c67241f9deef1b9abf9540616518629ba1ca6998913d8be9657bb",
         "returncode": 0,
-        "stderr_sha256": "c476aedde76e51f95c6865b07aba1a6e92ebc67c21de1e11f3d713862d67a5b6",
-        "stdout_sha256": "6fb8fa7d73a54738c6607785e41ccf118de48b4f2bad454dd70ae93ab62a1983",
+        "stderr_sha256": "6afe94c6e1721db9435ebb32d347684c1fda0eedbee175bd370a18e53887f14a",
+        "stdout_sha256": "9c2a807dad4cb5e0bbb9989105b0f66923eb806365d23d38eeceb7991ff82be7",
         "trigger_state": "GREEN"
       },
       "name": "registry_gate_green",
@@ -176,7 +176,7 @@
     {
       "evidence": {
         "hard_gap_count": 63,
-        "report_sha256": "a3857bcb744127e85012bdf3925ceb9aa0fd0dc88049713ba547d23792f1eefc",
+        "report_sha256": "0b68f07e810f414ce7bda9382a371def14f206ff36fe214d6014452d380af62c",
         "returncode": 2,
         "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "stdout_sha256": "7ec2d484ebe2a2c037b3f8ccfac60e019be551340d77e4a5061a61e51bf52ff0",
@@ -193,11 +193,11 @@
     {
       "evidence": {
         "exists": true,
-        "expected_content_sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+        "expected_content_sha256": "f7544bddba287ff46a67019e0cf6a5b52f467e9085837ee72584261218cadbdc",
         "expected_dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
-        "expected_dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+        "expected_dispatch_trace_id": "reflex-trace:893d8320abd76f22647fe174",
         "expected_route_id": "assistant.route_authority_effect",
-        "identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+        "identity": "f82aa48fc616f691ea3f58326b230e29eb179cf05af27a52235cbc35223288ef",
         "matches_intent": true,
         "mode": 384,
         "observer_id": "theseus_filesystem_effect_observer_v1",
@@ -208,17 +208,17 @@
           ],
           "capability_id": "assistant.route_authority_effect",
           "dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
-          "dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+          "dispatch_trace_id": "reflex-trace:893d8320abd76f22647fe174",
           "external_inference_calls": 0,
           "fallback_return_count": 0,
           "intent": "planning",
           "policy": "project_theseus_local_route_authority_canary_v1",
           "public_training_rows_written": 0,
           "route_id": "assistant.route_authority_effect",
-          "transaction_id": "assistant_effect_transaction-e6b754381e292b00"
+          "transaction_id": "assistant_effect_transaction-098978e1c7096b50"
         },
-        "path": "runtime/assistant_effects/core-evidence-e1-ucqerlev/allowed/route_authority.json",
-        "sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+        "path": "runtime/assistant_effects/core-evidence-e1-v6p1mpz1/allowed/route_authority.json",
+        "sha256": "f7544bddba287ff46a67019e0cf6a5b52f467e9085837ee72584261218cadbdc",
         "size_bytes": 640,
         "write_fault": ""
       },
@@ -227,11 +227,11 @@
     },
     {
       "evidence": {
-        "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "before_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
         "complete": true,
         "fault": "",
-        "final_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
-        "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+        "final_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
+        "first_effect_identity": "f82aa48fc616f691ea3f58326b230e29eb179cf05af27a52235cbc35223288ef",
         "prior_path_existed": false,
         "removed_new_path": true,
         "residual_count": 0,
@@ -242,11 +242,11 @@
     },
     {
       "evidence": {
-        "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "before_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
         "complete": true,
         "fault": "",
-        "final_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
-        "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+        "final_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
+        "first_effect_identity": "f82aa48fc616f691ea3f58326b230e29eb179cf05af27a52235cbc35223288ef",
         "prior_path_existed": false,
         "removed_new_path": true,
         "residual_count": 0,
@@ -305,7 +305,7 @@
           "viea_observation_matches": true,
           "viea_rollback_matches": true
         },
-        "effect_id": "declared_effect-da2847a77ee908ff",
+        "effect_id": "declared_effect-3801200711da3b33",
         "expected_invalid_control_count": 8,
         "expected_invalid_controls": [
           {
@@ -348,10 +348,10 @@
           "It does not prove general tool safety, model capability, public transfer, or ASI."
         ],
         "policy": "project_theseus_independent_effect_transaction_audit_v1",
-        "receipt_digest": "52ad22d853b01e92469dcd03947da695edc7787ede31cabd961d0785b18cbf2e",
+        "receipt_digest": "41a83b9885cbb2b06d6920b8c41fb45c541435ee6941fd32142f0ef9b0dec4e9",
         "route_id": "assistant.route_authority_effect",
         "support_state": "replayable-reference-backed",
-        "transaction_id": "assistant_effect_transaction-e6b754381e292b00",
+        "transaction_id": "assistant_effect_transaction-098978e1c7096b50",
         "valid": true
       },
       "name": "independent_effect_audit_valid",
@@ -402,7 +402,7 @@
   ],
   "clean_replay": {
     "archive_checkout_had_git_metadata": false,
-    "archive_sha256": "b8c542015bd2b21b3f0524549ca98d0cd22839b67f4cd75b303a476e3408d405",
+    "archive_sha256": "b9123400ee70fc5d8cf0f5773c5ef7013103db34527c6cac44ebeb6ee16bd164",
     "evidence_capsule": {
       "boundary": "local exact evidence inputs copied into disposable archive; public report retains only paths, sizes, and digests",
       "capsule_manifest_sha256": "426e0688b3eabfab0129a89dd31bb59bbcd0dfa3737ac29834ef356e65501b90",
@@ -1036,27 +1036,27 @@
     },
     "inner_returncode": 0,
     "inner_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "inner_stdout_sha256": "2c4d683ec5e0cb589e2c80ca36f81ec6c1cb0c6e024a548b27426f8a73412f5b",
-    "source_commit": "0d0bc5ea615cf842410c55692b754a18571b53cf",
+    "inner_stdout_sha256": "a2e8c7719f1e6e7121399d67a4db40b0edc7c220c63d9ebd1facd9b37bfad502",
+    "source_commit": "dd25a443c135020e45df25fa21dd78b11e22b67b",
     "source_gate_results": {
       "registry": {
         "hard_gap_count": 0,
-        "report_sha256": "1a1717113d653123b6d20af7969f9440ebb96b7a93af66606c28c2320ec6b0c9",
+        "report_sha256": "9685b3b983164c1a49574cf5f3ec3c9f0fa1647fac90ab6ef902f2b706f48625",
         "returncode": 0,
-        "stderr_sha256": "6a7cb293b12386c09ba864c079dee2f1555df4fc10c56ae02d2b7bde9f160318",
-        "stdout_sha256": "7551eabde927c75c77c61457588c15b9d3c6d5e93f437a2d611b16ca08ab39f9",
+        "stderr_sha256": "fb6c56f4381d7095e5e931abbccbe7559b9f2800c8a184d3fa787541d8121b39",
+        "stdout_sha256": "4d636cb4154cbcb67ea63d6518502d83fa06b4bbc05a4942b589d7e0a31e9bde",
         "trigger_state": "GREEN"
       },
       "roadmap": {
         "hard_gap_count": 0,
-        "report_sha256": "57c9eedf9b13b1fac37489a6b4c0823af3287d0b7b37ef86c638fa30fdf281ee",
+        "report_sha256": "07fd91a427c2e6879e3b7709042a486a0d213db29ef571fc9220acebb19a3f87",
         "returncode": 0,
         "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdout_sha256": "4c07eea253f512cfe750be9590f900dbe2151afc4138b760df283010a8bf1488",
+        "stdout_sha256": "b4ccd0bdae7479455c0a7ae3f26e9110196e7f6e056dbdd6f204aad94b1b8632",
         "trigger_state": "YELLOW"
       }
     },
-    "source_tree": "98b8d7f1b47cc6860415f65dffe87274f7279188",
+    "source_tree": "9d39f46d7bcf3ca219e089e8b51e9be98339c5c4",
     "temporary_checkout_removed_before_report_return": true
   },
   "counters": {
@@ -1071,7 +1071,7 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-07-29T18:57:51Z",
+  "created_utc": "2026-07-29T19:02:27Z",
   "disposition": "REPLAYABLE_REFERENCE_BACKED",
   "environment": {
     "external_inference": "forbidden_and_zero",
@@ -1086,15 +1086,15 @@
   "gate_results": {
     "registry": {
       "hard_gap_count": 0,
-      "report_sha256": "44a8c89613ac05a6f445dca86ecec9d0b55394ab1f1f182fa2dbf017be739b6a",
+      "report_sha256": "f47a002c678c67241f9deef1b9abf9540616518629ba1ca6998913d8be9657bb",
       "returncode": 0,
-      "stderr_sha256": "c476aedde76e51f95c6865b07aba1a6e92ebc67c21de1e11f3d713862d67a5b6",
-      "stdout_sha256": "6fb8fa7d73a54738c6607785e41ccf118de48b4f2bad454dd70ae93ab62a1983",
+      "stderr_sha256": "6afe94c6e1721db9435ebb32d347684c1fda0eedbee175bd370a18e53887f14a",
+      "stdout_sha256": "9c2a807dad4cb5e0bbb9989105b0f66923eb806365d23d38eeceb7991ff82be7",
       "trigger_state": "GREEN"
     },
     "roadmap": {
       "hard_gap_count": 63,
-      "report_sha256": "a3857bcb744127e85012bdf3925ceb9aa0fd0dc88049713ba547d23792f1eefc",
+      "report_sha256": "0b68f07e810f414ce7bda9382a371def14f206ff36fe214d6014452d380af62c",
       "returncode": 2,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_sha256": "7ec2d484ebe2a2c037b3f8ccfac60e019be551340d77e4a5061a61e51bf52ff0",
@@ -1128,7 +1128,7 @@
       "viea_observation_matches": true,
       "viea_rollback_matches": true
     },
-    "effect_id": "declared_effect-da2847a77ee908ff",
+    "effect_id": "declared_effect-3801200711da3b33",
     "expected_invalid_control_count": 8,
     "expected_invalid_controls": [
       {
@@ -1171,10 +1171,10 @@
       "It does not prove general tool safety, model capability, public transfer, or ASI."
     ],
     "policy": "project_theseus_independent_effect_transaction_audit_v1",
-    "receipt_digest": "52ad22d853b01e92469dcd03947da695edc7787ede31cabd961d0785b18cbf2e",
+    "receipt_digest": "41a83b9885cbb2b06d6920b8c41fb45c541435ee6941fd32142f0ef9b0dec4e9",
     "route_id": "assistant.route_authority_effect",
     "support_state": "replayable-reference-backed",
-    "transaction_id": "assistant_effect_transaction-e6b754381e292b00",
+    "transaction_id": "assistant_effect_transaction-098978e1c7096b50",
     "valid": true
   },
   "maximum_inference": "This exact committed packet is replayable and proves the recorded local mechanics, information boundary, authority denial, observation, and rollback only. It does not establish usefulness or learned capability.",
@@ -1188,11 +1188,11 @@
   ],
   "policy": "project_theseus_core_evidence_E1_clean_replay_v1",
   "replay_command": "python3 scripts/core_evidence_campaign.py --stage E1 --gate",
-  "report_payload_sha256": "2dc884a970a1dd19726936afc21df174d40877d29322f5b770a96f52c684cc5e",
+  "report_payload_sha256": "b4209541cc14565f4f5eb05905c964e1f4eb8137a265a0f69792ee271e06a4fb",
   "revoked_effect_trace": {
     "dispatch_bound": false,
     "dispatch_decision_digest": "sha256:a701660d916307c09127b2c7fc1a65bf4b34b19b62597004c7e87b9fabe17ca7",
-    "dispatch_trace_id": "reflex-trace:64327a6091500938119863eb",
+    "dispatch_trace_id": "reflex-trace:d668dcd0480359dcd0fe50e5",
     "effect_inventory": [],
     "evaluator_id": "theseus_effect_rollback_evaluator_v1",
     "external_inference_calls": 0,
@@ -1218,17 +1218,17 @@
     },
     "route_id": "",
     "selected_capability_ids": [],
-    "transaction_id": "assistant_effect_transaction-c8c084fe384a02b3"
+    "transaction_id": "assistant_effect_transaction-1a352d305fd4a40a"
   },
   "runtime": {
-    "wall_ms": 177.202
+    "wall_ms": 146.348
   },
   "source": {
-    "E0_preregistration_sha256": "67bf134dda10a39403e5d3cf4730b000fa589b47efcff610522d3d8a333cea8b",
-    "E0_report_payload_sha256": "0124ec5486bba00a2408135d29da5faa381df12d2b27f67818133b44721c7c01",
-    "commit": "0d0bc5ea615cf842410c55692b754a18571b53cf",
-    "config_sha256": "f60722a18b718b99cb90f991d482fb11115c35487e70054d4298a03aa1adf4cf",
-    "tree": "98b8d7f1b47cc6860415f65dffe87274f7279188"
+    "E0_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+    "E0_report_payload_sha256": "5c92ff90957f26ea4058f77298620db0314d079f61d844ee4a7042d4e97565c3",
+    "commit": "dd25a443c135020e45df25fa21dd78b11e22b67b",
+    "config_sha256": "51795a85792edffc8fccc8b1eaa744a785ebd864d416a5abe065bca7877d911d",
+    "tree": "9d39f46d7bcf3ca219e089e8b51e9be98339c5c4"
   },
   "stage": "E1",
   "trace_identities": {
@@ -1244,8 +1244,8 @@
       "learned_model_invoked": false
     },
     "observation": {
-      "final_effect_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
-      "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+      "final_effect_identity": "16646c973e20eb5ccd7a9dae922af906ddb7a16dfefd42b8de7b1b1419fb31ca",
+      "first_effect_identity": "f82aa48fc616f691ea3f58326b230e29eb179cf05af27a52235cbc35223288ef",
       "observer_id": "theseus_filesystem_effect_observer_v1"
     },
     "plan": {
@@ -1259,12 +1259,12 @@
     },
     "route": {
       "allowed_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
-      "allowed_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
-      "blocked_trace_id": "reflex-trace:00d792960a5fb5f8f41511db",
-      "revoked_trace_id": "reflex-trace:64327a6091500938119863eb"
+      "allowed_trace_id": "reflex-trace:893d8320abd76f22647fe174",
+      "blocked_trace_id": "reflex-trace:0a4c8902e06ea7f69b0d93cc",
+      "revoked_trace_id": "reflex-trace:d668dcd0480359dcd0fe50e5"
     },
     "terminal_receipt": {
-      "effect_audit_sha256": "d0be5b4b9a397257fe080d0dd7bb9a1d5a835ab08bf36d0775c4900349101df1",
+      "effect_audit_sha256": "da053a5e334955154e1c9bf634c65521d0f5adbba56ee4006bd496f3aad943af",
       "effect_audit_support_state": "replayable-reference-backed"
     },
     "tool": {
