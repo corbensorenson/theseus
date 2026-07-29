@@ -217,3 +217,25 @@ def test_e1_replay_fails_if_source_gates_are_red() -> None:
     failed = {row["name"] for row in report["hard_gaps"]}
     assert "registry_gate_green" in failed
     assert "roadmap_gate_nonred" in failed
+
+
+def test_e1_local_evidence_capsule_is_complete_and_digest_only(tmp_path: Path) -> None:
+    checkout = tmp_path / "checkout"
+    checkout.mkdir()
+
+    capsule = campaign.materialize_e1_evidence_capsule(ROOT, checkout)
+
+    assert capsule["missing_required_paths"] == []
+    assert capsule["entry_count"] >= 20
+    assert capsule["total_bytes"] > 0
+    assert len(capsule["capsule_manifest_sha256"]) == 64
+    for entry in capsule["entries"]:
+        assert set(entry) == {
+            "path",
+            "bytes",
+            "sha256",
+            "raw_content_embedded_in_public_packet",
+        }
+        assert entry["raw_content_embedded_in_public_packet"] is False
+        assert (checkout / entry["path"]).is_file()
+        assert campaign.sha256_bytes((checkout / entry["path"]).read_bytes()) == entry["sha256"]

@@ -434,7 +434,7 @@
         },
         "kerc_fidelity_gate": {
           "path": "scripts/kerc_implementation_fidelity_gate.py",
-          "sha256": "b6b29efe3ab3e846258083ab1345160762b08e039806bfe5ca4331328a35832c"
+          "sha256": "3469dc03964ab75a7c7785c70ef02a58eed9c508313cf5fc9b598662416edd08"
         },
         "kerc_fidelity_gate_tests": {
           "path": "tests/test_kerc_implementation_fidelity.py",

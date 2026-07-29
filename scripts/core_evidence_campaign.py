@@ -152,6 +152,24 @@ def run_clean_e1_replay(
             gaps=activation_gaps,
         )
 
+    source_gate_results = run_e1_source_gates(ROOT)
+    if source_gate_results.get("registry", {}).get("trigger_state") != "GREEN":
+        return failed_e1_report(
+            source_commit=commit,
+            source_tree=tree,
+            disposition="REPLAY_FAILED",
+            gaps=["source_worktree_registry_gate_not_green"],
+            process=source_gate_results.get("registry"),
+        )
+    if source_gate_results.get("roadmap", {}).get("trigger_state") not in {"GREEN", "YELLOW"}:
+        return failed_e1_report(
+            source_commit=commit,
+            source_tree=tree,
+            disposition="REPLAY_FAILED",
+            gaps=["source_worktree_roadmap_gate_red"],
+            process=source_gate_results.get("roadmap"),
+        )
+
     with tempfile.TemporaryDirectory(prefix="theseus-e1-clean-") as tmp:
         temp_root = Path(tmp)
         checkout = temp_root / "checkout"
@@ -183,6 +201,15 @@ def run_clean_e1_replay(
                 disposition="REPLAY_FAILED",
                 gaps=["archive_extract_failed"],
                 process=extract_result,
+            )
+        capsule = materialize_e1_evidence_capsule(ROOT, checkout)
+        if capsule["missing_required_paths"]:
+            return failed_e1_report(
+                source_commit=commit,
+                source_tree=tree,
+                disposition="REPLAY_FAILED",
+                gaps=["source_evidence_capsule_incomplete"],
+                process=capsule,
             )
         command = [
             sys.executable,
@@ -223,6 +250,8 @@ def run_clean_e1_replay(
             "inner_returncode": process["returncode"],
             "inner_stdout_sha256": sha256_text(process["stdout"]),
             "inner_stderr_sha256": sha256_text(process["stderr"]),
+            "source_gate_results": source_gate_results,
+            "evidence_capsule": capsule,
             "temporary_checkout_removed_before_report_return": True,
         }
         report["source"]["commit"] = commit
@@ -239,6 +268,52 @@ def run_clean_e1_replay(
             if key not in {"created_utc", "runtime", "report_payload_sha256"}
         })
         return report
+
+
+def materialize_e1_evidence_capsule(source_root: Path, checkout_root: Path) -> dict[str, Any]:
+    """Copy only the locally required evidence inputs into a clean archive.
+
+    Reports remain unembedded in the public packet.  Exact hashes and byte
+    counts make the local evidence bundle auditable while avoiding raw private
+    or oversized report publication.
+    """
+    registry_path = source_root / "configs" / "project_manifest_registry.json"
+    registry = read_json(registry_path)
+    required_paths: set[str] = {
+        "reports/viea_spine_materialized_view.json",
+        "reports/vcm_consumer_integration_gate.json",
+        "reports/theseus_plan_compiler.json",
+    }
+    for contract in dicts(registry.get("route_evidence_contracts")):
+        for requirement in dicts(contract.get("requirements")):
+            path = str(requirement.get("path") or "")
+            if path:
+                required_paths.add(path)
+    entries = []
+    missing = []
+    for relative_path in sorted(required_paths):
+        source = source_root / relative_path
+        if not source.exists() or not source.is_file():
+            missing.append(relative_path)
+            continue
+        destination = checkout_root / relative_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+        entries.append({
+            "path": relative_path,
+            "bytes": source.stat().st_size,
+            "sha256": sha256_bytes(source.read_bytes()),
+            "raw_content_embedded_in_public_packet": False,
+        })
+    return {
+        "policy": "project_theseus_E1_local_evidence_capsule_v1",
+        "entry_count": len(entries),
+        "entries": entries,
+        "missing_required_paths": missing,
+        "total_bytes": sum(integer(row.get("bytes")) for row in entries),
+        "capsule_manifest_sha256": stable_hash(entries),
+        "boundary": "local exact evidence inputs copied into disposable archive; public report retains only paths, sizes, and digests",
+    }
 
 
 def build_e1_packet(

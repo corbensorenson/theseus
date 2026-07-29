@@ -460,7 +460,14 @@ def audit_mechanisms(
         for ref_kind in ("implementation_refs", "evidence_refs"):
             for ref in string_list(row.get(ref_kind)):
                 if not resolve(ref, root=root).exists():
-                    faults.append(fault("mechanism_reference_missing", mechanism_id=identifier, kind=ref_kind, path=ref))
+                    faults.append(
+                        fault(
+                            "mechanism_reference_missing",
+                            mechanism_id=identifier,
+                            reference_kind=ref_kind,
+                            path=ref,
+                        )
+                    )
         if not str(row.get("claim_ceiling") or "").strip():
             faults.append(fault("mechanism_claim_ceiling_missing", mechanism_id=identifier))
 
