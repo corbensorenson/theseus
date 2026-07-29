@@ -1,14 +1,12 @@
 # Project Theseus Roadmap
 
-Last consolidated: 2026-07-29 UTC. Implementation evidence is current through
-`54aa6171`; this roadmap is part of the following documentation transaction.
+Last reoriented: 2026-07-29 UTC, after documentation commit `28a2fd17`.
 
 This is the forward human execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; operating rules belong in `AGENTS.md`; detailed
 machine obligations belong in `configs/roadmap_implementation_matrix.json`;
 canonical implementations and route authority belong in
-`configs/project_manifest_registry.json`. Historical roadmap prose remains in
-Git and content-bound reports.
+`configs/project_manifest_registry.json`.
 
 ## North Star
 
@@ -16,393 +14,448 @@ Build a private, locally trained assistant that Corben uses daily, serves with
 zero external inference, improves through governed evidence, and drives
 accepted live-teacher share toward zero.
 
-The seed scope is English, Python, JavaScript/TypeScript, HTML/CSS, and Rust. It
-must become useful before it becomes broad.
+The immediate objective is narrower:
 
-## The Falsifiable Project Question
+> Produce the fastest honest conclusions about whether the Theseus stack is
+> useful, efficient, governable, and improved by modular learned specialists.
 
-> Can a locally trained, source-disjoint Theseus student complete useful
-> conversation and repository work through the governed stack, and does
-> modular MoECOT improve the useful-safe frontier over matched dense controls
-> at acceptable total lifecycle cost?
+Progress is now a terminal experimental result, not another implemented
+subsystem. A positive, negative, inconclusive, or blocked result counts when it
+answers its preregistered question at the strongest scope the evidence earned.
 
-Every major task should reduce uncertainty about that question, make the
-experiment honest, or make the resulting system genuinely usable.
+## Program Reorientation
+
+The ASI Stack currently contains 84 chapter-core claims, all conservatively at
+`argument`. Theseus cannot prove all of them at once. It will instead run one
+flagship evidence program in which each experiment advances several claims.
+
+There are two independent denominators:
+
+1. **D1 — governed-stack efficacy:** natural repository work performed through
+   the existing local stack and matched simpler routes. This can run without
+   long neural training and cannot create learned-model credit.
+2. **D2 — local-student competence:** the frozen modular student and matched
+   dense controls. This remains sealed until matched training completes.
+
+D1 may not tune, rescue, restructure, or leak outcomes into D2. D2 failure may
+not erase a valid D1 result, and D1 success may not imply student competence.
+
+## Core Bets Under Test
+
+| Core bet | ASI Stack claim owner | Decisive Theseus evidence |
+| --- | --- | --- |
+| A governed stack can outperform a naked model or simple wrapper on useful-safe work | `asi-is-a-stack-not-a-model.core` | D1 matched natural repository-work routes |
+| Least-sufficient routing and reusable compilation can improve useful work per total cost | `the-efficient-asi-hypothesis.core` | Repeated-work route and reuse comparison |
+| Capability, context, and planning do not themselves grant effect authority | `system-boundaries-and-authority.core` | Natural allowed, denied, revoked, confused-deputy, and rollback paths |
+| Typed planning and context improve outcomes rather than merely produce records | `planning-as-a-control-layer.core`, `virtual-context-abi.core` | Full, no-plan, no-VCM, stale, shuffled, and omission-aware comparisons |
+| Verified repetition can become useful procedural memory | `procedural-memory-and-cognitive-loop-closure.core` | Reuse on source-disjoint repeated work with false-trigger and retirement tests |
+| Modular specialists improve the useful-safe frontier over dense controls | `routing-heads-and-specialist-cores.core` | D2 modular versus dense-active and dense-total comparison |
+| Evidence states, residuals, and joined traces prevent claim laundering | `evidence-states-and-claim-discipline.core`, `integrated-reference-architecture.core` | Independent replay, complete denominators, negative retention, and claim-scoped dispositions |
+| Theseus is a reproducible implementation reference rather than a report generator | `project-theseus-as-report-first-implementation-reference.core` | Clean live replay and public-safe evidence packet bound to exact source |
+
+Compact generative substrates, KERC/RDC, alternative attention, ANE training,
+RL, self-evolution, and broader ASI Stack chapters remain valuable research.
+They are not part of this proof campaign unless a terminal flagship result
+identifies them as the smallest causal next experiment.
 
 ## Current Program State
 
 | Track | State | Meaning |
 | --- | --- | --- |
-| Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage replay |
-| Long training | `TRAINING_HELD` | The operator hold is installed; no new long segment may launch |
-| Capability | `NOT_EVALUATED` | The current private 160-case surface has consumed 0 cases |
+| Documentation | `CUSTODY_GREEN` | Canonical state, roadmap, glossary, and runbooks agree at `28a2fd17` |
+| Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
+| Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
+| D1 natural-stack evidence | `READY_TO_PREREGISTER` | Can proceed locally without consuming D2 |
+| D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
-| Product usefulness | `EMPIRICAL_SUPPORT_INSUFFICIENT` | Assisted machinery works; genuine daily usefulness is not established |
-| Local security | `LOCAL_ONLY_GREEN` | Local adversarial tests pass; LAN/public exposure is unauthorized |
-| Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX is selected among tested eligible routes |
-| KERC/RDC discovery | `FROZEN_INCONCLUSIVE_EXPERIMENT` | Zero campaign-one exposure; K4-K8 are prospective re-entry obligations |
-| ANE training | `NOT_SELECTED` | Exact native block lost joined wall time to MLX in the tested regime |
-| Corpus | `FROZEN_SUFFICIENT_FOR_CURRENT_PROPOSAL` | Do not add broad data without a measured defect |
-| Teacher accounting | `GREEN` | About 0.013% of accepted rows are teacher-accepted |
-| Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Workflows exist locally; the latest local source has not been observed on hosted CI |
+| Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
+| KERC/RDC | `FROZEN_INCONCLUSIVE_EXPERIMENT` | Preserved for a later adequacy-complete campaign |
+| ANE training | `NOT_SELECTED` | Current exact route lost matched joined wall time to MLX |
+| Product usefulness | `EMPIRICAL_SUPPORT_INSUFFICIENT` | Assisted mechanics exist; real usefulness is not established |
+| Runtime exposure | `LOCAL_ONLY` | No LAN or public exposure qualification |
 
-## Controlling Rules
+## Rapid Evidence Campaign
 
-1. Public benchmarks are calibration only and never training data.
-2. Externally generated tokens are never served.
-3. Live teachers are OpenAI-only, residual, provenance-bound,
-   verifier-accepted, leakage-audited, retained, and capped.
-4. Generation and ranking may see only the prompt, callable signature, and
-   explicitly authorized runtime context.
-5. Tools, retrieval, templates, routers, rules, and fallbacks receive zero
-   learned-generation credit.
-6. Negative evidence is scoped to the exact implementation and regime tested.
-7. One canonical owner exists per abstraction. Replacement is transactional,
-   evidence-bound, and reversible.
-8. No new lane, dashboard, benchmark family, product surface, or document
-   family may bypass the breadth freeze.
-9. A mechanics GREEN does not imply capability, utility, launch authority, or
-   scientific confirmation.
-10. Host safety uses measured causal limits and two complete checkpoint
-    transactions, not clock-of-day windows or arbitrary memory/disk floors.
-11. An active capability or evaluation surface is consumed only through its
-    frozen registry and never rerun after exact consumption.
-12. When blocked, record the wall and stop; do not manufacture adjacent green
-    evidence.
+### E0 — Freeze Questions, Tasks, And Decision Rules
 
-## Critical Path
+State: `first`.
 
-### R0 — Documentation And Authority Reconciliation
+Create one prospectively frozen campaign packet under the existing
+`ASI-THESEUS-FLAGSHIP-01` owner. Do not create a new benchmark family or
+dashboard. The active implementation obligation is the existing
+`planned.governed_usefulness_effect_complete_rollback_v1` backlog item.
 
-State: `completed by the 2026-07-29 documentation transaction`.
+The packet must bind:
 
-Purpose: remove contradictory human and machine narratives before another
-state-changing campaign action.
+- exact claim IDs and maximum inference;
+- worker, model, route, tool, memory, and verifier identities;
+- one natural repository-replay cohort for D1;
+- disjoint calibration, development, and held-out partitions;
+- task-source, license, privacy, and contamination boundaries;
+- allowed candidate-visible fields;
+- hidden tests, gold effects, and evaluator-only fields;
+- matched route budgets and retry rules;
+- competence, usefulness, unsafe-release, false-block, weak-tail, cost, and
+  latency measures;
+- all failure, timeout, abstention, denial, and infrastructure denominators;
+- independent evaluator and candidate-integrity recomputation;
+- terminal decision rules and a fixed rescue ceiling.
 
-Complete when:
+Preferred tasks are real repository changes reconstructed from committed
+history or existing low-risk work records: parent source state plus the natural
+request is candidate-visible; later patches, tests, outcomes, commit identity,
+answer-family labels, and derived target metadata are not.
 
-- `README.md`, `docs/README.md`, `docs/PROJECT_STATE.md`, this roadmap, the
-  glossary, and active runbooks use the same state vocabulary;
-- stale pre-security and pre-step-11,416 claims are removed or marked
-  historical;
-- current versus architecture versus research versus archived documents are
-  explicitly classified;
-- Phase 0 and Phase 8 distinguish global follow-through from campaign-specific
-  readiness;
-- the document link audit is GREEN;
-- the project registry is GREEN;
-- the work is committed as one reviewed documentation transaction.
+If a task cannot be reconstructed without answer leakage or an authored
+success path, exclude it before the held-out partition is opened.
 
-Non-claim: documentation agreement does not make the model ready or useful.
+Exit: an immutable preregistration or an exact wall showing that a competent
+natural denominator cannot yet be assembled.
 
-### R1 — Source-Bound Readiness Repair
+### E1 — Clean Live Theseus Replay
 
-State: `next after the documentation transaction is committed`.
+State: `after E0`.
 
-Purpose: resolve the current contradiction between a historically GREEN exact
-replacement package and a current pre-training gate that is not ready.
+Reproduce the current public-safe stack from a clean checkout and bind:
 
-Actions:
+- source commit and environment;
+- registry and roadmap gate results;
+- one allowed-effect trace;
+- one blocked or revoked trace;
+- one exact rollback trace;
+- candidate/evaluator information-flow audit;
+- model, tool, VCM, plan, route, authority, observation, residual, and terminal
+  receipt identities;
+- every missing, stale, skipped, or private artifact.
 
-1. Recompute source identities only after R0 is banked.
-2. Separate nonblocking Phase-8 cross-platform/serving follow-through from the
-   selected M1/MLX campaign readiness predicate.
-3. Re-run the architecture freeze and independent readiness audit without
-   consuming capability surfaces.
-4. Verify the exact step-11,416 model, AdamW, RNG, cursor, plan migration, and
-   37-manifest prospective lineage.
-5. Require the roadmap pre-training gate to pass for the exact selected route.
-6. Leave the operator hold installed.
+This closes the “latest report versus reproducible reality” gap. It does not
+establish usefulness or student capability.
 
-Exit state: `TRAINING_READY_BUT_HELD`, not `TRAINING_STARTED`.
+Exit: `REPLAYABLE_REFERENCE_BACKED` for the exact packet, or an honest
+`REPLAY_FAILED` disposition with the causal defect.
 
-### R2 — Genuine Low-Cost Dogfood
+### E2 — D1 Natural Governed-Stack Comparison
 
-State: `ready now`.
+State: `after E0 and E1`; this is the immediate empirical headline.
 
-Purpose: learn whether the existing assisted local product solves real work
-before learned capability exists.
+Run the same frozen natural tasks through:
 
-Use the local CLI on genuine low-risk tasks such as:
+1. full governed stack;
+2. direct local worker;
+3. test-only route;
+4. record-only route;
+5. conservative-hold route.
 
-- repository orientation and status;
-- documentation lookup;
-- safe plan construction;
-- local artifact explanation;
-- bounded deterministic tool use;
-- evidence-backed comparison of existing reports.
+The worker must be local. No external inference, teacher call, hidden answer,
+current-repository escape, or user-facing effect is allowed.
 
-For every task record exactly one outcome:
+Primary outcomes:
 
-- `accepted`;
-- `missed`;
-- `ignored`;
-- `corrected`;
-- `completed`;
-- `failed`;
-- `abstained`.
+- useful completed task;
+- unsafe or unauthorized release;
+- false block and fair rescue;
+- missed or malformed result;
+- verified rollback or compensation;
+- weakest task-family outcome;
+- total lifecycle cost and latency.
 
-Required boundaries:
+Interpretation gate:
 
-- no raw user text in training rows;
-- no public benchmark payload;
-- no runtime external inference;
-- no learned-model credit for assisted behavior;
-- no LAN/dashboard exposure;
-- no synthetic success substitution.
+- if the frozen worker does not meet the preregistered competence floor, the
+  governance contrast is `INCONCLUSIVE_WORKER_INADEQUATE`;
+- the same result is still valid negative evidence about the current
+  integrated product;
+- the worker or floor may not be changed after held-out outcomes open;
+- full governance wins only if it improves the joint useful-safe frontier
+  without unacceptable false blocking or hidden lifecycle cost.
 
-Exit condition: multiple days of real traces with enough diversity to estimate
-task completion, request-fidelity misses, correction burden, latency, and
-ignored-output rate. No fixed positive-rate target is invented before the
-sample exists.
+### E3 — Efficiency, Planning, Memory, And Reuse
 
-### R3 — Remote CI And Reproducibility Confirmation
+State: `may run after E0 on a denominator disjoint from E2`.
 
-State: `blocked on push`.
+Use real repeated repository-work families to test three route policies:
 
-Purpose: make the newly defined Linux/public-safe checks an observed property,
-not merely a local workflow file.
+- always-maximal eligible route;
+- always-cheapest eligible route;
+- least-cost route satisfying the frozen quality predicate.
 
-Actions:
+Within the adaptive route, predeclare causal comparisons for:
 
-1. Review and push the current local commits.
-2. Observe Python format/lint/security/evaluator tests.
-3. Observe Rust format/clippy/tests on Linux.
-4. Observe license, public-release scope, dependency review, and deterministic
-   capsule output.
-5. Keep Mac MLX/Metal qualification manual and guarded.
-6. Fix real failures; do not weaken checks to obtain green status.
+- full planning versus direct execution;
+- VCM packet versus no VCM;
+- correct packet versus stale, shuffled, or omission-bearing packet;
+- verified reusable procedure versus fresh execution;
+- false-trigger, drift, quarantine, decompilation, rollback, and retirement.
 
-Exit condition: one clean hosted run bound to the current source commit.
+Reuse the existing reflexive-router, VCM ABI, verification-bandwidth,
+procedural-memory, claim-ledger, and ambiguous-routing owners. This is behavior
+qualification for already-wired mechanisms, not permission to implement a new
+router, memory system, planner, or evidence store.
 
-### R4 — One Bounded Fresh-Process Training Qualification
+Measure accepted useful work per total contract cost, not raw token count or
+isolated latency. Cost includes planning, retrieval, verification, repair,
+retries, human-equivalent intervention, storage, rollback, and residual burden.
 
-State: `blocked on R1 and operator availability`.
+If no route achieves the quality predicate, the experiment does not support
+the efficient-ASI claim. It records the competence or route wall instead.
 
-Purpose: verify that the selected route still behaves as measured after the
-source-bound readiness repair.
+### E4 — Joined Evidence And Claim Disposition
 
-Requirements:
+State: `after each terminal E1-E3 result`.
 
-- exact step-11,416 resume;
-- fresh process;
-- externally observed host/resource receipt;
-- no fixed available-memory floor;
-- no arbitrary time-of-day restriction;
+Update the existing evidence owner with:
+
+- complete method and preregistration;
+- all arms and denominators;
+- uncertainty and weak-tail results;
+- one sanitized success trace when one exists;
+- one failure trace;
+- one blocked/revoked/rollback trace;
+- resource and lifecycle-cost table;
+- exact negative, null, skipped, and infrastructure outcomes;
+- claim-by-claim disposition;
+- maximum justified inference and explicit non-claims;
+- public-safe replay command and artifact digests.
+
+Each result receives exactly one terminal state:
+
+- `POSITIVE_SCOPED`;
+- `NEGATIVE_SCOPED`;
+- `INCONCLUSIVE_WORKER_INADEQUATE`;
+- `INCONCLUSIVE_EXPERIMENT`;
+- `BLOCKED_INFRASTRUCTURE`;
+- `INVALID_INFORMATION_FLOW`;
+- `INVALID_EVALUATOR`.
+
+No roadmap, report, chart, test count, or polished demonstration changes an ASI
+Stack support state automatically. The book must review any proposed transition
+against its own claim identity and evidence-quality rules.
+
+### E5 — Showable Evidence Brief
+
+State: `after at least one terminal natural result`.
+
+Produce a public-safe brief from the existing flagship evidence packet:
+
+- the question in plain English;
+- a small architecture and experiment diagram;
+- matched-arm result table;
+- useful-safe frontier plot;
+- lifecycle-cost breakdown;
+- strongest success, failure, and rollback examples;
+- what the evidence changes in Theseus;
+- what it changes in the ASI Stack;
+- what remains unproved.
+
+The brief may be shared after review. It must remain interesting even when the
+result is negative.
+
+## Neural Verdict Campaign
+
+This is the only long-training program that remains on the roadmap.
+
+### N0 — Source-Bound Readiness Refresh
+
+State: `may run now; leave the hold installed`.
+
+1. Recompute the architecture freeze and independent readiness package from
+   committed source.
+2. Verify the exact step-11,416 model, AdamW, RNG, cursor, plan migration, and
+   prospective lineage.
+3. Separate selected-Mac-route readiness from nonblocking cross-platform work.
+4. Preserve the frozen corpus, architecture, objective, schedule, and
+   evaluation identity.
+5. Reach `TRAINING_READY_BUT_HELD`.
+
+### N1 — Bounded Fresh-Process Qualification
+
+State: `wait for operator availability for neural work`.
+
+Run one exact transactional resume segment with:
+
+- external resource watchdog;
 - two measured checkpoint transactions of disk headroom;
-- exact checkpoint/reload and next-update replay;
+- no arbitrary memory floor or time-of-day rule;
+- checkpoint/reload and next-update replay;
 - no evaluation consumption;
-- no KERC/ANE or topology change;
-- one bounded transactional segment only.
+- no topology, optimizer, data, KERC, or ANE change.
 
-Exit condition: a clean receipt or an honestly recorded causal wall.
+### N2 — Complete The Matched Training
 
-### R5 — Complete The Matched Neural Campaign
-
-State: `blocked on R4 and explicit operator approval`.
+State: `wait for a future multi-day compute window`.
 
 Order:
 
-1. Resume the exact modular shared-trunk candidate.
-2. Train the matched dense-active-parameter control.
-3. Train the matched dense-total-parameter control.
-4. Preserve raw data, compute, tuning opportunity, inference budget, verifier
-   budget, and total-system-cost comparability.
-5. Archive exact model, optimizer, RNG, cursor, receipt, and resource state at
-   transactional boundaries.
+1. modular shared-trunk candidate;
+2. dense active-parameter control;
+3. dense total-parameter control.
 
-Do not alter architecture, corpus, objective, schedule, or evaluation because
-an intermediate number is disappointing. Any successor requires a new lineage.
+All candidates receive matched raw data, compute, tuning opportunity,
+inference/verifier budget, and total-system-cost accounting. Runs are
+transactional and resumable; intermediate results do not alter the frozen
+experiment.
 
-Exit condition: all three preregistered candidates complete with custody and
-resource evidence.
+### N3 — Consume D2 Once
 
-### R6 — Consume The Frozen Functional Evaluation Once
+State: `blocked on N2`.
 
-State: `blocked on R5`.
+Consume the frozen 160-case private functional surface exactly once. Report:
 
-The evaluation has 160 private source-disjoint cases, 32 per language arm.
-
-Required outputs:
-
-- learned model-only score;
-- assisted score reported separately;
+- model-only and separately assisted outcomes;
 - weakest-arm utility;
-- verifier pass rate;
-- malformed, empty, injection, and forbidden-field rejection counts;
-- latency and total-system cost;
-- candidate-versus-control paired effects;
-- uncertainty and multiple-seed interpretation where available;
-- prospective human-audit receipt;
-- contamination and consumption-ledger replay.
+- verifier, malformed, empty, injection, and forbidden-field outcomes;
+- modular versus both dense paired effects;
+- latency, memory, and total lifecycle cost;
+- uncertainty and complete failure denominators.
 
 Decision:
 
-- if MoECOT wins meaningfully without a weak-arm or cost failure, retain it;
-- if a dense control wins, simplify the practical substrate;
-- if all fail the useful floor, use observed residuals to design the smallest
-  next data/objective/architecture change;
-- never translate one failed scale or implementation into a universal
-  architecture verdict.
+- retain MoECOT only if it earns a meaningful useful-safe advantage without an
+  unacceptable weak-arm or cost failure;
+- simplify to dense if a dense control wins;
+- if all candidates fail, use the observed residual—not another speculative
+  mechanism list—to define the smallest successor;
+- preserve the exact negative scope.
 
-### R7 — Product Loop After Learned Evidence
+### N4 — Compose D1 And D2
 
-State: `blocked on R6`.
+State: `blocked on E2-E4 and N3`.
 
-Only after behavior-positive learned evidence:
+The final flagship conclusion separately states:
 
-- route the selected checkpoint through the local assistant;
-- measure model-only versus assisted outcomes separately;
-- use real corrections as governed residual pressure;
-- activate bounded procedural-memory/toolification only from verified repeated
-  traces;
-- drive accepted teacher share down;
-- optimize inference latency and memory on the selected model;
-- consider exposure qualification only after a separate threat model and
-  security review.
+- whether the governed stack helped a competent local worker;
+- whether the Theseus student was competent;
+- whether modular specialization helped versus dense controls;
+- whether the integrated local student plus stack produced useful natural work;
+- total lifecycle cost and limiting residuals.
 
-## Protected Discovery Program
+No conclusion inherits support from another axis.
 
-The SymLiquid/CGS/VSA/liquid-substrate bet remains protected, but it cannot
-absorb the practical lane.
+## Work That Is Explicitly Sidelined
 
-Rules:
+The following work is frozen because it does not shorten E0-E5 or N0-N4:
 
-- use matched raw data, total compute, tuning opportunity, inference/verifier
-  budget, and total-system cost;
-- preserve strong transformer controls;
-- report weak tails and uncertainty;
-- require faithful mechanism implementation before negative claims;
-- cap work to bounded experiments that do not delay R0-R6;
-- promote a discovery mechanism only after it improves a canonical
-  source-disjoint functional outcome.
+- new architectures, attention variants, optimizers, tokenizers, objectives,
+  curricula, speculative decoding modes, or same-scale rescue patches;
+- KERC/RDC K4-K8, OneCell, SymLiquid expansion, CGS mechanism expansion,
+  Coil/RankFold/NeuralFold, and alternative-substrate implementation;
+- additional ANE, CPU/GPU/NPU partitioning, Rust rewrites, or generic
+  acceleration searches without a measured selected-route defect;
+- broad corpus growth, bulk teacher generation, public calibration, preference
+  optimization, RL, self-training, continual learning, or unlearning;
+- new benchmark, private-suite, report, dashboard, document, registry, or
+  product-surface families;
+- Hive networking, trusted-peer federation, public gateways, compute markets,
+  licensing expansion, mobile, spatial, voice, multimodal, embodied, and
+  multi-user work;
+- LAN/public exposure, packaging, release engineering, and production serving;
+- cross-platform parity, CUDA work, continuous batching, and system-energy
+  studies not required by the selected Mac experiment;
+- book chapter growth, broad prose rewrites, theorem-count expansion, reader
+  derivatives, publication packaging, and full live-manifest reconciliation;
+- cleanup that does not remove a blocker, reduce evidence ambiguity, recover
+  material disk, or eliminate an active duplicate owner.
 
-### KERC/RDC Re-entry
+Failures and incomplete ideas remain catalogued with their exact evidence
+scope. Sidelined means preserved and nonblocking, not refuted or deleted.
 
-KERC is frozen for campaign one. Prospective re-entry requires its existing
-K4-K8 program:
+## Re-entry Rule
 
-- causal interaction evidence;
-- adequate learned-stage training;
-- source-disjoint behavior;
-- maximum-row and resource qualification;
-- canonical-path integration;
-- matched surface/dynamic-patch/structured controls;
-- end-to-end cost and weak-tail evidence.
+A sidelined item may re-enter only when a terminal flagship result identifies
+it as the smallest causal intervention for a measured defect and the proposed
+experiment states:
 
-No additional KERC canary is immediate work.
+- exact defect and evidence;
+- why existing owners cannot repair it;
+- matched baseline and negative control;
+- expected decision value;
+- resource and opportunity cost;
+- rollback and retirement conditions;
+- maximum inference.
 
-### ANE Re-entry
+Curiosity, utilization, theoretical elegance, an unread paper, a green
+mechanics canary, or a desire to avoid a negative result is not a re-entry
+condition.
 
-The exact ANE/Accelerate/Metal training triad remains mechanics evidence. It
-may re-enter only when a prospectively different schedule, operator fusion, or
-device partition has a credible critical-path argument and beats MLX on
-matched end-to-end wall time with parity, replay, stability, and thermal
-evidence. CPU, GPU, and ANE utilization is not a goal unless joined wall time
-improves.
+## Unattended Execution Contract
 
-## Non-Critical Follow-Through
+While Corben is away, work inside this envelope may proceed without another
+interactive choice:
 
-These remain valid but may not delay R0-R6:
+- read-only audits and source reconciliation;
+- local, no-network, no-teacher experiments under E0-E4;
+- disposable-worktree or temporary-directory effects with exact rollback;
+- tests, validators, independent replays, and public-safe evidence assembly;
+- source changes that repair a discovered flagship defect and preserve the
+  frozen experiment;
+- commits that contain one coherent, reviewed, validated transaction.
 
-- cross-platform CUDA/Windows/Linux parity;
-- real trusted-peer Hive execution proof;
-- production multi-request inference batching;
-- system energy measurement;
-- signed public release/custody evidence;
-- ASI Stack live-manifest pin reconciliation;
-- strict-generator and code-LM-closure retirement after successor parity;
-- registry duplicate-family cleanup;
-- report/archive compaction;
-- mobile, spatial, voice, compute-market, and packaging maintenance.
+The unattended lane must not:
 
-## Twenty-Phase Summary
+- remove the neural training hold;
+- start multi-day training;
+- consume D2 or public calibration;
+- change architecture, optimizer, data, objective, schedule, or evaluator;
+- invoke external inference or transmit private data;
+- delete checkpoints, corpora, user files, or meaningful negative evidence;
+- expose a service beyond loopback;
+- publish, push, or mutate an external system without separate authority;
+- convert assisted behavior into learned credit;
+- retry a semantic failure as if it were infrastructure noise.
 
-The matrix retains detailed acceptance criteria. This table is the compact
-human view.
+Jobs stop on their declared terminal condition or a measured causal resource
+wall. They do not use clock-of-day restrictions, arbitrary available-memory
+floors, or percentage-improvement hurdles.
 
-| Phase | State | What moves it |
-| --- | --- | --- |
-| 0 Repository self-model | `partial` | R0/R1, duplicate-family cleanup, superseded-family retirement |
-| 1 VIEA spine | `wired` | Maintain effect-complete regression coverage |
-| 2 Stable capability fields | `wired` | Require exact authority/evidence for every replacement |
-| 3 VCM | `wired` | Measure utility only in future selected-model context paths |
-| 4 Candidate integrity | `wired` | Keep independent recomputation on all capability claims |
-| 5 Daily-use assistant | `partial` | R2 real multi-day dogfood |
-| 6 Deterministic tools | `wired` | Measure benefit only after nonzero learned generation |
-| 7 Teacher/data governance | `partial` | Preserve frozen corpus; use measured residuals for any change |
-| 8 Resource/acceleration | `partial globally; selected route closed` | R1 semantics repair; later cross-platform work |
-| 9 Hive distributed operation | `frozen` | One trusted reachable peer and bounded signed task |
-| 10 Practical neural seed | `partial` | R4-R6 |
-| 11 Cognitive-kernel discovery | `wired/protected` | New preregistered matched-compute comparator only |
-| 12 Public calibration | `wired/locked` | Behavior-positive private confirmation first |
-| 13 Semantic IR/KERC | `partial/frozen` | K4-K8 successor re-entry, not campaign-one work |
-| 14 Claims/proof records | `wired` | Maintain assurance compilation and corpus subset qualification |
-| 15 Procedural memory | `implemented/held` | Real verified repeated traces after selected model |
-| 16 MoECOT/Octopus | `partial` | R5/R6 architecture verdict and route comparison |
-| 17 Simulation/fidelity | `wired` | Extend only for real bounded simulators |
-| 18 Governance/security | `wired local-only` | Separate exposure qualification before LAN/public use |
-| 19 Book synchronization | `implemented with pin warning` | Reviewed pin update without runtime authority changes |
+## Twenty-Phase Disposition
 
-## Success Measures
+The detailed matrix retains every obligation, but only the following phase
+work is active.
 
-### Learned model
+| Phase | Disposition during proof campaign |
+| --- | --- |
+| 0 Repository self-model | Maintain only what E1 replay or evidence custody requires |
+| 1 VIEA spine | E1-E4 joined traces |
+| 2 Stable capability fields | Maintain authority and replacement identity |
+| 3 VCM | E3 natural causal comparison |
+| 4 Candidate integrity | Mandatory for every experiment |
+| 5 Daily-use assistant | E2 natural work and honest outcomes |
+| 6 Deterministic tools | E2/E3 attribution; no learned credit |
+| 7 Teacher/data governance | Freeze corpus and preserve accounting |
+| 8 Resource/acceleration | N0/N1 selected-route maintenance only |
+| 9 Hive | Sidelined |
+| 10 Practical neural seed | N0-N4 |
+| 11 Discovery substrates | Sidelined |
+| 12 Public calibration | Locked |
+| 13 Semantic IR/KERC | Sidelined except existing Semantic-IR control |
+| 14 Claims/proof records | E4 claim disposition only |
+| 15 Procedural memory | E3 natural reuse comparison |
+| 16 MoECOT/Octopus | N2-N4 verdict |
+| 17 Simulation/fidelity | Sidelined |
+| 18 Governance/security | E2 natural authority/rollback evidence; local-only |
+| 19 Book synchronization | Selected flagship claim crosswalk only |
 
-- source-disjoint functional completion;
-- weakest-arm utility;
-- malformed/empty output rate;
-- verifier pass rate;
-- model-only latency and memory;
-- matched candidate-control effect;
-- replayable checkpoint and resource custody.
+## Definition Of Done
 
-### Product
+The reoriented program is complete when:
 
-- genuine tasks attempted;
-- accepted, missed, ignored, corrected, completed, failed, and abstained counts;
-- request-fidelity miss rate;
-- correction burden;
-- time saved or lost;
-- model-only versus assisted attribution.
-
-### Governance
-
-- runtime external inference: zero;
-- public benchmark training rows: zero;
-- candidate forbidden-field access: zero;
-- teacher share of accepted rows and optimizer samples;
-- exact consumption-ledger validity;
-- local-only authority until exposure qualification.
-
-### Repository
-
-- one canonical owner per abstraction;
-- duplicate and cleanup queue trend down;
-- documentation link audit green;
-- no large uncommitted evidence cycle;
-- generated storage remains bounded and replayable;
-- CI observed on the current source commit.
-
-## Definition Of Done For The Current Program
-
-The current program is complete when:
-
-1. documentation and authority are coherent;
-2. the exact selected route is readiness-green but remains operator-controlled;
-3. the modular candidate and both dense controls complete matched training;
-4. the frozen private evaluation is consumed exactly once;
-5. the architecture verdict is made from paired functional utility and
-   total-system cost;
-6. one selected local model is used on genuine work;
-7. model-only and assisted outcomes remain separately attributable;
-8. runtime external inference and public-benchmark training remain zero.
-
-Until then, Theseus is a research system with strong machinery—not a proven
-useful private model.
+1. D1 has a terminal natural governed-stack result;
+2. repeated-work routing, planning, VCM, and reuse have scoped causal
+   dispositions;
+3. a clean live Theseus replay and public-safe evidence packet exist;
+4. the exact modular candidate and both dense controls complete matched
+   training;
+5. D2 is consumed once and produces a modular-versus-dense verdict;
+6. D1 and D2 are composed without denominator or support leakage;
+7. each affected ASI Stack claim receives a reviewed transition or explicit
+   no-promotion decision;
+8. a concise public-safe evidence brief communicates the strongest result and
+   its limits;
+9. the selected local system is used on genuine work with model-only and
+   assisted attribution;
+10. runtime external inference and public-benchmark training remain zero.
 
 ## Canonical Verification Commands
-
-Documentation and registry:
 
 ```bash
 python3 scripts/theseus_doc_link_audit.py
@@ -410,7 +463,7 @@ python3 scripts/theseus_project_registry.py --gate
 python3 scripts/roadmap_implementation_gate.py --gate
 ```
 
-Source-bound architecture readiness, after R0 is committed:
+After the proof-campaign source transaction is committed, N0 may run:
 
 ```bash
 python3 scripts/pretraining_architecture_freeze.py --execute-replays
@@ -419,5 +472,5 @@ python3 scripts/pre_long_run_replacement_freeze.py
 python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready
 ```
 
-These commands produce evidence. They do not remove the operator hold or
-authorize a long run.
+These commands produce evidence. They do not remove the training hold, consume
+an evaluation surface, or promote a claim.

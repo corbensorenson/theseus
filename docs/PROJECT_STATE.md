@@ -1,7 +1,7 @@
 # Project Theseus: Current State
 
-Last consolidated: 2026-07-29 UTC. Implementation evidence is current through
-`54aa6171`; this page is part of the following documentation transaction.
+Last consolidated: 2026-07-29 UTC. Documentation baseline `28a2fd17`; this page
+is part of the following evidence-first roadmap transaction.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -13,7 +13,9 @@ Theseus is a well-governed local AI research system with an exact resumable
 57.3M-parameter training lineage and a substantial assisted runtime, but it is
 not yet a demonstrated useful learned assistant: training is deliberately
 held, the current checkpoint is `NOT_EVALUATED`, matched dense controls have
-not been trained, and genuine dogfood evidence is insufficient.
+not been trained, and genuine natural-work evidence is insufficient. Immediate
+work now targets terminal evidence for the core Theseus and ASI Stack bets
+rather than further subsystem expansion.
 
 ## How Truth Is Resolved
 
@@ -53,9 +55,10 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 
 | Dimension | Current state | Evidence boundary |
 | --- | --- | --- |
-| Repository | `LOCAL_ONLY_NOT_REMOTE_VERIFIED` | Implementation baseline `54aa6171`; inspect Git for the documentation commit and current divergence from `origin/main` |
+| Repository | `LOCAL_ONLY_NOT_REMOTE_VERIFIED` | Documentation baseline `28a2fd17`; inspect Git for the current roadmap transaction and divergence from `origin/main` |
 | Project registry | `GREEN` | Zero routing blockers and zero hard governance violations |
-| Human roadmap gate | `YELLOW` | Zero hard gaps; two pre-training readiness blockers and one book-pin warning |
+| Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
+| D1 governed-stack evidence | `READY_TO_PREREGISTER` | Natural local repository work can test stack, authority, routing, planning, VCM, and reuse without consuming learned capability |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -64,7 +67,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
 | Teacher accounting | `GREEN_ACCOUNTING` | 15 teacher-accepted rows among 115,429 accepted rows, about 0.013% |
 | Storage | `GREEN_MAINTENANCE` | About 40.8 GB reclaimed; roughly 40 GiB free after cleanup |
-| Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the 13 commits have not been pushed |
+| Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
 | ASI Stack synchronization | `PIN_WARNING` | The live book manifest differs from the reviewed Theseus pin |
 
 ## The Active Neural Experiment
@@ -144,10 +147,33 @@ maintenance transaction. However:
    is closed; its remaining cross-platform and production-serving work should
    not be confused with a campaign blocker.
 
-Therefore the honest state is `TRAINING_HELD`, not `TRAINING_READY`. After this
-documentation transaction is banked, the source-bound freeze and independent
-readiness package must be regenerated and reviewed before the hold could be
-removed. Regenerating a GREEN report is not itself an instruction to train.
+Therefore the honest state is `TRAINING_HELD`, not `TRAINING_READY`. The current
+travel posture also excludes multi-day training. The source-bound freeze and
+independent readiness package may be regenerated with the hold installed, but
+training waits for a later compute window. Regenerating a GREEN report is not
+itself an instruction to train.
+
+## Active Evidence Program
+
+The roadmap now separates two independent questions:
+
+- **D1 governed-stack efficacy:** natural repository work through the full
+  local stack and matched direct, test-only, record-only, and conservative-hold
+  routes. This can run now without long training and receives no learned-model
+  credit.
+- **D2 local-student competence:** the modular student, dense-active control,
+  and dense-total control followed by the sealed 160-case evaluation. This
+  remains held and unconsumed.
+
+D1 will also use disjoint natural repeated-work cohorts to test
+least-sufficient routing, typed planning, VCM, stale or shuffled context,
+verified procedural reuse, false triggers, rollback, and total lifecycle cost.
+
+The active ASI Stack claim owners are the stack-not-model, efficient-ASI,
+authority, planning, VCM, procedural-memory, specialist-routing,
+evidence-discipline, integrated-architecture, and Theseus implementation
+reference claims. A Theseus result does not change a book support state without
+separate claim-specific review.
 
 ## Evaluation State
 
@@ -258,7 +284,7 @@ validated the latest transaction.
 | --- | --- | --- |
 | Project registry | `GREEN` | Canonical routes have current minimal evidence |
 | Roadmap implementation | `YELLOW` | Zero hard gaps; partial phases and book-pin warning remain |
-| Pre-training architecture | `NOT_READY` | Two blockers: Phase 0 consolidation/currentness and Phase 8 status semantics/currentness |
+| Pre-training architecture | `NOT_READY` | Three blocker records across Phase 0 consolidation/currentness and Phase 8 selected-route currentness |
 | Replacement freeze | Historical `GREEN` | Exact step-11,416 package before later source changes |
 | Independent pre-long-run audit | Historical `GREEN` | Readiness evidence only; explicitly did not authorize training |
 | Functional utility freeze | `NOT_EVALUATED` | 0/160 cases consumed |
@@ -268,31 +294,42 @@ validated the latest transaction.
 
 In order:
 
-1. Finish this documentation consolidation and bank it.
-2. Reconcile the Phase 0/Phase 8 readiness semantics so nonblocking
-   cross-platform work cannot make a Mac campaign appear both authorized and
-   not ready.
-3. Push the 13 local commits and observe the new Linux CI before relying on it.
-4. Use the assisted CLI on genuine low-risk work and collect honest empirical
-   outcomes.
-5. When the laptop can be dedicated, regenerate the exact source-bound
-   architecture freeze and independent readiness audit, then run one bounded
-   fresh-process selected-route qualification.
-6. Only after explicit operator approval, resume the exact shared-trunk
-   lineage, train both matched dense controls, and consume the frozen
-   functional evaluation once.
+1. Preregister the existing `ASI-THESEUS-FLAGSHIP-01` natural repository-work
+   cohort, visible/hidden fields, matched routes, competence floor, terminal
+   rules, and claim ceilings.
+2. Produce one clean live public-safe Theseus replay with allowed, blocked or
+   revoked, and exact rollback traces.
+3. Run D1 on natural work through full governed, direct, test-only,
+   record-only, and conservative-hold routes.
+4. On a disjoint denominator, compare maximal, cheapest, and least-sufficient
+   routing plus planning, VCM, stale/shuffled/omitted context, and verified
+   procedural reuse.
+5. Preserve every positive, negative, null, blocked, invalid, and weak-tail
+   outcome and produce a claim-scoped public-safe evidence packet.
+6. Refresh exact step-11,416 source-bound readiness with the training hold
+   installed.
+7. Push current local commits and observe hosted CI.
+8. When a future multi-day compute window exists, qualify once, complete the
+   modular and both dense candidates, and consume D2 exactly once.
 
 ## Explicitly Not Immediate
 
 - new architecture families;
-- more KERC or ANE work;
+- more KERC, RDC, ANE, OneCell, SymLiquid, CGS, Coil, RankFold, or NeuralFold
+  work;
 - generic acceleration searches;
+- new optimizers, tokenizers, objectives, curricula, or decoding modes;
 - more private benchmark families;
 - broad corpus expansion;
+- teacher generation, preference optimization, RL, self-training, continual
+  learning, or unlearning;
 - public benchmark consumption;
 - LAN or public dashboard exposure;
 - remote arbitrary execution;
-- mobile, spatial, compute-market, or product-surface expansion;
+- Hive networking, mobile, spatial, voice, multimodal, compute-market,
+  licensing, or product-surface expansion;
+- broad ASI Stack prose, chapter, theorem, reader-derivative, or publication
+  work before material evidence;
 - claims that assisted behavior is learned capability.
 
 ## Definition Of Project Progress
@@ -300,7 +337,8 @@ In order:
 Progress means at least one of:
 
 - the learned student improves on source-disjoint functional behavior;
-- the comparison becomes more scientifically honest;
+- a core stack or book claim receives a terminal scoped natural result;
+- the comparison becomes more scientifically honest or reproducible;
 - the runtime becomes safer or materially faster by measurement;
 - Corben genuinely uses the system and the outcome is recorded;
 - duplicated machinery is removed without losing evidence.

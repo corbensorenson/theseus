@@ -3775,6 +3775,19 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
+    "execution_state": "sidelined_to_flagship_evidence_only",
+    "active_work_package_ids": [
+      "ASI-03",
+      "ASI-08",
+      "ASI-09",
+      "ASI-10",
+      "ASI-12",
+      "ASI-14",
+      "ASI-15",
+      "ASI-20",
+      "ASI-32"
+    ],
+    "sidelined_default": "Every work package not named in active_work_package_ids is preserved but nonblocking until a terminal flagship result identifies it as the smallest causal next intervention. Required integrity dependencies may be maintained, but they cannot become a parallel headline lane.",
     "roadmap_source": "roadmap.md#asi-stack-to-theseus-completion-program",
     "shared_flagship_id": "ASI-THESEUS-FLAGSHIP-01",
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
@@ -4413,41 +4426,140 @@
     "Kernel English immutable source and protected-object capture, uncertainty-preserving semantic compilation, stable concept identity/runtime-code separation, surface/Kernel/pointer vocabularies, grammar-safe expandable macros, four-level VCM residual state, structured answer packets, copy-aware rendering, round-trip fidelity checks, versioned migration, total-system accounting, adversarial lifecycle tests, and matched falsification under Phases 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, and 18"
   ],
   "weekly_focus_decision": {
-    "date": "2026-07-11",
-    "recommendation": "Keep the capability survival lane as the sole flagship, but implement its intended five-arm MoECOT language topology before training. Use the frozen 6.6M dense MLX transformer as the matched control, then measure arm, route, composition, and direct answer behavior honestly.",
+    "date": "2026-07-29",
+    "recommendation": "Run one evidence-first flagship with independent D1 governed-stack and D2 local-student denominators. While long training is held, obtain terminal natural results for live replay, governed repository work, least-sufficient routing, planning, VCM, and verified reuse. Preserve the exact modular-versus-dense campaign for the later neural verdict and sideline all mechanism expansion.",
     "project_theseus_focus": [
-      "freeze_five_language_arm_and_shared_abi_contracts",
-      "retain_dense_mlx_transformer_as_matched_control",
-      "measure_unique_admitted_tokens_per_active_parameter",
-      "expand_licensed_deduplicated_english_and_code_corpus",
-      "complete_data_supported_per_arm_and_dense_control_training_rungs",
-      "measure_arm_route_composition_and_direct_answer_behavior_separately",
-      "retain_negative_interventions_without_new_head_families",
-      "promote_search_preference_rl_or_faster_modes_only_after_positive_behavior"
+      "freeze_natural_repository_replay_tasks_claims_routes_and_decision_rules",
+      "reproduce_one_clean_live_public_safe_theseus_packet",
+      "compare_full_governed_direct_test_only_record_only_and_conservative_hold_routes",
+      "measure_least_sufficient_route_planning_vcm_and_verified_reuse_on_disjoint_natural_work",
+      "retain_every_negative_null_blocked_and_invalid_outcome",
+      "produce_claim_scoped_public_safe_evidence_without_automatic_book_promotion",
+      "refresh_step_11416_source_bound_readiness_without_removing_training_hold",
+      "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training"
     ],
     "implementation_outputs": [
-      "configs/training_inference_execution_roadmap.json",
-      "reports/training_inference_execution_plan_gate.json",
-      "reports/neural_seed_survival_readiness_gate.json",
-      "reports/standard_causal_transformer_survival_gate.json"
+      "existing_ASI-THESEUS-FLAGSHIP-01_preregistration_owner",
+      "existing_reference_trace_and_claim_evidence_owners",
+      "existing_product_dogfood_and_total_resource_ledgers",
+      "existing_pretraining_architecture_and_replacement_freeze_owners"
     ],
-    "implementation_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
+    "implementation_gate": "python3 scripts/roadmap_implementation_gate.py --gate",
     "asi_book_focus": [
-      "import_public_safe_theseus_evidence",
-      "update_claim_and_evidence_states",
-      "record_non_claims",
-      "tighten_chapter_claims_only_when_implementation_results_change_them",
-      "do_not_create_new_project_work_without_a_concrete_contract_gap"
+      "bind_terminal_results_to_exact_core_claim_ids",
+      "preserve_D1_D2_denominator_independence",
+      "record_scoped_positive_negative_inconclusive_blocked_and_invalid_dispositions",
+      "prepare_public_safe_replay_and_showable_evidence_brief",
+      "propose_support_transitions_only_after_book_side_review"
     ],
     "do_not_spend_week_on": [
-      "broad_chapter_rewrites_without_new_evidence",
-      "outline_churn",
-      "new_report_families_without_registered_implementation",
-      "strict_generator_marker_slot_guard_churn",
-      "fresh_public_calibration_before_the_current_model_changes_materially",
-      "DPO_GRPO_search_width_MTP_diffusion_before_direct_verifier_positive_behavior",
-      "larger_scaling_or_symliquid_before_a_data_supported_five_arm_vs_dense_functional_verdict"
+      "new_architecture_optimizer_tokenizer_objective_or_acceleration_search",
+      "KERC_RDC_ANE_OneCell_SymLiquid_CGS_Coil_RankFold_or_NeuralFold_expansion",
+      "new_data_public_calibration_teacher_generation_preference_RL_or_self_training",
+      "new_benchmark_report_dashboard_document_registry_or_product_surface_family",
+      "Hive_network_public_gateway_mobile_spatial_voice_multimodal_or_compute_market_work",
+      "broad_book_rewrites_chapter_growth_theorem_count_or_release_packaging",
+      "cleanup_without_a_flagship_blocker_evidence_ambiguity_or_material_disk_effect"
     ]
+  },
+  "core_evidence_campaign": {
+    "policy": "project_theseus_core_evidence_campaign_v1",
+    "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+    "state": "active_natural_evidence_long_training_held",
+    "objective": "Reach the fastest honest terminal conclusions about governed-stack usefulness, route economics, planning/context/reuse causality, reproducible evidence, local-student competence, and modular-versus-dense value.",
+    "denominators": {
+      "D1": {
+        "question": "Does the existing local governed stack improve the joint useful-safe frontier over matched simpler routes on natural repository work at acceptable total lifecycle cost?",
+        "state": "ready_to_preregister",
+        "worker_boundary": "local_only_no_external_inference_no_teacher_calls_no_learned_student_credit",
+        "noninterference": "D1 tasks, outcomes, tuning decisions, and support movement may not alter or enter D2."
+      },
+      "D2": {
+        "question": "Does the locally trained modular Theseus student achieve useful source-disjoint behavior and improve over dense-active and dense-total controls?",
+        "state": "sealed_not_evaluated_training_held",
+        "surface": "frozen_160_case_private_functional_evaluation",
+        "noninterference": "D2 remains unconsumed until all three matched candidates finish exact training and custody."
+      }
+    },
+    "claim_ids": [
+      "asi-is-a-stack-not-a-model.core",
+      "the-efficient-asi-hypothesis.core",
+      "system-boundaries-and-authority.core",
+      "planning-as-a-control-layer.core",
+      "virtual-context-abi.core",
+      "procedural-memory-and-cognitive-loop-closure.core",
+      "routing-heads-and-specialist-cores.core",
+      "evidence-states-and-claim-discipline.core",
+      "integrated-reference-architecture.core",
+      "project-theseus-as-report-first-implementation-reference.core"
+    ],
+    "immediate_stages": [
+      {
+        "id": "E0",
+        "title": "Freeze natural tasks and decisions",
+        "exit": "Exact claims, natural task reconstruction, candidate-visible fields, hidden evaluator fields, disjoint partitions, routes, budgets, competence floor, terminal rules, rescue ceiling, and maximum inference are prospectively bound."
+      },
+      {
+        "id": "E1",
+        "title": "Clean live Theseus replay",
+        "exit": "One exact public-safe clean-checkout packet joins allowed, blocked or revoked, and rollback traces with complete identities and visible gaps."
+      },
+      {
+        "id": "E2",
+        "title": "D1 natural governed-stack comparison",
+        "exit": "Full governed, direct, test-only, record-only, and conservative-hold routes receive a scoped terminal disposition with competence, usefulness, unsafe release, false block, fair rescue, weak-tail, cost, and latency evidence."
+      },
+      {
+        "id": "E3",
+        "title": "Route planning context and reuse causality",
+        "exit": "Disjoint natural repeated work compares maximal, cheapest, and least-sufficient routes plus planning, VCM, stale/shuffled/omitted context, and verified-procedure interventions under total contract cost."
+      },
+      {
+        "id": "E4",
+        "title": "Claim disposition and public-safe evidence",
+        "exit": "Every denominator, failure, residual, digest, replay command, maximum inference, and non-claim is bound to an existing evidence owner; no automatic book support movement."
+      }
+    ],
+    "later_neural_stages": [
+      "N0_source_bound_step_11416_readiness_refresh_hold_installed",
+      "N1_one_bounded_fresh_process_resume_qualification",
+      "N2_modular_dense_active_dense_total_matched_training",
+      "N3_consume_D2_once",
+      "N4_compose_D1_and_D2_without_support_or_denominator_leakage"
+    ],
+    "terminal_states": [
+      "POSITIVE_SCOPED",
+      "NEGATIVE_SCOPED",
+      "INCONCLUSIVE_WORKER_INADEQUATE",
+      "INCONCLUSIVE_EXPERIMENT",
+      "BLOCKED_INFRASTRUCTURE",
+      "INVALID_INFORMATION_FLOW",
+      "INVALID_EVALUATOR"
+    ],
+    "unattended_envelope": {
+      "allowed": [
+        "read_only_audits_and_source_reconciliation",
+        "local_no_network_no_teacher_E0_through_E4_experiments",
+        "disposable_worktree_or_temporary_effects_with_exact_rollback",
+        "tests_validators_independent_replays_and_public_safe_evidence_assembly",
+        "flagship_defect_repairs_that_preserve_the_frozen_D2_experiment",
+        "one_coherent_reviewed_validated_local_commit"
+      ],
+      "forbidden": [
+        "remove_training_hold",
+        "start_multi_day_training",
+        "consume_D2_or_public_calibration",
+        "change_architecture_optimizer_data_objective_schedule_or_evaluator",
+        "external_inference_teacher_calls_or_private_transmission",
+        "checkpoint_corpus_user_file_or_negative_evidence_deletion",
+        "non_loopback_exposure",
+        "external_publish_push_or_mutation_without_separate_authority",
+        "assisted_to_learned_credit_laundering",
+        "retry_semantic_failure_as_infrastructure_noise"
+      ],
+      "resource_rule": "Stop on the declared terminal condition or a measured causal resource wall; use no clock-of-day restriction, arbitrary available-memory floor, or percentage-improvement hurdle."
+    },
+    "support_state_effect": "none_from_roadmap_experiment_execution_or_evidence_packet_without_book_side_claim_specific_review"
   },
   "implementation_rules": [
     "Improve an existing registered surface before creating a new surface.",
@@ -4489,7 +4601,7 @@
         19
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "pretraining_wired_behavior_qualification_pending",
+      "status": "active_E3_natural_route_policy_qualification",
       "dependency": "pre-training mechanics are complete through existing owners: canonical assistant predispatch; typed command/reflex registries and parameter/default binding; qualification and finite outcomes; bounded structured execution with cancellation, immutable partials, retry idempotency, late-result suppression, and compensation; trace integrity; Chronicle/cache invalidation; registry preview/apply/exact rollback; compilation/decompilation interfaces; fail-closed downstream skipping; three effort profiles; a real tool-to-plan DAG; a dispatch-digest-bound reversible effect transaction; and malformed learned-plan rejection. Thirty-four focused tests and the six-case assistant E2E pass every hard gate. The frozen 32-case/eight-track/ten-policy mechanics profile emits 320 rows: full reflexive resolves 32/32, while no-Chronicle and no-compiler each resolve 28/32, with zero held-field leakage, unsafe effects, literal activation, or replay-integrity failures. Learned-router calibration, selective risk, real route regret, answer benefit, and trace-to-reflex efficacy require a behavior-positive selected model and diverse governed traces after training.",
       "pre_training_acceptance_boundary": "Before long training, the canonical dispatch path, typed command and reflex registries, precedence engine, terminal outcomes, structured concurrency, dependency-complete invalidation, Chronicle state, sole effect-commit kernel, replay/decompilation/quarantine interfaces, checkpoint compatibility, resource records, and negative controls are registered and pass exact replay. Learned routing quality, real route regret, and trace-to-reflex promotion remain post-training evidence.",
       "acceptance_gate": "A single canonical dispatch path supports origin-authenticated typed route directives, direct capabilities, workflows, explicit fallback, requested-versus-realized effort, linked declarative command/reflex registries, indexed deterministic precedence, deterministic and calibrated abstaining learned proposals, SCF qualification, finite typed terminal outcomes, minimum-sufficient-compute atomic/composite DAGs with bounded structured concurrency, dependency-complete cache invalidation, typed results, bitemporal Chronicle updates, sole-kernel effect commits, semantic-version dependency invalidation, and economically governed trace-to-reflex replay/differential/shadow/canary/quarantine/decompilation. One frozen private profile reuses existing fixtures and compares model-only, LLM-first tool, hard-rule, learned-router, semantic-cache, modular-tool, no-Chronicle, no-compiler, full reflexive, and oracle policies under matched information, model, authority, retry, verification, and total-resource opportunities, with complete utility, routing, command, temporal, effect, lifecycle, and anti-Goodhart metrics.",
@@ -4827,7 +4939,7 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "implemented",
+      "status": "active_E3_natural_context_causal_qualification",
       "dependency": "requires deployed resolver/compiler conformance beyond fixture-level VCM records",
       "acceptance_gate": "Every materialized context packet carries source refs, omissions, loss contract, permitted uses, authority ceiling, taint/deletion closure, copy-on-write branch lineage, typed mandatory-miss faults, and consumer policy.",
       "support_state_target": "synthetic-test-backed",
@@ -4842,7 +4954,7 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "implemented",
+      "status": "active_E2_E3_natural_cost_qualification",
       "dependency": "requires route-level verifier capacity and residual-obligation ledgers",
       "acceptance_gate": "Routing decisions include adequacy state, verification tax, displaced repair/human-cleanup cost, residual obligations, verifier budget consumption, and stronger-verifier escalation for high-risk work.",
       "support_state_target": "synthetic-test-backed",
@@ -4857,7 +4969,7 @@
         19
       ],
       "track_id": "A_reference_evidence_spine",
-      "status": "wired",
+      "status": "active_E4_claim_disposition",
       "dependency": "requires immutable revision history attached to evidence transitions",
       "acceptance_gate": "Claims support downgrade, split, merge, contradiction-link, retire, and replacement transitions without overwriting earlier evidence; contradictions remain linked to affected routes and docs.",
       "support_state_target": "replayable-reference-backed",
@@ -4872,7 +4984,7 @@
         10
       ],
       "track_id": "B_product_assistant_usefulness",
-      "status": "wired",
+      "status": "active_E3_natural_reuse_qualification",
       "dependency": "requires repeated real or replayable verified trajectories with preconditions and monitoring",
       "acceptance_gate": "Verifier-passing repeated trajectories become procedural tool candidates with preconditions, postconditions, verifier receipt, monitoring, retirement, drift checks, and optional lookahead/trie decode source.",
       "support_state_target": "synthetic-test-backed",
@@ -4939,8 +5051,8 @@
         18
       ],
       "track_id": "B_product_assistant_usefulness",
-      "status": "planned",
-      "dependency": "requires a real assistant task with an explicit observable-effect inventory and separate proposer, observer, evaluator, and promotion interfaces",
+      "status": "active_E0_preregistration",
+      "dependency": "freeze a natural repository-replay cohort with explicit observable-effect inventory, separate proposer/observer/evaluator/claim-authority interfaces, candidate-hidden gold effects, matched route budgets, fixed competence floor, terminal rules, and rescue ceiling before E2 outcomes open",
       "acceptance_gate": "Matched direct and governed routes report useful and unsafe releases, false accepts/rejects, clarification/refusal/quarantine, first/final effect identity, exact rollback over every declared surface, residuals, latency, operator burden, and governance tax; hidden-effect, partial-snapshot, symlink, untracked-file, and observer-collapse controls fail.",
       "support_state_target": "empirical-test-backed",
       "no_claim_boundary": "Zero unsafe release with zero useful work is not successful governance, and exact rollback applies only to the declared independently observed effect inventory."
@@ -4959,7 +5071,7 @@
         18
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "queued_after_nonfallback_candidate_quality",
+      "status": "active_E3_deterministic_route_economics_learned_routing_still_blocked_by_D2",
       "dependency": "requires useful direct model candidates so route accuracy and answer quality can both be measured",
       "acceptance_gate": "A frozen naturally ambiguous workload compares specialist, generalist, clarification, fallback, and abstention routes plus no/fixed/adaptive/overcompute deliberation under matched budgets; report route accuracy, answer utility, calibration, first-hit, last-correct, stop reason, branch credit, verifier disagreement, overthinking harm, and residuals.",
       "support_state_target": "synthetic-test-backed",
@@ -4993,7 +5105,7 @@
         18
       ],
       "track_id": "A_reference_evidence_spine",
-      "status": "wired",
+      "status": "active_E0_E4_integrity_maintenance",
       "dependency": "extends candidate integrity, policy-update leases, benchmark ratchets, claim evidence, and promotion routing with one shared evaluation-integrity record",
       "acceptance_gate": "Bind elicitation, selection, reward, monitor, evaluator, heldout and cross-context probes, discrepancies, interference controls, residuals, mitigation evidence, and promotion effect; stale, incomparable, monitor-interference, selection-adaptation, and missing-control fixtures fail closed.",
       "support_state_target": "synthetic-test-backed",
@@ -5183,8 +5295,17 @@
     "count_router_as_learned_generation",
     "count_template_as_learned_generation",
     "long_training_as_implementation_proof",
+    "multi_day_training_during_current_travel_posture",
     "new_strict_generator_target_mode_experiments",
+    "new_architecture_optimizer_tokenizer_objective_curriculum_or_speculative_decode_intake",
+    "KERC_RDC_ANE_OneCell_SymLiquid_CGS_Coil_RankFold_or_NeuralFold_expansion_before_flagship_terminal_result",
+    "generic_CPU_GPU_NPU_Rust_or_acceleration_search_without_selected_route_defect",
+    "broad_corpus_growth_bulk_teacher_generation_preference_optimization_RL_self_training_or_unlearning",
+    "new_benchmark_private_suite_report_dashboard_document_or_registry_family",
     "new_mobile_spatial_product_surfaces",
+    "Hive_network_federation_public_gateway_compute_market_license_voice_multimodal_embodied_or_multi_user_expansion",
+    "LAN_public_exposure_packaging_release_engineering_or_production_serving",
+    "broad_book_rewrite_chapter_growth_theorem_count_reader_derivative_or_publication_packaging",
     "unregistered_sidecar_implementation",
     "beyond_sota_claim_without_support_state",
     "multiple_active_flagship_lanes",
@@ -5326,7 +5447,7 @@
         "formal strict-generator/code_lm_closure retirement proof: active imports and gate dependencies removed or extracted into canonical owners, retained comparators non-routeable, superseded reports archived with verified replay pointers, and reference-only source deleted or moved under deprecated with git history as recovery",
         "roadmap entropy enforcement: keep forward requirements in roadmap.md, move run narratives and inventories to matrix/registry/state/history, and hold the live roadmap below 1100 lines without dropping unresolved obligations"
       ],
-      "smallest_next_patch": "Bank the consolidated documentation transaction, then regenerate the source-bound architecture freeze, independent readiness audit, and exact step-11,416 replacement package without removing the operator hold. Reconcile the Phase-8 selected-route predicate so nonblocking cross-platform work cannot make the Mac campaign simultaneously authorized and not ready. Then continue duplicate-family cleanup and evidence-preserving strict-generator/code_lm_closure retirement. Committing and documentation agreement are custody, not capability or training authorization.",
+      "smallest_next_patch": "Freeze E0 under the existing ASI-THESEUS-FLAGSHIP-01 owner, then execute E1 clean live replay and regenerate the source-bound step-11,416 architecture/readiness package without removing the operator hold. Repair only registry, currentness, duplicate-owner, or retention faults that block those exact evidence paths. Defer all general cleanup and superseded-family retirement that does not remove a flagship blocker or material disk wall.",
       "integration_smoke": [
         "python3 scripts/python_environment_gate.py --profile cpu --gate",
         "python3 scripts/phase0_reproducibility_gate.py --gate",
@@ -5408,7 +5529,7 @@
       "external_followups": [
         "Replace the Hive task-submission receipt schema smoke with a real reachable-peer submission proof when another trusted node is physically reachable; this is owned by Phase 9 and does not block local architecture readiness."
       ],
-      "smallest_next_patch": "Maintain the effect-complete assistant profile as a required VIEA contract and repeat the same independent observation/rollback discipline for every new side-effect class.",
+      "smallest_next_patch": "Use the existing effect-complete VIEA owner for E1 and E2: join one natural allowed path, one blocked or revoked path, and one exact rollback path through intent, context, plan, route, authority, effect, observation, terminal acknowledgement, residual, and claim disposition. Add no new side-effect class or execution-spine family.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the current Theseus roadmap implementation state and name the next smallest patch.\" --intent planning --feedback completed --session-id roadmap_integration_smoke --out reports/theseus_assistant_roadmap_integration_smoke.json --markdown-out reports/theseus_assistant_roadmap_integration_smoke.md --events-out reports/theseus_assistant_roadmap_integration_events.jsonl --viea-trace-out reports/theseus_assistant_roadmap_integration_trace.jsonl",
         "reports/theseus_assistant_roadmap_integration_smoke.json trigger_state=GREEN",
@@ -5608,7 +5729,7 @@
         "the KERC exact substrate extends VCM with an append-only four-level hierarchical residual state carrying authority, privacy scope, hashes, transactional deltas, deterministic replay, migration, eviction/reset/close operations, and fail-closed stale/cross-user/document-injection controls; learned compiler/renderer efficacy is not claimed"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Consume the wired semantic lifecycle records in Phase 7 continual-update/deletion campaigns and Phase 10 model context paths; keep dense embedding, parametric unlearning, and public-memory capability claims separately evidence-gated.",
+      "smallest_next_patch": "Use a denominator disjoint from E2 to compare a correct VCM packet with no-VCM, stale, shuffled, and declared-omission packets on natural repeated repository work. Measure actual downstream use, useful completion, failure, repair, latency, total cost, and authority preservation. Defer continual learning, deletion, embedding expansion, and public-memory claims.",
       "integration_smoke": [
         "python3 scripts/vcm_context_governor_gate.py",
         "reports/vcm_context_governor.json summary.context_abi_fixture_status=ready",
@@ -5815,7 +5936,7 @@
       "missing_items": [
         "real useful governed assistant transaction with multi-day empirical accepted/missed/ignored/corrected/completed/failed/abstained outcomes and governance-tax accounting"
       ],
-      "smallest_next_patch": "Use the assistant on real local work through the VIEA/effect-complete path and earn empirical support from multi-day outcome traces; fixture metadata remains synthetic only.",
+      "smallest_next_patch": "Run E2 on prospectively frozen natural repository work through full governed, direct, test-only, record-only, and conservative-hold routes. Record accepted, missed, ignored, corrected, completed, failed, abstained, unsafe-release, false-block, fair-rescue, rollback, time, and total-cost outcomes. Assisted success remains separate from learned-model credit.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the assistant trace schema and dogfood outcome boundary.\" --intent planning --feedback completed --session-id assistant_trace_schema_smoke --out reports/theseus_assistant_trace_schema_smoke.json --markdown-out reports/theseus_assistant_trace_schema_smoke.md --events-out reports/theseus_assistant_trace_schema_events.jsonl --viea-trace-out reports/theseus_assistant_trace_schema_trace.jsonl --skip-context-refresh",
         "reports/theseus_assistant_trace_schema_smoke.json summary.assistant_trace_schema_ready=true",
@@ -6382,7 +6503,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Keep compiled FP32 MLX authoritative for the exact campaign. Treat cross-platform CUDA/Windows/Linux parity, production serving, continuous batching, and energy measurement as nonblocking global follow-through. After the documentation transaction is banked, repair the source-bound currentness and Phase-8 readiness predicate, then run one bounded fresh-process exact step-11,416 selected-route qualification. Preserve ANE and whole-microbatch ideas as frozen candidates with named re-entry conditions; do not reopen generic acceleration work.",
+      "smallest_next_patch": "Measure complete E2/E3 lifecycle cost through existing resource owners and keep compiled FP32 MLX authoritative for D2. Refresh selected-route currentness at step 11,416 with the hold installed. Cross-platform parity, serving, continuous batching, energy studies, ANE, Rust rewrites, and generic acceleration are sidelined unless a terminal flagship result identifies a measured selected-route defect.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -6750,7 +6871,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Preserve the frozen 57.315M proposal, corpus, objective, schedule, and unconsumed 160-case functional surface unchanged. After documentation and source-bound readiness repair, run one bounded exact step-11,416 qualification; with explicit operator approval, complete the modular candidate and both matched dense controls, then consume the private functional evaluation once. Add no broad data, same-scale patch, public calibration, preference/RL lane, or generation-mode experiment before the matched verdict exposes a measured residual.",
+      "smallest_next_patch": "Preserve D2's frozen 57.315M proposal, corpus, objective, schedule, modular candidate, dense-active control, dense-total control, and unconsumed 160-case surface unchanged while D1 runs. Complete N0 source-bound readiness with the hold installed. When a later multi-day compute window exists, run N1 once, complete all three N2 candidates, consume N3 once, and make the N4 modular-versus-dense verdict. No rescue patch or new mechanism may enter before that terminal result.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -7326,7 +7447,7 @@
         "Current-reference-aware compaction protects operational configs, route-required reports, roadmap citations, active promoted manifests, mutable ledgers, and explicit pins. It archived 13+ GiB of unreferenced weights, hard-linked ten byte-identical weight files, and archived superseded hot-report views through exact digest replay. The cumulative gate now replays 2,114/2,114 archived entries. Digest-bound aggregate records reduced the renewable replay report from 28.5 MB to 22.6 KB without weakening fail-closed checks. The artifact budget is GREEN with zero hard gaps and one explicit checkpoint-volume warning.",
         "The canonical evidence-store integrity kernel compiles a live supported claim into a digest-bound evaluation-integrity record and versioned assurance case. It keeps trusted/untrusted monitors separate, compares direct and compact contexts, preserves scoped non-claims, and rejects 9/9 stale, discrepancy, interference, selection-adaptation, missing-control, unresolved-defeater, stale-dependency, and countercase faults."
       ],
-      "smallest_next_patch": "Qualify the Phase 7 admission subset of the EpistemicTCBManifest before 57.315M training authorization. Then complete strict-lane retirement and roadmap compaction after the data campaign while maintaining assurance compilation in the canonical evidence store; no green report self-authorizes trust.",
+      "smallest_next_patch": "Use the canonical claim/evidence owner for E4. Preserve complete positive, negative, null, blocked, invalid, skipped, weak-tail, cost, residual, and replay evidence; issue one scoped disposition and maximum inference for every mapped claim. Do not expand proof volume, add a report family, or move a book support state automatically.",
       "integration_smoke": [
         "python3 scripts/theseus_artifact_retention.py --execute --include-report-snapshots --min-bytes 7000000 --max-files 1",
         "python3 scripts/theseus_artifact_retention_replay_gate.py",
@@ -7435,7 +7556,7 @@
         "Three bounded canaries execute over 203 matching metadata events, then three SCF replacement transactions adopt independent guarded routes with exact asset and lifecycle receipt identities. The plan compiler emits three canary and three default-route DAGs; the assistant runtime selects planning/chat/tool routes independently.",
         "Procedural assets remain workflow compression only: learned-generation credit, public training rows, runtime external inference, and fallback returns are all zero."
       ],
-      "smallest_next_patch": "After a behavior-positive selected local model produces real governed traces, extend the canonical Loop-Closure owner from exact procedural lookup through negative-space guard synthesis, differential plus live-shadow qualification, canary SCF replacement, route-regret monitoring, and decompilation. Preserve the three current exact assets and do not create a second procedural-memory or router lane.",
+      "smallest_next_patch": "Within E3, test the existing verified-procedure path against fresh execution on source-disjoint natural repeated work, including false-trigger, drift, quarantine, decompilation, rollback, retirement, and total-cost outcomes. This may support assisted procedural reuse only; learned procedural-memory claims still wait for behavior-positive D2. Create no second foundry or router lane.",
       "integration_smoke": [
         "python3 scripts/procedural_memory_toolification_gate.py",
         "reports/procedural_memory_toolification.json summary.assistant_trace_candidate_count=10",
@@ -7551,7 +7672,7 @@
         "live English/Python/JS-TS/HTML-CSS/Rust arm registry with independent model/data/checkpoint lineage and typed single/sequential/parallel/adjudicated composition",
         "natural ambiguous-routing workload with clarification, abstention, calibration, interference counterfactuals, and generated-answer utility separated from route correctness"
       ],
-      "smallest_next_patch": "After the v8 architecture verdict and one-shot confirmation select a routeable successor, bind the five language-arm or winning dense cards to exact model/data/checkpoint artifacts and make the existing Octopus lease emit typed single/composed routes. Then run the learned/rule/generalist/specialist/abstention matrix on frozen naturally ambiguous requests and retain route-versus-answer outcomes separately.",
+      "smallest_next_patch": "Leave MoECOT and Octopus frozen to D2 while D1 tests stack mechanics without learned credit. After matched modular, dense-active, and dense-total training, consume N3 once and report arm, route, composition, answer, abstention, weakest-arm, latency, memory, and total-cost outcomes separately. Retain the winning practical substrate and simplify if a dense control wins.",
       "integration_smoke": [
         "python3 scripts/train_octopus_router_head.py",
         "reports/octopus_router_head_report.json trace_summary.schema_bound_real_trace_examples>0",
@@ -7730,7 +7851,7 @@
       "external_followups": [
         "Prove the same inter-stack identity/delegation/budget/exchange contract against a real trusted-peer Hive endpoint when another node is reachable; the local transport-independent contract is wired and Phase 9 owns remote proof."
       ],
-      "smallest_next_patch": "Maintain the completed local authority package under adversarial regression coverage: request-local false-by-default teacher/network authority, authenticated mutations, Origin/CSRF/JSON/body/rate/concurrency limits, tokened exact-CORS OpenAI defaults, and loopback signed-discovery header-only Hive credentials. Keep remote untrusted-code execution fail-closed. Any LAN/public exposure requires a separate threat model, deployment qualification, and review; local tests are not an internet-security claim.",
+      "smallest_next_patch": "Use the completed local authority package in E1/E2 natural allowed, denied, revoked, confused-deputy, partial-failure, and rollback paths. Measure useful release, unsafe release, false block, fair rescue, containment, rollback completeness, and lifecycle cost. Keep remote execution fail-closed and every service loopback-only; do not turn local tests into an exposure claim.",
       "integration_smoke": [
         "python3 scripts/governance_rights_receipt_suite.py",
         "reports/governance_rights_receipt_suite.json summary.passed_fixture_count=4",
@@ -7812,7 +7933,7 @@
         "configs/project_steward.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Keep the reviewed 54-chapter pin authoritative while the live ASI Stack manifest differs. Reconcile the live book in one reviewed pin transaction by mapping every new or changed chapter into existing capability fields with a disposition, maturity/evidence/route state, activation gate, owner, tests, residuals, and non-claims. Create no new registry and grant no automatic runtime or support-state effect. This remains nonblocking unless it exposes a concrete campaign correctness or evaluator-integrity defect.",
+      "smallest_next_patch": "Keep the reviewed historical pin authoritative and bind only the ten selected flagship claim IDs to E0-E4 and N0-N4. Defer full live-manifest reconciliation, chapter expansion, prose rewriting, theorem growth, reader derivatives, and publication packaging. After each terminal result, return a public-safe exact claim disposition for book-side review; grant no automatic support-state effect.",
       "integration_smoke": [
         "python3 scripts/roadmap_implementation_gate.py --gate",
         "python3 scripts/module_definition_of_done_gate.py",
@@ -7927,15 +8048,15 @@
       },
       {
         "id": "T0A",
-        "state": "complete_with_prospective_T1_custody_residual",
+        "state": "historically_complete_source_currentness_refresh_required",
         "depends_on": ["T0"],
         "exit": "Adequate MTP, target-authoritative drafting, learned dynamic byte patches, RDC-enhanced KERC, optimizer challengers, candidate-specific canaries, frozen evaluator prompt-injection/runtime-taint integrity, and the matched factorized bakeoff are implemented through existing owners; every finite candidate is adopted or adequately dispositioned; a replacement content-addressed architecture freeze is published."
       },
       {
         "id": "T1",
-        "state": "active_step_9112_ledgered_from_step_9048_anchor_not_evaluated",
+        "state": "held_step_11416_ledgered_from_step_9048_anchor_not_evaluated",
         "depends_on": ["T0A"],
-        "exit": "The preregistration, executable topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then the five frozen arms and matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
+        "exit": "The existing preregistration, executable topology, tokenizer/index capacity, staged positions, controls, checkpoint namespace, and evaluation identity remain frozen through the held step-11,416 lineage; then the modular candidate and both matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
       },
       {
         "id": "T2",
@@ -7945,7 +8066,7 @@
       },
       {
         "id": "T3",
-        "state": "ready_for_assisted_use_learned_credit_waits_for_T2",
+        "state": "active_natural_evidence_assisted_use_learned_credit_waits_for_T2",
         "depends_on": [],
         "exit": "At least one week or five distinct days of real low-risk use records accepted, missed, ignored, corrected, completed, failed, or abstained outcomes with time, verifier/human cost, effects, rollback, and component attribution."
       },
@@ -7968,37 +8089,53 @@
         "exit": "A public-safe book handoff binds exact commits, artifacts, estimand, effects, costs, residuals, non-claims, and maximum inference; broadened claims then require separate reproduction and transfer."
       }
     ],
+    "parallel_book_evidence_path": {
+      "state": "active_without_long_training",
+      "denominator_id": "D1",
+      "depends_on": [
+        "E0_prospective_freeze",
+        "E1_clean_live_replay"
+      ],
+      "work": [
+        "E2_natural_governed_stack_comparison",
+        "E3_route_planning_context_and_reuse_causal_comparison",
+        "E4_claim_scoped_public_safe_evidence_packet"
+      ],
+      "rule": "D1 may reach a terminal governed-stack, route-economics, planning, VCM, procedural-reuse, trace, or implementation-reference result before local-student training completes. It grants no learned credit and may not tune, rescue, restructure, expose, or consume D2."
+    },
     "book_handoff_contract": {
       "book_owns": ["claim identity", "competence standard", "preregistration", "evidence transition", "argument-exit language", "publication boundary"],
       "theseus_owns": ["local student", "natural dogfood path", "runtime effects", "joined traces", "matched controls", "public-safe evidence pack"],
       "forbidden_shared_state": ["hidden answers", "held-out outcomes", "private payloads", "implied support movement"],
       "support_state_effect": "none_from_roadmap_or_handoff_alone"
     },
-    "rule": "The finite T0A pre-training architecture closure is frozen and may not be reopened without a concrete correctness, security, replay, migration, checkpoint, or measured performance defect. After the separate broader pre-training architecture-readiness gate is green, primary work returns to the selected English/code neural seed plus matched dense and discovery controls.",
-    "why": "The prior 57M package remains a valuable immutable systems control. The selected successor now has finite candidate dispositions, adequate factorized evidence, a qualified operation-specific M1 policy, and an independently replayed content-addressed freeze. Progress means banking that boundary, closing only the remaining named broader prerequisites, and training once on the selected package.",
+    "rule": "The finite T0A architecture and acceleration docket remains closed. Immediate work is D1 natural evidence plus source-bound readiness refresh while the neural hold stays installed. The only later long-training lane is the frozen modular, dense-active, and dense-total D2 campaign. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
+    "why": "Theseus and the ASI Stack have far more mechanics evidence than natural outcome evidence. The fastest meaningful path is to obtain terminal D1 results without long training, then complete the already-frozen D2 comparison when a multi-day compute window is available. Positive, negative, inconclusive, invalid, and blocked outcomes all remain useful when their scope and denominators are complete.",
     "allowed_parallel_work": [
-      "security or no-cheat regression fix",
-      "registry/steward cleanup on existing surfaces",
-      "AI_book evidence synchronization for already-produced public-safe traces",
-      "local authority-surface security fixes and adversarial tests on existing dashboard, OpenAI-shim, Hive, teacher/network, and safety-critical tool routes",
-      "independent A2 or E1 support-state consumption of an already-executed effect receipt",
-      "governed corpus admission and MLX performance work required by the active flagship lane",
-      "T0A implementation, migration, adequacy canaries, resource qualification, and factorized bakeoff through existing abstraction owners"
+      "E0 prospectively frozen natural task and decision packet",
+      "E1 clean live public safe replay",
+      "E2 full governed direct test only record only and conservative hold natural comparison",
+      "E3 least sufficient route planning VCM stale shuffled omitted context and verified reuse comparison",
+      "E4 complete claim scoped evidence disposition and E5 showable brief through existing owners",
+      "source bound step 11416 readiness refresh with training hold installed",
+      "security evaluator no cheat custody or replay repair required by those exact experiments",
+      "cleanup only when it removes an active flagship blocker evidence ambiguity or material disk wall"
     ],
     "disallowed_parallel_work": [
-      "new product surface unrelated to the active lane",
-      "new benchmark family to avoid a failed one",
-      "new strict-generator target-label family without preregistration",
-      "new report family when an existing registry-owned report should be updated",
-      "architecture families outside the closed T0A docket unless a correctness defect or materially different primary evidence justifies reopening intake",
-      "full-corpus training, public calibration, confirmation-surface consumption, or production-checkpoint mutation while the broader pre-training architecture-readiness gate has hard blockers"
+      "new architecture optimizer tokenizer objective curriculum speculative decode or accelerator intake",
+      "KERC RDC ANE OneCell SymLiquid CGS Coil RankFold NeuralFold or same scale rescue work",
+      "new data teacher preference RL self training continual learning or unlearning",
+      "new benchmark private suite report dashboard document registry or product surface family",
+      "Hive network public gateway compute market licensing mobile spatial voice multimodal or exposure expansion",
+      "broad book prose chapter theorem reader derivative or publication work before material evidence",
+      "full corpus training public calibration D2 consumption or production checkpoint mutation in the current travel posture"
     ]
   },
   "book_implementation_tracks": [
     {
       "track_id": "A_reference_evidence_spine",
       "name": "Book Reference Evidence Spine",
-      "status": "canonical_stack_layer",
+      "status": "active_E1_E4_clean_replay_and_claim_disposition_only",
       "job": "Make one end-to-end Theseus task replayable through command contract, VCM packet, typed job, runtime receipt, artifact graph, claim ledger, evidence transition, residual, and policy/update boundary.",
       "primary_phases": [
         1,
@@ -8011,7 +8148,7 @@
     {
       "track_id": "B_product_assistant_usefulness",
       "name": "Assisted Verified Daily-Use Product Lane",
-      "status": "wired_waiting_for_empirical_use_and_model_floor",
+      "status": "active_D1_assisted_natural_evidence_learned_credit_forbidden",
       "job": "Make Theseus useful for conversation and code on its own repo while honestly labeling assisted, tool, template, and learned output.",
       "primary_phases": [
         5,
@@ -8023,7 +8160,7 @@
     {
       "track_id": "C_capability_research_survival_lane",
       "name": "Capability Research Survival Lane",
-      "status": "active_flagship",
+      "status": "frozen_D2_training_held_until_multi_day_compute_window",
       "job": "Build the practical seed as five independently trained MoECOT language arms (English, Python, JS/TS, HTML/CSS, Rust) behind the governed Octopus router, with per-arm data/model scaling, weights, optimizer/checkpoint lineage, verifiers, readiness, and rollback. Train the frozen 6.6M mixed dense MLX transformer only as a matched falsification control. Measure arm, route, composition, and answer behavior separately before activating search, preference/RL, fast generation, or SymLiquid. Prevent routing, templates, tools, renderers, and fallbacks from counting as learned generation.",
       "primary_phases": [
         7,
@@ -8037,7 +8174,7 @@
     {
       "track_id": "D_repo_stewardship_and_evidence_hygiene",
       "name": "Repo Stewardship And Evidence Hygiene",
-      "status": "continuous",
+      "status": "maintenance_only_when_required_by_E0_E4_or_N0_N4",
       "job": "Keep the registry, ATT-D, report retention, module DoD, source-sync, and negative-evidence lifecycle green enough that evidence remains auditable.",
       "primary_phases": [
         0,
@@ -8049,7 +8186,7 @@
     {
       "track_id": "E_authority_security_rights_kernel",
       "name": "Authority, Security, Rights, And Failure Boundary Kernel",
-      "status": "core_prerequisite",
+      "status": "active_D1_natural_authority_and_rollback_evidence_only",
       "job": "Make authority transitions, Digital SCIFs, runtime adapter receipts, governance rights, constitutional predicates, and value-conflict records operational instead of prose.",
       "primary_phases": [
         2,
@@ -8062,7 +8199,7 @@
     {
       "track_id": "F_memory_planning_tool_substrate",
       "name": "Memory, Planning, Tool, And Substrate Integration",
-      "status": "canonical_stack_layer",
+      "status": "active_D1_planning_VCM_route_and_verified_reuse_evidence_only",
       "job": "Make VCM, PlanForge, deterministic tools, routing heads, resource accounting, semantic IR, simulation contracts, proof envelopes, and procedural memory one substrate-neutral stack.",
       "primary_phases": [
         3,

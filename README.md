@@ -34,7 +34,12 @@ The canonical human-readable status is
 - genuine daily usefulness remains `EMPIRICAL_SUPPORT_INSUFFICIENT`.
 
 Documentation consolidation does not change any of those evidence states.
-The next actions are in the [roadmap](roadmap.md).
+The current [roadmap](roadmap.md) is evidence-first: while multi-day training
+is held, Theseus will run one natural repository-work flagship to test governed
+stack usefulness, route economics, authority, planning, VCM, procedural reuse,
+and clean replay. The later sealed neural campaign separately tests modular
+MoECOT against dense-active and dense-total controls. Other architecture,
+acceleration, product, network, data, and book-expansion work is sidelined.
 
 ## Operating Boundaries
 
