@@ -100,6 +100,22 @@ def test_worker_credit_or_D2_access_invalidates_preregistration() -> None:
     assert "D2_forbidden" in failed
 
 
+def test_evaluator_must_require_a_real_independently_verified_patch() -> None:
+    config = load_config()
+    config["evaluator_contract"]["completion_predicate"]["patch_required"] = False
+    config["evaluator_contract"]["candidate_output_schema"]["candidate_emitted_integrity_flags_trusted"] = True
+
+    report = campaign.build_preregistration(
+        config,
+        ROOT / "configs" / "core_evidence_campaign.json",
+    )
+
+    assert report["trigger_state"] == "RED"
+    failed = {row["name"] for row in report["hard_gaps"]}
+    assert "candidate_output_schema_frozen" in failed
+    assert "completion_requires_real_verified_patch" in failed
+
+
 def test_route_or_floor_mutation_invalidates_preregistration() -> None:
     config = load_config()
     config["matched_routes"] = config["matched_routes"][:-1]
