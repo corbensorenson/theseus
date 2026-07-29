@@ -128,9 +128,21 @@ def test_current_t1_receipt_matches_prospective_lineage_anchor() -> None:
     )
     state = campaign.lineage_state(config, receipt)
     assert state["trigger_state"] == "GREEN"
-    assert state["manifest_count"] == 0
-    assert state["head_identity"]["optimizer_steps"] == 9048
+    assert state["manifest_count"] >= 1
+    assert state["head_identity"]["optimizer_steps"] == receipt["optimizer_steps"]
     assert state["pre_anchor_full_chain_available"] is False
+
+
+def test_archived_receipt_identity_does_not_follow_mutable_live_path() -> None:
+    _training, _plan, _target, receipt = campaign.campaign_state(
+        ROOT / "configs/moecot_language_arm_training.json"
+    )
+    archived_sha256 = "a" * 64
+    identity = campaign.receipt_identity(
+        receipt,
+        receipt_sha256=archived_sha256,
+    )
+    assert identity["receipt_sha256"] == archived_sha256
 
 
 def test_lineage_rejects_live_identity_drift_without_manifest() -> None:

@@ -91,7 +91,11 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def receipt_identity(receipt: dict[str, Any]) -> dict[str, Any]:
+def receipt_identity(
+    receipt: dict[str, Any],
+    *,
+    receipt_sha256: str | None = None,
+) -> dict[str, Any]:
     required = (
         "optimizer_steps",
         "optimizer_positions",
@@ -107,9 +111,10 @@ def receipt_identity(receipt: dict[str, Any]) -> dict[str, Any]:
         )
     checkpoint_path = training.resolve(str(receipt.get("checkpoint") or ""))
     receipt_path = checkpoint_path.parent / "training_receipt.json"
-    receipt_sha256 = receipt.get("receipt_sha256")
-    if receipt_path.is_file():
-        receipt_sha256 = file_sha256(receipt_path)
+    if receipt_sha256 is None:
+        receipt_sha256 = receipt.get("receipt_sha256")
+        if receipt_path.is_file():
+            receipt_sha256 = file_sha256(receipt_path)
     return {
         "optimizer_steps": int(receipt["optimizer_steps"]),
         "optimizer_positions": int(receipt["optimizer_positions"]),
@@ -154,17 +159,58 @@ def lineage_state(
     previous_steps = int(expected["optimizer_steps"])
     for path in manifests:
         row = training.read_json(path)
+        artifacts = row.get("artifacts")
+        if not isinstance(artifacts, dict):
+            raise ValueError(
+                "append-only training lineage artifacts missing:"
+                + training.relative(path)
+            )
+        archived: dict[str, Path] = {}
+        for name in (
+            "before_receipt",
+            "after_receipt",
+            "child_report",
+            "host_resource_safety",
+        ):
+            artifact = artifacts.get(name)
+            artifact_path = training.resolve(
+                str((artifact or {}).get("path") or "")
+            )
+            if (
+                not isinstance(artifact, dict)
+                or not artifact_path.is_file()
+                or file_sha256(artifact_path) != artifact.get("sha256")
+            ):
+                raise ValueError(
+                    "append-only training lineage artifact invalid:"
+                    + name
+                    + ":"
+                    + training.relative(path)
+                )
+            archived[name] = artifact_path
+        archived_before = training.read_json(archived["before_receipt"])
+        archived_after = training.read_json(archived["after_receipt"])
+        before_identity = receipt_identity(
+            archived_before,
+            receipt_sha256=str(artifacts["before_receipt"]["sha256"]),
+        )
+        after_identity = receipt_identity(
+            archived_after,
+            receipt_sha256=str(artifacts["after_receipt"]["sha256"]),
+        )
         if (
             row.get("policy") != LINEAGE_POLICY
-            or row.get("before_identity") != expected
-            or int((row.get("after_identity") or {}).get("optimizer_steps") or 0)
+            or row.get("before_identity") != before_identity
+            or row.get("after_identity") != after_identity
+            or before_identity != expected
+            or int(after_identity.get("optimizer_steps") or 0)
             <= previous_steps
         ):
             raise ValueError(
                 "append-only training lineage is noncontiguous:"
                 + training.relative(path)
             )
-        expected = dict(row["after_identity"])
+        expected = after_identity
         previous_steps = int(expected["optimizer_steps"])
     current = receipt_identity(current_receipt)
     if current != expected:
@@ -193,10 +239,8 @@ def archive_segment_lineage(
     returncode: int,
     segment_out: Path,
 ) -> str:
-    before_identity = receipt_identity(before)
-    after_identity = receipt_identity(after)
-    before_steps = int(before_identity["optimizer_steps"])
-    after_steps = int(after_identity["optimizer_steps"])
+    before_steps = int(before["optimizer_steps"])
+    after_steps = int(after["optimizer_steps"])
     if after_steps <= before_steps:
         raise ValueError("a lineage segment must advance optimizer steps")
     ledger_root = training.resolve(
@@ -213,14 +257,24 @@ def archive_segment_lineage(
     after_path = segment_dir / "after_receipt.json"
     training.write_json_atomic(before_path, before)
     training.write_json_atomic(after_path, after)
+    before_receipt_sha256 = file_sha256(before_path)
+    after_receipt_sha256 = file_sha256(after_path)
+    before_identity = receipt_identity(
+        before,
+        receipt_sha256=before_receipt_sha256,
+    )
+    after_identity = receipt_identity(
+        after,
+        receipt_sha256=after_receipt_sha256,
+    )
     artifacts = {
         "before_receipt": {
             "path": training.relative(before_path),
-            "sha256": file_sha256(before_path),
+            "sha256": before_receipt_sha256,
         },
         "after_receipt": {
             "path": training.relative(after_path),
-            "sha256": file_sha256(after_path),
+            "sha256": after_receipt_sha256,
         },
     }
     host_path = segment_out.with_suffix(".host_resource_safety.json")

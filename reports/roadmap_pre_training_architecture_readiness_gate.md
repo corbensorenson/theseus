@@ -9,9 +9,9 @@
 - Missing: `0`
 - Frozen: `1`
 - Book crosswalk items: `20`
-- AI_book authored source files: `4202`
+- AI_book authored source files: `4218`
 - Stale book-linked phases: `0`
-- Unresolved book-to-roadmap backlog items: `364`
+- Unresolved book-to-roadmap backlog items: `365`
 - Public-safe Theseus-to-book evidence pointers: `107`
 - Source-sync smoke passed: `True`
 - Public-safe evidence smoke passed: `True`

@@ -1851,7 +1851,7 @@
         "path": "configs/neural_seed_t1_lineage_anchor.json",
         "availability_policy": "configs/neural_seed_training_availability.json",
         "training_config": "configs/moecot_language_arm_training.json",
-        "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+        "required_current_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
         "allow_historical_source_artifact_drift": true
       }
     },
@@ -5142,7 +5142,7 @@
             "path": "configs/neural_seed_t1_lineage_anchor.json",
             "availability_policy": "configs/neural_seed_training_availability.json",
             "training_config": "configs/moecot_language_arm_training.json",
-            "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+            "required_current_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
             "allow_historical_source_artifact_drift": true
           }
         },
@@ -6135,7 +6135,7 @@
             "path": "configs/neural_seed_t1_lineage_anchor.json",
             "availability_policy": "configs/neural_seed_training_availability.json",
             "training_config": "configs/moecot_language_arm_training.json",
-            "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+            "required_current_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
             "allow_historical_source_artifact_drift": true
           }
         },
@@ -7758,7 +7758,7 @@
       },
       {
         "id": "T1",
-        "state": "active_step_9048_prospectively_anchored_not_evaluated",
+        "state": "active_step_9112_ledgered_from_step_9048_anchor_not_evaluated",
         "depends_on": ["T0A"],
         "exit": "The preregistration, executable topology, exact tokenizer/index capacity, staged positions, controls, checkpoint namespace, and fresh evaluation identity agree before the first optimizer step; then the five frozen arms and matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
       },

@@ -1,0 +1,3403 @@
+{
+  "all_requested_targets_complete": false,
+  "base_config": "configs/standard_causal_transformer_survival.json",
+  "base_config_sha256": "22e334af476b0243b8017f7930130662dfde81febaa4c5a4bfe7781b5e0dbdb2",
+  "candidate_canary_context": {
+    "active": false,
+    "capability_claim_authorized": false,
+    "config_overlay": {},
+    "lease_digest": "",
+    "production_checkpoint_deviations": [],
+    "production_optimizer_exposure_deviations": [],
+    "production_scale_deviations": [],
+    "production_training_authorized": false
+  },
+  "candidate_canary_lease": null,
+  "candidate_canary_resource_receipt": null,
+  "checkpoint_inventory": {
+    "all_targets_smoke_ready": false,
+    "capability_claim": "NOT_EVALUATED",
+    "distinct_checkpoint_digest_count": 1,
+    "distinct_optimizer_digest_count": 1,
+    "hard_gaps": [],
+    "rows": [
+      {
+        "capability_claim": "NOT_EVALUATED",
+        "checkpoint_sha256": "0fecb07690e85904f2a8e70175adcb6703d42a1430d41422f22f9b150cd3b1b4",
+        "complete": false,
+        "faults": [],
+        "optimizer_positions": 69801984,
+        "optimizer_state_sha256": "cad35469bdc4ec65999794a4ffeb037ae518d1888c07a7cd16e9a0df20d734e5",
+        "optimizer_steps": 9112,
+        "state": "GREEN",
+        "target_id": "shared_trunk"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "english"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "python"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "javascript_typescript"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "html_css"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "rust"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "dense_total_parameter"
+      },
+      {
+        "state": "NOT_RUN",
+        "target_id": "dense_active_parameter"
+      }
+    ],
+    "stale_canary_count": 0,
+    "state": "NOT_RUN",
+    "target_count": 8,
+    "valid_smoke_count": 1
+  },
+  "comparison_contract": {
+    "adoption_rule": "MoECOT may become default only if it has nonzero direct model-only behavior, does not regress any required language arm below its frozen floor, and beats or Pareto-dominates both dense controls without selecting a favorable accounting view after results are known.",
+    "assisted_output_is_model_only_output": false,
+    "deferred_kerc_metrics": [
+      "kerc_compiler_core_renderer_verifier_stage_cost",
+      "kerc_residual_bits_by_level_and_interaction_amortization",
+      "protected_object_copy_and_semantic_roundtrip_fidelity"
+    ],
+    "deferred_kerc_views": [
+      "matched_english_raw_bytes_training_flops_and_total_system_cost"
+    ],
+    "falsification_rule": "If a dense or matched surface control wins repeated decision-grade direct-behavior comparisons, retain the result and route the practical assistant through the winning conventional architecture. KERC may be retired only for the exact faithful regime tested after the independent adequacy audit passes.",
+    "first_campaign_candidate_ids": [
+      "shared_trunk",
+      "english",
+      "python",
+      "javascript_typescript",
+      "html_css",
+      "rust",
+      "dense_total_parameter",
+      "dense_active_parameter"
+    ],
+    "kerc_adoption_rule": "KERC may replace the conventional English path only if the faithful full system Pareto-dominates the matched surface control on functional utility and total end-to-end cost without protected-object, calibration, robustness, or weak-tail regression.",
+    "policy": "project_theseus_neural_seed_architecture_comparison_v2",
+    "preregistered_before_training": true,
+    "required_metrics": [
+      "direct_family_disjoint_verifier_pass_rate",
+      "direct_answer_utility",
+      "arm_behavior_by_language",
+      "routing_accuracy",
+      "composition_success_and_failure",
+      "total_parameters",
+      "active_parameters_per_request",
+      "unique_positions",
+      "optimizer_positions",
+      "estimated_parameter_token_product",
+      "wall_seconds",
+      "peak_memory_bytes",
+      "energy_joules_when_available",
+      "verifier_and_search_budget"
+    ],
+    "required_views": [
+      "equal_unique_system_positions_total_parameter_control",
+      "equal_active_parameters_active_compute_control"
+    ],
+    "route_success_is_answer_success": false
+  },
+  "config": "configs/moecot_language_arm_training.json",
+  "config_sha256": "2e4eecf854e19cac493455caf61dd30110433a9eb782ed59dc0a575b1382d2a6",
+  "created_utc": "2026-07-29T01:59:18.183618Z",
+  "executed_targets": [
+    "shared_trunk"
+  ],
+  "execution_policy": {
+    "compute_dtype": "float32",
+    "fp32_master": false,
+    "policy": "project_theseus_phase_specific_mlx_training_acceleration_v1",
+    "pretraining": {
+      "compile_width_quantum": 64,
+      "compiled_microbatch_size": 4,
+      "eager_gradient_accumulation_microbatch_size": 0,
+      "materialize_compiled_state_after_update": true,
+      "training_step_mode": "compiled"
+    },
+    "source_conditioned_pretraining": {
+      "compile_width_quantum": 64,
+      "compiled_microbatch_size": 1,
+      "eager_gradient_accumulation_microbatch_size": 1,
+      "training_step_mode": "eager"
+    },
+    "supervision": {
+      "compile_width_quantum": 64,
+      "compiled_microbatch_size": 1,
+      "eager_gradient_accumulation_microbatch_size": 1,
+      "training_step_mode": "eager"
+    },
+    "token_loss_compute_dtype": "float32"
+  },
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "hard_gaps": [],
+  "hidden_generalist_fallback": "forbidden",
+  "kernel_english_training": {
+    "architecture_disposition": {
+      "deferral_scope": "full_kerc_candidate_pending_k4_through_k8",
+      "evidence_scope": "decision_grade_k0_through_k3_with_explicit_remaining_gaps",
+      "first_campaign_optimizer_repetitions": 0,
+      "first_campaign_topology_exposure": 0,
+      "full_kerc_training_enabled": false,
+      "general_kerc_falsification_claimed": false,
+      "learned_capability_claimed": false,
+      "non_claims": [
+        "This bounded authored synthetic campaign does not prove that KERC can never work.",
+        "It does not establish general semantic preservation, independent verifier validity, security, transfer, production efficiency, SOTA, AGI, or ASI.",
+        "The retained exact-object and scoped-glossary mechanisms are deterministic infrastructure and receive no learned capability credit."
+      ],
+      "policy": "project_theseus_kerc_pretraining_disposition_v1",
+      "qualification_evidence": {
+        "canonical_allocator_training_authorized": true,
+        "causal_adequacy_trigger_state": "GREEN",
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_training_rows_written": 0,
+        "qualification_receipt_sha256": "sha256:a3686edd0cf4c59d6d60d029016ac01e45b7558bc2ff59c58f75b0926e06a29c",
+        "qualification_report": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+        "qualification_report_sha256": "fb99f22f12aa1a0b2eae7168f0ffe6ac97deb35ee5f4327578a17d8d06d185b8",
+        "remaining_phases": [
+          "K4_interaction_amortization",
+          "K5_coordinated_learned_architecture",
+          "K6_construct_valid_verification_and_lifecycle_security",
+          "K7_total_cost_instrumentation",
+          "K8_matched_campaign"
+        ],
+        "source_family_disjoint_seed_count": 5,
+        "template_credit": 0
+      },
+      "retained_mechanisms": [
+        "protected_exact_object_path",
+        "scoped_interaction_glossary_residual",
+        "source_conditioned_per_unit_allocator_k3"
+      ],
+      "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+      "superseded_proxy_evidence": {
+        "artifact_sha256": {
+          "confirmatory_result": "027507a0360c8b3749db4c081aa68d9d7a5f2d149dbd66a20a8815a2b28c259b",
+          "corpus": "0a626a38c3772cc9c70ae56fe2c99f94b03e7bbe19eb725c60ab13be4417a67a",
+          "design": "fa7d539cae86214d49d3cf1613031179b02c46535e7be03259c377aa7a73e170",
+          "design_validator": "f09b98863e9a13e15a3a9880560a80d3449433acb561d3d94edf093776603eb2",
+          "preregistration": "bc5adc41184033eaedbe7b4bdf80a9b98a00d140381a03289eca78a25db3090e",
+          "raw_run": "df31ceca782c510c47a4e1a8f5af5a07737612340f0d81ab47a692d816ed9a83",
+          "result_validator": "45e3c804729e7b362a4fa8df75f0c2f164567a76a8880e4b1493fb0f886a85ea"
+        },
+        "campaign_id": "p4-m8-kerc-runtime-001",
+        "denominators": {
+          "ablations": 13,
+          "attacks": 20,
+          "corpus": 192,
+          "heldout": 64,
+          "seeds": 5,
+          "train": 128
+        },
+        "independent_replay": {
+          "design_validator_passed": true,
+          "result_validator_passed": true,
+          "validated_utc": "2026-07-16"
+        },
+        "measurements": {
+          "attack_false_allow_count": 1,
+          "best_simple_total_description_bytes": 73.25,
+          "best_surface_mean_accuracy": 0.5,
+          "kernel_native_mean_accuracy": 0.5,
+          "packet_mean_bytes": 714.0,
+          "protected_object_recall": 1.0,
+          "shared_glossary_observed_break_even_turn": 2,
+          "simple_handle_mean_accuracy": 0.5
+        },
+        "source_project": "AI_book",
+        "source_state": "content_addressed_local_campaign",
+        "terminal_disposition": "broad_efficiency_refuted_narrow_exact_handle_and_shared_glossary_results_retained"
+      },
+      "terminal_evidence_state": "INCONCLUSIVE_IMPLEMENTATION"
+    },
+    "artifacts": {},
+    "code_vocabulary": {},
+    "compiled_view_count_by_objective": {},
+    "derived_view_unique_data_credit": 0,
+    "full_kerc_training_enabled": false,
+    "hard_gaps": [],
+    "learned_pipeline_contract": {},
+    "manifest": "",
+    "manifest_sha256": "",
+    "retained_mechanisms": [
+      "protected_exact_object_path",
+      "scoped_interaction_glossary_residual",
+      "source_conditioned_per_unit_allocator_k3"
+    ],
+    "score_semantics": "bounded pre-training architecture disposition; full KERC receives zero optimizer exposure",
+    "selected_record_count_by_split": {
+      "private_dev": 0,
+      "private_eval": 0,
+      "private_train": 0
+    },
+    "split_overlap_audit": {
+      "content_bound_disjoint": true,
+      "hard_gaps": [],
+      "raw_source_overlap_count": 0,
+      "source_group_overlap_count": 0
+    },
+    "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+    "unique_raw_source_count": 0
+  },
+  "mode": "training_execution",
+  "models": {
+    "canonical_vocab_size": 8195,
+    "deferred_architecture_candidates": {
+      "english_kerc": {
+        "optimizer_repetitions": 0,
+        "state": "DEFERRED_FROM_FIRST_LONG_RUN",
+        "terminal_evidence_state": "INCONCLUSIVE_IMPLEMENTATION",
+        "topology_exposure": 0
+      }
+    },
+    "dense_active_parameter": {
+      "active_parameter_count_per_request": 57348617,
+      "architecture": "decoder_only_prefix_lm_control",
+      "model": {
+        "attention_policy": "prefix_lm",
+        "d_model": 512,
+        "ff_dim": 2455,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_target_separator_token_id": 2
+      },
+      "parameter_count": 57348617,
+      "parameter_delta_fraction": 0.00014285,
+      "parameter_delta_vs_active_arm": 8191
+    },
+    "dense_total_parameter": {
+      "active_parameter_count_per_request": 67357193,
+      "architecture": "decoder_only_prefix_lm_control",
+      "model": {
+        "attention_policy": "prefix_lm",
+        "d_model": 512,
+        "ff_dim": 2998,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_target_separator_token_id": 2
+      },
+      "parameter_count": 67357193,
+      "parameter_delta_vs_moecot_total": -518
+    },
+    "kerc_vocab_size": 8195,
+    "moecot_system": {
+      "active_parameter_count_per_request": 57340426,
+      "arm_count": 5,
+      "arm_model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "arm_parameter_count": 57340426,
+      "expert_parameter_count_per_arm": 2504193,
+      "expert_trainable_scope": "low_rank_source_adapters",
+      "router_accounting_state": "EXCLUDED_UNTIL_LANGUAGE_ROUTER_IS_TRAINED",
+      "router_parameter_count": 0,
+      "shared_trunk_model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_target_separator_token_id": 2
+      },
+      "shared_trunk_parameter_count": 54836746,
+      "topology": {
+        "expert_adapter_dim": 128,
+        "expert_parameter_ownership": "one_independent_low_rank_source_delta_per_language",
+        "expert_trainable_scope": "low_rank_source_adapters",
+        "mode": "shared_trunk_language_experts",
+        "policy": "project_theseus_moecot_scaled_low_rank_specialists_v3",
+        "shared_parameter_ownership": "one_checkpoint_loaded_once",
+        "shared_trunk_initialization": {
+          "policy": "project_theseus_seeded_fresh_trunk_initialization_v1",
+          "reason": "The retained 3.716M shared trunk and the data-bounded 10.78M rung have incompatible tensor shapes; initialize the preregistered larger trunk from its frozen seed rather than pretending weight migration is valid.",
+          "seed": 20260712
+        },
+        "source_expert_adapter_dim": 64
+      },
+      "total_parameter_count": 67357711,
+      "total_parameter_delta_vs_dense_total": 7.69e-06
+    },
+    "vocab_size": 8195
+  },
+  "non_claims": [
+    "plan and checkpoint smoke are not learned capability",
+    "training loss is not direct answer utility",
+    "routing success is not answer success",
+    "neither accounting view may be selected after results are known"
+  ],
+  "plan_identity": {
+    "excluded_volatile_fields": [
+      "scale_preregistration.report_sha256",
+      "scale_preregistration.evaluation_freeze_sha256"
+    ],
+    "implementation_closure": [
+      "scripts/moecot_language_arm_training.py",
+      "scripts/moecot_auxiliary_stage_cache.py",
+      "scripts/fresh_process_pretraining_qualification.py",
+      "scripts/host_resource_safety.py",
+      "scripts/neural_seed_training_campaign.py",
+      "scripts/kerc_checkpoint_schema.py",
+      "scripts/kerc_concept_registry.py",
+      "scripts/kernel_english_protocol.py",
+      "scripts/standard_causal_transformer_model.py",
+      "scripts/standard_causal_transformer_corpus.py",
+      "scripts/standard_causal_transformer_survival.py",
+      "scripts/standard_causal_transformer_objectives.py",
+      "scripts/pretraining_candidate_canary.py",
+      "scripts/pretraining_optimizers.py",
+      "configs/pretraining_architecture_candidates.json",
+      "scripts/moecot_language_tokenizer.py",
+      "scripts/moecot_source_conditioned_pretraining.py",
+      "scripts/neural_seed_open_vocab.py",
+      "scripts/vcm_semantic_memory.py"
+    ],
+    "legacy_migrations": [
+      {
+        "evidence": "reports/training_acceleration_final_selector.json reports/masked_structural_growth_qualification.json reports/progressive_sequence_length_qualification.json configs/neural_seed_training_availability.json tests/test_masked_structural_growth_qualification.py tests/test_progressive_sequence_length_qualification.py tests/test_host_resource_safety.py tests/test_neural_seed_training_campaign.py",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_positions": 26680656,
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "migration_id": "shared_trunk_step3480_final_acceleration_and_availability_controller_v1",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule after dispositioning the remaining acceleration candidates. The canonical route remains compiled FP32, microbatch four, full depth from step zero, and fixed target width. Masked structural growth is present only behind an explicit zero-by-default mask API and was rejected by the preregistered weak-arm gate; progressive width is isolated to its qualification harness and was rejected by the joined-wall and time-to-quality gates. The host watchdog now treats machine-wide swapout growth as diagnostic while retaining hard process-RSS, launch-reserve, live-reserve, and wall-time enforcement, because guarded replay observed unrelated system swap growth with low child RSS and more than 3.3 GiB reclaimable memory. The outer resource controller permits launch at any hour and makes only between-segment decisions from explicit power, disk, competing-process, and operator-yield gates; it rejects clock-based launch windows, imposes no user-idle delay or second memory threshold, never interrupts an in-flight Metal segment, and changes no training math. The external child watchdog remains the sole owner of causal process-RSS, live-reserve, swap-treatment, and wall-time enforcement. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract changes on the selected route.",
+        "required_current_plan_sha256": "9be51efc6bb8dca93ed85db5f788610ea42c12f313af4e5b51c8fd563f193e72",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/resource_acceleration_compiled_route_current8_state.json reports/resource_acceleration_compiled_route_materialized8_state.json reports/resource_acceleration_fp32_materialized8_replay_b.json reports/resource_acceleration_compiled_route_materialized64.json reports/resource_acceleration_bf16_materialized64.json reports/resource_acceleration_bf16_materialized8_replay_a.json reports/resource_acceleration_bf16_materialized8_replay_b.json reports/compiled_state_materialization_unit_parity.host_resource_safety.json tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_positions": 26680656,
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "migration_id": "shared_trunk_step3480_compiled_state_detachment_v1",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while explicitly materializing the captured model and optimizer state after each compiled update. The prior route retained an unevaluated state chain, grew active MLX memory every update, and eventually tripped the campaign watchdog. Matched eight-update full-state diagnostics preserved exact loss, batch identities, cursor, and RNG; model and optimizer differences remained within the already-qualified fresh-process envelope at 1.19e-7 and 4.08e-9 maximum absolute delta. Two independent materialized FP32 processes remained within 1.19e-7 and 2.97e-9, while a 64-update run held active MLX memory flat near 659 MB. BF16 retained its speed advantage but remained cross-process divergent and is still rejected.",
+        "required_current_plan_sha256": "8a6eb82d1cffb863b353633cce744818a744b040d81e75a3d3f1ddc9d9f57ebe",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_host_resource_safety.py tests/test_neural_seed_training_campaign.py tests/test_selected_route_sustained_qualification.py reports/training_acceleration_final_selector.json",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_positions": 26680656,
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "migration_id": "shared_trunk_step3480_evidence_driven_resource_guard_v1",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while replacing only arbitrary host scheduling thresholds. The watchdog uses consecutive measured reclaimable-memory decline and its termination latency to predict exhaustion, with no fixed launch/runtime memory floor and no unrelated wall deadline for the already step-bounded child. A single allocation transient or stable low plateau is not a fault. Disk headroom is derived from two complete live checkpoint transactions. Sustained qualification stops from replicated adjacent-window uncertainty, clear degradation, or an available system thermal warning rather than elapsed hours or a fixed percentage. Process-group memory remains bounded, system swap remains diagnostic, canonical state remains scratch-isolated, and this migration changes no model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract.",
+        "required_current_plan_sha256": "7db8483b1a04bfc280d3ca29953592f0d1acd96c289b9a5695ad34bcfe18e271",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/selected_route_sustained_qualification.json reports/fresh_process_pretraining_qualification.json tests/test_host_resource_safety.py tests/test_selected_route_sustained_qualification.py tests/test_moecot_language_arm_training.py",
+        "legacy_checkpoint_sha256": "af4b55247e341c20cd7164890b71fa2daf9266bfccf22defb627b17445eb9247",
+        "legacy_optimizer_positions": 26680656,
+        "legacy_optimizer_state_sha256": "29bcb5f8e93267da1b52670687c2fb8d9507d3dd81a60c193a7d2d2d9ec0a2f7",
+        "legacy_optimizer_steps": 3480,
+        "legacy_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "migration_id": "shared_trunk_step3480_replay_swap_policy_alignment_v1",
+        "reason": "Continue the exact step-3480 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while making the independent fresh-process replay owner consume the already-selected host swap policy and binding the imported watchdog implementation into the training-plan closure. Exact two-segment replay matched an independently resumed second segment with 2.384185791015625e-07 maximum model delta, 6.9267116487026215e-09 maximum optimizer delta, identical RNG state, contiguous cursor and positions, and no causal watchdog fault. Machine-wide swapout counters remain visible but diagnostic under report_only; process-group RSS, measured working-set-envelope overrun, and predicted-exhaustion faults remain hard. The independently completed 4797.484 MiB route envelope suppresses sub-second decline extrapolation whenever observed route use remains inside that envelope, without requiring an arbitrary amount of initially free memory. Training authority requires the causal host guard to pass and rejects a report whose swap treatment disagrees with the frozen config. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, or evaluation contract changes.",
+        "required_current_plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "configs/neural_seed_t1_lineage_anchor.json configs/neural_seed_training_availability.json scripts/neural_seed_training_campaign.py tests/test_neural_seed_training_campaign.py tests/test_moecot_language_arm_training.py",
+        "legacy_checkpoint_sha256": "ed28acc8cc9a82b4bd00dbd8487f17b8131157df3c828f66eb458902d4e3c16d",
+        "legacy_optimizer_positions": 69310840,
+        "legacy_optimizer_state_sha256": "7b19ceb6880954a845bdb79914d84a6d388992abe45e98d63dfdfa3a2ed6c829",
+        "legacy_optimizer_steps": 9048,
+        "legacy_plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+        "migration_id": "shared_trunk_step9048_append_only_lineage_custody_v1",
+        "reason": "Continue the exact step-9048 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while adding a prospective append-only segment lineage ledger to the outer campaign controller. The anchor explicitly records that the complete step-3480-to-9048 predecessor chain and the exact step-3480 payload are not locally available, so it cannot launder that gap into a replay claim. Before any later segment launches, the live receipt must match the anchor or the terminal ledger identity; every state-changing segment archives exact before/after receipts plus child and host-guard identities before another launch. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, evaluation contract, or capability state changes.",
+        "required_current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/pretraining_architecture_freeze_package.json generated_receipts reports/neural_seed_50m_scale_preregistration.json",
+        "legacy_plan_sha256": "b55e7ae19ed5956b0e02ecc73809846fc0d51a867c20c83d15198daec4eeab9e",
+        "legacy_scale_report_sha256": "b78d8036009d3fbc05fe8c6193a8cc3cf699638d7c0c4ff7bc95cc99b54c347e",
+        "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
+        "reason": "The v1 plan identity hashed a timestamp-bearing generated preregistration report. Independent replay reproduces the legacy plan hash exactly when the frozen report hash is substituted; model, data, stage, optimizer, and evaluation contracts are unchanged.",
+        "required_current_plan_sha256": "a784e3fc50f3ae16fa8624b173e3b49e915a30c239ac5287677580197b40068b",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json configs/neural_seed_57m_functional_utility_freeze.json",
+        "legacy_checkpoint_sha256": "1f23b97fc8bb9ce92928c24ac2cade1d8629833fd247fb1bcd9e48d281c3121e",
+        "legacy_optimizer_positions": 3845232,
+        "legacy_optimizer_state_sha256": "fa004570333e365e133a4b00f353bc52cf2317c1ec7128e9ca7c27ff139c35fc",
+        "legacy_optimizer_steps": 501,
+        "legacy_plan_sha256": "49e2a4966ab0498a3a670f205b452b6d9905a351d4972bf49ba2399b8226039c",
+        "migration_id": "shared_trunk_step501_evaluation_freeze_semantic_identity_v1",
+        "reason": "The v2 plan identity still hashed the whole timestamp-bearing evaluation freeze. The v3 identity binds the unchanged case, candidate packet, compiler, verifier, rater, toolchain, and consumption contracts while excluding freeze bookkeeping and training-state snapshots.",
+        "required_current_plan_sha256": "a784e3fc50f3ae16fa8624b173e3b49e915a30c239ac5287677580197b40068b",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "commit:b3e22aef checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
+        "legacy_checkpoint_sha256": "cdbab0e84cb7e940a0973bee9f185d8815ef156df6030705f269a1babca732a5",
+        "legacy_optimizer_positions": 7663202,
+        "legacy_optimizer_state_sha256": "c842ae83e954db34a97586d077f6306b92b14b27519e985ad6a7eba29ded02d6",
+        "legacy_optimizer_steps": 1000,
+        "legacy_plan_sha256": "ed91f8b0900b62f74d8f2a846489228c51fb09d71023a684b04429205e20694c",
+        "migration_id": "shared_trunk_implementation_closure_and_cumulative_heartbeat_v1",
+        "reason": "Bind every imported training implementation to the plan and make resumed heartbeat counters cumulative without changing model, optimizer, data, objective, schedule, or evaluation behavior.",
+        "required_current_plan_sha256": "a784e3fc50f3ae16fa8624b173e3b49e915a30c239ac5287677580197b40068b",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
+        "legacy_checkpoint_sha256": "6317d422d57f77eff5e8bf502d8463c10b113f43604ac26510c2b9d4f1dd95f8",
+        "legacy_optimizer_positions": 19161119,
+        "legacy_optimizer_state_sha256": "999ad7e948a389f48c1b0d268da6e79ffb208d4bcc54cd5ab5ec476d148cc63b",
+        "legacy_optimizer_steps": 2500,
+        "legacy_plan_sha256": "a784e3fc50f3ae16fa8624b173e3b49e915a30c239ac5287677580197b40068b",
+        "migration_id": "shared_trunk_step2500_compiled_microbatch_acceleration_v1",
+        "reason": "Continue the exact step-2500 model and AdamW state through the MLX compiled, shape-bucketed microbatch execution route. The route preserves batch-16 token-mass weighting, clips once, updates once, leaves source-conditioned auxiliary phases eager, and passed one-step parameter-update parity without changing model, data, objective, schedule, or evaluation behavior.",
+        "required_current_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/moecot_language_arm_training_acceleration_500step_qualification.json reports/moecot_57m_shared_trunk_learning_curve_step3000.json tests/test_moecot_language_arm_training.py::test_batched_text_beam_advance_matches_serial_reference",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "migration_id": "shared_trunk_step3000_decode_and_checkpoint_observability_v1",
+        "reason": "Continue the exact step-3000 model and AdamW state after adding prompt-only beam batching, device-side admissible-logit selection, exact pre-forward beam pruning, private-development progress evaluation, checkpoint timing receipts, and an explicit eager/compiled qualification switch whose default preserves the prior automatic route. These changes affect inference execution and observability only; model, optimizer, data, objective, schedule, and saved tensors are unchanged.",
+        "required_current_plan_sha256": "e73a0e0fb8924955ca6bf9bbdaceb9b87150dd86820c1caa75b4cb958b8e3e19",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch tests/test_standard_causal_transformer_survival.py::test_compiled_training_rejects_invalid_microbatch_size tests/test_standard_causal_transformer_survival.py::test_fp32_master_mixed_precision_saves_authoritative_fp32_checkpoint tests/test_resource_acceleration_qualification.py::test_training_route_aggregation_uses_pooled_work_and_preserves_runs tests/test_resource_acceleration_qualification.py::test_precision_pair_rejects_bfloat16_when_speed_does_not_improve tests/test_moecot_language_arm_training.py::test_batched_kerc_beam_advance_matches_serial_reference",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "migration_id": "shared_trunk_step3000_repeated_acceleration_measurement_v1",
+        "reason": "Continue the exact step-3000 model and AdamW state after parameterizing the already-qualified compiled microbatch, adding repeated alternating acceleration instrumentation, routing deferred KERC generation through the same parity-tested batched beam machinery as direct text generation, and adding an optional qualification-only bfloat16-compute/fp32-master route. The default training route remains fp32 with microbatch four; model math, saved tensors, optimizer, data, objective, schedule, and evaluation contracts are unchanged.",
+        "required_current_plan_sha256": "dfd6adba35e816b8076fd5762468c3de253e2bc2fc9aa5561c9272ac60d76a62",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_moecot_language_arm_training.py::test_scratch_target_contract_redirects_all_mutable_paths tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch full-parameter paired acceleration replays from the immutable step-3000 checkpoint",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "migration_id": "shared_trunk_step3000_acceleration_profiling_and_scratch_canary_v1",
+        "reason": "Continue the exact step-3000 model and AdamW state after adding host/device phase timing and a bounded scratch-canary route that redirects every mutable path outside registered lineage. Rejected acceleration candidates were removed from the canonical implementation; model math, data, objective, schedule, saved tensors, optimizer behavior, and evaluation contracts remain unchanged.",
+        "required_current_plan_sha256": "8b10afa6ee1da40fd14783cb989c0366b470b580c1e7605266afb7fa513df05b",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/resource_acceleration_qualification.json tests/test_moecot_language_arm_training.py::test_checkpoint_format_migration_is_exact_atomic_and_idempotent",
+        "legacy_checkpoint_sha256": "3a9b04adc971e9133f440643bbf7ac30dbc6fcc407b32ad0aadaca01f54905a7",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "307bb3fd1216d7e70ecae4f8791e05b4a2ed0f424d2e888a77defdaa701b8af9",
+        "migration_id": "shared_trunk_step3000_atomic_safetensors_migration_v1",
+        "reason": "Continue the exact step-3000 model and AdamW state while replacing only the model checkpoint container after independent 197-tensor parity and alternating-load qualification. The migration adds zero optimizer steps or positions, leaves model tensors and optimizer bytes unchanged, advances the receipt atomically, and removes the legacy container only after exact replay and resume validation.",
+        "required_current_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_moecot_language_arm_training.py::test_batched_text_beam_advance_matches_serial_reference tests/test_neural_seed_resident_runtime.py",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_resident_prompt_cache_contract_v1",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state after adding an optional prompt-only, model-local KV prefill cache to the canonical decoder. The cache is disabled unless explicitly supplied, sees no target or verifier fields, preserves exact generated-token identity, and changes no training model, optimizer, data, objective, schedule, or saved tensor.",
+        "required_current_plan_sha256": "9957d6c18e73eb4055b3fa6f51a63c1349c68e360dc0abcc2e54fbf0b1ba4cf7",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_moecot_language_arm_training.py::test_cross_request_generation_batches_shape_compatible_prompts_exactly tests/test_neural_seed_resident_runtime.py reports/neural_seed_resident_runtime_qualification.json",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_cross_request_continuous_batching_v1",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state after adding optional prompt-length-bucketed cross-request prefill and beam advance plus a bounded resident request coalescer. The route sees prompt-only inputs, remains disabled in training, changes no model tensor, optimizer byte, data row, objective, schedule, or saved state, and requires exact serial/batched token parity before adoption.",
+        "required_current_plan_sha256": "9d4c5286b66f8e4942ed23f9878e6b6b40158e874651df6fb42b979bdfa81fe3",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch tests/test_resource_acceleration_qualification.py reports/resource_acceleration_qualification.json scripts/standard_causal_transformer_objectives.py",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_first_step_timing_and_phase_attribution_v1",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state after correcting acceleration timing to exclude the first compile/warmup step deterministically, attributing already-synchronized compiled time between accumulation and final update microbatches, and mechanically extracting the unchanged objective functions into the implementation-closure-bound objective module. The change adds no synchronization, changes no model math, tensor, optimizer byte, data row, objective, schedule, or evaluation behavior, and writes no training state during qualification.",
+        "required_current_plan_sha256": "43a2468c8cb590bb32160582963b44707d434c0ad28327ab922c14c8bf951720",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "commit:03a2bc23 tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch scripts/standard_causal_transformer_objectives.py",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_objective_module_canonical_eof_v1",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state after normalizing the final newline of the mechanically extracted objective module. The extracted objective AST is identical to the prior in-file objective block; model math, tensor values, optimizer bytes, data, objective, schedule, and evaluation behavior are unchanged.",
+        "required_current_plan_sha256": "3bc81e18a0decb707af26267f88c52008e6f073cf6c0bf6d4795127cf8fb0d53",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/mlx_fast_rope_training_qualification.json reports/mlx_fast_rope_training_manual_inference_parity.json tests/test_standard_causal_transformer_survival.py::test_fast_rope_kernel_is_bounded_and_manual_remains_default tests/test_standard_causal_transformer_survival.py::test_causal_loss_prunes_only_provably_inactive_auxiliary_outputs",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_training_only_fast_rope_v1",
+        "reason": "Continue the exact step-3000 safetensors model and AdamW state through the qualified training-only MLX fused RoPE kernel and removal of auxiliary outputs whose effective loss weight is provably zero. Repeated paired updates preserved all 197 tensors within 2.38419e-7 maximum absolute drift, reduced peak MLX memory, and exact manual-kernel serving replay preserved all eight held-out outputs and normalized receipts. Inference remains on the manual reference RoPE kernel; model topology, saved tensors, optimizer bytes, data order, objective weights, schedule, and evaluation contracts are unchanged.",
+        "required_current_plan_sha256": "79f850a553d71fdd2d35a35743d98bb8b750dcf94ff6a028a871dc902e6bca7f",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/resource_acceleration_fp32_resume_microbatch4_4step.json tests/test_moecot_language_arm_training.py::test_tiny_mlx_arm_writes_distinct_resumable_model_and_optimizer_state tests/test_moecot_language_arm_training.py::test_checkpoint_transaction_publishes_exact_mlx_rng_state tests/test_standard_causal_transformer_survival.py",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_t0p_exact_resume_and_measurement_v1",
+        "reason": "Continue the exact step-3000 model and AdamW bytes while adding an explicit epoch/batch data cursor, MLX RNG artifact, immutable step-generation publication, atomic compatibility aliases, exclusive station timing, and post-compile trace boundaries. The first continuation from this legacy receipt keeps its existing seed behavior; subsequent receipts preserve exact cursor and RNG state. Bounded FP32 save/reload replay preserved the exact batch and loss sequence with 1.19209e-7 maximum parameter drift. No model tensor, optimizer byte, data row, objective, schedule, evaluation surface, or optimizer position is changed by this migration.",
+        "required_current_plan_sha256": "5a923d08f2ed6453ea2360fc0e824534713aacf59fcfa96f1f0870fb7feef609",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_moecot_language_arm_training.py::test_text_finalizer_never_credits_unfinished_byte_span tests/test_moecot_language_arm_training.py::test_batched_text_beam_advance_matches_serial_reference tests/test_moecot_language_arm_training.py::test_cross_request_generation_batches_shape_compatible_prompts_exactly",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_serialization_complete_beam_finalization_v1",
+        "reason": "Continue the exact step-3000 model and AdamW state after making prompt-only inference finalization choose the best grammar-valid serialization-complete beam rather than an unfinished reversible-byte span at the token limit. The decoder still rejects when no complete serialization exists and emits no fallback return. This inference-only repair changes no model tensor, optimizer byte, training row, data order, objective, schedule, or optimizer position.",
+        "required_current_plan_sha256": "02775b673445f93b4babc55932c8b6aee3539f20a4b5fba75ad4c4734104e92f",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/resource_acceleration_fp32_resume_microbatch4_4step.json tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch tests/test_moecot_language_arm_training.py::test_text_finalizer_never_credits_unfinished_byte_span tests/test_moecot_language_arm_training.py::test_checkpoint_transaction_publishes_exact_mlx_rng_state",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_t0p_serialization_and_redundant_sync_removal_v1",
+        "reason": "Continue the exact step-3000 model and AdamW bytes through the explicit cursor/RNG/immutable-generation publication contract, grammar-complete prompt-only beam finalization, and removal of one redundant post-update full model/optimizer synchronization. Every compiled microbatch, including the stateful update, is still synchronized inside the timed loop; the final loss remains evaluated and timed. Full-state eager/compiled parity, exact FP32 checkpoint replay, batch order, model tensors, optimizer bytes, data, objective, schedule, and optimizer positions remain unchanged.",
+        "required_current_plan_sha256": "196129f6b9f50b9e3e66d411171056013efe4d4964fdf65c0a93b3c62e3afc56",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_analytical_accounting_reproduces_frozen_57m_candidate tests/test_moecot_language_arm_training.py::test_planning_parameter_accounting_never_imports_mlx tests/test_moecot_language_arm_training.py::test_kerc_dual_vocab_is_charged_only_to_candidate_and_surface_control_is_matched tests/test_neural_seed_50m_scale_preregistration.py::test_preregistration_architecture_contract_never_imports_mlx tests/test_moecot_language_arm_training.py::test_guarded_training_preflight_refusal_starts_no_child_and_writes_receipt",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_host_guard_and_allocation_free_accounting_v1",
+        "reason": "Continue the exact immutable step-3000 model and AdamW bytes after moving launch authority behind the process-group host resource guard and replacing planning-time MLX model allocation with exact analytical graph accounting. Frozen MLX receipts are reproduced exactly for the shared trunk, active arm, trainable specialist scope, full KERC candidate, and matched controls. These safety and accounting changes do not alter model topology, tensors, optimizer bytes, data order, objective, schedule, evaluation surface, or optimizer position.",
+        "required_current_plan_sha256": "b0c9828fe66399338c7f11596800dff0b4113f26b2de8da562555349d5bfc28b",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_moecot_language_arm_training.py::test_query_chunked_encoder_decoder_matches_outputs_loss_and_gradients tests/test_pretraining_candidate_canary.py::test_negative_attention_key_chunk_size_fails_closed configs/pretraining_architecture_freeze.json#query_chunk_compact_parity",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_optional_online_kv_attention_v1",
+        "reason": "Continue the exact immutable step-3000 model and AdamW bytes after adding an optional cache-offset-aware, grouped-query-mask-aware, NaN-safe online-softmax key/value attention route for resource-bounded candidate qualification. The canonical selected training policy leaves attention key chunking disabled, so model topology, forward math, tensors, optimizer bytes, data order, objective, schedule, evaluation surface, and optimizer position remain unchanged. The optional route has no authority until its exact guarded output/loss/gradient parity shard passes.",
+        "required_current_plan_sha256": "237064d3cbc38c04211b6d2f1cbe2bba5257b545d5cf3e508e3c98b891ec3f35",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "tests/test_standard_causal_transformer_survival.py::test_compiled_microbatch_pretraining_matches_eager_full_batch tests/test_standard_causal_transformer_survival.py::test_compiled_source_conditioned_training_matches_eager_full_batch tests/test_standard_causal_transformer_survival.py::test_compiled_bfloat16_compute_preserves_fp32_master_checkpoint scripts/resource_acceleration_qualification.py#run_precision_resume_entry",
+        "legacy_checkpoint_sha256": "606640cd8d529e1fd357a4666097da333e0575352e38e92ebe79a7c7eb925c0e",
+        "legacy_optimizer_positions": 22999779,
+        "legacy_optimizer_state_sha256": "62e1b52b88212430635ca670a4f672edecf9dad56f26242045303b195fb62f96",
+        "legacy_optimizer_steps": 3000,
+        "legacy_plan_sha256": "d9a07a7ea078e1d04ac852f31139274d9ea34399d4292d39ab062a129440328d",
+        "migration_id": "shared_trunk_step3000_compiled_rng_width_and_source_split_abi_v2",
+        "reason": "Continue the exact immutable step-3000 model, AdamW bytes, MLX RNG, sampler cursor, and optimizer position after making the compiled state ABI explicitly capture mx.random.state, exposing the existing width-padding quantum as a bounded acceleration autotune parameter, replacing an illegal tensor-to-Python token-authority branch with the identical host-known static fact on compiled nonzero-token batches, and adding source-conditioned split compilation. The source route compiles bounded forward/backward microbatches, accumulates gradients into exactly one logical batch update, and preserves token, generator-gate, and pointer-alignment normalization against full-batch objective mass. The selected default remains quantum 64, the current dense model contains no stochastic training module, and these changes do not modify model topology, objective mass, checkpoint tensors, optimizer bytes, data order, learning-rate schedule, evaluation surface, or current numerical policy. Exact eager/compiled and checkpoint/reload qualifications remain mandatory before promotion.",
+        "required_current_plan_sha256": "183d312d38a96fa02b67b6e04c0c556f19663f337e8fd41dd356b4d2835dcfbd",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "shared_trunk"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_adequacy_width628_two_exposure_terminal6144_dual_resource_stress_q32_k32_position_chunk64_seed_20260722.json reports/rdc_kerc_k5_stage_learnability_width628_terminal4566_seed_20260722_teacher_forced_rows16.json reports/rdc_kerc_k5_stage_learnability_width628_terminal4566_seed_20260722_generation_rows1.json reports/rdc_kerc_k5_overfit_compiler_full_stage_single_row_lr10x_position32_q32_steps16_retry4_seed_20260722.json reports/rdc_kerc_k5_overfit_compiler_full_stage_single_row_lr10x_steps16_retry4_teacher_forced1_retry2_seed_20260722.json reports/rdc_kerc_k5_overfit_compiler_full_stage_single_row_lr10x_steps16_retry4_source_counterfactual_teacher_forced1_seed_20260722.json tests/test_moecot_language_arm_training.py::test_candidate_continuation_import_is_content_bound_and_scratch_only tests/test_moecot_language_arm_training.py::test_sampler_migration_resets_only_the_declared_phase_cursor",
+        "legacy_checkpoint_sha256": "5ce6ef85ae14cbab721e65f686f42457c55a6dc1ffa4fb2fb3cda19158bd5bbf",
+        "legacy_optimizer_positions": 423227,
+        "legacy_optimizer_state_sha256": "f1bc15871dcf9d7dfcbbaceb7eb564957525d6c235543763ae51eaaa35432e32",
+        "legacy_optimizer_steps": 4566,
+        "legacy_plan_sha256": "5df9c62f31f6f2ab2d34d2fa7af70e10ad31089369a35377b193996a68b27810",
+        "migration_id": "english_kerc_step4566_compiler_consolidation_coverage_safe_v1",
+        "reason": "Continue only the exact seed-20260722 step-4566 KERC FP32 master, AdamW state, and MLX RNG after exact sampler replay showed the compiler population received roughly 2.7 row exposures and the checkpoint-specific probe found compiler EOS 0/16 while renderer, core, and direct teacher-forced token accuracy were materially higher. The cache-elided full five-parameter route then completed its formerly failing eight-row coverage replay, while a matched one-row 16-update learnability gate showed that 3e-4 moves compiler Kernel accuracy from 9/25 to 17/25 and total accuracy from 82/140 to 124/140; the prior 3e-5 floor moved zero Kernel predictions on its matched eight-step panel. The continuation keeps the source generation immutable, uses a fresh scratch namespace, adopts the measured 3e-4 compiler-stage learning rate, preserves coverage-safe sampling, and resets only the invalidated kernel sampler cursor. Population-wide behavior and source-disjoint evidence remain mandatory before another seed or K4 consumption.",
+        "required_current_plan_sha256": "b048da1694054fe63426ffad8478d0aae696425c691172ead6f6ad2923804dfa",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_full_stage_cache_elided_position32_q32_coverage_steps8_seed_20260722.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_steps8_source_counterfactual_teacher_forced16_seed_20260722.json tests/test_kerc_k5_stage_learnability_probe.py::test_probe_checkpoint_counterfactual_is_content_bound_and_explicit",
+        "legacy_checkpoint_sha256": "5ce6ef85ae14cbab721e65f686f42457c55a6dc1ffa4fb2fb3cda19158bd5bbf",
+        "legacy_optimizer_positions": 423227,
+        "legacy_optimizer_state_sha256": "f1bc15871dcf9d7dfcbbaceb7eb564957525d6c235543763ae51eaaa35432e32",
+        "legacy_optimizer_steps": 4566,
+        "legacy_plan_sha256": "5df9c62f31f6f2ab2d34d2fa7af70e10ad31089369a35377b193996a68b27810",
+        "migration_id": "english_kerc_step4566_compiler_full_stage_overfit_lr10x_v1",
+        "reason": "Continue the exact immutable step-4566 compiler state into a training-row-only learnability sanity after the cache-elided full-stage route cleared the prior resource wall but eight floor-rate updates changed only seven of 5,976 matched teacher-forced predictions and zero Kernel-region predictions. The canary repeats one deterministic compiler row at a fixed 10x diagnostic learning rate, keeps the five-parameter full-stage mechanism, exact projected AdamW custody, source checkpoint, seed, 32-position objective decomposition, q32/k32 attention, 16 MiB swap ceiling, and fresh scratch isolation. It has no capability, generalization, or architecture-falsification authority.",
+        "required_current_plan_sha256": "efe9796a8f3c4839b600a26acf02bb9f19375ffdf7f4238b38857d9fff8cbe37",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_unbucketed_segment_resume_final_step1_seed_20260722.json tests/test_moecot_language_arm_training.py::test_tiny_fp32_master_candidate_resumes_exact_optimizer_and_rng",
+        "legacy_checkpoint_sha256": "b949a8bc79c1d78dec7bc818db79052487a2c175a6217d2591b3c42feb015c0c",
+        "legacy_optimizer_positions": 423553,
+        "legacy_optimizer_state_sha256": "e4fdb9e93596f4552700da9ac5c30d8d3f8903aab3d71d6daa0cf7fd926f37dc",
+        "legacy_optimizer_steps": 4567,
+        "legacy_plan_sha256": "7818f980d8ae249e735aa468e1f65b5e34f5c78131633ec0f01289c72c02e79d",
+        "migration_id": "english_kerc_segment_step4567_delta_overlay_loader_v1",
+        "reason": "Preserve the exact governed segment-one compiler delta, projected AdamW state, MLX RNG, and data cursor while teaching segmented resume to reconstruct frozen BF16 compute tensors from the independently hashed full FP32 source checkpoint and then overlay and verify the five exact FP32 compiler-delta tensors. No model tensor, optimizer byte, sampler position, objective, schedule, seed, or evaluation surface is changed.",
+        "required_current_plan_sha256": "b048da1694054fe63426ffad8478d0aae696425c691172ead6f6ad2923804dfa",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_unbucketed_segment_resume_final_step2_retry1_seed_20260722.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_unbucketed_segment_resume_final_step3_seed_20260722.host_resource_safety.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_unbucketed_segment_resume_final_step3_retry1_seed_20260722.host_resource_safety.json",
+        "legacy_checkpoint_sha256": "2b63b3012f36fe05e555f1a06684ae7ab36de20041cd7a419762962d12332dd4",
+        "legacy_optimizer_positions": 423693,
+        "legacy_optimizer_state_sha256": "757837d4096867aa7bd73cdcb216477693178e2908c962bb4ec7efde8c4f47e3",
+        "legacy_optimizer_steps": 4568,
+        "legacy_plan_sha256": "d130617d702af951345ac74b97e2109692162b248d1434f8d2a5ffaf09a2ec20",
+        "migration_id": "english_kerc_segment_step4568_swap_granularity_repair_v1",
+        "reason": "Preserve the exact step-4568 compiler delta, projected AdamW bytes, MLX RNG, and batch-2 cursor while correcting only K5's swap-burst ceiling from 16 MiB to a measured 128 MiB. Two isolated q32 attempts at row three were killed after a 42.25 MiB macOS swap burst despite more than 4.8 GiB reclaimable memory; q16 then reduced inferred memory but took roughly four times longer and accumulated 142.31 MiB, so it was rejected. The retained q32 path keeps the same mathematical objective and uses two observed 64 MiB swap granules as its bounded ceiling while the independent 2 GiB live-reserve gate remains unchanged.",
+        "required_current_plan_sha256": "b048da1694054fe63426ffad8478d0aae696425c691172ead6f6ad2923804dfa",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_q32_swap128_segment_resume_population_step15_seed_20260722.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_q32_swap128_segment_resume_population_step16_seed_20260722.host_resource_safety.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_q32_swap128_segment_resume_population_step16_retry1_seed_20260722.host_resource_safety.json",
+        "legacy_checkpoint_sha256": "f8d62ec0bfacfdc72eefe730c4f6eca1a17c1841635d59df386188b789911a3b",
+        "legacy_optimizer_positions": 428757,
+        "legacy_optimizer_state_sha256": "8ce1d595517d419fcc2167a81bd09c926e1152b623ef91df3d7f58ec8f17966d",
+        "legacy_optimizer_steps": 4581,
+        "legacy_plan_sha256": "8344ad2c49cecf13e4ff5783f11e676d0ac757e79f12d206697e3cb57f1bb824",
+        "migration_id": "english_kerc_segment_step4581_swap320_row16_v1",
+        "reason": "Preserve the exact step-4581 compiler delta, projected AdamW bytes, MLX RNG, cumulative coverage, and batch-15 cursor while raising only K5's swap-burst ceiling from 128 MiB to 320 MiB. Row 16 reproducibly compiled a 3.77 GiB inferred graph and emitted 171.69\u2013268.69 MiB of macOS swap while retaining at least 2.42 GiB reclaimable memory; 320 MiB is five observed 64 MiB swap granules and leaves the independent 2 GiB live-reserve stop unchanged.",
+        "required_current_plan_sha256": "b048da1694054fe63426ffad8478d0aae696425c691172ead6f6ad2923804dfa",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_q32_swap320_segment_resume_population_step32_seed_20260722.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_q32_swap320_segment_resume_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_population_step32_matched_steps8_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_compiler_full_stage_cache_elided_lr10x_population_step32_transport_online_validator_beam4_training_row1_retry1_seed_20260722.json tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed tests/test_moecot_language_arm_training.py::test_kerc_materialization_trains_verifier_negatives_without_generator_credit",
+        "legacy_checkpoint_sha256": "2099570468d44aef05297bc05fd029bf7c0ae39b526f253d8f3f136039073edf",
+        "legacy_optimizer_positions": 435127,
+        "legacy_optimizer_state_sha256": "fc05108cabb39459c9e8bc3adf2d2805f8fad3976943ee73db185ad9b5137699",
+        "legacy_optimizer_steps": 4598,
+        "legacy_plan_sha256": "b048da1694054fe63426ffad8478d0aae696425c691172ead6f6ad2923804dfa",
+        "migration_id": "english_kerc_step4598_compact_schema_continuation_loss_v1",
+        "reason": "Continue the exact merged FP32 step-4598 model and projected AdamW state into a same-seed learned-objective intervention after the full 24-row population rung improved matched teacher-forced accuracy but the retained compiler row emitted the exact first two compact fields and then chose a schema-closing bracket instead of the required root separator. The new bounded 8x loss applies only to training-target commas that continue immutable compact-ABI cardinalities; it adds no semantic value, target-visible generation field, runtime repair, template, renderer, or verifier selection. The altered objective invalidates direct numerical comparability after step 4598, resets only the kernel sampler cursor for a matched intervention rung, and has no capability or generalization credit until behavior-positive source-disjoint evidence.",
+        "required_current_plan_sha256": "5d1fb4adea0a7595282ea688336d50ac2647533ecdcca6a7981920d82a602f71",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_schema_continuation_loss_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_schema_continuation_loss_population_step32_source_disjoint_behavior16_fresh02_seed_20260722.json reports/kerc_private_measurement_surface_rdc-kerc-k5-schema-continuation-step4630-seed20260722-private-dev-fresh02-v1.json tests/test_moecot_language_arm_training.py::test_kerc_logical_loss_positions_follow_byte_fallback_expansion",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_positions": 447027,
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "migration_id": "english_kerc_step4630_exact_logical_loss_position_mapping_v1",
+        "reason": "Continue the exact merged FP32 step-4630 model and projected AdamW state after the first source-disjoint fresh surface moved 15 of 16 failures from compact transport/schema into semantic span or residual-fidelity validation. An independent full private-train audit found that byte-fallback expansion shifted 202421 of 288052 intended schema-loss positions across all 12886 compiler rows. This successor maps every logical atom to its exact encoded half-open model-position range before applying the same bounded 8x schema-continuation loss; it adds no semantic value, target-visible generation field, runtime repair, template, renderer, or verifier selection. The corrected objective receives mechanics and matched retained-row evidence before any further fresh surface.",
+        "required_current_plan_sha256": "a60dcd2c0c2f052d52a66da552c0ba842ac2b86e4939802189d208a939b79dcc",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_schema_continuation_loss_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_schema_continuation_loss_population_step32_source_disjoint_behavior16_fresh02_seed_20260722.json reports/rdc_kerc_k5_compiler_exact_loss_position_mapping_population_step32_matched_teacher_forced16_retry1_seed_20260722.json reports/rdc_kerc_k5_compiler_exact_loss_position_mapping_population_step32_transport_shape_greedy1_training_row1_seed_20260722.json tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_positions": 447027,
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "migration_id": "english_kerc_step4630_semantic_pointer_fidelity_loss_v1",
+        "reason": "Reject the exact-mapping 8x schema continuation checkpoint for promotion because matched teacher-forced accuracy improved while the identical retained-row free generation regressed from residual cardinality six to four. Return to the ABI-valid merged step-4630 source, neutralize extra schema pressure to 1x, and apply a bounded 4x loss only to existing target atoms carrying program spans, protected/residual numeric pointers, residual unit ids, and fidelity modes. The full 24-row audit confirms all 40 span atoms and all 112 residual-id atoms already use reversible byte fallback, so this is targeted learnability pressure rather than a vocabulary migration. No semantic value, target-visible generation field, runtime repair, template, renderer, or verifier selection is added.",
+        "required_current_plan_sha256": "f59c92e43437a30171fceaffe00b0f39c9a632f1ebd8a63596f142058f2326be",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_semantic_pointer_fidelity_loss_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_semantic_pointer_fidelity_loss_population_step32_matched_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_compiler_semantic_pointer_fidelity_loss_population_step32_transport_shape_greedy1_training_row1_seed_20260722.json tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_positions": 447027,
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "migration_id": "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_v2",
+        "reason": "Reject the first 4x semantic-pointer branch because its matched teacher-forced gain coincides with a retained-row transport regression from the accepted six/six/three root-residual-hierarchy cardinalities to nine/five/zero. The classifier had selected every bare numeric atom, including the root ABI version, hierarchy chunk index, and unrelated numbers. Return again to the exact ABI-valid merged step-4630 source and retain the same bounded weights, optimizer, seed, sampler, and execution policy while selecting only existing program PSPANS atoms, protected-object character bounds, and residual unit-id/fidelity descendants through exact encoded half-open ranges. No semantic value, target-visible generation field, runtime repair, template, renderer, or verifier selection is added; retained-row transport validity is required before population scaling or fresh evaluation.",
+        "required_current_plan_sha256": "9d9028410da3e530d8b74f8d05df35c88ca29b13280ee6d34c6459b58deed71f",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step01_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step02_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step03_seed_20260722.host_resource_safety.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step03_retry1_seed_20260722.host_resource_safety.json tests/test_pretraining_candidate_canary.py::test_k5_measured_peak_is_advisory_and_live_reserve_is_the_launch_gate",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_positions": 447027,
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "migration_id": "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_q16_v3",
+        "reason": "Preserve the exact ABI-valid merged step-4630 source, bounded semantic and schema losses, selected rows, seed, sampler, optimizer, and update math after the q32 current-plan lineage completed two transactional steps but the identical 623-token third row twice forced more than 320 MiB of host swapout while retaining the 2048 MiB live reserve. Restart from step 4630 with exact checkpointed query/key attention and token-loss chunks reduced from 32 to 16. This is a prospectively bound execution-memory repair, adds no value or generator-visible field, weakens no reserve or swap ceiling, and receives exact parity plus matched behavior gates before any private surface.",
+        "required_current_plan_sha256": "56ce6f32c605113e7487414405ac0fb6092215d6c8dcbf637d85b4b0ad5418f1",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_matched_teacher_forced16_retry1_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_v2_plan9d_population_step32_retained_step4630_row_greedy1_seed_20260722.json tests/test_moecot_language_arm_training.py::test_progress_generation_cleanup_can_preserve_bounded_segment_history",
+        "legacy_checkpoint_sha256": "65b469df54fb293ef7c9235a986a554d8b3ce8c4cda316301241037679587f09",
+        "legacy_optimizer_positions": 447027,
+        "legacy_optimizer_state_sha256": "b9d2d1648407d1bd0f74b542cfd8c5a70f3ed36bb686b63bc147a2cdc9ca96e8",
+        "legacy_optimizer_steps": 4630,
+        "legacy_plan_sha256": "90bf87d41cb489567e510bc63c64c5b8d315dff3027a5b81a8aa2a414dfd034d",
+        "migration_id": "english_kerc_step4630_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4",
+        "reason": "Preserve the exact step-4630 model, optimizer, seed, sampler, q32 execution math, and path-qualified semantic objective after the 32-step lineage improved matched teacher-forced accuracy from 4140 to 4194 of 5976 but regressed the exact retained free-generation transport from valid 6/6/3 root-residual-hierarchy cardinalities to invalid 9/5/0. The segmented receipts hash-bind every intermediate generation, but supersession cleanup deleted those named checkpoints and prevented independent localization of the first regression. Retain the bounded 32-generation candidate history within the existing 6144 MiB disk lease; this changes checkpoint custody only and grants no capability or behavior credit.",
+        "required_current_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_step27_source_disjoint_behavior16_fresh03_seed_20260722.json reports/rdc_kerc_k5_compiler_path_qualified_semantic_pointer_fidelity_loss_retained_generations_v4_planbb9f_regression_search_step27_semantic_target_mass_components_audit_v3_seed_20260722.json tests/test_kernel_english_protocol.py::test_compact_compiler_transport_is_exact_smaller_and_fail_closed",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_positions": 457027,
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "migration_id": "english_kerc_step4657_semantic_target_mass_rebalance_v5",
+        "reason": "Continue the exact last behavior-valid step-4657 model and projected AdamW state after bounded checkpoint retention localized the first 6/6/3 to 9/3/0 transport regression to update 28 and a new exact-once source-disjoint panel produced sixteen complete, transport-valid candidates but zero accepted outputs: seven alignment-span, three protected-span replay, and six residual-unit fidelity faults. The 24-row objective audit shows that one global 4x semantic bucket allocates 27271 of 40877 encoded positions to residual unit ids but only 1929 to protected bounds and 1831 to fidelity values. Split the unchanged target atoms into exact causal path groups and apply a capped inverse-square-root frequency rebalance that preserves the prior 163508 total postweight semantic loss mass to float32 rounding (163507.996969 observed): alignment 4.67146849x, protected bounds 8x, residual fidelity 8x, residual unit ids 3.2060695x. Reset only the invalidated kernel sampler cursor. No target value, public or private evaluation row, generator-visible field, runtime repair, template, renderer, verifier selection, memory gate, or seed is added; matched admitted-training behavior and the step-4657 transport boundary must improve before another private surface.",
+        "required_current_plan_sha256": "a2ac3a63c510fb1bd6142af7eb4173d0163ce8ab9f6dceceee6a39775314f80a",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_retry1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_matched_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_v5_plana2ac_step01_matched_training_rows16_greedy1_seed_20260722.json",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_positions": 457027,
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "migration_id": "english_kerc_step4657_semantic_target_mass_rebalance_lr_min_v6",
+        "reason": "Reject the 3e-4 one-update semantic-mass branch because it reduced the exact frozen 16-row teacher-forced score from 4194/5976 to 4187/5976 and collapsed independently valid free-generation transport from 12/16 to 1/16: five 9/3/0, four 6/4/2, three 6/3/2, one 6/6/0, two max-token rows, and only one 6/6/3. Restart from the immutable last-valid step-4657 checkpoint and exact AdamW state with the same loss groups, weights, sampler, seed, data, q32 execution math, optimizer, and host gates, while reducing only the continuation learning rate by one geometric rung from 3e-4 to the registered 3e-5 minimum. One update must preserve the 6/6/3 transport boundary and improve or match the frozen diagnostics before any longer rung or new private surface.",
+        "required_current_plan_sha256": "3f6fc62e817b0f3725b91cb634e6769f01ab86db21f9488a37d772e6a135c2a9",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step01_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step08_matched_training_rows16_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step07_retained_step4657_row_greedy1_seed_20260722.json reports/rdc_kerc_k5_semantic_target_mass_rebalance_lr_min_v6_plan3f6f_step08_merged_fp32_seed_20260722.json",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_positions": 457027,
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "migration_id": "english_kerc_step4657_schema_protected_mass_neutral_v7",
+        "reason": "Reject the eight-update 3e-5 semantic-mass rung because aggregate teacher-forced accuracy stayed 4194/5976 but independent free-generation transport collapsed from 13/16 valid after one update to 3/16 at step eight. Retained checkpoint bisection keeps the sentinel 6/6/3 through step seven and localizes its 9/3/0 regression to sampler stage index 8, a row with proportionally elevated protected/fidelity pressure. Restore the 8x fixed schema-continuation protection used by the immutable source lineage and transfer its added 18480 units from the semantic groups so the 166148 total specialized postweight loss mass remains constant to float32 rounding: schema 8x, alignment 4.14348981x, protected bounds 7.09582406x, residual fidelity 7.09582406x, and residual unit ids 2.84371314x. Keep the exact source checkpoint, AdamW state, 3e-5 rate, sampler, seed, data, q32 execution, and host gates. No target value, evaluation row, decoder field, runtime repair, or capability credit is added.",
+        "required_current_plan_sha256": "a54c661ae927bf190951b79e0de735b1507bcb689d74b76c926fa29b2eccb903",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_qualification_seed_20260722.json tests/test_kernel_english_protocol.py::test_semantic_pointer_compiler_transport_removes_hidden_unit_hash_targets tests/test_kernel_english_protocol.py::test_learned_pipeline_executes_all_stages_and_roundtrip_without_direct_route tests/test_moecot_language_arm_training.py::test_kerc_materialization_trains_verifier_negatives_without_generator_credit",
+        "legacy_checkpoint_sha256": "e1c76ec1276dc3e32ffa4dca3bd1c649ca49c633d0afcd4691a413a8a09ac691",
+        "legacy_optimizer_positions": 457027,
+        "legacy_optimizer_state_sha256": "ff51b259c6f018fd33851665a08d3b1041a1c0a86379cb1e1540422573d76ecf",
+        "legacy_optimizer_steps": 4657,
+        "legacy_plan_sha256": "bb9fe9a5d3f6651a23780dde996e3fe49b0784cc9900c580af42f1a878e4a4d7",
+        "migration_id": "english_kerc_step4657_compiler_allocator_ownership_transport_v3",
+        "reason": "Reject the schema-protected v7 continuation because eight updates changed none of the frozen 16-row targeted top-1 semantic decisions and independently valid free generation remained zero: it converted schema failures into residual-fidelity failures. The compiler target duplicated the post-compiler residual allocator owner by requiring 24-hex unit identities derived from a source-record hash and higher-state paths absent from the generator-visible prompt. Transport v3 removes those allocator-owned unit-id/fidelity rows from the compiler wire, independently attaches the canonical residual packet after an accepted learned program, grants the attachment zero generation or repair credit, keeps the frozen vocabulary and checkpoint tensor shapes unchanged, restores schema 8x plus uniform 4x remaining semantic loss, and resets only the invalidated kernel sampler cursor. Full admitted-train replay migrates all 12886 compiler rows, removes 208224 hidden allocator rows and 15707815 wire bytes, and exposes no public/evaluation data.",
+        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_audit_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_overfit_steps32_teacher_forced1_position_errors_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_overfit_steps32_generation1_semantic_audit_seed_20260722.json",
+        "legacy_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
+        "legacy_optimizer_positions": 457228,
+        "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
+        "legacy_optimizer_steps": 4658,
+        "legacy_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
+        "migration_id": "english_kerc_step4658_transport_v4_population_v1",
+        "reason": "Import only the exact immutable step-4658 v3 checkpoint, projected AdamW bytes, and MLX RNG into the v4 admitted-population plan after the full 12886-row transport audit showed 25772/25772 exact v3-semantic equivalence and the bounded one-row control reached 97/97 teacher forcing plus exact online-valid independently semantic-valid raw v4 generation. Reset only the kernel sampler cursor, retain the conservative registered 3e-5 rate and same seed, and require exposure, weakest-row, raw-panel, reload, and source-disjoint diagnostics. The one-row overfit checkpoint is not population initialization and this migration grants no capability credit.",
+        "required_current_plan_sha256": "36a91eda54ce1f489fa7fa0b316ed8da9f15cd862af2abf6d1c9fd4bfab57151",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_step4658_root_rank_margin_matched_teacher_forced16_seed_20260722.json reports/rdc_kerc_k5_compiler_allocator_ownership_transport_v3_step01_matched_training_rows16_semantic_audit_greedy1_seed_20260722.json tests/test_kerc_k5_stage_learnability_probe.py::test_indexed_logit_diagnostic_reports_expected_rank_and_legacy_margin",
+        "legacy_checkpoint_sha256": "77e96f5721d3641cec665f2d1921733a5ccd4e5373bda23b934e0ab0e330b0b3",
+        "legacy_optimizer_positions": 457228,
+        "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
+        "legacy_optimizer_steps": 4658,
+        "legacy_plan_sha256": "ab262813f12a0d60276a230bb6de4c2f25862e8efc5bae0198a2b63d228e5efa",
+        "migration_id": "english_kerc_step4658_transport_v3_root_overfit_v1",
+        "reason": "Import only the exact step-4658 v3 checkpoint, projected AdamW bytes, and MLX RNG into the registered one-row compiler-only overfit plan after matched diagnostics showed the required v3 root token remained mean rank 670.0625 and 17.337442 logits behind v2 following one exposure. The scratch canary repeats one deterministic admitted compiler row at 3e-4 to establish checkpoint-specific ABI learnability, full-target recovery, reload exactness, and host safety. It consumes no evaluation row and has no population, generalization, capability, promotion, or architecture-falsification authority.",
+        "required_current_plan_sha256": "c144d253fee6d619032cd756d6d962ca337a5e98261d5d6323ed0eaf5cec26bc",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "reset_data_cursor_phase": "kernel_english",
+        "reset_data_cursor_seed": 20260722,
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_steps128_generation_rows16_seed_20260722.json",
+        "legacy_checkpoint_sha256": "e123932dabb31d238bacef16945afca35c14dc6a3aaee49ead9731168d5278fb",
+        "legacy_optimizer_positions": 488090,
+        "legacy_optimizer_state_sha256": "3efa652714bb54f8daa8c1a7dca8daaa5e4f57fe9ea0d516e04d59f2b92d9197",
+        "legacy_optimizer_steps": 4786,
+        "legacy_plan_sha256": "f9f69bec11f6b83692b3c0eba584514caa6d344a5b257b6b30a581e4b937b9a6",
+        "migration_id": "english_kerc_step4786_transport_v4_exact_cursor_exposure_doubling_v1",
+        "reason": "Continue the exact step-4786 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-2 batch-2 sampler cursor after 128 updates gave every bounded population row two exposures but left the v4 root top-1 at 0/16 and raw admitted-row validity at 0/16. The next rung doubles minimum exposure from two to four using another 128 updates at the unchanged 3e-5 rate, v4 objective, same seed, same admitted rows, and same hard host gates. Preserve the sampler cursor: this migration intentionally has no reset_data_cursor_phase. Require teacher-forced root movement and raw admitted-row validity before any source-disjoint surface. This is an underfit-regime diagnostic, not a capability or architecture-falsification claim.",
+        "required_current_plan_sha256": "48e89b87ca3d4be387479161c3dfac03301f1746fb0d2f30ec80eeb045501ef8",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "english_kerc"
+      },
+      {
+        "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
+        "legacy_checkpoint_sha256": "d5b59ec65a41e23ece8399bae0a3d1a12b17256a4158d250a6fe25209040aeed",
+        "legacy_optimizer_positions": 519165,
+        "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
+        "legacy_optimizer_steps": 4914,
+        "legacy_plan_sha256": "0d02519689796aa32d1eb32aaa69b31f314fe7a88f67bf54b6e52c7a414e04e7",
+        "migration_id": "english_kerc_step4914_transport_v4_checkpoint_exact_final_exposure_doubling_v1",
+        "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed.",
+        "required_current_plan_sha256": "12cde4025eac93520a4e8d856d6502aa43ea6aea48b93eb0f25d0efe7cc4107d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "target_id": "english_kerc"
+      }
+    ],
+    "policy": "project_theseus_semantic_training_plan_identity_v3"
+  },
+  "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+  "policy": "project_theseus_moecot_language_arm_training_plan_v1",
+  "public_training_rows_written": 0,
+  "results": [
+    {
+      "auxiliary_stage_residency": {
+        "materialization": {},
+        "policy": "deferred_until_phase_boundary_then_released_v1",
+        "source_conditioned_planning_row_count": 0,
+        "supervision_planning_row_count": 0
+      },
+      "bounded_phase_canary": true,
+      "candidate_behavior_evaluation_disposition": {
+        "executed_rows": 0,
+        "nonterminal_resource_preflight": false,
+        "policy": "project_theseus_terminal_candidate_behavior_evaluation_v1",
+        "requested_rows": 0,
+        "terminal_behavior_evaluation_required": false,
+        "terminal_candidate_run": false
+      },
+      "candidate_execution_policy": {},
+      "candidate_initialization": null,
+      "candidate_seed": 0,
+      "capability_claim": "NOT_EVALUATED",
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.step-00009112.safetensors",
+      "checkpoint_publication": {
+        "atomic_file_replacement": true,
+        "background_serialization": false,
+        "canonical_aliases": {
+          "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+          "mechanism": "atomic_hard_link_replace",
+          "mlx_rng_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.mlx-rng.safetensors",
+          "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.safetensors"
+        },
+        "checkpoint_bytes": 219367889,
+        "checkpoint_sha256": "0fecb07690e85904f2a8e70175adcb6703d42a1430d41422f22f9b150cd3b1b4",
+        "content_hash_seconds": 0.330983,
+        "mlx_rng_serialization_seconds": 0.005434,
+        "mlx_rng_state_bytes": 137,
+        "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+        "model_serialization_seconds": 0.347416,
+        "optimizer_serialization_seconds": 1.152218,
+        "optimizer_state_bytes": 438736910,
+        "optimizer_state_sha256": "cad35469bdc4ec65999794a4ffeb037ae518d1888c07a7cd16e9a0df20d734e5",
+        "policy": "project_theseus_checkpoint_publication_timing_v1",
+        "published_model_iterate": "training",
+        "total_seconds": 1.836104,
+        "training_iterate_restored_after_publication": true
+      },
+      "checkpoint_representation": "full_model_v1",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "checkpoint_sha256": "0fecb07690e85904f2a8e70175adcb6703d42a1430d41422f22f9b150cd3b1b4",
+      "complete": false,
+      "continuation_source_kernel_english_optimizer_positions": 0,
+      "created_utc": "2026-07-29T01:59:16.840185Z",
+      "current_kernel_phase_optimizer_positions": 0,
+      "current_kernel_phase_position_accounting_reset": false,
+      "effective_training_seed": 2749820298,
+      "energy_joules": null,
+      "energy_measurement_state": "NOT_AVAILABLE_FROM_MLX_RUNTIME",
+      "expert_trainable_scope": "",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "hard_gaps": [],
+      "hidden_generalist_fallback": "forbidden",
+      "immutable_generation_publication": true,
+      "kerc_unit_allocator_rows_present": false,
+      "kerc_unit_allocator_training_active": false,
+      "kerc_unit_allocator_training_authority": {
+        "authorized": false,
+        "checks": {
+          "canonical_long_training_authorized": true,
+          "causal_adequacy_green": true,
+          "mechanics_green": true,
+          "no_external_inference": true,
+          "no_fallback": true,
+          "no_public_training_rows": true,
+          "qualification_config_bound": true,
+          "semantic_panel_complete": true,
+          "training_config_bound": false
+        },
+        "gaps": [
+          "training_config_bound"
+        ],
+        "qualification_config": "configs/kerc_residual_allocator_qualification.json",
+        "qualification_receipt_sha256": "sha256:a3686edd0cf4c59d6d60d029016ac01e45b7558bc2ff59c58f75b0926e06a29c",
+        "qualification_report": "reports/runtime/kerc_residual_allocator_qualification_v1.json"
+      },
+      "kernel_code_vocabulary_sha256": "",
+      "kernel_english_optimizer_positions": 0,
+      "kernel_english_optimizer_repetitions": 1,
+      "kernel_english_optimizer_target_positions": 0,
+      "kernel_english_stage": null,
+      "mlx_rng_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00009112.mlx-rng.safetensors",
+      "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+      "optimizer_id": "adamw_mlx",
+      "optimizer_positions": 69801984,
+      "optimizer_repetition_factor": 2.59684056,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00009112.safetensors",
+      "optimizer_state_kind": "adamw_moments",
+      "optimizer_state_sha256": "cad35469bdc4ec65999794a4ffeb037ae518d1888c07a7cd16e9a0df20d734e5",
+      "optimizer_steps": 9112,
+      "optimizer_target_positions": 1096734920,
+      "parameter_count": 54836746,
+      "phase_boundary_cache_releases": {
+        "pretraining_to_checkpoint_publication": {
+          "cache_memory_bytes_after": 0,
+          "cache_memory_bytes_before": 3342855772,
+          "policy": "optimizer_safe_synchronized_mlx_cache_release_v1",
+          "seconds": 0.028578
+        }
+      },
+      "phases": {
+        "kernel_english": {
+          "final_loss": null,
+          "mean_loss": null,
+          "optimizer_steps": 0,
+          "phase": "moecot_kernel_english:shared_trunk",
+          "target_positions_consumed": 0,
+          "target_positions_requested": 0
+        },
+        "pretraining": {
+          "authoritative_weight_dtype": "float32",
+          "batch_index_schedule_length": 0,
+          "batch_index_schedule_policy": "ordinary_epoch_batches",
+          "batch_index_schedule_sha256": "",
+          "batch_index_sha256_prefix": [
+            "c5b802f323138f3af23a857d88107c59196a15286392dd888bd430c890b680ab",
+            "980160e85e7c40b29b4873cd45bd02f0deca4801c4ab97887d8c565dc96eeccc",
+            "ca12e2b73cc642197bea4f7e987da38243f5284b3b91989cadadfc608d2296a7",
+            "6128a26f130d661cccad93ff5cf14aec92c1d0edb4f39201be1af3b8521405aa",
+            "2ea0c48b137b21f424f4ab8e1a823118a646ce8feeadf28eab85e0200716988b",
+            "cad6636ed700d132516c784a367e95948ab200eedc701c388fa9ba6418d2f625",
+            "65c54975afba942ce5a92ec24b7d12c5e6774e67277231de05c26add6fb98c01",
+            "d9e96ccf813075305f203382652e20facb933942cb4f752f0f0be9d832189235",
+            "fa2fee3a0e2eada8c7c2349800c52f649113dd6877de896a03c9573f4bcf7a3f",
+            "bcb043544456af5e10c4461c867b236c38290f858e9097213b987a51a33f7363",
+            "7801fdf0b75929fcd28ff13baf8177f28be8d99b8fcd8ec48b002f3a8a1e3a20",
+            "ac9529ce093b3679907cf177b1f117bd61b86173349f7d446813eef8f4784ee5",
+            "4adcacaee929e8cdf33b77f8bc9e74718f618f9fa1e8972033edf89d764c0650",
+            "401e62088b4e0999483f749605f3e430d2f515dff2dab0848396929663e05edc",
+            "fdc07d27abedae549fb183e59b379329001c32983d2bd0c42dc3d868d10175fe",
+            "6b6928bbd13b05432e5fbed5f5fc28b7d61b2eb7fed2dc250bee75713aa6c941"
+          ],
+          "clear_device_cache_after_backward": false,
+          "clear_device_cache_after_step": false,
+          "clear_device_cache_before_step": false,
+          "compile_width_quantum": 64,
+          "compiled_accumulation_seconds_prefix": [
+            0.773628,
+            0.620961,
+            0.602416,
+            0.636687,
+            0.622932,
+            0.607398,
+            0.602845,
+            0.588129
+          ],
+          "compiled_accumulation_seconds_total": 115.39122,
+          "compiled_microbatch_size": 4,
+          "compiled_random_state_captured": true,
+          "compiled_split_gradient_accumulation": false,
+          "compiled_split_objective_normalization": "not_applicable",
+          "compiled_state_materialization_seconds_prefix": [
+            0.155797,
+            0.107545,
+            0.037743,
+            0.037151,
+            0.043671,
+            0.050519,
+            0.037558,
+            0.137405
+          ],
+          "compiled_state_materialization_seconds_total": 3.113993,
+          "compiled_update_seconds_prefix": [
+            0.621283,
+            0.624382,
+            0.623583,
+            0.618135,
+            0.628349,
+            0.62183,
+            0.58893,
+            0.614028
+          ],
+          "compiled_update_seconds_total": 39.28415,
+          "compute_dtype": "float32",
+          "coverage_first_sampling": {
+            "capacity": 1024,
+            "coverage_selected_indices_sha256": "",
+            "cumulative_across_fresh_process_segments": false,
+            "missing_labels": [],
+            "observed_label_counts": {},
+            "planning_capacity": 1024,
+            "policy": "project_theseus_training_canary_coverage_first_v1",
+            "required_label_count": 0,
+            "required_labels": [],
+            "resource_stress": {
+              "active": false,
+              "active_width": 0,
+              "already_in_coverage_prefix": false,
+              "policy": "project_theseus_target_and_width_resource_stress_prefix_v2",
+              "rows": [],
+              "selected_index_sha256": "",
+              "selected_indices_sha256": "",
+              "selected_row_count": 0,
+              "target_positions": 0
+            },
+            "selected_indices_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "selected_row_count": 0,
+            "state": "NOT_REQUESTED"
+          },
+          "data_cursor_next": {
+            "batch_index": 6112,
+            "batch_size": 16,
+            "epoch": 0,
+            "policy": "project_theseus_training_data_cursor_v1",
+            "row_count": 881592,
+            "seed": 2749823298
+          },
+          "data_cursor_start": {
+            "batch_index": 6048,
+            "batch_size": 16,
+            "epoch": 0,
+            "policy": "project_theseus_training_data_cursor_v1",
+            "row_count": 881592,
+            "seed": 2749823298
+          },
+          "device_step_seconds_total": 158.579531,
+          "distinct_execution_batch_width_count": 1,
+          "dynamic_batch_cropping": true,
+          "dynamic_batch_width_prefix": [
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512
+          ],
+          "eager_execution_width_quantum": 0,
+          "eager_gradient_accumulation_microbatch_size": 0,
+          "eager_gradient_accumulation_weighting": "not_applicable",
+          "eager_transaction_memory_prefix": [],
+          "epoch_order_policy": "project_theseus_epoch_independent_order_v1",
+          "epochs_touched": 1,
+          "execution_batch_width_prefix": [
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512,
+            512
+          ],
+          "external_inference_calls": 0,
+          "final_loss": 1.278502,
+          "first_optimizer_step_seconds": 2.872306,
+          "gradient_loss_scale": 1.0,
+          "host_batch_preparation_seconds_prefix": [
+            0.006136,
+            0.054688,
+            0.065936,
+            0.008592,
+            0.009174,
+            0.009742,
+            0.009314,
+            0.021531
+          ],
+          "host_batch_preparation_seconds_total": 0.699056,
+          "kerc_decision_auxiliary_weight": 0.0,
+          "kerc_decision_class_weights": {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": ""
+          },
+          "kerc_decision_labels_sha256": "",
+          "kerc_decision_loss_mask_sha256": "",
+          "kerc_decision_supervision_row_count": 0,
+          "kerc_per_unit_authoritative_unit_count": 0,
+          "kerc_per_unit_class_weights": {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": ""
+          },
+          "kerc_per_unit_residual_auxiliary_weight": 0.0,
+          "kerc_residual_auxiliary_weight": 0.0,
+          "kerc_residual_class_weights": {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": ""
+          },
+          "kerc_residual_labels_sha256": "",
+          "kerc_residual_loss_mask_sha256": "",
+          "kerc_residual_supervision_row_count": 0,
+          "kerc_verifier_auxiliary_weight": 0.0,
+          "kerc_verifier_class_weights": {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": ""
+          },
+          "kerc_verifier_labels_sha256": "",
+          "legacy_four_channel_allocator_training_authority": false,
+          "loss_prefix": [
+            1.56708169,
+            1.39557076,
+            1.2663939,
+            1.2990284,
+            1.44382715,
+            1.53470564,
+            1.30927837,
+            1.40642643,
+            1.37368488,
+            1.26980925,
+            1.33663642,
+            1.50223386,
+            1.46653807,
+            1.32847548,
+            1.42700744,
+            1.53316808
+          ],
+          "materialize_compiled_state_after_update": true,
+          "maximum_dynamic_batch_width": 512,
+          "maximum_execution_batch_width": 512,
+          "maximum_optimizer_step_seconds": 2.872306,
+          "mean_dynamic_batch_width": 512.0,
+          "mean_loss": 1.414788,
+          "mean_post_first_optimizer_step_seconds": 2.471543,
+          "median_optimizer_step_seconds": 2.46291,
+          "mlx_active_memory_bytes_maximum": 1097409356,
+          "mlx_active_memory_bytes_prefix": [
+            1097376588,
+            1097409356,
+            1097376588,
+            1097392972,
+            1097376588,
+            1097392972,
+            1097376588,
+            1097392972,
+            1097376588,
+            1097392972,
+            1097376588,
+            1097392956,
+            1097376588,
+            1097392972,
+            1097376588,
+            1097392972
+          ],
+          "mlx_cache_memory_bytes_after_backward_clear_prefix": [],
+          "mlx_cache_memory_bytes_after_clear_maximum": 3342691796,
+          "mlx_cache_memory_bytes_after_clear_prefix": [
+            2903649732,
+            3342659012,
+            3342691780,
+            3342675396,
+            3342691780,
+            3342675396,
+            3342691780,
+            3342675412,
+            3342691780,
+            3342675412,
+            3342691780,
+            3342675412,
+            3342691780,
+            3342675396,
+            3342691780,
+            3342675396
+          ],
+          "mlx_cache_memory_bytes_after_step_clear_prefix": [],
+          "mlx_cache_memory_bytes_before_backward_clear_prefix": [],
+          "mlx_cache_memory_bytes_before_step_clear_prefix": [],
+          "mlx_cache_memory_bytes_maximum": 3342691796,
+          "mlx_cache_memory_bytes_prefix": [
+            2903649732,
+            3342659012,
+            3342691780,
+            3342675396,
+            3342691780,
+            3342675396,
+            3342691780,
+            3342675412,
+            3342691780,
+            3342675412,
+            3342691780,
+            3342675412,
+            3342691780,
+            3342675396,
+            3342691780,
+            3342675396
+          ],
+          "mlx_peak_memory_bytes_maximum": 3812221752,
+          "mlx_peak_memory_bytes_prefix": [
+            3373245120,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752,
+            3812221752
+          ],
+          "optimizer_all_target_positions_consumed": 491144,
+          "optimizer_body_positions_consumed": 0,
+          "optimizer_state_offload_between_steps": false,
+          "optimizer_state_offload_count": 0,
+          "optimizer_state_offload_minimum_target_positions": 0,
+          "optimizer_step_seconds_prefix": [
+            2.872306,
+            2.607434,
+            2.44326,
+            2.546622,
+            2.527154,
+            2.526051,
+            2.53358,
+            2.532846
+          ],
+          "optimizer_steps": 64,
+          "ordered_plan_loss_weight": 1.0,
+          "padded_positions_avoided": 0,
+          "phase": "moecot_pretraining:shared_trunk",
+          "post_first_optimizer_tokens_per_second": 3108.109,
+          "reject_nonfinite_gradients": false,
+          "sampled_indices_sha256": "1eeb581a09ff5dec90ff12ff0effabb23244d7dd5d687168d0ac29ae62d1e1ea",
+          "sampled_row_coverage_rate": 0.00116154,
+          "sampled_unique_row_count": 1024,
+          "sampling_effective_size": 881592,
+          "sampling_with_replacement": false,
+          "semantic_plan_auxiliary_weight": 0.0,
+          "semantic_plan_factor_group_sizes": [],
+          "semantic_plan_labels": {
+            "fixed_point_count": 0,
+            "label_mode": "none",
+            "label_sha256": "",
+            "row_count": 0
+          },
+          "semantic_plan_loss_mode": "binary_multilabel",
+          "semantic_plan_positive_weights": {
+            "state": "NOT_APPLICABLE",
+            "weight_sha256": ""
+          },
+          "semantic_plan_slot_count": 0,
+          "sequence_balanced_token_loss": false,
+          "static_sequence_width": 512,
+          "target_positions_consumed": 491144,
+          "target_positions_requested": 1027424080,
+          "target_token_frequency_balance_power": 0.0,
+          "tokens_per_second": 3075.805,
+          "training_step_execution": "mlx_compiled_shape_bucket_v1",
+          "training_step_mode_requested": "compiled",
+          "transactional_eager_step": false,
+          "unit_allocator_pack_seconds_prefix": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "unit_allocator_pack_seconds_total": 1.3e-05,
+          "warmup_excluded_positions": 483955,
+          "warmup_excluded_seconds": 155.707225,
+          "warmup_excluded_tokens_per_second": 3108.109,
+          "warmup_step_index_zero_based": 0,
+          "weighted_sampling": false,
+          "weighted_sampling_minimum_stratum_coverage": false,
+          "weighted_sampling_policy": "shuffled_without_replacement_epoch_v1"
+        },
+        "source_conditioned_pretraining": {
+          "final_loss": null,
+          "mean_loss": null,
+          "optimizer_steps": 0,
+          "phase": "moecot_source_conditioned_pretraining:shared_trunk",
+          "target_positions_consumed": 0,
+          "target_positions_requested": 0
+        },
+        "supervision": {
+          "final_loss": null,
+          "mean_loss": null,
+          "optimizer_steps": 0,
+          "phase": "moecot_supervision:shared_trunk",
+          "target_positions_consumed": 0,
+          "target_positions_requested": 0
+        }
+      },
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "policy": "project_theseus_moecot_language_arm_training_receipt_v1",
+      "pretrain_optimizer_positions": 69801984,
+      "public_training_rows_written": 0,
+      "qualification_phase_step_limits": {},
+      "resume": true,
+      "resume_base_checkpoint_sha256": "ed28acc8cc9a82b4bd00dbd8487f17b8131157df3c828f66eb458902d4e3c16d",
+      "resume_plan_identity_migration": {
+        "current_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+        "evidence": "configs/neural_seed_t1_lineage_anchor.json configs/neural_seed_training_availability.json scripts/neural_seed_training_campaign.py tests/test_neural_seed_training_campaign.py tests/test_moecot_language_arm_training.py",
+        "legacy_checkpoint_sha256": "ed28acc8cc9a82b4bd00dbd8487f17b8131157df3c828f66eb458902d4e3c16d",
+        "legacy_optimizer_positions": 69310840,
+        "legacy_optimizer_state_sha256": "7b19ceb6880954a845bdb79914d84a6d388992abe45e98d63dfdfa3a2ed6c829",
+        "legacy_optimizer_steps": 9048,
+        "legacy_plan_sha256": "1c7c859ecdf2112dbd9938a34631aab70545031649c4d970554395294b1c098f",
+        "legacy_scale_report_sha256": null,
+        "migration_id": "shared_trunk_step9048_append_only_lineage_custody_v1",
+        "policy": "project_theseus_semantic_training_plan_identity_v3",
+        "reason": "Continue the exact step-9048 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while adding a prospective append-only segment lineage ledger to the outer campaign controller. The anchor explicitly records that the complete step-3480-to-9048 predecessor chain and the exact step-3480 payload are not locally available, so it cannot launder that gap into a replay claim. Before any later segment launches, the live receipt must match the anchor or the terminal ledger identity; every state-changing segment archives exact before/after receipts plus child and host-guard identities before another launch. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, evaluation contract, or capability state changes.",
+        "reset_data_cursor_phase": null,
+        "reset_data_cursor_seed": null
+      },
+      "resume_requested": true,
+      "role": "shared_trunk",
+      "row_ranges": [
+        {
+          "start": 0,
+          "stop": 881592
+        }
+      ],
+      "runtime_serving_allowed": false,
+      "score_semantics": "training provenance only; direct verifier behavior is evaluated separately",
+      "selective_compute_checkpoint": null,
+      "shared_trunk_checkpoint": "",
+      "shared_trunk_checkpoint_sha256": "",
+      "source_conditioned_optimizer_positions": 0,
+      "source_conditioned_optimizer_repetitions": 1,
+      "source_conditioned_optimizer_target_positions": 0,
+      "source_conditioned_stage": null,
+      "stage_metadata_sha256": "8e9b0a43f17fc6848ba35cee7069ca7939b789f22c3852114d5581582e5671b7",
+      "stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+      "supervision_optimizer_positions": 0,
+      "supervision_optimizer_repetitions": 4,
+      "supervision_optimizer_target_positions": 0,
+      "supervision_stage": null,
+      "target_id": "shared_trunk",
+      "templates_renderers_routers_tools_credit": 0,
+      "trainable_parameter_count": 54836746,
+      "training_phase_selection": "pretraining",
+      "trigger_state": "GREEN",
+      "unique_kernel_english_target_positions": 0,
+      "unique_source_conditioned_target_positions": 0,
+      "unique_supervision_target_positions": 0,
+      "unique_target_positions": 422334331,
+      "vocab_size": 8195,
+      "wall_seconds": 161.635626
+    }
+  ],
+  "runtime_serving_allowed": false,
+  "scale_preregistration": {
+    "architecture": {
+      "active_parameter_count_per_request": 57340426,
+      "arm_count": 5,
+      "arm_model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+      "dense_active_parameter": {
+        "delta": 8191,
+        "ff_width_parameter_increment": 18432,
+        "model": {
+          "attention_policy": "prefix_lm",
+          "d_model": 512,
+          "ff_dim": 2455,
+          "mtp_future_offsets": [
+            2,
+            3,
+            4
+          ],
+          "mtp_loss_scale": 0.0,
+          "mtp_loss_weights": [
+            0.3,
+            0.2,
+            0.1
+          ],
+          "mtp_low_rank": 1,
+          "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 12,
+          "rms_norm_eps": 1e-05,
+          "rope_base": 10000.0,
+          "source_target_separator_token_id": 2
+        },
+        "parameter_count": 57348617
+      },
+      "dense_total_parameter": {
+        "delta": -518,
+        "ff_width_parameter_increment": 18432,
+        "model": {
+          "attention_policy": "prefix_lm",
+          "d_model": 512,
+          "ff_dim": 2998,
+          "mtp_future_offsets": [
+            2,
+            3,
+            4
+          ],
+          "mtp_loss_scale": 0.0,
+          "mtp_loss_weights": [
+            0.3,
+            0.2,
+            0.1
+          ],
+          "mtp_low_rank": 1,
+          "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+          "num_heads": 8,
+          "num_kv_heads": 2,
+          "num_layers": 12,
+          "rms_norm_eps": 1e-05,
+          "rope_base": 10000.0,
+          "source_target_separator_token_id": 2
+        },
+        "parameter_count": 67357193
+      },
+      "expert_parameter_count_per_arm": 2504193,
+      "matched_active_within_one_ff_increment": true,
+      "matched_total_within_one_ff_increment": true,
+      "router_parameter_count": 0,
+      "router_state": "NOT_TRAINED_OR_CREDITED",
+      "shared_trunk_model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_target_separator_token_id": 2
+      },
+      "shared_trunk_parameter_count": 54836746,
+      "total_parameter_count": 67357711,
+      "vocab_size": 8195
+    },
+    "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
+    "config": "configs/neural_seed_50m_scale_preregistration.json",
+    "config_sha256": "164527919ec1cb94a2f2d6f714f67af2db9d0f811aba147e8291c21a735c7c4e",
+    "data_support": {
+      "canonical_unique_model_visible_positions": 422334331,
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions_per_active_parameter": 20.0,
+      "minimum_unique_positions_per_active_parameter": 5.0,
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "planned_optimizer_repetition_factor": 2.71540445,
+      "required_optimizer_positions": 1146808520,
+      "required_unique_positions": 286702130,
+      "specialist_unique_position_floor_ready": true,
+      "specialist_unique_position_support": {
+        "english": {
+          "meets_floor": true,
+          "minimum_required_positions": 12520965,
+          "owned_parameter_count": 2504193,
+          "positions_per_owned_parameter": 63.971298,
+          "shortfall_positions": 0,
+          "unique_model_visible_positions": 160196476
+        },
+        "html_css": {
+          "meets_floor": true,
+          "minimum_required_positions": 12520965,
+          "owned_parameter_count": 2504193,
+          "positions_per_owned_parameter": 7.019036,
+          "shortfall_positions": 0,
+          "unique_model_visible_positions": 17577020
+        },
+        "javascript_typescript": {
+          "meets_floor": true,
+          "minimum_required_positions": 12520965,
+          "owned_parameter_count": 2504193,
+          "positions_per_owned_parameter": 33.052436,
+          "shortfall_positions": 0,
+          "unique_model_visible_positions": 82769680
+        },
+        "python": {
+          "meets_floor": true,
+          "minimum_required_positions": 12520965,
+          "owned_parameter_count": 2504193,
+          "positions_per_owned_parameter": 46.419146,
+          "shortfall_positions": 0,
+          "unique_model_visible_positions": 116242500
+        },
+        "rust": {
+          "meets_floor": true,
+          "minimum_required_positions": 12520965,
+          "owned_parameter_count": 2504193,
+          "positions_per_owned_parameter": 18.188955,
+          "shortfall_positions": 0,
+          "unique_model_visible_positions": 45548655
+        }
+      },
+      "task_complete_contract_ready": true,
+      "task_complete_coverage": {
+        "english": {
+          "checks": {
+            "human_share": true,
+            "multi_turn_share": true,
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "human_contributed_share": 0.544317,
+          "minimum_target_positions": 10000000,
+          "minimum_verified_units": 20000,
+          "multi_turn_share": 0.486662,
+          "ready": true,
+          "required_verification_strength": null,
+          "target_positions": 30740755,
+          "verified_units": 25566
+        },
+        "html_css": {
+          "capabilities": {
+            "css": {
+              "checks": {
+                "position_floor": true,
+                "unit_floor": true
+              },
+              "minimum_target_positions": 50000,
+              "minimum_verified_units": 100,
+              "ready": true,
+              "required_verification_strength": "layout_render_delta",
+              "target_positions": 58178,
+              "verified_units": 173
+            },
+            "html": {
+              "checks": {
+                "position_floor": true,
+                "unit_floor": true
+              },
+              "minimum_target_positions": 400000,
+              "minimum_verified_units": 400,
+              "ready": true,
+              "required_verification_strength": "dom_a11y_layout_render_delta",
+              "target_positions": 1848748,
+              "verified_units": 517
+            }
+          },
+          "checks": {
+            "capability:css:position_floor": true,
+            "capability:css:unit_floor": true,
+            "capability:html:position_floor": true,
+            "capability:html:unit_floor": true,
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "minimum_target_positions": 500000,
+          "minimum_verified_units": 500,
+          "ready": true,
+          "required_verification_strength": null,
+          "target_positions": 1906926,
+          "verified_units": 690
+        },
+        "javascript_typescript": {
+          "checks": {
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "minimum_target_positions": 1000000,
+          "minimum_verified_units": 1000,
+          "ready": true,
+          "required_verification_strength": "executable_target_pass_starter_fail",
+          "target_positions": 1612835,
+          "verified_units": 1180
+        },
+        "python": {
+          "checks": {
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "minimum_target_positions": 1000000,
+          "minimum_verified_units": 1000,
+          "ready": true,
+          "required_verification_strength": "executable_target_pass_starter_fail",
+          "target_positions": 1129825,
+          "verified_units": 2022
+        },
+        "rust": {
+          "checks": {
+            "position_floor": true,
+            "unit_floor": true
+          },
+          "minimum_target_positions": 1000000,
+          "minimum_verified_units": 500,
+          "ready": true,
+          "required_verification_strength": "executable_target_pass_starter_fail",
+          "target_positions": 1162003,
+          "verified_units": 1504
+        }
+      },
+      "task_complete_coverage_ready": true,
+      "training_admission_contract_ready": true,
+      "training_admission_epistemic_tcb_qualified": true,
+      "training_admission_epistemic_tcb_surviving_mutants": 0,
+      "training_data_supported": true,
+      "unique_position_floor_ready": true,
+      "unique_position_shortfall": 0,
+      "unique_positions_per_active_parameter": 7.365385
+    },
+    "evaluation_freeze": "configs/neural_seed_57m_functional_utility_freeze.json",
+    "evaluation_freeze_semantic_sha256": "a81bef3e9ad5c256580a3a426d741ef13026e89f15b4848da83c5fd69b7d2c9f",
+    "evaluation_freeze_sha256": "0cbf3fb16baa40ed12cb50eace5fe63d3ef417ec9ae93d103562d1961c0e758a",
+    "hard_gaps": [],
+    "heldout_utility_contract": {
+      "accepted_verified_output_per_second_reported": true,
+      "confirmation_untouched_until_candidate_selected": true,
+      "minimum_model_only_passes_per_arm": 1,
+      "model_only_and_assisted_channels_separate": true,
+      "report_every_arm_before_aggregate": true,
+      "source_disjoint": true
+    },
+    "model_accounting_state": "GREEN",
+    "parameter_comparisons": {
+      "active_parameter_count_per_request": {
+        "expected": 57340426,
+        "observed": 57340426
+      },
+      "dense_active_parameter_count": {
+        "expected": 57348617,
+        "observed": 57348617
+      },
+      "dense_total_parameter_count": {
+        "expected": 67357193,
+        "observed": 67357193
+      },
+      "expert_parameter_count_per_arm": {
+        "expected": 2504193,
+        "observed": 2504193
+      },
+      "shared_trunk_parameter_count": {
+        "expected": 54836746,
+        "observed": 54836746
+      },
+      "total_parameter_count": {
+        "expected": 67357711,
+        "observed": 67357711
+      }
+    },
+    "policy": "project_theseus_executable_scale_binding_v1",
+    "report": "reports/neural_seed_50m_scale_preregistration.json",
+    "report_sha256": "b374a9a74b471bd0efef7dc3b21bca72cf4b590b4955bbf306fe2c326d2acafd",
+    "required_unique_positions": 286702130,
+    "stage_contract_state": "GREEN",
+    "staged_unique_positions": 422334331,
+    "state": "GREEN"
+  },
+  "score_semantics": "training provenance only; direct verifier behavior is evaluated separately",
+  "scratch_execution": {
+    "candidate_continuation_report": "",
+    "checkpoint_root": "",
+    "enabled": false,
+    "one_shot_candidate_continuation": false,
+    "registered_lineage_mutated": false,
+    "resumable": true
+  },
+  "source_conditioned_pretraining": {
+    "artifacts": {
+      "html_css": {
+        "bytes": 6549122,
+        "path": "data/training_data/moecot_source_conditioned_pretraining_v1/html_css.jsonl",
+        "row_count": 4000,
+        "sha256": "20d7f2de7861034c664ea16c687df22ce16054b6ed5c6809ee948e6650c5facc"
+      },
+      "javascript_typescript": {
+        "bytes": 6713843,
+        "path": "data/training_data/moecot_source_conditioned_pretraining_v1/javascript_typescript.jsonl",
+        "row_count": 4000,
+        "sha256": "0cbe0638629cfbca8e5473c4c1cb7160f629099e9bf2205d3c9cc53bcf69cd3c"
+      },
+      "python": {
+        "bytes": 6808672,
+        "path": "data/training_data/moecot_source_conditioned_pretraining_v1/python.jsonl",
+        "row_count": 4000,
+        "sha256": "ed69223753aa6382e2f10bec3717cdf511fc07de2c5116922fcabcfd23ab3d3a"
+      },
+      "rust": {
+        "bytes": 6481735,
+        "path": "data/training_data/moecot_source_conditioned_pretraining_v1/rust.jsonl",
+        "row_count": 4000,
+        "sha256": "f2f4310872a3e474057a3167ce49d0345ad62fd0d9a6b88815247455422be8c0"
+      }
+    },
+    "copy_coverage_by_arm": {
+      "html_css": {
+        "mean_target_token_copy_fraction": 0.98022456,
+        "minimum_target_token_copy_fraction": 0.89393939
+      },
+      "javascript_typescript": {
+        "mean_target_token_copy_fraction": 0.97716464,
+        "minimum_target_token_copy_fraction": 0.9
+      },
+      "python": {
+        "mean_target_token_copy_fraction": 0.97425914,
+        "minimum_target_token_copy_fraction": 0.875
+      },
+      "rust": {
+        "mean_target_token_copy_fraction": 0.97540102,
+        "minimum_target_token_copy_fraction": 0.88235294
+      }
+    },
+    "corruption": {
+      "deletion_fraction": 0.12,
+      "maximum_spans": 3,
+      "mode": "deterministic_span_deletion_reconstruction",
+      "seed": 20260712
+    },
+    "hard_gaps": [],
+    "manifest": "data/training_data/moecot_source_conditioned_pretraining_v1/manifest.json",
+    "manifest_sha256": "102b5fe945677029b03989dc9af32696f11bfa70893e1efb1ec5287b4e4dad95",
+    "score_semantics": "source-conditioned objective readiness only",
+    "state": "GREEN"
+  },
+  "specialist_data_scaling": {
+    "capability_credit": "NONE",
+    "hard_gaps": [],
+    "minimum_unique_positions_per_owned_parameter": 5.0,
+    "optimizer_repetition_counted_as_unique_data": false,
+    "policy": "project_theseus_moecot_specialist_data_scaling_v1",
+    "rows": [
+      {
+        "meets_floor": true,
+        "minimum_required_positions": 274183730,
+        "owned_parameter_count": 54836746,
+        "positions_per_owned_parameter": 7.701667,
+        "target_id": "shared_trunk",
+        "unique_model_visible_positions": 422334331
+      },
+      {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 63.971298,
+        "target_id": "english",
+        "unique_model_visible_positions": 160196476
+      },
+      {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 46.419146,
+        "target_id": "python",
+        "unique_model_visible_positions": 116242500
+      },
+      {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 33.052436,
+        "target_id": "javascript_typescript",
+        "unique_model_visible_positions": 82769680
+      },
+      {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 7.019036,
+        "target_id": "html_css",
+        "unique_model_visible_positions": 17577020
+      },
+      {
+        "meets_floor": true,
+        "minimum_required_positions": 12520965,
+        "owned_parameter_count": 2504193,
+        "positions_per_owned_parameter": 18.188955,
+        "target_id": "rust",
+        "unique_model_visible_positions": 45548655
+      }
+    ],
+    "state": "GREEN"
+  },
+  "stage": {
+    "arm_view_policy": "project_theseus_moecot_canonical_arm_views_v1",
+    "array_artifacts": {
+      "inputs": {
+        "bytes": 1805500416,
+        "path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/standard_causal_transformer_scale_v2/canonical_pretrain_inputs_v1.i32",
+        "sha256": "adce20d09e2073629c69ae7b18f22a9829a53f4249e61b08187d599a7bd6509c"
+      },
+      "labels": {
+        "bytes": 1805500416,
+        "path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/standard_causal_transformer_scale_v2/canonical_pretrain_labels_v1.i32",
+        "sha256": "3bba70c0b2b89d9125085afcd091b35abbb3b60e6dcec92be653985e7e58af5e"
+      },
+      "mask": {
+        "bytes": 451375104,
+        "path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/standard_causal_transformer_scale_v2/canonical_pretrain_mask_v1.u8",
+        "sha256": "770d4126a3ce68e236e7cb634adcfa4e6476889b5e1b126093322d44e691dc1e"
+      }
+    },
+    "metadata": "runtime/standard_causal_transformer_scale_v2/stage_metadata_v1.json",
+    "metadata_sha256": "8e9b0a43f17fc6848ba35cee7069ca7939b789f22c3852114d5581582e5671b7",
+    "path": "runtime/standard_causal_transformer_scale_v2",
+    "range_audit": {
+      "covered_rows": 881592,
+      "hard_gaps": [],
+      "non_overlapping_complete_partition": true,
+      "state": "GREEN",
+      "window_count": 881592
+    },
+    "stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+    "tokenizer_audit": {
+      "expected_profiles": {
+        "english_broad": "exact_text_v1",
+        "english_conversation_instruction": "exact_text_v1",
+        "html_css": "exact_text_v1",
+        "javascript_typescript": "exact_text_v1",
+        "python": "exact_text_v1",
+        "rust": "exact_text_v1"
+      },
+      "failure_behavior": "deny_training_until_stage_is_rebuilt",
+      "hard_gaps": [],
+      "observed": {
+        "admitted_unknown_token_position_count": 0,
+        "category_profiles_by_selected_document": {
+          "english_broad:exact_text_v1": 17374,
+          "english_conversation_instruction:exact_text_v1": 25570,
+          "html_css:exact_text_v1": 11321,
+          "javascript_typescript:exact_text_v1": 34754,
+          "python:exact_text_v1": 22181,
+          "rust:exact_text_v1": 7527
+        },
+        "failure_behavior": "reject_document_before_training",
+        "policy": "project_theseus_moecot_language_tokenizer_stage_audit_v1",
+        "profiles_by_selected_document": {
+          "exact_text_v1": 118727
+        },
+        "rejected_unknown_token_document_count": 21,
+        "roundtrip_failure_count": 0,
+        "roundtrip_modes_by_selected_document": {
+          "exact_utf8": 118727
+        }
+      },
+      "policy": "project_theseus_moecot_language_tokenizer_v1",
+      "state": "GREEN"
+    }
+  },
+  "supervision": {
+    "artifacts": {
+      "english:private_dev": {
+        "bytes": 150806,
+        "path": "data/training_data/moecot_language_supervision_v1/private_dev/english.jsonl",
+        "row_count": 128,
+        "sha256": "49cf5f5ca29d78df10a42305bae3d4f19d1f6645999730069ef063b56a39e180"
+      },
+      "english:private_eval": {
+        "bytes": 301481,
+        "path": "data/training_data/moecot_language_supervision_v1/private_eval/english.jsonl",
+        "row_count": 256,
+        "sha256": "1805e18c813191c74dd021a41dbd610c44bed043465e70636034e5b8ddb9342d"
+      },
+      "english:private_train": {
+        "bytes": 5881198,
+        "path": "data/training_data/moecot_language_supervision_v1/private_train/english.jsonl",
+        "row_count": 5000,
+        "sha256": "be7d8db0d15a770d2c61ea6522ec8858c3cf48866bebd423cd6ea2b23d840f8f"
+      },
+      "html_css:private_dev": {
+        "bytes": 234611,
+        "path": "data/training_data/moecot_language_supervision_v1/private_dev/html_css.jsonl",
+        "row_count": 100,
+        "sha256": "9268db47f08d09c66d6524cdf8200f64bcb5df8ec3d7e8434272e8e9c35d7d41"
+      },
+      "html_css:private_eval": {
+        "bytes": 490372,
+        "path": "data/training_data/moecot_language_supervision_v1/private_eval/html_css.jsonl",
+        "row_count": 200,
+        "sha256": "c872c3a441f8a7200066f7368dca12032ae05bc380d05de429d557aebb628e42"
+      },
+      "html_css:private_train": {
+        "bytes": 10030650,
+        "path": "data/training_data/moecot_language_supervision_v1/private_train/html_css.jsonl",
+        "row_count": 4000,
+        "sha256": "0ae705ff1c0ca98b44b3e1de8794320bf4107d7b40b13132cd6a007614bff7de"
+      },
+      "javascript_typescript:private_dev": {
+        "bytes": 321837,
+        "path": "data/training_data/moecot_language_supervision_v1/private_dev/javascript_typescript.jsonl",
+        "row_count": 128,
+        "sha256": "0ad1f7a58dbeef3dedaeb64b21b2936b56a885783bebf1942f818e528b99604f"
+      },
+      "javascript_typescript:private_eval": {
+        "bytes": 617565,
+        "path": "data/training_data/moecot_language_supervision_v1/private_eval/javascript_typescript.jsonl",
+        "row_count": 256,
+        "sha256": "7607169cf80fd5992e7280a4320083793fbd61b7da7af67fe68f642a3686cb68"
+      },
+      "javascript_typescript:private_train": {
+        "bytes": 11983804,
+        "path": "data/training_data/moecot_language_supervision_v1/private_train/javascript_typescript.jsonl",
+        "row_count": 5000,
+        "sha256": "c2b64013c300a31222bad84c1908fabc57d340543dc9ce0ea1f3b23045902252"
+      },
+      "python:private_dev": {
+        "bytes": 313089,
+        "path": "data/training_data/moecot_language_supervision_v1/private_dev/python.jsonl",
+        "row_count": 128,
+        "sha256": "e62d40392066999113ba82fec4ec84b5ff44569d67c71c2ebf6d6912132a25af"
+      },
+      "python:private_eval": {
+        "bytes": 587186,
+        "path": "data/training_data/moecot_language_supervision_v1/private_eval/python.jsonl",
+        "row_count": 256,
+        "sha256": "c820aca01cc6008ee9950d2e15da04ca47bc458f299de56f5cb6799312608512"
+      },
+      "python:private_train": {
+        "bytes": 11929589,
+        "path": "data/training_data/moecot_language_supervision_v1/private_train/python.jsonl",
+        "row_count": 5000,
+        "sha256": "6770dba776f0e139e87a70bc73347b8128ad412f9e77625246faba50b82698d4"
+      },
+      "rust:private_dev": {
+        "bytes": 160536,
+        "path": "data/training_data/moecot_language_supervision_v1/private_dev/rust.jsonl",
+        "row_count": 60,
+        "sha256": "7cc45d87dc77a6c06b73c4ba1c31a51ac30725f01537507f40d3d47d268a3b73"
+      },
+      "rust:private_eval": {
+        "bytes": 158857,
+        "path": "data/training_data/moecot_language_supervision_v1/private_eval/rust.jsonl",
+        "row_count": 64,
+        "sha256": "2c75704de4b5896a2890faa612fdea36463752d3740ea9a1cc18ab2cff8f8243"
+      },
+      "rust:private_train": {
+        "bytes": 2728651,
+        "path": "data/training_data/moecot_language_supervision_v1/private_train/rust.jsonl",
+        "row_count": 1000,
+        "sha256": "8575108c49d3e69cf37476639182b8912155b1088fbf8bbaaacf96180d087c6f"
+      }
+    },
+    "hard_gaps": [],
+    "manifest": "data/training_data/moecot_language_supervision_v1/manifest.json",
+    "manifest_sha256": "ee32f56130a52cbee5b4ba0788d4144e15be2f8cee0090cb3a77447676eb8c18",
+    "row_counts": {
+      "english": {
+        "private_dev": 128,
+        "private_eval": 256,
+        "private_train": 5000
+      },
+      "html_css": {
+        "private_dev": 100,
+        "private_eval": 200,
+        "private_train": 4000
+      },
+      "javascript_typescript": {
+        "private_dev": 128,
+        "private_eval": 256,
+        "private_train": 5000
+      },
+      "python": {
+        "private_dev": 128,
+        "private_eval": 256,
+        "private_train": 5000
+      },
+      "rust": {
+        "private_dev": 60,
+        "private_eval": 64,
+        "private_train": 1000
+      }
+    },
+    "score_semantics": "frozen supervision provenance and split integrity only",
+    "source_receipts": [
+      {
+        "dataset_id": "databricks/databricks-dolly-15k",
+        "downloaded_bytes": 13085339,
+        "revision": "bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a",
+        "source_row_count": 15011,
+        "stream_sha256": "2df9083338b4abd6bceb5635764dab5d833b393b55759dffb0959b6fcbf794ec",
+        "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k/resolve/bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a/databricks-dolly-15k.jsonl"
+      },
+      {
+        "dataset_id": "bigcode/commitpackft",
+        "downloaded_bytes": 135858935,
+        "language": "python",
+        "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+        "source_row_count": 56025,
+        "stream_sha256": "d167da37e1058371c48e057cd8815d03700c867dd8bcf58e61420d4dcd288d73",
+        "url": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/fc56fe33c030c6daa414c2b112c932b8eed085e6/data/python/data.jsonl"
+      },
+      {
+        "dataset_id": "bigcode/commitpackft",
+        "downloaded_bytes": 128001108,
+        "language": "javascript",
+        "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+        "source_row_count": 52989,
+        "stream_sha256": "968688a1163c2dbbced0d0f9cf1dd52bc0b626c2ad9b02ff23f5700b2e277f25",
+        "url": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/fc56fe33c030c6daa414c2b112c932b8eed085e6/data/javascript/data.jsonl"
+      },
+      {
+        "dataset_id": "bigcode/commitpackft",
+        "downloaded_bytes": 14620423,
+        "language": "typescript",
+        "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+        "source_row_count": 5868,
+        "stream_sha256": "43d32596844c62aa23b0e5a8811648f6f20fa07d9ab80499d66507136b844a76",
+        "url": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/fc56fe33c030c6daa414c2b112c932b8eed085e6/data/typescript/data.jsonl"
+      },
+      {
+        "dataset_id": "bigcode/commitpackft",
+        "downloaded_bytes": 49576827,
+        "language": "html",
+        "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+        "source_row_count": 20214,
+        "stream_sha256": "8b939f919f19e3a42307455d70b051261c5c64e40a6d733b0e3fff35f9cbbbf2",
+        "url": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/fc56fe33c030c6daa414c2b112c932b8eed085e6/data/html/data.jsonl"
+      },
+      {
+        "dataset_id": "bigcode/commitpackft",
+        "downloaded_bytes": 9580558,
+        "language": "css",
+        "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+        "source_row_count": 5049,
+        "stream_sha256": "d005a0daecea6dfc06400a3b0f1aab90559fc1fcee4a8def3e3402e1536ef70f",
+        "url": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/fc56fe33c030c6daa414c2b112c932b8eed085e6/data/css/data.jsonl"
+      },
+      {
+        "dataset_id": "bigcode/commitpackft",
+        "downloaded_bytes": 7411711,
+        "language": "rust",
+        "revision": "fc56fe33c030c6daa414c2b112c932b8eed085e6",
+        "source_row_count": 2996,
+        "stream_sha256": "5611f3701026acf3c43ba64da50f4f65a078e84fba56e2bf313e8f2996b0cc68",
+        "url": "https://huggingface.co/datasets/bigcode/commitpackft/resolve/fc56fe33c030c6daa414c2b112c932b8eed085e6/data/rust/data.jsonl"
+      }
+    ],
+    "split_overlap_audit": {
+      "policy": "project_theseus_moecot_supervision_split_overlap_v1",
+      "prompt_overlap_count": 0,
+      "prompt_overlap_sample": [],
+      "public_benchmark_payload_count": 0,
+      "target_overlap_count": 0,
+      "target_overlap_sample": []
+    },
+    "state": "GREEN"
+  },
+  "targets": {
+    "dense_active_parameter": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_active_parameter/weights.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 65777277436253780,
+      "expert_trainable_scope": "",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 1146972340,
+      "model": {
+        "attention_policy": "prefix_lm",
+        "d_model": 512,
+        "ff_dim": 2455,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 2.71579234,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_active_parameter/optimizer.safetensors",
+      "optimizer_target_positions": 1146972340,
+      "owned_parameter_count": 57348617,
+      "parameter_count": 57348617,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_active_parameter/training_receipt.json",
+      "role": "dense_control",
+      "row_count": 881592,
+      "row_ranges": [
+        {
+          "start": 0,
+          "stop": 881592
+        }
+      ],
+      "shared_trunk_checkpoint": "",
+      "source_conditioned_artifacts": {
+        "html_css:private_train": {
+          "bytes": 6549122,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "20d7f2de7861034c664ea16c687df22ce16054b6ed5c6809ee948e6650c5facc"
+        },
+        "javascript_typescript:private_train": {
+          "bytes": 6713843,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/javascript_typescript.jsonl",
+          "row_count": 4000,
+          "sha256": "0cbe0638629cfbca8e5473c4c1cb7160f629099e9bf2205d3c9cc53bcf69cd3c"
+        },
+        "python:private_train": {
+          "bytes": 6808672,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/python.jsonl",
+          "row_count": 4000,
+          "sha256": "ed69223753aa6382e2f10bec3717cdf511fc07de2c5116922fcabcfd23ab3d3a"
+        },
+        "rust:private_train": {
+          "bytes": 6481735,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/rust.jsonl",
+          "row_count": 4000,
+          "sha256": "f2f4310872a3e474057a3167ce49d0345ad62fd0d9a6b88815247455422be8c0"
+        }
+      },
+      "supervision_artifacts": {
+        "english:private_dev": {
+          "bytes": 150806,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/english.jsonl",
+          "row_count": 128,
+          "sha256": "49cf5f5ca29d78df10a42305bae3d4f19d1f6645999730069ef063b56a39e180"
+        },
+        "english:private_eval": {
+          "bytes": 301481,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/english.jsonl",
+          "row_count": 256,
+          "sha256": "1805e18c813191c74dd021a41dbd610c44bed043465e70636034e5b8ddb9342d"
+        },
+        "english:private_train": {
+          "bytes": 5881198,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/english.jsonl",
+          "row_count": 5000,
+          "sha256": "be7d8db0d15a770d2c61ea6522ec8858c3cf48866bebd423cd6ea2b23d840f8f"
+        },
+        "html_css:private_dev": {
+          "bytes": 234611,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/html_css.jsonl",
+          "row_count": 100,
+          "sha256": "9268db47f08d09c66d6524cdf8200f64bcb5df8ec3d7e8434272e8e9c35d7d41"
+        },
+        "html_css:private_eval": {
+          "bytes": 490372,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/html_css.jsonl",
+          "row_count": 200,
+          "sha256": "c872c3a441f8a7200066f7368dca12032ae05bc380d05de429d557aebb628e42"
+        },
+        "html_css:private_train": {
+          "bytes": 10030650,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "0ae705ff1c0ca98b44b3e1de8794320bf4107d7b40b13132cd6a007614bff7de"
+        },
+        "javascript_typescript:private_dev": {
+          "bytes": 321837,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/javascript_typescript.jsonl",
+          "row_count": 128,
+          "sha256": "0ad1f7a58dbeef3dedaeb64b21b2936b56a885783bebf1942f818e528b99604f"
+        },
+        "javascript_typescript:private_eval": {
+          "bytes": 617565,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/javascript_typescript.jsonl",
+          "row_count": 256,
+          "sha256": "7607169cf80fd5992e7280a4320083793fbd61b7da7af67fe68f642a3686cb68"
+        },
+        "javascript_typescript:private_train": {
+          "bytes": 11983804,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/javascript_typescript.jsonl",
+          "row_count": 5000,
+          "sha256": "c2b64013c300a31222bad84c1908fabc57d340543dc9ce0ea1f3b23045902252"
+        },
+        "python:private_dev": {
+          "bytes": 313089,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/python.jsonl",
+          "row_count": 128,
+          "sha256": "e62d40392066999113ba82fec4ec84b5ff44569d67c71c2ebf6d6912132a25af"
+        },
+        "python:private_eval": {
+          "bytes": 587186,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/python.jsonl",
+          "row_count": 256,
+          "sha256": "c820aca01cc6008ee9950d2e15da04ca47bc458f299de56f5cb6799312608512"
+        },
+        "python:private_train": {
+          "bytes": 11929589,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/python.jsonl",
+          "row_count": 5000,
+          "sha256": "6770dba776f0e139e87a70bc73347b8128ad412f9e77625246faba50b82698d4"
+        },
+        "rust:private_dev": {
+          "bytes": 160536,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/rust.jsonl",
+          "row_count": 60,
+          "sha256": "7cc45d87dc77a6c06b73c4ba1c31a51ac30725f01537507f40d3d47d268a3b73"
+        },
+        "rust:private_eval": {
+          "bytes": 158857,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/rust.jsonl",
+          "row_count": 64,
+          "sha256": "2c75704de4b5896a2890faa612fdea36463752d3740ea9a1cc18ab2cff8f8243"
+        },
+        "rust:private_train": {
+          "bytes": 2728651,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/rust.jsonl",
+          "row_count": 1000,
+          "sha256": "8575108c49d3e69cf37476639182b8912155b1088fbf8bbaaacf96180d087c6f"
+        }
+      },
+      "target_id": "dense_active_parameter",
+      "unique_target_positions": 422334331,
+      "vocab_size": 8195
+    },
+    "dense_total_parameter": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_total_parameter/weights.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 90739828976784980,
+      "expert_trainable_scope": "",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 1347143860,
+      "model": {
+        "attention_policy": "prefix_lm",
+        "d_model": 512,
+        "ff_dim": 2998,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 3.18975693,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_total_parameter/optimizer.safetensors",
+      "optimizer_target_positions": 1347143860,
+      "owned_parameter_count": 67357193,
+      "parameter_count": 67357193,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/dense_total_parameter/training_receipt.json",
+      "role": "dense_control",
+      "row_count": 881592,
+      "row_ranges": [
+        {
+          "start": 0,
+          "stop": 881592
+        }
+      ],
+      "shared_trunk_checkpoint": "",
+      "source_conditioned_artifacts": {
+        "html_css:private_train": {
+          "bytes": 6549122,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "20d7f2de7861034c664ea16c687df22ce16054b6ed5c6809ee948e6650c5facc"
+        },
+        "javascript_typescript:private_train": {
+          "bytes": 6713843,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/javascript_typescript.jsonl",
+          "row_count": 4000,
+          "sha256": "0cbe0638629cfbca8e5473c4c1cb7160f629099e9bf2205d3c9cc53bcf69cd3c"
+        },
+        "python:private_train": {
+          "bytes": 6808672,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/python.jsonl",
+          "row_count": 4000,
+          "sha256": "ed69223753aa6382e2f10bec3717cdf511fc07de2c5116922fcabcfd23ab3d3a"
+        },
+        "rust:private_train": {
+          "bytes": 6481735,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/rust.jsonl",
+          "row_count": 4000,
+          "sha256": "f2f4310872a3e474057a3167ce49d0345ad62fd0d9a6b88815247455422be8c0"
+        }
+      },
+      "supervision_artifacts": {
+        "english:private_dev": {
+          "bytes": 150806,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/english.jsonl",
+          "row_count": 128,
+          "sha256": "49cf5f5ca29d78df10a42305bae3d4f19d1f6645999730069ef063b56a39e180"
+        },
+        "english:private_eval": {
+          "bytes": 301481,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/english.jsonl",
+          "row_count": 256,
+          "sha256": "1805e18c813191c74dd021a41dbd610c44bed043465e70636034e5b8ddb9342d"
+        },
+        "english:private_train": {
+          "bytes": 5881198,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/english.jsonl",
+          "row_count": 5000,
+          "sha256": "be7d8db0d15a770d2c61ea6522ec8858c3cf48866bebd423cd6ea2b23d840f8f"
+        },
+        "html_css:private_dev": {
+          "bytes": 234611,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/html_css.jsonl",
+          "row_count": 100,
+          "sha256": "9268db47f08d09c66d6524cdf8200f64bcb5df8ec3d7e8434272e8e9c35d7d41"
+        },
+        "html_css:private_eval": {
+          "bytes": 490372,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/html_css.jsonl",
+          "row_count": 200,
+          "sha256": "c872c3a441f8a7200066f7368dca12032ae05bc380d05de429d557aebb628e42"
+        },
+        "html_css:private_train": {
+          "bytes": 10030650,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "0ae705ff1c0ca98b44b3e1de8794320bf4107d7b40b13132cd6a007614bff7de"
+        },
+        "javascript_typescript:private_dev": {
+          "bytes": 321837,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/javascript_typescript.jsonl",
+          "row_count": 128,
+          "sha256": "0ad1f7a58dbeef3dedaeb64b21b2936b56a885783bebf1942f818e528b99604f"
+        },
+        "javascript_typescript:private_eval": {
+          "bytes": 617565,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/javascript_typescript.jsonl",
+          "row_count": 256,
+          "sha256": "7607169cf80fd5992e7280a4320083793fbd61b7da7af67fe68f642a3686cb68"
+        },
+        "javascript_typescript:private_train": {
+          "bytes": 11983804,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/javascript_typescript.jsonl",
+          "row_count": 5000,
+          "sha256": "c2b64013c300a31222bad84c1908fabc57d340543dc9ce0ea1f3b23045902252"
+        },
+        "python:private_dev": {
+          "bytes": 313089,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/python.jsonl",
+          "row_count": 128,
+          "sha256": "e62d40392066999113ba82fec4ec84b5ff44569d67c71c2ebf6d6912132a25af"
+        },
+        "python:private_eval": {
+          "bytes": 587186,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/python.jsonl",
+          "row_count": 256,
+          "sha256": "c820aca01cc6008ee9950d2e15da04ca47bc458f299de56f5cb6799312608512"
+        },
+        "python:private_train": {
+          "bytes": 11929589,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/python.jsonl",
+          "row_count": 5000,
+          "sha256": "6770dba776f0e139e87a70bc73347b8128ad412f9e77625246faba50b82698d4"
+        },
+        "rust:private_dev": {
+          "bytes": 160536,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/rust.jsonl",
+          "row_count": 60,
+          "sha256": "7cc45d87dc77a6c06b73c4ba1c31a51ac30725f01537507f40d3d47d268a3b73"
+        },
+        "rust:private_eval": {
+          "bytes": 158857,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/rust.jsonl",
+          "row_count": 64,
+          "sha256": "2c75704de4b5896a2890faa612fdea36463752d3740ea9a1cc18ab2cff8f8243"
+        },
+        "rust:private_train": {
+          "bytes": 2728651,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/rust.jsonl",
+          "row_count": 1000,
+          "sha256": "8575108c49d3e69cf37476639182b8912155b1088fbf8bbaaacf96180d087c6f"
+        }
+      },
+      "target_id": "dense_total_parameter",
+      "unique_target_positions": 422334331,
+      "vocab_size": 8195
+    },
+    "english": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/english/expert_delta.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 401162893823868,
+      "expert_trainable_scope": "low_rank_source_adapters",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 50083860,
+      "model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 1.0,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/english/optimizer.safetensors",
+      "optimizer_target_positions": 160196476,
+      "owned_parameter_count": 2504193,
+      "parameter_count": 57340426,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/english/training_receipt.json",
+      "role": "language_expert",
+      "row_count": 334527,
+      "row_ranges": [
+        {
+          "start": 0,
+          "stop": 96002
+        },
+        {
+          "start": 96002,
+          "stop": 334527
+        }
+      ],
+      "shared_trunk_checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+      "source_conditioned_artifacts": {},
+      "supervision_artifacts": {
+        "private_dev": {
+          "bytes": 150806,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/english.jsonl",
+          "row_count": 128,
+          "sha256": "49cf5f5ca29d78df10a42305bae3d4f19d1f6645999730069ef063b56a39e180"
+        },
+        "private_eval": {
+          "bytes": 301481,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/english.jsonl",
+          "row_count": 256,
+          "sha256": "1805e18c813191c74dd021a41dbd610c44bed043465e70636034e5b8ddb9342d"
+        },
+        "private_train": {
+          "bytes": 5881198,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/english.jsonl",
+          "row_count": 5000,
+          "sha256": "be7d8db0d15a770d2c61ea6522ec8858c3cf48866bebd423cd6ea2b23d840f8f"
+        }
+      },
+      "target_id": "english",
+      "unique_target_positions": 160196476,
+      "vocab_size": 8195
+    },
+    "html_css": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/html_css/expert_delta.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 125419651624980,
+      "expert_trainable_scope": "low_rank_source_adapters",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 50083860,
+      "model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 2.84939427,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/html_css/optimizer.safetensors",
+      "optimizer_target_positions": 50083860,
+      "owned_parameter_count": 2504193,
+      "parameter_count": 57340426,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/html_css/training_receipt.json",
+      "role": "language_expert",
+      "row_count": 38980,
+      "row_ranges": [
+        {
+          "start": 750180,
+          "stop": 789160
+        }
+      ],
+      "shared_trunk_checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+      "source_conditioned_artifacts": {
+        "private_train": {
+          "bytes": 6549122,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "20d7f2de7861034c664ea16c687df22ce16054b6ed5c6809ee948e6650c5facc"
+        }
+      },
+      "supervision_artifacts": {
+        "private_dev": {
+          "bytes": 234611,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/html_css.jsonl",
+          "row_count": 100,
+          "sha256": "9268db47f08d09c66d6524cdf8200f64bcb5df8ec3d7e8434272e8e9c35d7d41"
+        },
+        "private_eval": {
+          "bytes": 490372,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/html_css.jsonl",
+          "row_count": 200,
+          "sha256": "c872c3a441f8a7200066f7368dca12032ae05bc380d05de429d557aebb628e42"
+        },
+        "private_train": {
+          "bytes": 10030650,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "0ae705ff1c0ca98b44b3e1de8794320bf4107d7b40b13132cd6a007614bff7de"
+        }
+      },
+      "target_id": "html_css",
+      "unique_target_positions": 17577020,
+      "vocab_size": 8195
+    },
+    "javascript_typescript": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/javascript_typescript/expert_delta.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 207271253268240,
+      "expert_trainable_scope": "low_rank_source_adapters",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 50083860,
+      "model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 1.0,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/javascript_typescript/optimizer.safetensors",
+      "optimizer_target_positions": 82769680,
+      "owned_parameter_count": 2504193,
+      "parameter_count": 57340426,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/javascript_typescript/training_receipt.json",
+      "role": "language_expert",
+      "row_count": 178071,
+      "row_ranges": [
+        {
+          "start": 572109,
+          "stop": 750180
+        }
+      ],
+      "shared_trunk_checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+      "source_conditioned_artifacts": {
+        "private_train": {
+          "bytes": 6713843,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/javascript_typescript.jsonl",
+          "row_count": 4000,
+          "sha256": "0cbe0638629cfbca8e5473c4c1cb7160f629099e9bf2205d3c9cc53bcf69cd3c"
+        }
+      },
+      "supervision_artifacts": {
+        "private_dev": {
+          "bytes": 321837,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/javascript_typescript.jsonl",
+          "row_count": 128,
+          "sha256": "0ad1f7a58dbeef3dedaeb64b21b2936b56a885783bebf1942f818e528b99604f"
+        },
+        "private_eval": {
+          "bytes": 617565,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/javascript_typescript.jsonl",
+          "row_count": 256,
+          "sha256": "7607169cf80fd5992e7280a4320083793fbd61b7da7af67fe68f642a3686cb68"
+        },
+        "private_train": {
+          "bytes": 11983804,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/javascript_typescript.jsonl",
+          "row_count": 5000,
+          "sha256": "c2b64013c300a31222bad84c1908fabc57d340543dc9ce0ea1f3b23045902252"
+        }
+      },
+      "target_id": "javascript_typescript",
+      "unique_target_positions": 82769680,
+      "vocab_size": 8195
+    },
+    "python": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/python/expert_delta.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 291093654802500,
+      "expert_trainable_scope": "low_rank_source_adapters",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 50083860,
+      "model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 1.0,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/python/optimizer.safetensors",
+      "optimizer_target_positions": 116242500,
+      "owned_parameter_count": 2504193,
+      "parameter_count": 57340426,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/python/training_receipt.json",
+      "role": "language_expert",
+      "row_count": 237582,
+      "row_ranges": [
+        {
+          "start": 334527,
+          "stop": 572109
+        }
+      ],
+      "shared_trunk_checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+      "source_conditioned_artifacts": {
+        "private_train": {
+          "bytes": 6808672,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/python.jsonl",
+          "row_count": 4000,
+          "sha256": "ed69223753aa6382e2f10bec3717cdf511fc07de2c5116922fcabcfd23ab3d3a"
+        }
+      },
+      "supervision_artifacts": {
+        "private_dev": {
+          "bytes": 313089,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/python.jsonl",
+          "row_count": 128,
+          "sha256": "e62d40392066999113ba82fec4ec84b5ff44569d67c71c2ebf6d6912132a25af"
+        },
+        "private_eval": {
+          "bytes": 587186,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/python.jsonl",
+          "row_count": 256,
+          "sha256": "c820aca01cc6008ee9950d2e15da04ca47bc458f299de56f5cb6799312608512"
+        },
+        "private_train": {
+          "bytes": 11929589,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/python.jsonl",
+          "row_count": 5000,
+          "sha256": "6770dba776f0e139e87a70bc73347b8128ad412f9e77625246faba50b82698d4"
+        }
+      },
+      "target_id": "python",
+      "unique_target_positions": 116242500,
+      "vocab_size": 8195
+    },
+    "rust": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/rust/expert_delta.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 125419651624980,
+      "expert_trainable_scope": "low_rank_source_adapters",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 50083860,
+      "model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "expert_adapter_dim": 128,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_expert_adapter_dim": 64,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 1.09956836,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/rust/optimizer.safetensors",
+      "optimizer_target_positions": 50083860,
+      "owned_parameter_count": 2504193,
+      "parameter_count": 57340426,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/rust/training_receipt.json",
+      "role": "language_expert",
+      "row_count": 92432,
+      "row_ranges": [
+        {
+          "start": 789160,
+          "stop": 881592
+        }
+      ],
+      "shared_trunk_checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+      "source_conditioned_artifacts": {
+        "private_train": {
+          "bytes": 6481735,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/rust.jsonl",
+          "row_count": 4000,
+          "sha256": "f2f4310872a3e474057a3167ce49d0345ad62fd0d9a6b88815247455422be8c0"
+        }
+      },
+      "supervision_artifacts": {
+        "private_dev": {
+          "bytes": 160536,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/rust.jsonl",
+          "row_count": 60,
+          "sha256": "7cc45d87dc77a6c06b73c4ba1c31a51ac30725f01537507f40d3d47d268a3b73"
+        },
+        "private_eval": {
+          "bytes": 158857,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/rust.jsonl",
+          "row_count": 64,
+          "sha256": "2c75704de4b5896a2890faa612fdea36463752d3740ea9a1cc18ab2cff8f8243"
+        },
+        "private_train": {
+          "bytes": 2728651,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/rust.jsonl",
+          "row_count": 1000,
+          "sha256": "8575108c49d3e69cf37476639182b8912155b1088fbf8bbaaacf96180d087c6f"
+        }
+      },
+      "target_id": "rust",
+      "unique_target_positions": 45548655,
+      "vocab_size": 8195
+    },
+    "shared_trunk": {
+      "checkpoint": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.safetensors",
+      "checkpoint_schema": "",
+      "checkpoint_schema_policy": "",
+      "checkpoint_schema_version": 0,
+      "estimated_parameter_token_product": 60141374237370320,
+      "expert_trainable_scope": "",
+      "kerc_compiler_transport": {},
+      "kernel_code_vocabulary": {},
+      "kernel_english_artifacts": {},
+      "kernel_english_objectives": [],
+      "maximum_optimizer_repetition_factor": 4.0,
+      "minimum_optimizer_positions": 1096734920,
+      "model": {
+        "attention_policy": "encoder_decoder",
+        "d_model": 512,
+        "ff_dim": 1536,
+        "mtp_future_offsets": [
+          2,
+          3,
+          4
+        ],
+        "mtp_loss_scale": 0.0,
+        "mtp_loss_weights": [
+          0.3,
+          0.2,
+          0.1
+        ],
+        "mtp_low_rank": 1,
+        "mtp_maximum_head_parameter_overhead_ratio": 0.25,
+        "num_heads": 8,
+        "num_kv_heads": 2,
+        "num_layers": 12,
+        "rms_norm_eps": 1e-05,
+        "rope_base": 10000.0,
+        "source_copy_auxiliary_loss_weight": 0.25,
+        "source_copy_mode": "pointer_generator",
+        "source_encoder_layers": 2,
+        "source_target_separator_token_id": 2
+      },
+      "optimizer_repetition_ceiling_ready": true,
+      "optimizer_repetition_counted_as_unique_data": false,
+      "optimizer_repetition_factor": 2.59684056,
+      "optimizer_state": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.safetensors",
+      "optimizer_target_positions": 1096734920,
+      "owned_parameter_count": 54836746,
+      "parameter_count": 54836746,
+      "plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+      "receipt": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
+      "role": "shared_trunk",
+      "row_count": 881592,
+      "row_ranges": [
+        {
+          "start": 0,
+          "stop": 881592
+        }
+      ],
+      "shared_trunk_checkpoint": "",
+      "source_conditioned_artifacts": {
+        "html_css:private_train": {
+          "bytes": 6549122,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "20d7f2de7861034c664ea16c687df22ce16054b6ed5c6809ee948e6650c5facc"
+        },
+        "javascript_typescript:private_train": {
+          "bytes": 6713843,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/javascript_typescript.jsonl",
+          "row_count": 4000,
+          "sha256": "0cbe0638629cfbca8e5473c4c1cb7160f629099e9bf2205d3c9cc53bcf69cd3c"
+        },
+        "python:private_train": {
+          "bytes": 6808672,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/python.jsonl",
+          "row_count": 4000,
+          "sha256": "ed69223753aa6382e2f10bec3717cdf511fc07de2c5116922fcabcfd23ab3d3a"
+        },
+        "rust:private_train": {
+          "bytes": 6481735,
+          "path": "data/training_data/moecot_source_conditioned_pretraining_v1/rust.jsonl",
+          "row_count": 4000,
+          "sha256": "f2f4310872a3e474057a3167ce49d0345ad62fd0d9a6b88815247455422be8c0"
+        }
+      },
+      "supervision_artifacts": {
+        "english:private_dev": {
+          "bytes": 150806,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/english.jsonl",
+          "row_count": 128,
+          "sha256": "49cf5f5ca29d78df10a42305bae3d4f19d1f6645999730069ef063b56a39e180"
+        },
+        "english:private_eval": {
+          "bytes": 301481,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/english.jsonl",
+          "row_count": 256,
+          "sha256": "1805e18c813191c74dd021a41dbd610c44bed043465e70636034e5b8ddb9342d"
+        },
+        "english:private_train": {
+          "bytes": 5881198,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/english.jsonl",
+          "row_count": 5000,
+          "sha256": "be7d8db0d15a770d2c61ea6522ec8858c3cf48866bebd423cd6ea2b23d840f8f"
+        },
+        "html_css:private_dev": {
+          "bytes": 234611,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/html_css.jsonl",
+          "row_count": 100,
+          "sha256": "9268db47f08d09c66d6524cdf8200f64bcb5df8ec3d7e8434272e8e9c35d7d41"
+        },
+        "html_css:private_eval": {
+          "bytes": 490372,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/html_css.jsonl",
+          "row_count": 200,
+          "sha256": "c872c3a441f8a7200066f7368dca12032ae05bc380d05de429d557aebb628e42"
+        },
+        "html_css:private_train": {
+          "bytes": 10030650,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/html_css.jsonl",
+          "row_count": 4000,
+          "sha256": "0ae705ff1c0ca98b44b3e1de8794320bf4107d7b40b13132cd6a007614bff7de"
+        },
+        "javascript_typescript:private_dev": {
+          "bytes": 321837,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/javascript_typescript.jsonl",
+          "row_count": 128,
+          "sha256": "0ad1f7a58dbeef3dedaeb64b21b2936b56a885783bebf1942f818e528b99604f"
+        },
+        "javascript_typescript:private_eval": {
+          "bytes": 617565,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/javascript_typescript.jsonl",
+          "row_count": 256,
+          "sha256": "7607169cf80fd5992e7280a4320083793fbd61b7da7af67fe68f642a3686cb68"
+        },
+        "javascript_typescript:private_train": {
+          "bytes": 11983804,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/javascript_typescript.jsonl",
+          "row_count": 5000,
+          "sha256": "c2b64013c300a31222bad84c1908fabc57d340543dc9ce0ea1f3b23045902252"
+        },
+        "python:private_dev": {
+          "bytes": 313089,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/python.jsonl",
+          "row_count": 128,
+          "sha256": "e62d40392066999113ba82fec4ec84b5ff44569d67c71c2ebf6d6912132a25af"
+        },
+        "python:private_eval": {
+          "bytes": 587186,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/python.jsonl",
+          "row_count": 256,
+          "sha256": "c820aca01cc6008ee9950d2e15da04ca47bc458f299de56f5cb6799312608512"
+        },
+        "python:private_train": {
+          "bytes": 11929589,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/python.jsonl",
+          "row_count": 5000,
+          "sha256": "6770dba776f0e139e87a70bc73347b8128ad412f9e77625246faba50b82698d4"
+        },
+        "rust:private_dev": {
+          "bytes": 160536,
+          "path": "data/training_data/moecot_language_supervision_v1/private_dev/rust.jsonl",
+          "row_count": 60,
+          "sha256": "7cc45d87dc77a6c06b73c4ba1c31a51ac30725f01537507f40d3d47d268a3b73"
+        },
+        "rust:private_eval": {
+          "bytes": 158857,
+          "path": "data/training_data/moecot_language_supervision_v1/private_eval/rust.jsonl",
+          "row_count": 64,
+          "sha256": "2c75704de4b5896a2890faa612fdea36463752d3740ea9a1cc18ab2cff8f8243"
+        },
+        "rust:private_train": {
+          "bytes": 2728651,
+          "path": "data/training_data/moecot_language_supervision_v1/private_train/rust.jsonl",
+          "row_count": 1000,
+          "sha256": "8575108c49d3e69cf37476639182b8912155b1088fbf8bbaaacf96180d087c6f"
+        }
+      },
+      "target_id": "shared_trunk",
+      "unique_target_positions": 422334331,
+      "vocab_size": 8195
+    }
+  },
+  "templates_renderers_routers_tools_credit": 0,
+  "training_implementation_closure": [
+    {
+      "path": "configs/pretraining_architecture_candidates.json",
+      "sha256": "83701918935f22d9b9dd0d5e4fa8d7b5c4391eab047c83fffdad78fe6ba66c29"
+    },
+    {
+      "path": "scripts/fresh_process_pretraining_qualification.py",
+      "sha256": "c24115b5e17b8f2d89762b73328cb7c5959dbc996dc18a35f29750aea118c790"
+    },
+    {
+      "path": "scripts/host_resource_safety.py",
+      "sha256": "9444ad9af1a70af25fa63a9978c0f35367ed7ffb6d4e415d953242358b6629d1"
+    },
+    {
+      "path": "scripts/kerc_checkpoint_schema.py",
+      "sha256": "56cced2fedd5dd705984ea1689def8b61afc037da0efdb6755635e516c67a5b9"
+    },
+    {
+      "path": "scripts/kerc_concept_registry.py",
+      "sha256": "2e2a2fff4dc63af35840e8f3b7bec56eb78957c5c20a0df7de7772b68d08e4f6"
+    },
+    {
+      "path": "scripts/kernel_english_protocol.py",
+      "sha256": "ff0d9c2a3e02ce4fa7d86f4ba6521ad4f104298549239062c00807886f89c29d"
+    },
+    {
+      "path": "scripts/moecot_auxiliary_stage_cache.py",
+      "sha256": "eacea70d171a8c99eb3fb82ed485908e46d9815bb1f6062212a1a087144f5ad3"
+    },
+    {
+      "path": "scripts/moecot_language_arm_training.py",
+      "sha256": "c2b7adfee7c2c549236364286d0227ac3800780af072e3203c75e3602b2271e6"
+    },
+    {
+      "path": "scripts/moecot_language_tokenizer.py",
+      "sha256": "50fe4081215927d3d937129e0e15c97bdb8bd09ebdc314daa1e3df1bd5546a8a"
+    },
+    {
+      "path": "scripts/moecot_source_conditioned_pretraining.py",
+      "sha256": "d060bdfb794652798413a7808e5d0c3c3d60f34baa1eb128fde1275534d3c4d5"
+    },
+    {
+      "path": "scripts/neural_seed_open_vocab.py",
+      "sha256": "3caddf372319a40d53ab001bbe29a62fb654cd3257e7c56e03d9ecdb64cd21f6"
+    },
+    {
+      "path": "scripts/neural_seed_training_campaign.py",
+      "sha256": "5f822783793242833d13cbebf61069dd72dd61d228192af8adae81e5be5ce44f"
+    },
+    {
+      "path": "scripts/pretraining_candidate_canary.py",
+      "sha256": "98ec52c032d67e8c43a5f20aaa130ca1aa36176c7fa7d17124b320707f8760b1"
+    },
+    {
+      "path": "scripts/pretraining_optimizers.py",
+      "sha256": "5263d02c7086724a5cb60570c712a41f0eb2414a371fe8eb009216b74785bea0"
+    },
+    {
+      "path": "scripts/standard_causal_transformer_corpus.py",
+      "sha256": "eb0f143a58ee98b20260256ca6cac80c4f1872a43f20a9d04d642af4624313a7"
+    },
+    {
+      "path": "scripts/standard_causal_transformer_model.py",
+      "sha256": "b436544243a8cb40ab762c4b35096560ace3c66a27c601feffd45cb447f62f7a"
+    },
+    {
+      "path": "scripts/standard_causal_transformer_objectives.py",
+      "sha256": "e6edec767bd77416ea63db1ffde11535ac8def36d5a06769c64a13c6d27d12ec"
+    },
+    {
+      "path": "scripts/standard_causal_transformer_survival.py",
+      "sha256": "afc3285796c748474975cc0816fd546da9cebffe28b6cc8d58e66371268021dc"
+    },
+    {
+      "path": "scripts/vcm_semantic_memory.py",
+      "sha256": "b8426b160405360a4f2ae33f2ea154407033007b1b1132e5682b73d6cd620f68"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

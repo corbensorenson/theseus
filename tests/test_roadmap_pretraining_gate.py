@@ -69,7 +69,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         self.assertEqual(currentness["capability_claim"], "NOT_EVALUATED")
         self.assertEqual(
             currentness["migration_id"],
-            "shared_trunk_step9048_append_only_lineage_custody_v1",
+            "shared_trunk_step9112_archived_receipt_digest_custody_fix_v1",
         )
 
     def test_deferred_kerc_campaign_exclusion_is_machine_checked(self) -> None:

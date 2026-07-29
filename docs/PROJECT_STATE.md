@@ -904,11 +904,14 @@ architecture-intake, canary, or report family may displace the matched campaign.
 decode, and joined-runtime speedups remain mechanics evidence until the student produces direct
 source-disjoint functional behavior.
 
-T1 is active at shared-trunk step 9,048 and 69,310,840 of 1,096,734,920
+T1 is active at shared-trunk step 9,112 and 69,801,984 of 1,096,734,920
 pretraining positions. The live canonical path advanced after the committed T0A freeze, but the
 exact step-3,480 payload and a complete immutable step-by-step predecessor chain were not retained.
 `configs/neural_seed_t1_lineage_anchor.json` therefore records an explicit prospective anchor at
-step 9,048 and the pre-anchor custody gap. Every later state-changing segment must archive exact
+step 9,048 and the pre-anchor custody gap. The first post-anchor segment is now archived through
+step 9,112; its initially invalid before-receipt digest was repaired from the intact archived
+receipt with the invalid-manifest hash retained, and the verifier now re-hashes every artifact.
+Every later state-changing segment must archive exact
 before/after receipts plus child and host-guard identities in the append-only lineage ledger before
 another segment can launch. This preserves current work without laundering the missing predecessor
 chain into a replay, capability, or support claim.

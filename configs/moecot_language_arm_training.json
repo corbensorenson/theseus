@@ -177,6 +177,19 @@
         "reason": "Continue the exact step-9048 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule while adding a prospective append-only segment lineage ledger to the outer campaign controller. The anchor explicitly records that the complete step-3480-to-9048 predecessor chain and the exact step-3480 payload are not locally available, so it cannot launder that gap into a replay claim. Before any later segment launches, the live receipt must match the anchor or the terminal ledger identity; every state-changing segment archives exact before/after receipts plus child and host-guard identities before another launch. No model topology, active training math, tensor, optimizer byte, data row, objective, schedule, evaluation contract, or capability state changes."
       },
       {
+        "migration_id": "shared_trunk_step9112_archived_receipt_digest_custody_fix_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "38951e6bc9605b86c0e0c793b37eef7ae5c6b3d5ea89f7aef4180f1b40aaa60d",
+        "legacy_checkpoint_sha256": "0fecb07690e85904f2a8e70175adcb6703d42a1430d41422f22f9b150cd3b1b4",
+        "legacy_optimizer_state_sha256": "cad35469bdc4ec65999794a4ffeb037ae518d1888c07a7cd16e9a0df20d734e5",
+        "legacy_optimizer_steps": 9112,
+        "legacy_optimizer_positions": 69801984,
+        "required_current_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/manifest.json reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/before_receipt.json reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/after_receipt.json scripts/neural_seed_training_campaign.py tests/test_neural_seed_training_campaign.py",
+        "reason": "Continue the exact step-9112 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule after correcting the first prospective ledger writer. The child completed successfully and archived exact before/after receipts plus child and host-guard reports, but the initial manifest resolved the before-receipt digest through the mutable live canonical path after it had advanced. The repaired manifest binds the immutable archived before receipt, records the original invalid-manifest hash, and the verifier now independently re-hashes every archived artifact. This migration changes no model topology, active training math, tensor, optimizer byte, data row, objective, schedule, evaluation contract, or capability state."
+      },
+      {
         "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
         "target_id": "shared_trunk",
         "legacy_plan_sha256": "b55e7ae19ed5956b0e02ecc73809846fc0d51a867c20c83d15198daec4eeab9e",
@@ -662,7 +675,7 @@
         "legacy_optimizer_state_sha256": "d543a788d796491057866840ec03c2d1344c6428e5999d6150adbb8f33dc7869",
         "legacy_optimizer_steps": 4658,
         "legacy_optimizer_positions": 457228,
-        "required_current_plan_sha256": "c144d253fee6d619032cd756d6d962ca337a5e98261d5d6323ed0eaf5cec26bc",
+        "required_current_plan_sha256": "87e34928ac1750198d9107e0c22b9cbfcd946b60fc48c45a6bcc199a97453c19",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "reset_data_cursor_phase": "kernel_english",
         "reset_data_cursor_seed": 20260722,
@@ -690,7 +703,7 @@
         "legacy_optimizer_state_sha256": "4b7bafdbfe65878f044b553f9d8fa699e381a6707eb51ede52a05f6052af33f9",
         "legacy_optimizer_steps": 4914,
         "legacy_optimizer_positions": 519165,
-        "required_current_plan_sha256": "12cde4025eac93520a4e8d856d6502aa43ea6aea48b93eb0f25d0efe7cc4107d",
+        "required_current_plan_sha256": "f641aa51b1f92a41872a472969ffadbb95643647832daf26b830fe397347cb71",
         "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
         "evidence": "reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_merged_fp32_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_teacher_forced_rows16_seed_20260722.json reports/rdc_kerc_k5_source_span_transport_v4_population_step256_exposure_doubling_generation_rows16_seed_20260722.json tests/test_standard_causal_transformer_survival.py::test_checkpoint_exact_epoch_order_ignores_prior_dense_permutation",
         "reason": "Continue only the exact step-4914 merged FP32 checkpoint, projected AdamW bytes, MLX RNG, and epoch-4 batch-4 sampler cursor. The matched 16-row panel moved the v4 root from mean rank 6.4375 and 0/16 top-1 to rank 1 and 16/16, but raw validity remained 0/16: fifteen completed candidates were rejected for compact schema, compact transport, or source-span declaration faults and the weakest row still exhausted 628 tokens. Migrate future dense epochs to the checkpoint-exact epoch-independent order policy discovered by independent sampler replay, preserve the recorded cursor without pretending path equivalence to the legacy in-place shuffle, and run one final 256-update same-seed exposure-doubling rung at the unchanged 3e-5 rate. Require at least one online-valid raw v4 row plus weakest-row completion before any source-disjoint surface. If absent at the preregistered minimum-eight-exposure boundary, freeze this exact KERC regime as INCONCLUSIVE_EXPERIMENT for first-campaign sequencing; do not falsify KERC broadly or open another seed."

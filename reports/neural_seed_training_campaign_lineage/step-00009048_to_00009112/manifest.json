@@ -1,0 +1,71 @@
+{
+  "after_identity": {
+    "checkpoint_sha256": "0fecb07690e85904f2a8e70175adcb6703d42a1430d41422f22f9b150cd3b1b4",
+    "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+    "optimizer_positions": 69801984,
+    "optimizer_state_sha256": "cad35469bdc4ec65999794a4ffeb037ae518d1888c07a7cd16e9a0df20d734e5",
+    "optimizer_steps": 9112,
+    "pretrain_optimizer_positions": 69801984,
+    "receipt_sha256": "31a31c76c24b107a28a0c23f9d3e4a9f9d034040f8023298e1cb49da7bea1116"
+  },
+  "artifacts": {
+    "after_receipt": {
+      "path": "reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/after_receipt.json",
+      "sha256": "31a31c76c24b107a28a0c23f9d3e4a9f9d034040f8023298e1cb49da7bea1116"
+    },
+    "before_receipt": {
+      "path": "reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/before_receipt.json",
+      "sha256": "e46683967238fd79c328bd7465bf7030e30bb5127f0afee7b02fbf936b0fed06"
+    },
+    "child_report": {
+      "path": "reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/neural_seed_training_campaign.segment-latest.json",
+      "sha256": "e760eb623803dacb3869530c99e3e2989f7086d63be3f2acc9bea5320c3846df"
+    },
+    "host_resource_safety": {
+      "path": "reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/neural_seed_training_campaign.segment-latest.host_resource_safety.json",
+      "sha256": "8d3eba16dd7024a3b1f909d930cc303f87c876107ea87002f6bc92fb5f1575b8"
+    }
+  },
+  "before_identity": {
+    "checkpoint_sha256": "ed28acc8cc9a82b4bd00dbd8487f17b8131157df3c828f66eb458902d4e3c16d",
+    "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+    "optimizer_positions": 69310840,
+    "optimizer_state_sha256": "7b19ceb6880954a845bdb79914d84a6d388992abe45e98d63dfdfa3a2ed6c829",
+    "optimizer_steps": 9048,
+    "pretrain_optimizer_positions": 69310840,
+    "receipt_sha256": "e46683967238fd79c328bd7465bf7030e30bb5127f0afee7b02fbf936b0fed06"
+  },
+  "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+  "capability_claim": "NOT_EVALUATED",
+  "custody_repair": {
+    "corrected_field": "before_identity.receipt_sha256",
+    "correction_source": "artifacts.before_receipt.sha256",
+    "defect": "The first prospective ledger implementation resolved the before-receipt digest through the live mutable canonical path after the child had already advanced it.",
+    "observed_invalid_manifest_sha256": "1555947b5c45256ac0027fb7b47d74ebec379658092677e26cac32477e1d6816",
+    "policy": "project_theseus_first_segment_manifest_receipt_digest_repair_v1",
+    "scope": "metadata_only_no_checkpoint_optimizer_rng_or_training_state_change"
+  },
+  "command": [
+    "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "/Users/corbensorenson/Documents/Theseus-Hive/scripts/moecot_language_arm_training.py",
+    "--config",
+    "/Users/corbensorenson/Documents/Theseus-Hive/configs/moecot_language_arm_training.json",
+    "--out",
+    "/Users/corbensorenson/Documents/Theseus-Hive/reports/neural_seed_training_campaign.segment-latest.json",
+    "--guarded",
+    "--execute",
+    "--target",
+    "shared_trunk",
+    "--phase",
+    "pretraining",
+    "--resume",
+    "--max-steps",
+    "64",
+    "--campaign-segment"
+  ],
+  "created_utc": "2026-07-29T01:59:21.336338Z",
+  "policy": "project_theseus_append_only_training_segment_lineage_v1",
+  "returncode": 0,
+  "support_state_effect": "none",
+  "target_id": "shared_trunk"
+}
