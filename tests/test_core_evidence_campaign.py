@@ -361,3 +361,68 @@ def test_e2_stops_at_frozen_competence_floor_without_opening_heldout() -> None:
         task["independent_evaluation"]["useful_completed_task"] is False
         for task in report["task_results"]
     )
+
+
+def test_e3_preregistration_is_source_disjoint_and_complete() -> None:
+    config = load_config()
+    e3 = json.loads(
+        (ROOT / "configs" / "core_evidence_e3_experiment.json").read_text(encoding="utf-8")
+    )
+
+    assert e3["parent_preregistration_sha256"] == (
+        json.loads(
+            (ROOT / "reports" / "core_evidence_e0_preregistration.json").read_text(
+                encoding="utf-8"
+            )
+        )["preregistration_sha256"]
+    )
+    assert e3["task_count"] == len(
+        [task for task in config["tasks"] if task["denominator"] == "D1_E3"]
+    )
+    assert campaign.disjoint_targets(config["tasks"], "D1_E2", "D1_E3")
+    assert {row["policy_id"] for row in e3["route_policies"]} == {
+        "always_maximal",
+        "always_cheapest",
+        "least_sufficient",
+    }
+    assert {row["vcm"] for row in e3["variants"]} >= {
+        "correct",
+        "none",
+        "stale",
+        "shuffled",
+        "omission",
+    }
+    assert {row["reuse"] for row in e3["variants"]} >= {"fresh", "verified"}
+
+
+def test_least_sufficient_policy_holds_when_no_variant_meets_quality() -> None:
+    variants = [
+        {
+            "variant_id": "expensive",
+            "cost_units": 19,
+            "evaluation": {
+                "useful_completed_task": False,
+                "information_flow_valid": True,
+            },
+        },
+        {
+            "variant_id": "cheap",
+            "cost_units": 10,
+            "evaluation": {
+                "useful_completed_task": False,
+                "information_flow_valid": True,
+            },
+        },
+    ]
+    policies = [
+        {"policy_id": "always_maximal", "selection": "expensive"},
+        {"policy_id": "always_cheapest", "selection": "cheap"},
+        {"policy_id": "least_sufficient", "selection": "quality"},
+    ]
+
+    rows = campaign.evaluate_e3_route_policies(variants, policies)
+
+    least = next(row for row in rows if row["policy_id"] == "least_sufficient")
+    assert least["selected_variant_id"] is None
+    assert least["held_for_quality_wall"] is True
+    assert least["total_lifecycle_cost_units"] == 0

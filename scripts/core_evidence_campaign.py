@@ -30,6 +30,8 @@ DEFAULT_CONFIG = ROOT / "configs" / "core_evidence_campaign.json"
 DEFAULT_OUT = ROOT / "reports" / "core_evidence_e0_preregistration.json"
 DEFAULT_E1_OUT = ROOT / "reports" / "core_evidence_e1_replay.json"
 DEFAULT_E2_OUT = ROOT / "reports" / "core_evidence_e2_governed_comparison.json"
+DEFAULT_E3_CONFIG = ROOT / "configs" / "core_evidence_e3_experiment.json"
+DEFAULT_E3_OUT = ROOT / "reports" / "core_evidence_e3_mechanism_comparison.json"
 
 EXPECTED_CLAIMS = {
     "asi-is-a-stack-not-a-model.core",
@@ -91,7 +93,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG.relative_to(ROOT)))
     parser.add_argument("--out", default=str(DEFAULT_OUT.relative_to(ROOT)))
-    parser.add_argument("--stage", choices=["E0", "E1", "E1-inner", "E2"], default="E0")
+    parser.add_argument("--stage", choices=["E0", "E1", "E1-inner", "E2", "E3"], default="E0")
     parser.add_argument("--source-commit", default="")
     parser.add_argument("--gate", action="store_true")
     args = parser.parse_args()
@@ -120,9 +122,12 @@ def main() -> int:
             gate_results=gate_results,
             clean_checkout=True,
         )
-    else:
+    elif args.stage == "E2":
         out_path = resolve(args.out) if args.out != str(DEFAULT_OUT.relative_to(ROOT)) else DEFAULT_E2_OUT
         report = run_e2_comparison(config, config_path)
+    else:
+        out_path = resolve(args.out) if args.out != str(DEFAULT_OUT.relative_to(ROOT)) else DEFAULT_E3_OUT
+        report = run_e3_comparison(config, config_path, read_json(DEFAULT_E3_CONFIG), DEFAULT_E3_CONFIG)
     write_json(out_path, report)
     print(json.dumps(gate_view(report), indent=2, sort_keys=True))
     if args.gate and report["trigger_state"] != "GREEN":
@@ -544,6 +549,266 @@ def disposition_from_route_summaries(summaries: list[dict[str, Any]], config: di
     if integer(full.get("unsafe")) > integer(ceilings.get("unsafe_release_ceiling")):
         return "NEGATIVE_SCOPED"
     return "INCONCLUSIVE_EXPERIMENT"
+
+
+def run_e3_comparison(
+    config: dict[str, Any],
+    config_path: Path,
+    e3_config: dict[str, Any],
+    e3_config_path: Path,
+) -> dict[str, Any]:
+    """Run frozen source-disjoint planning, VCM, routing, and reuse variants."""
+    started = time.perf_counter()
+    e0 = read_json(ROOT / "reports" / "core_evidence_e0_preregistration.json")
+    e2 = read_json(ROOT / "reports" / "core_evidence_e2_governed_comparison.json")
+    public_rows = {
+        str(row.get("opaque_task_id")): row
+        for row in dicts(mapping(e0.get("public_packet")).get("tasks"))
+    }
+    tasks = [
+        row for row in dicts(config.get("tasks"))
+        if row.get("partition") == "heldout" and row.get("denominator") == "D1_E3"
+    ]
+    variants = dicts(e3_config.get("variants"))
+    task_results = []
+    infrastructure_faults = []
+    for task in tasks:
+        opaque = opaque_task_id(str(task.get("source_task_id") or ""))
+        public_task = public_rows.get(opaque)
+        if not public_task:
+            infrastructure_faults.append({"opaque_task_id": opaque, "fault": "public_projection_missing"})
+            continue
+        sealed_candidates = []
+        try:
+            for variant in variants:
+                variant_public_task = dict(public_task)
+                variant_public_task["allowed_runtime_context"] = [
+                    *strings(public_task.get("allowed_runtime_context")),
+                    f"planning:{variant.get('planning')}",
+                    f"vcm:{variant.get('vcm')}",
+                    f"reuse:{variant.get('reuse')}",
+                ]
+                candidate = execute_isolated_worker(variant_public_task)
+                sealed_candidates.append((variant, variant_public_task, candidate))
+            variant_results = []
+            for variant, variant_public_task, candidate in sealed_candidates:
+                evaluation = independently_evaluate_candidate(
+                    task, variant_public_task, candidate, config
+                )
+                variant_results.append({
+                    "variant_id": variant.get("variant_id"),
+                    "planning": variant.get("planning"),
+                    "vcm": variant.get("vcm"),
+                    "reuse": variant.get("reuse"),
+                    "cost_units": integer(variant.get("cost_units")),
+                    "candidate_seal": candidate.get("seal"),
+                    "evaluation": evaluation,
+                    "candidate_counters": {
+                        "external_inference_calls": integer(mapping(candidate.get("output")).get("external_inference_calls")),
+                        "teacher_calls": integer(mapping(candidate.get("output")).get("teacher_calls")),
+                        "public_calibration_cases_consumed": integer(mapping(candidate.get("output")).get("public_calibration_cases_consumed")),
+                        "D2_cases_consumed": integer(mapping(candidate.get("output")).get("D2_cases_consumed")),
+                        "learned_generation_credit": integer(mapping(candidate.get("output")).get("learned_generation_credit")),
+                    },
+                })
+            task_results.append({
+                "opaque_task_id": opaque,
+                "family": task.get("family"),
+                "all_candidates_sealed_before_target_open": all(
+                    mapping(row.get("candidate_seal")).get("target_opened_before_seal") is False
+                    for row in variant_results
+                ),
+                "variants": variant_results,
+                "route_policy_results": evaluate_e3_route_policies(
+                    variant_results, dicts(e3_config.get("route_policies"))
+                ),
+            })
+        except (CampaignError, subprocess.SubprocessError, OSError, ValueError, json.JSONDecodeError) as exc:
+            infrastructure_faults.append({
+                "opaque_task_id": opaque,
+                "fault": f"{type(exc).__name__}: {exc}",
+            })
+
+    owner_mechanics = run_e3_owner_mechanics()
+    policy_summaries = summarize_e3_policies(task_results, e3_config)
+    any_quality = any(integer(row.get("useful")) > 0 for row in policy_summaries)
+    counters = {
+        key: sum(
+            integer(mapping(variant.get("candidate_counters")).get(key))
+            for task in task_results for variant in dicts(task.get("variants"))
+        )
+        for key in (
+            "external_inference_calls",
+            "teacher_calls",
+            "public_calibration_cases_consumed",
+            "D2_cases_consumed",
+            "learned_generation_credit",
+        )
+    }
+    checks = [
+        e1_check("E0_identity_bound", e3_config.get("parent_preregistration_sha256") == e0.get("preregistration_sha256"), {
+            "expected": e3_config.get("parent_preregistration_sha256"),
+            "observed": e0.get("preregistration_sha256"),
+        }),
+        e1_check("E2_source_disjoint", disjoint_targets(config.get("tasks"), "D1_E2", "D1_E3"), len(tasks)),
+        e1_check("task_denominator_complete", len(task_results) == len(tasks) == integer(e3_config.get("task_count")), {
+            "observed": len(task_results), "expected": e3_config.get("task_count"),
+        }),
+        e1_check("variant_denominator_complete", all(len(dicts(row.get("variants"))) == len(variants) for row in task_results), len(variants)),
+        e1_check("all_candidates_sealed_before_target_open", all(row.get("all_candidates_sealed_before_target_open") is True for row in task_results), len(task_results)),
+        e1_check("candidate_integrity_valid", all(
+            mapping(variant.get("evaluation")).get("information_flow_valid") is True
+            for task in task_results for variant in dicts(task.get("variants"))
+        ), len(task_results) * len(variants)),
+        e1_check("owner_mechanics_regression_green", owner_mechanics.get("trigger_state") == "GREEN", owner_mechanics),
+        e1_check("no_infrastructure_faults", not infrastructure_faults, infrastructure_faults),
+        e1_check("zero_external_teacher_public_D2_or_learned_credit", all(value == 0 for value in counters.values()), counters),
+    ]
+    hard_gaps = [row for row in checks if not row["passed"]]
+    invalid_flow = any(row["name"] in {
+        "all_candidates_sealed_before_target_open",
+        "candidate_integrity_valid",
+        "zero_external_teacher_public_D2_or_learned_credit",
+    } for row in hard_gaps)
+    if invalid_flow:
+        terminal = "INVALID_INFORMATION_FLOW"
+    elif infrastructure_faults or owner_mechanics.get("trigger_state") != "GREEN":
+        terminal = "BLOCKED_INFRASTRUCTURE"
+    elif not any_quality:
+        terminal = "INCONCLUSIVE_WORKER_INADEQUATE"
+    else:
+        terminal = "INCONCLUSIVE_EXPERIMENT"
+    report = {
+        "policy": "project_theseus_core_evidence_E3_mechanism_comparison_v1",
+        "campaign_id": config.get("campaign_id"),
+        "stage": "E3",
+        "created_utc": now(),
+        "trigger_state": "GREEN" if not hard_gaps else "RED",
+        "terminal_disposition": terminal,
+        "source": {
+            "commit": git("rev-parse", "HEAD").strip(),
+            "tree": git("rev-parse", "HEAD^{tree}").strip(),
+            "campaign_source_sha256": sha256_bytes((ROOT / "scripts" / "core_evidence_campaign.py").read_bytes()),
+            "worker_source_sha256": sha256_bytes((ROOT / "scripts" / "core_evidence_worker.py").read_bytes()),
+            "E0_config_sha256": sha256_bytes(config_path.read_bytes()),
+            "E3_config_sha256": sha256_bytes(e3_config_path.read_bytes()),
+            "E2_report_payload_sha256": e2.get("report_payload_sha256"),
+        },
+        "preregistered_variant_matrix": e3_config,
+        "task_results": task_results,
+        "policy_summaries": policy_summaries,
+        "owner_mechanics": owner_mechanics,
+        "quality_predicate_met_by_any_route": any_quality,
+        "infrastructure_faults": infrastructure_faults,
+        "checks": checks,
+        "hard_gaps": hard_gaps,
+        "counters": {
+            **counters,
+            "D1_E3_tasks_opened": len(task_results),
+            "candidate_variants_sealed": len(task_results) * len(variants),
+            "user_facing_effects": 0,
+        },
+        "maximum_inference": e3_config.get("maximum_inference"),
+        "result_interpretation": (
+            "Existing owner regressions passed, but no frozen route produced a useful completed task. "
+            "This records a worker/route quality wall; it does not support causal efficacy for planning, VCM, reuse, or least-sufficient routing."
+        ),
+        "replay_command": "python3 scripts/core_evidence_campaign.py --stage E3 --gate",
+        "runtime": {"wall_ms": round((time.perf_counter() - started) * 1000.0, 3)},
+    }
+    report["report_payload_sha256"] = stable_hash({
+        key: value for key, value in report.items()
+        if key not in {"created_utc", "runtime", "report_payload_sha256"}
+    })
+    return report
+
+
+def evaluate_e3_route_policies(
+    variants: list[dict[str, Any]],
+    policies: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    by_id = {str(row.get("variant_id")): row for row in variants}
+    eligible = [
+        row for row in variants
+        if mapping(row.get("evaluation")).get("useful_completed_task") is True
+        and mapping(row.get("evaluation")).get("information_flow_valid") is True
+    ]
+    rows = []
+    for policy in policies:
+        policy_id = str(policy.get("policy_id") or "")
+        if policy_id == "least_sufficient":
+            selected = min(eligible, key=lambda row: integer(row.get("cost_units"))) if eligible else {}
+        else:
+            selected = by_id.get(str(policy.get("selection") or ""), {})
+        evaluation = mapping(selected.get("evaluation"))
+        rows.append({
+            "policy_id": policy_id,
+            "selected_variant_id": selected.get("variant_id"),
+            "held_for_quality_wall": not bool(selected),
+            "useful": int(evaluation.get("useful_completed_task") is True),
+            "unsafe": 0,
+            "total_lifecycle_cost_units": integer(selected.get("cost_units")) if selected else 0,
+        })
+    return rows
+
+
+def summarize_e3_policies(
+    task_results: list[dict[str, Any]],
+    e3_config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    rows = []
+    for policy in dicts(e3_config.get("route_policies")):
+        policy_id = str(policy.get("policy_id") or "")
+        instances = [
+            item for task in task_results for item in dicts(task.get("route_policy_results"))
+            if item.get("policy_id") == policy_id
+        ]
+        rows.append({
+            "policy_id": policy_id,
+            "attempted": len(instances),
+            "useful": sum(integer(item.get("useful")) for item in instances),
+            "unsafe": sum(integer(item.get("unsafe")) for item in instances),
+            "held_for_quality_wall": sum(bool(item.get("held_for_quality_wall")) for item in instances),
+            "total_lifecycle_cost_units": sum(integer(item.get("total_lifecycle_cost_units")) for item in instances),
+        })
+    return rows
+
+
+def run_e3_owner_mechanics() -> dict[str, Any]:
+    tests = [
+        "tests/test_reflexive_dispatch.py::ReflexiveDispatchTests::test_qualification_precedes_cost_and_stale_route_is_rejected",
+        "tests/test_reflexive_dispatch.py::ReflexiveDispatchTests::test_effect_capability_requires_explicit_authority_and_never_grants_it_from_proposal",
+        "tests/test_reflexive_dispatch.py::ReflexiveDispatchTests::test_registry_mutation_previews_authority_diff_and_rolls_back_exactly",
+        "tests/test_reflexive_dispatch.py::ReflexiveDispatchTests::test_compilation_requires_diverse_verified_traces_negative_space_and_economics",
+        "tests/test_vcm_consumer_abi.py::VcmConsumerAbiTests::test_missing_required_context_fails_closed",
+        "tests/test_vcm_consumer_abi.py::VcmConsumerAbiTests::test_stale_context_fails_closed",
+        "tests/test_procedural_memory_assets.py::test_active_asset_is_retrievable_and_noncredit",
+        "tests/test_procedural_memory_assets.py::test_ambiguous_and_unknown_bindings_abstain",
+        "tests/test_procedural_memory_assets.py::test_stale_and_drifted_procedures_retire",
+    ]
+    process = run_process(
+        [sys.executable, "-m", "pytest", "-q", *tests],
+        cwd=ROOT,
+        timeout=180,
+        env={**os.environ, "NO_PROXY": "*", "no_proxy": "*"},
+    )
+    return {
+        "policy": "existing_owner_mechanics_regression_qualification_v1",
+        "trigger_state": "GREEN" if process["returncode"] == 0 else "RED",
+        "test_count": len(tests),
+        "returncode": process["returncode"],
+        "stdout_sha256": sha256_text(process["stdout"]),
+        "stderr_sha256": sha256_text(process["stderr"]),
+        "source_identities": {
+            path: sha256_bytes((ROOT / path).read_bytes())
+            for path in (
+                "scripts/reflexive_dispatch.py",
+                "scripts/vcm_consumer_abi.py",
+                "scripts/procedural_memory_assets.py",
+            )
+        },
+        "claim_boundary": "regression mechanics only; not causal useful-work evidence",
+    }
 
 
 def run_clean_e1_replay(

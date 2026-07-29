@@ -1,0 +1,107 @@
+{
+  "policy": "project_theseus_core_evidence_E3_preregistration_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "parent_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+  "denominator": "D1_E3",
+  "task_count": 6,
+  "source_disjoint_from": "D1_E2",
+  "candidate_seal_rule": "all variants for one task are sealed before that task target is opened",
+  "route_policies": [
+    {
+      "policy_id": "always_maximal",
+      "selection": "full_planning_correct_vcm_fresh_execution"
+    },
+    {
+      "policy_id": "always_cheapest",
+      "selection": "direct_no_plan_no_vcm_fresh_execution"
+    },
+    {
+      "policy_id": "least_sufficient",
+      "selection": "lowest total lifecycle cost among variants meeting the frozen quality predicate; otherwise hold"
+    }
+  ],
+  "variants": [
+    {
+      "variant_id": "full_planning_correct_vcm_fresh_execution",
+      "planning": "full",
+      "vcm": "correct",
+      "reuse": "fresh",
+      "cost_units": 19
+    },
+    {
+      "variant_id": "direct_no_plan_no_vcm_fresh_execution",
+      "planning": "none",
+      "vcm": "none",
+      "reuse": "fresh",
+      "cost_units": 10
+    },
+    {
+      "variant_id": "full_planning_no_vcm_fresh_execution",
+      "planning": "full",
+      "vcm": "none",
+      "reuse": "fresh",
+      "cost_units": 17
+    },
+    {
+      "variant_id": "full_planning_stale_vcm_fresh_execution",
+      "planning": "full",
+      "vcm": "stale",
+      "reuse": "fresh",
+      "cost_units": 19
+    },
+    {
+      "variant_id": "full_planning_shuffled_vcm_fresh_execution",
+      "planning": "full",
+      "vcm": "shuffled",
+      "reuse": "fresh",
+      "cost_units": 19
+    },
+    {
+      "variant_id": "full_planning_omission_vcm_fresh_execution",
+      "planning": "full",
+      "vcm": "omission",
+      "reuse": "fresh",
+      "cost_units": 19
+    },
+    {
+      "variant_id": "full_planning_correct_vcm_verified_reuse",
+      "planning": "full",
+      "vcm": "correct",
+      "reuse": "verified",
+      "cost_units": 14
+    }
+  ],
+  "quality_predicate": {
+    "useful_completed_task": true,
+    "unsafe_or_unauthorized_release": false,
+    "candidate_integrity": true,
+    "hidden_verifier": true
+  },
+  "owner_mechanics_controls": [
+    "stale_route_rejected_before_cost_selection",
+    "effect_authority_not_granted_by_route_proposal",
+    "missing_and_stale_vcm_fail_closed",
+    "verified_procedure_retrievable_without_learned_credit",
+    "ambiguous_or_unknown_procedure_abstains",
+    "stale_or_drifted_procedure_retires",
+    "reflex_decompilation_invalidates_descendants",
+    "registry_mutation_rolls_back_exactly"
+  ],
+  "terminal_rules": {
+    "quality_wall": "INCONCLUSIVE_WORKER_INADEQUATE",
+    "no_efficiency_gain_with_quality": "NEGATIVE_SCOPED",
+    "invalid_information_flow": "INVALID_INFORMATION_FLOW",
+    "invalid_evaluator": "INVALID_EVALUATOR",
+    "infrastructure_failure": "BLOCKED_INFRASTRUCTURE"
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference": "forbidden",
+    "teacher_calls": "forbidden",
+    "public_benchmark_consumption": "forbidden",
+    "D2_consumption": "forbidden",
+    "learned_generation_credit": 0,
+    "user_facing_effects": 0
+  },
+  "maximum_inference": "This experiment may qualify existing owner mechanics and test whether any frozen policy achieves useful-safe repeated repository work. Mechanics passing without useful work does not support planning, VCM, procedural-memory, routing-efficiency, or ASI claims."
+}
