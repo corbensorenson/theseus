@@ -118,7 +118,7 @@
     {
       "id": "kimi_k3_attention_residuals",
       "priority": 2,
-      "state": "REQUIRED_ISOLATED_SUCCESSOR_CANARY",
+      "state": "COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN",
       "why_it_has_teeth": "AttnRes changes depthwise information flow rather than merely changing execution. It may improve small-model optimization, but adopting it would invalidate the live checkpoint.",
       "candidate": "block-level Attention Residuals with bounded learned mixing over prior block outputs",
       "control": "current sequential residual stream",
@@ -131,7 +131,24 @@
         "activation-memory and bandwidth profile"
       ],
       "adoption_rule": "Restart campaign topology only for a repeatable time-to-quality or heldout Pareto win beyond uncertainty, with no weak-arm regression and a material joined-cost gain large enough to repay discarded step-11416 work.",
-      "negative_inference_boundary": "A small-rung loss is a campaign-one engineering disposition, not broad AttnRes falsification."
+      "negative_inference_boundary": "A small-rung loss is a campaign-one engineering disposition, not broad AttnRes falsification.",
+      "result": {
+        "report": "reports/kimi_k3_attnres_qualification.json",
+        "trigger_state": "GREEN",
+        "selected_architecture": "control",
+        "block_size": 2,
+        "candidate_parameter_count": 6625024,
+        "mean_relative_loss_improvement": -0.017047388459390706,
+        "mean_joined_wall_time_ratio": 1.1499794521335673,
+        "mean_time_to_control_final_quality_ratio": 1.5147679596939396,
+        "mean_allocator_peak_ratio": 1.0843481584583123,
+        "maximum_weak_arm_relative_loss_regression": 0.07673261691357343,
+        "reduction_to_control_exact": true,
+        "cached_decode_parity_passed": true,
+        "checkpoint_next_update_numerically_equivalent": true,
+        "disposition": "NOT_SELECTED_FIRST_CAMPAIGN",
+        "scientific_falsification_claimed": false
+      }
     },
     {
       "id": "kimi_k3_situ_glu",

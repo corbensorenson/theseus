@@ -19,6 +19,11 @@ class CausalTransformerConfig:
     rope_base: float = 10000.0
     rms_norm_eps: float = 1e-5
     attention_policy: str = "causal"
+    attention_residual_mode: str = "none"
+    attention_residual_block_size: int = 0
+    feed_forward_activation: str = "swiglu"
+    situ_glu_gate_beta: float = 4.0
+    situ_glu_up_beta: float = 25.0
     source_target_separator_token_id: int = 2
     source_encoder_layers: int = 0
     source_copy_mode: str = "none"
@@ -83,6 +88,31 @@ class CausalTransformerConfig:
             raise ValueError(
                 "attention policy must be causal, prefix_lm, or encoder_decoder"
             )
+        if self.attention_residual_mode not in {"none", "block"}:
+            raise ValueError("attention residual mode must be none or block")
+        if self.attention_residual_mode == "none":
+            if self.attention_residual_block_size != 0:
+                raise ValueError(
+                    "disabled attention residuals require zero block size"
+                )
+        elif (
+            self.attention_residual_block_size <= 0
+            or self.attention_residual_block_size > self.num_layers
+        ):
+            raise ValueError(
+                "block attention residuals require a valid block size"
+            )
+        if self.feed_forward_activation not in {"swiglu", "situ_glu"}:
+            raise ValueError(
+                "feed-forward activation must be swiglu or situ_glu"
+            )
+        if (
+            not math.isfinite(self.situ_glu_gate_beta)
+            or not math.isfinite(self.situ_glu_up_beta)
+            or self.situ_glu_gate_beta <= 0.0
+            or self.situ_glu_up_beta <= 0.0
+        ):
+            raise ValueError("SiTU-GLU beta values must be finite and positive")
         if self.source_encoder_layers < 0:
             raise ValueError("source encoder layers cannot be negative")
         if self.attention_policy == "encoder_decoder" and self.source_encoder_layers <= 0:
@@ -107,6 +137,13 @@ class CausalTransformerConfig:
             raise ValueError("source-target separator token must be in vocabulary")
         if self.state_memory_mode not in {"none", "semantic_roles", "hash_control"}:
             raise ValueError("state memory mode must be none, semantic_roles, or hash_control")
+        if (
+            self.attention_residual_mode != "none"
+            and self.state_memory_mode != "none"
+        ):
+            raise ValueError(
+                "attention residuals are not qualified with recurrent state memory"
+            )
         if self.state_memory_ablation not in {"none", "zero", "shuffle"}:
             raise ValueError("state memory ablation must be none, zero, or shuffle")
         if self.state_memory_read_policy not in {"unrestricted", "role_dependency"}:
@@ -360,6 +397,10 @@ def analytical_parameter_breakdown(
         "decoder_layers": int(config.num_layers) * decoder_layer,
         "final_norm": d_model,
     }
+    if config.attention_residual_mode == "block":
+        result["attention_residual_queries"] = (
+            int(config.num_layers) + 1
+        ) * d_model
 
     if config.attention_policy == "encoder_decoder":
         source_block = base_block + adapter(int(config.source_expert_adapter_dim))
@@ -538,7 +579,7 @@ def build_model(
     exact_checkpoint_placeholder_initialization: bool = False,
     self_attention_projection: str = "separate",
 ) -> Any:
-    """Build a pre-norm RoPE/GQA/SwiGLU causal LM with tied embeddings."""
+    """Build a pre-norm RoPE/GQA/gated-FFN causal LM with tied embeddings."""
 
     config.validate()
     if parameter_initialization_dtype not in {"float32", "bfloat16"}:
@@ -1400,7 +1441,19 @@ def build_model(
             self.down = nn.Linear(config.ff_dim, config.d_model, bias=False)
 
         def __call__(self, hidden: Any) -> Any:
-            return self.down(nn.silu(self.gate(hidden)) * self.up(hidden))
+            gate = self.gate(hidden)
+            up = self.up(hidden)
+            if config.feed_forward_activation == "situ_glu":
+                gate_beta = float(config.situ_glu_gate_beta)
+                up_beta = float(config.situ_glu_up_beta)
+                bounded_gate = (
+                    gate_beta
+                    * mx.tanh(gate / gate_beta)
+                    * mx.sigmoid(gate)
+                )
+                bounded_up = up_beta * mx.tanh(up / up_beta)
+                return self.down(bounded_gate * bounded_up)
+            return self.down(nn.silu(gate) * up)
 
     class ExpertAdapter(nn.Module):
         def __init__(self, dimension: int) -> None:
@@ -1605,6 +1658,13 @@ def build_model(
             self.token_embedding = nn.Embedding(config.vocab_size, config.d_model)
             self.layers = [DecoderBlock() for _ in range(config.num_layers)]
             self.final_norm = nn.RMSNorm(config.d_model, eps=config.rms_norm_eps)
+            if config.attention_residual_mode == "block":
+                self.attention_residual_queries = nn.Embedding(
+                    config.num_layers + 1, config.d_model
+                )
+            # A mechanics-only scalar permits an exact reduction-to-control
+            # check. The qualified candidate itself always uses scale 1.
+            self.attention_residual_scale = 1.0
             self.scale = math.sqrt(config.d_model)
             self.gradient_checkpointing = bool(gradient_checkpointing)
             self.kerc_stage_output_isolation = False
@@ -1815,6 +1875,36 @@ def build_model(
                         self.semantic_plan_projection.weight
                     )
             materialize_initialization(self)
+
+        def attention_residual_mix(
+            self,
+            *,
+            query_index: int,
+            sources: list[Any],
+            sequential_hidden: Any,
+        ) -> Any:
+            """Retrieve over depth exactly as K3 Block AttnRes equations 8-10."""
+
+            if config.attention_residual_mode != "block":
+                return sequential_hidden
+            scale = float(self.attention_residual_scale)
+            if scale == 0.0:
+                return sequential_hidden
+            values = mx.stack(sources, axis=2)
+            denominator = mx.sqrt(
+                mx.mean(mx.square(values), axis=-1, keepdims=True)
+                + float(config.rms_norm_eps)
+            )
+            keys = values / denominator
+            query = self.attention_residual_queries.weight[query_index]
+            logits = mx.sum(keys * query[None, None, None, :], axis=-1)
+            weights = mx.softmax(logits, axis=-1)
+            mixed = mx.sum(weights[:, :, :, None] * values, axis=2)
+            if scale == 1.0:
+                return mixed
+            return sequential_hidden + scale * (
+                mixed - sequential_hidden
+            )
 
         def set_structural_growth_masks(self, masks: tuple[float, ...]) -> None:
             """Set cache-free decoder residual masks for staged depth growth."""
@@ -2782,6 +2872,11 @@ def build_model(
                         "masked structural growth is qualified only for "
                         "cache-free non-recurrent training"
                     )
+                if config.attention_residual_mode != "none":
+                    raise ValueError(
+                        "masked structural growth and attention residuals "
+                        "require separate qualification"
+                    )
             if input_embeddings is not None:
                 if tuple(input_embeddings.shape) != (
                     int(tokens.shape[0]),
@@ -3029,8 +3124,30 @@ def build_model(
             attention_mask = self.sequence_attention_mask(decoder_tokens, cache)
             if not state_enabled:
                 hidden = conditioned_hidden
+                completed_attention_residual_blocks = (
+                    [conditioned_hidden]
+                    if config.attention_residual_mode == "block"
+                    else []
+                )
+                partial_attention_residual_block = None
+                attention_residual_block_size = int(
+                    config.attention_residual_block_size
+                )
                 next_cache: list[tuple[Any, ...]] = []
                 for index, layer in enumerate(self.layers):
+                    if config.attention_residual_mode == "block":
+                        sources = list(
+                            completed_attention_residual_blocks
+                        )
+                        if partial_attention_residual_block is not None:
+                            sources.append(
+                                partial_attention_residual_block
+                            )
+                        hidden = self.attention_residual_mix(
+                            query_index=index,
+                            sources=sources,
+                            sequential_hidden=hidden,
+                        )
                     layer_cache = layer_cache_input[index] if layer_cache_input is not None else None
                     if self.gradient_checkpointing and self.training:
                         if layer_cache is not None or plan_slot_attention_enabled:
@@ -3116,6 +3233,20 @@ def build_model(
                                 else None
                             ),
                         )
+                    if config.attention_residual_mode == "block":
+                        partial_attention_residual_block = (
+                            hidden
+                            if partial_attention_residual_block is None
+                            else partial_attention_residual_block + hidden
+                        )
+                        if (
+                            (index + 1) % attention_residual_block_size == 0
+                            or index + 1 == config.num_layers
+                        ):
+                            completed_attention_residual_blocks.append(
+                                partial_attention_residual_block
+                            )
+                            partial_attention_residual_block = None
                     next_cache.append(layer_next)
                 if source_encoder_enabled and source_memory is not None:
                     next_cache.append((source_memory, source_mask, source_copy_ids))
@@ -3130,6 +3261,12 @@ def build_model(
                             kerc_unit_logits,
                             kerc_unit_confidence_logits,
                         )
+                    )
+                if config.attention_residual_mode == "block":
+                    hidden = self.attention_residual_mix(
+                        query_index=config.num_layers,
+                        sources=completed_attention_residual_blocks,
+                        sequential_hidden=hidden,
                     )
                 final_hidden = self.final_norm(hidden)
                 if decoder_unpadded_width and output_position_mask is None:

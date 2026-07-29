@@ -224,6 +224,24 @@ the wall clock limit, made swap telemetry report-only, retained predictive-exhau
 process-memory protection, and completed green. This does not falsify Per-Head Muon outside
 the exact implementation, data, scale, objective, tuning grid, and evaluator.
 
+Block Attention Residuals are also complete and not selected for campaign one. The
+source-faithful block-size-two implementation uses learned pseudo-queries over
+RMS-normalized embedding, completed-block, and current-partial-block keys with raw
+representations as values, plus a learned final block aggregator. Exact scale-zero reduction
+to the sequential control, gradients through every eligible layer/query, intervention,
+in-place migration refusal, analytical/actual parameter parity, cached-decode parity, exact
+checkpoint reload, and tolerance-bound next-state replay all pass. On the 6.625M,
+128-step, three-seed source-disjoint rung it regressed mean heldout loss 1.7047%, used
+1.149979x joined wall, needed 1.514768x time to control final quality, used 1.084348x
+allocator peak, and reached 7.6733% weak-arm regression. The initial replay report was red
+because the harness incorrectly demanded bitwise-identical diagnostic gradient norms while
+the resulting model and optimizer states were within `1e-7`; the retained repair makes
+next-state equivalence the gate. A later predictive-memory wrapper also false-triggered on
+the initial MLX allocation slope despite several GiB of predicted headroom; a zero-reserve,
+wall-unbounded, process-capped resume completed green. These receipts are retained rather
+than hidden. The result is scoped to this implementation and rung, not broad AttnRes
+falsification.
+
 This is a finite reopening, not a standing architecture search. Every candidate has a
 prewritten control, scale, adequacy checks, adoption rule, and negative-inference boundary
 in `configs/neural_seed_pre_long_run_review.json`. No public or frozen functional surface is
@@ -3503,7 +3521,7 @@ and 87,441,996 of 1,096,734,920 pretraining positions while the finite Kimi K3-d
 pre-long-run review closes. The 10.8M rung is closed at 0/160 across MoECOT and both dense
 controls; that result does not transfer to the current rung.
 
-Next: execute only the remaining AttnRes and SiTU-GLU matched canaries frozen in
+Next: execute only the remaining SiTU-GLU matched canary frozen in
 `configs/neural_seed_pre_long_run_review.json`, publish one replacement selection receipt,
 then either resume the exact step-11,416 checkpoint unchanged or start a new incompatible
 lineage if a topology earns the restart. Train the selected model and matched controls and

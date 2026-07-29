@@ -3646,8 +3646,17 @@
         "id": "kimi_k3_attention_residuals",
         "priority": 2,
         "owner": "architecture_topology",
-        "decision": "Run one isolated block-level AttnRes successor canary with reduction-to-control, gradient, intervention, ablation, exact reload, activation-memory, time-to-quality, and weak-arm gates.",
-        "checkpoint_boundary": "Adoption invalidates step-11416 topology and requires a new content-addressed lineage."
+        "decision": "COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN: source-faithful block-size-two AttnRes passed reduction-to-control, gradient, intervention, cached decode, migration refusal, parameter accounting, exact reload, and next-state replay, but regressed mean heldout loss 1.7047 percent, used 1.149979x joined wall and 1.084348x allocator peak, required 1.514768x time to control quality, and reached 7.6733 percent weak-arm regression.",
+        "checkpoint_boundary": "Adoption would invalidate step-11416 topology and require a new content-addressed lineage; this candidate was not adopted.",
+        "evidence": [
+          "reports/kimi_k3_attnres_qualification.json",
+          "reports/accelerator_replay/kimi_k3_attnres_unit_guard.json",
+          "reports/accelerator_replay/kimi_k3_attnres_qualification_guard.json",
+          "reports/accelerator_replay/kimi_k3_attnres_qualification_replay_repair_guard.json",
+          "reports/accelerator_replay/kimi_k3_attnres_qualification_final_guard.json",
+          "reports/accelerator_replay/kimi_k3_attnres_qualification_final_resume_guard.json"
+        ],
+        "scientific_falsification_claimed": false
       },
       {
         "id": "kimi_k3_situ_glu",

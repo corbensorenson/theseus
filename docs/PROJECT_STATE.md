@@ -908,7 +908,12 @@ Per-Head Muon is complete and not selected: on the exact 6.623M, three-profile, 
 rung it regressed mean heldout loss 8.2798%, never reached AdamW final quality, used
 1.213938x AdamW training wall, and reached 21.8135% weak-arm regression. Exact checkpoint
 and next-update replay passed. This result is scoped to that implementation and regime;
-AttnRes and SiTU-GLU remain the only open Kimi K3 candidates.
+AttnRes and SiTU-GLU were the only remaining Kimi K3 candidates at that point.
+Block AttnRes is now complete and not selected as well. Its exact mechanics, migration
+refusal, cached decode, checkpoint reload, and next-state replay pass, but the matched rung
+regressed mean loss 1.7047%, used 1.149979x joined wall and 1.084348x allocator peak,
+required 1.514768x time to control final quality, and reached 7.6733% weak-arm regression.
+SiTU-GLU is the only open Kimi K3 candidate.
 
 T1 is paused at shared-trunk step 11,416 and 87,441,996 of 1,096,734,920
 pretraining positions. The live canonical path advanced after the committed T0A freeze, but the
