@@ -147,3 +147,73 @@ def test_report_digest_is_stable_across_timestamp_changes() -> None:
 
     assert first["preregistration_sha256"] == second["preregistration_sha256"]
     assert first["report_payload_sha256"] == second["report_payload_sha256"]
+
+
+def test_e1_packet_joins_allowed_blocked_revoked_and_exact_rollback() -> None:
+    config = load_config()
+    report = campaign.build_e1_packet(
+        config,
+        ROOT / "configs" / "core_evidence_campaign.json",
+        source_commit="unit-test-source",
+        checkout_root=ROOT,
+        gate_results={
+            "registry": {"trigger_state": "GREEN", "returncode": 0},
+            "roadmap": {"trigger_state": "YELLOW", "returncode": 0},
+        },
+        clean_checkout=True,
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["disposition"] == "REPLAYABLE_REFERENCE_BACKED"
+    assert report["hard_gaps"] == []
+    assert report["allowed_effect_trace"]["ready"] is True
+    assert report["allowed_effect_trace"]["rollback"]["complete"] is True
+    assert report["allowed_effect_trace"]["rollback"]["before_identity"] == report["allowed_effect_trace"]["rollback"]["final_identity"]
+    assert report["blocked_effect_trace"]["ready"] is False
+    assert report["revoked_effect_trace"]["ready"] is False
+    assert report["independent_effect_audit"]["valid"] is True
+    assert report["counters"]["exact_rollback_count"] == 1
+    assert report["counters"]["D2_cases_consumed"] == 0
+    assert report["counters"]["external_inference_calls"] == 0
+    assert report["counters"]["learned_generation_credit"] == 0
+
+
+def test_e1_replay_fails_if_e0_config_identity_changes(tmp_path: Path) -> None:
+    config = load_config()
+    changed = tmp_path / "changed.json"
+    changed.write_text(json.dumps({**config, "question": "changed"}), encoding="utf-8")
+    report = campaign.build_e1_packet(
+        config,
+        changed,
+        source_commit="unit-test-source",
+        checkout_root=ROOT,
+        gate_results={
+            "registry": {"trigger_state": "GREEN", "returncode": 0},
+            "roadmap": {"trigger_state": "YELLOW", "returncode": 0},
+        },
+        clean_checkout=True,
+    )
+
+    assert report["trigger_state"] == "RED"
+    assert report["disposition"] == "REPLAY_FAILED"
+    assert "E0_config_identity" in {row["name"] for row in report["hard_gaps"]}
+
+
+def test_e1_replay_fails_if_source_gates_are_red() -> None:
+    report = campaign.build_e1_packet(
+        load_config(),
+        ROOT / "configs" / "core_evidence_campaign.json",
+        source_commit="unit-test-source",
+        checkout_root=ROOT,
+        gate_results={
+            "registry": {"trigger_state": "RED", "returncode": 2},
+            "roadmap": {"trigger_state": "RED", "returncode": 2},
+        },
+        clean_checkout=True,
+    )
+
+    assert report["trigger_state"] == "RED"
+    assert report["disposition"] == "REPLAY_FAILED"
+    failed = {row["name"] for row in report["hard_gaps"]}
+    assert "registry_gate_green" in failed
+    assert "roadmap_gate_nonred" in failed

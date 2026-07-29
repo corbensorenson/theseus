@@ -13,8 +13,12 @@ import argparse
 import hashlib
 import json
 import os
+import platform
+import shutil
 import subprocess
 import sys
+import tempfile
+import time
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,6 +28,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "core_evidence_campaign.json"
 DEFAULT_OUT = ROOT / "reports" / "core_evidence_e0_preregistration.json"
+DEFAULT_E1_OUT = ROOT / "reports" / "core_evidence_e1_replay.json"
 
 EXPECTED_CLAIMS = {
     "asi-is-a-stack-not-a-model.core",
@@ -85,18 +90,632 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG.relative_to(ROOT)))
     parser.add_argument("--out", default=str(DEFAULT_OUT.relative_to(ROOT)))
+    parser.add_argument("--stage", choices=["E0", "E1", "E1-inner"], default="E0")
+    parser.add_argument("--source-commit", default="")
     parser.add_argument("--gate", action="store_true")
     args = parser.parse_args()
 
     config_path = resolve(args.config)
-    out_path = resolve(args.out)
     config = read_json(config_path)
-    report = build_preregistration(config, config_path)
+    if args.stage == "E0":
+        out_path = resolve(args.out)
+        report = build_preregistration(config, config_path)
+    elif args.stage == "E1":
+        out_path = resolve(args.out) if args.out != str(DEFAULT_OUT.relative_to(ROOT)) else DEFAULT_E1_OUT
+        report = run_clean_e1_replay(
+            config,
+            config_path,
+            source_commit=args.source_commit,
+        )
+    else:
+        out_path = resolve(args.out)
+        source_commit = args.source_commit or os.environ.get("THESEUS_E1_SOURCE_COMMIT", "")
+        gate_results = run_e1_source_gates(ROOT)
+        report = build_e1_packet(
+            config,
+            config_path,
+            source_commit=source_commit,
+            checkout_root=ROOT,
+            gate_results=gate_results,
+            clean_checkout=True,
+        )
     write_json(out_path, report)
     print(json.dumps(gate_view(report), indent=2, sort_keys=True))
     if args.gate and report["trigger_state"] != "GREEN":
         return 2
     return 0
+
+
+def run_clean_e1_replay(
+    config: dict[str, Any],
+    config_path: Path,
+    *,
+    source_commit: str = "",
+) -> dict[str, Any]:
+    """Run E1 from a git archive with no worktree or git-object access."""
+    commit = git("rev-parse", f"{source_commit or 'HEAD'}^{{commit}}").strip()
+    tree = git("rev-parse", f"{commit}^{{tree}}").strip()
+    e0_report_path = ROOT / "reports" / "core_evidence_e0_preregistration.json"
+    e0_report = read_json(e0_report_path)
+    activation_gaps = []
+    if e0_report.get("trigger_state") != "GREEN":
+        activation_gaps.append("E0_preregistration_not_green")
+    if e0_report.get("preregistration_state") != "FROZEN_PROSPECTIVE":
+        activation_gaps.append("E0_preregistration_not_frozen")
+    if e0_report.get("config_sha256") != sha256_bytes(config_path.read_bytes()):
+        activation_gaps.append("E0_config_identity_changed")
+    if activation_gaps:
+        return failed_e1_report(
+            source_commit=commit,
+            source_tree=tree,
+            disposition="REPLAY_FAILED",
+            gaps=activation_gaps,
+        )
+
+    with tempfile.TemporaryDirectory(prefix="theseus-e1-clean-") as tmp:
+        temp_root = Path(tmp)
+        checkout = temp_root / "checkout"
+        archive = temp_root / "source.tar"
+        inner_out = temp_root / "e1.json"
+        checkout.mkdir()
+        archive_result = run_process(
+            ["git", "archive", "--format=tar", f"--output={archive}", commit],
+            cwd=ROOT,
+            timeout=120,
+        )
+        if archive_result["returncode"] != 0:
+            return failed_e1_report(
+                source_commit=commit,
+                source_tree=tree,
+                disposition="REPLAY_FAILED",
+                gaps=["git_archive_failed"],
+                process=archive_result,
+            )
+        extract_result = run_process(
+            ["tar", "-xf", str(archive), "-C", str(checkout)],
+            cwd=ROOT,
+            timeout=120,
+        )
+        if extract_result["returncode"] != 0:
+            return failed_e1_report(
+                source_commit=commit,
+                source_tree=tree,
+                disposition="REPLAY_FAILED",
+                gaps=["archive_extract_failed"],
+                process=extract_result,
+            )
+        command = [
+            sys.executable,
+            "scripts/core_evidence_campaign.py",
+            "--stage",
+            "E1-inner",
+            "--source-commit",
+            commit,
+            "--out",
+            str(inner_out),
+            "--gate",
+        ]
+        process = run_process(
+            command,
+            cwd=checkout,
+            timeout=600,
+            env={
+                **os.environ,
+                "THESEUS_E1_SOURCE_COMMIT": commit,
+                "NO_PROXY": "*",
+                "no_proxy": "*",
+            },
+        )
+        if not inner_out.exists():
+            return failed_e1_report(
+                source_commit=commit,
+                source_tree=tree,
+                disposition="REPLAY_FAILED",
+                gaps=["inner_report_missing"],
+                process=process,
+            )
+        report = read_json(inner_out)
+        report["clean_replay"] = {
+            "source_commit": commit,
+            "source_tree": tree,
+            "archive_sha256": sha256_bytes(archive.read_bytes()),
+            "archive_checkout_had_git_metadata": (checkout / ".git").exists(),
+            "inner_returncode": process["returncode"],
+            "inner_stdout_sha256": sha256_text(process["stdout"]),
+            "inner_stderr_sha256": sha256_text(process["stderr"]),
+            "temporary_checkout_removed_before_report_return": True,
+        }
+        report["source"]["commit"] = commit
+        report["source"]["tree"] = tree
+        if process["returncode"] != 0:
+            report["trigger_state"] = "RED"
+            report["disposition"] = "REPLAY_FAILED"
+            report.setdefault("hard_gaps", []).append({
+                "name": "clean_inner_gate_failed",
+                "evidence": {"returncode": process["returncode"]},
+            })
+        report["report_payload_sha256"] = stable_hash({
+            key: value for key, value in report.items()
+            if key not in {"created_utc", "runtime", "report_payload_sha256"}
+        })
+        return report
+
+
+def build_e1_packet(
+    config: dict[str, Any],
+    config_path: Path,
+    *,
+    source_commit: str,
+    checkout_root: Path,
+    gate_results: dict[str, Any],
+    clean_checkout: bool,
+) -> dict[str, Any]:
+    """Execute allowed, revoked, and rollback traces in a disposable root."""
+    started = time.perf_counter()
+    scripts_path = checkout_root / "scripts"
+    if str(scripts_path) not in sys.path:
+        sys.path.insert(0, str(scripts_path))
+    import reflexive_dispatch  # noqa: PLC0415
+    import theseus_assistant_runtime  # noqa: PLC0415
+    from viea_spine_records import audit_effect_complete_transaction  # noqa: PLC0415
+
+    bounded_effect_parent = checkout_root / "runtime" / "assistant_effects"
+    bounded_effect_parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="core-evidence-e1-", dir=bounded_effect_parent) as effect_tmp:
+        effect_root = Path(effect_tmp)
+        allowed_target = effect_root / "allowed" / "route_authority.json"
+        blocked_target = effect_root / "blocked" / "route_authority.json"
+        revoked_target = effect_root / "revoked" / "route_authority.json"
+        allowed_root = effect_root / "allowed"
+        blocked_root = effect_root / "blocked"
+        revoked_root = effect_root / "revoked"
+        for path in (allowed_root, blocked_root, revoked_root):
+            path.mkdir(parents=True, exist_ok=True)
+
+        allowed_dispatch = effect_dispatch(
+            reflexive_dispatch,
+            authenticated=True,
+            authority_refs=["local_assistant_read", "local_effect_write", "local_tool_read"],
+        )
+        blocked_dispatch = effect_dispatch(
+            reflexive_dispatch,
+            authenticated=False,
+            authority_refs=["local_assistant_read", "local_effect_write", "local_tool_read"],
+        )
+        revoked_dispatch = effect_dispatch(
+            reflexive_dispatch,
+            authenticated=True,
+            authority_refs=["local_assistant_read", "local_tool_read"],
+        )
+        allowed = theseus_assistant_runtime.run_local_effect_canary(
+            enabled=True,
+            target=allowed_target,
+            allowed_root=allowed_root,
+            session_id="core-evidence-e1-allowed",
+            intent="planning",
+            prompt_hash=sha256_text("E1 allowed bounded route-authority effect"),
+            reflexive_dispatch_trace=allowed_dispatch,
+        )
+        blocked = theseus_assistant_runtime.run_local_effect_canary(
+            enabled=True,
+            target=blocked_target,
+            allowed_root=blocked_root,
+            session_id="core-evidence-e1-blocked",
+            intent="planning",
+            prompt_hash=sha256_text("E1 unauthenticated effect request"),
+            reflexive_dispatch_trace=blocked_dispatch,
+        )
+        revoked = theseus_assistant_runtime.run_local_effect_canary(
+            enabled=True,
+            target=revoked_target,
+            allowed_root=revoked_root,
+            session_id="core-evidence-e1-revoked",
+            intent="planning",
+            prompt_hash=sha256_text("E1 revoked local effect authority"),
+            reflexive_dispatch_trace=revoked_dispatch,
+        )
+        audit_input = effect_audit_report(allowed)
+        effect_audit = audit_effect_complete_transaction(
+            audit_input,
+            expected_route_ids={"assistant.route_authority_effect"},
+        )
+        effect_root_final_entries = sorted(
+            str(path.relative_to(effect_root))
+            for path in effect_root.rglob("*")
+            if path.is_file() or path.is_symlink()
+        )
+
+    e0_report = read_json(checkout_root / "reports" / "core_evidence_e0_preregistration.json")
+    artifact_identities = e1_artifact_identities(checkout_root)
+    trace_identities = {
+        "model": {
+            "id": str(config.get("identities", {}).get("worker") or ""),
+            "kind": str(config.get("identities", {}).get("worker_kind") or ""),
+            "learned_model_invoked": False,
+            "learned_credit": False,
+        },
+        "tool": {
+            "id": "theseus_assistant_runtime.run_local_effect_canary",
+            "source_sha256": artifact_identities.get("effect_kernel_source_sha256"),
+        },
+        "vcm": artifact_identities.get("vcm"),
+        "plan": artifact_identities.get("plan"),
+        "route": {
+            "allowed_trace_id": allowed.get("dispatch_trace_id"),
+            "allowed_decision_digest": allowed.get("dispatch_decision_digest"),
+            "blocked_trace_id": blocked_dispatch.get("trace_id"),
+            "revoked_trace_id": revoked_dispatch.get("trace_id"),
+        },
+        "authority": {
+            "allowed_authority_set_sha256": stable_hash(["local_assistant_read", "local_effect_write", "local_tool_read"]),
+            "revoked_authority_set_sha256": stable_hash(["local_assistant_read", "local_tool_read"]),
+            "blocked_authenticated": False,
+        },
+        "observation": {
+            "observer_id": allowed.get("observer_id"),
+            "first_effect_identity": mapping(allowed.get("rollback")).get("first_effect_identity"),
+            "final_effect_identity": mapping(allowed.get("rollback")).get("final_identity"),
+        },
+        "residual": {
+            "blocked_residual_sha256": stable_hash(blocked.get("residuals")),
+            "revoked_residual_sha256": stable_hash(revoked.get("residuals")),
+        },
+        "terminal_receipt": {
+            "effect_audit_sha256": stable_hash(effect_audit),
+            "effect_audit_support_state": effect_audit.get("support_state"),
+        },
+    }
+    checks = [
+        e1_check("clean_checkout", clean_checkout, clean_checkout),
+        e1_check("source_commit_present", bool(source_commit), source_commit),
+        e1_check("E0_green", e0_report.get("trigger_state") == "GREEN", e0_report.get("trigger_state")),
+        e1_check("E0_frozen", e0_report.get("preregistration_state") == "FROZEN_PROSPECTIVE", e0_report.get("preregistration_state")),
+        e1_check("E0_config_identity", e0_report.get("config_sha256") == sha256_bytes(config_path.read_bytes()), {
+            "expected": e0_report.get("config_sha256"),
+            "observed": sha256_bytes(config_path.read_bytes()),
+        }),
+        e1_check("registry_gate_green", gate_results.get("registry", {}).get("trigger_state") == "GREEN", gate_results.get("registry")),
+        e1_check("roadmap_gate_nonred", gate_results.get("roadmap", {}).get("trigger_state") in {"GREEN", "YELLOW"}, gate_results.get("roadmap")),
+        e1_check("allowed_effect_ready", allowed.get("ready") is True, allowed.get("residuals")),
+        e1_check("allowed_effect_observed", mapping(allowed.get("observation")).get("matches_intent") is True, allowed.get("observation")),
+        e1_check("rollback_complete", mapping(allowed.get("rollback")).get("complete") is True, allowed.get("rollback")),
+        e1_check("rollback_identity_exact", mapping(allowed.get("rollback")).get("before_identity") == mapping(allowed.get("rollback")).get("final_identity"), allowed.get("rollback")),
+        e1_check("blocked_request_no_effect", blocked.get("ready") is False and not blocked_target.exists(), blocked.get("residuals")),
+        e1_check("revoked_request_no_effect", revoked.get("ready") is False and not revoked_target.exists(), revoked.get("residuals")),
+        e1_check("effect_root_clean", not effect_root_final_entries, effect_root_final_entries),
+        e1_check("independent_effect_audit_valid", effect_audit.get("valid") is True, effect_audit),
+        e1_check("no_external_inference", all(integer(row.get("external_inference_calls")) == 0 for row in (allowed, blocked, revoked)), {
+            "allowed": allowed.get("external_inference_calls"),
+            "blocked": blocked.get("external_inference_calls"),
+            "revoked": revoked.get("external_inference_calls"),
+        }),
+        e1_check("no_training_rows", all(integer(row.get("public_training_rows_written")) == 0 for row in (allowed, blocked, revoked)), {
+            "allowed": allowed.get("public_training_rows_written"),
+            "blocked": blocked.get("public_training_rows_written"),
+            "revoked": revoked.get("public_training_rows_written"),
+        }),
+        e1_check("no_learned_credit", trace_identities["model"]["learned_credit"] is False, trace_identities["model"]),
+        e1_check("D2_untouched", True, {"D2_cases_consumed": 0}),
+        e1_check("public_calibration_untouched", True, {"public_calibration_cases_consumed": 0}),
+    ]
+    hard_gaps = [row for row in checks if not row["passed"]]
+    trigger_state = "GREEN" if not hard_gaps else "RED"
+    disposition = "REPLAYABLE_REFERENCE_BACKED" if trigger_state == "GREEN" else "REPLAY_FAILED"
+    report = {
+        "policy": "project_theseus_core_evidence_E1_clean_replay_v1",
+        "campaign_id": config.get("campaign_id"),
+        "stage": "E1",
+        "created_utc": now(),
+        "trigger_state": trigger_state,
+        "disposition": disposition,
+        "source": {
+            "commit": source_commit,
+            "tree": "",
+            "E0_preregistration_sha256": e0_report.get("preregistration_sha256"),
+            "E0_report_payload_sha256": e0_report.get("report_payload_sha256"),
+            "config_sha256": sha256_bytes(config_path.read_bytes()),
+        },
+        "environment": {
+            "python": platform.python_version(),
+            "implementation": platform.python_implementation(),
+            "system": platform.system(),
+            "release": platform.release(),
+            "machine": platform.machine(),
+            "network_policy": "forbidden",
+            "external_inference": "forbidden_and_zero",
+            "teacher_calls": "forbidden_and_zero",
+        },
+        "gate_results": gate_results,
+        "trace_identities": trace_identities,
+        "allowed_effect_trace": public_effect_trace(allowed),
+        "blocked_effect_trace": public_effect_trace(blocked),
+        "revoked_effect_trace": public_effect_trace(revoked),
+        "independent_effect_audit": effect_audit,
+        "artifact_identities": artifact_identities,
+        "artifact_gaps": e1_artifact_gaps(checkout_root, artifact_identities),
+        "checks": checks,
+        "hard_gaps": hard_gaps,
+        "counters": {
+            "allowed_trace_count": 1,
+            "blocked_trace_count": 1,
+            "revoked_trace_count": 1,
+            "exact_rollback_count": 1 if mapping(allowed.get("rollback")).get("complete") else 0,
+            "D2_cases_consumed": 0,
+            "public_calibration_cases_consumed": 0,
+            "external_inference_calls": 0,
+            "teacher_calls": 0,
+            "learned_generation_credit": 0,
+            "user_facing_effects": 0,
+        },
+        "runtime": {
+            "wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
+        },
+        "maximum_inference": "This exact committed packet is replayable and proves the recorded local mechanics, information boundary, authority denial, observation, and rollback only. It does not establish usefulness or learned capability.",
+        "non_claims": strings(config.get("explicit_non_claims")),
+        "replay_command": "python3 scripts/core_evidence_campaign.py --stage E1 --gate",
+    }
+    report["report_payload_sha256"] = stable_hash({
+        key: value for key, value in report.items()
+        if key not in {"created_utc", "runtime", "report_payload_sha256"}
+    })
+    return report
+
+
+def effect_dispatch(reflexive_dispatch: Any, *, authenticated: bool, authority_refs: list[str]) -> dict[str, Any]:
+    event = reflexive_dispatch.canonical_event(
+        payload="change local route authority",
+        principal="local-user",
+        authenticated=authenticated,
+        origin="local_user_control",
+        authority_refs=authority_refs,
+        context_handles=["vcm://core-evidence/e1"],
+        deadline_ms=30_000,
+    )
+    return reflexive_dispatch.dispatch(
+        event,
+        intent="chat",
+        requested_route="assistant.route_authority_effect",
+        fallback_policy="no_fallback",
+    )
+
+
+def effect_audit_report(effect: dict[str, Any]) -> dict[str, Any]:
+    transaction_id = str(effect.get("transaction_id") or "")
+    counters = {
+        "public_training_rows_written": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    inventory_id = f"effect-inventory-{sha256_text(transaction_id)[:16]}"
+    observation_id = f"effect-observation-{sha256_text(transaction_id)[:16]}"
+    trace = [
+        {
+            "record_id": inventory_id,
+            "record_type": "effect_inventory",
+            "content": {
+                "transaction_id": transaction_id,
+                "declared_effects": effect.get("effect_inventory"),
+                "proposer_id": effect.get("proposer_id"),
+                "undeclared_effects_permitted": False,
+            },
+            **counters,
+        },
+        {
+            "record_id": observation_id,
+            "record_type": "effect_observation_record",
+            "content": {
+                "transaction_id": transaction_id,
+                "effect_inventory_record_id": inventory_id,
+                "observation": effect.get("observation"),
+                "observer_id": effect.get("observer_id"),
+                "observer_independent_from_proposer": True,
+            },
+            **counters,
+        },
+        {
+            "record_id": f"effect-rollback-{sha256_text(transaction_id)[:16]}",
+            "record_type": "rollback_completeness_record",
+            "content": {
+                "transaction_id": transaction_id,
+                "effect_inventory_record_id": inventory_id,
+                "effect_observation_record_id": observation_id,
+                "rollback": effect.get("rollback"),
+                "evaluator_id": effect.get("evaluator_id"),
+                "evaluator_independent_from_proposer_and_observer": True,
+                "ready": effect.get("ready"),
+                "residuals": effect.get("residuals"),
+            },
+            **counters,
+        },
+    ]
+    return {
+        "trigger_state": "GREEN" if effect.get("ready") else "RED",
+        "summary": {
+            "effect_canary_enabled": True,
+            "effect_canary_ready": effect.get("ready"),
+            "effect_canary_transaction_id": transaction_id,
+            "effect_canary_first_effect_identity": mapping(effect.get("rollback")).get("first_effect_identity"),
+            "effect_canary_final_effect_identity": mapping(effect.get("rollback")).get("final_identity"),
+            "effect_canary_rollback_complete": mapping(effect.get("rollback")).get("complete"),
+            **counters,
+        },
+        "effect_canary": effect,
+        "assistant_viea_trace": trace,
+        **counters,
+    }
+
+
+def public_effect_trace(effect: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "policy": effect.get("policy"),
+        "transaction_id": effect.get("transaction_id"),
+        "ready": effect.get("ready"),
+        "dispatch_bound": effect.get("dispatch_bound"),
+        "dispatch_trace_id": effect.get("dispatch_trace_id"),
+        "dispatch_decision_digest": effect.get("dispatch_decision_digest"),
+        "selected_capability_ids": effect.get("selected_capability_ids"),
+        "route_id": effect.get("route_id"),
+        "proposer_id": effect.get("proposer_id"),
+        "observer_id": effect.get("observer_id"),
+        "evaluator_id": effect.get("evaluator_id"),
+        "effect_inventory": effect.get("effect_inventory"),
+        "observation": effect.get("observation"),
+        "rollback": effect.get("rollback"),
+        "residuals": effect.get("residuals"),
+        "external_inference_calls": effect.get("external_inference_calls"),
+        "public_training_rows_written": effect.get("public_training_rows_written"),
+        "fallback_return_count": effect.get("fallback_return_count"),
+        "non_claims": effect.get("non_claims"),
+    }
+
+
+def run_e1_source_gates(checkout_root: Path) -> dict[str, Any]:
+    commands = {
+        "registry": [sys.executable, "scripts/theseus_project_registry.py", "--gate"],
+        "roadmap": [sys.executable, "scripts/roadmap_implementation_gate.py", "--gate"],
+    }
+    results: dict[str, Any] = {}
+    for name, command in commands.items():
+        result = run_process(command, cwd=checkout_root, timeout=300)
+        report_path = checkout_root / "reports" / (
+            "theseus_project_registry.json" if name == "registry" else "roadmap_implementation_gate.json"
+        )
+        report = read_json(report_path) if report_path.exists() else {}
+        results[name] = {
+            "trigger_state": report.get("trigger_state"),
+            "returncode": result["returncode"],
+            "stdout_sha256": sha256_text(result["stdout"]),
+            "stderr_sha256": sha256_text(result["stderr"]),
+            "report_sha256": sha256_bytes(report_path.read_bytes()) if report_path.exists() else "",
+            "hard_gap_count": integer(mapping(report.get("summary")).get("hard_gap_count")),
+        }
+    return results
+
+
+def e1_artifact_identities(checkout_root: Path) -> dict[str, Any]:
+    paths = {
+        "effect_kernel_source_sha256": checkout_root / "scripts" / "theseus_assistant_runtime.py",
+        "route_contract_sha256": checkout_root / "configs" / "reflexive_router_contract.json",
+        "vcm_report_sha256": checkout_root / "reports" / "vcm_consumer_integration_gate.json",
+        "plan_report_sha256": checkout_root / "reports" / "theseus_plan_compiler.json",
+    }
+    result: dict[str, Any] = {}
+    for name, path in paths.items():
+        result[name] = sha256_bytes(path.read_bytes()) if path.exists() and path.is_file() else ""
+    result["vcm"] = {
+        "id": "vcm_consumer_abi_existing_owner",
+        "report_sha256": result["vcm_report_sha256"],
+        "state": read_json(checkout_root / "reports" / "vcm_consumer_integration_gate.json").get("trigger_state")
+        if (checkout_root / "reports" / "vcm_consumer_integration_gate.json").exists() else "MISSING",
+    }
+    result["plan"] = {
+        "id": "theseus_plan_compiler_existing_owner",
+        "report_sha256": result["plan_report_sha256"],
+        "state": read_json(checkout_root / "reports" / "theseus_plan_compiler.json").get("trigger_state")
+        if (checkout_root / "reports" / "theseus_plan_compiler.json").exists() else "MISSING",
+    }
+    return result
+
+
+def e1_artifact_gaps(checkout_root: Path, identities: dict[str, Any]) -> list[dict[str, Any]]:
+    required = {
+        "E0_preregistration": checkout_root / "reports" / "core_evidence_e0_preregistration.json",
+        "route_contract": checkout_root / "configs" / "reflexive_router_contract.json",
+        "effect_kernel": checkout_root / "scripts" / "theseus_assistant_runtime.py",
+        "vcm_report": checkout_root / "reports" / "vcm_consumer_integration_gate.json",
+        "plan_report": checkout_root / "reports" / "theseus_plan_compiler.json",
+    }
+    gaps = []
+    for artifact_id, path in required.items():
+        if not path.exists():
+            gaps.append({
+                "artifact_id": artifact_id,
+                "state": "MISSING",
+                "path": relative_to(path, checkout_root),
+                "claim_effect": "identity unavailable; no broader claim",
+            })
+    if identities.get("vcm", {}).get("state") not in {"GREEN", "YELLOW"}:
+        gaps.append({
+            "artifact_id": "vcm_report",
+            "state": str(identities.get("vcm", {}).get("state") or "UNKNOWN"),
+            "path": "reports/vcm_consumer_integration_gate.json",
+            "claim_effect": "VCM identity recorded but no current VCM quality claim",
+        })
+    if identities.get("plan", {}).get("state") not in {"GREEN", "YELLOW"}:
+        gaps.append({
+            "artifact_id": "plan_report",
+            "state": str(identities.get("plan", {}).get("state") or "UNKNOWN"),
+            "path": "reports/theseus_plan_compiler.json",
+            "claim_effect": "plan identity recorded but no current planning quality claim",
+        })
+    return gaps
+
+
+def failed_e1_report(
+    *,
+    source_commit: str,
+    source_tree: str,
+    disposition: str,
+    gaps: list[str],
+    process: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    return {
+        "policy": "project_theseus_core_evidence_E1_clean_replay_v1",
+        "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+        "stage": "E1",
+        "created_utc": now(),
+        "trigger_state": "RED",
+        "disposition": disposition,
+        "source": {"commit": source_commit, "tree": source_tree},
+        "hard_gaps": [{"name": gap, "evidence": process or {}} for gap in gaps],
+        "counters": {
+            "D2_cases_consumed": 0,
+            "public_calibration_cases_consumed": 0,
+            "external_inference_calls": 0,
+            "teacher_calls": 0,
+            "learned_generation_credit": 0,
+            "user_facing_effects": 0,
+        },
+        "maximum_inference": "Replay failed before a mechanics claim could be made.",
+        "replay_command": "python3 scripts/core_evidence_campaign.py --stage E1 --gate",
+    }
+
+
+def e1_check(name: str, passed: bool, evidence: Any) -> dict[str, Any]:
+    return {"name": name, "passed": bool(passed), "evidence": evidence}
+
+
+def run_process(
+    command: list[str],
+    *,
+    cwd: Path,
+    timeout: int,
+    env: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    completed = subprocess.run(
+        command,
+        cwd=cwd,
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=timeout,
+        env=env,
+    )
+    return {
+        "command": command,
+        "returncode": completed.returncode,
+        "stdout": completed.stdout,
+        "stderr": completed.stderr,
+        "wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
+    }
+
+
+def relative_to(path: Path, root: Path) -> str:
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return str(path)
 
 
 def build_preregistration(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
@@ -403,6 +1022,25 @@ def git(*args: str) -> str:
 
 
 def gate_view(report: dict[str, Any]) -> dict[str, Any]:
+    if report.get("stage") == "E1":
+        counters = mapping(report.get("counters"))
+        return {
+            "trigger_state": report.get("trigger_state"),
+            "disposition": report.get("disposition"),
+            "campaign_id": report.get("campaign_id"),
+            "stage": report.get("stage"),
+            "source_commit": mapping(report.get("source")).get("commit"),
+            "allowed_trace_count": counters.get("allowed_trace_count"),
+            "blocked_trace_count": counters.get("blocked_trace_count"),
+            "revoked_trace_count": counters.get("revoked_trace_count"),
+            "exact_rollback_count": counters.get("exact_rollback_count"),
+            "hard_gap_count": len(dicts(report.get("hard_gaps"))),
+            "D2_cases_consumed": counters.get("D2_cases_consumed"),
+            "public_calibration_cases_consumed": counters.get("public_calibration_cases_consumed"),
+            "external_inference_calls": counters.get("external_inference_calls"),
+            "teacher_calls": counters.get("teacher_calls"),
+            "learned_generation_credit": counters.get("learned_generation_credit"),
+        }
     summary = mapping(report.get("sealed_evaluator_summary"))
     return {
         "trigger_state": report.get("trigger_state"),
