@@ -109,3 +109,173 @@ def test_changed_cache_is_not_removed(tmp_path: Path) -> None:
     assert action["status"] == "failed"
     assert "cache_changed_after_manifest" in action["error"]
     assert cache.exists()
+
+
+def make_checkpoint_directory(root: Path, name: str = "run") -> Path:
+    checkpoint = root / name / "english_kerc"
+    checkpoint.mkdir(parents=True)
+    for step in (7, 8):
+        (checkpoint / f"weights.step-{step:08d}.safetensors").write_bytes(
+            f"weights-{step}".encode()
+        )
+        (checkpoint / f"optimizer.step-{step:08d}.safetensors").write_bytes(
+            f"optimizer-{step}".encode()
+        )
+        (
+            checkpoint / f"optimizer.step-{step:08d}.mlx-rng.safetensors"
+        ).write_bytes(f"rng-{step}".encode())
+    (checkpoint / "weights.safetensors").write_bytes(b"weights-8")
+    (checkpoint / "optimizer.safetensors").write_bytes(b"optimizer-8")
+    (checkpoint / "optimizer.mlx-rng.safetensors").write_bytes(b"rng-8")
+    (checkpoint / "weights.step-00000007.merged-fp32.safetensors").write_bytes(
+        b"diagnostic"
+    )
+    (checkpoint / "training_receipt.json").write_text("{}", encoding="utf-8")
+    old = 1_700_000_000
+    for path in checkpoint.iterdir():
+        os.utime(path, (old, old))
+    return checkpoint
+
+
+def test_checkpoint_compaction_preserves_terminal_aliases_and_diagnostics(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime" / "t0a_canaries"
+    checkpoint = make_checkpoint_directory(root)
+
+    candidates, rejected, preserved = (
+        retention.discover_superseded_checkpoints(
+            root,
+            min_age_hours=0,
+            tracked=set(),
+            now_timestamp=1_700_100_000,
+        )
+    )
+
+    assert rejected == []
+    assert len(candidates) == 3
+    assert {row["step"] for row in candidates} == {7}
+    assert preserved[0]["terminal_step"] == 8
+    assert preserved[0]["terminal_alias_parity"] is True
+    assert preserved[0]["merged_diagnostic_file_count"] == 1
+
+    actions = [
+        retention.remove_checkpoint_generation(root, row) for row in candidates
+    ]
+    assert {row["status"] for row in actions} == {"deleted"}
+    assert not (checkpoint / "weights.step-00000007.safetensors").exists()
+    assert (checkpoint / "weights.step-00000008.safetensors").exists()
+    assert (checkpoint / "weights.safetensors").read_bytes() == b"weights-8"
+    assert (
+        checkpoint / "weights.step-00000007.merged-fp32.safetensors"
+    ).exists()
+    assert (checkpoint / "training_receipt.json").exists()
+
+
+def test_checkpoint_compaction_rejects_terminal_alias_mismatch(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime" / "t0a_canaries"
+    checkpoint = make_checkpoint_directory(root)
+    (checkpoint / "optimizer.safetensors").write_bytes(b"wrong")
+
+    candidates, rejected, preserved = (
+        retention.discover_superseded_checkpoints(
+            root,
+            min_age_hours=0,
+            tracked=set(),
+            now_timestamp=1_700_100_000,
+        )
+    )
+
+    assert candidates == []
+    assert preserved == []
+    assert rejected == [
+        {
+            "path": str(checkpoint),
+            "reason": "terminal_alias_digest_mismatch:optimizer",
+        }
+    ]
+
+
+def test_changed_checkpoint_generation_is_not_removed(tmp_path: Path) -> None:
+    root = tmp_path / "runtime" / "t0a_canaries"
+    checkpoint = make_checkpoint_directory(root)
+    candidates, _, _ = retention.discover_superseded_checkpoints(
+        root,
+        min_age_hours=0,
+        tracked=set(),
+        now_timestamp=1_700_100_000,
+    )
+    candidate = next(row for row in candidates if row["kind"] == "weights")
+    (checkpoint / "weights.step-00000007.safetensors").write_bytes(b"changed")
+
+    action = retention.remove_checkpoint_generation(root, candidate)
+
+    assert action["status"] == "failed"
+    assert "checkpoint_generation_changed_after_manifest" in action["error"]
+
+
+def test_closed_canary_run_requires_no_canonical_reference(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "runtime" / "t0a_canaries"
+    checkpoint = make_checkpoint_directory(root / "family", "run")
+    run = checkpoint.parent
+    canonical = [
+        {
+            "source": "configs/example.json",
+            "line": "7",
+            "reference": retention.relative(run),
+        }
+    ]
+
+    protected = retention.inspect_canary_run(
+        root,
+        run,
+        min_age_hours=0,
+        now_timestamp=1_700_100_000,
+        tracked=set(),
+        authority_references=canonical,
+        evidence_references=[],
+    )
+    candidate = retention.inspect_canary_run(
+        root,
+        run,
+        min_age_hours=0,
+        now_timestamp=1_700_100_000,
+        tracked=set(),
+        authority_references=[],
+        evidence_references=[
+            {
+                "source": "reports/result.json",
+                "line": "9",
+                "reference": retention.relative(run) + "/english_kerc",
+            }
+        ],
+    )
+
+    assert protected["authority_references"] == canonical
+    assert candidate["authority_references"] == []
+    assert candidate["evidence_reference_files"] == ["reports/result.json"]
+    assert candidate["terminal_checkpoints"][0]["terminal_alias_parity"] is True
+
+
+def test_closed_canary_run_exact_manifest_removal(tmp_path: Path) -> None:
+    root = tmp_path / "runtime" / "t0a_canaries"
+    checkpoint = make_checkpoint_directory(root / "family", "run")
+    run = checkpoint.parent
+    candidate = retention.inspect_canary_run(
+        root,
+        run,
+        min_age_hours=0,
+        now_timestamp=1_700_100_000,
+        tracked=set(),
+        authority_references=[],
+        evidence_references=[],
+    )
+
+    action = retention.remove_canary_run(root, candidate)
+
+    assert action["status"] == "deleted"
+    assert not run.exists()

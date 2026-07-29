@@ -3,7 +3,7 @@
 
 This script does not capture events. It only reads existing redacted dogfood
 metadata events and, when explicitly enabled by a local consent config, exports
-accepted/missed/ignored/corrected/completed rows into the private training
+accepted/missed/ignored/corrected/completed/failed/abstained rows into the private training
 surface.
 """
 
@@ -23,7 +23,15 @@ DEFAULT_TRACE = ROOT / "runtime" / "dogfood" / "daily_use_events.jsonl"
 DEFAULT_TRAINING_ROWS = ROOT / "data" / "training_data" / "high_transfer" / "private_train" / "dogfood_daily_use_trace_training_rows.jsonl"
 DEFAULT_OUT = ROOT / "reports" / "dogfood_trace_training_bridge.json"
 DEFAULT_MD = ROOT / "reports" / "dogfood_trace_training_bridge.md"
-ALLOWED_OUTCOMES = {"accepted", "missed", "ignored", "corrected", "completed"}
+ALLOWED_OUTCOMES = {
+    "accepted",
+    "missed",
+    "ignored",
+    "corrected",
+    "completed",
+    "failed",
+    "abstained",
+}
 FORBIDDEN_EVENT_KEYS = {
     "raw_user_text",
     "raw_assistant_text",
@@ -248,7 +256,7 @@ def build_report(
         },
         "gates": gates,
         "score_semantics": (
-            "Dogfood training bridge only. It exports redacted accepted/missed/ignored/corrected/completed metadata events into private "
+            "Dogfood training bridge only. It exports redacted accepted/missed/ignored/corrected/completed/failed/abstained metadata events into private "
             "training rows only after local capture consent and local training consent are present. It does not "
             "collect raw user text, call a teacher, use public benchmark rows, run external inference, return fallback bodies, or promote a model."
         ),

@@ -29,9 +29,19 @@ function connectEvents() {
 }
 
 async function post(url, body) {
+  const csrf = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("theseus_dashboard_csrf="))
+    ?.split("=")
+    .slice(1)
+    .join("=") || "";
   const res = await fetch(url, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: {
+      "Content-Type": "application/json",
+      "X-Theseus-CSRF": decodeURIComponent(csrf)
+    },
+    credentials: "same-origin",
     body: JSON.stringify(body)
   });
   const text = await res.text();

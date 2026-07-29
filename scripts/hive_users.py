@@ -253,13 +253,51 @@ def revoke_user(policy: dict[str, Any], user_id: str) -> dict[str, Any]:
 def authenticate(policy: dict[str, Any], client_host: str, provided_token: str = "", query: str = "", *, allow_loopback: bool = True) -> dict[str, Any]:
     if allow_loopback and is_loopback(client_host):
         return auth_context(policy, "local", "Local User", "owner", "loopback", "loopback")
-    token = token_from_request(provided_token, query)
+    token = token_from_request(provided_token, query, policy=policy)
     if not token:
         return {"ok": False, "error": "operator_token_required"}
 
     for expected in legacy_hive_tokens(policy):
         if expected and hmac.compare_digest(token, expected):
-            return auth_context(policy, "legacy-owner", "Hive Owner", "owner", "legacy_hive_secret", "secret_ok")
+            legacy_role = str(
+                get_path(
+                    policy,
+                    ["multi_user", "legacy_hive_join_token_role"],
+                    "machine",
+                )
+                or "machine"
+            )
+            if legacy_role == "disabled":
+                continue
+            if legacy_role == "machine":
+                return {
+                    "ok": True,
+                    "user_id": "hive-machine",
+                    "display_name": "Hive Machine",
+                    "role": "machine",
+                    "token_kind": "hive_machine_secret",
+                    "reason": "machine_secret_ok",
+                    "scopes": {
+                        "can_view_status": True,
+                        "can_request_worker_chunks": True,
+                        "remote_task_kinds": sorted(
+                            str(row)
+                            for row in (
+                                policy.get("task_kinds", {}).keys()
+                                if isinstance(policy.get("task_kinds"), dict)
+                                else []
+                            )
+                        ),
+                    },
+                }
+            return auth_context(
+                policy,
+                "legacy-owner",
+                "Hive Owner",
+                legacy_role,
+                "legacy_hive_secret",
+                "secret_ok",
+            )
 
     digest = token_digest(token)
     for row in load_user_config(policy).get("users", []):
@@ -295,6 +333,14 @@ def authorize(
     task_kind: str = "",
     allow_loopback: bool = True,
 ) -> dict[str, Any]:
+    machine = machine_authorization(
+        policy,
+        provided_token,
+        action=action,
+        task_kind=task_kind,
+    )
+    if machine is not None:
+        return machine
     ctx = authenticate(policy, client_host, provided_token, query, allow_loopback=allow_loopback)
     if not ctx.get("ok"):
         return ctx
@@ -304,9 +350,79 @@ def authorize(
     return ctx
 
 
+def machine_authorization(
+    policy: dict[str, Any],
+    provided_token: str,
+    *,
+    action: str,
+    task_kind: str,
+) -> dict[str, Any] | None:
+    token = str(provided_token or "").strip()
+    if not token:
+        return None
+    env_key = (
+        "worker_secret_env"
+        if action == "task"
+        else "coordinator_secret_env"
+    )
+    default_env = (
+        "THESEUS_HIVE_WORKER_SECRET"
+        if action == "task"
+        else "THESEUS_HIVE_COORDINATOR_SECRET"
+    )
+    env_name = str(
+        get_path(policy, ["security", env_key], default_env)
+    )
+    expected = os.environ.get(env_name, "")
+    if not expected or not hmac.compare_digest(token, expected):
+        return None
+    if action not in {"status", "task"}:
+        return {
+            "ok": False,
+            "error": "machine_credential_scope_denied",
+            "action": action,
+        }
+    task_kinds = (
+        sorted(str(row) for row in policy.get("task_kinds", {}).keys())
+        if isinstance(policy.get("task_kinds"), dict)
+        else []
+    )
+    ctx = {
+        "ok": True,
+        "user_id": "hive-worker" if action == "task" else "hive-coordinator",
+        "display_name": "Hive Machine",
+        "role": "machine",
+        "token_kind": (
+            "hive_worker_secret"
+            if action == "task"
+            else "hive_coordinator_secret"
+        ),
+        "reason": "scoped_machine_secret_ok",
+        "scopes": {
+            "can_view_status": action == "status",
+            "can_request_worker_chunks": action == "task",
+            "remote_task_kinds": task_kinds if action == "task" else [],
+        },
+    }
+    if action == "task" and not task_allowed(ctx, task_kind):
+        return {
+            **ctx,
+            "ok": False,
+            "error": "machine_task_scope_denied",
+            "task_kind": task_kind,
+        }
+    return ctx
+
+
 def action_allowed(ctx: dict[str, Any], action: str, *, task_kind: str = "") -> bool:
     if ctx.get("token_kind") in {"loopback", "legacy_hive_secret"}:
         return True
+    if ctx.get("token_kind") == "hive_machine_secret":
+        if action in {"status"}:
+            return True
+        if action == "task":
+            return task_allowed(ctx, task_kind)
+        return False
     scopes = ctx.get("scopes") if isinstance(ctx.get("scopes"), dict) else {}
     if action in {"status", "operator_status"}:
         return bool(scopes.get("can_view_status", True))
@@ -509,11 +625,23 @@ def public_user(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def token_from_request(provided_token: str, query: str) -> str:
+def token_from_request(
+    provided_token: str,
+    query: str,
+    *,
+    policy: dict[str, Any] | None = None,
+) -> str:
     token = str(provided_token or "").strip()
     if token:
         return token
-    if query:
+    allow_query = bool(
+        get_path(
+            policy or {},
+            ["security", "allow_query_credentials"],
+            False,
+        )
+    )
+    if query and allow_query:
         parsed = parse_qs(query)
         for key in ("token", "t", "operator_token", "access_token"):
             value = (parsed.get(key) or [""])[0]

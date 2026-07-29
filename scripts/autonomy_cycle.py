@@ -24,6 +24,7 @@ from autonomy_cycle_runtime import (
     observe,
     profile_train_limit,
     read_json,
+    request_local_authority,
     run_step,
     skipped_step,
     timeout_for_profile,
@@ -71,11 +72,13 @@ def main() -> int:
     profile = str(decision.get("profile") or requested_profile)
     teacher_forbidden = bool(args.offline or args.forbid_teacher)
     network_forbidden = bool(args.offline or args.forbid_network_fetch)
-    teacher_allowed = False if teacher_forbidden else bool(args.allow_teacher or policy.get("allow_teacher_by_default", False))
-    network_allowed = False if network_forbidden else bool(
-        args.allow_network_fetch
-        or policy.get("allow_network_fetch_by_default", False)
-        or decision.get("allow_network_fetch", False)
+    teacher_allowed = request_local_authority(
+        requested=bool(args.allow_teacher),
+        forbidden=teacher_forbidden,
+    )
+    network_allowed = request_local_authority(
+        requested=bool(args.allow_network_fetch),
+        forbidden=network_forbidden,
     )
     write_json(
         ROOT / "reports" / "frontier_policy_status.json",
@@ -95,7 +98,12 @@ def main() -> int:
             "pressure_card_id": decision.get("pressure_card_id"),
             "rotation_request_id": decision.get("rotation_request_id"),
             "allow_network_fetch": network_allowed,
+            "network_fetch_recommended": bool(
+                decision.get("network_fetch_recommended", False)
+            ),
+            "network_authority_source": "request_local_cli_flag_only",
             "allow_teacher": teacher_allowed,
+            "teacher_authority_source": "request_local_cli_flag_only",
             "offline": bool(args.offline),
             "teacher_forbidden": teacher_forbidden,
             "network_fetch_forbidden": network_forbidden,

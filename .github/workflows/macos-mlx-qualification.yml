@@ -1,0 +1,23 @@
+name: guarded-macos-mlx-qualification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  local-apple-silicon:
+    runs-on: [self-hosted, macOS, ARM64, theseus-mlx-qualified]
+    timeout-minutes: 30
+    concurrency:
+      group: theseus-local-apple-silicon
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Host safety preflight
+        run: python3 scripts/host_resource_safety.py
+      - name: Pinned MLX environment diagnosis
+        run: python3 scripts/macos_mlx_environment_diagnosis.py
+      - name: Guarded structural smoke
+        run: python3 scripts/macos_mlx_structural_action_smoke.py

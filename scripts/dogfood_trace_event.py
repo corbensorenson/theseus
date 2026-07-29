@@ -21,7 +21,15 @@ DEFAULT_CONFIG = ROOT / "configs" / "dogfood_trace.local.json"
 DEFAULT_TRACE_PATH = ROOT / "runtime" / "dogfood" / "daily_use_events.jsonl"
 DEFAULT_OUT = ROOT / "reports" / "dogfood_trace_event_check.json"
 DEFAULT_MARKDOWN = ROOT / "reports" / "dogfood_trace_event_check.md"
-ALLOWED_OUTCOMES = {"accepted", "missed", "ignored", "corrected", "completed"}
+ALLOWED_OUTCOMES = {
+    "accepted",
+    "missed",
+    "ignored",
+    "corrected",
+    "completed",
+    "failed",
+    "abstained",
+}
 FORBIDDEN_EVENT_KEYS = {
     "raw_user_text",
     "raw_assistant_text",
@@ -164,6 +172,8 @@ def build_event(args: argparse.Namespace) -> dict[str, Any]:
         "artifact_refs": [str(item) for item in args.artifact_ref],
         "error_family": str(args.error_family or ""),
         "duration_ms": max(0, int(args.duration_ms or 0)),
+        "learned_model_credit_allowed": False,
+        "capability_credit": "none_assisted_or_tool_mediated",
     }
 
 

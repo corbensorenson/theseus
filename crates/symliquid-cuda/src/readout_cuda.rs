@@ -98,6 +98,7 @@ struct ReadoutDeviceKey {
     bias_len: usize,
     input_dim: usize,
     output_dim: usize,
+    parameter_fingerprint: u64,
 }
 
 #[cfg(feature = "cuda")]
@@ -106,6 +107,7 @@ struct WeightedScoreDeviceKey {
     weights_ptr: usize,
     weights_len: usize,
     feature_dim: usize,
+    parameter_fingerprint: u64,
 }
 
 #[cfg(feature = "cuda")]
@@ -115,6 +117,7 @@ impl WeightedScoreDeviceKey {
             weights_ptr: weights.as_ptr() as usize,
             weights_len: weights.len(),
             feature_dim: weights.len(),
+            parameter_fingerprint: parameter_fingerprint(&[weights]),
         }
     }
 }
@@ -129,8 +132,23 @@ impl ReadoutDeviceKey {
             bias_len: readout.bias.len(),
             input_dim: readout.input_dim,
             output_dim: readout.output_dim,
+            parameter_fingerprint: parameter_fingerprint(&[&readout.weights, &readout.bias]),
         }
     }
+}
+
+#[cfg(any(feature = "cuda", test))]
+fn parameter_fingerprint(parts: &[&[f32]]) -> u64 {
+    let mut hash = 0xcbf2_9ce4_8422_2325_u64;
+    for part in parts {
+        hash ^= part.len() as u64;
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+        for value in *part {
+            hash ^= u64::from(value.to_bits());
+            hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+        }
+    }
+    hash
 }
 
 #[cfg(feature = "cuda")]
@@ -1507,4 +1525,18 @@ pub fn train_token_superposition_cuda(
 #[cfg(feature = "cuda")]
 fn cuda_error(error: impl std::fmt::Display) -> SymError {
     SymError::InvalidArgument(format!("CUDA readout operation failed: {error}"))
+}
+
+#[cfg(test)]
+mod cache_identity_tests {
+    use super::parameter_fingerprint;
+
+    #[test]
+    fn in_place_weight_mutation_changes_resident_cache_identity() {
+        let mut weights = vec![0.25_f32, -0.5, 1.0];
+        let before = parameter_fingerprint(&[&weights]);
+        weights[1] += 0.125;
+        let after = parameter_fingerprint(&[&weights]);
+        assert_ne!(before, after);
+    }
 }

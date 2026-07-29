@@ -1996,10 +1996,12 @@
       {
         "id": "review.security.local_authority_surfaces",
         "owner_work_package": "ASI-31",
-        "state": "required_now_parallel_non_model",
+        "state": "implemented_local_fail_closed_2026_07_29",
         "blocks": ["routine_dashboard_use", "routine_openai_shim_use", "routine_hive_or_lan_use"],
         "does_not_block": ["bounded_local_mlx_training"],
-        "acceptance": "Request-local false-by-default teacher/network authority; authenticated mutation; exact Origin/CSRF/JSON/body/rate/concurrency/SSE/job controls; tokened non-wildcard-CORS OpenAI defaults; loopback signed-discovery header-credential Hive defaults; sandboxed workers; attempted/transmitted/received/parsed/admitted external-call accounting; adversarial HTTP tests."
+        "acceptance": "Request-local false-by-default teacher/network authority; authenticated mutation; exact Origin/CSRF/JSON/body/rate/concurrency/SSE/job controls; tokened non-wildcard-CORS OpenAI defaults; loopback signed-discovery header-credential Hive defaults; sandboxed workers; attempted/transmitted/received/parsed/admitted external-call accounting; adversarial HTTP tests.",
+        "evidence": ["configs/openai_compat_policy.json", "scripts/openai_compat_server.py", "configs/autonomy_policy.json", "scripts/sparkstream_dashboard.py", "configs/hive_policy.json", "scripts/hive_node.py", "tests/test_openai_compat_security.py", "tests/test_autonomy_authority_security.py", "tests/test_sparkstream_dashboard_security.py", "tests/test_hive_authority_security.py"],
+        "residual": "Local fail-closed code and adversarial tests do not establish public-internet hardening; unqualified remote sandbox execution remains denied."
       },
       {
         "id": "review.security.safety_grade_floor",
@@ -2010,9 +2012,11 @@
       {
         "id": "review.evaluation.judge_injection_and_runtime_taint",
         "owner_work_package": "ASI-32",
-        "state": "pretraining_contract",
+        "state": "implemented_unconsumed_freeze_2026_07_29",
         "blocks": ["T0A_replacement_evaluator_freeze", "T1"],
-        "acceptance": "Candidate output is inert judge data; adversarial injection, copied-rubric, self-score, empty, malformed, agreement, and prospective human-audit controls pass; STATIC_FLOW_LINT_PASS is supplemented by runtime forbidden-field taint/capability enforcement and independent candidate-integrity recomputation."
+        "acceptance": "Candidate output is inert judge data; adversarial injection, copied-rubric, self-score, empty, malformed, agreement, and prospective human-audit controls pass; STATIC_FLOW_LINT_PASS is supplemented by runtime forbidden-field taint/capability enforcement and independent candidate-integrity recomputation.",
+        "evidence": ["scripts/blind_runtime_guard.py", "scripts/blind_information_flow_audit.py", "scripts/neural_seed_local_english_raters.py", "scripts/neural_seed_functional_utility.py", "scripts/neural_seed_functional_verifiers.py", "configs/neural_seed_57m_functional_utility_freeze.json", "tests/test_blind_runtime_guard.py", "tests/test_neural_seed_local_english_raters.py", "tests/test_neural_seed_functional_utility.py"],
+        "residual": "Runtime capability enforcement and adversarial controls reduce known threats but are not semantic noninterference or judge-correctness proofs; the prospective human audit remains required at consumption."
       },
       {
         "id": "review.evidence.status_vector",
@@ -2035,7 +2039,7 @@
       {
         "id": "review.rust_cuda_correctness_debt",
         "owner_work_package": "ASI-27",
-        "state": "post_behavior_qualification_unless_campaign_critical",
+        "state": "bounded_core_debt_closed_2026_07_29_broader_semantics_remain",
         "acceptance": "Checked overflow-safe tensor/module invariants, explicit batch semantics, parameter validation, scoped EFE/CGS claims, runtime CUDA device states, strict no-fallback evidence, versioned weight-cache invalidation, and explicit unmeasured metrics pass property and differential tests."
       },
       {
@@ -2047,13 +2051,14 @@
       {
         "id": "review.public_ci_and_reproducibility_capsule",
         "owner_work_packages": ["ASI-04", "ASI-16"],
-        "state": "required_before_T6_public_claim",
-        "acceptance": "Linux CI, guarded hardware lanes, security/dependency/license checks, and one licensed tiny end-to-end evidence-protocol capsule reproduce build, train, resume, candidate, verifier, digest, runtime, and tolerance behavior without publishing private rows, heldouts, user data, or decisive checkpoints."
+        "state": "implemented_public_safe_2026_07_29",
+        "acceptance": "Linux CI, guarded hardware lanes, security/dependency/license checks, and one licensed tiny end-to-end evidence-protocol capsule reproduce build, train, resume, candidate, verifier, digest, runtime, and tolerance behavior without publishing private rows, heldouts, user data, or decisive checkpoints.",
+        "evidence": [".github/workflows/ci.yml", ".github/workflows/macos-mlx-qualification.yml", "scripts/public_reproducibility_capsule.py", "examples/public_repro_capsule/config.json", "scripts/repository_license_gate.py", "scripts/public_release_audit.py", "tests/test_public_reproducibility_capsule.py", "tests/test_repository_license_gate.py"]
       },
       {
         "id": "review.license_alignment",
         "owner_work_package": "ASI-16",
-        "state": "repo_health_before_public_distribution",
+        "state": "implemented_apache_2_0_alignment_2026_07_29",
         "acceptance": "Cargo and repository license texts agree; commercial value claims attach to official builds, services, support, trademarks, policy/evidence packs, or signed checkpoints rather than technical control of permissive forks."
       }
     ],
@@ -5141,12 +5146,12 @@
       "completed_subcontracts": [
         "One content-bound registered contract now inventories all seven stable slots and their control/challenger implementation cards, source owners, checkpoint state, migration, rollback, authority, claim boundaries, and cross-slot compatibility rules.",
         "The canonical MoECOT trainer denies generic bounded architecture training and requires a candidate-specific lease binding implementation ids, target, phase, isolated namespace, steps, positions, wall time, memory, disk, seeds, heldout identity, required checks, immutable-control separation, and zero-cheat boundaries.",
-        "Runtime monitor callbacks enforce wall, RSS, disk, and step limits at device-step boundaries and emit a position/resource receipt at completion; unsafe namespace, resume, target, phase, and budget requests fail closed."
-        ,"The canonical MLX transformer and objective owners now implement adequate independent and register-conditioned MTP heads plus a monotonic NTP-to-MTP curriculum. Both candidates pass bounded gradient, ablation, alignment, learning, parameter-inventory, and exact-reload mechanics checks without public data or capability credit."
-        ,"A source-disjoint, topology-identical three-seed AR-versus-MTP rung now compares fixed, curriculum, and register-conditioned auxiliary routes on 120 governed train rows and 40 heldout rows across all five arms. Exact pairing, reload, resource, weak-tail, and no-cheat gates pass. No candidate cleared the loss floor and the corpus lacks executable functional verifiers, so optimized AR receives the first-campaign budget while MTP remains scientifically inconclusive with an explicit re-entry condition."
-        ,"The finite optimizer docket is complete. The canonical owner implements AdamW, eligible-matrix Muon plus AdamW fallback, reference x/y/z schedule-free AdamW, and Adafactor with row/column matrix factors, unfactored vector/scalar fallback, parameter scaling, update clipping, and exact state resume. Four digest-bound executable Policy Cards cover grouping, state/dtypes, exact global-clip/update order, schedule, decay, stabilizers, approximation, placement, tuning, stopping, and checkpoint custody. In the source-disjoint three-profile/three-seed clipped matched rung, Adafactor uses 40,856 state bytes versus AdamW's 3,554,316 and improves mean loss 2.34 percent, but a 6.69 percent English regression on seed 20260722 misses the frozen 2 percent weak-arm ceiling. Muon regresses 10.85 percent and schedule-free 57.83 percent. AdamW remains selected without universal challenger falsification. The unchanged selected profile passes exact resume and all three isolated d_model=512 transfer seeds with 73.67 percent mean private loss improvement. The guarded run peaks at 846 MiB RSS, 1,621 MiB inferred unified memory, retains 4,966 MiB reclaimable reserve, and adds zero swap."
-        ,"One target-authoritative draft ABI now binds exact target and codec identities, branch-local cache state, depth, rollback, and accepted-prefix-only mutation. Real MLX Medusa, EAGLE, and conventional smaller draft-model modules pass bounded training and exact reload; the target remains frozen and canonical output survives adversarial proposal rejection. Their state is separate from the base checkpoint, so matched post-hoc adoption waits for a useful base and does not delay base pretraining."
-        ,"The learned dynamic-byte codec now has prefix-causal boundary learning, byte and patch encoders, a one-patch-shifted canonical causal-core route, explicit within-patch positional decoding with a previous-byte-only local causal path, exact lossless byte custody, protected spans, corruption rejection, hard patch-size bounds, intervention sensitivity, checkpoint replay, and bounded predictive overfit/contraction mechanics. Byte interventions leave current-and-prior logits unchanged and sequential local inference matches teacher-forced decoding. Canonical corpus/trainer integration and matched raw-byte selection remain open."
+        "Runtime monitor callbacks enforce wall, RSS, disk, and step limits at device-step boundaries and emit a position/resource receipt at completion; unsafe namespace, resume, target, phase, and budget requests fail closed.",
+        "The canonical MLX transformer and objective owners now implement adequate independent and register-conditioned MTP heads plus a monotonic NTP-to-MTP curriculum. Both candidates pass bounded gradient, ablation, alignment, learning, parameter-inventory, and exact-reload mechanics checks without public data or capability credit.",
+        "A source-disjoint, topology-identical three-seed AR-versus-MTP rung now compares fixed, curriculum, and register-conditioned auxiliary routes on 120 governed train rows and 40 heldout rows across all five arms. Exact pairing, reload, resource, weak-tail, and no-cheat gates pass. No candidate cleared the loss floor and the corpus lacks executable functional verifiers, so optimized AR receives the first-campaign budget while MTP remains scientifically inconclusive with an explicit re-entry condition.",
+        "The finite optimizer docket is complete. The canonical owner implements AdamW, eligible-matrix Muon plus AdamW fallback, reference x/y/z schedule-free AdamW, and Adafactor with row/column matrix factors, unfactored vector/scalar fallback, parameter scaling, update clipping, and exact state resume. Four digest-bound executable Policy Cards cover grouping, state/dtypes, exact global-clip/update order, schedule, decay, stabilizers, approximation, placement, tuning, stopping, and checkpoint custody. In the source-disjoint three-profile/three-seed clipped matched rung, Adafactor uses 40,856 state bytes versus AdamW's 3,554,316 and improves mean loss 2.34 percent, but a 6.69 percent English regression on seed 20260722 misses the frozen 2 percent weak-arm ceiling. Muon regresses 10.85 percent and schedule-free 57.83 percent. AdamW remains selected without universal challenger falsification. The unchanged selected profile passes exact resume and all three isolated d_model=512 transfer seeds with 73.67 percent mean private loss improvement. The guarded run peaks at 846 MiB RSS, 1,621 MiB inferred unified memory, retains 4,966 MiB reclaimable reserve, and adds zero swap.",
+        "One target-authoritative draft ABI now binds exact target and codec identities, branch-local cache state, depth, rollback, and accepted-prefix-only mutation. Real MLX Medusa, EAGLE, and conventional smaller draft-model modules pass bounded training and exact reload; the target remains frozen and canonical output survives adversarial proposal rejection. Their state is separate from the base checkpoint, so matched post-hoc adoption waits for a useful base and does not delay base pretraining.",
+        "The learned dynamic-byte codec now has prefix-causal boundary learning, byte and patch encoders, a one-patch-shifted canonical causal-core route, explicit within-patch positional decoding with a previous-byte-only local causal path, exact lossless byte custody, protected spans, corruption rejection, hard patch-size bounds, intervention sensitivity, checkpoint replay, and bounded predictive overfit/contraction mechanics. Byte interventions leave current-and-prior logits unchanged and sequential local inference matches teacher-forced decoding. Canonical corpus/trainer integration and matched raw-byte selection remain open."
         ,"The canonical Semantic-IR owner now exposes RDC-1.0 dimension, entity, relation-schema, relation-instance, typed-incidence, branch/lifecycle, proposal, operator-order, contraction, reversible schema migration, monitored specialist rollback, structure-of-arrays lowering, sparse factorized NumPy/MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with exact replay and fail-closed mutations. Real source-disjoint relation quality, real multi-turn K4 utility, canonical-path structured-draft qualification, and adequate K5-K7 behavior remain open."
         ,"The disabled-until-qualified KERC candidate now has a canonical candidate-only activation overlay bound to its exact frozen stage identity. Process-isolated KERC/control execution preserves exact disk-backed common initialization and per-target crash-surviving telemetry. Three seeds complete 128 optimizer steps per target with matched parameter counts, exact state custody, zero swap growth, and direct source-disjoint evaluation."
         ,"Checkpointed query/KV streaming attention, compact partitions, BF16 compute with FP32 authority, BF16 Adam moments, transactional optimizer materialization, and zero-authority decoder pruning pass exact parity. The representative KERC full objective passes the external 2,048 MiB live-reserve and 16 MiB swap-growth watchdog; allocator peak is observational. A 1,005-token 32-step q32/k32 mechanics preflight also passes. The 648-token route completes a bounded 256-step canary but fails two fresh terminal launches on its 637/609 stress row. Independent maximum-target plus maximum-width prefixing selects a 628-token terminal envelope retaining 2,393 rows and 428 compiler rows; its 512/496 and 628/408 stress owners both pass with zero swap. Rows above 628 tokens and the maximum 5,866-token positive row remain explicit K7 repair blockers without capability or scientific-negative credit."
@@ -5766,7 +5771,7 @@
       "required_records": [
         "assistant_trace",
         "dogfood_event",
-        "accepted_missed_ignored_outcome",
+        "accepted_missed_ignored_corrected_completed_failed_abstained_outcome",
         "redaction_receipt"
       ],
       "required_gates": [
@@ -5796,16 +5801,19 @@
         "reports/theseus_assistant_trace_schema_trace.jsonl",
         "runtime/dogfood/daily_use_events.jsonl",
         "data/training_data/high_transfer/private_train/dogfood_daily_use_trace_training_rows.jsonl",
-        "reports/theseus_assistant_product_lane_gate.json"
+        "reports/theseus_assistant_product_lane_gate.json",
+        "reports/theseus_assistant_travel_mode_dogfood.json",
+        "reports/dogfood_trace_event_travel_mode_20260729.json"
       ],
       "implemented_items": [
         "shared assistant_trace/dogfood_outcome schema is registered and consumed by the assistant runtime, VIEA policy_optimization_record, conversation events, and product smoke gates",
         "canonical assistant runtime is GREEN with VCM context ready, assistant VIEA trace complete, dogfood training bridge GREEN, and no public training/external inference/fallback counters",
         "assistant e2e has 4/4 route cases passing, 80 recent trainable events, 66 completed-or-accepted recent events, 397 local dogfood events, and 396 governed dogfood trace training rows",
-        "B1 assisted verified assistant product lane is synthetic-test-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, metadata-only fixture/e2e dogfood events, expected-invalid controls, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence. Empirical support is intentionally blocked until real multi-day user dogfood trace evidence exists."
+        "B1 assisted verified assistant product lane is synthetic-test-backed: reports/theseus_assistant_product_lane_gate.json verifies 4/4 assistant route cases, CLI/memory/feedback receipts, VCM readiness, deterministic tool evidence, private verifier receipts, metadata-only fixture/e2e dogfood events, expected-invalid controls, VIEA product trace records, and no public-training/runtime-external/fallback counters while preserving the code-generator wall as C1 evidence. Empirical support is intentionally blocked until real multi-day user dogfood trace evidence exists.",
+        "The 2026-07-29 real travel-mode planning request was honestly recorded as missed/request_fidelity_miss because the assisted response omitted both requested facts; no training row or learned-model credit was assigned. The shared schema accounts for accepted, missed, ignored, corrected, completed, failed, and abstained outcomes."
       ],
       "missing_items": [
-        "real useful governed assistant transaction with empirical accepted/missed/ignored/corrected/completed outcomes and governance-tax accounting"
+        "real useful governed assistant transaction with multi-day empirical accepted/missed/ignored/corrected/completed/failed/abstained outcomes and governance-tax accounting"
       ],
       "smallest_next_patch": "Use the assistant on real local work through the VIEA/effect-complete path and earn empirical support from multi-day outcome traces; fixture metadata remains synthetic only.",
       "integration_smoke": [
@@ -6005,6 +6013,7 @@
         "reports/teacher_distillation_gate.json",
         "reports/teacher_share_ledger_summary.json",
         "reports/teacher_share_ledger_summary.md",
+        "runtime/data_governance/teacher_share_accounting_ledger.jsonl",
         "reports/training_data_admission_v1.json",
         "reports/training_admission_epistemic_tcb.json",
         "configs/task_complete_training_units.json",
@@ -6032,6 +6041,8 @@
         "full-state continual-update and deletion-causality workload with prospective best/final authority, forgetting, influence, storage erasure, and exact rollback"
       ],
       "implemented_items": [
+        "The durable teacher-share accounting ledger binds the exact teacher-distillation ledger, admission report, and candidate-receipt ledger in a replay-valid append-only hash chain. The current content-bound snapshot reports 15 teacher rows among 115429 accepted rows (0.00012995001256183454), below the 0.10 cap, with zero runtime external inference and zero public training rows.",
+        "A read-only replay of the frozen 57M corpus reports 422334331 unique positions, all 68 governed source identities current, every required license/provenance/deduplication/public-contamination/retention/tokenizer evidence dimension true, recursive synthetic position share 0.07182161, and no corpus mutation or teacher generation.",
         "The task-complete owner is GREEN across all five arms: English 25566, Python 2022, JS/TS 1180, HTML/CSS 690, and Rust 1504 admitted verified units; Rust contributes 1162003 target positions and the complete corpus contributes 36552344 target positions.",
         "The Phase-7 EpistemicTCBManifest independently replays 35887 ledger rows and 9739 verifier-cache receipts, reconciles source/split/count/position identities, checks 1407 admitted Rust final baselines and cleanup, kills 17/17 golden-invalid mutations, reports three correlated dependencies, and is a digest-bound hard prerequisite of canonical admission and the 57.315M preregistration.",
         "Canonical admission remains YELLOW only for its declared recursive-synthetic distribution warning; it has no failed hard gate, admits no public benchmark payload, and binds the current task corpus plus TCB by hash.",
@@ -6039,7 +6050,7 @@
       ],
       "smallest_next_patch": "Freeze the now-sufficient corpus and hand the unchanged 57.315M proposal to its registered MLX resource/checkpoint/resume canaries. Admit no additional broad data unless a later measured product-quality or coverage defect requires it. Published-agent traces remain optional post-baseline evidence pressure and receive no credit without the existing rights, privacy, scope, deduplication, outcome, verifier, and heldout causal-lift gates.",
       "integration_smoke": [
-        "python3 scripts/teacher_distillation_gate.py",
+        "python3 scripts/teacher_distillation_gate.py --record-share-ledger",
         "python3 scripts/task_complete_training_units.py --prepare-javascript",
         "python3 scripts/training_data_admission_v1.py --task-complete-report reports/task_complete_training_units_v1.json",
         "python3 scripts/training_data_lineage_audit.py",
@@ -6064,7 +6075,7 @@
         "python3 scripts/theseus_control_plane.py --no-ingest",
         "python3 scripts/hive_node.py operator-status --out reports/hive_operator_status.json",
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the teacher-share governance state and no-runtime-external-token boundary.\" --intent planning --feedback completed --session-id teacher_share_phase7_smoke --out reports/theseus_assistant_teacher_share_smoke.json --markdown-out reports/theseus_assistant_teacher_share_smoke.md --events-out reports/theseus_assistant_teacher_share_events.jsonl --viea-trace-out reports/theseus_assistant_teacher_share_trace.jsonl --skip-context-refresh",
-        "reports/teacher_share_ledger_summary.json summary.metric_ready=true",
+        "reports/teacher_share_ledger_summary.json summary.metric_ready=true and summary.accounting_ledger_replay_valid=true and summary.current_snapshot_recorded=true",
         "reports/hive_operator_status.json teacher_governance.operator_visible=true",
         "reports/hive_operator_status.json teacher_governance.no_cheat_clean=true",
         "reports/theseus_control_plane.json gates.teacher_share_ledger_ready.passed=true",
@@ -6279,16 +6290,15 @@
         "scripts/kerc_training_memory_preflight.py"
       ],
       "missing_items": [
-        "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign.",
-        "Evidence-preserving compaction of superseded T0A scratch canaries remains repository-health follow-through. The selected route already derives launch disk headroom from two complete checkpoint transactions, so cleanup cannot delay or mutate the frozen campaign."
+        "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
       ],
       "pre_training_readiness": {
         "state": "READY_FOR_FROZEN_CAMPAIGN",
         "acceptance_boundary": "The selected M1 route is compiled FP32 MLX, microbatch four, width quantum 64, explicit post-update model/optimizer materialization, externally watched 64-step fresh processes, and eager microbatch-one auxiliary phases. Six exact scratch segments completed in two adjacent three-replicate windows with joined throughput medians 3042.702 and 3017.356 positions/second; the 0.991670 ratio has a [0.944840, 1.025765] replicate uncertainty interval containing one and no thermal warning. Independent segmented replay preserves RNG and cursor and matches every model/optimizer tensor under the frozen per-tensor absolute-or-relative contract, with 2.3841858e-7 maximum model delta and 3.608875e-9 maximum optimizer delta. The canonical step-3480 model, AdamW state, RNG, and receipt remain byte-unchanged. The resource contract has no fixed launch/runtime memory floor or unrelated wall deadline: the exact measured working-set envelope suppresses transient decline extrapolation while causal process-RSS and envelope-overrun faults remain hard; system-wide swap is visible and diagnostic. The content-addressed replacement freeze binds this plan and these receipts before any long optimizer run.",
         "nonblocking_residuals": [
-          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign.",
-          "Evidence-preserving compaction of superseded T0A scratch canaries remains repository-health follow-through. The selected route already derives launch disk headroom from two complete checkpoint transactions, so cleanup cannot delay or mutate the frozen campaign."
+          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
         ],
+        "completed_storage_maintenance": "The reference-aware 2026-07-29 retention transaction reclaimed about 40.8 GB while preserving and independently rehashing the exact step-11416 model, AdamW, RNG/cursor, 37-manifest lineage, and retained evidence. Disk launch safety remains derived from two measured checkpoint transactions plus observed filesystem/swap/write headroom.",
         "evidence": {
           "path": "reports/pretraining_architecture_freeze_package.json",
           "policy": "project_theseus_pretraining_architecture_freeze_v1",
@@ -8007,7 +8017,7 @@
         15
       ],
       "support_state_target": "empirical-test-backed",
-      "success_test": "Synthetic support is the green product-lane wiring gate; empirical support requires at least a week or 5 distinct days of real metadata-only user dogfood traces with accepted/missed/ignored/corrected/completed outcomes, verifier receipts, and raw private text disabled by default."
+      "success_test": "Synthetic support is the green product-lane wiring gate; empirical support requires at least a week or 5 distinct days of real metadata-only user dogfood traces with accepted/missed/ignored/corrected/completed/failed/abstained outcomes, verifier receipts, and raw private text disabled by default."
     },
     {
       "track_id": "C_capability_research_survival_lane",

@@ -1,0 +1,27 @@
+{
+  "policy": "project_theseus_public_reproducibility_capsule_v1",
+  "license": "Apache-2.0",
+  "dataset": "examples/public_repro_capsule/tiny_linear_rows.jsonl",
+  "learning_rate": "0.020",
+  "momentum": "0.800",
+  "updates": 96,
+  "checkpoint_update": 48,
+  "decimal_precision": 40,
+  "candidate_inputs": [
+    "4",
+    "5"
+  ],
+  "expected_outputs": [
+    "9",
+    "11"
+  ],
+  "absolute_tolerance": "0.50",
+  "boundaries": {
+    "synthetic_authored_fixture": true,
+    "public_benchmark": false,
+    "private_training_rows": 0,
+    "user_data_rows": 0,
+    "external_inference_calls": 0,
+    "capability_claim": "NONE_EVIDENCE_PROTOCOL_ONLY"
+  }
+}

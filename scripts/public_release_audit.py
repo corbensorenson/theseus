@@ -37,12 +37,41 @@ def main() -> int:
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     parser.add_argument("--out", default=str(DEFAULT_OUT))
     parser.add_argument("--gate", action="store_true")
+    parser.add_argument(
+        "--local-only",
+        action="store_true",
+        help="Run tracked-file and secret checks without requiring GitHub visibility.",
+    )
+    parser.add_argument(
+        "--scope-prefix",
+        action="append",
+        default=[],
+        help="Restrict the audit to tracked paths under one or more prefixes.",
+    )
     args = parser.parse_args()
 
     config_path = resolve(args.config)
     out_path = resolve(args.out)
     config = read_json(config_path)
     tracked = git_tracked_files()
+    if args.scope_prefix:
+        prefixes = tuple(str(prefix) for prefix in args.scope_prefix)
+        scoped = {
+            rel_path
+            for rel_path in tracked
+            if rel_path.startswith(prefixes)
+        }
+        for prefix in prefixes:
+            candidate = ROOT / prefix
+            if candidate.is_file():
+                scoped.add(candidate.relative_to(ROOT).as_posix())
+            elif candidate.is_dir():
+                scoped.update(
+                    path.relative_to(ROOT).as_posix()
+                    for path in candidate.rglob("*")
+                    if path.is_file()
+                )
+        tracked = sorted(scoped)
     hard_gaps: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
 
@@ -84,7 +113,11 @@ def main() -> int:
 
     visibility = gh_repo_visibility()
     visibility_state = str(visibility.get("visibility", "UNKNOWN")).upper()
-    if bool(config.get("require_public_visibility", False)) and visibility_state != "PUBLIC":
+    if (
+        not args.local_only
+        and bool(config.get("require_public_visibility", False))
+        and visibility_state != "PUBLIC"
+    ):
         hard_gaps.append(
             {
                 "kind": "github_visibility_not_public",
@@ -105,6 +138,7 @@ def main() -> int:
         "warning_count": len(warnings),
         "github_visibility": visibility.get("visibility", "UNKNOWN"),
         "github_repository": visibility.get("nameWithOwner", ""),
+        "remote_visibility_checked": not args.local_only,
     }
     report = {
         "policy": str(config.get("policy", "project_theseus_public_release_manifest_v1")),

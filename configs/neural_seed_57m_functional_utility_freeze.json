@@ -13,27 +13,27 @@
     "rust": 32
   },
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1",
-  "compiler_sha256": "78831afdf223603749d91673566b490dd371eef80e495e9f53ae7f7def1657cd",
+  "compiler_sha256": "475ecc0d044e7c477c38e6f680c9ff0f6c54c5361a9f48daf0cc5df26aa2c037",
   "config": "configs/neural_seed_functional_utility.json",
-  "config_sha256": "f7d65b888e555c2504b35116fce74f84619feb2179600fb8e780427548c89b3f",
+  "config_sha256": "a8d14f0311d3f343eb4a2f785623ec34b886d59aab5d690c5210495b04705442",
   "consumed_case_count": 0,
   "consumption_policy_sha256": "fbb925f92d301b744f90c3d45429f75109ec48b14ba6d2c5345ee1b3633ff4dd",
   "consumption_registry": "reports/private_functional_consumption_registry.jsonl",
   "dense_controls_complete_at_freeze": false,
   "evaluation_state": "NOT_EVALUATED",
   "external_inference_calls": 0,
-  "frozen_utc": "2026-07-22T03:22:31.601731Z",
+  "frozen_utc": "2026-07-29T16:17:02.192115Z",
   "generation_wrapper_sha256": "76bf5714f999e4e68c96f27b7179a0368a4bb5ee273cd46d29f89d5a78ad08d6",
   "immutable": true,
-  "local_english_rater_config_sha256": "48ce47f0351d49660afacc6bddb02b6c196a5590a9982b1177c10eb0e22fecf6",
-  "local_english_rater_implementation_sha256": "e28663f7e7660fdc79c79cfbddfa8ac8eec45e1edb8cbb5ad7d0d230552d692b",
+  "local_english_rater_config_sha256": "be4b1ffed51edc34d4e0f2268b12cb4964d12888d72c015a203ed81007c16b24",
+  "local_english_rater_implementation_sha256": "7e534c4b382be69415e3da386d049a56a64892a51fd6a012eca73c18e92454dc",
   "policy": "project_theseus_private_functional_utility_freeze_v2",
   "public_training_rows_written": 0,
   "source_disjoint": true,
-  "supersede_reason": "Bind the still-unconsumed functional contract to the qualified training-only MLX fast-RoPE and zero-effective auxiliary-pruning plan identity. Candidate cases, visible packet, generation wrapper, serving RoPE kernel, verifier, data, optimizer state, objective weights, schedule, checkpoint tensors, and consumption count remain unchanged.",
-  "supersedes_freeze_sha256": "6dad2ebcc63f0ef4c12f62e5fd7e8586a5775b83979cb94fa8318d5bfdcea14b",
+  "supersede_reason": "evaluator_integrity_completion_adds_mandatory_prospective_human_audit_receipt_before_any_57m_result",
+  "supersedes_freeze_sha256": "22e89d11e6ca3e46b31e57b4970d64e354e023c29e8e7721754510e8f953115f",
   "templates_renderers_routers_tools_credit": 0,
-  "toolchain_identity_sha256": "ca3d37c3f7db18132b6f6b2ae8e73553887c614f5970124f6e12fa933f9ef096",
+  "toolchain_identity_sha256": "a59b4273f03b0c23ef21f2d3c0566e67fb1ebf3263802794a4d8496c8e7be56a",
   "training_base_config_sha256": "22e334af476b0243b8017f7930130662dfde81febaa4c5a4bfe7781b5e0dbdb2",
   "training_config": "configs/moecot_language_arm_training.json",
   "training_config_identity": {
@@ -43,8 +43,8 @@
     "policy": "project_theseus_functional_training_config_semantic_identity_v1",
     "reason": "Checkpoint lineage migrations do not change model, data, objective, schedule, generator, or evaluation behavior."
   },
-  "training_config_sha256": "fbf824f8d178680859b4e79d2dde8ce4ffbe377240f531ad0ecced870de31bd9",
-  "training_generator_sha256": "fe9efb7a4765e8a8b906cb8ddf638c42990adf98aead02dee64117ffc91e95b0",
+  "training_config_sha256": "e068d0c3011db9cea0653fabf931017f0d893c25de720c32ee7912d8501b8683",
+  "training_generator_sha256": "c2b7adfee7c2c549236364286d0227ac3800780af072e3203c75e3602b2271e6",
   "training_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
   "training_state_at_freeze": {
     "candidate_id": "moecot_mlx_57m_active_preregistered_v1",
@@ -72,5 +72,5 @@
     "dense_controls_complete": false,
     "functional_contract_frozen_before_control_completion": true
   },
-  "verifier_sha256": "a792cc6d206829b0742e79925e446c07f3a9e19dbfba50055bc992de4ed68701"
+  "verifier_sha256": "b513f860654db0881c220a53b16c5be841736a6e20dd4d5704f268cac1ad67ca"
 }

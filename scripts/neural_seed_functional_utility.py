@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 import moecot_language_arm_training as training
+from blind_runtime_guard import blind_view, issue_blind_capability
 
 from neural_seed_functional_cases import ARMS, materialize_cases, stable_hash
 from neural_seed_functional_verifiers import (
@@ -59,6 +60,7 @@ def main() -> int:
     parser.add_argument("--blind-english-packet-out", default="")
     parser.add_argument("--judgments", default="")
     parser.add_argument("--judgment-receipt", default="")
+    parser.add_argument("--human-audit-receipt", default="")
     parser.add_argument("--judgment-label", default="")
     parser.add_argument("--compare-results", nargs=3, default=[])
     parser.add_argument("--exact-diagnostic", default="")
@@ -116,6 +118,12 @@ def main() -> int:
         prior_code_identity: dict[str, Any] = {}
         judgment_receipt_path = resolve(args.judgment_receipt) if args.judgment_receipt else None
         judgment_receipt_identity: dict[str, Any] = {}
+        human_audit_path = (
+            resolve(args.human_audit_receipt)
+            if args.human_audit_receipt
+            else None
+        )
+        human_audit_identity: dict[str, Any] = {}
         if args.judgments:
             if not output_path.is_file():
                 raise ValueError("final qualification requires the consumed code evaluation")
@@ -140,6 +148,14 @@ def main() -> int:
                 stage="blind_english_local_scoring",
                 artifact_sha256=judgment_receipt_identity["sha256"],
             )
+            if not human_audit_path or not human_audit_path.is_file():
+                raise ValueError(
+                    "final qualification requires the prospective human-audit receipt"
+                )
+            human_audit_identity = {
+                "path": relative(human_audit_path),
+                "sha256": sha256_file(human_audit_path),
+            }
         elif output_path.exists():
             raise ValueError("preliminary functional evaluation output already exists")
         reservation = reserve_once(
@@ -152,6 +168,10 @@ def main() -> int:
                 "case_contract_sha256": active_freeze.get("case_contract_sha256"),
                 "prior_code_evaluation_sha256": prior_code_identity.get("sha256", ""),
                 "judgment_receipt_sha256": judgment_receipt_identity.get("sha256", ""),
+                "human_audit_receipt_sha256": human_audit_identity.get(
+                    "sha256",
+                    "",
+                ),
             },
         )
         try:
@@ -164,6 +184,9 @@ def main() -> int:
             judgments_path = resolve(args.judgments) if args.judgments else None
             judgments = read_jsonl(judgments_path) if judgments_path else []
             judgment_receipt = read_json(judgment_receipt_path) if judgment_receipt_path else {}
+            human_audit_receipt = (
+                read_json(human_audit_path) if human_audit_path else {}
+            )
             judgments_identity = (
                 {
                     "path": relative(judgments_path),
@@ -180,6 +203,8 @@ def main() -> int:
                 active_freeze,
                 judgments,
                 judgment_receipt=judgment_receipt,
+                human_audit_receipt=human_audit_receipt,
+                human_audit_identity=human_audit_identity,
                 judgments_identity=judgments_identity,
                 judgment_label=args.judgment_label,
                 candidate_bundle_identity=bundle_identity,
@@ -368,16 +393,33 @@ def build_blind_english_packet(
     gaps.extend(provenance["hard_gaps"])
     items = []
     if not gaps:
+        case_capability = issue_blind_capability(
+            allowed_fields={"arm_id", "case_id", "prompt"},
+            purpose="blind_english_case_materialization",
+        )
+        candidate_capability = issue_blind_capability(
+            allowed_fields={"case_id", "output"},
+            purpose="blind_english_candidate_materialization",
+        )
         for case in cases.values():
-            if case["arm_id"] != "english":
+            visible_case = blind_view(case, case_capability)
+            if visible_case["arm_id"] != "english":
                 continue
-            candidate = str(candidate_rows[case["case_id"]].get("output") or "")
-            binding = english_candidate_binding(case["case_id"], candidate)
+            case_id = str(visible_case["case_id"])
+            visible_candidate = blind_view(
+                candidate_rows[case_id],
+                candidate_capability,
+            )
+            if str(visible_candidate["case_id"]) != case_id:
+                gaps.append("candidate_case_identity_mismatch")
+                continue
+            candidate = str(visible_candidate["output"] or "")
+            binding = english_candidate_binding(case_id, candidate)
             items.append(
                 {
                     "blind_item_id": binding["blind_item_id"],
-                    "case_id": case["case_id"],
-                    "prompt": case["prompt"],
+                    "case_id": case_id,
+                    "prompt": visible_case["prompt"],
                     "candidate_output": candidate,
                     "candidate_sha256": binding["candidate_sha256"],
                     "dimensions": list(config["english_scoring"]["dimensions"]),
@@ -626,6 +668,8 @@ def evaluate_bundle(
     judgments: list[dict[str, Any]],
     *,
     judgment_receipt: dict[str, Any] | None = None,
+    human_audit_receipt: dict[str, Any] | None = None,
+    human_audit_identity: dict[str, Any] | None = None,
     judgments_identity: dict[str, Any] | None = None,
     judgment_label: str = "",
     candidate_bundle_identity: dict[str, Any] | None = None,
@@ -689,6 +733,8 @@ def evaluate_bundle(
         judgment_receipt or {},
         judgments_identity or {},
         judgment_label,
+        human_audit_receipt or {},
+        human_audit_identity or {},
     )
     gaps.extend(judgment_audit["hard_gaps"])
     english = score_english_judgments(list(cases.values()), outputs, judgments, config) if judgments else {
@@ -907,6 +953,8 @@ def audit_local_english_judgments(
     receipt: dict[str, Any],
     judgments_identity: dict[str, Any],
     label: str,
+    human_audit_receipt: dict[str, Any] | None = None,
+    human_audit_identity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not judgments:
         return {
@@ -915,6 +963,8 @@ def audit_local_english_judgments(
             "hard_gaps": [],
         }
     gaps = []
+    human_audit_receipt = human_audit_receipt or {}
+    human_audit_identity = human_audit_identity or {}
     if receipt.get("policy") != "project_theseus_local_blind_english_judgment_receipt_v1":
         gaps.append("local_judgment_receipt_policy_mismatch")
     if receipt.get("trigger_state") != "GREEN":
@@ -930,6 +980,11 @@ def audit_local_english_judgments(
         gaps.append("local_judgments_training_boundary_missing")
     if receipt.get("raw_model_responses_retained") is not False:
         gaps.append("local_judgment_raw_response_retained")
+    controls = receipt.get("adversarial_control_suite") or {}
+    if controls.get("trigger_state") != "GREEN":
+        gaps.append("local_judgment_adversarial_controls_not_green")
+    if not isinstance(receipt.get("agreement"), dict):
+        gaps.append("local_judgment_agreement_missing")
     local_calls = int(receipt.get("local_evaluator_inference_calls") or 0)
     if local_calls <= 0:
         gaps.append("local_judgment_inference_calls_missing")
@@ -977,6 +1032,13 @@ def audit_local_english_judgments(
             gaps.append("local_judgment_blind_packet_invalid")
         if file_row.get("blind_packet_contract_sha256") != blind_packet.get("packet_sha256"):
             gaps.append("local_judgment_blind_packet_mismatch")
+    human_audit = audit_prospective_human_sample(
+        receipt,
+        human_audit_receipt,
+        human_audit_identity,
+        configured,
+    )
+    gaps.extend(human_audit["hard_gaps"])
     return {
         "state": "GREEN" if not gaps else "RED",
         "receipt_policy": receipt.get("policy"),
@@ -986,6 +1048,88 @@ def audit_local_english_judgments(
         "adjudicator_ids": sorted(observed_adjudicators),
         "local_evaluator_inference_calls": local_calls,
         "external_inference_calls": 0,
+        "human_audit": human_audit,
+        "hard_gaps": sorted(set(gaps)),
+    }
+
+
+def audit_prospective_human_sample(
+    rater_receipt: dict[str, Any],
+    human_receipt: dict[str, Any],
+    human_identity: dict[str, Any],
+    rater_config: dict[str, Any],
+) -> dict[str, Any]:
+    gaps = []
+    if (
+        human_receipt.get("policy")
+        != "project_theseus_blind_english_human_audit_v1"
+    ):
+        gaps.append("human_audit_policy_mismatch")
+    planned = (
+        (rater_receipt.get("human_audit") or {}).get("prospective_sample")
+        if isinstance(rater_receipt.get("human_audit"), dict)
+        else []
+    )
+    planned = planned if isinstance(planned, list) else []
+    rows = (
+        human_receipt.get("rows")
+        if isinstance(human_receipt.get("rows"), list)
+        else []
+    )
+    expected = {
+        (
+            str(row.get("case_id") or ""),
+            str(row.get("blind_item_id") or ""),
+            str(row.get("candidate_sha256") or ""),
+        )
+        for row in planned
+        if isinstance(row, dict)
+    }
+    observed = {
+        (
+            str(row.get("case_id") or ""),
+            str(row.get("blind_item_id") or ""),
+            str(row.get("candidate_sha256") or ""),
+        )
+        for row in rows
+        if isinstance(row, dict)
+    }
+    if not expected or observed != expected:
+        gaps.append("human_audit_prospective_sample_mismatch")
+    dimensions = list(rater_config["scoring"]["dimensions"])
+    rater_ids = {
+        str(card["rater_id"])
+        for card in [
+            *rater_config["primary_raters"],
+            rater_config["adjudicator"],
+        ]
+    }
+    for row in rows:
+        scores = row.get("human_scores") if isinstance(row, dict) else {}
+        if (
+            not isinstance(scores, dict)
+            or set(scores) != set(dimensions)
+            or any(
+                not isinstance(scores[dimension], int)
+                or not 0 <= scores[dimension] <= 4
+                for dimension in dimensions
+            )
+        ):
+            gaps.append("human_audit_scores_invalid")
+        auditor = str(row.get("auditor_id") or "")
+        if not auditor or auditor in rater_ids:
+            gaps.append("human_auditor_not_independent")
+        if not str(row.get("audited_utc") or ""):
+            gaps.append("human_audit_timestamp_missing")
+        if not isinstance(row.get("injection_or_malformed_flag"), bool):
+            gaps.append("human_audit_integrity_flag_missing")
+    if not human_identity.get("sha256"):
+        gaps.append("human_audit_artifact_identity_missing")
+    return {
+        "state": "GREEN" if not gaps else "RED",
+        "receipt": human_identity,
+        "prospective_sample_count": len(expected),
+        "audited_row_count": len(rows),
         "hard_gaps": sorted(set(gaps)),
     }
 
@@ -1312,6 +1456,8 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         gaps.append("english_local_rater_implementation_mismatch")
     if english.get("local_judgment_receipt_required") is not True:
         gaps.append("english_local_judgment_receipt_boundary_missing")
+    if english.get("prospective_human_audit_receipt_required") is not True:
+        gaps.append("english_human_audit_receipt_boundary_missing")
     local_rater = read_json(LOCAL_RATER_CONFIG)
     gaps.extend(
         f"english_local_rater:{gap}" for gap in validate_local_rater_config(local_rater)

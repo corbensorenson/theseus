@@ -768,6 +768,11 @@ def score_english_judgments(
         by_case[case_id].append({**row, "rater_id": rater_id})
     results = []
     pair_values: list[tuple[int, int]] = []
+    dimension_pairs: dict[str, list[tuple[int, int]]] = {
+        dimension: [] for dimension in dimensions
+    }
+    exact_case_agreement_count = 0
+    compared_case_count = 0
     for case_id, case in english.items():
         rows = by_case[case_id]
         primary_by_rater = {
@@ -777,6 +782,13 @@ def score_english_judgments(
             faults.append(f"insufficient_raters:{case_id}")
             continue
         first, second = [primary_by_rater[key] for key in sorted(primary_by_rater)]
+        compared_case_count += 1
+        exact_case_agreement_count += int(
+            all(
+                first["scores"][dimension] == second["scores"][dimension]
+                for dimension in dimensions
+            )
+        )
         requires_adjudication = any(abs(first["scores"][d] - second["scores"][d]) >= delta for d in dimensions)
         adjudicators = [row for row in rows if row.get("adjudicator") is True]
         if requires_adjudication and len(adjudicators) != 1:
@@ -791,6 +803,13 @@ def score_english_judgments(
         adjudicated = adjudicators[0] if adjudicators else None
         final_scores = adjudicated["scores"] if adjudicated else {d: (first["scores"][d] + second["scores"][d]) / 2 for d in dimensions}
         pair_values.extend((first["scores"][d], second["scores"][d]) for d in dimensions)
+        for dimension in dimensions:
+            dimension_pairs[dimension].append(
+                (
+                    first["scores"][dimension],
+                    second["scores"][dimension],
+                )
+            )
         required = case["verifier"]["required_concepts"]
         forbidden = case["verifier"]["forbidden_claims"]
         text = candidates.get(case_id, "").lower()
@@ -799,7 +818,45 @@ def score_english_judgments(
         mean = sum(final_scores.values()) / len(dimensions)
         results.append({"case_id": case_id, "passed": mean >= 3.0 and not forbidden_hits, "mean_score": mean, "scores": final_scores, "required_concept_recall_diagnostic": concept_diagnostic, "forbidden_hits": forbidden_hits})
     kappa = _quadratic_weighted_kappa(pair_values)
-    return {"valid": not faults and len(results) == len(english), "faults": faults, "results": results, "quadratic_weighted_kappa": kappa, "passed": sum(bool(row["passed"]) for row in results), "total": len(english)}
+    return {
+        "valid": not faults and len(results) == len(english),
+        "faults": faults,
+        "results": results,
+        "quadratic_weighted_kappa": kappa,
+        "agreement": {
+            "compared_case_count": compared_case_count,
+            "exact_case_agreement_count": exact_case_agreement_count,
+            "exact_case_agreement_rate": (
+                exact_case_agreement_count / compared_case_count
+                if compared_case_count
+                else None
+            ),
+            "dimensions": {
+                dimension: {
+                    "comparison_count": len(pairs),
+                    "exact_agreement_count": sum(
+                        left == right for left, right in pairs
+                    ),
+                    "exact_agreement_rate": (
+                        sum(left == right for left, right in pairs) / len(pairs)
+                        if pairs
+                        else None
+                    ),
+                    "quadratic_weighted_kappa": _quadratic_weighted_kappa(
+                        pairs
+                    ),
+                }
+                for dimension, pairs in dimension_pairs.items()
+            },
+        },
+        "candidate_integrity_blocked_judgment_count": sum(
+            row.get("candidate_integrity_blocked") is True
+            for rows in by_case.values()
+            for row in rows
+        ),
+        "passed": sum(bool(row["passed"]) for row in results),
+        "total": len(english),
+    }
 
 
 def english_candidate_binding(case_id: str, candidate: str) -> dict[str, str]:

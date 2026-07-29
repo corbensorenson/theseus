@@ -22,6 +22,7 @@ import sys
 import threading
 import time
 import uuid
+from collections import defaultdict, deque
 from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -44,7 +45,12 @@ import hive_spatial
 import hive_users
 from hive_node_peer_registry import accept_bonjour_peers, accept_heartbeat_response, accept_peer, announce_multicast, bonjour_enabled, bonjour_register_command, current_peers, ensure_peer_registry_loaded, known_peers, listen_multicast, mark_peer_url_failure, peer_from_status, peer_registry_path, peer_state_counts, probe_known_peers, scan_bonjour
 from hive_node_operator_runtime import operator_solo_learning_summary, operator_training_summary, operator_utilization_summary
-from hive_node_operator_targets import node_can_run_task, operator_accelerator_summary, operator_targets
+from hive_node_operator_targets import (
+    node_accelerator_ids,
+    node_can_run_task,
+    operator_accelerator_summary,
+    operator_targets,
+)
 from hive_node_slots import acquire_slot, init_slot_state, local_task_support, release_slot, slots_snapshot
 from hive_node_relay import fetch_relay_peers, poll_relay_tasks, post_relay_result, register_with_relay, sync_static_coordinator
 from hive_node_storage_peer import storage_peer_browse, storage_peer_file_bytes, storage_peer_file_payload
@@ -54,7 +60,7 @@ from hive_node_resources import classify_capabilities, probe_resources, resource
 from hive_node_notifications import acknowledge_operator_notifications, operator_network_summary, operator_notification_summary, operator_notifications
 from hive_node_compact_reports import compact_hive_version, compact_license, compact_market, compact_operator_overnight, compact_promoted, compact_remote_control, compact_rented_compute, compact_runtime, compact_storage, compact_training_execution, compact_update_status, compact_utilization
 from hive_node_identity import load_identity
-from hive_node_federation import apply_runtime_join_overrides, coordinator_urls, hive_id, hive_tier, join_token, relay_url, shared_secret, unique_nonempty
+from hive_node_federation import apply_runtime_join_overrides, coordinator_urls, hive_id, hive_tier, join_token, relay_url, shared_secret, unique_nonempty, worker_secret
 from hive_node_common import append_jsonl, command_available, display_path, event, get_path, is_loopback, now, parse_json_arg, read_json, read_jsonl_tail, remove_if_exists, report_path, task_ledger_path, to_float, write_json, write_text
 from hive_node_artifacts import artifact_index, bundle_result_artifacts, materialize_output_artifacts, read_artifact_payload
 from hive_node_operator_ui import mobile_operator_html, operator_icon_png, operator_webmanifest
@@ -72,6 +78,155 @@ STATUS_CACHE_LOCK = threading.Lock()
 STATUS_CACHE: dict[int, tuple[float, dict[str, Any]]] = {}
 OPERATOR_STATUS_CACHE_LOCK = threading.Lock()
 OPERATOR_STATUS_CACHE: dict[str, tuple[float, dict[str, Any]]] = {}
+
+
+class HiveRequestFault(ValueError):
+    def __init__(self, code: str, status: int) -> None:
+        super().__init__(code)
+        self.code = code
+        self.status = status
+
+
+HIVE_POST_SCHEMAS: dict[str, dict[str, Any]] = {
+    "/api/hive/tasks": {
+        "allowed": {"kind", "payload"},
+        "required": {"kind", "payload"},
+        "objects": {"payload"},
+    },
+    "/api/hive/operator/chat": {
+        "allowed": {
+            "checkpoint_id",
+            "chat_route",
+            "feedback",
+            "intent",
+            "mode",
+            "prompt",
+            "route",
+            "session_id",
+            "target_node_id",
+        },
+        "required": {"prompt"},
+    },
+    "/api/hive/operator/assistant-feedback": {
+        "allowed": {
+            "artifact_ref",
+            "feedback",
+            "outcome",
+            "session_id",
+        },
+    },
+    "/api/hive/operator/task": {
+        "allowed": {"kind", "target_node_id", "task_payload"},
+        "required": {"kind", "task_payload"},
+        "objects": {"task_payload"},
+    },
+    "/api/hive/operator/notifications/ack": {
+        "allowed": {"all_before_utc", "all_current", "ids"},
+    },
+    "/api/hive/operator/governance-audit": {
+        "allowed": {
+            "artifact_ref",
+            "artifact_refs",
+            "request_id",
+            "request_kind",
+        },
+    },
+    "/api/hive/operator/utilization": {
+        "allowed": {"action"},
+        "required": {"action"},
+    },
+    "/api/hive/remote-control/session": {
+        "allowed": {
+            "duration_minutes",
+            "mode",
+            "provider",
+            "target_node_id",
+        },
+    },
+    "/api/hive/voice/presence": {
+        "allowed": {
+            "direction",
+            "direction_degrees",
+            "rms_db",
+            "room_id",
+            "room_name",
+            "score",
+            "source",
+        },
+    },
+    "/api/hive/heartbeat": {
+        "allowed": {"peer"},
+        "required": {"peer"},
+        "objects": {"peer"},
+    },
+    "/api/hive/update/configure": {
+        "allowed": {
+            "allow_prerelease",
+            "auto_install_hard",
+            "auto_install_soft",
+            "catalog_url",
+            "channel",
+            "check_on_start",
+            "mode",
+            "no_allow_prerelease",
+            "no_auto_install_hard",
+            "no_auto_install_soft",
+            "no_check_on_start",
+            "track",
+        },
+    },
+    "/api/hive/update/check": {
+        "allowed": {
+            "apply",
+            "catalog_url",
+            "if_enabled_on_start",
+            "respect_interval",
+            "update_id",
+        },
+    },
+    "/api/hive/update/apply": {
+        "allowed": {"allow_hard", "execute", "mode", "offer", "restart"},
+    },
+    "/api/hive/update/apply-soft": {
+        "allowed": {"allow_hard", "execute", "mode", "offer", "restart"},
+    },
+}
+
+
+def validate_hive_request_schema(
+    path: str,
+    payload: dict[str, Any],
+) -> None:
+    schema = HIVE_POST_SCHEMAS.get(path)
+    if schema is None:
+        return
+    allowed = schema.get("allowed") or set()
+    unknown = sorted(set(payload) - set(allowed))
+    if unknown:
+        raise HiveRequestFault(
+            f"unknown_request_fields:{','.join(unknown)}",
+            400,
+        )
+    required = schema.get("required") or set()
+    missing = sorted(
+        key for key in required if key not in payload
+    )
+    if missing:
+        raise HiveRequestFault(
+            f"missing_request_fields:{','.join(missing)}",
+            400,
+        )
+    object_fields = schema.get("objects") or set()
+    invalid_objects = sorted(
+        key
+        for key in object_fields
+        if key in payload and not isinstance(payload.get(key), dict)
+    )
+    if invalid_objects:
+        raise HiveRequestFault(
+            f"request_fields_must_be_objects:{','.join(invalid_objects)}",
+            400,
+        )
 
 
 def main() -> int:
@@ -159,7 +314,9 @@ def main() -> int:
 
 def run_daemon(args: argparse.Namespace, policy: dict[str, Any]) -> int:
     apply_runtime_join_overrides(policy, args)
-    host = args.host or str(get_path(policy, ["node", "http_host"], "0.0.0.0"))
+    host = args.host or str(
+        get_path(policy, ["node", "http_host"], "127.0.0.1")
+    )
     port = int(args.port or get_path(policy, ["node", "http_port"], 8791))
     ensure_peer_registry_loaded(policy)
     status = build_status(policy, http_port=port)
@@ -198,6 +355,20 @@ def run_daemon(args: argparse.Namespace, policy: dict[str, Any]) -> int:
 def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
     class HiveHandler(BaseHTTPRequestHandler):
         server_version = "ProjectTheseusHive/0.1"
+        request_slots = threading.BoundedSemaphore(
+            max(
+                1,
+                int(
+                    get_path(
+                        policy,
+                        ["security", "max_concurrent_requests"],
+                        8,
+                    )
+                ),
+            )
+        )
+        rate_lock = threading.Lock()
+        request_times: dict[str, deque[float]] = defaultdict(deque)
 
         def auth(self, action: str = "status", task_kind: str = "", query: str = "") -> dict[str, Any]:
             return hive_users.authorize(
@@ -207,18 +378,53 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
                 query,
                 action=action,
                 task_kind=task_kind,
+                allow_loopback=bool(
+                    get_path(
+                        policy,
+                        ["security", "allow_status_without_secret"],
+                        False,
+                    )
+                    and action == "status"
+                ),
             )
 
         def deny_auth(self, auth: dict[str, Any]) -> None:
             self.send_json({"ok": False, "error": auth.get("error") or auth.get("reason") or "access_denied"}, status=403)
 
         def do_GET(self) -> None:  # noqa: N802
+            if not self.request_slots.acquire(blocking=False):
+                return self.send_json(
+                    {"ok": False, "error": "hive_concurrency_limit"},
+                    status=429,
+                )
+            try:
+                validate_hive_browser_origin(self.headers, policy)
+                if not self.rate_allowed():
+                    raise HiveRequestFault("hive_rate_limit", 429)
+                return self._do_GET()
+            except HiveRequestFault as exc:
+                return self.send_json(
+                    {"ok": False, "error": exc.code},
+                    status=exc.status,
+                )
+            except Exception:
+                return self.send_json(
+                    {"ok": False, "error": "hive_internal_error"},
+                    status=500,
+                )
+            finally:
+                self.request_slots.release()
+
+        def _do_GET(self) -> None:
             parsed = urlparse(self.path)
             if parsed.path in {"/mobile", "/operator", "/m"}:
                 return self.send_text(mobile_operator_html(), content_type="text/html; charset=utf-8")
             if parsed.path == "/operator.webmanifest":
                 return self.send_text(operator_webmanifest(), content_type="application/manifest+json; charset=utf-8")
             if parsed.path == "/api/hive/health":
+                auth = self.auth("status", query=parsed.query)
+                if not auth.get("ok"):
+                    return self.deny_auth(auth)
                 return self.send_json(build_health(policy, http_port=int(get_path(policy, ["node", "http_port"], 8791))))
             if parsed.path in {"/operator-icon-180.png", "/operator-icon-1024.png"}:
                 icon = operator_icon_png(parsed.path)
@@ -226,6 +432,9 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
                     return self.send_error(HTTPStatus.NOT_FOUND)
                 return self.send_bytes(icon, content_type="image/png", filename=parsed.path.rsplit("/", 1)[-1])
             if parsed.path in {"/", "/api/hive/status", "/api/hive/node"}:
+                auth = self.auth("status", query=parsed.query)
+                if not auth.get("ok"):
+                    return self.deny_auth(auth)
                 return self.send_json(cached_build_status(policy, http_port=int(get_path(policy, ["node", "http_port"], 8791))))
             if parsed.path == "/api/hive/vcm/status":
                 auth = self.auth("operator_status", query=parsed.query)
@@ -248,7 +457,11 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
                     return self.deny_auth(auth)
                 query = parse_qs(parsed.query)
                 include_token = str((query.get("include_token") or query.get("with_token") or ["0"])[0]).lower() in {"1", "true", "yes"}
-                provided_token = hive_users.token_from_request(self.headers.get("X-Theseus-Hive-Secret", ""), parsed.query)
+                provided_token = hive_users.token_from_request(
+                    self.headers.get("X-Theseus-Hive-Secret", ""),
+                    parsed.query,
+                    policy=policy,
+                )
                 return self.send_json(operator_roaming_profile(policy, auth, provided_token=provided_token, include_token=include_token))
             if parsed.path == "/api/hive/operator/notifications":
                 auth = self.auth("operator_status", query=parsed.query)
@@ -284,9 +497,15 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
                     )
                 )
             if parsed.path == "/api/hive/update-catalog":
+                auth = self.auth("status", query=parsed.query)
+                if not auth.get("ok"):
+                    return self.deny_auth(auth)
                 hive_catalog = hive_version_catalog()
                 return self.send_json(hive_catalog if hive_catalog.get("offers") else update_manager.public_catalog(update_policy()))
             if parsed.path == "/api/hive/version":
+                auth = self.auth("status", query=parsed.query)
+                if not auth.get("ok"):
+                    return self.deny_auth(auth)
                 return self.send_json(hive_version_manager.status_report(write_report=True))
             if parsed.path == "/api/hive/installer-artifacts":
                 auth = self.auth("artifact_sync", query=parsed.query)
@@ -299,8 +518,14 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
                     return self.deny_auth(auth)
                 return self.send_json(update_manager.status_report(policy=update_policy(), write_report=True))
             if parsed.path == "/api/hive/peers":
+                auth = self.auth("status", query=parsed.query)
+                if not auth.get("ok"):
+                    return self.deny_auth(auth)
                 return self.send_json(peers_report(policy))
             if parsed.path == "/api/hive/tasks":
+                auth = self.auth("status", query=parsed.query)
+                if not auth.get("ok"):
+                    return self.deny_auth(auth)
                 return self.send_json(tasks_report(policy))
             if parsed.path == "/api/hive/artifacts":
                 auth = self.auth("artifact_sync", query=parsed.query)
@@ -423,8 +648,33 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
             return self.send_error(HTTPStatus.NOT_FOUND)
 
         def do_POST(self) -> None:  # noqa: N802
+            if not self.request_slots.acquire(blocking=False):
+                return self.send_json(
+                    {"ok": False, "error": "hive_concurrency_limit"},
+                    status=429,
+                )
+            try:
+                validate_hive_browser_origin(self.headers, policy)
+                if not self.rate_allowed():
+                    raise HiveRequestFault("hive_rate_limit", 429)
+                return self._do_POST()
+            except HiveRequestFault as exc:
+                return self.send_json(
+                    {"ok": False, "error": exc.code},
+                    status=exc.status,
+                )
+            except Exception:
+                return self.send_json(
+                    {"ok": False, "error": "hive_internal_error"},
+                    status=500,
+                )
+            finally:
+                self.request_slots.release()
+
+        def _do_POST(self) -> None:
             parsed = urlparse(self.path)
             payload = self.read_json_body()
+            validate_hive_request_schema(parsed.path, payload)
             if parsed.path == "/api/hive/tasks":
                 kind = str(payload.get("kind") or "")
                 auth = self.auth("task", task_kind=kind)
@@ -525,15 +775,59 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
             return self.send_error(HTTPStatus.NOT_FOUND)
 
         def read_json_body(self) -> dict[str, Any]:
-            length = int(self.headers.get("Content-Length", "0") or 0)
+            if self.headers.get("Transfer-Encoding"):
+                raise HiveRequestFault("transfer_encoding_forbidden", 400)
+            content_type = str(self.headers.get("Content-Type") or "")
+            if (
+                content_type.split(";", 1)[0].strip().lower()
+                != "application/json"
+            ):
+                raise HiveRequestFault("application_json_required", 415)
+            raw_length = str(self.headers.get("Content-Length") or "")
+            if not raw_length.isdigit():
+                raise HiveRequestFault("valid_content_length_required", 411)
+            length = int(raw_length)
+            maximum = int(
+                get_path(
+                    policy,
+                    ["security", "max_request_body_bytes"],
+                    1_048_576,
+                )
+            )
             if length <= 0:
                 return {}
-            raw = self.rfile.read(length).decode("utf-8")
+            if length > maximum:
+                raise HiveRequestFault("request_body_too_large", 413)
+            try:
+                raw = self.rfile.read(length).decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise HiveRequestFault("utf8_json_required", 400) from exc
             try:
                 value = json.loads(raw)
-            except json.JSONDecodeError:
-                return {}
-            return value if isinstance(value, dict) else {}
+            except json.JSONDecodeError as exc:
+                raise HiveRequestFault("malformed_json", 400) from exc
+            if not isinstance(value, dict):
+                raise HiveRequestFault("json_object_required", 400)
+            return value
+
+        def rate_allowed(self) -> bool:
+            client = str(self.client_address[0])
+            maximum = int(
+                get_path(
+                    policy,
+                    ["security", "max_requests_per_minute_per_client"],
+                    120,
+                )
+            )
+            current = time.monotonic()
+            with self.rate_lock:
+                rows = self.request_times[client]
+                while rows and current - rows[0] >= 60.0:
+                    rows.popleft()
+                if len(rows) >= maximum:
+                    return False
+                rows.append(current)
+                return True
 
         def send_json(self, payload: Any, status: int = 200) -> None:
             data = json.dumps(payload, indent=2).encode("utf-8")
@@ -565,6 +859,27 @@ def make_handler(policy: dict[str, Any]) -> type[BaseHTTPRequestHandler]:
             return
 
     return HiveHandler
+
+
+def validate_hive_browser_origin(
+    headers: Any,
+    policy: dict[str, Any],
+) -> None:
+    origin = str(headers.get("Origin") or "")
+    if not origin:
+        return
+    allowed = get_path(
+        policy,
+        ["security", "browser_allowed_origins"],
+        [],
+    )
+    allowed_origins = (
+        {str(row) for row in allowed}
+        if isinstance(allowed, list)
+        else set()
+    )
+    if origin not in allowed_origins:
+        raise HiveRequestFault("hive_browser_origin_denied", 403)
 
 
 def build_health(policy: dict[str, Any], *, http_port: int) -> dict[str, Any]:
@@ -944,7 +1259,7 @@ def enqueue_task(policy: dict[str, Any], kind: str, payload: dict[str, Any], *, 
         payload=payload,
         source=source,
         hive_id=hive_id(policy),
-        join_token=join_token(policy) or shared_secret(policy),
+        join_token=worker_secret(policy),
         local_node_id=str(identity.get("node_id") or ""),
     )
     if not security.get("ok"):
@@ -996,7 +1311,7 @@ def enqueue_relay_task(policy: dict[str, Any], relay_task: dict[str, Any]) -> di
         payload=payload,
         source="relay",
         hive_id=hive_id(policy),
-        join_token=join_token(policy) or shared_secret(policy),
+        join_token=worker_secret(policy),
         local_node_id=str(identity.get("node_id") or ""),
     )
     if not security.get("ok"):
@@ -1168,6 +1483,28 @@ def run_task(policy: dict[str, Any], task: dict[str, Any]) -> dict[str, Any]:
     timeout = int(task_def.get("timeout_seconds") or 300)
     started = time.perf_counter()
     started_utc = now()
+    source = str(task.get("source") or "")
+    sandbox = get_path(policy, ["security", "worker_sandbox"], {})
+    sandbox = sandbox if isinstance(sandbox, dict) else {}
+    if (
+        not hive_security.is_local_source(source)
+        and bool(sandbox.get("required_for_remote", True))
+        and not bool(sandbox.get("qualified", False))
+    ):
+        return {
+            **task,
+            "status": "denied",
+            "error": "remote_worker_sandbox_unqualified",
+            "started_utc": started_utc,
+            "finished_utc": now(),
+            "returncode": 126,
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+            "sandbox": {
+                "required": True,
+                "qualified": False,
+                "execution_attempted": False,
+            },
+        }
     try:
         result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, timeout=timeout, env=theseus_runtime.runtime_env())
         report = {
@@ -2830,7 +3167,14 @@ def authorize_task(policy: dict[str, Any], client_host: str, provided_secret: st
 
 
 def authorize_secret_or_loopback(policy: dict[str, Any], client_host: str, provided_secret: str, query: str = "") -> tuple[bool, str]:
-    if is_loopback(client_host):
+    if (
+        get_path(
+            policy,
+            ["security", "allow_status_without_secret"],
+            False,
+        )
+        and is_loopback(client_host)
+    ):
         return True, "loopback"
     auth = hive_users.authorize(policy, client_host, provided_secret, query, action="status", allow_loopback=False)
     if auth.get("ok"):
@@ -2846,7 +3190,7 @@ def submit_task(policy: dict[str, Any], peer_url: str, kind: str, payload: dict[
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    secret = join_token(policy) or shared_secret(policy)
+    secret = worker_secret(policy)
     if secret:
         req.add_header("X-Theseus-Hive-Secret", secret)
     timeout = float(get_path(policy, ["node", "task_submit_timeout_seconds"], 30))

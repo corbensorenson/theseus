@@ -1,0 +1,129 @@
+name: public-safe-ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements/theseus-py312-cpu.txt
+      - run: python -m pip install pytest==8.3.5 ruff==0.15.0
+      - name: Format
+        run: >-
+          ruff format --check
+          scripts/blind_runtime_guard.py
+          scripts/repository_license_gate.py
+          scripts/public_reproducibility_capsule.py
+          tests/test_blind_runtime_guard.py
+          tests/test_repository_license_gate.py
+          tests/test_public_reproducibility_capsule.py
+          tests/test_teacher_share_accounting_ledger.py
+          tests/test_dogfood_outcome_accounting.py
+          tests/test_vcm_consumer_integration_archive.py
+      - name: Lint
+        run: >-
+          ruff check --select E9,F63,F7,F82
+          scripts/blind_runtime_guard.py
+          scripts/repository_license_gate.py
+          scripts/public_reproducibility_capsule.py
+          scripts/openai_compat_server.py
+          scripts/sparkstream_dashboard.py
+          scripts/hive_node.py
+          scripts/hive_node_federation.py
+          scripts/hive_node_peer_registry.py
+          scripts/hive_users.py
+          tests/test_blind_runtime_guard.py
+          tests/test_repository_license_gate.py
+          tests/test_public_reproducibility_capsule.py
+          tests/test_openai_compat_security.py
+          tests/test_sparkstream_dashboard_security.py
+          tests/test_hive_authority_security.py
+          tests/test_autonomy_authority_security.py
+          tests/test_teacher_share_accounting_ledger.py
+          tests/test_dogfood_outcome_accounting.py
+          tests/test_vcm_consumer_integration_archive.py
+      - name: Public-safe unit slice
+        run: >-
+          python -m pytest -q
+          tests/test_blind_runtime_guard.py
+          tests/test_repository_license_gate.py
+          tests/test_public_reproducibility_capsule.py
+          tests/test_openai_compat_security.py
+          tests/test_sparkstream_dashboard_security.py
+          tests/test_hive_authority_security.py
+          tests/test_autonomy_authority_security.py
+          tests/test_teacher_share_accounting_ledger.py
+          tests/test_dogfood_outcome_accounting.py
+          tests/test_vcm_consumer_integration_archive.py
+      - name: Evidence-protocol capsule
+        run: >-
+          python scripts/public_reproducibility_capsule.py
+          --out-dir "${RUNNER_TEMP}/theseus-public-repro"
+          --gate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-repro-capsule
+          path: ${{ runner.temp }}/theseus-public-repro
+
+  rust:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - name: Linux clippy
+        run: >-
+          cargo clippy --workspace --all-targets --locked
+          --exclude symliquid-metal
+          --exclude symliquid-cli
+          -- -D warnings
+      - name: Linux tests
+        run: >-
+          cargo test --workspace --locked
+          --exclude symliquid-metal
+          --exclude symliquid-cli
+
+  governance-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/repository_license_gate.py --gate
+      - run: >-
+          python scripts/public_release_audit.py
+          --local-only
+          --scope-prefix examples/public_repro_capsule/
+          --scope-prefix scripts/public_reproducibility_capsule.py
+          --scope-prefix tests/test_public_reproducibility_capsule.py
+          --gate
+          --out "${RUNNER_TEMP}/public-release-audit.json"
+      - name: Source governance JSON
+        run: |
+          python -m json.tool configs/project_manifest_registry.json >/dev/null
+          python -m json.tool configs/roadmap_implementation_matrix.json >/dev/null
+          python -m json.tool configs/teacher_distillation_policy.json >/dev/null
+      - uses: actions/dependency-review-action@v4
+        if: github.event_name == 'pull_request'
+        with:
+          fail-on-severity: high

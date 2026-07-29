@@ -228,12 +228,16 @@ def main(argv: list[str] | None = None) -> int:
     chat.add_argument("--checkpoint-id", default="live")
     chat.add_argument("--session-id", default="cli_default")
     chat.add_argument("--intent", choices=["auto", "chat", "code", "tool", "planning"], default="auto")
-    chat.add_argument("--feedback", choices=["accepted", "missed", "ignored", "corrected", "completed"], default="completed")
+    chat.add_argument(
+        "--feedback",
+        choices=["accepted", "missed", "ignored", "corrected", "completed", "failed", "abstained"],
+        default="completed",
+    )
     chat.add_argument("--surface", default="theseus_cli")
     chat.add_argument("--allow-teacher", action="store_true")
 
-    feedback = sub.add_parser("feedback", help="Mark the latest local assistant answer as accepted, missed, ignored, corrected, or completed.")
-    feedback.add_argument("outcome", choices=["accepted", "missed", "ignored", "corrected", "completed"])
+    feedback = sub.add_parser("feedback", help="Mark the latest local assistant answer as accepted, missed, ignored, corrected, completed, failed, or abstained.")
+    feedback.add_argument("outcome", choices=["accepted", "missed", "ignored", "corrected", "completed", "failed", "abstained"])
     feedback.add_argument("--session-id", default="cli_default")
     feedback.add_argument("--latest-report", default="reports/checkpoint_chat_last.json")
     feedback.add_argument("--artifact-ref", action="append", default=[])

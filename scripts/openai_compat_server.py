@@ -8,12 +8,16 @@ grounded live/checkpoint chat shim.
 from __future__ import annotations
 
 import argparse
+import hmac
 import json
 import os
+import secrets
 import signal
 import subprocess
 import sys
+import threading
 import time
+from collections import defaultdict, deque
 from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -28,6 +32,54 @@ ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "configs" / "openai_compat_policy.json"
 sys.path.insert(0, str(ROOT / "scripts"))
 import license_manager  # noqa: E402
+
+
+class RequestFault(ValueError):
+    def __init__(self, code: str, status: int) -> None:
+        super().__init__(code)
+        self.code = code
+        self.status = status
+
+
+REQUEST_FIELDS = {
+    "/v1/chat/completions": {
+        "model",
+        "messages",
+        "temperature",
+        "top_p",
+        "n",
+        "stream",
+        "stop",
+        "max_tokens",
+        "presence_penalty",
+        "frequency_penalty",
+        "logit_bias",
+        "user",
+        "seed",
+        "response_format",
+        "tools",
+        "tool_choice",
+    },
+    "/v1/completions": {
+        "model",
+        "prompt",
+        "best_of",
+        "echo",
+        "frequency_penalty",
+        "logit_bias",
+        "logprobs",
+        "max_tokens",
+        "n",
+        "presence_penalty",
+        "seed",
+        "stop",
+        "stream",
+        "suffix",
+        "temperature",
+        "top_p",
+        "user",
+    },
+}
 
 
 def main() -> int:
@@ -129,8 +181,13 @@ def serve_endpoint(policy: dict[str, Any], args: argparse.Namespace) -> int:
 
     host = str(cfg.get("host") or "127.0.0.1")
     port = int(cfg.get("port") or 8789)
+    write_json(local_config_path(policy), cfg)
     Handler.config = cfg
     Handler.policy = policy
+    Handler.request_slots = threading.BoundedSemaphore(
+        max(1, int(cfg.get("max_concurrent_requests") or 4))
+    )
+    Handler.request_times = defaultdict(deque)
     try:
         Handler.resident_runtime = initialize_resident_runtime(cfg)
     except (ValueError, RuntimeError, PermissionError) as exc:
@@ -171,8 +228,21 @@ class Handler(BaseHTTPRequestHandler):
     config: dict[str, Any] = {}
     policy: dict[str, Any] = {}
     resident_runtime: Any | None = None
+    request_slots = threading.BoundedSemaphore(4)
+    rate_lock = threading.Lock()
+    request_times: dict[str, deque[float]] = defaultdict(deque)
 
     def do_OPTIONS(self) -> None:  # noqa: N802 - stdlib handler naming.
+        if not origin_allowed(self.config, str(self.headers.get("Origin") or "")):
+            return self.send_json(
+                {
+                    "error": {
+                        "message": "origin_denied",
+                        "type": "authentication_error",
+                    }
+                },
+                status=403,
+            )
         self.send_response(HTTPStatus.NO_CONTENT)
         self.send_common_headers()
         self.end_headers()
@@ -199,10 +269,52 @@ class Handler(BaseHTTPRequestHandler):
         return self.send_json({"error": {"message": "not_found", "type": "invalid_request_error"}}, status=404)
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler naming.
+        if not self.request_slots.acquire(blocking=False):
+            return self.send_json(
+                {
+                    "error": {
+                        "message": "concurrency_limit",
+                        "type": "rate_limit_error",
+                    }
+                },
+                status=429,
+            )
+        try:
+            if not self.rate_allowed():
+                return self.send_json(
+                    {
+                        "error": {
+                            "message": "rate_limit",
+                            "type": "rate_limit_error",
+                        }
+                    },
+                    status=429,
+                )
+            return self._do_POST()
+        except RequestFault as exc:
+            return self.send_json(
+                {"error": {"message": exc.code, "type": "invalid_request_error"}},
+                status=exc.status,
+            )
+        except Exception:
+            return self.send_json(
+                {
+                    "error": {
+                        "message": "internal_error",
+                        "type": "server_error",
+                    }
+                },
+                status=500,
+            )
+        finally:
+            self.request_slots.release()
+
+    def _do_POST(self) -> None:
         parsed = urlparse(self.path)
         if not self.authorized():
             return self.send_auth_error()
         payload = self.read_json_body()
+        validate_request_payload(parsed.path, payload)
         if parsed.path == "/v1/chat/completions":
             return self.handle_chat(payload)
         if parsed.path == "/v1/completions":
@@ -250,7 +362,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/event-stream")
         self.end_headers()
         chunk = {
-            "id": f"chatcmpl-theseus-{int(time.time() * 1000)}",
+            "id": f"chatcmpl-theseus-{secrets.token_urlsafe(12)}",
             "object": "chat.completion.chunk",
             "created": int(time.time()),
             "model": model,
@@ -268,13 +380,31 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(b"data: [DONE]\n\n")
 
     def read_json_body(self) -> dict[str, Any]:
-        length = int(self.headers.get("Content-Length", "0") or 0)
-        raw = self.rfile.read(length).decode("utf-8") if length > 0 else ""
+        if self.headers.get("Transfer-Encoding"):
+            raise RequestFault("transfer_encoding_forbidden", 400)
+        content_type = str(self.headers.get("Content-Type") or "")
+        if content_type.split(";", 1)[0].strip().lower() != "application/json":
+            raise RequestFault("application_json_required", 415)
+        raw_length = str(self.headers.get("Content-Length") or "")
+        if not raw_length.isdigit():
+            raise RequestFault("valid_content_length_required", 411)
+        length = int(raw_length)
+        maximum = int(self.config.get("max_request_body_bytes") or 1_048_576)
+        if length <= 0:
+            raise RequestFault("nonempty_json_body_required", 400)
+        if length > maximum:
+            raise RequestFault("request_body_too_large", 413)
         try:
-            value = json.loads(raw) if raw else {}
-        except json.JSONDecodeError:
-            return {}
-        return value if isinstance(value, dict) else {}
+            raw = self.rfile.read(length).decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise RequestFault("utf8_json_required", 400) from exc
+        try:
+            value = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise RequestFault("malformed_json", 400) from exc
+        if not isinstance(value, dict):
+            raise RequestFault("json_object_required", 400)
+        return value
 
     def authorized(self) -> bool:
         token = str(self.config.get("api_token") or "")
@@ -283,7 +413,22 @@ class Handler(BaseHTTPRequestHandler):
         auth_header = str(self.headers.get("Authorization") or "")
         prefix = "Bearer "
         supplied = auth_header[len(prefix) :] if auth_header.startswith(prefix) else auth_header
-        return bool(token and supplied == token)
+        return bool(token and hmac.compare_digest(supplied, token))
+
+    def rate_allowed(self) -> bool:
+        client = str(self.client_address[0])
+        maximum = int(
+            self.config.get("max_requests_per_minute_per_client") or 60
+        )
+        current = time.monotonic()
+        with self.rate_lock:
+            rows = self.request_times[client]
+            while rows and current - rows[0] >= 60.0:
+                rows.popleft()
+            if len(rows) >= maximum:
+                return False
+            rows.append(current)
+            return True
 
     def send_auth_error(self) -> None:
         self.send_json({"error": {"message": "unauthorized", "type": "authentication_error"}}, status=401)
@@ -298,8 +443,10 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def send_common_headers(self) -> None:
-        if self.config.get("cors", True):
-            self.send_header("Access-Control-Allow-Origin", "*")
+        origin = str(self.headers.get("Origin") or "")
+        if self.config.get("cors") and origin_allowed(self.config, origin):
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
             self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
             self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Cache-Control", "no-store")
@@ -435,7 +582,7 @@ def chat_completion_response(model: str, result: dict[str, Any], request_payload
     prompt_tokens = rough_tokens(json.dumps(request_payload.get("messages", [])))
     completion_tokens = rough_tokens(content)
     return {
-        "id": f"chatcmpl-theseus-{int(time.time() * 1000)}",
+            "id": f"chatcmpl-theseus-{secrets.token_urlsafe(12)}",
         "object": "chat.completion",
         "created": int(time.time()),
         "model": model,
@@ -466,7 +613,7 @@ def text_completion_response(model: str, result: dict[str, Any], request_payload
     prompt_tokens = rough_tokens(str(request_payload.get("prompt") or ""))
     completion_tokens = rough_tokens(content)
     return {
-        "id": f"cmpl-theseus-{int(time.time() * 1000)}",
+        "id": f"cmpl-theseus-{secrets.token_urlsafe(12)}",
         "object": "text_completion",
         "created": int(time.time()),
         "model": model,
@@ -637,8 +784,25 @@ def enforce_safe_defaults(policy: dict[str, Any], cfg: dict[str, Any]) -> None:
     if get_path(policy, ["security", "loopback_only_by_default"], True) and host in {"", "0.0.0.0", "::"}:
         if not cfg.get("allow_lan"):
             cfg["host"] = "127.0.0.1"
+    if get_path(policy, ["security", "require_token_by_default"], True):
+        if not (
+            is_loopback(str(cfg.get("host") or "127.0.0.1"))
+            and get_path(
+                policy,
+                ["security", "allow_unauthenticated_loopback"],
+                False,
+            )
+        ):
+            cfg["require_token"] = True
     if not is_loopback(str(cfg.get("host") or "127.0.0.1")) and get_path(policy, ["security", "require_token_for_non_loopback"], True):
         cfg["require_token"] = True
+    if cfg.get("require_token") and not cfg.get("api_token"):
+        cfg["api_token"] = secrets.token_urlsafe(32)
+    if get_path(policy, ["security", "cors_disabled_by_default"], True):
+        cfg["cors"] = bool(cfg.get("cors", False))
+    allowed_origins = cfg.get("allowed_origins")
+    if not isinstance(allowed_origins, list):
+        cfg["allowed_origins"] = []
     if get_path(policy, ["security", "never_call_external_inference"], True):
         cfg["allow_teacher"] = False
     if get_path(policy, ["security", "teacher_disabled_by_default"], True) and "allow_teacher" not in cfg:
@@ -652,7 +816,31 @@ def effective_config(policy: dict[str, Any]) -> dict[str, Any]:
     local = read_json(local_config_path(policy), {})
     if isinstance(local, dict):
         cfg.update(local)
+    enforce_safe_defaults(policy, cfg)
     return cfg
+
+
+def origin_allowed(cfg: dict[str, Any], origin: str) -> bool:
+    if not cfg.get("cors"):
+        return False
+    allowed = cfg.get("allowed_origins")
+    return bool(
+        origin
+        and isinstance(allowed, list)
+        and origin in {str(row) for row in allowed}
+    )
+
+
+def validate_request_payload(path: str, payload: dict[str, Any]) -> None:
+    allowed = REQUEST_FIELDS.get(path)
+    if allowed is None:
+        raise RequestFault("not_found", 404)
+    unknown = sorted(set(payload) - allowed)
+    if unknown:
+        raise RequestFault(
+            "unknown_fields:" + ",".join(unknown),
+            400,
+        )
 
 
 def public_config(cfg: dict[str, Any]) -> dict[str, Any]:

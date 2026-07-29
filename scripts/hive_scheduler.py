@@ -2021,10 +2021,22 @@ def peer_from_status(status: dict[str, Any]) -> dict[str, Any]:
 
 
 def shared_secret(policy: dict[str, Any]) -> str:
-    env_name = str(get_path(policy, ["security", "shared_secret_env"], "THESEUS_HIVE_SECRET"))
+    env_name = str(
+        get_path(
+            policy,
+            ["security", "worker_secret_env"],
+            "THESEUS_HIVE_WORKER_SECRET",
+        )
+    )
     env_value = os.environ.get(env_name, "")
     if env_value:
         return env_value
+    if not get_path(
+        policy,
+        ["security", "allow_legacy_machine_join_token"],
+        False,
+    ):
+        return ""
     join_cfg = read_json(ROOT / str(get_path(policy, ["federation", "join_config_path"], "configs/hive_join.local.json")), {})
     if isinstance(join_cfg, dict) and join_cfg.get("join_token"):
         return str(join_cfg.get("join_token") or "")

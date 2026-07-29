@@ -9,7 +9,9 @@ license, leakage, verifier, and teacher-share evidence.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -25,26 +27,56 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--policy", default="configs/teacher_distillation_policy.json")
     parser.add_argument("--out", default="reports/teacher_distillation_gate.json")
-    parser.add_argument("--markdown-out", default="reports/teacher_distillation_gate.md")
-    parser.add_argument("--share-out", default="reports/teacher_share_ledger_summary.json")
-    parser.add_argument("--share-markdown-out", default="reports/teacher_share_ledger_summary.md")
+    parser.add_argument(
+        "--markdown-out", default="reports/teacher_distillation_gate.md"
+    )
+    parser.add_argument(
+        "--share-out", default="reports/teacher_share_ledger_summary.json"
+    )
+    parser.add_argument(
+        "--share-markdown-out", default="reports/teacher_share_ledger_summary.md"
+    )
+    parser.add_argument(
+        "--record-share-ledger",
+        action="store_true",
+        help="Append one content-bound teacher-share accounting snapshot when the current snapshot is new.",
+    )
     args = parser.parse_args()
 
     policy_path = ROOT / args.policy
     policy = read_json(policy_path)
     state = load_state(policy)
+    teacher_share = teacher_share_summary(policy, state)
+    if args.record_share_ledger:
+        record_teacher_share_snapshot(policy, state, teacher_share)
+        state = load_state(policy)
+        teacher_share = teacher_share_summary(policy, state)
     checks = build_checks(policy, state)
     red = [item for item in checks if item["severity"] == "hard" and not item["passed"]]
-    unmet = [item for item in checks if item["severity"] != "hard" and not item["passed"]]
+    unmet = [
+        item for item in checks if item["severity"] != "hard" and not item["passed"]
+    ]
     allowed = not red and not unmet
     trigger_state = "RED" if red else ("GREEN" if allowed else "YELLOW")
-    teacher_share = teacher_share_summary(policy, state)
     unlock_required = operator_unlock_required(policy)
     manifest = state.get("manifest") if isinstance(state.get("manifest"), dict) else {}
-    manifest_summary = manifest.get("summary") if isinstance(manifest.get("summary"), dict) else {}
-    manifest_rows = list_value(manifest.get("rows")) or list_value(manifest_summary.get("rows"))
-    manifest_row_count = int(manifest_summary.get("row_count") or manifest.get("row_count") or len(manifest_rows) or 0)
-    external_inference_calls = int(manifest_summary.get("external_inference_calls") or manifest.get("external_inference_calls") or 0)
+    manifest_summary = (
+        manifest.get("summary") if isinstance(manifest.get("summary"), dict) else {}
+    )
+    manifest_rows = list_value(manifest.get("rows")) or list_value(
+        manifest_summary.get("rows")
+    )
+    manifest_row_count = int(
+        manifest_summary.get("row_count")
+        or manifest.get("row_count")
+        or len(manifest_rows)
+        or 0
+    )
+    external_inference_calls = int(
+        manifest_summary.get("external_inference_calls")
+        or manifest.get("external_inference_calls")
+        or 0
+    )
     verifier_pass_rate_applicable = bool(
         manifest_summary.get("verifier_pass_rate_applicable")
         or manifest.get("verifier_pass_rate_applicable")
@@ -69,20 +101,38 @@ def main() -> int:
             "missing_or_locked": [item["name"] for item in unmet],
             "manifest_path": state.get("manifest_path"),
             "manifest_row_count": manifest_row_count,
-            "manifest_verifier_pass_rate": float(manifest_summary.get("verifier_pass_rate") or manifest.get("verifier_pass_rate") or 0.0),
+            "manifest_verifier_pass_rate": float(
+                manifest_summary.get("verifier_pass_rate")
+                or manifest.get("verifier_pass_rate")
+                or 0.0
+            ),
             "manifest_verifier_pass_rate_applicable": verifier_pass_rate_applicable,
             "manifest_admission_safety_checks_clean": bool(
                 manifest_summary.get("admission_safety_checks_clean")
                 or manifest.get("admission_safety_checks_clean")
             ),
             "teacher_distillation_fail_closed": not allowed and not red,
-            "manifest_public_overlap_hits": int(manifest_summary.get("public_overlap_hits") or manifest.get("public_overlap_hits") or 0),
-            "manifest_holdout_overlap_hits": int(manifest_summary.get("holdout_overlap_hits") or manifest.get("holdout_overlap_hits") or 0),
+            "manifest_public_overlap_hits": int(
+                manifest_summary.get("public_overlap_hits")
+                or manifest.get("public_overlap_hits")
+                or 0
+            ),
+            "manifest_holdout_overlap_hits": int(
+                manifest_summary.get("holdout_overlap_hits")
+                or manifest.get("holdout_overlap_hits")
+                or 0
+            ),
             "teacher_accepted_rows": teacher_share.get("teacher_accepted_rows", 0),
             "accepted_training_rows": teacher_share.get("accepted_rows", 0),
-            "verified_self_generated_rows": teacher_share.get("verified_self_generated_rows", 0),
-            "teacher_share_of_accepted_training_rows": teacher_share.get("teacher_accepted_row_share", 0.0),
-            "teacher_accepted_row_share": teacher_share.get("teacher_accepted_row_share", 0.0),
+            "verified_self_generated_rows": teacher_share.get(
+                "verified_self_generated_rows", 0
+            ),
+            "teacher_share_of_accepted_training_rows": teacher_share.get(
+                "teacher_accepted_row_share", 0.0
+            ),
+            "teacher_accepted_row_share": teacher_share.get(
+                "teacher_accepted_row_share", 0.0
+            ),
             "teacher_share_within_cap": teacher_share.get("within_initial_cap", False),
             "teacher_share_cap": teacher_share.get("max_initial_training_ratio"),
             "teacher_optimizer_sampling_target": get_path(
@@ -97,13 +147,19 @@ def main() -> int:
             "teacher_share_ledger_present": teacher_share.get("ledger_present", False),
             "teacher_share_ledger_row_count": teacher_share.get("ledger_row_count", 0),
             "teacher_share_metric_ready": teacher_share.get("metric_ready", False),
-            "teacher_proposal_rows_recorded": teacher_share.get("teacher_proposal_rows", 0),
-            "teacher_rejected_rows_recorded": teacher_share.get("teacher_rejected_rows", 0),
+            "teacher_proposal_rows_recorded": teacher_share.get(
+                "teacher_proposal_rows", 0
+            ),
+            "teacher_rejected_rows_recorded": teacher_share.get(
+                "teacher_rejected_rows", 0
+            ),
             "runtime_external_tokens_forbidden": True,
             "operator_unlock_required": unlock_required,
             "operator_unlock_present": bool(state.get("operator_unlock_present")),
             "governed_teacher_proposal_mode": bool(not unlock_required),
-            "governed_teacher_training_rows_enabled_by_policy": bool(not unlock_required),
+            "governed_teacher_training_rows_enabled_by_policy": bool(
+                not unlock_required
+            ),
             "external_inference_calls": external_inference_calls,
         },
         "growth_validation": policy.get("growth_validation", {}),
@@ -117,21 +173,46 @@ def main() -> int:
         ),
         "external_inference_calls": external_inference_calls,
     }
-    share_payload = build_teacher_share_ledger_report(policy, state, teacher_share, payload)
+    share_payload = build_teacher_share_ledger_report(
+        policy, state, teacher_share, payload
+    )
     write_json(ROOT / args.out, payload)
     write_text(ROOT / args.markdown_out, render_markdown(payload))
     write_json(ROOT / args.share_out, share_payload)
-    write_text(ROOT / args.share_markdown_out, render_teacher_share_markdown(share_payload))
+    write_text(
+        ROOT / args.share_markdown_out, render_teacher_share_markdown(share_payload)
+    )
     print(json.dumps(payload, indent=2))
     return 2 if trigger_state == "RED" else 0
 
 
 def load_state(policy: dict[str, Any]) -> dict[str, Any]:
     reports = ROOT / "reports"
-    operator_unlock = ROOT / str(policy.get("operator_unlock_flag", "reports/teacher_distillation_operator_unlock.flag"))
-    manifest_path = ROOT / str(policy.get("manifest_path", "reports/teacher_distillation_manifest.json"))
-    ledger_path = ROOT / str(policy.get("ledger_path", "reports/teacher_distillation_ledger.jsonl"))
-    neural_gate_path = ROOT / str(get_path(policy, ["neural_seed", "gate_report"], "reports/neural_seed_growth_gate.json"))
+    operator_unlock = ROOT / str(
+        policy.get(
+            "operator_unlock_flag", "reports/teacher_distillation_operator_unlock.flag"
+        )
+    )
+    manifest_path = ROOT / str(
+        policy.get("manifest_path", "reports/teacher_distillation_manifest.json")
+    )
+    ledger_path = ROOT / str(
+        policy.get("ledger_path", "reports/teacher_distillation_ledger.jsonl")
+    )
+    accounting_ledger_path = ROOT / str(
+        get_path(
+            policy,
+            ["teacher_share", "accounting_ledger_path"],
+            "runtime/data_governance/teacher_share_accounting_ledger.jsonl",
+        )
+    )
+    neural_gate_path = ROOT / str(
+        get_path(
+            policy,
+            ["neural_seed", "gate_report"],
+            "reports/neural_seed_growth_gate.json",
+        )
+    )
     return {
         "operator_unlock_present": operator_unlock.exists(),
         "operator_unlock_path": rel(operator_unlock),
@@ -139,11 +220,15 @@ def load_state(policy: dict[str, Any]) -> dict[str, Any]:
         "manifest_path": rel(manifest_path),
         "ledger_rows": read_jsonl(ledger_path),
         "ledger_path": rel(ledger_path),
+        "teacher_share_accounting_rows": read_jsonl(accounting_ledger_path),
+        "teacher_share_accounting_path": rel(accounting_ledger_path),
         "neural_seed": read_json(neural_gate_path),
         "neural_seed_path": rel(neural_gate_path),
         "external_audit": read_json(reports / "external_inference_audit.json"),
         "teacher_policy": read_json(ROOT / "configs" / "teacher_policy.json"),
-        "synthetic_data_policy": read_json(ROOT / "configs" / "synthetic_data_policy.json"),
+        "synthetic_data_policy": read_json(
+            ROOT / "configs" / "synthetic_data_policy.json"
+        ),
         "standard_transformer_policy": read_json(
             ROOT / "configs" / "standard_causal_transformer_survival.json"
         ),
@@ -152,15 +237,39 @@ def load_state(policy: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str, Any]]:
-    boundary = policy.get("boundary") if isinstance(policy.get("boundary"), dict) else {}
+    boundary = (
+        policy.get("boundary") if isinstance(policy.get("boundary"), dict) else {}
+    )
     manifest = state.get("manifest") if isinstance(state.get("manifest"), dict) else {}
-    neural_seed = state.get("neural_seed") if isinstance(state.get("neural_seed"), dict) else {}
-    external_audit = state.get("external_audit") if isinstance(state.get("external_audit"), dict) else {}
-    teacher_policy = state.get("teacher_policy") if isinstance(state.get("teacher_policy"), dict) else {}
-    synthetic_policy = state.get("synthetic_data_policy") if isinstance(state.get("synthetic_data_policy"), dict) else {}
-    standard_policy = state.get("standard_transformer_policy") if isinstance(state.get("standard_transformer_policy"), dict) else {}
+    neural_seed = (
+        state.get("neural_seed") if isinstance(state.get("neural_seed"), dict) else {}
+    )
+    external_audit = (
+        state.get("external_audit")
+        if isinstance(state.get("external_audit"), dict)
+        else {}
+    )
+    teacher_policy = (
+        state.get("teacher_policy")
+        if isinstance(state.get("teacher_policy"), dict)
+        else {}
+    )
+    synthetic_policy = (
+        state.get("synthetic_data_policy")
+        if isinstance(state.get("synthetic_data_policy"), dict)
+        else {}
+    )
+    standard_policy = (
+        state.get("standard_transformer_policy")
+        if isinstance(state.get("standard_transformer_policy"), dict)
+        else {}
+    )
     optimizer_sampling_target = float(
-        get_path(standard_policy, ["teacher_distillation", "teacher_sampling_probability_target"], 1.0)
+        get_path(
+            standard_policy,
+            ["teacher_distillation", "teacher_sampling_probability_target"],
+            1.0,
+        )
         or 0.0
     )
     optimizer_sampling_cap = float(
@@ -170,16 +279,21 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
     unlock_required = operator_unlock_required(policy)
     public_boundary = str(boundary.get("public_benchmarks") or "")
     public_boundary_ok = (
-        public_boundary in {
+        public_boundary
+        in {
             "calibration_only_not_training",
             "heldout_scoring_only_exact_eval_payloads_forbidden",
         }
         and boundary.get("public_solutions_or_hidden_tests") == "forbidden"
     )
     synthetic_governed = (
-        "teacher_output_training_use" in set(synthetic_policy.get("blocked_without_human_approval", []))
-        or str(synthetic_policy.get("teacher_generation_default") or "").startswith("governed")
-        or get_path(synthetic_policy, ["teacher_distillation", "default_state"], "") == "governed_training_enabled"
+        "teacher_output_training_use"
+        in set(synthetic_policy.get("blocked_without_human_approval", []))
+        or str(synthetic_policy.get("teacher_generation_default") or "").startswith(
+            "governed"
+        )
+        or get_path(synthetic_policy, ["teacher_distillation", "default_state"], "")
+        == "governed_training_enabled"
     )
     teacher_gate_ref = get_path(
         teacher_policy,
@@ -189,10 +303,13 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
     neural_required = bool(get_path(policy, ["neural_seed", "required"], True))
     student_distillation_evidence_ready = bool(
         neural_seed.get("student_distillation_evidence_ready") is True
-        or get_path(neural_seed, ["summary", "student_distillation_evidence_ready"], False)
+        or get_path(
+            neural_seed, ["summary", "student_distillation_evidence_ready"], False
+        )
     )
     neural_trigger_ok = bool(
-        neural_seed.get("trigger_state") == get_path(policy, ["neural_seed", "minimum_report_trigger_state"], "GREEN")
+        neural_seed.get("trigger_state")
+        == get_path(policy, ["neural_seed", "minimum_report_trigger_state"], "GREEN")
         or (
             student_distillation_evidence_ready
             and neural_seed.get("trigger_state") in {"GREEN", "YELLOW"}
@@ -209,28 +326,72 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             or student_distillation_evidence_ready
         )
     )
-    manifest_summary = manifest.get("summary") if isinstance(manifest.get("summary"), dict) else {}
-    manifest_rows = list_value(manifest.get("rows")) or list_value(manifest_summary.get("rows"))
-    manifest_row_count = int(manifest_summary.get("row_count") or manifest.get("row_count") or len(manifest_rows) or 0)
-    public_overlap_hits = int(manifest_summary.get("public_overlap_hits") or manifest.get("public_overlap_hits") or 0)
-    holdout_overlap_hits = int(manifest_summary.get("holdout_overlap_hits") or manifest.get("holdout_overlap_hits") or 0)
-    verifier_pass_rate = float(manifest_summary.get("verifier_pass_rate") or manifest.get("verifier_pass_rate") or 0.0)
+    manifest_summary = (
+        manifest.get("summary") if isinstance(manifest.get("summary"), dict) else {}
+    )
+    manifest_rows = list_value(manifest.get("rows")) or list_value(
+        manifest_summary.get("rows")
+    )
+    manifest_row_count = int(
+        manifest_summary.get("row_count")
+        or manifest.get("row_count")
+        or len(manifest_rows)
+        or 0
+    )
+    public_overlap_hits = int(
+        manifest_summary.get("public_overlap_hits")
+        or manifest.get("public_overlap_hits")
+        or 0
+    )
+    holdout_overlap_hits = int(
+        manifest_summary.get("holdout_overlap_hits")
+        or manifest.get("holdout_overlap_hits")
+        or 0
+    )
+    verifier_pass_rate = float(
+        manifest_summary.get("verifier_pass_rate")
+        or manifest.get("verifier_pass_rate")
+        or 0.0
+    )
     verifier_pass_rate_applicable = bool(
         manifest_summary.get("verifier_pass_rate_applicable")
         or manifest.get("verifier_pass_rate_applicable")
         or manifest_row_count > 0
     )
-    min_verifier_pass_rate = float(get_path(policy, ["quality_gates", "min_verifier_pass_rate"], 0.95) or 0.95)
-    license_status = state.get("license_status") if isinstance(state.get("license_status"), dict) else {}
-    manifest_license = manifest.get("license_check") or manifest_summary.get("license_check") or manifest.get("license_status") or manifest_summary.get("license_status")
-    license_ok = license_status.get("ok") is True or license_status.get("allowed") is True
+    min_verifier_pass_rate = float(
+        get_path(policy, ["quality_gates", "min_verifier_pass_rate"], 0.95) or 0.95
+    )
+    license_status = (
+        state.get("license_status")
+        if isinstance(state.get("license_status"), dict)
+        else {}
+    )
+    manifest_license = (
+        manifest.get("license_check")
+        or manifest_summary.get("license_check")
+        or manifest.get("license_status")
+        or manifest_summary.get("license_status")
+    )
+    license_ok = (
+        license_status.get("ok") is True or license_status.get("allowed") is True
+    )
     manifest_license_ok = bool(manifest) and (
         manifest_license is True
         or manifest_license == "ok"
-        or (isinstance(manifest_license, dict) and (manifest_license.get("ok") is True or manifest_license.get("allowed") is True))
+        or (
+            isinstance(manifest_license, dict)
+            and (
+                manifest_license.get("ok") is True
+                or manifest_license.get("allowed") is True
+            )
+        )
     )
-    admission_checks = manifest.get("admission_checks") or manifest_summary.get("admission_checks")
-    admission_safety_checks = manifest.get("admission_safety_checks") or manifest_summary.get("admission_safety_checks")
+    admission_checks = manifest.get("admission_checks") or manifest_summary.get(
+        "admission_checks"
+    )
+    admission_safety_checks = manifest.get(
+        "admission_safety_checks"
+    ) or manifest_summary.get("admission_safety_checks")
     admission_safety_checks_clean_reported = bool(
         manifest.get("admission_safety_checks_clean")
         or manifest_summary.get("admission_safety_checks_clean")
@@ -244,7 +405,9 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
         "runtime_serving_forbidden",
         "public_benchmark_excluded",
     ]
-    admission_safety_required = [key for key in admission_required if key != "verifier_accepted"]
+    admission_safety_required = [
+        key for key in admission_required if key != "verifier_accepted"
+    ]
     admission_safety_required.append("approved_teacher_provider_only")
     ledger_provider_violations = teacher_ledger_provider_violations(policy, state)
     configured_provider_violation = teacher_identity_violation(
@@ -253,11 +416,15 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
         str(teacher_policy.get("model") or ""),
     )
     if isinstance(admission_checks, dict):
-        admission_checks_have_required_keys = all(key in admission_checks for key in admission_required)
+        admission_checks_have_required_keys = all(
+            key in admission_checks for key in admission_required
+        )
         admission_safety_clean = (
             admission_safety_checks_clean_reported
             if isinstance(admission_safety_checks, dict)
-            else all(admission_checks.get(key) is True for key in admission_safety_required)
+            else all(
+                admission_checks.get(key) is True for key in admission_safety_required
+            )
         )
         # Empty proposal-only manifests have no admitted training rows to fail
         # verifier acceptance. Keep them locked via has_rows/pass_rate checks,
@@ -290,7 +457,9 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             "hard",
             {
                 "public_benchmarks": boundary.get("public_benchmarks"),
-                "public_solutions_or_hidden_tests": boundary.get("public_solutions_or_hidden_tests"),
+                "public_solutions_or_hidden_tests": boundary.get(
+                    "public_solutions_or_hidden_tests"
+                ),
                 "semantics": "public/open data may train; exact heldout benchmark payloads may not",
             },
         ),
@@ -301,7 +470,9 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             {
                 "present": bool(external_audit),
                 "ok": external_audit.get("ok"),
-                "total_violations": get_path(external_audit, ["summary", "total_violations"], None),
+                "total_violations": get_path(
+                    external_audit, ["summary", "total_violations"], None
+                ),
             },
         ),
         check(
@@ -315,9 +486,15 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             synthetic_governed,
             "evidence",
             {
-                "teacher_generation_default": synthetic_policy.get("teacher_generation_default"),
-                "teacher_distillation_default": get_path(synthetic_policy, ["teacher_distillation", "default_state"], None),
-                "blocked_without_human_approval": synthetic_policy.get("blocked_without_human_approval", []),
+                "teacher_generation_default": synthetic_policy.get(
+                    "teacher_generation_default"
+                ),
+                "teacher_distillation_default": get_path(
+                    synthetic_policy, ["teacher_distillation", "default_state"], None
+                ),
+                "blocked_without_human_approval": synthetic_policy.get(
+                    "blocked_without_human_approval", []
+                ),
             },
         ),
         check(
@@ -341,7 +518,9 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
                 "trigger_ok": neural_trigger_ok,
                 "neural_student_ready_semantics": "model-growth/promotion flag",
                 "student_distillation_evidence_ready": student_distillation_evidence_ready,
-                "student_distillation_evidence": neural_seed.get("student_distillation_evidence"),
+                "student_distillation_evidence": neural_seed.get(
+                    "student_distillation_evidence"
+                ),
                 "summary": neural_seed.get("summary"),
             },
         ),
@@ -355,17 +534,27 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             "distillation_manifest_has_rows",
             bool(manifest) and manifest_row_count > 0,
             "readiness",
-            {"manifest_path": state.get("manifest_path"), "row_count": manifest_row_count},
+            {
+                "manifest_path": state.get("manifest_path"),
+                "row_count": manifest_row_count,
+            },
         ),
         check(
             "manifest_provenance_and_retention",
             bool(manifest)
-            and bool(manifest.get("provenance_retained") or manifest_summary.get("provenance_retained"))
-            and bool(manifest.get("rows_retained") or manifest_summary.get("rows_retained")),
+            and bool(
+                manifest.get("provenance_retained")
+                or manifest_summary.get("provenance_retained")
+            )
+            and bool(
+                manifest.get("rows_retained") or manifest_summary.get("rows_retained")
+            ),
             "readiness",
             {
-                "provenance_retained": manifest.get("provenance_retained") or manifest_summary.get("provenance_retained"),
-                "rows_retained": manifest.get("rows_retained") or manifest_summary.get("rows_retained"),
+                "provenance_retained": manifest.get("provenance_retained")
+                or manifest_summary.get("provenance_retained"),
+                "rows_retained": manifest.get("rows_retained")
+                or manifest_summary.get("rows_retained"),
             },
         ),
         check(
@@ -375,7 +564,9 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             {
                 "license_status_ok": license_status.get("ok"),
                 "license_allowed": license_status.get("allowed"),
-                "entitlement_source": get_path(license_status, ["entitlement", "source"], None),
+                "entitlement_source": get_path(
+                    license_status, ["entitlement", "source"], None
+                ),
             },
         ),
         check(
@@ -391,8 +582,14 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
         check(
             "manifest_leakage_zero",
             bool(manifest)
-            and public_overlap_hits <= int(get_path(policy, ["quality_gates", "max_public_overlap_hits"], 0) or 0)
-            and holdout_overlap_hits <= int(get_path(policy, ["quality_gates", "max_holdout_overlap_hits"], 0) or 0),
+            and public_overlap_hits
+            <= int(
+                get_path(policy, ["quality_gates", "max_public_overlap_hits"], 0) or 0
+            )
+            and holdout_overlap_hits
+            <= int(
+                get_path(policy, ["quality_gates", "max_holdout_overlap_hits"], 0) or 0
+            ),
             "readiness",
             {
                 "public_overlap_hits": public_overlap_hits,
@@ -457,9 +654,15 @@ def build_checks(policy: dict[str, Any], state: dict[str, Any]) -> list[dict[str
             and admission_safety_checks.get("approved_teacher_provider_only") is True,
             "hard",
             {
-                "allowed": get_path(policy, ["provider_policy", "allowed_providers"], []),
-                "model_prefixes": get_path(policy, ["provider_policy", "allowed_model_prefixes"], []),
-                "violation_count": manifest_summary.get("teacher_provider_violation_count"),
+                "allowed": get_path(
+                    policy, ["provider_policy", "allowed_providers"], []
+                ),
+                "model_prefixes": get_path(
+                    policy, ["provider_policy", "allowed_model_prefixes"], []
+                ),
+                "violation_count": manifest_summary.get(
+                    "teacher_provider_violation_count"
+                ),
                 "receipt_provenance_verified": manifest_summary.get(
                     "teacher_receipt_provenance_verified"
                 ),
@@ -503,7 +706,11 @@ def teacher_ledger_provider_violations(
         provider = str(row.get("teacher_provider") or "").strip().lower()
         model = str(row.get("teacher_model") or "").strip().lower()
         violation = teacher_identity_violation(policy, provider, model)
-        receipt = row.get("teacher_receipt") if isinstance(row.get("teacher_receipt"), dict) else {}
+        receipt = (
+            row.get("teacher_receipt")
+            if isinstance(row.get("teacher_receipt"), dict)
+            else {}
+        )
         receipt_external_calls = int(receipt.get("external_inference_calls") or 0)
         if not violation and (
             receipt.get("accepted") is not True
@@ -513,7 +720,8 @@ def teacher_ledger_provider_violations(
             or (
                 receipt_external_calls > 0
                 and (
-                    str(receipt.get("executable") or "").lower() not in {"codex", "codex.exe"}
+                    str(receipt.get("executable") or "").lower()
+                    not in {"codex", "codex.exe"}
                     or receipt.get("command_model") != model
                     or not str(receipt.get("command_sha256") or "")
                 )
@@ -542,8 +750,12 @@ def teacher_identity_violation(
     return decision["reject_reasons"][0] if decision["reject_reasons"] else None
 
 
-def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
-    rows = state.get("ledger_rows") if isinstance(state.get("ledger_rows"), list) else []
+def teacher_share_summary(
+    policy: dict[str, Any], state: dict[str, Any]
+) -> dict[str, Any]:
+    rows = (
+        state.get("ledger_rows") if isinstance(state.get("ledger_rows"), list) else []
+    )
     ledger_path = ROOT / str(state.get("ledger_path") or "")
     ledger_present = ledger_path.exists()
     accepted = [row for row in rows if isinstance(row, dict) and row.get("accepted")]
@@ -555,7 +767,9 @@ def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict
     self_rows = [
         row
         for row in accepted
-        if str(row.get("source_kind") or row.get("source") or "").startswith("verified_self")
+        if str(row.get("source_kind") or row.get("source") or "").startswith(
+            "verified_self"
+        )
     ]
     teacher_proposals = [
         row
@@ -569,13 +783,40 @@ def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict
         for row in rows
         if isinstance(row, dict)
         and row.get("accepted") is not True
-        and str(row.get("source_kind") or "").startswith("teacher_distillation_rejected")
+        and str(row.get("source_kind") or "").startswith(
+            "teacher_distillation_rejected"
+        )
     ]
     non_teacher_training = non_teacher_training_denominator()
-    non_teacher_count = int(non_teacher_training.get("accepted_non_teacher_training_rows") or 0)
+    non_teacher_count = int(
+        non_teacher_training.get("accepted_non_teacher_training_rows") or 0
+    )
     total = len(accepted) + non_teacher_count
     share = (len(teacher_rows) / total) if total else 0.0
-    cap = float(get_path(policy, ["teacher_share", "max_initial_training_ratio"], 0.2) or 0.2)
+    cap = float(
+        get_path(policy, ["teacher_share", "max_initial_training_ratio"], 0.2) or 0.2
+    )
+    source_bindings = teacher_share_source_bindings(state, non_teacher_training)
+    snapshot = {
+        "accepted_training_rows": total,
+        "accepted_rows_from_teacher_ledger": len(accepted),
+        "accepted_non_teacher_training_rows": non_teacher_count,
+        "teacher_accepted_rows": len(teacher_rows),
+        "verified_self_generated_rows": len(self_rows),
+        "teacher_proposal_rows": len(teacher_proposals),
+        "teacher_rejected_rows": len(teacher_rejected),
+        "teacher_share_of_accepted_training_rows": share,
+        "teacher_share_cap": cap,
+        "source_bindings": source_bindings,
+    }
+    snapshot_digest = canonical_sha256(snapshot)
+    accounting = validate_teacher_share_accounting_ledger(
+        state.get("teacher_share_accounting_rows"),
+        expected_snapshot_digest=snapshot_digest,
+    )
+    base_metric_ready = ledger_present and all(
+        isinstance(row, dict) and "accepted" in row for row in rows
+    )
     return {
         "ledger_path": state.get("ledger_path"),
         "ledger_present": ledger_present,
@@ -584,7 +825,9 @@ def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict
         "accepted_rows_from_teacher_ledger": len(accepted),
         "accepted_non_teacher_training_rows": non_teacher_count,
         "accepted_non_teacher_training_source": non_teacher_training.get("source"),
-        "accepted_non_teacher_training_source_count": non_teacher_training.get("source_count"),
+        "accepted_non_teacher_training_source_count": non_teacher_training.get(
+            "source_count"
+        ),
         "teacher_accepted_rows": len(teacher_rows),
         "teacher_proposal_rows": len(teacher_proposals),
         "teacher_rejected_rows": len(teacher_rejected),
@@ -592,11 +835,190 @@ def teacher_share_summary(policy: dict[str, Any], state: dict[str, Any]) -> dict
         "teacher_accepted_row_share": share,
         "max_initial_training_ratio": cap,
         "within_initial_cap": share <= cap,
-        "metric_ready": ledger_present and all(isinstance(row, dict) and "accepted" in row for row in rows),
+        "base_metric_ready": base_metric_ready,
+        "metric_ready": bool(
+            base_metric_ready
+            and accounting["replay_valid"]
+            and accounting["current_snapshot_recorded"]
+        ),
+        "snapshot_digest": snapshot_digest,
+        "source_bindings": source_bindings,
+        "accounting_ledger_path": state.get("teacher_share_accounting_path"),
+        "accounting_ledger_row_count": accounting["row_count"],
+        "accounting_ledger_replay_valid": accounting["replay_valid"],
+        "current_snapshot_recorded": accounting["current_snapshot_recorded"],
+        "accounting_ledger_faults": accounting["faults"],
         "has_accepted_rows": total > 0,
         "target_trend": get_path(policy, ["teacher_share", "target_trend"], ""),
-        "graduation_target": get_path(policy, ["teacher_share", "graduation_target"], None),
+        "graduation_target": get_path(
+            policy, ["teacher_share", "graduation_target"], None
+        ),
     }
+
+
+def teacher_share_source_bindings(
+    state: dict[str, Any], non_teacher_training: dict[str, Any]
+) -> dict[str, Any]:
+    teacher_path = ROOT / str(state.get("ledger_path") or "")
+    admission_path = ROOT / str(
+        non_teacher_training.get("source") or "reports/training_data_admission_v1.json"
+    )
+    admission = read_json(admission_path)
+    receipt = get_path(
+        admission,
+        ["candidate_lineage", "candidate_receipt_ledger"],
+        {},
+    )
+    return {
+        "teacher_distillation_ledger": file_binding(teacher_path),
+        "training_data_admission_report": file_binding(admission_path),
+        "candidate_receipt_ledger": {
+            "path": receipt.get("path") if isinstance(receipt, dict) else None,
+            "sha256": receipt.get("sha256") if isinstance(receipt, dict) else None,
+            "receipt_count": receipt.get("receipt_count")
+            if isinstance(receipt, dict)
+            else None,
+            "replay_valid": receipt.get("replay_valid")
+            if isinstance(receipt, dict)
+            else None,
+        },
+    }
+
+
+def record_teacher_share_snapshot(
+    policy: dict[str, Any],
+    state: dict[str, Any],
+    teacher_share: dict[str, Any],
+) -> bool:
+    if teacher_share.get("base_metric_ready") is not True:
+        raise ValueError("teacher-share source ledgers are not ready")
+    rows = state.get("teacher_share_accounting_rows")
+    replay = validate_teacher_share_accounting_ledger(
+        rows,
+        expected_snapshot_digest=str(teacher_share.get("snapshot_digest") or ""),
+    )
+    if not replay["replay_valid"]:
+        raise ValueError(
+            "teacher-share accounting ledger replay failed: "
+            + ",".join(replay["faults"])
+        )
+    if replay["current_snapshot_recorded"]:
+        return False
+    prior_rows = rows if isinstance(rows, list) else []
+    prior_hash = str(prior_rows[-1].get("event_sha256") or "") if prior_rows else None
+    event = {
+        "policy": "project_theseus_teacher_share_accounting_event_v1",
+        "created_utc": now(),
+        "sequence": len(prior_rows),
+        "previous_event_sha256": prior_hash,
+        "snapshot_digest": teacher_share["snapshot_digest"],
+        "snapshot": {
+            "accepted_training_rows": teacher_share["accepted_rows"],
+            "accepted_rows_from_teacher_ledger": teacher_share[
+                "accepted_rows_from_teacher_ledger"
+            ],
+            "accepted_non_teacher_training_rows": teacher_share[
+                "accepted_non_teacher_training_rows"
+            ],
+            "teacher_accepted_rows": teacher_share["teacher_accepted_rows"],
+            "verified_self_generated_rows": teacher_share[
+                "verified_self_generated_rows"
+            ],
+            "teacher_proposal_rows": teacher_share["teacher_proposal_rows"],
+            "teacher_rejected_rows": teacher_share["teacher_rejected_rows"],
+            "teacher_share_of_accepted_training_rows": teacher_share[
+                "teacher_accepted_row_share"
+            ],
+            "teacher_share_cap": teacher_share["max_initial_training_ratio"],
+            "source_bindings": teacher_share["source_bindings"],
+        },
+    }
+    event["event_sha256"] = canonical_sha256(event)
+    path = ROOT / str(
+        get_path(
+            policy,
+            ["teacher_share", "accounting_ledger_path"],
+            "runtime/data_governance/teacher_share_accounting_ledger.jsonl",
+        )
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(event, sort_keys=True, separators=(",", ":")) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    return True
+
+
+def validate_teacher_share_accounting_ledger(
+    rows: Any,
+    *,
+    expected_snapshot_digest: str,
+) -> dict[str, Any]:
+    ledger_rows = rows if isinstance(rows, list) else []
+    faults: list[str] = []
+    previous: str | None = None
+    seen_snapshots: set[str] = set()
+    for index, row in enumerate(ledger_rows):
+        if not isinstance(row, dict):
+            faults.append(f"row_{index}_not_object")
+            continue
+        event = dict(row)
+        claimed_hash = str(event.pop("event_sha256", "") or "")
+        if int(row.get("sequence", -1)) != index:
+            faults.append(f"row_{index}_sequence_mismatch")
+        if row.get("previous_event_sha256") != previous:
+            faults.append(f"row_{index}_previous_hash_mismatch")
+        if claimed_hash != canonical_sha256(event):
+            faults.append(f"row_{index}_event_hash_mismatch")
+        snapshot = row.get("snapshot")
+        if not isinstance(snapshot, dict):
+            faults.append(f"row_{index}_snapshot_missing")
+        elif str(row.get("snapshot_digest") or "") != canonical_sha256(snapshot):
+            faults.append(f"row_{index}_snapshot_digest_mismatch")
+        snapshot_digest = str(row.get("snapshot_digest") or "")
+        if snapshot_digest in seen_snapshots:
+            faults.append(f"row_{index}_duplicate_snapshot")
+        seen_snapshots.add(snapshot_digest)
+        previous = claimed_hash
+    replay_valid = not faults
+    return {
+        "row_count": len(ledger_rows),
+        "replay_valid": replay_valid,
+        "current_snapshot_recorded": bool(
+            replay_valid
+            and expected_snapshot_digest
+            and expected_snapshot_digest in seen_snapshots
+        ),
+        "head_event_sha256": previous,
+        "faults": faults,
+    }
+
+
+def file_binding(path: Path) -> dict[str, Any]:
+    return {
+        "path": rel(path),
+        "exists": path.is_file(),
+        "bytes": path.stat().st_size if path.is_file() else 0,
+        "sha256": file_sha256(path) if path.is_file() else None,
+    }
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def canonical_sha256(value: Any) -> str:
+    encoded = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def build_teacher_share_ledger_report(
@@ -605,9 +1027,15 @@ def build_teacher_share_ledger_report(
     teacher_share: dict[str, Any],
     gate_payload: dict[str, Any],
 ) -> dict[str, Any]:
-    rows = state.get("ledger_rows") if isinstance(state.get("ledger_rows"), list) else []
+    rows = (
+        state.get("ledger_rows") if isinstance(state.get("ledger_rows"), list) else []
+    )
     trend = teacher_ledger_daily_trend(rows)
-    summary = gate_payload.get("summary") if isinstance(gate_payload.get("summary"), dict) else {}
+    summary = (
+        gate_payload.get("summary")
+        if isinstance(gate_payload.get("summary"), dict)
+        else {}
+    )
     metric_ready = bool(teacher_share.get("metric_ready"))
     within_cap = bool(teacher_share.get("within_initial_cap"))
     no_cheat = {
@@ -616,7 +1044,10 @@ def build_teacher_share_ledger_report(
         "public_training_rows_written": 0,
         "public_benchmark_training_rows_written": 0,
         "fallback_return_count": 0,
-        "teacher_apply_mode_forbidden": get_path(policy, ["boundary", "teacher_apply_mode"], "") == "forbidden",
+        "teacher_apply_mode_forbidden": get_path(
+            policy, ["boundary", "teacher_apply_mode"], ""
+        )
+        == "forbidden",
     }
     no_cheat_clean = bool(
         no_cheat["runtime_external_serving_forbidden"]
@@ -626,7 +1057,9 @@ def build_teacher_share_ledger_report(
         and int(no_cheat["public_benchmark_training_rows_written"]) == 0
         and int(no_cheat["fallback_return_count"]) == 0
     )
-    trigger_state = "GREEN" if metric_ready and within_cap and no_cheat_clean else "YELLOW"
+    trigger_state = (
+        "GREEN" if metric_ready and within_cap and no_cheat_clean else "YELLOW"
+    )
     return {
         "policy": "project_theseus_teacher_share_ledger_summary_v1",
         "created_utc": now(),
@@ -638,24 +1071,46 @@ def build_teacher_share_ledger_report(
             "ledger_present": teacher_share.get("ledger_present", False),
             "ledger_row_count": teacher_share.get("ledger_row_count", 0),
             "accepted_training_rows": teacher_share.get("accepted_rows", 0),
-            "accepted_rows_from_teacher_ledger": teacher_share.get("accepted_rows_from_teacher_ledger", 0),
-            "accepted_non_teacher_training_rows": teacher_share.get("accepted_non_teacher_training_rows", 0),
+            "accepted_rows_from_teacher_ledger": teacher_share.get(
+                "accepted_rows_from_teacher_ledger", 0
+            ),
+            "accepted_non_teacher_training_rows": teacher_share.get(
+                "accepted_non_teacher_training_rows", 0
+            ),
             "teacher_accepted_rows": teacher_share.get("teacher_accepted_rows", 0),
-            "verified_self_generated_rows": teacher_share.get("verified_self_generated_rows", 0),
+            "verified_self_generated_rows": teacher_share.get(
+                "verified_self_generated_rows", 0
+            ),
             "teacher_proposal_rows": teacher_share.get("teacher_proposal_rows", 0),
             "teacher_rejected_rows": teacher_share.get("teacher_rejected_rows", 0),
-            "teacher_share_of_accepted_training_rows": teacher_share.get("teacher_accepted_row_share", 0.0),
+            "teacher_share_of_accepted_training_rows": teacher_share.get(
+                "teacher_accepted_row_share", 0.0
+            ),
             "teacher_share_cap": teacher_share.get("max_initial_training_ratio"),
             "teacher_share_within_cap": within_cap,
             "teacher_share_target_trend": teacher_share.get("target_trend"),
             "teacher_share_graduation_target": teacher_share.get("graduation_target"),
+            "teacher_share_snapshot_digest": teacher_share.get("snapshot_digest"),
+            "teacher_share_source_bindings": teacher_share.get("source_bindings"),
+            "accounting_ledger_path": teacher_share.get("accounting_ledger_path"),
+            "accounting_ledger_row_count": teacher_share.get(
+                "accounting_ledger_row_count"
+            ),
+            "accounting_ledger_replay_valid": teacher_share.get(
+                "accounting_ledger_replay_valid"
+            ),
+            "current_snapshot_recorded": teacher_share.get("current_snapshot_recorded"),
             "distillation_gate_state": gate_payload.get("trigger_state"),
             "distillation_allowed": gate_payload.get("distillation_allowed"),
             "manifest_row_count": summary.get("manifest_row_count"),
             "manifest_verifier_pass_rate": summary.get("manifest_verifier_pass_rate"),
             "manifest_public_overlap_hits": summary.get("manifest_public_overlap_hits"),
-            "manifest_holdout_overlap_hits": summary.get("manifest_holdout_overlap_hits"),
-            "training_time_external_teacher_calls_recorded": summary.get("external_inference_calls", 0),
+            "manifest_holdout_overlap_hits": summary.get(
+                "manifest_holdout_overlap_hits"
+            ),
+            "training_time_external_teacher_calls_recorded": summary.get(
+                "external_inference_calls", 0
+            ),
             "runtime_external_inference_calls": 0,
             "public_training_rows_written": 0,
             "daily_trend_bucket_count": len(trend),
@@ -710,10 +1165,18 @@ def teacher_ledger_daily_trend(rows: list[dict[str, Any]]) -> list[dict[str, Any
             bucket["teacher_proposal_rows"] += 1
         elif source_kind.startswith("teacher_distillation_rejected"):
             bucket["teacher_rejected_rows"] += 1
-        bucket["training_time_external_teacher_calls"] += int(row.get("external_inference_calls") or 0)
-        bucket["public_training_rows_written"] += int(row.get("public_training_rows_written") or 0)
+        bucket["training_time_external_teacher_calls"] += int(
+            row.get("external_inference_calls") or 0
+        )
+        bucket["public_training_rows_written"] += int(
+            row.get("public_training_rows_written") or 0
+        )
     for bucket in buckets.values():
-        accepted_total = bucket["teacher_accepted_rows"] + bucket["verified_self_generated_rows"] + bucket["other_accepted_rows"]
+        accepted_total = (
+            bucket["teacher_accepted_rows"]
+            + bucket["verified_self_generated_rows"]
+            + bucket["other_accepted_rows"]
+        )
         bucket["teacher_share_within_ledger_accepted_rows"] = (
             bucket["teacher_accepted_rows"] / accepted_total if accepted_total else 0.0
         )
@@ -723,13 +1186,20 @@ def teacher_ledger_daily_trend(rows: list[dict[str, Any]]) -> list[dict[str, Any
 def non_teacher_training_denominator() -> dict[str, Any]:
     path = ROOT / "reports" / "training_data_admission_v1.json"
     report = read_json(path)
-    rows = report.get("source_admissions") if isinstance(report.get("source_admissions"), list) else []
+    rows = (
+        report.get("source_admissions")
+        if isinstance(report.get("source_admissions"), list)
+        else []
+    )
     count = 0
     source_count = 0
     for row in rows:
         if not isinstance(row, dict):
             continue
-        if row.get("training_use") != "allowed" or row.get("allowed_for_training") is not True:
+        if (
+            row.get("training_use") != "allowed"
+            or row.get("allowed_for_training") is not True
+        ):
             continue
         teacher_rows = int(row.get("teacher_row_count") or 0)
         row_count = max(0, int(row.get("row_count") or 0) - teacher_rows)
@@ -743,7 +1213,9 @@ def non_teacher_training_denominator() -> dict[str, Any]:
         "accepted_non_teacher_training_rows": count,
         "source_count": source_count,
         "admitted_open_public_row_count": summary.get("admitted_open_public_row_count"),
-        "admitted_open_public_source_count": summary.get("admitted_open_public_source_count"),
+        "admitted_open_public_source_count": summary.get(
+            "admitted_open_public_source_count"
+        ),
     }
 
 
@@ -753,9 +1225,15 @@ def operator_unlock_required(policy: dict[str, Any]) -> bool:
     return default_state == "operator_locked" or "operator_locked" in boundary_state
 
 
-def next_action(red: list[dict[str, Any]], unmet: list[dict[str, Any]], state: dict[str, Any]) -> str:
+def next_action(
+    red: list[dict[str, Any]], unmet: list[dict[str, Any]], state: dict[str, Any]
+) -> str:
     if red:
-        return "Do not enable teacher distillation; fix hard boundary failures first: " + ", ".join(item["name"] for item in red) + "."
+        return (
+            "Do not enable teacher distillation; fix hard boundary failures first: "
+            + ", ".join(item["name"] for item in red)
+            + "."
+        )
     names = {item["name"] for item in unmet}
     if "teacher_policy_points_to_distillation_gate" in names:
         return "Wire teacher_policy.json to configs/teacher_distillation_policy.json before any distillation planning."
@@ -768,7 +1246,11 @@ def next_action(red: list[dict[str, Any]], unmet: list[dict[str, Any]], state: d
     if "distillation_manifest_has_rows" in names:
         return "Keep teacher distillation locked until the manifest contains retained candidate rows with provenance, license, leakage, verifier, and admission evidence."
     if names:
-        return "Keep teacher distillation locked until the missing readiness gates pass: " + ", ".join(sorted(names)) + "."
+        return (
+            "Keep teacher distillation locked until the missing readiness gates pass: "
+            + ", ".join(sorted(names))
+            + "."
+        )
     return "Governed teacher distillation may run as training-time data only; runtime external serving remains forbidden."
 
 
@@ -822,7 +1304,12 @@ def render_teacher_share_markdown(payload: dict[str, Any]) -> str:
 
 
 def check(name: str, passed: bool, severity: str, evidence: Any) -> dict[str, Any]:
-    return {"name": name, "passed": bool(passed), "severity": severity, "evidence": evidence}
+    return {
+        "name": name,
+        "passed": bool(passed),
+        "severity": severity,
+        "evidence": evidence,
+    }
 
 
 def get_path(value: Any, path: list[str], default: Any = None) -> Any:

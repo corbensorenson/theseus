@@ -12,10 +12,11 @@ pub struct Tensor {
 
 impl Tensor {
     pub fn new(rows: usize, cols: usize, data: Vec<f32>) -> Result<Self> {
-        if rows * cols != data.len() {
+        let expected = checked_element_count(rows, cols)?;
+        if expected != data.len() {
             return Err(SymError::Shape(format!(
                 "expected {} values for shape [{rows}, {cols}], got {}",
-                rows * cols,
+                expected,
                 data.len()
             )));
         }
@@ -23,24 +24,30 @@ impl Tensor {
     }
 
     pub fn zeros(rows: usize, cols: usize) -> Self {
+        let len = checked_element_count(rows, cols)
+            .expect("tensor shape overflow while constructing zeros");
         Self {
             rows,
             cols,
-            data: vec![0.0; rows * cols],
+            data: vec![0.0; len],
         }
     }
 
     pub fn ones(rows: usize, cols: usize) -> Self {
+        let len = checked_element_count(rows, cols)
+            .expect("tensor shape overflow while constructing ones");
         Self {
             rows,
             cols,
-            data: vec![1.0; rows * cols],
+            data: vec![1.0; len],
         }
     }
 
     pub fn random_normal(rows: usize, cols: usize, scale: f32, rng: &mut impl Rng) -> Self {
         let normal = StandardNormal;
-        let data = (0..rows * cols)
+        let len = checked_element_count(rows, cols)
+            .expect("tensor shape overflow while constructing random_normal");
+        let data = (0..len)
             .map(|_| {
                 let z: f32 = normal.sample(rng);
                 z * scale
@@ -117,10 +124,11 @@ impl Tensor {
     }
 
     pub fn matmul_right_transposed(&self, weights: &[f32], out_dim: usize) -> Result<Self> {
-        if weights.len() != out_dim * self.cols {
+        let expected = checked_element_count(out_dim, self.cols)?;
+        if weights.len() != expected {
             return Err(SymError::Shape(format!(
                 "weight matrix expected {} values for [{out_dim}, {}], got {}",
-                out_dim * self.cols,
+                expected,
                 self.cols,
                 weights.len()
             )));
@@ -153,6 +161,14 @@ impl Tensor {
         }
         Ok(())
     }
+}
+
+fn checked_element_count(rows: usize, cols: usize) -> Result<usize> {
+    rows.checked_mul(cols).ok_or_else(|| {
+        SymError::Shape(format!(
+            "tensor shape [{rows}, {cols}] overflows addressable element count"
+        ))
+    })
 }
 
 pub fn softplus(x: f32) -> f32 {
@@ -226,4 +242,28 @@ pub fn one_hot(index: usize, dim: usize) -> Tensor {
     let mut out = Tensor::zeros(1, dim);
     out.set(0, index, 1.0);
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Tensor;
+
+    #[test]
+    fn new_rejects_shape_overflow_without_wrapping() {
+        let error = Tensor::new(usize::MAX, 2, Vec::new()).unwrap_err();
+        assert!(error.to_string().contains("overflows"));
+    }
+
+    #[test]
+    #[should_panic(expected = "tensor shape overflow while constructing zeros")]
+    fn zeros_fails_closed_on_shape_overflow() {
+        let _ = Tensor::zeros(usize::MAX, 2);
+    }
+
+    #[test]
+    fn matmul_rejects_weight_shape_overflow() {
+        let tensor = Tensor::new(0, 2, Vec::new()).unwrap();
+        let error = tensor.matmul_right_transposed(&[], usize::MAX).unwrap_err();
+        assert!(error.to_string().contains("overflows"));
+    }
 }

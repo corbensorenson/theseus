@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from autonomy_cycle_runtime import request_local_authority
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_POLICY = ROOT / "configs" / "autonomy_policy.json"
@@ -42,8 +44,14 @@ def main() -> int:
     profile = args.profile or policy.get("default_profile", "inner_loop")
     teacher_forbidden = bool(args.offline or args.forbid_teacher)
     network_forbidden = bool(args.offline or args.forbid_network_fetch)
-    allow_teacher = False if teacher_forbidden else bool(args.allow_teacher or policy.get("allow_teacher_by_default", False))
-    allow_network_fetch = False if network_forbidden else bool(args.allow_network_fetch or policy.get("allow_network_fetch_by_default", False))
+    allow_teacher = request_local_authority(
+        requested=bool(args.allow_teacher),
+        forbidden=teacher_forbidden,
+    )
+    allow_network_fetch = request_local_authority(
+        requested=bool(args.allow_network_fetch),
+        forbidden=network_forbidden,
+    )
     max_cycles = args.max_cycles
     if max_cycles is None:
         max_cycles = int(policy.get("max_cycles_per_daemon_run", 0))
@@ -107,8 +115,14 @@ def main() -> int:
             policy = read_json(ROOT / args.policy)
             teacher_forbidden = bool(args.offline or args.forbid_teacher)
             network_forbidden = bool(args.offline or args.forbid_network_fetch)
-            allow_teacher = False if teacher_forbidden else bool(args.allow_teacher or policy.get("allow_teacher_by_default", False))
-            allow_network_fetch = False if network_forbidden else bool(args.allow_network_fetch or policy.get("allow_network_fetch_by_default", False))
+            allow_teacher = request_local_authority(
+                requested=bool(args.allow_teacher),
+                forbidden=teacher_forbidden,
+            )
+            allow_network_fetch = request_local_authority(
+                requested=bool(args.allow_network_fetch),
+                forbidden=network_forbidden,
+            )
             interval = int(policy.get("cycle_interval_seconds", interval))
             paths = daemon_paths(policy)
             stop_flag = paths["stop_flag"]

@@ -8,7 +8,7 @@
       "worker",
       "chat_gateway"
     ],
-    "http_host": "0.0.0.0",
+    "http_host": "127.0.0.1",
     "http_port": 8791,
     "dashboard_port": 8787,
     "heartbeat_interval_seconds": 5,
@@ -44,8 +44,8 @@
     "bonjour_browse_seconds": 3,
     "bonjour_advertise_refresh_seconds": 300,
     "require_signed_multicast_when_secret_configured": true,
-    "require_signed_multicast": false,
-    "trust_unsigned_multicast_without_secret": true
+    "require_signed_multicast": true,
+    "trust_unsigned_multicast_without_secret": false
   },
   "federation": {
     "tiers": {
@@ -385,9 +385,26 @@
     "trust_boundary": "trusted_local_network_private_tunnel_or_authenticated_relay_only",
     "shared_secret_env": "THESEUS_HIVE_SECRET",
     "requires_shared_secret_for_remote_tasks": true,
-    "allow_status_without_secret": true,
-    "allow_loopback_tasks_without_secret": true,
-    "require_signed_task_manifest_for_remote": false,
+    "allow_status_without_secret": false,
+    "allow_loopback_tasks_without_secret": false,
+    "require_signed_task_manifest_for_remote": true,
+    "allow_query_credentials": false,
+    "max_request_body_bytes": 1048576,
+    "max_concurrent_requests": 8,
+    "max_requests_per_minute_per_client": 120,
+    "browser_allowed_origins": [
+      "http://127.0.0.1:8791",
+      "http://localhost:8791"
+    ],
+    "coordinator_secret_env": "THESEUS_HIVE_COORDINATOR_SECRET",
+    "worker_secret_env": "THESEUS_HIVE_WORKER_SECRET",
+    "discovery_secret_env": "THESEUS_HIVE_DISCOVERY_SECRET",
+    "allow_legacy_machine_join_token": false,
+    "worker_sandbox": {
+      "required_for_remote": true,
+      "qualified": false,
+      "unqualified_action": "deny_remote_execution"
+    },
     "task_manifest_signature_algorithms": [
       "hmac-sha256-private-hive-v0"
     ],
@@ -419,7 +436,7 @@
     "enabled": true,
     "users_config_path": "configs/hive_users.local.json",
     "token_storage": "sha256_hash_only_in_local_ignored_config",
-    "legacy_hive_join_token_role": "owner",
+    "legacy_hive_join_token_role": "disabled",
     "default_new_user_role": "member",
     "roles": {
       "owner": {

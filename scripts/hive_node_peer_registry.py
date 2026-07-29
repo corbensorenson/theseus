@@ -21,7 +21,13 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 
 from hive_node_common import append_jsonl, display_path, event, get_path, now, read_json, report_path, task_ledger_path, write_json
-from hive_node_federation import hive_id, hive_tier, join_token, shared_secret, unique_nonempty
+from hive_node_federation import (
+    coordinator_secret,
+    discovery_secret,
+    hive_id,
+    hive_tier,
+    unique_nonempty,
+)
 from hive_node_identity import load_identity
 
 
@@ -135,7 +141,7 @@ def bonjour_txt_records(policy: dict[str, Any], status: dict[str, Any]) -> list[
 
 
 def bonjour_signature(policy: dict[str, Any], txt: dict[str, Any]) -> str:
-    token = join_token(policy) or shared_secret(policy)
+    token = discovery_secret(policy)
     if not token:
         return ""
     signed = {
@@ -148,7 +154,7 @@ def bonjour_signature(policy: dict[str, Any], txt: dict[str, Any]) -> str:
 
 
 def verify_bonjour_txt(policy: dict[str, Any], txt: dict[str, Any]) -> bool:
-    token = join_token(policy) or shared_secret(policy)
+    token = discovery_secret(policy)
     if not token:
         return False
     signature = str(txt.get("sig") or "")
@@ -256,7 +262,7 @@ def accept_bonjour_peers(policy: dict[str, Any], report: dict[str, Any]) -> None
         if not isinstance(peer, dict):
             continue
         signed = bool(get_path(peer, ["bonjour", "signed"], False))
-        if join_token(policy) or shared_secret(policy):
+        if discovery_secret(policy):
             trusted = signed
             source = "bonjour_signed" if signed else "bonjour_unsigned"
         else:
@@ -288,7 +294,7 @@ def signed_discovery_payload(policy: dict[str, Any], status: dict[str, Any]) -> 
 
 
 def verify_discovery_payload(policy: dict[str, Any], payload: dict[str, Any]) -> bool:
-    token = join_token(policy) or shared_secret(policy)
+    token = discovery_secret(policy)
     signature = str(payload.get("signature") or "")
     if not token or not signature:
         return False
@@ -297,7 +303,7 @@ def verify_discovery_payload(policy: dict[str, Any], payload: dict[str, Any]) ->
 
 
 def unsigned_multicast_trusted(policy: dict[str, Any], payload: dict[str, Any]) -> bool:
-    if join_token(policy) or shared_secret(policy):
+    if discovery_secret(policy):
         return False
     if bool(get_path(policy, ["discovery", "require_signed_multicast"], False)):
         return False
@@ -307,7 +313,7 @@ def unsigned_multicast_trusted(policy: dict[str, Any], payload: dict[str, Any]) 
 
 
 def discovery_signature(policy: dict[str, Any], payload: dict[str, Any]) -> str:
-    token = join_token(policy) or shared_secret(policy)
+    token = discovery_secret(policy)
     if not token:
         return ""
     signed = {
@@ -695,7 +701,7 @@ def known_peers(policy: dict[str, Any]) -> list[dict[str, Any]]:
 def probe_known_peers(policy: dict[str, Any], status: dict[str, Any]) -> None:
     if not bool(get_path(policy, ["discovery", "probe_known_peers"], True)):
         return
-    secret = join_token(policy) or shared_secret(policy)
+    secret = coordinator_secret(policy)
     if not secret:
         return
     rows = known_peers(policy)

@@ -26,8 +26,13 @@ pub struct CudaBackend {
 
 impl CudaBackend {
     pub fn new() -> Self {
+        let info = if cfg!(feature = "cuda") {
+            device::DeviceInfo::cuda_enabled()
+        } else {
+            device::DeviceInfo::cpu_emulated()
+        };
         Self {
-            available: cfg!(feature = "cuda"),
+            available: info.available,
         }
     }
 
@@ -36,7 +41,7 @@ impl CudaBackend {
     }
 
     pub fn device_info(&self) -> device::DeviceInfo {
-        if self.available {
+        if cfg!(feature = "cuda") {
             device::DeviceInfo::cuda_enabled()
         } else {
             device::DeviceInfo::cpu_emulated()

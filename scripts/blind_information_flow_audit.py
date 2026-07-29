@@ -177,6 +177,11 @@ def main() -> int:
         "policy": "project_theseus_blind_information_flow_audit_v1",
         "created_utc": now(),
         "trigger_state": trigger_state,
+        "evidence_grade": (
+            "STATIC_FLOW_LINT_PASS"
+            if trigger_state == "GREEN"
+            else "STATIC_FLOW_LINT_FAIL"
+        ),
         "summary": {
             "source_file_count": len(source_results),
             "config_file_count": len(config_results),
@@ -194,6 +199,8 @@ def main() -> int:
             "forbidden_inference_fields": sorted(FORBIDDEN_INFERENCE_FIELDS),
             "action_selector_boundary": "fixed action catalogs/renderers are baselines or tools, never learned code generation",
             "self_declared_integrity_sufficient": False,
+            "static_analysis_is_noninterference_proof": False,
+            "runtime_guard_owner": "scripts/blind_runtime_guard.py",
         },
         "source_results": source_results,
         "config_results": config_results,

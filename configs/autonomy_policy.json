@@ -4,8 +4,23 @@
   "max_profile_without_user_request": "candidate",
   "cycle_interval_seconds": 300,
   "max_cycles_per_daemon_run": 0,
-  "allow_network_fetch_by_default": true,
-  "allow_teacher_by_default": true,
+  "allow_network_fetch_by_default": false,
+  "allow_teacher_by_default": false,
+  "dashboard_security": {
+    "allowed_origins": [
+      "http://127.0.0.1:8787",
+      "http://localhost:8787"
+    ],
+    "max_request_body_bytes": 1048576,
+    "max_concurrent_requests": 4,
+    "max_requests_per_minute_per_client": 60,
+    "max_concurrent_sse_connections": 2,
+    "max_sse_seconds": 300,
+    "max_active_jobs": 8,
+    "require_exact_origin": true,
+    "require_session_cookie": true,
+    "require_csrf_header": true
+  },
   "improvement_campaign_controller": {
     "contract": "configs/open_ended_improvement_campaign.json",
     "implementation": "scripts/open_ended_improvement_campaign.py",

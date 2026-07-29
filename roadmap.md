@@ -1758,6 +1758,67 @@ The following findings have teeth and are accepted as roadmap obligations:
     enterprise policy/evidence packs, signed checkpoints, and trademarks rather than as
     technical control over permissively licensed forks.
 
+### 2026-07-29 Travel-Mode Readiness Closure
+
+The finite maintenance package above is implemented without starting training, consuming a
+capability surface, changing the frozen corpus, or reopening KERC/ANE. The exact step-11,416
+training hold remains present.
+
+1. **Storage custody is green.** Reference-aware retention removed 93 unreferenced closed
+   runs and 126 superseded checkpoint files, recovering about 40.8 GB. The active model
+   (`d2a485a5...`), AdamW (`4d85f939...`), RNG (`9209383f...`), cursor, 37-manifest lineage,
+   and final/negative evidence were independently rehashed after deletion. Launch safety is
+   derived from two measured checkpoint transactions plus observed filesystem, swap, and
+   write headroom; there is no replacement arbitrary GiB floor.
+2. **Existing local authority surfaces fail closed.** OpenAI-shim, dashboard/autonomy, and
+   Hive mutations now enforce token/session authentication, exact Origin/CSRF policy, strict
+   JSON and bounded bodies, rate/concurrency/job/SSE limits, sanitized errors, random IDs,
+   request-local teacher/network authority, and loopback/header-credential/signed-discovery
+   Hive defaults. Remote worker execution remains denied when the configured sandbox is not
+   qualified. This is local adversarial-test evidence, not permission for public exposure or
+   an internet-security claim.
+3. **The prospective evaluator contract is repaired.** Candidate text is passed as inert
+   assistant-role data with the rubric repeated afterward; judge-directed, rubric-copy,
+   self-score, empty, and malformed outputs are rejected before inference. Runtime
+   forbidden-field capabilities reject direct, aliased, indexed, attribute, derived-label,
+   cached, and ranking access, while candidate integrity is independently recomputed.
+   `STATIC_FLOW_LINT_PASS` remains explicitly lint rather than a noninterference proof. The
+   fresh 57M utility freeze also requires a separately bound prospective human-audit receipt;
+   no utility item has been consumed.
+4. **Public-safe reproducibility is executable.** Linux CI covers scoped Python format/lint/
+   tests, Rust format/clippy/tests, licenses, secret-safe release scope, and dependency review.
+   Mac MLX qualification is manual and requires the qualified local runner. The tiny licensed
+   capsule deterministically trains, checkpoints model/optimizer/cursor state, exactly
+   resumes, emits a candidate/verifier packet, and binds all artifacts by SHA-256. It
+   publishes no private row, heldout, user trace, or decisive checkpoint.
+5. **Teacher/data accounting is content-bound.** The durable append-only teacher-share ledger
+   binds the exact teacher ledger, admission report, and candidate-receipt ledger and passes
+   hash-chain replay. Current share is 15 / 115,429 accepted rows
+   (`0.00012995001256183454`), below the 0.10 cap. A read-only replay of the frozen 57M
+   corpus validates 422,334,331 unique positions, all 68 source identities, license and
+   provenance authority, exact and semantic deduplication, public-contamination exclusion,
+   retention/revocation lifecycle, tokenizer accounting, and a 0.07182161 recursive-synthetic
+   position share. No corpus or teacher payload was generated.
+6. **The bounded Rust correctness slice is closed.** Tensor shape multiplication fails closed
+   on overflow; CUDA reports compiled, driver-visible, device-visible, initialized, fallback,
+   and terminal state separately; resident caches include parameter-content identity so
+   in-place mutation invalidates them; and unmeasured CUDA case latency is marked unmeasured
+   with summary coverage rather than reported as zero. This is discovery-substrate
+   correctness and does not change the frozen MLX campaign.
+7. **Real assisted dogfood began honestly.** The local planning lane was asked for the
+   training hold and one safe travel action. It omitted both, so the event is recorded as
+   `missed` / `request_fidelity_miss`, with zero training-row export and
+   `learned_model_credit_allowed=false`. The shared outcome contract now accounts for
+   accepted, missed, ignored, corrected, completed, failed, and abstained. Empirical
+   usefulness still requires the existing multi-day denominator; this one miss is pressure,
+   not capability evidence.
+
+Remaining work is deliberately not disguised by this closure: broader ASI-31 sandbox,
+encryption, fixed risk-grade, and public-exposure qualification; the rest of the Rust
+module/batch/parameter semantics review; multi-day dogfood usefulness; trained capability;
+and the matched campaign all retain their existing owners and entry conditions. During
+travel, keep the step-11,416 hold and prefer bounded maintenance and genuine local use.
+
 The ASI Stack comparison adds six useful consolidations, all routed through existing owners:
 
 - Pin the committed book contract and reconcile all 84 chapters inside the existing roadmap
@@ -3755,18 +3816,20 @@ receipts and preserve the simulation-to-reality claim boundary.
 
 ### Phase 18: Governance And Failure Boundaries
 
-State: `wired but not safe for routine exposed use`. The governance kernel owns roles,
-predicates, thresholds, authority, budgets, leases, revocation, dispute, shutdown, replay
-protection, and assurance use. The 2026-07-25 source audit confirmed missing authentication
-and browser-origin controls on dashboard mutations, permissive teacher/network inheritance,
-tokenless wildcard-CORS OpenAI defaults, and unsafe Hive exposure/credential defaults.
+State: `local authority package implemented; broader exposure still denied by policy`. The
+governance kernel owns roles, predicates, thresholds, authority, budgets, leases, revocation,
+dispute, shutdown, replay protection, and assurance use. The dashboard/autonomy, OpenAI shim,
+and Hive findings from the 2026-07-25 source audit now have request-local false-by-default
+authority, authenticated mutations, exact browser-origin/CSRF/JSON/body/rate/concurrency
+controls, safe token/CORS defaults, loopback signed-discovery header credentials, distinct
+worker/coordinator authority, and adversarial regression tests. Unqualified remote worker
+execution fails closed.
 
-Next: close the local authority-surface security package through the existing runtime owners:
-request-local opt-in authority, mutation authentication, Origin/CSRF/content-type/body/rate/
-concurrency gates, exact token/discovery policy, transmitted-attempt accounting, safety-grade
-floors, and adversarial HTTP tests. Then require every new effect or inter-stack exchange to
-prove blocked, revoked, expired, replayed, conflicting, and rollback paths. This package may
-run beside KERC but blocks routine dashboard, OpenAI-shim, Hive, or LAN exposure.
+Next: preserve these regressions and close the broader ASI-31 remainder before any nonlocal or
+public exposure: fixed safety-grade floors, disposable unprivileged untrusted-code isolation,
+teacher-payload minimization/encryption/retention, transmitted-attempt accounting across every
+external adapter, and blocked/revoked/expired/replayed/conflicting/rollback effect paths. Local
+test closure is not an internet-security or production-hardening claim.
 
 ### Phase 19: Book-To-Theseus Synchronization
 

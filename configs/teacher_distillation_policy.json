@@ -89,6 +89,7 @@
     "must_keep_verifier_harness": true
   },
   "teacher_share": {
+    "accounting_ledger_path": "runtime/data_governance/teacher_share_accounting_ledger.jsonl",
     "max_initial_training_ratio": 0.1,
     "maximum_optimizer_sampling_ratio": 0.02,
     "role": "targeted_residual_only_after_licensed_data_and_local_failure_evidence",

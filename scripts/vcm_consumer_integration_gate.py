@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import vcm_consumer_abi
+from theseus_archive_resolver import read_json_follow_pointer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -222,12 +223,7 @@ def as_dict(value: Any) -> dict[str, Any]:
 
 
 def read_json(path: Path) -> dict[str, Any]:
-    if not path.exists():
-        return {}
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
+    value = read_json_follow_pointer(path, {})
     return value if isinstance(value, dict) else {}
 
 

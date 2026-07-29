@@ -48,12 +48,44 @@
     "checkpoint_identity_hidden": true,
     "reference_answer_hidden": true
   },
+  "candidate_integrity": {
+    "candidate_is_assistant_data_role": true,
+    "rubric_repeated_after_candidate": true,
+    "candidate_confidence_visible_to_rater": false,
+    "candidate_self_rating_visible_to_rater": false,
+    "judge_directed_instruction_detection_required": true,
+    "copied_rubric_detection_required": true,
+    "self_score_detection_required": true,
+    "empty_or_malformed_detection_required": true,
+    "blocked_candidate_score": 0,
+    "maximum_candidate_characters": 16384,
+    "independent_binding_recomputation_required": true,
+    "adversarial_control_suite_required": true
+  },
+  "human_audit": {
+    "required_for_final_qualification": true,
+    "prospective_sample_size": 8,
+    "selection_seed": 20260729,
+    "candidate_identity_blinded": true,
+    "required_fields": [
+      "case_id",
+      "blind_item_id",
+      "candidate_sha256",
+      "human_scores",
+      "injection_or_malformed_flag",
+      "auditor_id",
+      "audited_utc"
+    ]
+  },
   "boundaries": {
     "local_inference_only": true,
     "external_inference_calls": 0,
     "public_training_rows_written": 0,
     "judgments_admitted_to_training": false,
     "raw_model_responses_retained": false,
-    "candidate_architecture_visible_to_rater": false
+    "candidate_architecture_visible_to_rater": false,
+    "candidate_text_interpolated_into_judge_instruction": false,
+    "candidate_output_role": "assistant_data",
+    "rubric_repeated_after_candidate": true
   }
 }

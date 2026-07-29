@@ -1228,12 +1228,14 @@ fn evaluate_shared_readout(
                 model_id: model_id.to_string(),
                 mode: RunMode::SymLiquid,
                 output: pred,
-                runtime_ms: Some(0),
+                runtime_ms: None,
                 token_count: Some(case.observation.split_whitespace().count()),
                 tool_calls: Some(0),
                 estimated_cost_usd: Some(0.0),
                 notes: vec![
                     "Standalone SymLiquid CUDA rollout features with shared readout head and CGS governance priors."
+                        .to_string(),
+                    "Per-case runtime was not measured; runtime_ms is intentionally unmeasured."
                         .to_string(),
                 ],
             },
@@ -1286,12 +1288,14 @@ fn evaluate_task_head_readouts(
                 model_id: model_id.to_string(),
                 mode: RunMode::SymLiquid,
                 output: pred,
-                runtime_ms: Some(0),
+                runtime_ms: None,
                 token_count: Some(case.observation.split_whitespace().count()),
                 tool_calls: Some(0),
                 estimated_cost_usd: Some(0.0),
                 notes: vec![
                     "Standalone SymLiquid CUDA rollout features with task-specialized readout head."
+                        .to_string(),
+                    "Per-case runtime was not measured; runtime_ms is intentionally unmeasured."
                         .to_string(),
                 ],
             },
@@ -1344,12 +1348,14 @@ fn evaluate_residual_adapter_readouts(
                 model_id: model_id.to_string(),
                 mode: RunMode::SymLiquid,
                 output: pred,
-                runtime_ms: Some(0),
+                runtime_ms: None,
                 token_count: Some(case.observation.split_whitespace().count()),
                 tool_calls: Some(0),
                 estimated_cost_usd: Some(0.0),
                 notes: vec![
                     "Standalone SymLiquid CUDA rollout features with shared readout, low-rank task residual adapters, and CGS governance priors."
+                        .to_string(),
+                    "Per-case runtime was not measured; runtime_ms is intentionally unmeasured."
                         .to_string(),
                 ],
             },

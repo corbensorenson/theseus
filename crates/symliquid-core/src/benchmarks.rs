@@ -106,6 +106,8 @@ pub struct CaseResult {
     pub score: f32,
     pub residual: f32,
     pub runtime_ms: u128,
+    #[serde(default)]
+    pub runtime_measured: bool,
     pub token_count: usize,
     pub tool_calls: usize,
     pub estimated_cost_usd: f32,
@@ -124,6 +126,12 @@ pub struct BenchmarkSummary {
     pub residual: f32,
     pub invalid_action_rate: f32,
     pub total_runtime_ms: u128,
+    #[serde(default)]
+    pub runtime_measured_cases: usize,
+    #[serde(default)]
+    pub runtime_unmeasured_cases: usize,
+    #[serde(default)]
+    pub runtime_measurement_complete: bool,
     pub total_tokens: usize,
     pub total_tool_calls: usize,
     pub total_estimated_cost_usd: f32,
@@ -3265,6 +3273,7 @@ pub fn score_output(
         .token_count
         .unwrap_or_else(|| rough_token_count(&response.output));
     let tool_calls = response.tool_calls.unwrap_or(0);
+    let runtime_measured = response.runtime_ms.is_some();
     let runtime_ms = response.runtime_ms.unwrap_or(0);
     let estimated_cost_usd = response.estimated_cost_usd.unwrap_or(0.0);
     let memory_bytes = match response.mode {
@@ -3285,6 +3294,7 @@ pub fn score_output(
         score,
         residual,
         runtime_ms,
+        runtime_measured,
         token_count,
         tool_calls,
         estimated_cost_usd,
@@ -3344,6 +3354,11 @@ pub fn summarize(
         .filter(|result| result.invalid_action)
         .count();
     let total_runtime_ms = results.iter().map(|result| result.runtime_ms).sum();
+    let runtime_measured_cases = results
+        .iter()
+        .filter(|result| result.runtime_measured)
+        .count();
+    let runtime_unmeasured_cases = results.len().saturating_sub(runtime_measured_cases);
     let total_tokens = results.iter().map(|result| result.token_count).sum();
     let total_tool_calls = results.iter().map(|result| result.tool_calls).sum();
     let total_estimated_cost_usd = results
@@ -3386,6 +3401,9 @@ pub fn summarize(
         residual: 1.0 - accuracy,
         invalid_action_rate: invalid as f32 / cases as f32,
         total_runtime_ms,
+        runtime_measured_cases,
+        runtime_unmeasured_cases,
+        runtime_measurement_complete: runtime_unmeasured_cases == 0,
         total_tokens,
         total_tool_calls,
         total_estimated_cost_usd,

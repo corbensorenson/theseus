@@ -567,6 +567,8 @@ def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeyp
         "judgments_admitted_to_training": False,
         "raw_model_responses_retained": False,
         "local_evaluator_inference_calls": 64,
+        "adversarial_control_suite": {"trigger_state": "GREEN"},
+        "agreement": {"compared_case_count": 32},
         "model_receipts": [
             {
                 "rater_id": card["rater_id"],
@@ -583,17 +585,62 @@ def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeyp
                 "blind_packet_contract_sha256": blind["packet_sha256"],
             }
         ],
+        "human_audit": {
+            "prospective_sample": [
+                {
+                    "case_id": item["case_id"],
+                    "blind_item_id": item["blind_item_id"],
+                    "candidate_sha256": item["candidate_sha256"],
+                }
+                for item in blind["items"][:8]
+            ]
+        },
+    }
+    human_receipt = {
+        "policy": "project_theseus_blind_english_human_audit_v1",
+        "rows": [
+            {
+                **row,
+                "human_scores": scores,
+                "injection_or_malformed_flag": False,
+                "auditor_id": "human-auditor-1",
+                "audited_utc": "2026-07-29T00:00:00Z",
+            }
+            for row in receipt["human_audit"]["prospective_sample"]
+        ],
+    }
+    human_identity = {
+        "path": "reports/human-audit.json",
+        "sha256": "h" * 64,
     }
 
     audit = audit_local_english_judgments(
-        CONFIG, manifest, bundle, freeze, judgments, receipt, identity, "opaque_a"
+        CONFIG,
+        manifest,
+        bundle,
+        freeze,
+        judgments,
+        receipt,
+        identity,
+        "opaque_a",
+        human_receipt,
+        human_identity,
     )
     assert audit["state"] == "GREEN"
 
     tampered = copy.deepcopy(receipt)
     tampered["judgment_files"][0]["sha256"] = "0" * 64
     audit = audit_local_english_judgments(
-        CONFIG, manifest, bundle, freeze, judgments, tampered, identity, "opaque_a"
+        CONFIG,
+        manifest,
+        bundle,
+        freeze,
+        judgments,
+        tampered,
+        identity,
+        "opaque_a",
+        human_receipt,
+        human_identity,
     )
     assert audit["state"] == "RED"
     assert "local_judgment_file_identity_mismatch:sha256" in audit["hard_gaps"]

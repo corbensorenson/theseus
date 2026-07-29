@@ -152,7 +152,8 @@
     "blind_packet_policy": "project_theseus_blind_english_judgment_packet_v1",
     "local_rater_config": "configs/neural_seed_local_english_raters.json",
     "local_rater_implementation": "scripts/neural_seed_local_english_raters.py",
-    "local_judgment_receipt_required": true
+    "local_judgment_receipt_required": true,
+    "prospective_human_audit_receipt_required": true
   },
   "reporting": {
     "exact_recovery_separate": true,

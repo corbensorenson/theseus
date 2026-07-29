@@ -320,7 +320,7 @@ def decide_next_action(policy: dict[str, Any], state: dict[str, Any], profile: s
         rl_frontier_env = active_artifacts.get("rl_frontier_env", "")
         rl_frontier_seed = active_artifacts.get("rl_frontier_seed")
         pressure_card_id = active_artifacts.get("pressure_card_id", "")
-    allow_network_fetch = bool(
+    network_fetch_recommended = bool(
         get_path(policy, ["benchmark_discovery", "enabled"], True)
         and (
             pressure["frontier_exhausted"]
@@ -329,7 +329,7 @@ def decide_next_action(policy: dict[str, Any], state: dict[str, Any], profile: s
         )
     )
     discovery_queries = []
-    if allow_network_fetch:
+    if network_fetch_recommended:
         limit = int(get_path(policy, ["benchmark_discovery", "queries_per_cycle"], 3))
         discovery_queries = list(get_path(policy, ["benchmark_discovery", "queries"], []))[: max(1, limit)]
     return {
@@ -348,12 +348,19 @@ def decide_next_action(policy: dict[str, Any], state: dict[str, Any], profile: s
         "rl_frontier_seed": rl_frontier_seed,
         "pressure_card_id": pressure_card_id,
         "force_frontier_generation": force_frontier_generation,
-        "allow_network_fetch": allow_network_fetch,
+        "allow_network_fetch": False,
+        "network_fetch_recommended": network_fetch_recommended,
+        "network_authority_source": "request_local_cli_flag_only",
         "benchmark_discovery_queries": discovery_queries,
         "goal": goal_for_decision(reason, frontier, pressure),
         "watchdog_override_id": pressure.get("watchdog_override_id"),
         "rotation_request_id": pressure.get("rotation_request_id"),
     }
+
+
+def request_local_authority(*, requested: bool, forbidden: bool) -> bool:
+    """Return execution authority only for this invocation's explicit flag."""
+    return bool(requested and not forbidden)
 
 
 def active_watchdog_override() -> dict[str, Any] | None:

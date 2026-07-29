@@ -23,7 +23,15 @@ DEFAULT_TRACE = ROOT / "runtime" / "dogfood" / "daily_use_events.jsonl"
 DEFAULT_ROWS = ROOT / "data" / "training_data" / "high_transfer" / "private_train" / "dogfood_daily_use_trace_training_rows.jsonl"
 DEFAULT_OUT = ROOT / "reports" / "dogfood_trace_bootstrap.json"
 DEFAULT_MD = ROOT / "reports" / "dogfood_trace_bootstrap.md"
-ALLOWED_OUTCOMES = ("accepted", "missed", "ignored")
+ALLOWED_OUTCOMES = (
+    "accepted",
+    "missed",
+    "ignored",
+    "corrected",
+    "completed",
+    "failed",
+    "abstained",
+)
 FORBIDDEN_KEYS = {
     "raw_user_text",
     "raw_assistant_text",

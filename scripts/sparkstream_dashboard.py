@@ -8,11 +8,15 @@ bounded local SparkStream commands.
 from __future__ import annotations
 
 import argparse
+import hmac
 import json
+import secrets
 import subprocess
 import sys
 import threading
 import time
+from collections import defaultdict, deque
+from http.cookies import SimpleCookie
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -36,6 +40,164 @@ SINGLETON_JOB_NEEDLES = {
     "hive_node": ["hive_node.py daemon"],
     "hive_relay": ["hive_relay.py"],
 }
+MAX_ACTIVE_JOBS = 8
+
+
+class DashboardRequestFault(ValueError):
+    def __init__(self, code: str, status: int) -> None:
+        super().__init__(code)
+        self.code = code
+        self.status = status
+
+
+DASHBOARD_POST_FIELDS = {
+    "/api/control": {
+        "action",
+        "profile",
+        "execute",
+        "allow_teacher",
+        "allow_network_fetch",
+        "confirm_external_fetch",
+        "confirm_long_run",
+        "duration_hours",
+        "max_cycles",
+    },
+    "/api/license/status": set(),
+    "/api/license/register": {
+        "name",
+        "email",
+        "organization",
+        "usage",
+        "seats",
+        "commercial",
+        "accept_terms",
+    },
+    "/api/license/request": {"feature", "features"},
+    "/api/license/import": {"file", "license_json"},
+    "/api/openai/status": set(),
+    "/api/openai/configure": {
+        "enabled",
+        "host",
+        "port",
+        "model",
+        "checkpoint_id",
+        "require_token",
+        "api_token",
+    },
+    "/api/openai/start": {"host", "port", "model", "checkpoint_id"},
+    "/api/openai/stop": set(),
+    "/api/updates/status": set(),
+    "/api/updates/check": {
+        "catalog_url",
+        "update_id",
+        "apply",
+        "if_enabled_on_start",
+        "respect_interval",
+    },
+    "/api/updates/configure": {
+        "mode",
+        "channel",
+        "track",
+        "catalog_url",
+        "check_on_start",
+        "no_check_on_start",
+        "auto_install_soft",
+        "no_auto_install_soft",
+        "auto_install_hard",
+        "no_auto_install_hard",
+        "allow_prerelease",
+        "no_allow_prerelease",
+    },
+    "/api/updates/catalog": set(),
+    "/api/updates/create": {"checkpoint_id", "if_promoted"},
+    "/api/updates/apply": {"mode", "execute", "allow_hard", "restart", "offer"},
+    "/api/market/status": set(),
+    "/api/market/quote": {"task_kind", "payload", "provider_node"},
+    "/api/market/settle": {"limit"},
+    "/api/viea/action-executor/run": {
+        "max_actions",
+        "max_steps",
+        "timeout_seconds",
+        "allow_teacher",
+    },
+    "/api/viea/action-executor/status": set(),
+    "/api/viea/action-executor/pause": set(),
+    "/api/viea/action-executor/resume": set(),
+    "/api/viea/action-executor/block": {"action_id", "reason"},
+    "/api/viea/teacher/request": {
+        "max_experiments",
+        "max_steps",
+        "timeout_seconds",
+        "allow_teacher",
+    },
+    "/api/viea/broad-calibration/run": {"min_public_tasks"},
+    "/api/viea/repo-repair/refresh": set(),
+    "/api/viea/symliquid/refresh": set(),
+    "/api/readiness/run": {"profile", "require_teacher_cli"},
+    "/api/checkpoints/create": {"kind", "label", "reason", "profile", "status"},
+    "/api/checkpoints/compare": {"a", "b"},
+    "/api/checkpoints/materialize": {"checkpoint_id", "force"},
+    "/api/checkpoints/backup": {"provider", "checkpoint_id", "execute"},
+    "/api/benchmarks/add": {
+        "url",
+        "name",
+        "notes",
+        "allow_network_fetch",
+        "confirm_external_fetch",
+    },
+    "/api/benchmarks/discover": {
+        "query",
+        "limit",
+        "allow_network_fetch",
+        "confirm_external_fetch",
+    },
+    "/api/teacher/ask": {"prompt", "reason", "allow_teacher"},
+    "/api/chat/checkpoint": {"prompt", "checkpoint_id", "allow_teacher"},
+    "/api/goals/run": {
+        "goal",
+        "profile",
+        "execute",
+        "allow_teacher",
+        "allow_network_fetch",
+        "confirm_external_fetch",
+    },
+    "/api/rl/discover": {
+        "query",
+        "limit",
+        "allow_network_fetch",
+        "confirm_external_fetch",
+    },
+    "/api/sources/catalog": {
+        "import_sources",
+        "allow_network_fetch",
+        "confirm_external_fetch",
+        "max_imports",
+    },
+    "/api/hive/probe": set(),
+    "/api/hive/start": {"port", "no_discovery", "no_worker"},
+    "/api/hive/relay/start": {"port"},
+    "/api/hive/schedule": {"execute", "probe_peers", "worker_chunks"},
+    "/api/hive/operator-os/refresh": set(),
+    "/api/hive/work-board/run": {
+        "max_tasks",
+        "max_steps",
+        "timeout_seconds",
+        "allow_teacher",
+    },
+    "/api/hive/command": {
+        "command",
+        "source_channel",
+        "max_tasks",
+        "max_steps",
+        "timeout_seconds",
+        "execute",
+        "enqueue_only",
+        "allow_teacher",
+    },
+    "/api/hive/high-transfer/schedule": set(),
+    "/api/hive/task": {"kind", "payload", "peer_url"},
+    "/api/capabilities/refresh": set(),
+}
 
 
 def main() -> int:
@@ -44,6 +206,16 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=8787)
     args = parser.parse_args()
 
+    policy = read_json(ROOT / "configs" / "autonomy_policy.json")
+    Handler.security = build_dashboard_security(args.host, args.port, policy)
+    Handler.request_slots = threading.BoundedSemaphore(
+        Handler.security["max_concurrent_requests"]
+    )
+    Handler.sse_slots = threading.BoundedSemaphore(
+        Handler.security["max_concurrent_sse_connections"]
+    )
+    global MAX_ACTIVE_JOBS
+    MAX_ACTIVE_JOBS = Handler.security["max_active_jobs"]
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     print(f"SparkStream dashboard: http://{args.host}:{args.port}")
     try:
@@ -57,11 +229,20 @@ def main() -> int:
 
 class Handler(BaseHTTPRequestHandler):
     server_version = "SparkStreamDashboard/0.1"
+    security: dict[str, Any] = {}
+    request_slots = threading.BoundedSemaphore(4)
+    sse_slots = threading.BoundedSemaphore(2)
+    rate_lock = threading.Lock()
+    request_times: dict[str, deque[float]] = defaultdict(deque)
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler naming.
         parsed = urlparse(self.path)
         if parsed.path == "/":
-            return self.serve_file(DASHBOARD_DIR / "index.html", "text/html; charset=utf-8")
+            return self.serve_file(
+                DASHBOARD_DIR / "index.html",
+                "text/html; charset=utf-8",
+                establish_session=True,
+            )
         if parsed.path == "/styles.css":
             return self.serve_file(DASHBOARD_DIR / "styles.css", "text/css; charset=utf-8")
         if parsed.path == "/app.js":
@@ -79,8 +260,37 @@ class Handler(BaseHTTPRequestHandler):
         return self.send_error(HTTPStatus.NOT_FOUND)
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler naming.
+        if not self.request_slots.acquire(blocking=False):
+            return self.send_json(
+                {"ok": False, "error": "dashboard_concurrency_limit"},
+                status=429,
+            )
+        try:
+            validate_dashboard_mutation(
+                self.headers,
+                self.security,
+                client=str(self.client_address[0]),
+            )
+            if not self.rate_allowed():
+                raise DashboardRequestFault("dashboard_rate_limit", 429)
+            return self._do_POST()
+        except DashboardRequestFault as exc:
+            return self.send_json(
+                {"ok": False, "error": exc.code},
+                status=exc.status,
+            )
+        except Exception:
+            return self.send_json(
+                {"ok": False, "error": "dashboard_internal_error"},
+                status=500,
+            )
+        finally:
+            self.request_slots.release()
+
+    def _do_POST(self) -> None:
         parsed = urlparse(self.path)
         payload = self.read_json_body()
+        validate_dashboard_payload(parsed.path, payload)
         if parsed.path == "/api/control":
             return self.send_json(handle_control(payload))
         if parsed.path == "/api/license/status":
@@ -775,16 +985,39 @@ class Handler(BaseHTTPRequestHandler):
         return self.send_error(HTTPStatus.NOT_FOUND)
 
     def read_json_body(self) -> dict[str, Any]:
-        length = int(self.headers.get("Content-Length", "0") or 0)
+        if self.headers.get("Transfer-Encoding"):
+            raise DashboardRequestFault("transfer_encoding_forbidden", 400)
+        content_type = str(self.headers.get("Content-Type") or "")
+        if content_type.split(";", 1)[0].strip().lower() != "application/json":
+            raise DashboardRequestFault("application_json_required", 415)
+        raw_length = str(self.headers.get("Content-Length") or "")
+        if not raw_length.isdigit():
+            raise DashboardRequestFault("valid_content_length_required", 411)
+        length = int(raw_length)
+        maximum = int(self.security.get("max_request_body_bytes") or 1_048_576)
+        if length > maximum:
+            raise DashboardRequestFault("request_body_too_large", 413)
         if length <= 0:
             return {}
-        raw = self.rfile.read(length).decode("utf-8")
         try:
-            return json.loads(raw)
-        except json.JSONDecodeError:
-            return {}
+            raw = self.rfile.read(length).decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise DashboardRequestFault("utf8_json_required", 400) from exc
+        try:
+            value = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise DashboardRequestFault("malformed_json", 400) from exc
+        if not isinstance(value, dict):
+            raise DashboardRequestFault("json_object_required", 400)
+        return value
 
-    def serve_file(self, path: Path, content_type: str) -> None:
+    def serve_file(
+        self,
+        path: Path,
+        content_type: str,
+        *,
+        establish_session: bool = False,
+    ) -> None:
         if not path.exists():
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -792,35 +1025,166 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        if establish_session:
+            self.send_header(
+                "Set-Cookie",
+                (
+                    "theseus_dashboard_session="
+                    f"{self.security['session_token']}; HttpOnly; "
+                    "SameSite=Strict; Path=/"
+                ),
+            )
+            self.send_header(
+                "Set-Cookie",
+                (
+                    "theseus_dashboard_csrf="
+                    f"{self.security['csrf_token']}; SameSite=Strict; Path=/"
+                ),
+            )
         self.end_headers()
         self.wfile.write(data)
 
     def serve_events(self) -> None:
+        if not self.sse_slots.acquire(blocking=False):
+            return self.send_json(
+                {"ok": False, "error": "dashboard_sse_limit"},
+                status=429,
+            )
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-cache")
         self.send_header("Connection", "keep-alive")
         self.end_headers()
-        for _ in range(3600):
-            payload = json.dumps(build_health())
-            try:
+        try:
+            iterations = max(
+                1,
+                int(self.security.get("max_sse_seconds") or 300) // 2,
+            )
+            for _ in range(iterations):
+                payload = json.dumps(build_health())
                 self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
                 self.wfile.flush()
-            except (BrokenPipeError, ConnectionResetError):
-                return
-            time.sleep(2)
+                time.sleep(2)
+        except (BrokenPipeError, ConnectionResetError):
+            return
+        finally:
+            self.sse_slots.release()
 
     def send_json(self, payload: Any, status: int = 200) -> None:
         data = json.dumps(payload, indent=2).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(data)
+
+    def rate_allowed(self) -> bool:
+        client = str(self.client_address[0])
+        maximum = int(
+            self.security.get("max_requests_per_minute_per_client") or 60
+        )
+        current = time.monotonic()
+        with self.rate_lock:
+            rows = self.request_times[client]
+            while rows and current - rows[0] >= 60.0:
+                rows.popleft()
+            if len(rows) >= maximum:
+                return False
+            rows.append(current)
+            return True
 
     def log_message(self, fmt: str, *args: Any) -> None:
         # Keep dashboard output quiet; status is visible in the UI.
         return
+
+
+def build_dashboard_security(
+    host: str,
+    port: int,
+    policy: dict[str, Any],
+) -> dict[str, Any]:
+    configured = policy.get("dashboard_security")
+    configured = configured if isinstance(configured, dict) else {}
+    allowed = configured.get("allowed_origins")
+    if not isinstance(allowed, list) or not allowed:
+        allowed = [f"http://{host}:{port}"]
+    return {
+        "allowed_origins": sorted({str(row) for row in allowed}),
+        "session_token": secrets.token_urlsafe(32),
+        "csrf_token": secrets.token_urlsafe(32),
+        "max_request_body_bytes": max(
+            1024,
+            int(configured.get("max_request_body_bytes") or 1_048_576),
+        ),
+        "max_concurrent_requests": max(
+            1,
+            int(configured.get("max_concurrent_requests") or 4),
+        ),
+        "max_requests_per_minute_per_client": max(
+            1,
+            int(configured.get("max_requests_per_minute_per_client") or 60),
+        ),
+        "max_concurrent_sse_connections": max(
+            1,
+            int(configured.get("max_concurrent_sse_connections") or 2),
+        ),
+        "max_sse_seconds": max(
+            2,
+            int(configured.get("max_sse_seconds") or 300),
+        ),
+        "max_active_jobs": max(
+            1,
+            int(configured.get("max_active_jobs") or 8),
+        ),
+    }
+
+
+def validate_dashboard_mutation(
+    headers: Any,
+    security: dict[str, Any],
+    *,
+    client: str,
+) -> None:
+    origin = str(headers.get("Origin") or "")
+    if origin not in set(security.get("allowed_origins") or []):
+        raise DashboardRequestFault("dashboard_origin_denied", 403)
+    cookie = SimpleCookie()
+    try:
+        cookie.load(str(headers.get("Cookie") or ""))
+    except Exception as exc:
+        raise DashboardRequestFault("dashboard_auth_required", 401) from exc
+    session = (
+        cookie["theseus_dashboard_session"].value
+        if "theseus_dashboard_session" in cookie
+        else ""
+    )
+    expected_session = str(security.get("session_token") or "")
+    if not (
+        session
+        and expected_session
+        and hmac.compare_digest(session, expected_session)
+    ):
+        raise DashboardRequestFault("dashboard_auth_required", 401)
+    csrf = str(headers.get("X-Theseus-CSRF") or "")
+    expected_csrf = str(security.get("csrf_token") or "")
+    if not csrf or not expected_csrf or not hmac.compare_digest(csrf, expected_csrf):
+        raise DashboardRequestFault("dashboard_csrf_denied", 403)
+    if client not in {"127.0.0.1", "::1"}:
+        raise DashboardRequestFault("dashboard_loopback_required", 403)
+
+
+def validate_dashboard_payload(path: str, payload: dict[str, Any]) -> None:
+    allowed = DASHBOARD_POST_FIELDS.get(path)
+    if allowed is None:
+        raise DashboardRequestFault("dashboard_route_not_found", 404)
+    unknown = sorted(set(payload) - allowed)
+    if unknown:
+        raise DashboardRequestFault(
+            "unknown_fields:" + ",".join(unknown),
+            400,
+        )
 
 
 def handle_control(payload: dict[str, Any]) -> dict[str, Any]:
@@ -828,11 +1192,9 @@ def handle_control(payload: dict[str, Any]) -> dict[str, Any]:
     action = str(payload.get("action") or "")
     profile = str(payload.get("profile") or "inner_loop")
     execute = bool(payload.get("execute"))
-    allow_teacher = bool(payload.get("allow_teacher", policy.get("allow_teacher_by_default", True)))
+    allow_teacher = bool(payload.get("allow_teacher") is True)
     allow_network_fetch_explicit = "allow_network_fetch" in payload
-    allow_network_fetch = bool(
-        payload.get("allow_network_fetch", policy.get("allow_network_fetch_by_default", True))
-    )
+    allow_network_fetch = bool(payload.get("allow_network_fetch") is True)
     if execute and profile in LONG_RUN_PROFILES and not payload.get("confirm_long_run"):
         return {
             "ok": False,
@@ -929,7 +1291,20 @@ def start_job(name: str, command: list[str]) -> dict[str, Any]:
             "name": name,
             "existing_processes": existing[:3],
         }
-    job_id = f"job_{int(time.time() * 1000)}"
+    with ACTIVE_LOCK:
+        running = sum(
+            1
+            for row in ACTIVE_JOBS.values()
+            if row["process"].poll() is None
+        )
+        if running >= MAX_ACTIVE_JOBS:
+            return {
+                "ok": False,
+                "error": "dashboard_active_job_limit",
+                "active_job_count": running,
+                "maximum_active_jobs": MAX_ACTIVE_JOBS,
+            }
+    job_id = f"job_{secrets.token_urlsafe(12)}"
     log_dir = REPORTS / "sparkstream_jobs"
     log_dir.mkdir(parents=True, exist_ok=True)
     stdout_path = log_dir / f"{job_id}.out.log"

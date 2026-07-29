@@ -7,7 +7,9 @@
     "missed",
     "ignored",
     "corrected",
-    "completed"
+    "completed",
+    "failed",
+    "abstained"
   ],
   "empty_outcome_allowed": true,
   "required_event_fields": [
@@ -56,7 +58,9 @@
     "missed": "The assistant failed to address the user's actual need.",
     "ignored": "The output was not used and should not be treated as successful.",
     "corrected": "The user or verifier supplied a correction signal.",
-    "completed": "The task reached a usable completed state without implying model promotion."
+    "completed": "The task reached a usable completed state without implying model promotion.",
+    "failed": "The assisted lane reached a terminal failure and must not receive success or capability credit.",
+    "abstained": "The assisted lane deliberately declined because authority, evidence, or safe execution was insufficient."
   },
   "boundaries": {
     "raw_prompt_persistence": "hash_only",
@@ -65,6 +69,7 @@
     "external_inference_at_runtime_allowed": false,
     "fallback_returns_allowed": false,
     "tool_outputs_are_evidence_not_model_only_skill": true,
+    "assisted_behavior_learned_model_credit_allowed": false,
     "dogfood_metadata_is_private_training_pressure_only": true
   },
   "failure_behavior": {

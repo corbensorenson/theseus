@@ -91,6 +91,58 @@ def join_token(policy: dict[str, Any]) -> str:
     cfg = join_config(policy)
     return shared_secret(policy) or str(cfg.get("join_token") or "")
 
+
+def coordinator_secret(policy: dict[str, Any]) -> str:
+    env_name = str(
+        get_path(
+            policy,
+            ["security", "coordinator_secret_env"],
+            "THESEUS_HIVE_COORDINATOR_SECRET",
+        )
+    )
+    return os.environ.get(env_name, "")
+
+
+def worker_secret(policy: dict[str, Any]) -> str:
+    env_name = str(
+        get_path(
+            policy,
+            ["security", "worker_secret_env"],
+            "THESEUS_HIVE_WORKER_SECRET",
+        )
+    )
+    value = os.environ.get(env_name, "")
+    if value:
+        return value
+    if get_path(
+        policy,
+        ["security", "allow_legacy_machine_join_token"],
+        False,
+    ):
+        return shared_secret(policy)
+    return ""
+
+
+def discovery_secret(policy: dict[str, Any]) -> str:
+    env_name = str(
+        get_path(
+            policy,
+            ["security", "discovery_secret_env"],
+            "THESEUS_HIVE_DISCOVERY_SECRET",
+        )
+    )
+    value = os.environ.get(env_name, "")
+    if value:
+        return value
+    if get_path(
+        policy,
+        ["security", "allow_legacy_machine_join_token"],
+        False,
+    ):
+        return shared_secret(policy)
+    return ""
+
+
 def shared_secret(policy: dict[str, Any]) -> str:
     env_name = str(get_path(policy, ["security", "shared_secret_env"], "THESEUS_HIVE_SECRET"))
     env_value = os.environ.get(env_name, "")

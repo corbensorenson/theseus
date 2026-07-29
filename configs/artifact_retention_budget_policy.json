@@ -5,6 +5,30 @@
     "reports",
     "checkpoints"
   ],
+  "runtime_canary_retention": {
+    "root": "runtime/t0a_canaries",
+    "retirable_families": [
+      "optimizer_adequacy",
+      "rdc_kerc_adequacy",
+      "rdc_kerc_k5_adequacy",
+      "rdc_kerc_k5_overfit"
+    ],
+    "authority_reference_sources": [
+      "configs",
+      "docs/PROJECT_STATE.md",
+      "roadmap.md"
+    ],
+    "evidence_reference_sources": [
+      "reports"
+    ],
+    "rules": {
+      "preserve_authority_referenced_runs": true,
+      "preserve_terminal_generation_in_retained_runs": true,
+      "preserve_all_reports": true,
+      "retire_only_complete_terminal_alias_parity_runs": true,
+      "write_exact_prepared_manifest_before_deletion": true
+    }
+  },
   "max_hot_report_bytes": 1073741824,
   "max_hot_report_files": 6000,
   "max_active_index_bytes": 1073741824,

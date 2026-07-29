@@ -16,9 +16,16 @@
     "checkpoint_id": "live",
     "allow_teacher": false,
     "accept_any_model": true,
-    "require_token": false,
+    "require_token": true,
     "api_token": "",
-    "cors": true,
+    "cors": false,
+    "allowed_origins": [
+      "http://127.0.0.1:8789",
+      "http://localhost:8789"
+    ],
+    "max_request_body_bytes": 1048576,
+    "max_concurrent_requests": 4,
+    "max_requests_per_minute_per_client": 60,
     "resident_neural_seed": {
       "enabled": false,
       "model_id": "theseus-neural-seed",
@@ -36,7 +43,11 @@
   },
   "security": {
     "loopback_only_by_default": true,
+    "require_token_by_default": true,
+    "allow_unauthenticated_loopback": false,
     "require_token_for_non_loopback": true,
+    "cors_disabled_by_default": true,
+    "exact_origin_allowlist_required": true,
     "never_call_external_inference": true,
     "teacher_disabled_by_default": true
   },

@@ -39,7 +39,16 @@ DEFAULT_EFFECT_ROOT = ROOT / "runtime" / "assistant_effects"
 DEFAULT_EFFECT_TARGET = DEFAULT_EFFECT_ROOT / "default_route_authority.json"
 DEFAULT_REFRESH_CACHE = ROOT / "runtime" / "cache" / "assistant_context_refresh_v1.json"
 DOGFOOD_EVENTS = ROOT / "runtime" / "dogfood" / "daily_use_events.jsonl"
-DEFAULT_ALLOWED_FEEDBACK = {"", "accepted", "missed", "ignored", "corrected", "completed"}
+DEFAULT_ALLOWED_FEEDBACK = {
+    "",
+    "accepted",
+    "missed",
+    "ignored",
+    "corrected",
+    "completed",
+    "failed",
+    "abstained",
+}
 ASSISTANT_VIEA_REQUIRED_RECORD_TYPES = viea_spine_records.ASSISTANT_RUNTIME_REQUIRED_RECORDS
 ASSISTANT_PRODUCT_VIEW_GROUPS = [
     "claim_ledger_entries",
