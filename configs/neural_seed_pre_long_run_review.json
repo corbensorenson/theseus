@@ -90,6 +90,16 @@
         "reports/pre_long_run_independent_readiness_audit.json"
       ],
       "decision": "A separately implemented audit recomputed evidence and authority hashes, exact checkpoint/alias identity, all 37 prospective lineage and artifact edges, fresh-process replay, resource policy, functional-surface nonconsumption, scoped negative evidence, claim boundaries, and the execution hold. It is GREEN but does not authorize or start long training."
+    },
+    {
+      "id": "step_11416_semantic_plan_identity_migration",
+      "state": "QUALIFIED_EXACT_RESUME_COMPATIBLE",
+      "evidence": [
+        "configs/moecot_language_arm_training.json",
+        "reports/pre_long_run_acceleration_residual_audit.json",
+        "reports/pre_long_run_independent_readiness_audit.json"
+      ],
+      "decision": "The held receipt plan 4f18bd17... is explicitly migrated to current plan 5d5b77e5... only for the exact step-11416 checkpoint/AdamW/RNG/position identity. The implementation closure gained isolated default-off candidates and candidate/resource governance, while the active compiled-FP32/AdamW/separate-QKV/SwiGLU/sequential-residual production route, data, cursor, objective, schedule, and functional surface remain unchanged."
     }
   ],
   "new_source": {

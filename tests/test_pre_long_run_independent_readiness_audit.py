@@ -11,6 +11,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import pre_long_run_independent_readiness_audit as audit
+import moecot_language_arm_training as training
 
 
 def test_independent_audit_config_covers_all_required_boundaries() -> None:
@@ -57,6 +58,34 @@ def test_current_independent_audit_is_green_without_authorizing_training() -> No
     )
     assert report["audits"]["resource_integrity"]["fixed_available_memory_floor_mib"] == 0
     assert report["long_training_authorized"] is False
+
+
+def test_exact_step_11416_plan_migration_is_accepted_without_state_reset() -> None:
+    config_path = ROOT / "configs/moecot_language_arm_training.json"
+    config = training.bind_scale_preregistration(
+        training.read_json(config_path)
+    )
+    plan = training.build_plan(config, config_path=config_path)
+    receipt = training.read_json(
+        ROOT
+        / "checkpoints/moecot_mlx_57m_active_preregistered_v1"
+        / "shared_trunk/training_receipt.json"
+    )
+    target = plan["targets"][training.SHARED_TRUNK_ID]
+    migration = training.accepted_plan_identity_migration(
+        receipt, plan, target
+    )
+    assert plan["plan_sha256"] == (
+        "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d"
+    )
+    assert migration is not None
+    assert migration["migration_id"] == (
+        "shared_trunk_step11416_finite_candidate_and_guard_closure_v1"
+    )
+    assert migration["legacy_optimizer_steps"] == 11416
+    assert migration["legacy_optimizer_positions"] == 87441996
+    assert migration["reset_data_cursor_phase"] is None
+    assert migration["reset_data_cursor_seed"] is None
 
 
 def test_consumption_matcher_detects_current_identity(tmp_path: Path) -> None:

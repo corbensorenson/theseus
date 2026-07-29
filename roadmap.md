@@ -288,6 +288,16 @@ source-disjoint, `0/160` consumed, and `NOT_EVALUATED`. This closes the independ
 prerequisite only; the content-addressed replacement freeze and operator-controlled hold still
 stand between this evidence and any long run.
 
+Freeze preflight also caught and repaired a semantic plan-identity gap rather than papering it
+over. The held step-11,416 receipt carries plan `4f18bd17...`, while the completed default-off
+candidate implementations and candidate guard contract produce current plan `5d5b77e5...`.
+An exact receipt-bound migration now authorizes that transition only for checkpoint
+`d2a485a5...`, AdamW `4d85f939...`, RNG `9209383f...`, step `11,416`, and position
+`87,441,996`. It states explicitly that Per-Head Muon, AttnRes, SiTU-GLU, and fused QKV remain
+isolated and unselected and that the active production graph, tensor state, data, cursor,
+objective, schedule, and evaluation surface are unchanged. The production resume validator
+now accepts this exact migration and would still reject any other state.
+
 ### 2026-07-26 Production Training Hot-Path Audit
 
 The system is **not yet entitled to claim that training is as fast as possible**. It is

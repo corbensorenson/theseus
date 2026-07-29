@@ -29,7 +29,12 @@ share toward zero. Public benchmarks are calibration only.
   now re-hashed every residual-audit input, reconstructed all prospective lineage and artifact
   edges, verified fresh-process replay/resource policy, found no consumption row matching the
   current 57M functional freeze identity, and confirmed every candidate negative is scoped.
-  It is GREEN and explicitly does not authorize training.
+  It is GREEN and explicitly does not authorize training. Freeze preflight also found that the
+  held receipt plan `4f18bd17...` lacked a migration to the post-review implementation-closure
+  plan `5d5b77e5...`. An exact step-11,416 checkpoint/AdamW/RNG/position-bound semantic
+  migration now covers only the default-off candidate and guard-governance additions; the
+  production graph, data, cursor, objective, schedule, and evaluation surface remain unchanged.
+  Resume validation passes only for that exact identity.
 - **Deep-review reconciliation:** the 2026-07-25 source audit accepts the external review's
   authority-surface, evaluator-integrity, benchmark-validity, status-semantics,
   reproducibility, maintainability, and Rust/CUDA correctness criticisms. The dashboard

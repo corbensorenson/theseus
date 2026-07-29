@@ -190,6 +190,20 @@
         "reason": "Continue the exact step-9112 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, and learning-rate schedule after correcting the first prospective ledger writer. The child completed successfully and archived exact before/after receipts plus child and host-guard reports, but the initial manifest resolved the before-receipt digest through the mutable live canonical path after it had advanced. The repaired manifest binds the immutable archived before receipt, records the original invalid-manifest hash, and the verifier now independently re-hashes every archived artifact. This migration changes no model topology, active training math, tensor, optimizer byte, data row, objective, schedule, evaluation contract, or capability state."
       },
       {
+        "migration_id": "shared_trunk_step11416_finite_candidate_and_guard_closure_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
+        "legacy_checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
+        "legacy_optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
+        "legacy_mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+        "legacy_optimizer_steps": 11416,
+        "legacy_optimizer_positions": 87441996,
+        "required_current_plan_sha256": "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "reports/pre_long_run_acceleration_residual_audit.json reports/pre_long_run_independent_readiness_audit.json reports/per_head_muon_qualification.json reports/kimi_k3_attnres_qualification.json reports/kimi_k3_situ_glu_qualification.json reports/fused_qkv_full_route_qualification.json configs/neural_seed_pre_long_run_review.json",
+        "reason": "Continue the exact step-11416 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, learning-rate schedule, and immutable functional surface after the finite pre-long-run review. The implementation closure gained isolated, default-off Per-Head Muon, Attention Residual, SiTU-GLU, and fused-QKV candidate paths plus their matched qualification owners; every challenger was not selected and the production route remains compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, and sequential unscaled residuals. The candidate contract also removes fixed available-memory reserves and uses predicted exhaustion with process limits and report-only swap telemetry; this changes only candidate/resource governance, not training math. Independent audits re-hash the exact live state, all 37 prospective lineage manifests, replay reports, frozen evaluation nonconsumption, scoped negatives, and the operator hold. No production model topology, active operation, tensor, optimizer byte, RNG byte, data row/order/cursor, objective mass, schedule, evaluation contract, or capability state changes."
+      },
+      {
         "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
         "target_id": "shared_trunk",
         "legacy_plan_sha256": "b55e7ae19ed5956b0e02ecc73809846fc0d51a867c20c83d15198daec4eeab9e",

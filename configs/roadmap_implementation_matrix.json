@@ -3742,6 +3742,17 @@
       ],
       "claim_boundary": "The audit supports readiness for a content-addressed replacement freeze only. It does not authorize long training, prove physical optimality, evaluate utility, or broaden any scoped negative."
     },
+    "step_11416_plan_identity_migration": {
+      "state": "GREEN_EXACT_IDENTITY_ONLY",
+      "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
+      "current_plan_sha256": "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d",
+      "checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
+      "optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
+      "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+      "optimizer_steps": 11416,
+      "optimizer_positions": 87441996,
+      "claim_boundary": "This authorizes semantic plan identity only for the exact unchanged state. It cannot reinterpret incompatible model, optimizer, RNG, cursor, data, objective, schedule, or evaluation state."
+    },
     "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
     "resource_rule": "No clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor. Use finite prewritten workloads, transactional boundaries, and causal thermal/swap/disk/nonfinite/parity stops.",
     "no_claim_boundary": "Source review, roadmap admission, canary completion, loss reduction, or throughput does not establish Kimi K3 reproduction, Theseus capability, architecture superiority, public transfer, support, or release."
