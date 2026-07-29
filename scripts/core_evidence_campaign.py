@@ -133,6 +133,8 @@ def main() -> int:
 def run_e2_comparison(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     """Run the competence gate and matched development routes before E2 heldout."""
     started = time.perf_counter()
+    source_commit = git("rev-parse", "HEAD").strip()
+    source_tree = git("rev-parse", "HEAD^{tree}").strip()
     e0 = read_json(ROOT / "reports" / "core_evidence_e0_preregistration.json")
     e1 = read_json(ROOT / "reports" / "core_evidence_e1_replay.json")
     public_rows = {
@@ -256,6 +258,13 @@ def run_e2_comparison(config: dict[str, Any], config_path: Path) -> dict[str, An
             "sha256": e0.get("preregistration_sha256"),
             "config_sha256": e0.get("config_sha256"),
             "E1_report_payload_sha256": e1.get("report_payload_sha256"),
+        },
+        "source": {
+            "commit": source_commit,
+            "tree": source_tree,
+            "campaign_source_sha256": sha256_bytes((ROOT / "scripts" / "core_evidence_campaign.py").read_bytes()),
+            "worker_source_sha256": sha256_bytes((ROOT / "scripts" / "core_evidence_worker.py").read_bytes()),
+            "config_sha256": sha256_bytes(config_path.read_bytes()),
         },
         "competence_floor": {
             "passed": competence_passed,

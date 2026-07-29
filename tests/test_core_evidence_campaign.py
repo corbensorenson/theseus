@@ -348,6 +348,9 @@ def test_e2_stops_at_frozen_competence_floor_without_opening_heldout() -> None:
     assert report["counters"]["E2_heldout_tasks_opened"] == 0
     assert report["counters"]["D2_cases_consumed"] == 0
     assert report["counters"]["external_inference_calls"] == 0
+    assert report["source"]["commit"] == campaign.git("rev-parse", "HEAD").strip()
+    assert len(report["source"]["campaign_source_sha256"]) == 64
+    assert len(report["source"]["worker_source_sha256"]) == 64
     assert len(report["route_summaries"]) == 5
     assert all(row["attempted"] == 3 for row in report["route_summaries"])
     assert all(
