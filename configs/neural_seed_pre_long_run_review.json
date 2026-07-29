@@ -153,12 +153,32 @@
     {
       "id": "kimi_k3_situ_glu",
       "priority": 3,
-      "state": "REQUIRED_BOUNDED_STABILITY_CANARY",
+      "state": "COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN",
       "why_it_has_teeth": "SiTU-GLU is a smooth bounded replacement for the current SwiGLU pathway and could change stability or finite-precision behavior, but Theseus has no present activation-explosion wall.",
       "control": "current SwiGLU",
       "required_scale": "matched 6.623M rung using the same seeds, data, parameter accounting, and time-to-quality evaluator as the AttnRes control",
       "adoption_rule": "Adopt only for a repeatable heldout/time-to-quality win or a demonstrated stability improvement on an actually observed failure, with no joined-wall or weak-arm regression.",
-      "negative_inference_boundary": "No result transfers beyond the tested bounds or establishes a universal activation choice."
+      "negative_inference_boundary": "No result transfers beyond the tested bounds or establishes a universal activation choice.",
+      "result": {
+        "report": "reports/kimi_k3_situ_glu_qualification.json",
+        "trigger_state": "GREEN",
+        "selected_architecture": "control",
+        "gate_beta": 4.0,
+        "up_beta": 25.0,
+        "control_parameter_count": 6623232,
+        "candidate_parameter_count": 6623232,
+        "mean_relative_loss_improvement": -0.006668939046725758,
+        "mean_joined_wall_time_ratio": 1.1469995069748389,
+        "mean_time_to_control_final_quality_ratio": 1.158341803567035,
+        "mean_allocator_peak_ratio": 1.040046610879615,
+        "maximum_weak_arm_relative_loss_regression": 0.03268345599726408,
+        "formal_coordinate_bound_respected": true,
+        "near_origin_match": true,
+        "cached_decode_parity_passed": true,
+        "checkpoint_next_update_numerically_equivalent": true,
+        "disposition": "NOT_SELECTED_FIRST_CAMPAIGN",
+        "scientific_falsification_claimed": false
+      }
     }
   ],
   "explicit_scope_dispositions": [

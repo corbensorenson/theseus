@@ -913,7 +913,12 @@ Block AttnRes is now complete and not selected as well. Its exact mechanics, mig
 refusal, cached decode, checkpoint reload, and next-state replay pass, but the matched rung
 regressed mean loss 1.7047%, used 1.149979x joined wall and 1.084348x allocator peak,
 required 1.514768x time to control final quality, and reached 7.6733% weak-arm regression.
-SiTU-GLU is the only open Kimi K3 candidate.
+SiTU-GLU is complete and not selected too. Its exact beta-4/beta-25 implementation is
+parameter matched and passes source-bound, near-origin, gradient, migration-refusal,
+cached-decode, reload, and next-state replay checks, but regressed mean loss 0.6669%, used
+1.147000x joined wall and 1.040047x allocator peak, required 1.158342x time to control
+quality, and reached 3.2683% weak-arm regression. All three admitted Kimi K3 candidates
+are closed; replacement selection/readiness and independent audits remain.
 
 T1 is paused at shared-trunk step 11,416 and 87,441,996 of 1,096,734,920
 pretraining positions. The live canonical path advanced after the committed T0A freeze, but the

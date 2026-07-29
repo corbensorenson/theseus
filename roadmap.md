@@ -242,6 +242,19 @@ wall-unbounded, process-capped resume completed green. These receipts are retain
 than hidden. The result is scoped to this implementation and rung, not broad AttnRes
 falsification.
 
+SiTU-GLU is now complete and not selected for campaign one. The exact beta-4 gate and
+beta-25 up branches are parameter matched to SwiGLU and pass source-equation intervention,
+the formal coordinate bound, the near-origin limit, gradients through every layer,
+migration refusal, cached-decode parity, exact reload, and tolerance-bound next-state
+replay. On the 6.623M, 128-step, three-seed source-disjoint rung it regressed mean heldout
+loss 0.6669%, used 1.147000x joined wall, needed 1.158342x time to control final quality,
+used 1.040047x allocator peak, and reached 3.2683% weak-arm regression. The initial direct
+formula unit test demanded bitwise identity across differently fused FP32 expressions and
+failed at `7.62939453125e-06`; that red receipt is retained, and the corrected source-
+equation tolerance passed. No control instability was observed, so there is no stability-
+repair route around the prewritten quality, time, and weak-tail misses. This is scoped to
+the exact implementation and rung, not broad SiTU-GLU falsification.
+
 This is a finite reopening, not a standing architecture search. Every candidate has a
 prewritten control, scale, adequacy checks, adoption rule, and negative-inference boundary
 in `configs/neural_seed_pre_long_run_review.json`. No public or frozen functional surface is
@@ -3521,12 +3534,12 @@ and 87,441,996 of 1,096,734,920 pretraining positions while the finite Kimi K3-d
 pre-long-run review closes. The 10.8M rung is closed at 0/160 across MoECOT and both dense
 controls; that result does not transfer to the current rung.
 
-Next: execute only the remaining SiTU-GLU matched canary frozen in
-`configs/neural_seed_pre_long_run_review.json`, publish one replacement selection receipt,
-then either resume the exact step-11,416 checkpoint unchanged or start a new incompatible
-lineage if a topology earns the restart. Train the selected model and matched controls and
-consume the frozen functional surface once. Preference/RL, GVR, and search still require
-direct behavior; no other architecture intake may delay this finite decision.
+Next: publish one content-addressed replacement selection/readiness receipt after the
+remaining measured acceleration residual and independent-integrity audits close. All three
+Kimi K3 candidates are now complete and none earned a replacement. The receipt must either
+authorize exact step-11,416 resume unchanged or identify a newly proven incompatible
+lineage; this goal does not launch either long run. Preference/RL, GVR, and search still
+require direct behavior; no other architecture intake may delay this finite decision.
 
 ### Phase 11: Cognitive Kernel Discovery
 

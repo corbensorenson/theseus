@@ -3662,7 +3662,14 @@
         "id": "kimi_k3_situ_glu",
         "priority": 3,
         "owner": "activation_and_numerics",
-        "decision": "Run one separately matched SiTU-GLU versus SwiGLU canary and adopt only for a repeatable quality/time-to-quality win or an observed stability repair without weak-arm or joined-wall regression."
+        "decision": "COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN: exact beta-4/beta-25 SiTU-GLU passed source-equation bound, near-origin, gradient, intervention, cached decode, migration refusal, parameter parity, exact reload, and next-state replay, but regressed mean heldout loss 0.6669 percent, used 1.147000x joined wall and 1.040047x allocator peak, required 1.158342x time to control quality, and reached 3.2683 percent weak-arm regression.",
+        "evidence": [
+          "reports/kimi_k3_situ_glu_qualification.json",
+          "reports/accelerator_replay/kimi_k3_situ_glu_unit_guard.json",
+          "reports/accelerator_replay/kimi_k3_situ_glu_unit_final_guard.json",
+          "reports/accelerator_replay/kimi_k3_situ_glu_qualification_guard.json"
+        ],
+        "scientific_falsification_claimed": false
       }
     ],
     "closed_or_scope_dispositioned": [

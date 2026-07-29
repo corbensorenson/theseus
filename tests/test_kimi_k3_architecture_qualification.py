@@ -17,6 +17,7 @@ import kimi_k3_architecture_qualification as qualification
 
 
 CONFIG = ROOT / "configs/kimi_k3_attnres_qualification.json"
+SITU_CONFIG = ROOT / "configs/kimi_k3_situ_glu_qualification.json"
 
 
 def test_attnres_config_is_finite_source_disjoint_six_million_rung() -> None:
@@ -45,6 +46,37 @@ def test_attnres_model_contract_refuses_in_place_control_migration() -> None:
     assert control.attention_residual_mode == "none"
     assert candidate.attention_residual_mode == "block"
     assert candidate.attention_residual_block_size == 2
+    with pytest.raises(
+        qualification.KimiK3ArchitectureFault,
+        match="in_place_topology_migration_forbidden",
+    ):
+        qualification.assert_migration_compatible(control, candidate)
+
+
+def test_situ_config_is_matched_and_refuses_swiglu_migration() -> None:
+    config = qualification.load_config(SITU_CONFIG)
+    assert config["variant"]["kind"] == "situ_glu"
+    assert config["variant"]["gate_beta"] == 4.0
+    assert config["variant"]["up_beta"] == 25.0
+    assert config["training"]["steps"] == 128
+    assert config["seeds"] == [20260722, 20260723, 20260724]
+    preflight = qualification.preflight(SITU_CONFIG)
+    assert preflight["trigger_state"] == "GREEN"
+    assert preflight["source_overlap_count"] == 0
+    assert preflight["parameter_count"]["counts"] == {
+        "control": 6623232,
+        "candidate": 6623232,
+    }
+    control = qualification.model_config(
+        config, 8195, candidate=False
+    )
+    candidate = qualification.model_config(
+        config, 8195, candidate=True
+    )
+    assert control.feed_forward_activation == "swiglu"
+    assert candidate.feed_forward_activation == "situ_glu"
+    assert candidate.situ_glu_gate_beta == 4.0
+    assert candidate.situ_glu_up_beta == 25.0
     with pytest.raises(
         qualification.KimiK3ArchitectureFault,
         match="in_place_topology_migration_forbidden",
