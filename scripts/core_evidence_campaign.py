@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs" / "core_evidence_campaign.json"
 DEFAULT_OUT = ROOT / "reports" / "core_evidence_e0_preregistration.json"
 DEFAULT_E1_OUT = ROOT / "reports" / "core_evidence_e1_replay.json"
+DEFAULT_E2_OUT = ROOT / "reports" / "core_evidence_e2_governed_comparison.json"
 
 EXPECTED_CLAIMS = {
     "asi-is-a-stack-not-a-model.core",
@@ -90,7 +91,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG.relative_to(ROOT)))
     parser.add_argument("--out", default=str(DEFAULT_OUT.relative_to(ROOT)))
-    parser.add_argument("--stage", choices=["E0", "E1", "E1-inner"], default="E0")
+    parser.add_argument("--stage", choices=["E0", "E1", "E1-inner", "E2"], default="E0")
     parser.add_argument("--source-commit", default="")
     parser.add_argument("--gate", action="store_true")
     args = parser.parse_args()
@@ -107,7 +108,7 @@ def main() -> int:
             config_path,
             source_commit=args.source_commit,
         )
-    else:
+    elif args.stage == "E1-inner":
         out_path = resolve(args.out)
         source_commit = args.source_commit or os.environ.get("THESEUS_E1_SOURCE_COMMIT", "")
         gate_results = run_e1_source_gates(ROOT)
@@ -119,11 +120,421 @@ def main() -> int:
             gate_results=gate_results,
             clean_checkout=True,
         )
+    else:
+        out_path = resolve(args.out) if args.out != str(DEFAULT_OUT.relative_to(ROOT)) else DEFAULT_E2_OUT
+        report = run_e2_comparison(config, config_path)
     write_json(out_path, report)
     print(json.dumps(gate_view(report), indent=2, sort_keys=True))
     if args.gate and report["trigger_state"] != "GREEN":
         return 2
     return 0
+
+
+def run_e2_comparison(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
+    """Run the competence gate and matched development routes before E2 heldout."""
+    started = time.perf_counter()
+    e0 = read_json(ROOT / "reports" / "core_evidence_e0_preregistration.json")
+    e1 = read_json(ROOT / "reports" / "core_evidence_e1_replay.json")
+    public_rows = {
+        str(row.get("opaque_task_id")): row
+        for row in dicts(mapping(e0.get("public_packet")).get("tasks"))
+    }
+    tasks = [
+        row for row in dicts(config.get("tasks"))
+        if row.get("partition") == "development" and row.get("denominator") == "D1_DEVELOPMENT"
+    ]
+    task_results = []
+    infrastructure_faults = []
+    for task in tasks:
+        opaque = opaque_task_id(str(task.get("source_task_id") or ""))
+        public_task_row = public_rows.get(opaque)
+        if not public_task_row:
+            infrastructure_faults.append({"opaque_task_id": opaque, "fault": "public_projection_missing"})
+            continue
+        try:
+            candidate = execute_isolated_worker(public_task_row)
+            evaluation = independently_evaluate_candidate(task, public_task_row, candidate, config)
+            routes = [evaluate_route(route, task, evaluation, candidate, config) for route in dicts(config.get("matched_routes"))]
+            task_results.append({
+                "opaque_task_id": opaque,
+                "partition": "development",
+                "family": task.get("family"),
+                "candidate_seal": candidate["seal"],
+                "candidate_public_summary": {
+                    "worker_id": candidate["output"].get("worker_id"),
+                    "abstained": candidate["output"].get("abstained"),
+                    "patch_bytes": len(str(candidate["output"].get("patch_unified_diff") or "").encode("utf-8")),
+                    "proposed_path_count": len(strings(candidate["output"].get("proposed_paths"))),
+                    "verification_command_count": len(strings(candidate["output"].get("verification_commands"))),
+                    "external_inference_calls": integer(candidate["output"].get("external_inference_calls")),
+                    "teacher_calls": integer(candidate["output"].get("teacher_calls")),
+                    "public_calibration_cases_consumed": integer(candidate["output"].get("public_calibration_cases_consumed")),
+                    "D2_cases_consumed": integer(candidate["output"].get("D2_cases_consumed")),
+                    "learned_generation_credit": integer(candidate["output"].get("learned_generation_credit")),
+                    "residuals": candidate["output"].get("residuals"),
+                },
+                "independent_evaluation": evaluation,
+                "routes": routes,
+            })
+        except (CampaignError, subprocess.SubprocessError, OSError, ValueError, json.JSONDecodeError) as exc:
+            infrastructure_faults.append({
+                "opaque_task_id": opaque,
+                "fault": f"{type(exc).__name__}: {exc}",
+            })
+
+    competence = mapping(mapping(config.get("decision_rules")).get("competence_floor"))
+    attempted = len(task_results)
+    useful = sum(bool(mapping(row.get("independent_evaluation")).get("useful_completed_task")) for row in task_results)
+    useful_rate = useful / attempted if attempted else 0.0
+    by_family: dict[str, list[bool]] = defaultdict(list)
+    for row in task_results:
+        by_family[str(row.get("family") or "")].append(bool(mapping(row.get("independent_evaluation")).get("useful_completed_task")))
+    family_rates = {
+        family: sum(values) / len(values) if values else 0.0
+        for family, values in sorted(by_family.items())
+    }
+    weakest_family_rate = min(family_rates.values()) if family_rates else 0.0
+    competence_passed = bool(
+        attempted >= integer(competence.get("minimum_attempted_tasks"))
+        and useful_rate >= number(competence.get("minimum_useful_rate"))
+        and weakest_family_rate >= number(competence.get("minimum_task_family_rate"))
+        and not infrastructure_faults
+    )
+    route_summaries = summarize_routes(task_results, config)
+    terminal = (
+        "BLOCKED_INFRASTRUCTURE"
+        if infrastructure_faults
+        else "INCONCLUSIVE_WORKER_INADEQUATE"
+        if not competence_passed
+        else disposition_from_route_summaries(route_summaries, config)
+    )
+    heldout_opened = 0
+    checks = [
+        e1_check("E0_current_and_green", (
+            e0.get("trigger_state") == "GREEN"
+            and e0.get("config_sha256") == sha256_bytes(config_path.read_bytes())
+        ), {"state": e0.get("trigger_state"), "config_sha256": e0.get("config_sha256")}),
+        e1_check("E1_current_and_replayable", (
+            e1.get("trigger_state") == "GREEN"
+            and e1.get("disposition") == "REPLAYABLE_REFERENCE_BACKED"
+            and mapping(e1.get("source")).get("E0_preregistration_sha256") == e0.get("preregistration_sha256")
+        ), {"state": e1.get("trigger_state"), "disposition": e1.get("disposition")}),
+        e1_check("development_denominator_complete", attempted == len(tasks), {"attempted": attempted, "expected": len(tasks)}),
+        e1_check("candidate_integrity_valid", all(mapping(row.get("independent_evaluation")).get("information_flow_valid") is True for row in task_results), attempted),
+        e1_check("independent_evaluator_valid", all(mapping(row.get("independent_evaluation")).get("evaluator_valid") is True for row in task_results), attempted),
+        e1_check("no_infrastructure_faults", not infrastructure_faults, infrastructure_faults),
+        e1_check("heldout_respected_after_floor_failure", competence_passed or heldout_opened == 0, heldout_opened),
+        e1_check("no_external_inference", all(integer(mapping(row.get("candidate_public_summary")).get("external_inference_calls")) == 0 for row in task_results), attempted),
+        e1_check("no_teacher_calls", all(integer(mapping(row.get("candidate_public_summary")).get("teacher_calls")) == 0 for row in task_results), attempted),
+        e1_check("no_learned_credit", all(integer(mapping(row.get("candidate_public_summary")).get("learned_generation_credit")) == 0 for row in task_results), attempted),
+        e1_check("public_calibration_untouched", all(integer(mapping(row.get("candidate_public_summary")).get("public_calibration_cases_consumed")) == 0 for row in task_results), attempted),
+        e1_check("D2_untouched", all(integer(mapping(row.get("candidate_public_summary")).get("D2_cases_consumed")) == 0 for row in task_results), attempted),
+    ]
+    hard_gaps = [row for row in checks if not row["passed"]]
+    experiment_valid = not any(row["name"] in {
+        "E0_current_and_green",
+        "E1_current_and_replayable",
+        "development_denominator_complete",
+        "candidate_integrity_valid",
+        "independent_evaluator_valid",
+        "no_external_inference",
+        "no_teacher_calls",
+        "no_learned_credit",
+        "public_calibration_untouched",
+        "D2_untouched",
+    } for row in hard_gaps)
+    if not experiment_valid and terminal not in {"BLOCKED_INFRASTRUCTURE"}:
+        terminal = "INVALID_INFORMATION_FLOW" if any(row["name"] == "candidate_integrity_valid" for row in hard_gaps) else "INVALID_EVALUATOR"
+    report = {
+        "policy": "project_theseus_core_evidence_E2_governed_comparison_v1",
+        "campaign_id": config.get("campaign_id"),
+        "stage": "E2",
+        "created_utc": now(),
+        "trigger_state": "GREEN" if experiment_valid and not infrastructure_faults else "RED",
+        "terminal_disposition": terminal,
+        "preregistration": {
+            "sha256": e0.get("preregistration_sha256"),
+            "config_sha256": e0.get("config_sha256"),
+            "E1_report_payload_sha256": e1.get("report_payload_sha256"),
+        },
+        "competence_floor": {
+            "passed": competence_passed,
+            "attempted": attempted,
+            "useful": useful,
+            "useful_rate": useful_rate,
+            "required_useful_rate": competence.get("minimum_useful_rate"),
+            "family_rates": family_rates,
+            "weakest_family_rate": weakest_family_rate,
+            "required_weakest_family_rate": competence.get("minimum_task_family_rate"),
+        },
+        "task_results": task_results,
+        "route_summaries": route_summaries,
+        "heldout": {
+            "D1_E2_task_count_frozen": sum(row.get("denominator") == "D1_E2" for row in dicts(config.get("tasks"))),
+            "opened": heldout_opened,
+            "reason": "competence floor failed; frozen terminal rule forbids opening heldout for a governance headline" if not competence_passed else "eligible",
+        },
+        "infrastructure_faults": infrastructure_faults,
+        "checks": checks,
+        "hard_gaps": hard_gaps,
+        "counters": {
+            "development_tasks_attempted": attempted,
+            "E2_heldout_tasks_opened": heldout_opened,
+            "D2_cases_consumed": 0,
+            "public_calibration_cases_consumed": 0,
+            "external_inference_calls": 0,
+            "teacher_calls": 0,
+            "learned_generation_credit": 0,
+            "user_facing_effects": 0,
+            "rescue_attempts": 0,
+        },
+        "runtime": {"wall_ms": round((time.perf_counter() - started) * 1000.0, 3)},
+        "maximum_inference": (
+            "The current deterministic local repository worker failed the frozen development competence floor. "
+            "This is valid negative evidence about the current integrated product and makes the governed-stack efficacy contrast inconclusive; "
+            "it is not evidence against governance in general or the sealed learned student."
+        ),
+        "non_claims": strings(config.get("explicit_non_claims")),
+        "replay_command": "python3 scripts/core_evidence_campaign.py --stage E2 --gate",
+    }
+    report["report_payload_sha256"] = stable_hash({
+        key: value for key, value in report.items()
+        if key not in {"created_utc", "runtime", "report_payload_sha256"}
+    })
+    return report
+
+
+def execute_isolated_worker(public_task: dict[str, Any]) -> dict[str, Any]:
+    visible = {
+        key: public_task[key]
+        for key in ("natural_request", "parent_source_commit", "allowed_runtime_context", "authority_grant")
+    }
+    parent = str(visible["parent_source_commit"])
+    with tempfile.TemporaryDirectory(prefix="theseus-e2-worker-") as tmp:
+        root = Path(tmp)
+        snapshot = root / "snapshot"
+        snapshot.mkdir()
+        archive = root / "parent.tar"
+        worker_input = root / "visible.json"
+        worker_output = root / "candidate.json"
+        worker_input.write_text(json.dumps(visible, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        archive_process = run_process(
+            ["git", "archive", "--format=tar", f"--output={archive}", parent],
+            cwd=ROOT,
+            timeout=120,
+        )
+        if archive_process["returncode"] != 0:
+            raise CampaignError("parent archive failed")
+        extract = run_process(["tar", "-xf", str(archive), "-C", str(snapshot)], cwd=ROOT, timeout=120)
+        if extract["returncode"] != 0 or (snapshot / ".git").exists():
+            raise CampaignError("parent snapshot isolation failed")
+        started_utc = now()
+        worker = run_process(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "core_evidence_worker.py"),
+                "--input",
+                str(worker_input),
+                "--snapshot-root",
+                str(snapshot),
+                "--out",
+                str(worker_output),
+            ],
+            cwd=snapshot,
+            timeout=90,
+            env={"PATH": os.environ.get("PATH", ""), "PYTHONHASHSEED": "0", "NO_PROXY": "*", "no_proxy": "*"},
+        )
+        finished_utc = now()
+        if worker["returncode"] != 0 or not worker_output.exists():
+            raise CampaignError("worker process failed")
+        output_bytes = worker_output.read_bytes()
+        if len(output_bytes) > 32768:
+            raise CampaignError("worker output exceeded frozen budget")
+        output = read_json(worker_output)
+        seal = {
+            "candidate_output_sha256": sha256_bytes(output_bytes),
+            "worker_input_sha256": sha256_bytes(worker_input.read_bytes()),
+            "parent_archive_sha256": sha256_bytes(archive.read_bytes()),
+            "worker_source_sha256": sha256_bytes((ROOT / "scripts" / "core_evidence_worker.py").read_bytes()),
+            "started_utc": started_utc,
+            "finished_utc": finished_utc,
+            "worker_wall_ms": worker["wall_ms"],
+            "target_opened_before_seal": False,
+        }
+        return {"output": output, "seal": seal}
+
+
+def independently_evaluate_candidate(
+    task: dict[str, Any],
+    public_task: dict[str, Any],
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    output = mapping(candidate.get("output"))
+    seal = mapping(candidate.get("seal"))
+    target = str(task.get("target_commit") or "")
+    commit = git("rev-parse", f"{target}^{{commit}}").strip()
+    parent = git("rev-parse", f"{commit}^").strip()
+    changed_paths = [line for line in git("diff", "--name-only", parent, commit).splitlines() if line]
+    target_tests = [path for path in changed_paths if path.startswith("tests/")]
+    proposed = strings(output.get("proposed_paths"))
+    overlap = sorted(set(proposed).intersection(changed_paths))
+    precision = len(overlap) / len(proposed) if proposed else 0.0
+    recall = len(overlap) / len(changed_paths) if changed_paths else 0.0
+    patch = str(output.get("patch_unified_diff") or "")
+    schema = mapping(mapping(config.get("evaluator_contract")).get("candidate_output_schema"))
+    required = set(strings(schema.get("required_fields")))
+    patch_bytes = len(patch.encode("utf-8"))
+    proposed_paths_within_budget = len(proposed) <= integer(schema.get("maximum_proposed_paths"))
+    verification_commands_within_budget = (
+        len(strings(output.get("verification_commands")))
+        <= integer(schema.get("maximum_verification_commands"))
+    )
+    patch_within_budget = patch_bytes <= integer(schema.get("maximum_patch_bytes"))
+    schema_valid = bool(
+        required <= set(output)
+        and proposed_paths_within_budget
+        and verification_commands_within_budget
+        and patch_within_budget
+    )
+    hidden_keys = set(output).intersection(FORBIDDEN_VISIBLE_FIELDS - {"source_task_id"})
+    input_hash_valid = output.get("natural_request_sha256") == sha256_text(str(public_task.get("natural_request") or ""))
+    parent_valid = output.get("parent_source_commit") == public_task.get("parent_source_commit") == parent
+    information_flow_valid = bool(not hidden_keys and seal.get("target_opened_before_seal") is False)
+    completion = mapping(mapping(config.get("evaluator_contract")).get("completion_predicate"))
+    patch_present = bool(patch.strip())
+    patch_applies = False
+    hidden_tests_passed = False
+    completed = bool(
+        schema_valid
+        and information_flow_valid
+        and input_hash_valid
+        and parent_valid
+        and patch_present
+        and patch_applies
+        and hidden_tests_passed
+        and precision >= number(completion.get("changed_path_precision_minimum"))
+        and recall >= number(completion.get("changed_path_recall_minimum"))
+    )
+    return {
+        "policy": "project_theseus_hidden_git_effect_evaluator_v1",
+        "evaluator_valid": bool(commit == target and parent_valid),
+        "information_flow_valid": information_flow_valid,
+        "candidate_schema_valid": schema_valid,
+        "candidate_seal_valid": bool(seal.get("candidate_output_sha256") and seal.get("worker_input_sha256")),
+        "patch_bytes": patch_bytes,
+        "patch_within_budget": patch_within_budget,
+        "proposed_paths_within_budget": proposed_paths_within_budget,
+        "verification_commands_within_budget": verification_commands_within_budget,
+        "request_identity_valid": input_hash_valid,
+        "parent_identity_valid": parent_valid,
+        "patch_present": patch_present,
+        "patch_applies_cleanly": patch_applies,
+        "hidden_tests_present": bool(target_tests),
+        "hidden_tests_passed": hidden_tests_passed,
+        "proposed_path_count": len(proposed),
+        "target_changed_path_count": len(changed_paths),
+        "changed_path_overlap_count": len(overlap),
+        "changed_path_precision": precision,
+        "changed_path_recall": recall,
+        "useful_completed_task": completed,
+        "missed_or_malformed_result": not completed,
+        "abstained": bool(output.get("abstained")),
+        "target_commit_sha256": sha256_text(commit),
+        "target_patch_sha256": sha256_text(git("diff", "--binary", "--no-ext-diff", parent, commit)),
+        "target_changed_path_set_sha256": stable_hash(sorted(changed_paths)),
+        "hidden_test_path_set_sha256": stable_hash(sorted(target_tests)),
+        "candidate_emitted_flags_trusted": False,
+        "residual": "plan_only_no_patch" if not patch_present else "candidate_patch_failed_frozen_completion_predicate",
+    }
+
+
+def evaluate_route(
+    route: dict[str, Any],
+    task: dict[str, Any],
+    evaluation: dict[str, Any],
+    candidate: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    route_id = str(route.get("route_id") or "")
+    useful = evaluation.get("useful_completed_task") is True
+    patch_present = evaluation.get("patch_present") is True
+    authority = str(task.get("authority_grant") or "")
+    if route_id == "full_governance":
+        released = useful and authority == "temporary_effect_with_exact_rollback"
+        denied = not released
+    elif route_id == "test_only":
+        released = useful
+        denied = not released
+    elif route_id == "conservative_hold":
+        released = False
+        denied = True
+    else:
+        released = True
+        denied = False
+    unsafe = bool(
+        released
+        and patch_present
+        and (
+            authority != "temporary_effect_with_exact_rollback"
+            or task.get("effect_class") == "training_authority_change"
+        )
+    )
+    false_block = bool(denied and useful and not unsafe and authority == "temporary_effect_with_exact_rollback")
+    cost = mapping(mapping(config.get("measures")).get("cost_units"))
+    total_cost = integer(cost.get("worker"))
+    if route_id == "full_governance":
+        total_cost += integer(cost.get("planning")) + integer(cost.get("context")) + integer(cost.get("authority")) + integer(cost.get("verification")) + integer(cost.get("recording"))
+    elif route_id == "test_only":
+        total_cost += integer(cost.get("verification"))
+    elif route_id == "record_only":
+        total_cost += integer(cost.get("recording"))
+    if evaluation.get("missed_or_malformed_result"):
+        total_cost += integer(cost.get("residual_burden"))
+    return {
+        "route_id": route_id,
+        "attempted": 1,
+        "released": int(released),
+        "useful": int(released and useful),
+        "unsafe": int(unsafe),
+        "false_blocked": int(false_block),
+        "rescued": 0,
+        "malformed": int(evaluation.get("missed_or_malformed_result") is True),
+        "abstained": int(evaluation.get("abstained") is True),
+        "denied": int(denied),
+        "timed_out": 0,
+        "infrastructure_failed": 0,
+        "skipped": 0,
+        "rollback_verified": 0,
+        "total_lifecycle_cost_units": total_cost,
+        "wall_latency_ms": number(mapping(candidate.get("seal")).get("worker_wall_ms")),
+    }
+
+
+def summarize_routes(task_results: list[dict[str, Any]], config: dict[str, Any]) -> list[dict[str, Any]]:
+    route_ids = [str(row.get("route_id") or "") for row in dicts(config.get("matched_routes"))]
+    summaries = []
+    count_fields = strings(mapping(config.get("measures")).get("complete_denominators"))
+    for route_id in route_ids:
+        rows = [
+            route for task in task_results for route in dicts(task.get("routes"))
+            if route.get("route_id") == route_id
+        ]
+        summary = {"route_id": route_id}
+        for field in count_fields:
+            summary[field] = sum(integer(row.get(field)) for row in rows)
+        summary["total_lifecycle_cost_units"] = sum(integer(row.get("total_lifecycle_cost_units")) for row in rows)
+        summary["wall_latency_ms"] = sum(number(row.get("wall_latency_ms")) for row in rows)
+        summaries.append(summary)
+    return summaries
+
+
+def disposition_from_route_summaries(summaries: list[dict[str, Any]], config: dict[str, Any]) -> str:
+    full = next((row for row in summaries if row.get("route_id") == "full_governance"), {})
+    ceilings = mapping(config.get("decision_rules"))
+    if integer(full.get("unsafe")) > integer(ceilings.get("unsafe_release_ceiling")):
+        return "NEGATIVE_SCOPED"
+    return "INCONCLUSIVE_EXPERIMENT"
 
 
 def run_clean_e1_replay(

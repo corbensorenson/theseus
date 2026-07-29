@@ -12,6 +12,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import core_evidence_campaign as campaign  # noqa: E402
+import core_evidence_worker as worker  # noqa: E402
 
 
 def load_config() -> dict:
@@ -286,3 +287,74 @@ def test_e1_local_evidence_capsule_is_complete_and_digest_only(tmp_path: Path) -
         assert (checkout / entry["path"]).is_file()
         assert campaign.sha256_bytes((checkout / entry["path"]).read_bytes()) == entry["sha256"]
     assert all(row["content_changed"] is False for row in capsule["source_timestamp_overlays"])
+
+
+def test_local_worker_is_target_blind_and_emits_no_capability_credit(tmp_path: Path) -> None:
+    snapshot = tmp_path / "snapshot"
+    (snapshot / "scripts").mkdir(parents=True)
+    (snapshot / "scripts" / "resource_policy.py").write_text(
+        "def resource_policy():\n    return 'bounded'\n",
+        encoding="utf-8",
+    )
+    visible = {
+        "natural_request": "Tighten the resource policy and verify it.",
+        "parent_source_commit": "a" * 40,
+        "allowed_runtime_context": ["repository_parent_snapshot"],
+        "authority_grant": "temporary_effect_with_exact_rollback",
+    }
+
+    result = worker.run_worker(visible, snapshot)
+
+    assert result["patch_unified_diff"] == ""
+    assert result["learned_generation_credit"] == 0
+    assert result["external_inference_calls"] == 0
+    assert result["teacher_calls"] == 0
+    assert result["D2_cases_consumed"] == 0
+    assert result["public_calibration_cases_consumed"] == 0
+    assert not campaign.FORBIDDEN_VISIBLE_FIELDS.intersection(result)
+    assert result["proposed_paths"] == ["scripts/resource_policy.py"]
+
+
+def test_local_worker_rejects_extra_hidden_input_fields(tmp_path: Path) -> None:
+    visible = {
+        "natural_request": "Do the task.",
+        "parent_source_commit": "a" * 40,
+        "allowed_runtime_context": ["repository_parent_snapshot"],
+        "authority_grant": "read_only",
+        "target_commit": "b" * 40,
+    }
+
+    try:
+        worker.run_worker(visible, tmp_path)
+    except ValueError as exc:
+        assert "input fields must be exactly" in str(exc)
+    else:
+        raise AssertionError("worker accepted a hidden target field")
+
+
+def test_e2_stops_at_frozen_competence_floor_without_opening_heldout() -> None:
+    report = campaign.run_e2_comparison(
+        load_config(),
+        ROOT / "configs" / "core_evidence_campaign.json",
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["terminal_disposition"] == "INCONCLUSIVE_WORKER_INADEQUATE"
+    assert report["hard_gaps"] == []
+    assert report["competence_floor"]["attempted"] == 3
+    assert report["competence_floor"]["useful"] == 0
+    assert report["competence_floor"]["passed"] is False
+    assert report["heldout"]["opened"] == 0
+    assert report["counters"]["E2_heldout_tasks_opened"] == 0
+    assert report["counters"]["D2_cases_consumed"] == 0
+    assert report["counters"]["external_inference_calls"] == 0
+    assert len(report["route_summaries"]) == 5
+    assert all(row["attempted"] == 3 for row in report["route_summaries"])
+    assert all(
+        task["candidate_seal"]["target_opened_before_seal"] is False
+        for task in report["task_results"]
+    )
+    assert all(
+        task["independent_evaluation"]["useful_completed_task"] is False
+        for task in report["task_results"]
+    )

@@ -9193,6 +9193,7 @@
         "scripts/theseus_assistant_product_lane_gate.py",
         "configs/core_evidence_campaign.json",
         "scripts/core_evidence_campaign.py",
+        "scripts/core_evidence_worker.py",
         "tests/test_core_evidence_campaign.py"
       ],
       "canonical": "scripts/theseus_assistant_runtime.py",
@@ -9227,7 +9228,8 @@
         "reports/theseus_assistant_state_report.md",
         "reports/theseus_assistant_product_lane_gate.json",
         "reports/core_evidence_e0_preregistration.json",
-        "reports/core_evidence_e1_replay.json"
+        "reports/core_evidence_e1_replay.json",
+        "reports/core_evidence_e2_governed_comparison.json"
       ],
       "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_core_evidence_campaign.py && python3 scripts/core_evidence_campaign.py --gate && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "cleanup_policy": "canonical user-facing assistant loop; must compose checkpoint session memory, VCM context, dogfood feedback, deterministic tools, planning, and practical code routing rather than creating parallel chat lanes",
