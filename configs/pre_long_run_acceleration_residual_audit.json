@@ -1,0 +1,63 @@
+{
+  "policy": "project_theseus_pre_long_run_acceleration_residual_audit_v1",
+  "report": "reports/pre_long_run_acceleration_residual_audit.json",
+  "production_trainer_config": "configs/moecot_language_arm_training.json",
+  "candidate_contract": "configs/pretraining_architecture_candidates.json",
+  "pre_long_run_review": "configs/neural_seed_pre_long_run_review.json",
+  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "lineage_root": "reports/neural_seed_training_campaign_lineage",
+  "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
+  "expected_checkpoint": {
+    "optimizer_steps": 11416,
+    "optimizer_positions": 87441996,
+    "capability_claim": "NOT_EVALUATED",
+    "lineage_manifest_count": 37,
+    "first_prospective_step": 9048
+  },
+  "evidence": {
+    "final_selector": "reports/training_acceleration_final_selector.json",
+    "sustained_route": "reports/selected_route_sustained_qualification.json",
+    "fresh_process_replay": "reports/fresh_process_pretraining_qualification.json",
+    "ane_exact_block_join": "reports/exact_decoder_block_join_m1.json",
+    "ane_backend_bakeoff": "reports/exact_decoder_block_backend_bakeoff_m1.json",
+    "joined_data_path": "reports/resource_acceleration_joined_campaign_path_bf16_m8_aux_m1_steps64_8_8_retry6.json",
+    "data_stage_qualification": "reports/moecot_language_arm_training_acceleration_500step_qualification.json",
+    "fused_qkv_full_route": "reports/fused_qkv_full_route_qualification.json",
+    "per_head_muon": "reports/per_head_muon_qualification.json",
+    "kimi_attnres": "reports/kimi_k3_attnres_qualification.json",
+    "kimi_situ_glu": "reports/kimi_k3_situ_glu_qualification.json"
+  },
+  "selected_recipe": {
+    "compute_dtype": "float32",
+    "fp32_master": false,
+    "token_loss_compute_dtype": "float32",
+    "training_step_mode": "compiled",
+    "compiled_microbatch_size": 4,
+    "compile_width_quantum": 64,
+    "optimizer_id": "adamw_mlx",
+    "training_rope_kernel": "mlx_fast",
+    "self_attention_projection": "separate",
+    "feed_forward_activation": "swiglu",
+    "residual_policy": "sequential_unscaled",
+    "per_head_muon": false
+  },
+  "required_domains": [
+    "mlx_metal",
+    "cpu_rust",
+    "ane_accelerate_metal",
+    "data_pipeline",
+    "checkpoint_replay",
+    "memory_disk",
+    "thermal",
+    "joined_wall",
+    "architecture_candidates",
+    "custody_hold"
+  ],
+  "selection_claim": "No currently source- or measured-profile-justified open acceleration residual remains among the tested eligible routes.",
+  "non_claims": [
+    "This does not prove the selected route is the fastest physically possible implementation.",
+    "This does not grant capability, utility, architecture-superiority, or scientific-falsification credit.",
+    "A materially new source, mechanism, hardware capability, or measured critical-path residual may reopen a bounded candidate prospectively.",
+    "No long training run is started or resumed by this audit."
+  ]
+}

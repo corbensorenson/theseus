@@ -262,6 +262,21 @@ consumed. If none wins, resume the exact step-11,416 lineage. If a topology wins
 step 11,416 as non-capability evidence and start a new content-addressed campaign lineage.
 There is no clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor.
 
+The finite cross-domain acceleration residual audit is now GREEN. Its executable gate covers
+MLX/Metal, the CPU/Rust Amdahl bound, the exact ANE/Accelerate/Metal decoder-block challenger,
+joined source-conditioned and supervision data paths, fresh-process checkpoint/replay,
+predicted-exhaustion memory safety, two-transaction disk custody, sustained thermal behavior,
+full-route QKV joined wall, all three Kimi K3 candidates, and the live execution hold. It
+independently re-hashes the exact step-11,416 model/AdamW/RNG aliases and all 37 append-only
+manifests from the honest step-9,048 prospective anchor. Fixed 6/4 GiB candidate-contract
+reserves and the hidden 2/2 GiB KERC overrides are removed; the guard retains causal
+process-memory and predicted-exhaustion stops with swap as report-only telemetry. The result
+supports only this claim: no currently source- or measured-profile-justified open acceleration
+residual remains among tested eligible routes. It does **not** prove physical optimality, and a
+materially new source, mechanism, hardware capability, or measured critical-path residual may
+reopen one bounded matched candidate prospectively. The final independent claim-boundary and
+replacement-freeze transaction remains before any long training authorization.
+
 ### 2026-07-26 Production Training Hot-Path Audit
 
 The system is **not yet entitled to claim that training is as fast as possible**. It is

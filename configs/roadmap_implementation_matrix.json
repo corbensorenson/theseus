@@ -3708,6 +3708,25 @@
       "MXFP4/MXFP8 lacks a qualified M1 MLX training route",
       "cosine decay is already present"
     ],
+    "acceleration_residual_closure": {
+      "state": "GREEN_PENDING_INDEPENDENT_AUDITS_AND_REPLACEMENT_FREEZE",
+      "evidence": "reports/pre_long_run_acceleration_residual_audit.json",
+      "domains": [
+        "mlx_metal",
+        "cpu_rust",
+        "ane_accelerate_metal",
+        "data_pipeline",
+        "checkpoint_replay",
+        "memory_disk",
+        "thermal",
+        "joined_wall",
+        "architecture_candidates",
+        "custody_hold"
+      ],
+      "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
+      "claim_boundary": "No currently source- or measured-profile-justified open acceleration residual remains among tested eligible routes. This does not prove the route is physically fastest possible.",
+      "reentry_rule": "A materially new source, mechanism, hardware capability, or measured critical-path residual must justify one bounded prospectively registered matched candidate."
+    },
     "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
     "resource_rule": "No clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor. Use finite prewritten workloads, transactional boundaries, and causal thermal/swap/disk/nonfinite/parity stops.",
     "no_claim_boundary": "Source review, roadmap admission, canary completion, loss reduction, or throughput does not establish Kimi K3 reproduction, Theseus capability, architecture superiority, public transfer, support, or release."

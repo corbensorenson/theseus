@@ -1,0 +1,425 @@
+{
+  "authority": {
+    "candidate_contract": {
+      "path": "configs/pretraining_architecture_candidates.json",
+      "sha256": "255803b4a017bf84b2829a1e26a4cc9db5370ed5caff320c740d5c213740c180"
+    },
+    "pre_long_run_review": {
+      "path": "configs/neural_seed_pre_long_run_review.json",
+      "sha256": "b264f2dbfe7fd95322e855e1ed6ffa8b938e315968e6653bba082d8028126285"
+    },
+    "production_trainer_config": {
+      "path": "configs/moecot_language_arm_training.json",
+      "sha256": "3e7beec6d9b3261ef5a08bdfe39095864f7754d3e1a7495c0dc8a02f9cc10683"
+    },
+    "yield_control": {
+      "path": "runtime/control/neural_seed_yield_after_segment",
+      "sha256": "94faffd130960b3583b2877b7a749da76838626ded0606775d661b976547b529"
+    }
+  },
+  "capability_claim": "NONE_ACCELERATION_READINESS_AND_CUSTODY_ONLY",
+  "checkpoint_custody": {
+    "canonical_alias_hashes_match_versioned": {
+      "mlx_rng": true,
+      "model": true,
+      "optimizer": true
+    },
+    "capability_claim": "NOT_EVALUATED",
+    "files": {
+      "mlx_rng": {
+        "bytes": 137,
+        "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00011416.mlx-rng.safetensors",
+        "sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f"
+      },
+      "model": {
+        "bytes": 219367889,
+        "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/weights.step-00011416.safetensors",
+        "sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506"
+      },
+      "optimizer": {
+        "bytes": 438736910,
+        "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/optimizer.step-00011416.safetensors",
+        "sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb"
+      },
+      "receipt": {
+        "bytes": 18792,
+        "path": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk/training_receipt.json",
+        "sha256": "4ae6cf532884838da99c41674ae9ce496aaf85b3b893f1277ce923a4d8ad2c60"
+      }
+    },
+    "lineage": {
+      "faults": [],
+      "first_prospective_step": 9048,
+      "manifest_count": 37,
+      "manifests": [
+        {
+          "after_step": 9112,
+          "before_step": 9048,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009048_to_00009112/manifest.json",
+          "sha256": "506b5c856af5c16a18a576baf4644a125e103da3de012e5df9f0dc7ae7e80144"
+        },
+        {
+          "after_step": 9176,
+          "before_step": 9112,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009112_to_00009176/manifest.json",
+          "sha256": "4194513101f02df85c5fb0674c7d7c1f2d500f74d392565a57ecc063da70172b"
+        },
+        {
+          "after_step": 9240,
+          "before_step": 9176,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009176_to_00009240/manifest.json",
+          "sha256": "27ec56bb3f5da51ea0f85eee070901a950d11818c545788184c9345bc754e285"
+        },
+        {
+          "after_step": 9304,
+          "before_step": 9240,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009240_to_00009304/manifest.json",
+          "sha256": "352845439db394aeb2834f15d2b4c4c4908c3ce199327a4140419972f8887a1c"
+        },
+        {
+          "after_step": 9368,
+          "before_step": 9304,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009304_to_00009368/manifest.json",
+          "sha256": "2cfa1967944d245e4f5a4eebeb717d16022dc3fb2ef604f82bd04d311a2f06bc"
+        },
+        {
+          "after_step": 9432,
+          "before_step": 9368,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009368_to_00009432/manifest.json",
+          "sha256": "e37785251d68bf0c1d9dbc17d778bf78284eb231e31f754f5b49be5fc63810ed"
+        },
+        {
+          "after_step": 9496,
+          "before_step": 9432,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009432_to_00009496/manifest.json",
+          "sha256": "959efa99299bb72d48769028291ef343f1bc6cce140ede980ef0e2e19e4231d9"
+        },
+        {
+          "after_step": 9560,
+          "before_step": 9496,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009496_to_00009560/manifest.json",
+          "sha256": "09aad74fd9a7316bc86c2e221d2029df44056d153e6c261a2b1021d791a8571e"
+        },
+        {
+          "after_step": 9624,
+          "before_step": 9560,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009560_to_00009624/manifest.json",
+          "sha256": "d9d9b713cbe4c9220da48d5582acdbbb14ecccc25a4d24760b097147e4f49bda"
+        },
+        {
+          "after_step": 9688,
+          "before_step": 9624,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009624_to_00009688/manifest.json",
+          "sha256": "e94e086189d5ae86e702ca7e81215717684d90cc8827f2886ef05de0093cd1e4"
+        },
+        {
+          "after_step": 9752,
+          "before_step": 9688,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009688_to_00009752/manifest.json",
+          "sha256": "38626a95f31910881ca7239a1c6b07cee2f38c3bb9e806096ae499fd990d5c17"
+        },
+        {
+          "after_step": 9816,
+          "before_step": 9752,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009752_to_00009816/manifest.json",
+          "sha256": "bfb18f69138a3a419531ec1252f1d5abc6aafff0479784de1c37ef2c9cda293c"
+        },
+        {
+          "after_step": 9880,
+          "before_step": 9816,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009816_to_00009880/manifest.json",
+          "sha256": "ab0ef5f76ff5d82f8410a9f0ad4efb63f543e9eca6cd2acc93ae26aafad89729"
+        },
+        {
+          "after_step": 9944,
+          "before_step": 9880,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009880_to_00009944/manifest.json",
+          "sha256": "c4eb9f926a872896d6199f2f481476ef61a62310fe6f895d6de30262d4755f64"
+        },
+        {
+          "after_step": 10008,
+          "before_step": 9944,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00009944_to_00010008/manifest.json",
+          "sha256": "87e8bf3a8de9fb3cb6b7f8e6e7dbef23a8c6448513d2afd747e96513fb8764f0"
+        },
+        {
+          "after_step": 10072,
+          "before_step": 10008,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010008_to_00010072/manifest.json",
+          "sha256": "f82a5eb75f8608433a1a579350972c551484d32fe79c7dd1f8562076867d18fa"
+        },
+        {
+          "after_step": 10136,
+          "before_step": 10072,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010072_to_00010136/manifest.json",
+          "sha256": "85db3d117a3a710e08c85b13e0e6c23e26c9c7033a03a16f065db86570b3f00a"
+        },
+        {
+          "after_step": 10200,
+          "before_step": 10136,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010136_to_00010200/manifest.json",
+          "sha256": "1dddbc37748065fd3a6be6a74363a2d20d8bf42a9923b581436d38abb640c905"
+        },
+        {
+          "after_step": 10264,
+          "before_step": 10200,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010200_to_00010264/manifest.json",
+          "sha256": "f35ecf34e86b4db124639c7e343740f0f04bc40cac00a396c307a9a023cf0fea"
+        },
+        {
+          "after_step": 10328,
+          "before_step": 10264,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010264_to_00010328/manifest.json",
+          "sha256": "79fe70765ddb7b45104370c8b5ed071875e40357a5671e80b44f082d500613cb"
+        },
+        {
+          "after_step": 10392,
+          "before_step": 10328,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010328_to_00010392/manifest.json",
+          "sha256": "fca1e42d578ce3a0a263d6846fe7e6336f8855f2c49f0854ba7137131c62c7e3"
+        },
+        {
+          "after_step": 10456,
+          "before_step": 10392,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010392_to_00010456/manifest.json",
+          "sha256": "ab9c86df44b81156233122ab8953e997936915e5f289faaccac1a978d983253b"
+        },
+        {
+          "after_step": 10520,
+          "before_step": 10456,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010456_to_00010520/manifest.json",
+          "sha256": "d92b7e4f885c48ab85d6803c8bed2e2561e56a41e8ddc8c6a8ee93de4a81b375"
+        },
+        {
+          "after_step": 10584,
+          "before_step": 10520,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010520_to_00010584/manifest.json",
+          "sha256": "f690ed2de1100b28c8d7a5930ead2cad9541b49f1dca6be9567f8e4e35d82d2b"
+        },
+        {
+          "after_step": 10648,
+          "before_step": 10584,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010584_to_00010648/manifest.json",
+          "sha256": "f475261a080f087fccf38e9bcd05227715cf787106b65bac41a99700fba449c7"
+        },
+        {
+          "after_step": 10712,
+          "before_step": 10648,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010648_to_00010712/manifest.json",
+          "sha256": "3f64e1b7968ad49510fa524ef02feb85af80fa1fe36845ea525d2d1743c861cd"
+        },
+        {
+          "after_step": 10776,
+          "before_step": 10712,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010712_to_00010776/manifest.json",
+          "sha256": "766e4783937db76e94482f9c1486f7d8fe3b915894181d4741434c71053f3570"
+        },
+        {
+          "after_step": 10840,
+          "before_step": 10776,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010776_to_00010840/manifest.json",
+          "sha256": "ed372286f7727e7dca35eef58386539c02080dc1a882a9c166b93253adbfc3a7"
+        },
+        {
+          "after_step": 10904,
+          "before_step": 10840,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010840_to_00010904/manifest.json",
+          "sha256": "3da9a6749085ffd371e00c3d68fa0aa0fe5e58830fe7260d4ec26669060093f9"
+        },
+        {
+          "after_step": 10968,
+          "before_step": 10904,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010904_to_00010968/manifest.json",
+          "sha256": "632a83373ba2e8b0d60f8e05432cd4f129f3e91ca7c8e3c416d09bf9ce304f08"
+        },
+        {
+          "after_step": 11032,
+          "before_step": 10968,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00010968_to_00011032/manifest.json",
+          "sha256": "54cfec61936789d84d90bdd1f88bf87305f9074faae3fb6a29ef9295b91f555b"
+        },
+        {
+          "after_step": 11096,
+          "before_step": 11032,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00011032_to_00011096/manifest.json",
+          "sha256": "c337c1bbe4f4e578a63f69eb7e6f6ff2d1b18069fb189ec5b33a8d7b1ba90ace"
+        },
+        {
+          "after_step": 11160,
+          "before_step": 11096,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00011096_to_00011160/manifest.json",
+          "sha256": "fa67e3d5ebeb35d52b1c0294daa39e3c6027ef225653e68feee26bbc841719f6"
+        },
+        {
+          "after_step": 11224,
+          "before_step": 11160,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00011160_to_00011224/manifest.json",
+          "sha256": "2e6916ee0b824a44b4d1e354e7d9938bbeb2d84d5f454554b026eb6666c6084a"
+        },
+        {
+          "after_step": 11288,
+          "before_step": 11224,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00011224_to_00011288/manifest.json",
+          "sha256": "86c9c94854a1080795fb4463fc5b2357450520ddd42d3d999f79e12d44f3bfd2"
+        },
+        {
+          "after_step": 11352,
+          "before_step": 11288,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00011288_to_00011352/manifest.json",
+          "sha256": "5ee888cadb9d36685b325166a969a0909cedae6c737af21cf2a3545132b9bb6f"
+        },
+        {
+          "after_step": 11416,
+          "before_step": 11352,
+          "path": "reports/neural_seed_training_campaign_lineage/step-00011352_to_00011416/manifest.json",
+          "sha256": "f62f881df20896ea76165bfb0c6906e62cf92aa8215fc8b4279913171cec891d"
+        }
+      ],
+      "passed": true,
+      "pre_anchor_boundary": "The append-only evidence begins at the prospective step-9048 anchor; it makes no complete-chain claim before that point.",
+      "pre_anchor_chain_available": false,
+      "terminal_step": 11416
+    },
+    "optimizer_positions": 87441996,
+    "optimizer_steps": 11416,
+    "versioned_hashes_match_receipt": {
+      "mlx_rng": true,
+      "model": true,
+      "optimizer": true
+    }
+  },
+  "config": "configs/pre_long_run_acceleration_residual_audit.json",
+  "config_sha256": "30c104f7744166108ca863a8fb1f46967d12418309397353677c205c87444d95",
+  "domains": {
+    "ane_accelerate_metal": {
+      "disposition": "exact_native_decoder_block_not_selected",
+      "passed": true
+    },
+    "architecture_candidates": {
+      "disposition": "all_finite_kimi_k3_candidates_completed_not_selected",
+      "passed": true
+    },
+    "checkpoint_replay": {
+      "disposition": "exact_step_11416_custody_and_replay_green",
+      "passed": true
+    },
+    "cpu_rust": {
+      "disposition": "host_rewrite_closed_without_new_cpu_profile",
+      "passed": true
+    },
+    "custody_hold": {
+      "disposition": "long_training_remains_prohibited",
+      "passed": true
+    },
+    "data_pipeline": {
+      "disposition": "joined_auxiliary_path_qualified_not_calendar_dominant",
+      "passed": true
+    },
+    "joined_wall": {
+      "disposition": "separate_qkv_retained_after_full_route_pairs",
+      "passed": true
+    },
+    "memory_disk": {
+      "checkpoint_transaction_bytes": 658123728,
+      "disk_free_bytes": 6954872832,
+      "disposition": "predicted_exhaustion_and_derived_two_transaction_disk_custody",
+      "fixed_available_memory_floor_mib": 0,
+      "passed": true,
+      "two_transaction_required_bytes": 1316247456
+    },
+    "mlx_metal": {
+      "disposition": "compiled_fp32_mlx_retained",
+      "passed": true
+    },
+    "thermal": {
+      "disposition": "stable_within_observed_replicate_uncertainty",
+      "passed": true
+    }
+  },
+  "evidence": {
+    "ane_backend_bakeoff": {
+      "path": "reports/exact_decoder_block_backend_bakeoff_m1.json",
+      "sha256": "0bd272b53c374faa39e515b39a10543d55ac30798738a4129cd1247b6388b8db"
+    },
+    "ane_exact_block_join": {
+      "path": "reports/exact_decoder_block_join_m1.json",
+      "sha256": "7485e1d71ac50c6ca90d60c0de02447ced7207b95a6d8170829887346d10af51"
+    },
+    "data_stage_qualification": {
+      "path": "reports/moecot_language_arm_training_acceleration_500step_qualification.json",
+      "sha256": "137a5a637226100eeb2f1ca9b866a98c9306a2aaf91f3854fc6258cb6dfa40db"
+    },
+    "final_selector": {
+      "path": "reports/training_acceleration_final_selector.json",
+      "sha256": "177c58b7b85416a79c8d36d242a339b90aae1dc87f62bc6a98d59f7aa2c878a3"
+    },
+    "fresh_process_replay": {
+      "path": "reports/fresh_process_pretraining_qualification.json",
+      "sha256": "199be8358522c581fc6ee6ec589079cbf7ecaa1f57a75d2306ca431a085f505a"
+    },
+    "fused_qkv_full_route": {
+      "path": "reports/fused_qkv_full_route_qualification.json",
+      "sha256": "32c4adc1b89a3a1cf14a5288044548f82e2577c01f10f4cd638ed95686148d1e"
+    },
+    "joined_data_path": {
+      "path": "reports/resource_acceleration_joined_campaign_path_bf16_m8_aux_m1_steps64_8_8_retry6.json",
+      "sha256": "553b5fd41d02410338c7a45475724b9f44d89ac3f6f19ca4e7263c6aa81fcb85"
+    },
+    "kimi_attnres": {
+      "path": "reports/kimi_k3_attnres_qualification.json",
+      "sha256": "a16874c9490f6e5e3b553e427035e42eec564dc4f100ef5d8d50b44018beec20"
+    },
+    "kimi_situ_glu": {
+      "path": "reports/kimi_k3_situ_glu_qualification.json",
+      "sha256": "2057b4d1304f7abd9be3d6b00aa301ca748310d67d68c72abe4fd7a7c713f1a0"
+    },
+    "per_head_muon": {
+      "path": "reports/per_head_muon_qualification.json",
+      "sha256": "754580adfd6218b8e1b3a9ee412396384bf2a9660eef60b22634478ad0bcbd31"
+    },
+    "sustained_route": {
+      "path": "reports/selected_route_sustained_qualification.json",
+      "sha256": "45ebeb055bce1459c6daa25ed37cccf41ca095ba04da3ac6e83fe32339768d5c"
+    }
+  },
+  "failed_domains": [],
+  "long_training_started_or_resumed": false,
+  "missing_domains": [],
+  "non_claims": [
+    "This does not prove the selected route is the fastest physically possible implementation.",
+    "This does not grant capability, utility, architecture-superiority, or scientific-falsification credit.",
+    "A materially new source, mechanism, hardware capability, or measured critical-path residual may reopen a bounded candidate prospectively.",
+    "No long training run is started or resumed by this audit."
+  ],
+  "policy": "project_theseus_pre_long_run_acceleration_residual_audit_v1",
+  "reentry_rule": "Reopen only for a materially new source, mechanism, hardware capability, or measured critical-path residual with a plausible joined-wall benefit; preregister one bounded matched test.",
+  "required_domains": [
+    "mlx_metal",
+    "cpu_rust",
+    "ane_accelerate_metal",
+    "data_pipeline",
+    "checkpoint_replay",
+    "memory_disk",
+    "thermal",
+    "joined_wall",
+    "architecture_candidates",
+    "custody_hold"
+  ],
+  "selected_recipe": {
+    "compile_width_quantum": 64,
+    "compiled_microbatch_size": 4,
+    "compute_dtype": "float32",
+    "feed_forward_activation": "swiglu",
+    "fp32_master": false,
+    "optimizer_id": "adamw_mlx",
+    "per_head_muon": false,
+    "residual_policy": "sequential_unscaled",
+    "self_attention_projection": "separate",
+    "token_loss_compute_dtype": "float32",
+    "training_rope_kernel": "mlx_fast",
+    "training_step_mode": "compiled"
+  },
+  "selection_claim": "No currently source- or measured-profile-justified open acceleration residual remains among the tested eligible routes.",
+  "support_state": "SUPPORTED_FINITE_ACCELERATION_DOCKET_CLOSED",
+  "trigger_state": "GREEN"
+}

@@ -74,6 +74,14 @@
         "reports/accelerator_replay/fused_qkv_full_route_candidate_pair3_guard.json"
       ],
       "decision": "The checkpoint-compatible concatenate-then-matmul QKV graph won only one of three alternating step-11416 full-route pairs, reached 0.972096x geometric and 0.970465x pooled candidate-over-control speed, exceeded the frozen loss and full-state continuity bounds, and retained exact RNG, batches, cursor, parameter names, and shapes. Keep separate Q/K/V projections for campaign one. This is a scoped implementation disposition, not general projection-fusion falsification."
+    },
+    {
+      "id": "cross_domain_acceleration_residual_audit",
+      "state": "QUALIFIED_CLOSED_PENDING_REPLACEMENT_FREEZE",
+      "evidence": [
+        "reports/pre_long_run_acceleration_residual_audit.json"
+      ],
+      "decision": "All ten required execution domains are green and no currently source- or measured-profile-justified open acceleration residual remains among tested eligible routes. This does not prove physical optimality. Reopen only for a materially new source, mechanism, hardware capability, or measured critical-path residual through one bounded prospectively registered matched candidate."
     }
   ],
   "new_source": {

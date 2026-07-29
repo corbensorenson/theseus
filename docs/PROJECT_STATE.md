@@ -1,6 +1,6 @@
 # Project State
 
-Last consolidated: 2026-07-28 UTC.
+Last consolidated: 2026-07-29 UTC.
 
 This is the bounded current-wall page. The machine contract is
 `configs/roadmap_implementation_matrix.json`; the forward plan is `roadmap.md`; history
@@ -14,6 +14,18 @@ share toward zero. Public benchmarks are calibration only.
 
 ## Current Verdict
 
+- **Finite pre-long-run acceleration closure:** the cross-domain residual audit is GREEN
+  across MLX/Metal, CPU/Rust, ANE/Accelerate/Metal, data staging, checkpoint/replay, memory,
+  disk, thermals, joined wall, the Kimi K3 candidates, and execution custody. Compiled FP32
+  MLX with microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, and sequential
+  unscaled residuals remains selected among the tested eligible routes. The exact step-11,416
+  model/AdamW/RNG aliases and 37-manifest prospective lineage from step 9,048 replay green;
+  the pre-anchor chain remains explicitly unavailable. Candidate guards now have zero fixed
+  available-memory reserve and use predicted exhaustion plus causal process limits; disk
+  custody is derived from two complete checkpoint transactions rather than a round-number
+  floor. This is finite execution-selection evidence, not a fastest-possible, capability,
+  utility, or scientific-falsification claim. The long-run hold remains installed pending
+  independent claim-boundary review and the content-addressed replacement freeze.
 - **Deep-review reconciliation:** the 2026-07-25 source audit accepts the external review's
   authority-surface, evaluator-integrity, benchmark-validity, status-semantics,
   reproducibility, maintainability, and Rust/CUDA correctness criticisms. The dashboard
