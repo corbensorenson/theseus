@@ -121,6 +121,15 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--self-attention-projection",
+        choices=("separate", "fused_qkv"),
+        default="separate",
+        help=(
+            "Select the checkpoint-compatible self-attention projection "
+            "execution graph for an isolated route diagnostic."
+        ),
+    )
+    parser.add_argument(
         "--bf16-clear-device-cache-after-step",
         action="store_true",
         help="Clear the MLX allocator cache after each BF16 optimizer update.",
@@ -304,6 +313,7 @@ def main() -> int:
                 args.compact_encoder_decoder_partitions
             ),
             compact_output_projection=args.compact_output_projection,
+            self_attention_projection=args.self_attention_projection,
             route_mode=args.isolated_route_mode,
         )
         write_json(resolve(args.out), report)
@@ -829,6 +839,7 @@ def run_compiled_route_entry(
     diagnostic_state_root: Path | None,
     compact_encoder_decoder_partitions: bool,
     compact_output_projection: bool,
+    self_attention_projection: str,
     route_mode: str,
 ) -> dict[str, Any]:
     """Measure one compiled implementation without an eager route in-process."""
@@ -905,6 +916,7 @@ def run_compiled_route_entry(
             compact_encoder_decoder_partitions
         ),
         compact_output_projection=compact_output_projection,
+        self_attention_projection=self_attention_projection,
         eager_gradient_accumulation_microbatch_size=(
             1 if route_mode == "eager" and training_phase != "pretraining" else 0
         ),
@@ -926,6 +938,7 @@ def run_compiled_route_entry(
             compact_encoder_decoder_partitions
         ),
         "compact_output_projection": bool(compact_output_projection),
+        "self_attention_projection": self_attention_projection,
         "route_mode": route_mode,
         "implementation_authority": (
             "DIAGNOSTIC_ONLY_UNMIGRATED_CHALLENGER"
@@ -2916,6 +2929,7 @@ def run_training_route(
     diagnostic_state_root: Path | None = None,
     compact_encoder_decoder_partitions: bool = False,
     compact_output_projection: bool = False,
+    self_attention_projection: str = "separate",
     reject_nonfinite_gradients_override: bool | None = None,
 ) -> dict[str, Any]:
     """Run one non-mutating route from the exact registered checkpoint state."""
@@ -2961,6 +2975,7 @@ def run_training_route(
             compact_encoder_decoder_partitions
         ),
         compact_output_projection=compact_output_projection,
+        self_attention_projection=self_attention_projection,
         compact_partition_width_quantum=(
             64 if compact_encoder_decoder_partitions else 0
         ),
@@ -2978,6 +2993,7 @@ def run_training_route(
                 compact_encoder_decoder_partitions
             ),
             compact_output_projection=compact_output_projection,
+            self_attention_projection=self_attention_projection,
             compact_partition_width_quantum=(
                 64 if compact_encoder_decoder_partitions else 0
             ),
@@ -3186,6 +3202,7 @@ def run_training_route(
             compact_encoder_decoder_partitions
         ),
         "compact_output_projection": bool(compact_output_projection),
+        "self_attention_projection": self_attention_projection,
         "compute_parameters": tree_numeric_receipt(
             model.trainable_parameters(), mx=mx, mlx_utils=mlx_utils
         ),

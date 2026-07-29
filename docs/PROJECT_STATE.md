@@ -919,6 +919,11 @@ cached-decode, reload, and next-state replay checks, but regressed mean loss 0.6
 1.147000x joined wall and 1.040047x allocator peak, required 1.158342x time to control
 quality, and reached 3.2683% weak-arm regression. All three admitted Kimi K3 candidates
 are closed; replacement selection/readiness and independent audits remain.
+The last measured execution residual is closed too: checkpoint-compatible fused QKV won
+only one of three alternating step-11,416 full-route pairs, reached 0.972096x geometric
+and 0.970465x pooled speed, and failed the frozen final-loss/model/optimizer continuity
+bounds while preserving exact RNG, batches, cursor, and parameter schema. Separate Q/K/V
+remains authoritative. This is scoped to the tested MLX concatenation graph.
 
 T1 is paused at shared-trunk step 11,416 and 87,441,996 of 1,096,734,920
 pretraining positions. The live canonical path advanced after the committed T0A freeze, but the

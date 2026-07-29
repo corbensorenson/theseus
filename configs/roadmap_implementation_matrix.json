@@ -3595,6 +3595,32 @@
           "reports/pretraining_architecture_freeze_package.json"
         ],
         "roadmap_action": "bank the content-addressed replacement freeze and move directly to the preregistered matched 57M campaign without another backend or architecture-intake cycle"
+      },
+      {
+        "claim": "the positive isolated fused-QKV station measurement still requires full-route closure",
+        "disposition": "ACCEPTED_AND_COMPLETED_NOT_SELECTED_FIRST_CAMPAIGN",
+        "facts": {
+          "starting_checkpoint_step": 11416,
+          "alternating_pair_count": 3,
+          "candidate_win_count": 1,
+          "geometric_candidate_over_control_speedup": 0.9720961135789689,
+          "pooled_candidate_over_control_speedup": 0.9704650871297816,
+          "maximum_model_state_delta": 9.90554690361023e-05,
+          "maximum_optimizer_state_delta": 3.786650631809607e-05,
+          "rng_batches_and_cursor_exact": true,
+          "retained_projection": "separate"
+        },
+        "evidence": [
+          "reports/fused_qkv_full_route_qualification.json",
+          "reports/accelerator_replay/fused_qkv_full_route_control_pair1_guard.json",
+          "reports/accelerator_replay/fused_qkv_full_route_candidate_pair1_guard.json",
+          "reports/accelerator_replay/fused_qkv_full_route_candidate_pair2_guard.json",
+          "reports/accelerator_replay/fused_qkv_full_route_control_pair2_guard.json",
+          "reports/accelerator_replay/fused_qkv_full_route_control_pair3_guard.json",
+          "reports/accelerator_replay/fused_qkv_full_route_candidate_pair3_guard.json"
+        ],
+        "roadmap_action": "retain separate Q/K/V projection execution for campaign one and do not reopen the same concatenate-then-matmul graph; custom kernels or other shapes require a new measured residual",
+        "negative_evidence_boundary": "the result is an engineering disposition for the exact MLX concatenation graph and full route, not general projection-fusion falsification"
       }
     ],
     "ordered_next_actions": [

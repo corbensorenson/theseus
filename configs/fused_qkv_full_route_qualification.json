@@ -1,0 +1,66 @@
+{
+  "policy": "project_theseus_fused_qkv_full_route_qualification_config_v1",
+  "report": "reports/fused_qkv_full_route_qualification.json",
+  "production_config": "configs/moecot_language_arm_training.json",
+  "pairs": [
+    {
+      "id": "pair1_control_first",
+      "order": [
+        "control",
+        "candidate"
+      ],
+      "control": "reports/fused_qkv_full_route_control_pair1.json",
+      "candidate": "reports/fused_qkv_full_route_candidate_pair1.json",
+      "control_guard": "reports/accelerator_replay/fused_qkv_full_route_control_pair1_guard.json",
+      "candidate_guard": "reports/accelerator_replay/fused_qkv_full_route_candidate_pair1_guard.json"
+    },
+    {
+      "id": "pair2_candidate_first",
+      "order": [
+        "candidate",
+        "control"
+      ],
+      "control": "reports/fused_qkv_full_route_control_pair2.json",
+      "candidate": "reports/fused_qkv_full_route_candidate_pair2.json",
+      "control_guard": "reports/accelerator_replay/fused_qkv_full_route_control_pair2_guard.json",
+      "candidate_guard": "reports/accelerator_replay/fused_qkv_full_route_candidate_pair2_guard.json"
+    },
+    {
+      "id": "pair3_control_first",
+      "order": [
+        "control",
+        "candidate"
+      ],
+      "control": "reports/fused_qkv_full_route_control_pair3.json",
+      "candidate": "reports/fused_qkv_full_route_candidate_pair3.json",
+      "control_guard": "reports/accelerator_replay/fused_qkv_full_route_control_pair3_guard.json",
+      "candidate_guard": "reports/accelerator_replay/fused_qkv_full_route_candidate_pair3_guard.json"
+    }
+  ],
+  "retained_state_pair": {
+    "control_model": "runtime/t0a_canaries/fused_qkv_full_route/control_pair3/model.safetensors",
+    "candidate_model": "runtime/t0a_canaries/fused_qkv_full_route/candidate_pair3/model.safetensors",
+    "control_optimizer": "runtime/t0a_canaries/fused_qkv_full_route/control_pair3/optimizer.safetensors",
+    "candidate_optimizer": "runtime/t0a_canaries/fused_qkv_full_route/candidate_pair3/optimizer.safetensors",
+    "control_rng": "runtime/t0a_canaries/fused_qkv_full_route/control_pair3/rng.safetensors",
+    "candidate_rng": "runtime/t0a_canaries/fused_qkv_full_route/candidate_pair3/rng.safetensors"
+  },
+  "decision": {
+    "maximum_final_loss_absolute_delta": 2e-6,
+    "require_candidate_win_every_pair": true,
+    "require_model_state_within_frozen_tolerance": true,
+    "require_optimizer_state_within_frozen_tolerance": true,
+    "require_rng_state_exact": true,
+    "arbitrary_percentage_hurdle": false,
+    "rule": "Adopt only when the checkpoint-compatible fused-QKV graph wins every alternating full-route pair, the pooled direction is positive, and final loss, full model state, optimizer state, RNG, data order, cursor, resource, and checkpoint authority all pass. A station microbenchmark is not sufficient."
+  },
+  "hard_boundaries": {
+    "optimizer_steps_per_process": 8,
+    "production_checkpoint_mutation": false,
+    "production_config_mutation": false,
+    "public_training_rows": 0,
+    "public_evaluation_rows": 0,
+    "external_inference_calls": 0,
+    "frozen_evaluation_surface_consumption": 0
+  }
+}

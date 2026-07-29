@@ -711,6 +711,17 @@ Therefore:
    authorize a custom Metal kernel or host-language wrapper from this result.
    Norm, clipping, AdamW, and classifier/loss remain bounded small even under impossible
    total elimination; fused linear cross-entropy and exact packing remain memory-enablers.
+
+   **Full-route disposition (2026-07-29):** the checkpoint-compatible fused-QKV graph is
+   now closed rather than inferred from its station result. Three alternating fresh-process,
+   eight-update pairs start from the exact step-11,416 checkpoint/AdamW/data/cursor authority.
+   Candidate-over-control speed is `0.974856x`, `0.849956x`, and `1.108640x`: only one pair
+   wins, with `0.972096x` geometric and `0.970465x` pooled direction. The retained final pair
+   preserves parameter names/shapes, exact RNG, batches, and cursor, but differs by
+   `9.90555e-5` in model state and `3.78665e-5` in optimizer state and every pair exceeds the
+   frozen `2e-6` final-loss bound. Retain separate Q/K/V projections. This result rejects
+   only the concatenate-then-matmul MLX implementation on this route; custom kernels, other
+   shapes, and projection fusion generally remain scientifically untested.
 4. **Treat disconnected optimizer state as a memory candidate, not a 26% speed claim.**
    Plain-token pretraining executes 40,384,512 of the 54,836,746 trunk parameters.
    Source encoder, decoder cross-attention, pointer generator, and inactive MTP account for

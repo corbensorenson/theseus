@@ -60,6 +60,20 @@
         "reports/training_acceleration_final_selector.json"
       ],
       "decision": "The raw sustained speed gain does not override retained-state and independent-process replay failures. FP32 remains authoritative unless a materially different implementation removes both failures."
+    },
+    {
+      "id": "fused_qkv_full_route",
+      "state": "QUALIFIED_NOT_SELECTED",
+      "evidence": [
+        "reports/fused_qkv_full_route_qualification.json",
+        "reports/accelerator_replay/fused_qkv_full_route_control_pair1_guard.json",
+        "reports/accelerator_replay/fused_qkv_full_route_candidate_pair1_guard.json",
+        "reports/accelerator_replay/fused_qkv_full_route_candidate_pair2_guard.json",
+        "reports/accelerator_replay/fused_qkv_full_route_control_pair2_guard.json",
+        "reports/accelerator_replay/fused_qkv_full_route_control_pair3_guard.json",
+        "reports/accelerator_replay/fused_qkv_full_route_candidate_pair3_guard.json"
+      ],
+      "decision": "The checkpoint-compatible concatenate-then-matmul QKV graph won only one of three alternating step-11416 full-route pairs, reached 0.972096x geometric and 0.970465x pooled candidate-over-control speed, exceeded the frozen loss and full-state continuity bounds, and retained exact RNG, batches, cursor, parameter names, and shapes. Keep separate Q/K/V projections for campaign one. This is a scoped implementation disposition, not general projection-fusion falsification."
     }
   ],
   "new_source": {
