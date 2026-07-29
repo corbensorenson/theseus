@@ -1,0 +1,1281 @@
+{
+  "allowed_effect_trace": {
+    "dispatch_bound": true,
+    "dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
+    "dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+    "effect_inventory": [
+      {
+        "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "effect_id": "declared_effect-da2847a77ee908ff",
+        "intended_content_sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+        "intended_mode": "0o600",
+        "operation": "create",
+        "path": "runtime/assistant_effects/core-evidence-e1-ucqerlev/allowed/route_authority.json",
+        "rollback_obligation": "remove created path"
+      }
+    ],
+    "evaluator_id": "theseus_effect_rollback_evaluator_v1",
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "non_claims": [
+      "this canary proves local effect accounting and rollback, not model capability",
+      "the route-authority state is rolled back before the assistant call returns"
+    ],
+    "observation": {
+      "exists": true,
+      "expected_content_sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+      "expected_dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
+      "expected_dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+      "expected_route_id": "assistant.route_authority_effect",
+      "identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+      "matches_intent": true,
+      "mode": 384,
+      "observer_id": "theseus_filesystem_effect_observer_v1",
+      "parsed_json": {
+        "assistant_surface": "local_assistant",
+        "authority_ceiling": [
+          "bounded_local_metadata_route"
+        ],
+        "capability_id": "assistant.route_authority_effect",
+        "dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
+        "dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "intent": "planning",
+        "policy": "project_theseus_local_route_authority_canary_v1",
+        "public_training_rows_written": 0,
+        "route_id": "assistant.route_authority_effect",
+        "transaction_id": "assistant_effect_transaction-e6b754381e292b00"
+      },
+      "path": "runtime/assistant_effects/core-evidence-e1-ucqerlev/allowed/route_authority.json",
+      "sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+      "size_bytes": 640,
+      "write_fault": ""
+    },
+    "observer_id": "theseus_filesystem_effect_observer_v1",
+    "policy": "project_theseus_bounded_local_effect_transaction_v1",
+    "proposer_id": "theseus_assistant_effect_proposer_v1",
+    "public_training_rows_written": 0,
+    "ready": true,
+    "residuals": [],
+    "rollback": {
+      "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+      "complete": true,
+      "fault": "",
+      "final_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+      "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+      "prior_path_existed": false,
+      "removed_new_path": true,
+      "residual_count": 0,
+      "restored_prior_bytes": false
+    },
+    "route_id": "assistant.route_authority_effect",
+    "selected_capability_ids": [
+      "assistant.route_authority_effect"
+    ],
+    "transaction_id": "assistant_effect_transaction-e6b754381e292b00"
+  },
+  "artifact_gaps": [
+    {
+      "artifact_id": "roadmap_implementation_gate",
+      "claim_effect": "the exact clean packet remains replayable, but no whole-roadmap readiness claim is allowed",
+      "hard_gap_count": 63,
+      "path": "reports/roadmap_implementation_gate.json",
+      "state": "RED"
+    }
+  ],
+  "artifact_identities": {
+    "effect_kernel_source_sha256": "4bad2fad8b2d9d8faf92d65bceffb9f37cb5e45644b85a7b24b064c4884067ec",
+    "plan": {
+      "id": "theseus_plan_compiler_existing_owner",
+      "report_sha256": "6fc90bdb3846679c3af0edefe111c6fe073f32ea464d5e2589cadc8ddcd889c7",
+      "state": "GREEN"
+    },
+    "plan_report_sha256": "6fc90bdb3846679c3af0edefe111c6fe073f32ea464d5e2589cadc8ddcd889c7",
+    "route_contract_sha256": "badda412f06a1dd8ea1f372ed8be607245219fdf76b5e48dba33fabc38db942f",
+    "vcm": {
+      "id": "vcm_consumer_abi_existing_owner",
+      "report_sha256": "5de7bbfeba5773df37b7219bae948917165e8e393794524b2558edb697b4cdd8",
+      "state": "GREEN"
+    },
+    "vcm_report_sha256": "5de7bbfeba5773df37b7219bae948917165e8e393794524b2558edb697b4cdd8"
+  },
+  "blocked_effect_trace": {
+    "dispatch_bound": false,
+    "dispatch_decision_digest": "sha256:90949be31e9cc476976183a109514ac43814055e4fbdc2a0fab5a53e98361b85",
+    "dispatch_trace_id": "reflex-trace:00d792960a5fb5f8f41511db",
+    "effect_inventory": [],
+    "evaluator_id": "theseus_effect_rollback_evaluator_v1",
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "non_claims": [
+      "this canary proves local effect accounting and rollback, not model capability",
+      "the route-authority state is rolled back before the assistant call returns"
+    ],
+    "observation": {},
+    "observer_id": "theseus_filesystem_effect_observer_v1",
+    "policy": "project_theseus_bounded_local_effect_transaction_v1",
+    "proposer_id": "theseus_assistant_effect_proposer_v1",
+    "public_training_rows_written": 0,
+    "ready": false,
+    "residuals": [
+      {
+        "kind": "effect_dispatch_binding_invalid"
+      }
+    ],
+    "rollback": {
+      "complete": false,
+      "residual_count": 1
+    },
+    "route_id": "",
+    "selected_capability_ids": [],
+    "transaction_id": "assistant_effect_transaction-75301a2fdb1bfe6d"
+  },
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "checks": [
+    {
+      "evidence": true,
+      "name": "clean_checkout",
+      "passed": true
+    },
+    {
+      "evidence": "0d0bc5ea615cf842410c55692b754a18571b53cf",
+      "name": "source_commit_present",
+      "passed": true
+    },
+    {
+      "evidence": "GREEN",
+      "name": "E0_green",
+      "passed": true
+    },
+    {
+      "evidence": "FROZEN_PROSPECTIVE",
+      "name": "E0_frozen",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "expected": "f60722a18b718b99cb90f991d482fb11115c35487e70054d4298a03aa1adf4cf",
+        "observed": "f60722a18b718b99cb90f991d482fb11115c35487e70054d4298a03aa1adf4cf"
+      },
+      "name": "E0_config_identity",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "hard_gap_count": 0,
+        "report_sha256": "44a8c89613ac05a6f445dca86ecec9d0b55394ab1f1f182fa2dbf017be739b6a",
+        "returncode": 0,
+        "stderr_sha256": "c476aedde76e51f95c6865b07aba1a6e92ebc67c21de1e11f3d713862d67a5b6",
+        "stdout_sha256": "6fb8fa7d73a54738c6607785e41ccf118de48b4f2bad454dd70ae93ab62a1983",
+        "trigger_state": "GREEN"
+      },
+      "name": "registry_gate_green",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "hard_gap_count": 63,
+        "report_sha256": "a3857bcb744127e85012bdf3925ceb9aa0fd0dc88049713ba547d23792f1eefc",
+        "returncode": 2,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "7ec2d484ebe2a2c037b3f8ccfac60e019be551340d77e4a5061a61e51bf52ff0",
+        "trigger_state": "RED"
+      },
+      "name": "roadmap_gate_result_bound",
+      "passed": true
+    },
+    {
+      "evidence": [],
+      "name": "allowed_effect_ready",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "exists": true,
+        "expected_content_sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+        "expected_dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
+        "expected_dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+        "expected_route_id": "assistant.route_authority_effect",
+        "identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+        "matches_intent": true,
+        "mode": 384,
+        "observer_id": "theseus_filesystem_effect_observer_v1",
+        "parsed_json": {
+          "assistant_surface": "local_assistant",
+          "authority_ceiling": [
+            "bounded_local_metadata_route"
+          ],
+          "capability_id": "assistant.route_authority_effect",
+          "dispatch_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
+          "dispatch_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+          "external_inference_calls": 0,
+          "fallback_return_count": 0,
+          "intent": "planning",
+          "policy": "project_theseus_local_route_authority_canary_v1",
+          "public_training_rows_written": 0,
+          "route_id": "assistant.route_authority_effect",
+          "transaction_id": "assistant_effect_transaction-e6b754381e292b00"
+        },
+        "path": "runtime/assistant_effects/core-evidence-e1-ucqerlev/allowed/route_authority.json",
+        "sha256": "9186712b21729cadf617f3d3293218d464713e305a3536b1c008578aebe67112",
+        "size_bytes": 640,
+        "write_fault": ""
+      },
+      "name": "allowed_effect_observed",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "complete": true,
+        "fault": "",
+        "final_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+        "prior_path_existed": false,
+        "removed_new_path": true,
+        "residual_count": 0,
+        "restored_prior_bytes": false
+      },
+      "name": "rollback_complete",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "before_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "complete": true,
+        "fault": "",
+        "final_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+        "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+        "prior_path_existed": false,
+        "removed_new_path": true,
+        "residual_count": 0,
+        "restored_prior_bytes": false
+      },
+      "name": "rollback_identity_exact",
+      "passed": true
+    },
+    {
+      "evidence": [
+        {
+          "kind": "effect_dispatch_binding_invalid"
+        }
+      ],
+      "name": "blocked_request_no_effect",
+      "passed": true
+    },
+    {
+      "evidence": [
+        {
+          "kind": "effect_dispatch_binding_invalid"
+        }
+      ],
+      "name": "revoked_request_no_effect",
+      "passed": true
+    },
+    {
+      "evidence": [],
+      "name": "effect_root_clean",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "checks": {
+          "assistant_green": true,
+          "bounded_effect_policy": true,
+          "content_digest_matches": true,
+          "effect_enabled_and_ready": true,
+          "effect_was_material": true,
+          "first_effect_identity_matches": true,
+          "no_cheat_counters_explicit_and_clean": true,
+          "observation_matches_intent": true,
+          "observer_role_matches": true,
+          "one_declared_effect": true,
+          "roles_present_and_distinct": true,
+          "rollback_exact_and_residual_free": true,
+          "rollback_operation_matches_prior_state": true,
+          "route_identity_matches": true,
+          "route_is_expected": true,
+          "summary_matches_receipt": true,
+          "target_is_bounded_local_effect": true,
+          "target_path_matches": true,
+          "transaction_identity_matches": true,
+          "viea_effect_records_unique": true,
+          "viea_inventory_matches": true,
+          "viea_observation_matches": true,
+          "viea_rollback_matches": true
+        },
+        "effect_id": "declared_effect-da2847a77ee908ff",
+        "expected_invalid_control_count": 8,
+        "expected_invalid_controls": [
+          {
+            "control": "role_collision",
+            "rejected": true
+          },
+          {
+            "control": "undeclared_extra_effect",
+            "rejected": true
+          },
+          {
+            "control": "observation_digest_mismatch",
+            "rejected": true
+          },
+          {
+            "control": "summary_identity_mismatch",
+            "rejected": true
+          },
+          {
+            "control": "rollback_incomplete",
+            "rejected": true
+          },
+          {
+            "control": "rollback_residual",
+            "rejected": true
+          },
+          {
+            "control": "identity_not_restored",
+            "rejected": true
+          },
+          {
+            "control": "route_binding_mismatch",
+            "rejected": true
+          }
+        ],
+        "expected_invalid_rejected_count": 8,
+        "hard_gaps": [],
+        "non_claims": [
+          "This audit covers one bounded local route-authority filesystem effect class.",
+          "It does not prove general tool safety, model capability, public transfer, or ASI."
+        ],
+        "policy": "project_theseus_independent_effect_transaction_audit_v1",
+        "receipt_digest": "52ad22d853b01e92469dcd03947da695edc7787ede31cabd961d0785b18cbf2e",
+        "route_id": "assistant.route_authority_effect",
+        "support_state": "replayable-reference-backed",
+        "transaction_id": "assistant_effect_transaction-e6b754381e292b00",
+        "valid": true
+      },
+      "name": "independent_effect_audit_valid",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "allowed": 0,
+        "blocked": 0,
+        "revoked": 0
+      },
+      "name": "no_external_inference",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "allowed": 0,
+        "blocked": 0,
+        "revoked": 0
+      },
+      "name": "no_training_rows",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "id": "theseus_local_repository_worker_v1",
+        "kind": "deterministic_local_repository_retrieval_and_patch_planning_control",
+        "learned_credit": false,
+        "learned_model_invoked": false
+      },
+      "name": "no_learned_credit",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "D2_cases_consumed": 0
+      },
+      "name": "D2_untouched",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "public_calibration_cases_consumed": 0
+      },
+      "name": "public_calibration_untouched",
+      "passed": true
+    }
+  ],
+  "clean_replay": {
+    "archive_checkout_had_git_metadata": false,
+    "archive_sha256": "b8c542015bd2b21b3f0524549ca98d0cd22839b67f4cd75b303a476e3408d405",
+    "evidence_capsule": {
+      "boundary": "local exact evidence inputs copied into disposable archive; public report retains only paths, sizes, and digests",
+      "capsule_manifest_sha256": "426e0688b3eabfab0129a89dd31bb59bbcd0dfa3737ac29834ef356e65501b90",
+      "entries": [
+        {
+          "bytes": 26506862,
+          "path": "checkpoints/standard_causal_transformer_conditioned_stale_pre_source_offset_retained/standard_causal_transformer_survival_v1.npz",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "local_model_artifact",
+          "sha256": "28098fe87e2a0a6cd944505d6fcfcd6118210d5f095e56fea7dac4bb506347fe"
+        },
+        {
+          "bytes": 26506862,
+          "path": "checkpoints/standard_causal_transformer_faulty_source_offset_retained/standard_causal_transformer_survival_v1.npz",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "local_model_artifact",
+          "sha256": "668ed50ff58148f41570c1df244b34855a034dc5670cf1b7b6414bcac13c8013"
+        },
+        {
+          "bytes": 26506862,
+          "path": "checkpoints/standard_causal_transformer_survival_v1/standard_causal_transformer_survival_v1.npz",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "local_model_artifact",
+          "sha256": "d0fe62ae939be033015cd6093a09893ae954c6614e81f6cbb93d5658c06f4b90"
+        },
+        {
+          "bytes": 2398,
+          "path": "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "b6f8ef4e4b43f2b1fc70ada678ad7a6c927936b3c8ccd8eaa426b5114c94ef45"
+        },
+        {
+          "bytes": 9724,
+          "path": "reports/candidate_integrity_audit.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "df1bead0f22a4f224f9d08ef8d53ce549e709b7e542f1a02ba14973d4bb639a5"
+        },
+        {
+          "bytes": 8481,
+          "path": "reports/candidate_integrity_standard_causal_transformer_survival.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "b86f91b410abb627af62c6733904f8ef1cd4dd9ea854f393bcfa5f913b0ff93e"
+        },
+        {
+          "bytes": 115922,
+          "path": "reports/deterministic_tool_substrate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "8abf435ba43f5a23175c55f08d0b368491e6b3213a03b82aa59a5317f8b62eee"
+        },
+        {
+          "bytes": 170809,
+          "path": "reports/generation_mode_registry.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "83d6e9a2c5d787abe4c680b2fbc59496e69846743c4ddf4367e221444fa12fda"
+        },
+        {
+          "bytes": 5537,
+          "path": "reports/kerc_scoped_semantics_k1k.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "5c1172965dea50cce996322fede79d611b92f790bff8eb98d076256998d5975c"
+        },
+        {
+          "bytes": 10338,
+          "path": "reports/macos_mlx_environment_diagnosis.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "dbf56d734581f6a514648d5986d9d5a5e6af5da72e388a48b59b862a658dd8df"
+        },
+        {
+          "bytes": 392911,
+          "path": "reports/mtp_matched_adequacy.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "a80d1cf1080286ed18e9fb6eaadd7e857d48ad0768a262c53ab1dc7df51ada81"
+        },
+        {
+          "bytes": 68517,
+          "path": "reports/neural_seed_survival_readiness_gate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "4e785b21e113d0acd4158fe0af4b979412bcb23e25d4c0ecee8d6fdc396871da"
+        },
+        {
+          "bytes": 3920,
+          "path": "reports/octopus_router_head_gate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "3f2b327a7eb30e254224eec18a35c64202daaa477cf86e89fd8b8facc482dca9"
+        },
+        {
+          "bytes": 403484,
+          "path": "reports/octopus_router_report.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "bd7d3870593ef40bc8e016f1fad3c4c438cd108ba92c5eee040258254280c50c"
+        },
+        {
+          "bytes": 24778,
+          "path": "reports/policy_optimization_program.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "8b42a2e021fdf1694d8cdfc8c7d0e2ce584364e8ff3152b02db11714e3e50b06"
+        },
+        {
+          "bytes": 6367,
+          "path": "reports/resource_aware_execution_policy.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "a7baf9ac722e57cfb40dd0bc828e25c08a6305ce82697c80d5ba6c3241cb34fb"
+        },
+        {
+          "bytes": 1721,
+          "path": "reports/runtime/kerc_concept_registry_verification.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "5d7953c51d37a96dbc6c745cf0abc9c4e44652c8523f5f7c9b46f9e7e2338b4b"
+        },
+        {
+          "bytes": 62589,
+          "path": "reports/runtime/kerc_residual_allocator_qualification_v1.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "fb99f22f12aa1a0b2eae7168f0ffe6ac97deb35ee5f4327578a17d8d06d185b8"
+        },
+        {
+          "bytes": 153151,
+          "path": "reports/runtime/kerc_semantic_corpus_verification.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "d15a3cef75796bccdd82ca6edf3f602e7bae84d402f920fb82d1c8318acc6022"
+        },
+        {
+          "bytes": 310995,
+          "path": "reports/standard_causal_transformer_survival.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "d7800fa00ca66251aee9b78eb18bbd19d35a5ba33da7192ed06004cbe464c1bf"
+        },
+        {
+          "bytes": 98269,
+          "path": "reports/standard_causal_transformer_survival_gate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "d8de0aa6c98d223ebfe77432639146a68fa213a49310308893746919ad8b1cff"
+        },
+        {
+          "bytes": 222814,
+          "path": "reports/strict_generator_semantic_ir_repair_apply_v9.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "4d423e507d98dbe10bc0d22eca4658a5a72ed7c42e669816b775ebbffe8c7891"
+        },
+        {
+          "bytes": 44689,
+          "path": "reports/teacher_distillation_gate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "c6012df4816f7ad18dfd5da4f3df41891f2a89bf1d8478c541396edad6282a94"
+        },
+        {
+          "bytes": 40716,
+          "path": "reports/theseus_assistant_product_lane_gate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "82393431dbe4d4dc28cbe72a1fd45f32e2ee2dc0e351feed4ae33ff798e329c8"
+        },
+        {
+          "bytes": 281646,
+          "path": "reports/theseus_control_plane.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "94c6ecd240941d34a2c3a71ecf8d98394832418a64860ea0fcfae48c79165034"
+        },
+        {
+          "bytes": 81498,
+          "path": "reports/theseus_plan_compiler.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "6fc90bdb3846679c3af0edefe111c6fe073f32ea464d5e2589cadc8ddcd889c7"
+        },
+        {
+          "bytes": 25362,
+          "path": "reports/training_admission_epistemic_tcb.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "c0cfc4a761e072dfdf603f8f9add1c9220e05c7765cf548bd29799f068fe2dd5"
+        },
+        {
+          "bytes": 1523662,
+          "path": "reports/training_data_admission_v1.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "333d38f0b64fa2772aa4d69a640ce2020d2a26dd032b5def20120d31aaef4725"
+        },
+        {
+          "bytes": 33952,
+          "path": "reports/training_data_lineage_audit.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "b72c6bcf9fb1f6c58139e1887d95f2af421e09aafdc47e94e27c23524e1dd7b6"
+        },
+        {
+          "bytes": 23945,
+          "path": "reports/vcm_consumer_integration_gate.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "5de7bbfeba5773df37b7219bae948917165e8e393794524b2558edb697b4cdd8"
+        },
+        {
+          "bytes": 10096,
+          "path": "reports/vcm_runtime_claim_readiness.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "87c6cb9918f533e8e61ca4c52c53549134309e61adca766a1f4d81b471dea982"
+        },
+        {
+          "bytes": 9256925,
+          "path": "reports/viea_spine_materialized_view.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "e6b8754db62083cc365b02abae214ea29227581c8e7d7abcd15c2c17e1b68bbe"
+        },
+        {
+          "bytes": 8120,
+          "path": "reports/virtual_context_memory_status.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "public_safe_digest_only_report_input",
+          "sha256": "0f8766098e1c5558c580ece8c8bd8445d53a5ae5eca9734387ff7c0b72db9689"
+        },
+        {
+          "bytes": 310358,
+          "path": "runtime/standard_causal_transformer_source_offset_repair/report.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "local_runtime_evidence",
+          "sha256": "c4dcef3c80ea942613a62b7d34b53b6065e5046bb8c40f2bf3e4ee8e196e7fb7"
+        },
+        {
+          "bytes": 377,
+          "path": "runtime/standard_causal_transformer_stage_v1/training_heartbeat.json",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "local_runtime_evidence",
+          "sha256": "7ef84f20635666813c6187c6d42eae863ca8aed050fee718ace61c93db83ad19"
+        },
+        {
+          "bytes": 3312017,
+          "path": "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
+          "raw_content_embedded_in_public_packet": false,
+          "sensitivity": "local_source_dependency_digest_only",
+          "sha256": "586ba746bfd15a18378f912485b279c8dafdf610fb4b01209270e8a8125bd0df"
+        }
+      ],
+      "entry_count": 36,
+      "missing_required_paths": [],
+      "policy": "project_theseus_E1_local_evidence_capsule_v1",
+      "source_timestamp_faults": [],
+      "source_timestamp_overlays": [
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "configs/full_state_update_causality.json",
+          "sha256": "ad83d16fb9d0d4700fcd46d6c00ac0571bcfc20bdf6ac83112983e1dca74aa5e"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "configs/reflexive_router_contract.json",
+          "sha256": "badda412f06a1dd8ea1f372ed8be607245219fdf76b5e48dba33fabc38db942f"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "configs/reflexive_router_profile.json",
+          "sha256": "e11f88ff0404f8770534d5f7ad50d268fd66b73b34a4eaef6964a69cb8fb3c81"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "configs/standard_causal_transformer_survival.json",
+          "sha256": "22e334af476b0243b8017f7930130662dfde81febaa4c5a4bfe7781b5e0dbdb2"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "configs/task_complete_training_units.json",
+          "sha256": "a8ed227cfb029bf229842f192be197c3100b0498c249421558b15d2cc499f039"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "configs/theseus_plan_compiler.json",
+          "sha256": "993a4f75f4c0fe8e3538b103d04675aec785fefbbe825df06c5164b83e3998e7"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "crates/symliquid-cli/src/code_token_generator.rs",
+          "sha256": "f629b8e1ea74eafe1cfbffcb4fcb55878fa741daef3ca8e1bda1dfe7fb966595"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "data/training_data/high_transfer/private_eval/broad_private_generalization_ladder_v1_heldout_code_lm_tasks.jsonl",
+          "sha256": "586ba746bfd15a18378f912485b279c8dafdf610fb4b01209270e8a8125bd0df"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "data/training_sources/training_data_admission_v1.json",
+          "sha256": "3a0ea4c881c895bbf09d23e47b2380138689e499d9e69d6c43f8dc4146859944"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/blind_information_flow_audit.py",
+          "sha256": "450b87a7cbd3d5a99eef65380d1acc8ff5a4be4375227fb45aeff09e0c5b35f5"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/candidate_integrity.py",
+          "sha256": "7b850e415e423630d90664c51d5547afe14deb38324c60f00588b3dd6a8d1b91"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/code_lm_private_verifier.py",
+          "sha256": "9932028648784ad715b8986e49246376f47474d5e58b1b9cee2c355986bf04a5"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/code_lm_train_once_fanout.py",
+          "sha256": "21429927ad028d220f766e46713170d0fb265ed73e5d558f99cbd54534c7d17e"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/full_state_update_causality.py",
+          "sha256": "ca043af80e27c3d2f980563775e414babfac9ddee9a9a79e8ce60e3063d58ebf"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/governed_conversation_stream.py",
+          "sha256": "e3d79b12ef576beef72fe9eff22a6578c370856e4232810adf7b68d3d6bedb74"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/gvr_state_machine.py",
+          "sha256": "a125f6f504cc44c3833b824e56e4edb073c3f30906c37717038688dc1ee3538e"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/macos_mlx_environment_diagnosis.py",
+          "sha256": "7c7c9aa3a867973851cdc33c6cf262336ad51197ab0bc1c59f76c2547d9b3e2c"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/neural_seed_candidate_generation.py",
+          "sha256": "66c229e1525886ecc4f131c135ab2cc3a3ea6ce1b9018e10aa2f6fca9ae2ab3e"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/neural_seed_open_vocab.py",
+          "sha256": "3caddf372319a40d53ab001bbe29a62fb654cd3257e7c56e03d9ecdb64cd21f6"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/neural_seed_survival_readiness_gate.py",
+          "sha256": "dc10f5026ee4ed23a7c96885bc5f644848567c73dc766449de6d732001043aea"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/neural_seed_token_decoder_comparator.py",
+          "sha256": "c7cda93c3d5861c765ef6227fad7e7738d8cec525fa5933c1ed01e765e949e08"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/neural_seed_token_decoder_rendering.py",
+          "sha256": "1f4f43d8a9d64d1972d70ac553f7c6cf854da64a6e603847be3de8cdd9ea35c0"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/neural_seed_token_decoder_support.py",
+          "sha256": "5203feb28682e41c354635547a284fb8c873d3cbcdd0fc9e85452df17ef2c63b"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/octopus_router.py",
+          "sha256": "357511685b7b8da7cb314ad23f7e1039f98cbc726bd7a50dd2f9ad068259c10d"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/octopus_router_head_gate.py",
+          "sha256": "0bac8014e819a13aba9428ee83462a00f20a851d5df14aa4c4eed2e0c33a6fa4"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/open_conversation_training_pantry.py",
+          "sha256": "0824a13d9aeb183a762727d034a2a4343105371f2abe6b47186e06a905991d5d"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/reflexive_dispatch.py",
+          "sha256": "641e777a70c394674a26245604385c9b07c91920ff0550d7c13e958e799e37c8"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/semantic_ir.py",
+          "sha256": "87a82953d52fbddbd80e4453c64966297c4d0871979354fb89caa0f2bc367ba7"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/semantic_ir_obligation_gate.py",
+          "sha256": "f30a204a1928d33ff9bb139e8a8712a27cbcdaa93ca8afbfada0c01c8e62246e"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/standard_causal_transformer_model.py",
+          "sha256": "4220cef51f61ac4f899929e8bf9ec61806f9621ee1d23257675e7e227e409297"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/standard_causal_transformer_objectives.py",
+          "sha256": "e6edec767bd77416ea63db1ffde11535ac8def36d5a06769c64a13c6d27d12ec"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/standard_causal_transformer_preference.py",
+          "sha256": "bcfc7673ec4e07d0cf38fb47f634b9176b73776f323d27aa9e2cc77eb238bdfe"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/standard_causal_transformer_survival.py",
+          "sha256": "afc3285796c748474975cc0816fd546da9cebffe28b6cc8d58e66371268021dc"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/standard_causal_transformer_survival_gate.py",
+          "sha256": "30eb0c8f3252b0fa1503cb846028161e46c9c1fe7675e96dbc6d90b51f7f6a79"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/strict_generator_semantic_ir_repair_apply.py",
+          "sha256": "a6a5ffc93b89fa38ae9d9027efe27665648d8d70032952fb9e9b7d9dcb2789e8"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/task_complete_rust_holes.py",
+          "sha256": "7f251d01b82386d29cc6b1c693d698a8673a844da960f1bca81461bd8286c754"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/task_complete_training_units.py",
+          "sha256": "1f5047d5bacf790dd6492a9ccf862f9e56f6dfa1a413a0ea39ffe0c390c39c90"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/teacher_distillation_gate.py",
+          "sha256": "f346d2b9cc313b5665d93d85f3f858a00528391f84ae118879620be89d6c9b82"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/theseus_assistant_e2e.py",
+          "sha256": "e65d20d069b7825ad81d4a42ecd6b5dc43e5246f874bac9f4ebd5b79cc8ad08c"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/theseus_assistant_product_lane_gate.py",
+          "sha256": "23757042f3a4bcbe11cd9f5f3d4a2889c9bcd0109de4075a4b923318546e8aa6"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/theseus_assistant_runtime.py",
+          "sha256": "4bad2fad8b2d9d8faf92d65bceffb9f37cb5e45644b85a7b24b064c4884067ec"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/theseus_control_plane.py",
+          "sha256": "cf8fb0bfd2055c76eaa53f643073ce368e793f66575f7565d0d8792966595d15"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/theseus_deterministic_tool_substrate.py",
+          "sha256": "99d75e1b83bc88f819c5a83a47eb4ba709eeeb88a48cc81cf2de13f92d98cd9d"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/theseus_plan_compiler.py",
+          "sha256": "581d6fd34cbf89a4483f0274d01765fa48d23a588b2f2cff9a8998b338bcf395"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/train_octopus_router_head.py",
+          "sha256": "4fce3f3277b7477b2f5c718624a792edf8652f41e56dfd5cf722e2571ff8f344"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/training_admission_epistemic_tcb.py",
+          "sha256": "5482737de496c06b3cfdebcbe86d6240c649142b1be034f6e27f182f5111876c"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/training_data_admission_v1.py",
+          "sha256": "e05ae31ec8a9ea92c9687930274a36f3f38a40643f2464d916ad19147d04f780"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/training_data_lineage_audit.py",
+          "sha256": "d541713ed0d07da713842e428241a5b6ebfa148f57ab734526cab86ee5ec0bc6"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_consumer_abi.py",
+          "sha256": "2011ea6df842df1e84241d5f2f909cf21e92a2da45a409ec4104bb808e5a05a4"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_consumer_integration_gate.py",
+          "sha256": "fbd5c17f761448c8f7608387a32358f07fe0805913ae48cda5cd7d87bad21612"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_context_governor_gate.py",
+          "sha256": "70c5f57f253126401fb1930dfde7c6ade891a04ed0aa1169f27c217c273c17b7"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_native_runtime_probe.py",
+          "sha256": "2b8e5838a3474498b3d3fd6868a0870e2ca5f176401ac931415e78d467381302"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_runtime_claim_readiness.py",
+          "sha256": "82d651a0fe321910a6e520199d2c3a121705bed3e678316a7472a089a6502cca"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_semantic_memory.py",
+          "sha256": "b8426b160405360a4f2ae33f2ea154407033007b1b1132e5682b73d6cd620f68"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/vcm_task_context_bridge.py",
+          "sha256": "5d100dd430c12dc5456bb0e82ba2e2cdaf11ba53b1fefb98485c16bc1f91f8d1"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/verifier_guided_search.py",
+          "sha256": "f9ced2e5f38d379f77cc68554695ce83384f710377805df513cc267f28e13569"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "scripts/virtual_context_memory.py",
+          "sha256": "6332c012c0417013fcee33fcce7f293fffca1132f108016c8ac093cb5556f931"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "tests/test_full_state_update_causality.py",
+          "sha256": "294141a8e9bd1f1b2213362502fd659950778dd7b302e53898b31ffc26a0fcf6"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "tests/test_gvr_state_machine.py",
+          "sha256": "8e0be31d48192f0ba220b3892c1f6eeddda01fb894f0a9f3d306770d8699f683"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "tests/test_task_complete_training_units.py",
+          "sha256": "c21a4376ae88b575bb180196cee5b10c2e8ce7c02230fcd36fa283d454855280"
+        },
+        {
+          "content_changed": false,
+          "mtime_restored_from_exact_source_worktree": true,
+          "path": "tests/test_verifier_guided_search.py",
+          "sha256": "e05a5d41718580d5933cedadafc27c71f8a6e0124ab4aeb466a6079c2577cf1a"
+        }
+      ],
+      "total_bytes": 96546674
+    },
+    "inner_returncode": 0,
+    "inner_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "inner_stdout_sha256": "2c4d683ec5e0cb589e2c80ca36f81ec6c1cb0c6e024a548b27426f8a73412f5b",
+    "source_commit": "0d0bc5ea615cf842410c55692b754a18571b53cf",
+    "source_gate_results": {
+      "registry": {
+        "hard_gap_count": 0,
+        "report_sha256": "1a1717113d653123b6d20af7969f9440ebb96b7a93af66606c28c2320ec6b0c9",
+        "returncode": 0,
+        "stderr_sha256": "6a7cb293b12386c09ba864c079dee2f1555df4fc10c56ae02d2b7bde9f160318",
+        "stdout_sha256": "7551eabde927c75c77c61457588c15b9d3c6d5e93f437a2d611b16ca08ab39f9",
+        "trigger_state": "GREEN"
+      },
+      "roadmap": {
+        "hard_gap_count": 0,
+        "report_sha256": "57c9eedf9b13b1fac37489a6b4c0823af3287d0b7b37ef86c638fa30fdf281ee",
+        "returncode": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "4c07eea253f512cfe750be9590f900dbe2151afc4138b760df283010a8bf1488",
+        "trigger_state": "YELLOW"
+      }
+    },
+    "source_tree": "98b8d7f1b47cc6860415f65dffe87274f7279188",
+    "temporary_checkout_removed_before_report_return": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "allowed_trace_count": 1,
+    "blocked_trace_count": 1,
+    "exact_rollback_count": 1,
+    "external_inference_calls": 0,
+    "learned_generation_credit": 0,
+    "public_calibration_cases_consumed": 0,
+    "revoked_trace_count": 1,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-29T18:57:51Z",
+  "disposition": "REPLAYABLE_REFERENCE_BACKED",
+  "environment": {
+    "external_inference": "forbidden_and_zero",
+    "implementation": "CPython",
+    "machine": "arm64",
+    "network_policy": "forbidden",
+    "python": "3.12.5",
+    "release": "24.0.0",
+    "system": "Darwin",
+    "teacher_calls": "forbidden_and_zero"
+  },
+  "gate_results": {
+    "registry": {
+      "hard_gap_count": 0,
+      "report_sha256": "44a8c89613ac05a6f445dca86ecec9d0b55394ab1f1f182fa2dbf017be739b6a",
+      "returncode": 0,
+      "stderr_sha256": "c476aedde76e51f95c6865b07aba1a6e92ebc67c21de1e11f3d713862d67a5b6",
+      "stdout_sha256": "6fb8fa7d73a54738c6607785e41ccf118de48b4f2bad454dd70ae93ab62a1983",
+      "trigger_state": "GREEN"
+    },
+    "roadmap": {
+      "hard_gap_count": 63,
+      "report_sha256": "a3857bcb744127e85012bdf3925ceb9aa0fd0dc88049713ba547d23792f1eefc",
+      "returncode": 2,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7ec2d484ebe2a2c037b3f8ccfac60e019be551340d77e4a5061a61e51bf52ff0",
+      "trigger_state": "RED"
+    }
+  },
+  "hard_gaps": [],
+  "independent_effect_audit": {
+    "checks": {
+      "assistant_green": true,
+      "bounded_effect_policy": true,
+      "content_digest_matches": true,
+      "effect_enabled_and_ready": true,
+      "effect_was_material": true,
+      "first_effect_identity_matches": true,
+      "no_cheat_counters_explicit_and_clean": true,
+      "observation_matches_intent": true,
+      "observer_role_matches": true,
+      "one_declared_effect": true,
+      "roles_present_and_distinct": true,
+      "rollback_exact_and_residual_free": true,
+      "rollback_operation_matches_prior_state": true,
+      "route_identity_matches": true,
+      "route_is_expected": true,
+      "summary_matches_receipt": true,
+      "target_is_bounded_local_effect": true,
+      "target_path_matches": true,
+      "transaction_identity_matches": true,
+      "viea_effect_records_unique": true,
+      "viea_inventory_matches": true,
+      "viea_observation_matches": true,
+      "viea_rollback_matches": true
+    },
+    "effect_id": "declared_effect-da2847a77ee908ff",
+    "expected_invalid_control_count": 8,
+    "expected_invalid_controls": [
+      {
+        "control": "role_collision",
+        "rejected": true
+      },
+      {
+        "control": "undeclared_extra_effect",
+        "rejected": true
+      },
+      {
+        "control": "observation_digest_mismatch",
+        "rejected": true
+      },
+      {
+        "control": "summary_identity_mismatch",
+        "rejected": true
+      },
+      {
+        "control": "rollback_incomplete",
+        "rejected": true
+      },
+      {
+        "control": "rollback_residual",
+        "rejected": true
+      },
+      {
+        "control": "identity_not_restored",
+        "rejected": true
+      },
+      {
+        "control": "route_binding_mismatch",
+        "rejected": true
+      }
+    ],
+    "expected_invalid_rejected_count": 8,
+    "hard_gaps": [],
+    "non_claims": [
+      "This audit covers one bounded local route-authority filesystem effect class.",
+      "It does not prove general tool safety, model capability, public transfer, or ASI."
+    ],
+    "policy": "project_theseus_independent_effect_transaction_audit_v1",
+    "receipt_digest": "52ad22d853b01e92469dcd03947da695edc7787ede31cabd961d0785b18cbf2e",
+    "route_id": "assistant.route_authority_effect",
+    "support_state": "replayable-reference-backed",
+    "transaction_id": "assistant_effect_transaction-e6b754381e292b00",
+    "valid": true
+  },
+  "maximum_inference": "This exact committed packet is replayable and proves the recorded local mechanics, information boundary, authority denial, observation, and rollback only. It does not establish usefulness or learned capability.",
+  "non_claims": [
+    "No D1 result is learned student capability.",
+    "No deterministic tool, authored policy, replay fixture, or retrieval path is learned generation.",
+    "No E0-E5 result changes an ASI Stack support state without book-side claim-specific review.",
+    "No task outcome consumes, tunes, rescues, or otherwise informs the sealed D2 evaluation.",
+    "A safe hold with no useful work is not successful governance.",
+    "A clean mechanics replay is not evidence that the worker is competent."
+  ],
+  "policy": "project_theseus_core_evidence_E1_clean_replay_v1",
+  "replay_command": "python3 scripts/core_evidence_campaign.py --stage E1 --gate",
+  "report_payload_sha256": "2dc884a970a1dd19726936afc21df174d40877d29322f5b770a96f52c684cc5e",
+  "revoked_effect_trace": {
+    "dispatch_bound": false,
+    "dispatch_decision_digest": "sha256:a701660d916307c09127b2c7fc1a65bf4b34b19b62597004c7e87b9fabe17ca7",
+    "dispatch_trace_id": "reflex-trace:64327a6091500938119863eb",
+    "effect_inventory": [],
+    "evaluator_id": "theseus_effect_rollback_evaluator_v1",
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "non_claims": [
+      "this canary proves local effect accounting and rollback, not model capability",
+      "the route-authority state is rolled back before the assistant call returns"
+    ],
+    "observation": {},
+    "observer_id": "theseus_filesystem_effect_observer_v1",
+    "policy": "project_theseus_bounded_local_effect_transaction_v1",
+    "proposer_id": "theseus_assistant_effect_proposer_v1",
+    "public_training_rows_written": 0,
+    "ready": false,
+    "residuals": [
+      {
+        "kind": "effect_dispatch_binding_invalid"
+      }
+    ],
+    "rollback": {
+      "complete": false,
+      "residual_count": 1
+    },
+    "route_id": "",
+    "selected_capability_ids": [],
+    "transaction_id": "assistant_effect_transaction-c8c084fe384a02b3"
+  },
+  "runtime": {
+    "wall_ms": 177.202
+  },
+  "source": {
+    "E0_preregistration_sha256": "67bf134dda10a39403e5d3cf4730b000fa589b47efcff610522d3d8a333cea8b",
+    "E0_report_payload_sha256": "0124ec5486bba00a2408135d29da5faa381df12d2b27f67818133b44721c7c01",
+    "commit": "0d0bc5ea615cf842410c55692b754a18571b53cf",
+    "config_sha256": "f60722a18b718b99cb90f991d482fb11115c35487e70054d4298a03aa1adf4cf",
+    "tree": "98b8d7f1b47cc6860415f65dffe87274f7279188"
+  },
+  "stage": "E1",
+  "trace_identities": {
+    "authority": {
+      "allowed_authority_set_sha256": "25809bda1d2541267dfcfc34496284f9d252c7c141570496499df6874b09e4e8",
+      "blocked_authenticated": false,
+      "revoked_authority_set_sha256": "56197c010926038b425cce81aa9850db284d356ec9e88774cccc2aaea9347ee9"
+    },
+    "model": {
+      "id": "theseus_local_repository_worker_v1",
+      "kind": "deterministic_local_repository_retrieval_and_patch_planning_control",
+      "learned_credit": false,
+      "learned_model_invoked": false
+    },
+    "observation": {
+      "final_effect_identity": "9aba91550887fbc05c2e8f88fbc691e581f441a5b6c76879510a3d8701cf7424",
+      "first_effect_identity": "90872259df1aeb48106b1dc425254b7899e10c3c257ee027a047adf0da0d0d04",
+      "observer_id": "theseus_filesystem_effect_observer_v1"
+    },
+    "plan": {
+      "id": "theseus_plan_compiler_existing_owner",
+      "report_sha256": "6fc90bdb3846679c3af0edefe111c6fe073f32ea464d5e2589cadc8ddcd889c7",
+      "state": "GREEN"
+    },
+    "residual": {
+      "blocked_residual_sha256": "2696f66ef90dfc98b5db6a60edc91bed47e35a76ffd06732393e56f0a8a183cf",
+      "revoked_residual_sha256": "2696f66ef90dfc98b5db6a60edc91bed47e35a76ffd06732393e56f0a8a183cf"
+    },
+    "route": {
+      "allowed_decision_digest": "sha256:9c651457e3ba3fe9aa2dea3a0d5e37e11406fa140103cef9c95cf8cec1b547b9",
+      "allowed_trace_id": "reflex-trace:6f008053521bdc8b8a2a5e25",
+      "blocked_trace_id": "reflex-trace:00d792960a5fb5f8f41511db",
+      "revoked_trace_id": "reflex-trace:64327a6091500938119863eb"
+    },
+    "terminal_receipt": {
+      "effect_audit_sha256": "d0be5b4b9a397257fe080d0dd7bb9a1d5a835ab08bf36d0775c4900349101df1",
+      "effect_audit_support_state": "replayable-reference-backed"
+    },
+    "tool": {
+      "id": "theseus_assistant_runtime.run_local_effect_canary",
+      "source_sha256": "4bad2fad8b2d9d8faf92d65bceffb9f37cb5e45644b85a7b24b064c4884067ec"
+    },
+    "vcm": {
+      "id": "vcm_consumer_abi_existing_owner",
+      "report_sha256": "5de7bbfeba5773df37b7219bae948917165e8e393794524b2558edb697b4cdd8",
+      "state": "GREEN"
+    }
+  },
+  "trigger_state": "GREEN"
+}
