@@ -9193,10 +9193,16 @@
         "scripts/theseus_assistant_product_lane_gate.py",
         "configs/core_evidence_campaign.json",
         "configs/core_evidence_e3_experiment.json",
+        "configs/core_evidence_worker_v2_development.json",
         "scripts/core_evidence_campaign.py",
         "scripts/core_evidence_worker.py",
+        "scripts/core_evidence_worker_v2.py",
+        "scripts/core_evidence_worker_v2_development.py",
+        "scripts/core_evidence_worker_v2_evaluator.py",
         "scripts/core_evidence_synthesis.py",
-        "tests/test_core_evidence_campaign.py"
+        "tests/test_core_evidence_campaign.py",
+        "tests/test_core_evidence_worker_v2.py",
+        "tests/test_core_evidence_worker_v2_evaluator.py"
       ],
       "canonical": "scripts/theseus_assistant_runtime.py",
       "report_outputs": [
@@ -9238,7 +9244,7 @@
         "docs/CORE_EVIDENCE_BRIEF.md",
         "docs/assets/core-evidence-useful-safe-frontier.svg"
       ],
-      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_core_evidence_campaign.py && python3 scripts/core_evidence_campaign.py --gate && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_core_evidence_campaign.py tests/test_core_evidence_worker_v2.py tests/test_core_evidence_worker_v2_evaluator.py && python3 scripts/core_evidence_campaign.py --gate && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "cleanup_policy": "canonical user-facing assistant loop; must compose checkpoint session memory, VCM context, dogfood feedback, deterministic tools, planning, and practical code routing rather than creating parallel chat lanes",
       "abstraction_id": "assistant_runtime_contract",
       "major_surface": true,

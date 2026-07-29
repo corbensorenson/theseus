@@ -261,6 +261,62 @@ Produce a public-safe brief from the existing flagship evidence packet:
 The brief may be shared after review. It must remain interesting even when the
 result is negative.
 
+### D1 Successor — Local Repository Worker v2
+
+State: `ACTIVE_DEVELOPMENT`; this is the sole active D1 successor.
+
+E2 and E3 established a dependency, not another reason to rerun the same
+campaign: governance efficacy is unmeasurable while the frozen worker produces
+zero useful work. Do not rerun E2, add E3 variants, narrow the task definition,
+lower the competence floor, or count tool-heavy/no-op work merely to manufacture
+a nonzero baseline.
+
+The successor must instead:
+
+1. diagnose the consumed 0/3 development tasks as development evidence only;
+2. build a completely local, patch-producing worker that receives only the
+   natural request, authority grant, allowed context, and git-free parent
+   snapshot;
+3. label any locally invoked third-party model as local learned generation,
+   never Theseus-student credit;
+4. confine reads and writes to an allowlisted disposable snapshot with no
+   arbitrary shell, network, teacher, public-calibration, D2, or user-facing
+   effect path;
+5. independently apply the candidate diff, inventory every effect, run hidden
+   verification after candidate seal, and prove exact rollback;
+6. freeze Worker v2, evaluator, budgets, rescue ceiling, unchanged competence
+   floor, and a fresh source-disjoint qualification cohort before opening its
+   targets;
+7. open the preserved four-task E2 heldout exactly once only if that fresh
+   qualification clears the frozen floor.
+
+Failure must terminate with the causal wall assigned to retrieval, edit
+synthesis, patch application, verifier selection, bounded repair, rollback,
+evaluator integrity, infrastructure, or local-model competence. D1 is
+`blocked_pending_competent_worker` for efficacy claims until this condition
+closes; E1's replayable authority/rollback result and the E5 brief remain valid
+and shareable at their existing mechanics-only scope.
+
+Development evidence remains non-blind and cannot unlock E2. On the first
+already-consumed task, Worker v2 now produces a real, cleanly applicable patch,
+independently recomputes its effect, selects the relevant existing test, and
+proves exact rollback with zero out-of-snapshot effects. It still completes
+`0/1`: the patch touched one of six target paths (precision `1.0`, recall
+`0.1667`), failed both candidate and hidden verification, exhausted its turn
+budget, and was assigned `EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`. A 4B local model
+copied tool examples and was rejected; 8B thinking mode spent 1,536 tokens and
+342.8 seconds without one action and was rejected; a mild repetition penalty
+closed a measured 1,536-token degenerate loop. Do not assemble or open the
+fresh qualification cohort until the remaining consumed-development tasks are
+run and this repair wall is either closed or declared terminal.
+
+The repeated acceleration criticism in the July review is stale for the
+selected route: the production pretraining step already uses `mx.compile`,
+compiled microbatch four, and width quantum 64. Batch-one settings remain on
+separate eager source-conditioned/supervision routes, not the selected plain
+pretraining route. General acceleration remains frozen unless a fresh profile
+identifies a selected-route defect; it does not preempt Worker v2.
+
 ## Neural Verdict Campaign
 
 This is the only long-training program that remains on the roadmap.

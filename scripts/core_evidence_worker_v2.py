@@ -1,0 +1,1068 @@
+#!/usr/bin/env python3
+"""Bounded, completely local repository patch worker.
+
+The model sees only the natural request, declared runtime context, authority
+grant, and a git-free parent snapshot. It can use a small structured tool set;
+it never receives a shell, target identity, hidden tests, or evaluator output.
+All writes are confined to the disposable snapshot and returned as a unified
+diff for independent evaluation.
+"""
+
+from __future__ import annotations
+
+import argparse
+import difflib
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import time
+from pathlib import Path, PurePosixPath
+from typing import Any, Callable
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CONFIG = ROOT / "configs" / "core_evidence_worker_v2_development.json"
+ALLOWED_SUFFIXES = {
+    ".css", ".html", ".js", ".json", ".md", ".py", ".qmd", ".rs", ".toml",
+    ".ts", ".tsx", ".yml", ".yaml",
+}
+ALLOWED_TOP_LEVEL = {"configs", "crates", "docs", "examples", "scripts", "tests"}
+VISIBLE_FIELDS = {
+    "natural_request", "parent_source_commit", "allowed_runtime_context",
+    "authority_grant",
+}
+FORBIDDEN_TERMS = {
+    "target_commit", "source_task_id", "hidden_tests", "gold_effects", "solution",
+    "expected", "answer_family", "evaluator_score", "required_constructs",
+}
+VERIFY_PYTHON = "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3"
+
+
+class WorkerFault(ValueError):
+    """A fail-closed worker boundary fault."""
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", required=True)
+    parser.add_argument("--snapshot-root", required=True)
+    parser.add_argument("--out", required=True)
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--events-out", default="")
+    args = parser.parse_args()
+    visible = read_json(Path(args.input))
+    config = read_json(Path(args.config))
+    event_path = Path(args.events_out) if args.events_out else None
+    result = run_worker(
+        visible,
+        Path(args.snapshot_root),
+        config,
+        event_sink=(
+            (lambda event: append_event(event_path, event))
+            if event_path is not None
+            else None
+        ),
+    )
+    Path(args.out).write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return 0
+
+
+def run_worker(
+    visible: dict[str, Any],
+    snapshot_root: Path,
+    config: dict[str, Any],
+    *,
+    generator: Callable[[list[dict[str, str]]], str] | None = None,
+    event_sink: Callable[[dict[str, Any]], None] | None = None,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    validate_inputs(visible, snapshot_root, config)
+    state = RepositoryState(snapshot_root, config)
+    local_model = None
+    if generator is None:
+        local_model = LocalMlxModel(config["model"])
+        generator = local_model.generate
+    request = str(visible["natural_request"])
+    request_id = sha256_text(request)[:16]
+    messages = initial_messages(visible, state, config)
+    budgets = config["budgets"]
+    format_faults = 0
+    terminal_reason = "turn_budget_exhausted"
+    for turn in range(1, int(budgets["maximum_agent_turns"]) + 1):
+        generation_started = time.perf_counter()
+        retained = int(budgets.get("maximum_retained_tool_turns") or 6) * 2
+        active_messages = (
+            messages
+            if len(messages) <= 2 + retained
+            else messages[:2] + messages[-retained:]
+        )
+        raw = generator(active_messages)
+        generation_wall_ms = round(
+            (time.perf_counter() - generation_started) * 1000.0, 3
+        )
+        generation_metrics = (
+            dict(local_model.last_generation_metrics)
+            if local_model is not None
+            else {}
+        )
+        state.inference_calls += 1
+        action_kind = "parse_fault"
+        try:
+            action = parse_action(raw)
+            action_kind = str(action.get("action") or "")
+            action_detail = safe_action_detail(action)
+        except (json.JSONDecodeError, KeyError, TypeError) as exc:
+            action_detail = {}
+            format_faults += 1
+            result = {
+                "ok": False,
+                "fault": f"{type(exc).__name__}:{exc}",
+                "instruction": "Return exactly one valid JSON tool action.",
+            }
+            if format_faults > int(budgets["maximum_format_retries"]):
+                terminal_reason = "format_retry_budget_exhausted"
+                emit_event(event_sink, {
+                    "turn": turn,
+                    "request_id": request_id,
+                    "action": action_kind,
+                    "action_detail": action_detail,
+                    "ok": False,
+                    "generation_wall_ms": generation_wall_ms,
+                    **generation_metrics,
+                    "raw_response_sha256": sha256_text(raw),
+                    "raw_response_characters": len(raw),
+                    "raw_response_tail": raw[-240:],
+                    "terminal": True,
+                    "reason": terminal_reason,
+                })
+                break
+        else:
+            format_faults = 0
+            try:
+                result = state.execute(action)
+            except WorkerFault as exc:
+                state.actions.append({
+                    "action": action_kind,
+                    "ok": False,
+                })
+                result = {
+                    "ok": False,
+                    "fault": f"{type(exc).__name__}:{exc}",
+                    "instruction": (
+                        "The tool request was denied. Inspect the returned "
+                        "fault and choose a safe alternative action."
+                    ),
+                }
+        result["state"] = {
+            "changed_paths": state.changed_paths(),
+            "verification_count": len(state.verification_receipts),
+            "last_verification_green": bool(
+                state.verification_receipts
+                and state.verification_receipts[-1]["passed"]
+            ),
+            "repair_attempts": state.repair_attempts,
+            "pre_mutation_inspection": {
+                "read_actions": state.read_actions,
+                "distinct_read_paths": sorted(state.read_paths),
+                "test_read_done": any(
+                    path.startswith("tests/") for path in state.read_paths
+                ),
+                "required_read_actions": int(
+                    budgets["minimum_pre_mutation_read_actions"]
+                ),
+                "required_distinct_paths": int(
+                    budgets["minimum_pre_mutation_distinct_paths"]
+                ),
+            },
+            "remaining_turns": int(budgets["maximum_agent_turns"]) - turn,
+        }
+        emit_event(event_sink, {
+            "turn": turn,
+            "request_id": request_id,
+            "action": action_kind,
+            "action_detail": action_detail,
+            "ok": result.get("ok") is True,
+            "generation_wall_ms": generation_wall_ms,
+            **generation_metrics,
+            "raw_response_sha256": sha256_text(raw),
+            "raw_response_characters": len(raw),
+            "raw_response_tail": (
+                raw[-240:] if action_kind == "parse_fault" else ""
+            ),
+            "changed_path_count": len(state.changed_paths()),
+            "verification_count": len(state.verification_receipts),
+            "terminal": result.get("terminal") is True,
+            "fault": result.get("fault"),
+        })
+        messages.extend([
+            {"role": "assistant", "content": raw[: int(budgets["maximum_tool_result_characters"])]},
+            {
+                "role": "user",
+                "content": "TOOL_RESULT\n" + json.dumps(
+                    result, sort_keys=True
+                )[: int(budgets["maximum_tool_result_characters"])],
+            },
+        ])
+        if result.get("terminal") is True:
+            terminal_reason = str(result.get("reason") or "finished")
+            break
+
+    patch = state.unified_diff()
+    patch_bytes = len(patch.encode("utf-8"))
+    if patch_bytes > int(budgets["maximum_patch_bytes"]):
+        patch = ""
+        terminal_reason = "patch_budget_exceeded"
+    changed_paths = state.changed_paths()
+    verified = bool(state.verification_receipts) and state.verification_receipts[-1]["passed"]
+    residuals = []
+    if not patch:
+        residuals.append("no_effect_capable_patch")
+    if changed_paths and not verified:
+        residuals.append("final_candidate_verification_not_green")
+    if terminal_reason != "finished":
+        residuals.append(terminal_reason)
+    model_card = config["model"]
+    return {
+        "policy": "project_theseus_local_repository_worker_v2",
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent",
+        "model_identity": {
+            "repo_id": model_card["repo_id"],
+            "revision": model_card["revision"],
+            "snapshot_manifest_sha256": (
+                local_model.snapshot_manifest_sha256 if local_model else "injected_test_generator"
+            ),
+            "runtime": "mlx_lm_local_metal",
+        },
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": state.inference_calls,
+        "external_inference_calls": 0,
+        "teacher_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "D2_cases_consumed": 0,
+        "user_facing_effects": 0,
+        "natural_request_sha256": sha256_text(request),
+        "parent_source_commit": str(visible["parent_source_commit"]),
+        "patch_unified_diff": patch,
+        "proposed_paths": changed_paths,
+        "verification_commands": [
+            command for receipt in state.verification_receipts
+            for command in receipt["commands"]
+        ],
+        "verification_receipts": state.verification_receipts,
+        "effect_inventory": state.effect_inventory(),
+        "action_summary": state.action_summary(),
+        "repair_attempts": state.repair_attempts,
+        "terminal_reason": terminal_reason,
+        "abstained": not bool(patch),
+        "residuals": residuals,
+        "candidate_authored_success_flags": [],
+        "runtime": {
+            "wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
+        },
+        "non_claims": [
+            "This local third-party model is not the Theseus student.",
+            "Candidate verification is advisory; the hidden evaluator independently recomputes completion.",
+        ],
+    }
+
+
+class RepositoryState:
+    def __init__(self, root: Path, config: dict[str, Any]) -> None:
+        self.root = root.resolve()
+        self.config = config
+        self.baseline = text_inventory(self.root)
+        self.actions: list[dict[str, Any]] = []
+        self.verification_receipts: list[dict[str, Any]] = []
+        self.inference_calls = 0
+        self.mutations = 0
+        self.repair_attempts = 0
+        self.failed_verification_seen = False
+        self.read_actions = 0
+        self.read_paths: set[str] = set()
+        self.read_spans: set[tuple[str, int, int]] = set()
+
+    def execute(self, action: dict[str, Any]) -> dict[str, Any]:
+        kind = str(action.get("action") or "")
+        if kind == "list":
+            result = self.list_paths(str(action.get("prefix") or ""))
+        elif kind == "search":
+            result = self.search(str(action.get("query") or ""))
+        elif kind == "read":
+            result = self.read(
+                str(action.get("path") or ""),
+                int(action.get("start_line") or 1),
+                int(action.get("end_line") or 240),
+            )
+        elif kind == "replace":
+            result = self.replace(
+                str(action.get("path") or ""),
+                str(action.get("old") or ""),
+                str(action.get("new") or ""),
+            )
+        elif kind == "create":
+            result = self.create(
+                str(action.get("path") or ""),
+                str(action.get("content") or ""),
+            )
+        elif kind == "delete":
+            result = self.delete(str(action.get("path") or ""))
+        elif kind == "verify":
+            result = self.verify(
+                strings(action.get("pytest")),
+                strings(action.get("py_compile")),
+                strings(action.get("json")),
+            )
+        elif kind == "finish":
+            if not self.changed_paths():
+                return {"ok": False, "terminal": False, "fault": "no_changed_paths"}
+            if not self.verification_receipts or not self.verification_receipts[-1]["passed"]:
+                return {"ok": False, "terminal": False, "fault": "final_verification_not_green"}
+            result = {"ok": True, "terminal": True, "reason": "finished"}
+        else:
+            raise WorkerFault(f"unknown_action:{kind}")
+        self.actions.append({"action": kind, "ok": result.get("ok") is True})
+        return result
+
+    def safe_path(self, value: str, *, must_exist: bool = True) -> Path:
+        pure = PurePosixPath(value)
+        if (
+            not value or pure.is_absolute() or ".." in pure.parts
+            or not pure.parts or pure.parts[0] not in ALLOWED_TOP_LEVEL
+            or pure.suffix.lower() not in ALLOWED_SUFFIXES
+        ):
+            raise WorkerFault("unsafe_or_unsupported_path")
+        path = self.root.joinpath(*pure.parts)
+        cursor = self.root
+        for part in pure.parts:
+            cursor = cursor / part
+            if cursor.is_symlink():
+                raise WorkerFault("symlink_path_forbidden")
+        resolved_parent = path.parent.resolve()
+        if not resolved_parent.is_relative_to(self.root):
+            raise WorkerFault("path_escape")
+        if must_exist and (not path.is_file() or path.is_symlink()):
+            raise WorkerFault("file_missing_or_not_regular")
+        return path
+
+    def list_paths(self, prefix: str) -> dict[str, Any]:
+        if prefix:
+            pure = PurePosixPath(prefix)
+            if pure.is_absolute() or ".." in pure.parts:
+                raise WorkerFault("unsafe_prefix")
+        paths = [
+            path for path in sorted(text_inventory(self.root))
+            if not prefix or path.startswith(prefix)
+        ][: int(self.config["budgets"]["maximum_search_results"])]
+        return {"ok": True, "paths": paths}
+
+    def search(self, query: str) -> dict[str, Any]:
+        query = query.strip()
+        if not query or len(query) > 200:
+            raise WorkerFault("invalid_search_query")
+        rows = []
+        maximum = int(self.config["budgets"]["maximum_search_results"])
+        inventory = text_inventory(self.root)
+        for relative, text in inventory.items():
+            for line_number, line in enumerate(text.splitlines(), 1):
+                if query.casefold() in line.casefold():
+                    rows.append({
+                        "path": relative,
+                        "line": line_number,
+                        "text": line[:500],
+                    })
+                    if len(rows) >= maximum:
+                        return {
+                            "ok": True,
+                            "matches": rows,
+                            "truncated": True,
+                            "match_mode": "exact_substring",
+                        }
+        if rows:
+            return {
+                "ok": True,
+                "matches": rows,
+                "truncated": False,
+                "match_mode": "exact_substring",
+            }
+        terms = keywords(query)
+        ranked = []
+        for relative, text in inventory.items():
+            path_text = relative.casefold().replace("_", " ").replace("-", " ")
+            for line_number, line in enumerate(text.splitlines(), 1):
+                lowered = line.casefold()
+                hits = sum(token in lowered for token in terms)
+                if not hits:
+                    continue
+                score = hits * 10 + sum(
+                    token in path_text for token in terms
+                ) * 3
+                ranked.append((score, relative, line_number, line[:500]))
+        ranked.sort(key=lambda row: (-row[0], row[1], row[2]))
+        fuzzy = [
+            {"path": path, "line": line_number, "text": line}
+            for _, path, line_number, line in ranked[:maximum]
+        ]
+        return {
+            "ok": True,
+            "matches": fuzzy,
+            "truncated": len(ranked) > maximum,
+            "match_mode": "token_ranked_fallback",
+        }
+
+    def read(self, relative: str, start: int, end: int) -> dict[str, Any]:
+        path = self.safe_path(relative)
+        maximum = int(self.config["budgets"]["maximum_read_lines"])
+        start = max(1, start)
+        end = min(max(start, end), start + maximum - 1)
+        lines = path.read_text(encoding="utf-8").splitlines()
+        span = (relative, start, min(end, len(lines)))
+        if span in self.read_spans:
+            raise WorkerFault("duplicate_read_span_no_new_information")
+        self.read_spans.add(span)
+        self.read_actions += 1
+        self.read_paths.add(relative)
+        numbered = [f"{index}: {lines[index - 1]}" for index in range(start, min(end, len(lines)) + 1)]
+        return {
+            "ok": True,
+            "path": relative,
+            "start_line": start,
+            "end_line": min(end, len(lines)),
+            "content": "\n".join(numbered),
+        }
+
+    def before_mutation(self) -> None:
+        budgets = self.config["budgets"]
+        if self.read_actions < int(
+            budgets["minimum_pre_mutation_read_actions"]
+        ):
+            raise WorkerFault("insufficient_pre_mutation_read_actions")
+        if len(self.read_paths) < int(
+            budgets["minimum_pre_mutation_distinct_paths"]
+        ):
+            raise WorkerFault("insufficient_pre_mutation_distinct_paths")
+        if (
+            budgets["require_test_read_before_mutation"]
+            and not any(path.startswith("tests/") for path in self.read_paths)
+        ):
+            raise WorkerFault("test_read_required_before_mutation")
+        if self.mutations >= int(budgets["maximum_file_mutations"]):
+            raise WorkerFault("mutation_budget_exhausted")
+        if self.failed_verification_seen:
+            if self.repair_attempts >= int(budgets["maximum_repair_attempts"]):
+                raise WorkerFault("repair_budget_exhausted")
+            self.repair_attempts += 1
+            self.failed_verification_seen = False
+        self.mutations += 1
+
+    def replace(self, relative: str, old: str, new: str) -> dict[str, Any]:
+        if not old or old == new:
+            raise WorkerFault("replace_requires_distinct_nonempty_old_text")
+        path = self.safe_path(relative)
+        text = path.read_text(encoding="utf-8")
+        occurrences = text.count(old)
+        if occurrences != 1:
+            raise WorkerFault(f"replace_old_occurrence_count:{occurrences}")
+        self.before_mutation()
+        write_normalized_text(path, text.replace(old, new, 1))
+        return {"ok": True, "path": relative, "changed": True}
+
+    def create(self, relative: str, content: str) -> dict[str, Any]:
+        path = self.safe_path(relative, must_exist=False)
+        if path.exists() or not content:
+            raise WorkerFault("create_requires_new_nonempty_file")
+        if (
+            self.config["budgets"][
+                "require_existing_integration_before_new_implementation"
+            ]
+            and PurePosixPath(relative).parts[0] in {"scripts", "crates"}
+            and not any(
+                changed in self.baseline for changed in self.changed_paths()
+            )
+        ):
+            raise WorkerFault(
+                "new_implementation_requires_existing_integration_effect"
+            )
+        self.before_mutation()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        write_normalized_text(path, content)
+        return {"ok": True, "path": relative, "changed": True}
+
+    def delete(self, relative: str) -> dict[str, Any]:
+        path = self.safe_path(relative)
+        self.before_mutation()
+        path.unlink()
+        return {"ok": True, "path": relative, "changed": True}
+
+    def verify(
+        self,
+        pytest_targets: list[str],
+        py_compile_targets: list[str],
+        json_targets: list[str],
+    ) -> dict[str, Any]:
+        if not self.changed_paths():
+            raise WorkerFault("verification_requires_changed_paths")
+        automatic = self.automatic_verification_targets()
+        denied_targets: list[str] = []
+        pytest_targets = self.accept_verification_suggestions(
+            pytest_targets, ".py", "tests/", denied_targets
+        )
+        py_compile_targets = self.accept_verification_suggestions(
+            py_compile_targets, ".py", "", denied_targets
+        )
+        json_targets = self.accept_verification_suggestions(
+            json_targets, ".json", "", denied_targets
+        )
+        pytest_targets = sorted(set(pytest_targets) | set(automatic["pytest"]))
+        py_compile_targets = sorted(
+            set(py_compile_targets) | set(automatic["py_compile"])
+        )
+        json_targets = sorted(set(json_targets) | set(automatic["json"]))
+        commands: list[list[str]] = []
+        if pytest_targets:
+            commands.append([
+                VERIFY_PYTHON, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                *pytest_targets,
+            ])
+        if py_compile_targets:
+            commands.append([
+                VERIFY_PYTHON, "-m", "py_compile", *py_compile_targets
+            ])
+        for target in json_targets:
+            commands.append([VERIFY_PYTHON, "-m", "json.tool", target])
+        if not commands:
+            receipt = {
+                "passed": True,
+                "commands": ["internal:text_inventory_and_utf8_validation"],
+                "results": [],
+                "denied_candidate_targets": denied_targets,
+                "selection": automatic,
+                "wall_ms": 0.0,
+            }
+            self.verification_receipts.append(receipt)
+            self.failed_verification_seen = False
+            return {"ok": True, **receipt}
+        started = time.perf_counter()
+        rows = []
+        passed = True
+        for command in commands:
+            process = subprocess.run(
+                command,
+                cwd=self.root,
+                capture_output=True,
+                text=True,
+                timeout=int(self.config["budgets"]["verification_timeout_seconds"]),
+                env={
+                    **os.environ,
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                    "HF_HUB_OFFLINE": "1",
+                    "TRANSFORMERS_OFFLINE": "1",
+                    "NO_PROXY": "*",
+                    "no_proxy": "*",
+                },
+                check=False,
+            )
+            passed = passed and process.returncode == 0
+            rows.append({
+                "argv": [relative_command_part(value, self.root) for value in command],
+                "returncode": process.returncode,
+                "stdout_tail": process.stdout[-4000:],
+                "stderr_tail": process.stderr[-4000:],
+            })
+        receipt = {
+            "passed": passed,
+            "commands": [" ".join(row["argv"]) for row in rows],
+            "results": rows,
+            "failure_summaries": [
+                {
+                    "command": " ".join(row["argv"]),
+                    "returncode": row["returncode"],
+                    "stdout_tail": row["stdout_tail"][-1800:],
+                    "stderr_tail": row["stderr_tail"][-1800:],
+                }
+                for row in rows if row["returncode"] != 0
+            ],
+            "denied_candidate_targets": denied_targets,
+            "selection": automatic,
+            "wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
+        }
+        self.verification_receipts.append(receipt)
+        self.failed_verification_seen = not passed
+        return {"ok": True, **receipt}
+
+    def accept_verification_suggestions(
+        self,
+        targets: list[str],
+        suffix: str,
+        prefix: str,
+        denied: list[str],
+    ) -> list[str]:
+        accepted = []
+        for target in targets:
+            try:
+                accepted.append(self.verification_path(target, suffix, prefix))
+            except WorkerFault:
+                denied.append(target)
+        return accepted
+
+    def automatic_verification_targets(self) -> dict[str, list[str]]:
+        changed = self.changed_paths()
+        pytest_targets = {
+            path for path in changed
+            if path.startswith("tests/") and path.endswith(".py")
+        }
+        py_compile_targets = {
+            path for path in changed if path.endswith(".py")
+        }
+        json_targets = {
+            path for path in changed if path.endswith(".json")
+        }
+        test_inventory = {
+            path: text for path, text in text_inventory(self.root).items()
+            if path.startswith("tests/") and path.endswith(".py")
+        }
+        for changed_path in changed:
+            if not changed_path.endswith(".py"):
+                continue
+            stem = PurePosixPath(changed_path).stem
+            direct = f"tests/test_{stem}.py"
+            if direct in test_inventory:
+                pytest_targets.add(direct)
+            references = [
+                path for path, text in test_inventory.items()
+                if stem in text or changed_path in text
+            ][:4]
+            pytest_targets.update(references)
+        return {
+            "pytest": sorted(pytest_targets),
+            "py_compile": sorted(py_compile_targets),
+            "json": sorted(json_targets),
+        }
+
+    def verification_path(
+        self, relative: str, suffix: str, prefix: str = ""
+    ) -> str:
+        path = self.safe_path(relative)
+        if path.suffix != suffix or (prefix and not relative.startswith(prefix)):
+            raise WorkerFault("verification_target_not_allowlisted")
+        return relative
+
+    def changed_paths(self) -> list[str]:
+        current = text_inventory(self.root)
+        return sorted(
+            path for path in set(self.baseline) | set(current)
+            if self.baseline.get(path) != current.get(path)
+        )
+
+    def effect_inventory(self) -> list[dict[str, Any]]:
+        current = text_inventory(self.root)
+        rows = []
+        for path in self.changed_paths():
+            before = self.baseline.get(path)
+            after = current.get(path)
+            rows.append({
+                "path": path,
+                "effect": "create" if before is None else "delete" if after is None else "modify",
+                "before_sha256": sha256_text(before) if before is not None else None,
+                "after_sha256": sha256_text(after) if after is not None else None,
+            })
+        return rows
+
+    def unified_diff(self) -> str:
+        current = text_inventory(self.root)
+        chunks = []
+        for path in self.changed_paths():
+            before = self.baseline.get(path)
+            after = current.get(path)
+            chunks.extend(difflib.unified_diff(
+                [] if before is None else before.splitlines(keepends=True),
+                [] if after is None else after.splitlines(keepends=True),
+                fromfile="/dev/null" if before is None else f"a/{path}",
+                tofile="/dev/null" if after is None else f"b/{path}",
+                lineterm="\n",
+            ))
+        return "".join(chunks)
+
+    def action_summary(self) -> dict[str, Any]:
+        counts: dict[str, int] = {}
+        for row in self.actions:
+            key = str(row["action"])
+            counts[key] = counts.get(key, 0) + 1
+        return {
+            "action_count": len(self.actions),
+            "action_counts": counts,
+            "file_mutations": self.mutations,
+            "failed_actions": sum(row["ok"] is False for row in self.actions),
+            "pre_mutation_read_actions": self.read_actions,
+            "distinct_read_paths": sorted(self.read_paths),
+        }
+
+
+class LocalMlxModel:
+    def __init__(self, card: dict[str, Any]) -> None:
+        os.environ["HF_HUB_OFFLINE"] = "1"
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+        from mlx_lm import load
+        from mlx_lm.server import LRUPromptCache
+        from mlx_lm.sample_utils import (
+            make_logits_processors,
+            make_sampler,
+        )
+        import mlx.core as mx
+
+        self.card = card
+        self.snapshot = local_snapshot(card)
+        self.snapshot_manifest_sha256 = snapshot_manifest(self.snapshot)
+        self.model, self.tokenizer = load(str(self.snapshot), lazy=False)
+        mx.eval(self.model.parameters())
+        self.sampler = make_sampler(temp=float(card["temperature"]))
+        self.logits_processors = make_logits_processors(
+            repetition_penalty=float(card["repetition_penalty"]),
+            repetition_context_size=int(card["repetition_context_size"]),
+        )
+        self.prompt_cache = LRUPromptCache(max_size=2)
+        self.model_key = (
+            str(card["repo_id"]),
+            str(card["revision"]),
+        )
+        self.last_generation_metrics: dict[str, Any] = {}
+
+    def generate(self, messages: list[dict[str, str]]) -> str:
+        from mlx_lm import stream_generate
+        from mlx_lm.models.cache import make_prompt_cache
+
+        prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+            **dict(self.card.get("chat_template_kwargs") or {}),
+        )
+        bos = self.tokenizer.bos_token
+        prompt_tokens = self.tokenizer.encode(
+            prompt,
+            add_special_tokens=(
+                bos is None or not prompt.startswith(bos)
+            ),
+        )
+        prompt_cache, uncached_tokens = self.prompt_cache.fetch_nearest_cache(
+            self.model_key, prompt_tokens
+        )
+        cache_reused = prompt_cache is not None
+        if prompt_cache is None:
+            prompt_cache = make_prompt_cache(self.model)
+        cache_key = prompt_tokens[:]
+        stream = stream_generate(
+            self.model,
+            self.tokenizer,
+            prompt=uncached_tokens,
+            max_tokens=int(self.card["maximum_action_tokens"]),
+            sampler=self.sampler,
+            logits_processors=self.logits_processors,
+            prompt_cache=prompt_cache,
+        )
+        text = ""
+        complete = None
+        generated_tokens = 0
+        try:
+            for response in stream:
+                cache_key.append(int(response.token))
+                generated_tokens += 1
+                text += response.text
+                complete = complete_action_json(text)
+                if complete is not None:
+                    break
+        finally:
+            stream.close()
+            self.prompt_cache.insert_cache(
+                self.model_key, cache_key, prompt_cache
+            )
+        self.last_generation_metrics = {
+            "prompt_tokens": len(prompt_tokens),
+            "uncached_prompt_tokens": len(uncached_tokens),
+            "generated_tokens": generated_tokens,
+            "prefix_cache_reused": cache_reused,
+        }
+        return complete if complete is not None else text
+
+
+def initial_messages(
+    visible: dict[str, Any], state: RepositoryState, config: dict[str, Any]
+) -> list[dict[str, str]]:
+    ranked = lexical_rank(
+        state.baseline, keywords(str(visible["natural_request"]))
+    )[:12]
+    retrieval = initial_retrieval_context(
+        state.baseline,
+        keywords(str(visible["natural_request"])),
+        ranked,
+        int(config["budgets"]["maximum_initial_retrieval_characters"]),
+    )
+    system = """You are a local repository editing agent inside a disposable parent snapshot.
+Complete the user's request by inspecting and editing the repository, then verify it.
+You have no target answer, git history, network, shell, or hidden tests.
+Return exactly one JSON object per turn and no Markdown.
+Actions:
+{"action":"list","prefix":"scripts/"}
+{"action":"search","query":"request-specific identifier"}
+{"action":"read","path":"scripts/x.py","start_line":1,"end_line":240}
+{"action":"replace","path":"scripts/x.py","old":"exact unique text","new":"replacement text"}
+{"action":"create","path":"tests/test_x.py","content":"complete text"}
+{"action":"delete","path":"path"}
+{"action":"verify","pytest":["tests/test_x.py"],"py_compile":["scripts/x.py"],"json":["configs/x.json"]}
+{"action":"finish"}
+Use read/search before editing. A behavioral request requires behavioral code; changing only
+messages, comments, reports, or roadmap prose is not a solution. Inspect the primary
+implementation, an analogous implementation or config, and at least one relevant test before
+mutation; the harness enforces three distinct read paths and three read actions.
+Integrate behavior into the existing request-specific code before adding any new implementation
+module; an orphan helper is not completion.
+Keep edits minimal and general. Never alter tests merely to make incorrect behavior pass.
+For verification, prefer empty arrays so the worker independently selects tests, compilation,
+and JSON checks from the actual changed paths. Finish only after green verification.
+Candidate claims of success are ignored."""
+    user = json.dumps({
+        "natural_request": visible["natural_request"],
+        "allowed_runtime_context": visible["allowed_runtime_context"],
+        "authority_grant": visible["authority_grant"],
+        "lexically_ranked_paths": ranked,
+        "retrieved_parent_context": retrieval,
+        "budgets": {
+            key: config["budgets"][key] for key in (
+                "maximum_agent_turns", "maximum_file_mutations",
+                "maximum_repair_attempts",
+            )
+        },
+    }, sort_keys=True)
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+def validate_inputs(
+    visible: dict[str, Any], snapshot_root: Path, config: dict[str, Any]
+) -> None:
+    if set(visible) != VISIBLE_FIELDS:
+        raise WorkerFault(f"visible_fields_must_equal:{sorted(VISIBLE_FIELDS)}")
+    if FORBIDDEN_TERMS.intersection(visible):
+        raise WorkerFault("forbidden_visible_field")
+    if (snapshot_root / ".git").exists():
+        raise WorkerFault("git_metadata_forbidden")
+    if config.get("policy") != "project_theseus_local_repository_worker_v2_development_v1":
+        raise WorkerFault("unexpected_config_policy")
+    boundaries = config.get("boundaries") or {}
+    required = {
+        "network": "forbidden",
+        "external_inference_calls": 0,
+        "teacher_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "D2_cases_consumed": 0,
+        "user_facing_effects": 0,
+        "learned_generation_credit": 1,
+        "candidate_snapshot_has_git_metadata": False,
+        "arbitrary_shell": False,
+    }
+    if any(boundaries.get(key) != value for key, value in required.items()):
+        raise WorkerFault("boundary_contract_mismatch")
+
+
+def parse_action(raw: str) -> dict[str, Any]:
+    complete = complete_action_json(raw)
+    if complete is None:
+        raise json.JSONDecodeError("no complete JSON action", raw, 0)
+    result = json.loads(complete)
+    if not isinstance(result, dict):
+        raise WorkerFault("action_must_be_object")
+    return result
+
+
+def complete_action_json(raw: str) -> str | None:
+    """Return the first complete JSON object without waiting for model EOS."""
+    start = raw.find("{")
+    if start < 0:
+        return None
+    try:
+        result, consumed = json.JSONDecoder().raw_decode(raw[start:])
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(result, dict):
+        raise WorkerFault("action_must_be_object")
+    return raw[start:start + consumed]
+
+
+def write_normalized_text(path: Path, text: str) -> None:
+    path.write_text(
+        text if text.endswith("\n") else text + "\n",
+        encoding="utf-8",
+    )
+
+
+def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
+    kind = str(action.get("action") or "")
+    if kind == "search":
+        return {"query": str(action.get("query") or "")[:200]}
+    if kind == "list":
+        return {"prefix": str(action.get("prefix") or "")[:200]}
+    if kind in {"read", "replace", "create", "delete"}:
+        detail = {"path": str(action.get("path") or "")[:300]}
+        if kind == "read":
+            detail.update({
+                "start_line": int(action.get("start_line") or 1),
+                "end_line": int(action.get("end_line") or 240),
+            })
+        return detail
+    if kind == "verify":
+        return {
+            key: strings(action.get(key))[:16]
+            for key in ("pytest", "py_compile", "json")
+        }
+    return {}
+
+
+def initial_retrieval_context(
+    inventory: dict[str, str],
+    tokens: list[str],
+    ranked_paths: list[str],
+    maximum_characters: int,
+) -> list[dict[str, Any]]:
+    """Build compact target-blind excerpts from the parent snapshot."""
+    rows = []
+    used = 0
+    for path in ranked_paths[:8]:
+        lines = inventory[path].splitlines()
+        matching = [
+            index for index, line in enumerate(lines)
+            if any(token in line.casefold() for token in tokens)
+        ]
+        selected: set[int] = set()
+        for index in matching[:10]:
+            selected.update(range(max(0, index - 2), min(len(lines), index + 3)))
+        if path.endswith(".py"):
+            selected.update(
+                index for index, line in enumerate(lines)
+                if re.match(r"^(?:async\s+)?(?:def|class)\s+", line)
+            )
+        selected_lines = [
+            f"{index + 1}: {lines[index]}" for index in sorted(selected)[:60]
+        ]
+        excerpt = "\n".join(selected_lines)
+        if not excerpt:
+            excerpt = "\n".join(
+                f"{index + 1}: {line}"
+                for index, line in enumerate(lines[:20])
+            )
+        remaining = maximum_characters - used
+        if remaining <= 0:
+            break
+        excerpt = excerpt[:remaining]
+        rows.append({"path": path, "excerpt": excerpt})
+        used += len(excerpt)
+    return rows
+
+
+def text_inventory(root: Path) -> dict[str, str]:
+    rows = {}
+    for path in root.rglob("*"):
+        if (
+            not path.is_file() or path.is_symlink()
+            or path.suffix.lower() not in ALLOWED_SUFFIXES
+            or path.stat().st_size > 1_000_000
+        ):
+            continue
+        relative = path.relative_to(root)
+        if not relative.parts or relative.parts[0] not in ALLOWED_TOP_LEVEL:
+            continue
+        rows[relative.as_posix()] = path.read_text(encoding="utf-8", errors="strict")
+    return dict(sorted(rows.items()))
+
+
+def lexical_rank(inventory: dict[str, str], tokens: list[str]) -> list[str]:
+    scores = []
+    for path, text in inventory.items():
+        path_text = path.lower().replace("_", " ").replace("-", " ")
+        lowered = text.lower()
+        score = sum(4 for token in tokens if token in path_text)
+        score += sum(min(lowered.count(token), 8) for token in tokens)
+        if score:
+            scores.append((score, path))
+    return [path for _, path in sorted(scores, key=lambda row: (-row[0], row[1]))]
+
+
+def keywords(value: str) -> list[str]:
+    stop = {"and", "for", "from", "into", "the", "this", "with"}
+    return sorted({
+        token for token in re.findall(r"[a-z0-9]+", value.lower())
+        if len(token) >= 3 and token not in stop
+    })
+
+
+def local_snapshot(card: dict[str, Any]) -> Path:
+    repo = str(card["repo_id"]).replace("/", "--")
+    path = (
+        Path.home() / ".cache" / "huggingface" / "hub" / f"models--{repo}"
+        / "snapshots" / str(card["revision"])
+    )
+    required = {"config.json", "model.safetensors", "tokenizer.json", "tokenizer_config.json"}
+    if not path.is_dir() or not all((path / item).exists() for item in required):
+        raise WorkerFault("complete_local_model_snapshot_missing")
+    return path
+
+
+def snapshot_manifest(path: Path) -> str:
+    rows = []
+    for item in sorted(path.iterdir()):
+        if item.is_file():
+            resolved = item.resolve()
+            rows.append({
+                "path": item.name,
+                "bytes": resolved.stat().st_size,
+                "blob_identity": resolved.name,
+            })
+    return hashlib.sha256(
+        json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def relative_command_part(value: str, root: Path) -> str:
+    try:
+        path = Path(value)
+        return path.relative_to(root).as_posix() if path.is_absolute() else value
+    except ValueError:
+        return value
+
+
+def append_event(path: Path, event: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(event, sort_keys=True) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def emit_event(
+    sink: Callable[[dict[str, Any]], None] | None,
+    event: dict[str, Any],
+) -> None:
+    if sink is not None:
+        sink(event)
+
+
+def strings(value: Any) -> list[str]:
+    return [str(item) for item in value] if isinstance(value, list) else []
+
+
+def read_json(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise TypeError(f"{path} must contain an object")
+    return value
+
+
+def sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

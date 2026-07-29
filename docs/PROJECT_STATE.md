@@ -60,6 +60,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Project registry | `GREEN` | Zero routing blockers and zero hard governance violations |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
+| D1 successor | `WORKER_V2_ACTIVE_DEVELOPMENT_0_OF_1` | Real patch/apply/hidden-test/rollback mechanics are live; first consumed task failed edit synthesis/repair, so fresh qualification remains unopened |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |

@@ -1,0 +1,42 @@
+{
+  "policy": "project_theseus_local_repository_worker_v2_development_v1",
+  "model": {
+    "repo_id": "mlx-community/Qwen3-8B-4bit",
+    "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "temperature": 0.0,
+    "maximum_action_tokens": 1536,
+    "repetition_penalty": 1.05,
+    "repetition_context_size": 128
+  },
+  "budgets": {
+    "maximum_agent_turns": 18,
+    "maximum_format_retries": 3,
+    "maximum_file_mutations": 16,
+    "maximum_repair_attempts": 2,
+    "minimum_pre_mutation_read_actions": 3,
+    "minimum_pre_mutation_distinct_paths": 3,
+    "require_test_read_before_mutation": true,
+    "require_existing_integration_before_new_implementation": true,
+    "maximum_read_lines": 180,
+    "maximum_search_results": 12,
+    "maximum_tool_result_characters": 3000,
+    "maximum_retained_tool_turns": 18,
+    "maximum_initial_retrieval_characters": 4000,
+    "maximum_patch_bytes": 262144,
+    "verification_timeout_seconds": 180
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "learned_generation_credit": 1,
+    "candidate_snapshot_has_git_metadata": false,
+    "arbitrary_shell": false
+  }
+}
