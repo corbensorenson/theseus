@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -216,16 +217,44 @@ def test_e1_replay_fails_if_source_gates_are_red() -> None:
     assert report["disposition"] == "REPLAY_FAILED"
     failed = {row["name"] for row in report["hard_gaps"]}
     assert "registry_gate_green" in failed
-    assert "roadmap_gate_nonred" in failed
+    assert "roadmap_gate_result_bound" not in failed
+    assert any(row["artifact_id"] == "roadmap_implementation_gate" for row in report["artifact_gaps"])
+
+
+def test_e1_replay_fails_if_roadmap_gate_result_is_missing() -> None:
+    report = campaign.build_e1_packet(
+        load_config(),
+        ROOT / "configs" / "core_evidence_campaign.json",
+        source_commit="unit-test-source",
+        checkout_root=ROOT,
+        gate_results={
+            "registry": {"trigger_state": "GREEN", "returncode": 0},
+            "roadmap": {"trigger_state": None, "returncode": 1},
+        },
+        clean_checkout=True,
+    )
+
+    assert report["trigger_state"] == "RED"
+    assert "roadmap_gate_result_bound" in {row["name"] for row in report["hard_gaps"]}
 
 
 def test_e1_local_evidence_capsule_is_complete_and_digest_only(tmp_path: Path) -> None:
     checkout = tmp_path / "checkout"
     checkout.mkdir()
+    registry = json.loads((ROOT / "configs" / "project_manifest_registry.json").read_text(encoding="utf-8"))
+    for contract in registry["route_evidence_contracts"]:
+        for requirement in contract.get("requirements", []):
+            for relative_path in requirement.get("source_paths", []):
+                source = ROOT / relative_path
+                destination = checkout / relative_path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, destination)
 
     capsule = campaign.materialize_e1_evidence_capsule(ROOT, checkout)
 
     assert capsule["missing_required_paths"] == []
+    assert capsule["source_timestamp_faults"] == []
+    assert capsule["source_timestamp_overlays"]
     assert capsule["entry_count"] >= 20
     assert capsule["total_bytes"] > 0
     assert len(capsule["capsule_manifest_sha256"]) == 64
@@ -235,7 +264,9 @@ def test_e1_local_evidence_capsule_is_complete_and_digest_only(tmp_path: Path) -
             "bytes",
             "sha256",
             "raw_content_embedded_in_public_packet",
+            "sensitivity",
         }
         assert entry["raw_content_embedded_in_public_packet"] is False
         assert (checkout / entry["path"]).is_file()
         assert campaign.sha256_bytes((checkout / entry["path"]).read_bytes()) == entry["sha256"]
+    assert all(row["content_changed"] is False for row in capsule["source_timestamp_overlays"])

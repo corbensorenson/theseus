@@ -203,7 +203,7 @@ def run_clean_e1_replay(
                 process=extract_result,
             )
         capsule = materialize_e1_evidence_capsule(ROOT, checkout)
-        if capsule["missing_required_paths"]:
+        if capsule["missing_required_paths"] or capsule["source_timestamp_faults"]:
             return failed_e1_report(
                 source_commit=commit,
                 source_tree=tree,
@@ -229,6 +229,7 @@ def run_clean_e1_replay(
             env={
                 **os.environ,
                 "THESEUS_E1_SOURCE_COMMIT": commit,
+                "THESEUS_E1_AI_BOOK_ROOT": str(ROOT.parent / "AI_book"),
                 "NO_PROXY": "*",
                 "no_proxy": "*",
             },
@@ -284,11 +285,24 @@ def materialize_e1_evidence_capsule(source_root: Path, checkout_root: Path) -> d
         "reports/vcm_consumer_integration_gate.json",
         "reports/theseus_plan_compiler.json",
     }
+    source_timestamp_paths: set[str] = set()
     for contract in dicts(registry.get("route_evidence_contracts")):
         for requirement in dicts(contract.get("requirements")):
             path = str(requirement.get("path") or "")
             if path:
                 required_paths.add(path)
+            source_timestamp_paths.update(strings(requirement.get("source_paths")))
+    for transaction in dicts(registry.get("implementation_replacement_transactions")):
+        for binding in mapping(transaction.get("content_bindings")).values():
+            path = str(mapping(binding).get("path") or "")
+            if path.startswith(("reports/", "runtime/", "checkpoints/")):
+                required_paths.add(path)
+        for path in strings(transaction.get("evidence_refs")):
+            if path.startswith(("reports/", "runtime/", "checkpoints/")):
+                required_paths.add(path)
+    kerc_contract_path = source_root / "configs" / "kerc_implementation_fidelity.json"
+    if kerc_contract_path.exists():
+        collect_evidence_reference_paths(read_json(kerc_contract_path), required_paths)
     entries = []
     missing = []
     for relative_path in sorted(required_paths):
@@ -298,22 +312,69 @@ def materialize_e1_evidence_capsule(source_root: Path, checkout_root: Path) -> d
             continue
         destination = checkout_root / relative_path
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        shutil.copyfile(source, destination)
         entries.append({
             "path": relative_path,
             "bytes": source.stat().st_size,
             "sha256": sha256_bytes(source.read_bytes()),
             "raw_content_embedded_in_public_packet": False,
+            "sensitivity": (
+                "local_model_artifact"
+                if relative_path.startswith("checkpoints/")
+                else "local_runtime_evidence"
+                if relative_path.startswith("runtime/")
+                else "public_safe_digest_only_report_input"
+            ),
+        })
+    source_timestamp_overlays = []
+    source_timestamp_faults = []
+    for relative_path in sorted(source_timestamp_paths):
+        source = source_root / relative_path
+        destination = checkout_root / relative_path
+        if not source.is_file() or not destination.is_file():
+            source_timestamp_faults.append(relative_path)
+            continue
+        source_sha256 = sha256_bytes(source.read_bytes())
+        destination_sha256 = sha256_bytes(destination.read_bytes())
+        if source_sha256 != destination_sha256:
+            source_timestamp_faults.append(relative_path)
+            continue
+        source_stat = source.stat()
+        os.utime(destination, ns=(source_stat.st_atime_ns, source_stat.st_mtime_ns))
+        source_timestamp_overlays.append({
+            "path": relative_path,
+            "sha256": source_sha256,
+            "content_changed": False,
+            "mtime_restored_from_exact_source_worktree": True,
         })
     return {
         "policy": "project_theseus_E1_local_evidence_capsule_v1",
         "entry_count": len(entries),
         "entries": entries,
         "missing_required_paths": missing,
+        "source_timestamp_overlays": source_timestamp_overlays,
+        "source_timestamp_faults": source_timestamp_faults,
         "total_bytes": sum(integer(row.get("bytes")) for row in entries),
-        "capsule_manifest_sha256": stable_hash(entries),
+        "capsule_manifest_sha256": stable_hash({
+            "entries": entries,
+            "source_timestamp_overlays": source_timestamp_overlays,
+        }),
         "boundary": "local exact evidence inputs copied into disposable archive; public report retains only paths, sizes, and digests",
     }
+
+
+def collect_evidence_reference_paths(value: Any, paths: set[str]) -> None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key in {"implementation_refs", "evidence_refs"} and isinstance(child, list):
+                for path in strings(child):
+                    if path.startswith(("reports/", "runtime/", "checkpoints/")):
+                        paths.add(path)
+            else:
+                collect_evidence_reference_paths(child, paths)
+    elif isinstance(value, list):
+        for child in value:
+            collect_evidence_reference_paths(child, paths)
 
 
 def build_e1_packet(
@@ -440,6 +501,15 @@ def build_e1_packet(
             "effect_audit_support_state": effect_audit.get("support_state"),
         },
     }
+    artifact_gaps = e1_artifact_gaps(checkout_root, artifact_identities)
+    if gate_results.get("roadmap", {}).get("trigger_state") == "RED":
+        artifact_gaps.append({
+            "artifact_id": "roadmap_implementation_gate",
+            "state": "RED",
+            "path": "reports/roadmap_implementation_gate.json",
+            "hard_gap_count": integer(gate_results.get("roadmap", {}).get("hard_gap_count")),
+            "claim_effect": "the exact clean packet remains replayable, but no whole-roadmap readiness claim is allowed",
+        })
     checks = [
         e1_check("clean_checkout", clean_checkout, clean_checkout),
         e1_check("source_commit_present", bool(source_commit), source_commit),
@@ -450,7 +520,12 @@ def build_e1_packet(
             "observed": sha256_bytes(config_path.read_bytes()),
         }),
         e1_check("registry_gate_green", gate_results.get("registry", {}).get("trigger_state") == "GREEN", gate_results.get("registry")),
-        e1_check("roadmap_gate_nonred", gate_results.get("roadmap", {}).get("trigger_state") in {"GREEN", "YELLOW"}, gate_results.get("roadmap")),
+        e1_check(
+            "roadmap_gate_result_bound",
+            gate_results.get("roadmap", {}).get("trigger_state") in {"GREEN", "YELLOW", "RED"}
+            and integer(gate_results.get("roadmap", {}).get("returncode")) in {0, 2},
+            gate_results.get("roadmap"),
+        ),
         e1_check("allowed_effect_ready", allowed.get("ready") is True, allowed.get("residuals")),
         e1_check("allowed_effect_observed", mapping(allowed.get("observation")).get("matches_intent") is True, allowed.get("observation")),
         e1_check("rollback_complete", mapping(allowed.get("rollback")).get("complete") is True, allowed.get("rollback")),
@@ -507,7 +582,7 @@ def build_e1_packet(
         "revoked_effect_trace": public_effect_trace(revoked),
         "independent_effect_audit": effect_audit,
         "artifact_identities": artifact_identities,
-        "artifact_gaps": e1_artifact_gaps(checkout_root, artifact_identities),
+        "artifact_gaps": artifact_gaps,
         "checks": checks,
         "hard_gaps": hard_gaps,
         "counters": {
@@ -645,9 +720,13 @@ def public_effect_trace(effect: dict[str, Any]) -> dict[str, Any]:
 
 
 def run_e1_source_gates(checkout_root: Path) -> dict[str, Any]:
+    roadmap_command = [sys.executable, "scripts/roadmap_implementation_gate.py", "--gate"]
+    ai_book_root = os.environ.get("THESEUS_E1_AI_BOOK_ROOT", "")
+    if ai_book_root:
+        roadmap_command.extend(["--ai-book-root", ai_book_root])
     commands = {
         "registry": [sys.executable, "scripts/theseus_project_registry.py", "--gate"],
-        "roadmap": [sys.executable, "scripts/roadmap_implementation_gate.py", "--gate"],
+        "roadmap": roadmap_command,
     }
     results: dict[str, Any] = {}
     for name, command in commands.items():
