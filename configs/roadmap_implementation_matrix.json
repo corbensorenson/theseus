@@ -4601,7 +4601,7 @@
         19
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "active_E3_natural_route_policy_qualification",
+      "status": "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate",
       "dependency": "pre-training mechanics are complete through existing owners: canonical assistant predispatch; typed command/reflex registries and parameter/default binding; qualification and finite outcomes; bounded structured execution with cancellation, immutable partials, retry idempotency, late-result suppression, and compensation; trace integrity; Chronicle/cache invalidation; registry preview/apply/exact rollback; compilation/decompilation interfaces; fail-closed downstream skipping; three effort profiles; a real tool-to-plan DAG; a dispatch-digest-bound reversible effect transaction; and malformed learned-plan rejection. Thirty-four focused tests and the six-case assistant E2E pass every hard gate. The frozen 32-case/eight-track/ten-policy mechanics profile emits 320 rows: full reflexive resolves 32/32, while no-Chronicle and no-compiler each resolve 28/32, with zero held-field leakage, unsafe effects, literal activation, or replay-integrity failures. Learned-router calibration, selective risk, real route regret, answer benefit, and trace-to-reflex efficacy require a behavior-positive selected model and diverse governed traces after training.",
       "pre_training_acceptance_boundary": "Before long training, the canonical dispatch path, typed command and reflex registries, precedence engine, terminal outcomes, structured concurrency, dependency-complete invalidation, Chronicle state, sole effect-commit kernel, replay/decompilation/quarantine interfaces, checkpoint compatibility, resource records, and negative controls are registered and pass exact replay. Learned routing quality, real route regret, and trace-to-reflex promotion remain post-training evidence.",
       "acceptance_gate": "A single canonical dispatch path supports origin-authenticated typed route directives, direct capabilities, workflows, explicit fallback, requested-versus-realized effort, linked declarative command/reflex registries, indexed deterministic precedence, deterministic and calibrated abstaining learned proposals, SCF qualification, finite typed terminal outcomes, minimum-sufficient-compute atomic/composite DAGs with bounded structured concurrency, dependency-complete cache invalidation, typed results, bitemporal Chronicle updates, sole-kernel effect commits, semantic-version dependency invalidation, and economically governed trace-to-reflex replay/differential/shadow/canary/quarantine/decompilation. One frozen private profile reuses existing fixtures and compares model-only, LLM-first tool, hard-rule, learned-router, semantic-cache, modular-tool, no-Chronicle, no-compiler, full reflexive, and oracle policies under matched information, model, authority, retry, verification, and total-resource opportunities, with complete utility, routing, command, temporal, effect, lifecycle, and anti-Goodhart metrics.",
@@ -4939,7 +4939,7 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "active_E3_natural_context_causal_qualification",
+      "status": "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate",
       "dependency": "requires deployed resolver/compiler conformance beyond fixture-level VCM records",
       "acceptance_gate": "Every materialized context packet carries source refs, omissions, loss contract, permitted uses, authority ceiling, taint/deletion closure, copy-on-write branch lineage, typed mandatory-miss faults, and consumer policy.",
       "support_state_target": "synthetic-test-backed",
@@ -4954,7 +4954,7 @@
         16
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "active_E2_E3_natural_cost_qualification",
+      "status": "terminal_E2_E3_zero_useful_cost_contrast_inconclusive_worker_inadequate",
       "dependency": "requires route-level verifier capacity and residual-obligation ledgers",
       "acceptance_gate": "Routing decisions include adequacy state, verification tax, displaced repair/human-cleanup cost, residual obligations, verifier budget consumption, and stronger-verifier escalation for high-risk work.",
       "support_state_target": "synthetic-test-backed",
@@ -4969,7 +4969,7 @@
         19
       ],
       "track_id": "A_reference_evidence_spine",
-      "status": "active_E4_claim_disposition",
+      "status": "implemented_E4_claim_scoped_disposition",
       "dependency": "requires immutable revision history attached to evidence transitions",
       "acceptance_gate": "Claims support downgrade, split, merge, contradiction-link, retire, and replacement transitions without overwriting earlier evidence; contradictions remain linked to affected routes and docs.",
       "support_state_target": "replayable-reference-backed",
@@ -4984,7 +4984,7 @@
         10
       ],
       "track_id": "B_product_assistant_usefulness",
-      "status": "active_E3_natural_reuse_qualification",
+      "status": "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate",
       "dependency": "requires repeated real or replayable verified trajectories with preconditions and monitoring",
       "acceptance_gate": "Verifier-passing repeated trajectories become procedural tool candidates with preconditions, postconditions, verifier receipt, monitoring, retirement, drift checks, and optional lookahead/trie decode source.",
       "support_state_target": "synthetic-test-backed",
@@ -5051,7 +5051,7 @@
         18
       ],
       "track_id": "B_product_assistant_usefulness",
-      "status": "active_E0_preregistration",
+      "status": "terminal_E2_inconclusive_worker_inadequate_heldout_preserved",
       "dependency": "freeze a natural repository-replay cohort with explicit observable-effect inventory, separate proposer/observer/evaluator/claim-authority interfaces, candidate-hidden gold effects, matched route budgets, fixed competence floor, terminal rules, and rescue ceiling before E2 outcomes open",
       "acceptance_gate": "Matched direct and governed routes report useful and unsafe releases, false accepts/rejects, clarification/refusal/quarantine, first/final effect identity, exact rollback over every declared surface, residuals, latency, operator burden, and governance tax; hidden-effect, partial-snapshot, symlink, untracked-file, and observer-collapse controls fail.",
       "support_state_target": "empirical-test-backed",
@@ -5071,7 +5071,7 @@
         18
       ],
       "track_id": "F_memory_planning_tool_substrate",
-      "status": "active_E3_deterministic_route_economics_learned_routing_still_blocked_by_D2",
+      "status": "terminal_E3_deterministic_quality_wall_learned_routing_still_blocked_by_D2",
       "dependency": "requires useful direct model candidates so route accuracy and answer quality can both be measured",
       "acceptance_gate": "A frozen naturally ambiguous workload compares specialist, generalist, clarification, fallback, and abstention routes plus no/fixed/adaptive/overcompute deliberation under matched budgets; report route accuracy, answer utility, calibration, first-hit, last-correct, stop reason, branch credit, verifier disagreement, overthinking harm, and residuals.",
       "support_state_target": "synthetic-test-backed",
@@ -5105,7 +5105,7 @@
         18
       ],
       "track_id": "A_reference_evidence_spine",
-      "status": "active_E0_E4_integrity_maintenance",
+      "status": "implemented_E0_E4_integrity_and_disposition",
       "dependency": "extends candidate integrity, policy-update leases, benchmark ratchets, claim evidence, and promotion routing with one shared evaluation-integrity record",
       "acceptance_gate": "Bind elicitation, selection, reward, monitor, evaluator, heldout and cross-context probes, discrepancies, interference controls, residuals, mitigation evidence, and promotion effect; stale, incomparable, monitor-interference, selection-adaptation, and missing-control fixtures fail closed.",
       "support_state_target": "synthetic-test-backed",
@@ -8135,7 +8135,7 @@
     {
       "track_id": "A_reference_evidence_spine",
       "name": "Book Reference Evidence Spine",
-      "status": "active_E1_E4_clean_replay_and_claim_disposition_only",
+      "status": "implemented_E1_E4_clean_replay_and_claim_disposition",
       "job": "Make one end-to-end Theseus task replayable through command contract, VCM packet, typed job, runtime receipt, artifact graph, claim ledger, evidence transition, residual, and policy/update boundary.",
       "primary_phases": [
         1,

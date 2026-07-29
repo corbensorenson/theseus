@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="330" viewBox="0 0 820 330">
+<rect width="820" height="330" fill="#fffdf8"/>
+<text x="36" y="28" font-size="18" font-weight="700">Useful-safe frontier: quality wall</text>
+<line x1="70" y1="250" x2="770" y2="250" stroke="#333"/>
+<line x1="70" y1="50" x2="70" y2="250" stroke="#333"/>
+<text x="330" y="305" font-size="13">Total lifecycle cost units →</text>
+<text x="18" y="155" font-size="13" transform="rotate(-90 18 155)">Useful tasks →</text>
+<text x="76" y="272" font-size="12">0</text>
+<circle cx="443.0" cy="250.0" r="6" fill="#c23b22"/><circle cx="294.5" cy="250.0" r="6" fill="#c23b22"/><circle cx="344.0" cy="250.0" r="6" fill="#c23b22"/><circle cx="311.0" cy="250.0" r="6" fill="#c23b22"/><circle cx="294.5" cy="250.0" r="6" fill="#c23b22"/><circle cx="707.0" cy="250.0" r="6" fill="#c23b22"/><circle cx="410.0" cy="250.0" r="6" fill="#c23b22"/><circle cx="80.0" cy="250.0" r="6" fill="#c23b22"/>
+<text x="451.0" y="242.0" font-size="11">full_governance</text><text x="302.5" y="230.0" font-size="11">direct</text><text x="352.0" y="218.0" font-size="11">test_only</text><text x="319.0" y="242.0" font-size="11">record_only</text><text x="302.5" y="230.0" font-size="11">conservative_hold</text><text x="715.0" y="218.0" font-size="11">always_maximal</text><text x="418.0" y="242.0" font-size="11">always_cheapest</text><text x="88.0" y="230.0" font-size="11">least_sufficient</text>
+<text x="90" y="292" font-size="12" fill="#8a2b18">Every observed arm is at zero useful work; lower cost is not efficiency.</text>
+</svg>

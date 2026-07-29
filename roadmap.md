@@ -65,7 +65,7 @@ identifies them as the smallest causal next experiment.
 | Documentation | `CUSTODY_GREEN` | Canonical state, roadmap, glossary, and runbooks agree at `28a2fd17` |
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
-| D1 natural-stack evidence | `READY_TO_PREREGISTER` | Can proceed locally without consuming D2 |
+| D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -78,7 +78,8 @@ identifies them as the smallest causal next experiment.
 
 ### E0 — Freeze Questions, Tasks, And Decision Rules
 
-State: `first`.
+State: `COMPLETE` — frozen at preregistration digest
+`97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72`.
 
 Create one prospectively frozen campaign packet under the existing
 `ASI-THESEUS-FLAGSHIP-01` owner. Do not create a new benchmark family or
@@ -114,7 +115,7 @@ natural denominator cannot yet be assembled.
 
 ### E1 — Clean Live Theseus Replay
 
-State: `after E0`.
+State: `COMPLETE_REPLAYABLE_REFERENCE_BACKED`.
 
 Reproduce the current public-safe stack from a clean checkout and bind:
 
@@ -136,7 +137,11 @@ Exit: `REPLAYABLE_REFERENCE_BACKED` for the exact packet, or an honest
 
 ### E2 — D1 Natural Governed-Stack Comparison
 
-State: `after E0 and E1`; this is the immediate empirical headline.
+State: `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE`.
+
+Observed result: the frozen local worker completed 0/3 development tasks. The
+preregistered stop rule preserved all four E2 heldout tasks unopened. No
+efficacy comparison is justified.
 
 Run the same frozen natural tasks through:
 
@@ -171,7 +176,11 @@ Interpretation gate:
 
 ### E3 — Efficiency, Planning, Memory, And Reuse
 
-State: `may run after E0 on a denominator disjoint from E2`.
+State: `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE`.
+
+Observed result: nine existing-owner mechanics controls passed, all 42
+candidate variants were sealed before their corresponding targets opened, and
+no maximal, cheapest, or least-sufficient policy completed a useful task.
 
 Use real repeated repository-work families to test three route policies:
 
@@ -201,7 +210,8 @@ the efficient-ASI claim. It records the competence or route wall instead.
 
 ### E4 — Joined Evidence And Claim Disposition
 
-State: `after each terminal E1-E3 result`.
+State: `COMPLETE` — nine claim-scoped dispositions are recorded in
+`reports/core_evidence_e4_disposition.json`.
 
 Update the existing evidence owner with:
 
@@ -233,7 +243,8 @@ against its own claim identity and evidence-quality rules.
 
 ### E5 — Showable Evidence Brief
 
-State: `after at least one terminal natural result`.
+State: `COMPLETE_PUBLIC_SAFE` — the shareable result is
+`docs/CORE_EVIDENCE_BRIEF.md`.
 
 Produce a public-safe brief from the existing flagship evidence packet:
 

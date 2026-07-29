@@ -10,12 +10,13 @@ training or serving action by itself.
 ## One-Sentence Verdict
 
 Theseus is a well-governed local AI research system with an exact resumable
-57.3M-parameter training lineage and a substantial assisted runtime, but it is
-not yet a demonstrated useful learned assistant: training is deliberately
-held, the current checkpoint is `NOT_EVALUATED`, matched dense controls have
-not been trained, and genuine natural-work evidence is insufficient. Immediate
-work now targets terminal evidence for the core Theseus and ASI Stack bets
-rather than further subsystem expansion.
+57.3M-parameter training lineage and replayable local authority/rollback
+mechanics, but it is not yet a demonstrated useful learned assistant. The first
+flagship D1 campaign terminated honestly: the frozen worker completed 0/3
+development tasks and 0/6 disjoint repeated-work tasks, so stack efficacy,
+planning, VCM, reuse, and routing efficiency remain inconclusive. Training is
+held, D2 is untouched, and the smallest next causal experiment is a genuinely
+patch-producing local worker qualification—not another governance surface.
 
 ## How Truth Is Resolved
 
@@ -58,7 +59,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Repository | `LOCAL_ONLY_NOT_REMOTE_VERIFIED` | Documentation baseline `28a2fd17`; inspect Git for the current roadmap transaction and divergence from `origin/main` |
 | Project registry | `GREEN` | Zero routing blockers and zero hard governance violations |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
-| D1 governed-stack evidence | `READY_TO_PREREGISTER` | Natural local repository work can test stack, authority, routing, planning, VCM, and reuse without consuming learned capability |
+| D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -153,7 +154,7 @@ independent readiness package may be regenerated with the hold installed, but
 training waits for a later compute window. Regenerating a GREEN report is not
 itself an instruction to train.
 
-## Active Evidence Program
+## Flagship Evidence Result
 
 The roadmap now separates two independent questions:
 
@@ -165,9 +166,17 @@ The roadmap now separates two independent questions:
   and dense-total control followed by the sealed 160-case evaluation. This
   remains held and unconsumed.
 
-D1 will also use disjoint natural repeated-work cohorts to test
-least-sufficient routing, typed planning, VCM, stale or shuffled context,
-verified procedural reuse, false triggers, rollback, and total lifecycle cost.
+D1 used a disjoint natural repeated-work cohort to test maximal, cheapest, and
+least-sufficient routing plus planning, VCM, stale/shuffled/omission context,
+and verified reuse. Nine existing-owner mechanics regressions passed, but no
+route met the frozen useful-work predicate. This is a worker/route wall, not a
+falsification of the broader mechanisms.
+
+The public-safe result is `docs/CORE_EVIDENCE_BRIEF.md`; exact claim
+dispositions are in `reports/core_evidence_e4_disposition.json`. The E2 heldout
+cohort remains sealed. Any successor must keep the evaluator and competence
+floor fixed while qualifying a patch-producing local worker on the already
+opened development partition.
 
 The active ASI Stack claim owners are the stack-not-model, efficient-ASI,
 authority, planning, VCM, procedural-memory, specialist-routing,
@@ -294,22 +303,17 @@ validated the latest transaction.
 
 In order:
 
-1. Preregister the existing `ASI-THESEUS-FLAGSHIP-01` natural repository-work
-   cohort, visible/hidden fields, matched routes, competence floor, terminal
-   rules, and claim ceilings.
-2. Produce one clean live public-safe Theseus replay with allowed, blocked or
-   revoked, and exact rollback traces.
-3. Run D1 on natural work through full governed, direct, test-only,
-   record-only, and conservative-hold routes.
-4. On a disjoint denominator, compare maximal, cheapest, and least-sufficient
-   routing plus planning, VCM, stale/shuffled/omitted context, and verified
-   procedural reuse.
-5. Preserve every positive, negative, null, blocked, invalid, and weak-tail
-   outcome and produce a claim-scoped public-safe evidence packet.
-6. Refresh exact step-11,416 source-bound readiness with the training hold
+1. Keep the E2 heldout and D2 surfaces sealed; do not lower the competence
+   floor or weaken the evaluator.
+2. Qualify a genuinely patch-producing local worker on the already-open
+   three-task development partition.
+3. Re-enter E2 heldout only if the frozen competence floor passes without
+   target leakage, external inference, teacher calls, or learned-credit
+   laundering.
+4. Refresh exact step-11,416 source-bound readiness with the training hold
    installed.
-7. Push current local commits and observe hosted CI.
-8. When a future multi-day compute window exists, qualify once, complete the
+5. Push current local commits and observe hosted CI.
+6. When a future multi-day compute window exists, qualify once, complete the
    modular and both dense candidates, and consume D2 exactly once.
 
 ## Explicitly Not Immediate

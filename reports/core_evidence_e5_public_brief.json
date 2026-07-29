@@ -1,0 +1,78 @@
+{
+  "E4_report_payload_sha256": "7a59a90bb48ffc27bc99ec4eb8ffd76e739c28a9580a3e39b239d22dd3b88d87",
+  "artifact_paths": [
+    "docs/CORE_EVIDENCE_BRIEF.md",
+    "docs/assets/core-evidence-useful-safe-frontier.svg",
+    "reports/core_evidence_e4_disposition.json"
+  ],
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "checks": [
+    {
+      "evidence": "GREEN",
+      "name": "E4_green",
+      "passed": true
+    },
+    {
+      "evidence": "no prompt, target, patch, private payload, or raw checkpoint content embedded",
+      "name": "opaque_examples_only",
+      "passed": true
+    },
+    {
+      "evidence": 0,
+      "name": "D2_untouched",
+      "passed": true
+    },
+    {
+      "evidence": "efficacy claims remain inconclusive",
+      "name": "no_capability_laundering",
+      "passed": true
+    }
+  ],
+  "created_utc": "2026-07-29T19:17:17.157471Z",
+  "hard_gaps": [],
+  "headline": "The governance mechanics replay cleanly; the current frozen worker cannot yet do the work needed to test stack efficacy.",
+  "policy": "project_theseus_core_evidence_E5_public_brief_v1",
+  "question": "Can the existing local Theseus stack improve useful-safe repository work at acceptable total lifecycle cost?",
+  "report_payload_sha256": "9ccc9702500bea7833ddebea78c4dc380cfd5415a4fe7e734a78ac4a36f16b0a",
+  "result_table": [
+    {
+      "denominator": 1,
+      "disposition": "POSITIVE_SCOPED mechanics",
+      "experiment": "clean replay",
+      "result": "replayable"
+    },
+    {
+      "denominator": 3,
+      "disposition": "INCONCLUSIVE_WORKER_INADEQUATE",
+      "experiment": "development competence",
+      "result": "0 useful"
+    },
+    {
+      "denominator": 6,
+      "disposition": "INCONCLUSIVE_WORKER_INADEQUATE",
+      "experiment": "repeated-work policies",
+      "result": "0 useful"
+    },
+    {
+      "denominator": 9,
+      "disposition": "mechanics regression only",
+      "experiment": "owner mechanics controls",
+      "result": "9 pass"
+    }
+  ],
+  "safe_to_share": true,
+  "stage": "E5",
+  "trigger_state": "GREEN",
+  "what_changes": [
+    "Stop expanding governance surfaces for this campaign.",
+    "The smallest causal next experiment is a genuinely patch-producing local worker qualification on development tasks.",
+    "Keep E2 heldout and D2 sealed; do not lower the competence floor."
+  ],
+  "what_remains_unproved": [
+    "governed-stack efficacy",
+    "planning or VCM causal utility",
+    "procedural reuse efficiency",
+    "least-sufficient routing efficiency",
+    "learned student capability"
+  ]
+}
