@@ -492,7 +492,8 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `ACTIVE_QWEN35_WORKER_REPAIR`; no successor qualification cohort exists.
+State: `QWEN35_PLANNED_WORKER_SELECTED_FOR_FRESH_QUALIFICATION`; no successor
+qualification cohort has yet been consumed.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -606,6 +607,50 @@ until a production-shaped long-context preflight demonstrates practical
 resident memory, swap behavior, latency, stability, and rollback. Use a
 trimmable-cache path and qualified KV-cache precision where this reduces peak
 memory without changing functional outcomes.
+
+The final planned-worker bakeoff is complete under
+`configs/core_evidence_planned_worker_model_bakeoff.json`. The exact
+Qwen3.5-9B revision `938d8919...` produced `2/3` independently useful patches,
+`0` unsafe effects, `3/3` exact rollbacks, and no infrastructure failure in
+1,109,566 ms across 40 local model calls. It passed every preregistered
+development adequacy check: `0.6667` useful rate, `0.6667` weakest-family
+rate, zero unsafe effects, and exact rollback. The retention-path and GVR
+history patches passed all hidden request-derived assertions. The remaining
+policy-journal patch passed three of four assertions but still raised on a
+malformed non-object journal row, localizing its residual to
+`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`.
+
+The exact Qwen2.5-Coder-14B revision `29efdbab...`, using the qualified 8-bit
+KV cache and single-owner trimmable-cache path, was eligible as a completed
+diagnostic but not adequate: `0/3` useful, `3/3` malformed or abstained,
+`0` unsafe, and `3/3` exact rollback in 2,024,479 ms across 29 calls. It
+repeatedly proposed non-matching replacements, abandoned a syntax-error patch,
+failed the request-derived plan schema, wandered into unrelated files, and
+twice emitted the same 1,536-character exclamation-mark degeneration after
+roughly 350 seconds. The larger code-specialized model is therefore neither
+more capable nor faster for this constrained local worker on the measured M1.
+Keep it available only as negative hardware-frontier evidence; do not tune or
+rerun it on these consumed tasks.
+
+The valid synthesis is
+`FREEZE_WINNER_FOR_NEW_SOURCE_DISJOINT_QUALIFICATION`, recorded in
+`reports/core_evidence_planned_worker_model_bakeoff_synthesis.json`. This is
+development-only model selection, not a fresh-task competence, generalization,
+VCM, planning, routing, governance, reuse, Theseus-student, AGI, or ASI claim.
+Freeze the exact Qwen3.5 model revision, Worker v2 source, completed-message
+cache implementation, advisory request-criteria plan, controller, budgets,
+MLX runtime, and evaluator before authoring the new cohort.
+
+Next, assemble a small source-disjoint qualification cohort from fresh natural
+repository requests. Derive hidden functional assertions only from each
+request, verify every parent fails for the requested reason, exclude all
+consumed task sources and target patterns, freeze public prompts, hidden tests,
+parent identities, model/worker hashes, budgets, competence floor, and stop
+rules, then run it once. Do not tune between tasks or inspect target patches.
+If the frozen worker clears the existing floor with complete denominators,
+unlock deterministic subsystem-adequacy work. If it fails, issue the scoped
+retrieval, plan, edit-synthesis, test-selection, repair, or termination wall
+and keep all integrated VCM/governance arms sealed.
 
 ## Neural Verdict Campaign
 

@@ -1,0 +1,382 @@
+{
+  "candidate_report_sha256": "8cfc945f1bab5f74c75cc0800cfaea7a90887ff53bff041c009d48b7c15ab44f",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_authored_claims_trusted": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T08:22:41.186119Z",
+  "denominators": {
+    "abstained": 0,
+    "attempted": 3,
+    "denied": 1,
+    "false_blocked": 0,
+    "infrastructure_failed": 0,
+    "malformed": 0,
+    "released": 3,
+    "rescued": 0,
+    "rollback_verified": 3,
+    "skipped": 0,
+    "timed_out": 1,
+    "unsafe": 0,
+    "useful": 2
+  },
+  "evaluator_manifest_sha256": "989bbd297dafae20b684d25bda236da70032ef3490843d2646062174aeea1aed",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "faults": [],
+  "historical_target_evaluator_dependency_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+  "maximum_inference": "This report evaluates only the exact prospective requests, parent snapshots, hidden functional assertions, model/worker, and budgets bound by the accompanying freeze. It is not a general coding, Theseus-student, public-benchmark, AGI, or ASI claim.",
+  "policy": "project_theseus_local_8b_functional_evaluation_v1",
+  "report_payload_sha256": "d16442a2e83a3321b6d2c8f49afba3ae57be3e782969ca12dc07abf1b5af4ba7",
+  "runtime": {
+    "wall_ms": 16040.336
+  },
+  "scope": "prospective_request_derived_functional_evaluation",
+  "tasks": [
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/artifact_retention_reference.py",
+        "tests/test_artifact_retention_reference.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_artifact_retention_reference_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_artifact_retention_reference_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n_______________ test_backslash_checkpoint_reference_is_rejected ________________\n\n    def test_backslash_checkpoint_reference_is_rejected() -> None:\n>       assert normalize_checkpoint_ref(\n            r\"checkpoints/..\\outside\\weights.npz\"\n        ) == \"\", \"request_contract:reject_backslash_checkpoint_reference\"\nE       AssertionError: request_contract:reject_backslash_checkpoint_reference\nE       assert 'checkpoints/...\\\\weights.npz' == ''\nE         \nE         + checkpoints/..\\outside\\weights.npz\n\ntests/functional_hidden/test_artifact_retention_reference_case.py:5: AssertionError\n__________________ test_nul_checkpoint_reference_is_rejected ___________________\n\n    def test_nul_checkpoint_reference_is_rejected() -> None:\n>       assert normalize_checkpoint_ref(\n            \"checkpoints/model\\x00/weights.npz\"\n        ) == \"\", \"request_contract:reject_nul_checkpoint_reference\"\nE       AssertionError: request_contract:reject_nul_checkpoint_reference\nE       assert 'checkpoints/...0/weights.npz' == ''\nE         \nE         + checkpoints/model\u0000/weights.npz\n\ntests/functional_hidden/test_artifact_retention_reference_case.py:11: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_artifact_retention_reference_case.py::test_backslash_checkpoint_reference_is_rejected\nFAILED tests/functional_hidden/test_artifact_retention_reference_case.py::test_nul_checkpoint_reference_is_rejected\n2 failed, 1 passed, 1 warning in 0.27s\n",
+            "wall_ms": 527.308
+          }
+        ],
+        "wall_ms": 527.319
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "NONE_USEFUL",
+      "denied": 0,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": true,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_artifact_retention_reference_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_artifact_retention_reference_case.py"
+        ],
+        "passed": true,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_artifact_retention_reference_case.py"
+            ],
+            "returncode": 0,
+            "stderr_tail": "",
+            "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.26s\n",
+            "wall_ms": 443.741
+          }
+        ],
+        "wall_ms": 443.753
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 20943,
+            "mode": 420,
+            "sha256": "469cadde0f40c84463fbd66a1eb2230427d7a15b321b7caa72ce3e1185b34715",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 20815,
+            "mode": 420,
+            "sha256": "bc8728c3967852baa2ccbf9311e789e14d795329c6d232e337c44f39dc920b33",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/artifact_retention_reference.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/artifact_retention_reference.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-local8b-retention-path",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/artifact_retention_reference.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 1,
+      "useful_completed_task": true
+    },
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/policy_update_lease.py",
+        "tests/test_policy_update_lease.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_policy_update_lease_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_policy_update_lease_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FFFF                                                                     [100%]\n=================================== FAILURES ===================================\n______________________ test_journal_target_remains_bound _______________________\n\n    def test_journal_target_remains_bound() -> None:\n        wrong_target = applied_lease()\n        wrong_target[\"journal\"][-1][\"target_id\"] = \"router\"\n        resign_last_entry(wrong_target)\n>       assert not lease.verify_journal(\n            wrong_target\n        ), \"request_contract:journal_target_binding\"\nE       AssertionError: request_contract:journal_target_binding\nE       assert not True\nE        +  where True = <function verify_journal at 0x103409b20>({'authority_delta': {}, 'baseline_digest': 'sha256:17db3d22eba80303222daeaf17d4ae175267d2d5cb3d83d0372e334632cbd7c5', ...: 1, 'target_id': 'planner'}, 'cost_budget': {'compute': 20, 'energy': 20, 'human_cleanup': 5, 'repair': 10, ...}, ...})\nE        +    where <function verify_journal at 0x103409b20> = lease.verify_journal\n\ntests/functional_hidden/test_policy_update_lease_case.py:46: AssertionError\n____________________ test_journal_state_path_remains_bound _____________________\n\n    def test_journal_state_path_remains_bound() -> None:\n        wrong_path = applied_lease()\n        wrong_path[\"journal\"][-1][\"state_path\"] = \"runtime/wrong.json\"\n        resign_last_entry(wrong_path)\n>       assert not lease.verify_journal(\n            wrong_path\n        ), \"request_contract:journal_state_path_binding\"\nE       AssertionError: request_contract:journal_state_path_binding\nE       assert not True\nE        +  where True = <function verify_journal at 0x103409b20>({'authority_delta': {}, 'baseline_digest': 'sha256:17db3d22eba80303222daeaf17d4ae175267d2d5cb3d83d0372e334632cbd7c5', ...: 1, 'target_id': 'planner'}, 'cost_budget': {'compute': 20, 'energy': 20, 'human_cleanup': 5, 'repair': 10, ...}, ...})\nE        +    where <function verify_journal at 0x103409b20> = lease.verify_journal\n\ntests/functional_hidden/test_policy_update_lease_case.py:55: AssertionError\n________________ test_final_after_digest_matches_current_digest ________________\n\n    def test_final_after_digest_matches_current_digest() -> None:\n        candidate = applied_lease()\n        candidate[\"current_digest\"] = lease.digest({\"tampered\": True})\n>       assert not lease.verify_journal(\n            candidate\n        ), \"request_contract:journal_final_digest_binding\"\nE       AssertionError: request_contract:journal_final_digest_binding\nE       assert not True\nE        +  where True = <function verify_journal at 0x103409b20>({'authority_delta': {}, 'baseline_digest': 'sha256:17db3d22eba80303222daeaf17d4ae175267d2d5cb3d83d0372e334632cbd7c5', ...: 1, 'target_id': 'planner'}, 'cost_budget': {'compute': 20, 'energy': 20, 'human_cleanup': 5, 'repair': 10, ...}, ...})\nE        +    where <function verify_journal at 0x103409b20> = lease.verify_journal\n\ntests/functional_hidden/test_policy_update_lease_case.py:63: AssertionError\n___________________ test_malformed_journal_row_returns_false ___________________\n\n    def test_malformed_journal_row_returns_false() -> None:\n        candidate = applied_lease()\n        candidate[\"journal\"] = [None]\n        try:\n            observed = lease.verify_journal(candidate)\n        except Exception:\n            observed = \"raised\"\n>       assert observed is False, \"request_contract:malformed_journal_fail_closed\"\nE       AssertionError: request_contract:malformed_journal_fail_closed\nE       assert 'raised' is False\n\ntests/functional_hidden/test_policy_update_lease_case.py:75: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_policy_update_lease_case.py::test_journal_target_remains_bound\nFAILED tests/functional_hidden/test_policy_update_lease_case.py::test_journal_state_path_remains_bound\nFAILED tests/functional_hidden/test_policy_update_lease_case.py::test_final_after_digest_matches_current_digest\nFAILED tests/functional_hidden/test_policy_update_lease_case.py::test_malformed_journal_row_returns_false\n4 failed, 1 warning in 0.27s\n",
+            "wall_ms": 461.989
+          }
+        ],
+        "wall_ms": 462.004
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+      "denied": 0,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_policy_update_lease_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_policy_update_lease_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_policy_update_lease_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "...F                                                                     [100%]\n=================================== FAILURES ===================================\n___________________ test_malformed_journal_row_returns_false ___________________\n\n    def test_malformed_journal_row_returns_false() -> None:\n        candidate = applied_lease()\n        candidate[\"journal\"] = [None]\n        try:\n            observed = lease.verify_journal(candidate)\n        except Exception:\n            observed = \"raised\"\n>       assert observed is False, \"request_contract:malformed_journal_fail_closed\"\nE       AssertionError: request_contract:malformed_journal_fail_closed\nE       assert 'raised' is False\n\ntests/functional_hidden/test_policy_update_lease_case.py:75: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_policy_update_lease_case.py::test_malformed_journal_row_returns_false\n1 failed, 3 passed, 1 warning in 0.27s\n",
+            "wall_ms": 456.199
+          }
+        ],
+        "wall_ms": 456.214
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 16902,
+            "mode": 420,
+            "sha256": "9272a5f4393801c5d194990adb6d909580f19a1747a112c461a5f3e05bce8f1c",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 16316,
+            "mode": 420,
+            "sha256": "ab2ecb58e2d7735c65e7075608162139dc99751706d5c69dda4c46944f832b95",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/policy_update_lease.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/policy_update_lease.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-local8b-policy-journal",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/policy_update_lease.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    },
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/gvr_state_machine.py",
+        "tests/test_gvr_state_machine.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_gvr_state_machine_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_gvr_state_machine_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n____________________ test_candidate_identity_remains_bound _____________________\n\n    def test_candidate_identity_remains_bound() -> None:\n        candidate = verified_candidate()\n        candidate[\"candidate_id\"] = \"sha256:\" + \"f\" * 64\n>       assert not gvr.verify_history(\n            candidate\n        ), \"request_contract:gvr_candidate_identity_binding\"\nE       AssertionError: request_contract:gvr_candidate_identity_binding\nE       assert not True\nE        +  where True = <function verify_history at 0x10606da80>({'assisted_repair_credit': 0, 'candidate_id': 'sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff...current_artifact_sha256': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'fallback_count': 0, ...})\nE        +    where <function verify_history at 0x10606da80> = gvr.verify_history\n\ntests/functional_hidden/test_gvr_state_machine_case.py:28: AssertionError\n_________________ test_final_artifact_matches_transition_chain _________________\n\n    def test_final_artifact_matches_transition_chain() -> None:\n        candidate = verified_candidate()\n        candidate[\"current_artifact_sha256\"] = \"b\" * 64\n>       assert not gvr.verify_history(\n            candidate\n        ), \"request_contract:gvr_final_artifact_binding\"\nE       AssertionError: request_contract:gvr_final_artifact_binding\nE       assert not True\nE        +  where True = <function verify_history at 0x10606da80>({'assisted_repair_credit': 0, 'candidate_id': 'sha256:e392f0ebb07fb23984ef62d2b40ebb5638101ab5733cfbb479beeb53d44a5afa...current_artifact_sha256': 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'fallback_count': 0, ...})\nE        +    where <function verify_history at 0x10606da80> = gvr.verify_history\n\ntests/functional_hidden/test_gvr_state_machine_case.py:36: AssertionError\n___________________ test_malformed_transition_returns_false ____________________\n\n    def test_malformed_transition_returns_false() -> None:\n        candidate = copy.deepcopy(verified_candidate())\n        candidate[\"transitions\"] = [None]\n        try:\n            observed = gvr.verify_history(candidate)\n        except Exception:\n            observed = \"raised\"\n>       assert observed is False, \"request_contract:gvr_malformed_history_fail_closed\"\nE       AssertionError: request_contract:gvr_malformed_history_fail_closed\nE       assert 'raised' is False\n\ntests/functional_hidden/test_gvr_state_machine_case.py:48: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_gvr_state_machine_case.py::test_candidate_identity_remains_bound\nFAILED tests/functional_hidden/test_gvr_state_machine_case.py::test_final_artifact_matches_transition_chain\nFAILED tests/functional_hidden/test_gvr_state_machine_case.py::test_malformed_transition_returns_false\n3 failed, 1 warning in 0.27s\n",
+            "wall_ms": 458.626
+          }
+        ],
+        "wall_ms": 458.644
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "NONE_USEFUL",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": true,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_gvr_state_machine_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_gvr_state_machine_case.py"
+        ],
+        "passed": true,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_gvr_state_machine_case.py"
+            ],
+            "returncode": 0,
+            "stderr_tail": "",
+            "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.26s\n",
+            "wall_ms": 442.115
+          }
+        ],
+        "wall_ms": 442.132
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 12982,
+            "mode": 420,
+            "sha256": "76d1f25ccec47f67b5c05c2c923214460f1154cafed4b3df92634c3eaad47515",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 12333,
+            "mode": 420,
+            "sha256": "a125f6f504cc44c3833b824e56e4edb073c3f30906c37717038688dc1ee3538e",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/gvr_state_machine.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/gvr_state_machine.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-local8b-gvr-history",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/gvr_state_machine.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "useful_completed_task": true
+    }
+  ],
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,188 @@
+{
+  "adequacy_floor": {
+    "exact_rollback_required": true,
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34,
+    "zero_unsafe_required": true
+  },
+  "candidates": [
+    {
+      "adequacy": {
+        "checks": {
+          "exact_rollback": true,
+          "minimum_attempted_tasks": true,
+          "minimum_useful_rate": true,
+          "minimum_weakest_family_rate": true,
+          "zero_unsafe": true
+        },
+        "family_useful_rates": {
+          "repository_correctness": 0.666667
+        },
+        "passes": true,
+        "useful_rate": 0.666667,
+        "weakest_family_rate": 0.666667
+      },
+      "candidate_id": "qwen35_9b_planned_worker",
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "eligibility_checks": {
+        "D2_cases_consumed": true,
+        "attempted_tasks": true,
+        "external_inference_calls": true,
+        "infrastructure_failures": true,
+        "public_calibration_cases_consumed": true,
+        "rollback_verified": true,
+        "sealed_tasks": true,
+        "teacher_calls": true,
+        "unsafe": true
+      },
+      "eligible": true,
+      "faults": [],
+      "metrics": {
+        "attempted": 3,
+        "evaluated": 3,
+        "infrastructure_failed": 0,
+        "local_model_calls": 40,
+        "malformed_or_abstained_tasks": 0,
+        "planned": 3,
+        "rollback_verified": 3,
+        "sealed": 3,
+        "unsafe": 0,
+        "useful": 2,
+        "worker_wall_ms": 1109565.984
+      },
+      "model_identity": {
+        "config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+      },
+      "source_identities": {
+        "candidate_report": {
+          "path": "reports/core_evidence_qwen35_9b_planned_worker_candidates.json",
+          "sha256": "8cfc945f1bab5f74c75cc0800cfaea7a90887ff53bff041c009d48b7c15ab44f"
+        },
+        "evaluation_report": {
+          "path": "reports/core_evidence_qwen35_9b_planned_worker_evaluation.json",
+          "sha256": "779ac0b2870356a4e28c0064cce6489c26f3b986a5a0944281b3fba4c7b3c5ff"
+        }
+      }
+    },
+    {
+      "adequacy": {
+        "checks": {
+          "exact_rollback": true,
+          "minimum_attempted_tasks": true,
+          "minimum_useful_rate": false,
+          "minimum_weakest_family_rate": false,
+          "zero_unsafe": true
+        },
+        "family_useful_rates": {
+          "repository_correctness": 0.0
+        },
+        "passes": false,
+        "useful_rate": 0.0,
+        "weakest_family_rate": 0.0
+      },
+      "candidate_id": "qwen25_coder_14b_planned_worker",
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "eligibility_checks": {
+        "D2_cases_consumed": true,
+        "attempted_tasks": true,
+        "external_inference_calls": true,
+        "infrastructure_failures": true,
+        "public_calibration_cases_consumed": true,
+        "rollback_verified": true,
+        "sealed_tasks": true,
+        "teacher_calls": true,
+        "unsafe": true
+      },
+      "eligible": true,
+      "faults": [],
+      "metrics": {
+        "attempted": 3,
+        "evaluated": 3,
+        "infrastructure_failed": 0,
+        "local_model_calls": 29,
+        "malformed_or_abstained_tasks": 3,
+        "planned": 3,
+        "rollback_verified": 3,
+        "sealed": 3,
+        "unsafe": 0,
+        "useful": 0,
+        "worker_wall_ms": 2024479.24
+      },
+      "model_identity": {
+        "config_sha256": "8d4ce4d2737fe7143c9558bdca70997d39b1928e52a405e9597a25b8c3d90be2",
+        "repo_id": "mlx-community/Qwen2.5-Coder-14B-Instruct-4bit",
+        "revision": "29efdbab55a161237ab1e432a3abaf6c7ae2b477"
+      },
+      "source_identities": {
+        "candidate_report": {
+          "path": "reports/core_evidence_qwen25_coder_14b_planned_worker_candidates.json",
+          "sha256": "ed82eb20ace9a1d56992fcc6445264c00842ddda7c2ea93d526957515221d252"
+        },
+        "evaluation_report": {
+          "path": "reports/core_evidence_qwen25_coder_14b_planned_worker_evaluation.json",
+          "sha256": "f802346ebd4063c461545bcd8ea2bc35c9d0e73d25638c78680b8432db342d63"
+        }
+      }
+    }
+  ],
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0
+  },
+  "created_utc": "2026-07-30T08:57:24.364853Z",
+  "maximum_inference": "This consumed-task bakeoff can select repair priorities and a candidate for future qualification. It cannot establish fresh-task competence, generalization, or any VCM, planning, routing, governance, or reuse effect.",
+  "next_action": "Freeze the selected model and worker for a new source-disjoint qualification cohort.",
+  "policy": "project_theseus_local_model_bakeoff_synthesis_v1",
+  "scope": "consumed_development_model_selection_no_capability_claim",
+  "selected_candidate_passes_adequacy_floor": true,
+  "selection": {
+    "diagnostic_signal_is_not_qualification": true,
+    "diagnostic_signal_leader": "qwen35_9b_planned_worker",
+    "diagnostic_signal_leader_is_eligible": true,
+    "eligible_candidate_ids": [
+      "qwen35_9b_planned_worker",
+      "qwen25_coder_14b_planned_worker"
+    ],
+    "selected_candidate_id": "qwen35_9b_planned_worker",
+    "selection_rule": [
+      "highest_useful_task_count",
+      "fewest_unsafe_tasks",
+      "fewest_malformed_or_abstained_tasks",
+      "fewest_local_model_calls",
+      "lowest_total_worker_wall_time"
+    ]
+  },
+  "source_identities": {
+    "plan": {
+      "path": "configs/core_evidence_planned_worker_model_bakeoff.json",
+      "sha256": "aa6cc26451593d12a80cd609f06fbda60b8732a541325022f4204e07fb314c43"
+    },
+    "synthesis_source": {
+      "path": "scripts/core_evidence_local_model_bakeoff_synthesis.py",
+      "sha256": "27e4698205068f4e17706942b991c216c7073a44a4c5ef386023d54bf7b92a69"
+    },
+    "task_manifest": {
+      "path": "configs/core_evidence_local_8b_qualification_public.json",
+      "sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522"
+    }
+  },
+  "terminal_disposition": "FREEZE_WINNER_FOR_NEW_SOURCE_DISJOINT_QUALIFICATION",
+  "trigger_state": "GREEN"
+}
