@@ -1,0 +1,135 @@
+{
+  "policy": "project_theseus_local_8b_functional_evaluator_v1",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v2",
+  "candidate_output_schema": {
+    "required_fields": [
+      "worker_id",
+      "natural_request_sha256",
+      "parent_source_commit",
+      "patch_unified_diff",
+      "proposed_paths",
+      "verification_commands",
+      "abstained"
+    ],
+    "maximum_patch_bytes": 262144,
+    "maximum_proposed_paths": 16
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/code_lm_run_lock.py, make release_run_lock unlink a lock only when the supplied path still names the same filesystem object as the acquired file descriptor. It must always close the descriptor, preserve a replacement lock created after acquisition, and never unlink a different supplied lock path, while preserving normal acquire-and-release behavior. Add focused run-lock tests.",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "allowed_effect_paths": [
+        "scripts/code_lm_run_lock.py",
+        "tests/test_code_lm_run_lock.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/code_lm_run_lock_case.py",
+          "destination": "tests/functional_hidden/test_code_lm_run_lock_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "replacement lock survives stale-owner release",
+          "request_quote": "preserve a replacement lock created after acquisition",
+          "hidden_test": "tests/functional_hidden/test_code_lm_run_lock_case.py",
+          "assertion_marker": "request_contract:replacement_run_lock_preserved"
+        },
+        {
+          "criterion": "a different supplied lock path is never unlinked",
+          "request_quote": "never unlink a different supplied lock path",
+          "hidden_test": "tests/functional_hidden/test_code_lm_run_lock_case.py",
+          "assertion_marker": "request_contract:different_run_lock_preserved"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:replacement_run_lock_preserved",
+        "request_contract:different_run_lock_preserved"
+      ],
+      "verification_timeout_seconds": 180
+    },
+    {
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/hive_node_registry.py, make timestamp_age_seconds fail closed with None rather than raising for timezone-naive timestamps, and reject timestamps more than five seconds in the future. Preserve correct elapsed-age calculation for timezone-aware ISO-8601 timestamps with Z or explicit UTC offsets, allowing at most five seconds of clock skew to clamp to zero. Add focused registry tests.",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "allowed_effect_paths": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/hive_timestamp_case.py",
+          "destination": "tests/functional_hidden/test_hive_timestamp_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "timezone-naive peer timestamps fail closed",
+          "request_quote": "fail closed with None rather than raising for timezone-naive timestamps",
+          "hidden_test": "tests/functional_hidden/test_hive_timestamp_case.py",
+          "assertion_marker": "request_contract:naive_peer_timestamp_fails_closed"
+        },
+        {
+          "criterion": "materially future peer timestamps are rejected",
+          "request_quote": "reject timestamps more than five seconds in the future",
+          "hidden_test": "tests/functional_hidden/test_hive_timestamp_case.py",
+          "assertion_marker": "request_contract:future_peer_timestamp_rejected"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:naive_peer_timestamp_fails_closed",
+        "request_contract:future_peer_timestamp_rejected"
+      ],
+      "verification_timeout_seconds": 180
+    },
+    {
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/training_data_admission_v1.py, make generated-data license admission use the same canonical normalization as normalize_license so project_generated and private_generated are admitted in either underscore or hyphen form. Preserve all existing allowed SPDX identifiers and continue to block near-miss or extended generated-license names. Add focused training-data admission tests.",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "allowed_effect_paths": [
+        "scripts/training_data_admission_v1.py",
+        "tests/test_training_data_admission_v1.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/training_license_case.py",
+          "destination": "tests/functional_hidden/test_training_license_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "project-generated licenses are admitted in both canonical spellings",
+          "request_quote": "project_generated and private_generated are admitted in either underscore or hyphen form",
+          "hidden_test": "tests/functional_hidden/test_training_license_case.py",
+          "assertion_marker": "request_contract:project_generated_license_admitted"
+        },
+        {
+          "criterion": "private-generated licenses are admitted in both canonical spellings",
+          "request_quote": "project_generated and private_generated are admitted in either underscore or hyphen form",
+          "hidden_test": "tests/functional_hidden/test_training_license_case.py",
+          "assertion_marker": "request_contract:private_generated_license_admitted"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:project_generated_license_admitted",
+        "request_contract:private_generated_license_admitted"
+      ],
+      "verification_timeout_seconds": 180
+    }
+  ],
+  "boundaries": {
+    "authoritative_target_patch_used": false,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "candidate_authored_claims_trusted": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

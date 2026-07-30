@@ -492,7 +492,7 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `FIRST_FRESH_COHORT_INVALID_CONFIG_HANDOFF`; replacement cohort required.
+State: `QWEN35_FRESH_V2_FROZEN_NOT_CONSUMED`.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -687,6 +687,24 @@ regression test covering all three subprocess calls. Bank this repair, then
 author a completely new source-disjoint cohort against the repaired committed
 runner; do not recycle the two exposed requests or the unexposed third member
 of their already-frozen cohort.
+
+Replacement cohort v2 is now aligned and frozen against the repaired runner.
+It uses three new source files and causal patterns: inode/device ownership when
+releasing replaced run locks; timezone-aware peer freshness with naïve and
+future timestamps rejected; and canonical underscore/hyphen admission for
+project-generated and private-generated licenses while near misses remain
+blocked. None reuse the invalid cohort's requests, target files, or hidden
+fixtures.
+
+The independent audit is `GREEN`: all `3/3` parent snapshots expose all six
+request-derived failure markers, with no target commit or target patch.
+`configs/core_evidence_qwen35_fresh_v2_qualification_freeze.json` binds the
+repaired qualification-runner hash `ee86a86c...`, the selected Qwen3.5 config
+hash `29dde8ad...`, Worker v2, development runner, public manifest, hidden
+evaluator, exact parent commit, unchanged competence floor, and run-once
+rules. The candidate runner independently validates the freeze and the focused
+worker/freeze/evaluator suite is `52/52` green. Commit this freeze before the
+one-shot candidate process.
 
 ## Neural Verdict Campaign
 

@@ -1,0 +1,151 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T09:13:18.647266Z",
+  "evaluator_manifest_sha256": "4714d07ed7d7482e795800bbd33cecdadc6d647c23dc78c4ab468bbe5fcd7f53",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "policy": "project_theseus_local_8b_functional_alignment_audit_v1",
+  "report_payload_sha256": "5fe5771173a9c76187845685532b1f2aaa57a7ba8e720172fa2e7204e7d7f004",
+  "runtime": {
+    "wall_ms": 4850.849
+  },
+  "scope": "prospective_pre_generation_request_test_alignment",
+  "summary": {
+    "aligned_task_count": 3,
+    "target_commit_count": 0,
+    "target_patch_count": 0,
+    "task_count": 3
+  },
+  "tasks": [
+    {
+      "acceptance_contract_sha256": "25af4ccd7057a42bcf4bbca31ec8423354240ec78f2f032d6b25bc5183bb60e4",
+      "allowed_effect_path_set_sha256": "f0abc92550ae16ac5da529d7fbeb4c058dbfa3c691ed108891192ed315fbe643",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_code_lm_run_lock_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_code_lm_run_lock_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": ".FF                                                                      [100%]\n=================================== FAILURES ===================================\n__________________ test_release_preserves_a_replacement_lock ___________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-722/test_release_preserves_a_repla0')\n\n    def test_release_preserves_a_replacement_lock(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        path = run_lock.resolve_path(args().lock_path, tmp_path)\n        assert fd is not None\n        path.unlink()\n        replacement = {\"pid\": 999999, \"owner\": \"replacement\"}\n        path.write_text(json.dumps(replacement) + \"\\n\", encoding=\"utf-8\")\n    \n        run_lock.release_run_lock(fd, path)\n    \n>       assert path.is_file() and json.loads(\n            path.read_text(encoding=\"utf-8\")\n        ) == replacement, \"request_contract:replacement_run_lock_preserved\"\nE       AssertionError: request_contract:replacement_run_lock_preserved\nE       assert (False)\nE        +  where False = is_file()\nE        +    where is_file = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-722/test_release_preserves_a_repla0/runtime/qualification.lock').is_file\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:44: AssertionError\n________________ test_release_does_not_unlink_a_different_path _________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-722/test_release_does_not_unlink_a0')\n\n    def test_release_does_not_unlink_a_different_path(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        acquired = run_lock.resolve_path(args().lock_path, tmp_path)\n        other = tmp_path / \"runtime\" / \"other.lock\"\n        other.write_text('{\"owner\":\"other\"}\\n', encoding=\"utf-8\")\n        assert fd is not None\n    \n        run_lock.release_run_lock(fd, other)\n    \n>       assert other.is_file(), \"request_contract:different_run_lock_preserved\"\nE       AssertionError: request_contract:different_run_lock_preserved\nE       assert False\nE        +  where False = is_file()\nE        +    where is_file = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-722/test_release_does_not_unlink_a0/runtime/other.lock').is_file\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_preserves_a_replacement_lock\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_does_not_unlink_a_different_path\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 533.569
+          }
+        ],
+        "wall_ms": 533.582
+      },
+      "expected_failure_markers": [
+        "request_contract:different_run_lock_preserved",
+        "request_contract:replacement_run_lock_preserved"
+      ],
+      "hidden_test_source_set_sha256": "4742d93721238a263579d6aaebd72b95ea7124c1020201c38fce22960086aae8",
+      "observed_failure_markers": [
+        "request_contract:different_run_lock_preserved",
+        "request_contract:replacement_run_lock_preserved"
+      ],
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "request_sha256": "1c69b69338baa65c40c6bd51a9f3e89660e12d8772a91ccadb61a5dafc0e32eb"
+    },
+    {
+      "acceptance_contract_sha256": "dc38e04af4990cf7e76d132b794ab5a091f870816529490cbcb77345ff595b6c",
+      "allowed_effect_path_set_sha256": "7a040d979ecfb7af158cc21a7c0ca407e870d0830865f3925debc16bdbdb442b",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_timestamp_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_timestamp_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n____________ test_naive_peer_timestamp_fails_closed_without_raising ____________\n\n    def test_naive_peer_timestamp_fails_closed_without_raising() -> None:\n        try:\n            observed = registry.timestamp_age_seconds(\"2026-01-01T00:00:00\")\n        except Exception:\n            observed = \"raised\"\n>       assert observed is None, (\n            \"request_contract:naive_peer_timestamp_fails_closed\"\n        )\nE       AssertionError: request_contract:naive_peer_timestamp_fails_closed\nE       assert 'raised' is None\n\ntests/functional_hidden/test_hive_timestamp_case.py:21: AssertionError\n______________ test_materially_future_peer_timestamp_is_rejected _______________\n\n    def test_materially_future_peer_timestamp_is_rejected() -> None:\n        future = datetime.now(timezone.utc) + timedelta(minutes=1)\n>       assert registry.timestamp_age_seconds(\n            future.isoformat()\n        ) is None, \"request_contract:future_peer_timestamp_rejected\"\nE       AssertionError: request_contract:future_peer_timestamp_rejected\nE       assert 0.0 is None\nE        +  where 0.0 = <function timestamp_age_seconds at 0x1029f4540>('2026-07-30T09:14:16.850563+00:00')\nE        +    where <function timestamp_age_seconds at 0x1029f4540> = registry.timestamp_age_seconds\nE        +    and   '2026-07-30T09:14:16.850563+00:00' = <built-in method isoformat of datetime.datetime object at 0x102828cf0>()\nE        +      where <built-in method isoformat of datetime.datetime object at 0x102828cf0> = datetime.datetime(2026, 7, 30, 9, 14, 16, 850563, tzinfo=datetime.timezone.utc).isoformat\n\ntests/functional_hidden/test_hive_timestamp_case.py:28: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_naive_peer_timestamp_fails_closed_without_raising\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_materially_future_peer_timestamp_is_rejected\n2 failed, 1 passed, 1 warning in 0.29s\n",
+            "wall_ms": 476.483
+          }
+        ],
+        "wall_ms": 476.496
+      },
+      "expected_failure_markers": [
+        "request_contract:future_peer_timestamp_rejected",
+        "request_contract:naive_peer_timestamp_fails_closed"
+      ],
+      "hidden_test_source_set_sha256": "b23af6cd6cc66d492202bbf93c75716a7f1b343ce2960555e1baabda08590e69",
+      "observed_failure_markers": [
+        "request_contract:future_peer_timestamp_rejected",
+        "request_contract:naive_peer_timestamp_fails_closed"
+      ],
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "request_sha256": "707d91be30fc3d0be031d7178cfe0b247c5417f7b9f37f2e319779c3e1b4ccf8"
+    },
+    {
+      "acceptance_contract_sha256": "29872da266b6eaec189ac7044a625e5cf90534f2ed5688652e17de0225210c3b",
+      "allowed_effect_path_set_sha256": "9f5a34f15e37e0ca733fb6ec530f6484340a70fa9b2386b2e8999768ac65acc5",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_training_license_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_training_license_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n____________ test_project_generated_license_is_admitted_canonically ____________\n\n    def test_project_generated_license_is_admitted_canonically() -> None:\n>       assert decision(\"project_generated\").startswith(\n            \"allowed_\"\n        ), \"request_contract:project_generated_license_admitted\"\nE       AssertionError: request_contract:project_generated_license_admitted\nE       assert False\nE        +  where False = <built-in method startswith of str object at 0x102d09de0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x102d09de0> = 'blocked_license_project-generated'.startswith\nE        +      where 'blocked_license_project-generated' = decision('project_generated')\n\ntests/functional_hidden/test_training_license_case.py:25: AssertionError\n____________ test_private_generated_license_is_admitted_canonically ____________\n\n    def test_private_generated_license_is_admitted_canonically() -> None:\n>       assert decision(\"private_generated\").startswith(\n            \"allowed_\"\n        ), \"request_contract:private_generated_license_admitted\"\nE       AssertionError: request_contract:private_generated_license_admitted\nE       assert False\nE        +  where False = <built-in method startswith of str object at 0x104a75750>('allowed_')\nE        +    where <built-in method startswith of str object at 0x104a75750> = 'blocked_license_private-generated'.startswith\nE        +      where 'blocked_license_private-generated' = decision('private_generated')\n\ntests/functional_hidden/test_training_license_case.py:34: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_training_license_case.py::test_project_generated_license_is_admitted_canonically\nFAILED tests/functional_hidden/test_training_license_case.py::test_private_generated_license_is_admitted_canonically\n2 failed, 1 passed, 1 warning in 0.30s\n",
+            "wall_ms": 488.354
+          }
+        ],
+        "wall_ms": 488.37
+      },
+      "expected_failure_markers": [
+        "request_contract:private_generated_license_admitted",
+        "request_contract:project_generated_license_admitted"
+      ],
+      "hidden_test_source_set_sha256": "ab3be60c976ceb7ff5d31cd35b890472091b3759cf0e231a30c62bee80ff4f9e",
+      "observed_failure_markers": [
+        "request_contract:private_generated_license_admitted",
+        "request_contract:project_generated_license_admitted"
+      ],
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "request_sha256": "192d84dfdbc8f458b1ae9fac4a3a3c4e06d4710e8067798d3f17ddc85fe64d04"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

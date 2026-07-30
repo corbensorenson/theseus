@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_local_8b_functional_qualification_public_v1",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v2",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/code_lm_run_lock.py, make release_run_lock unlink a lock only when the supplied path still names the same filesystem object as the acquired file descriptor. It must always close the descriptor, preserve a replacement lock created after acquisition, and never unlink a different supplied lock path, while preserving normal acquire-and-release behavior. Add focused run-lock tests.",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/hive_node_registry.py, make timestamp_age_seconds fail closed with None rather than raising for timezone-naive timestamps, and reject timestamps more than five seconds in the future. Preserve correct elapsed-age calculation for timezone-aware ISO-8601 timestamps with Z or explicit UTC offsets, allowing at most five seconds of clock skew to clamp to zero. Add focused registry tests.",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/training_data_admission_v1.py, make generated-data license admission use the same canonical normalization as normalize_license so project_generated and private_generated are admitted in either underscore or hyphen form. Preserve all existing allowed SPDX identifiers and continue to block near-miss or extended generated-license names. Add focused training-data admission tests.",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    }
+  ],
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "authoritative_target_patch_used": false
+  }
+}
