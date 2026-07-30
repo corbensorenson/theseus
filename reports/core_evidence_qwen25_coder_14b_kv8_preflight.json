@@ -1,0 +1,42 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "local_model_inference_calls": 1,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T07:35:18.782826Z",
+  "maximum_inference": "This proves only offline runtime compatibility and exact action format on one trivial prompt, not repository competence.",
+  "model_identity": {
+    "repo_id": "mlx-community/Qwen2.5-Coder-14B-Instruct-4bit",
+    "revision": "29efdbab55a161237ab1e432a3abaf6c7ae2b477",
+    "snapshot_manifest_sha256": "e4f7ec07d655084a6f75d1a6a9b96d29bbff9615e263041768a9fa5ad2e34265"
+  },
+  "output": {
+    "characters": 36,
+    "exact_action_valid": true,
+    "raw_sha256": "1699bb6a29dd27b47cb8b7e676189075890274ac727a9707d3028d1aee729539"
+  },
+  "policy": "project_theseus_local_model_runtime_preflight_v1",
+  "runtime": {
+    "context_boundary_tokens": 46,
+    "generated_tokens": 9,
+    "generation_uncached_prompt_tokens": 49,
+    "generation_wall_ms": 3742.67,
+    "kv_bits": 8,
+    "load_wall_ms": 4768.076,
+    "peak_rss_mib": 4440.609,
+    "prefix_cache_reused": false,
+    "prompt_boundary_cache_used": false,
+    "prompt_cache_trimmable": true,
+    "prompt_tokens": 49,
+    "swap_after_mib": 6258.69,
+    "swap_before_mib": 6265.81,
+    "swap_growth_mib": -7.12,
+    "uncached_context_tokens": 49,
+    "uncached_prompt_tokens": 98
+  },
+  "trigger_state": "GREEN"
+}

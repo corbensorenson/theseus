@@ -1,0 +1,81 @@
+{
+  "checks": {
+    "both_actions_parseable": false,
+    "both_turns_completed": true,
+    "second_turn_processes_less_than_full_prompt": true,
+    "second_turn_reuses_prefix": true,
+    "target_context_reached": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "local_model_inference_calls": 2,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T08:02:05.587277Z",
+  "faults": [],
+  "maximum_inference": "This establishes long-context local runtime mechanics and measured host resource behavior only. It cannot establish repository competence or subsystem effects.",
+  "model_identity": {
+    "repo_id": "mlx-community/Qwen2.5-Coder-14B-Instruct-4bit",
+    "revision": "29efdbab55a161237ab1e432a3abaf6c7ae2b477",
+    "snapshot_manifest_sha256": "e4f7ec07d655084a6f75d1a6a9b96d29bbff9615e263041768a9fa5ad2e34265"
+  },
+  "policy": "project_theseus_local_model_long_context_qualification_v1",
+  "runtime": {
+    "load_wall_ms": 4852.489,
+    "peak_rss_mib": 4824.0,
+    "swap_after_mib": 6492.69,
+    "swap_before_mib": 6027.75,
+    "swap_growth_mib": 464.94
+  },
+  "scope": "runtime_resource_mechanics_only_no_competence_claim",
+  "source_identities": {
+    "config_sha256": "8d4ce4d2737fe7143c9558bdca70997d39b1928e52a405e9597a25b8c3d90be2",
+    "qualification_sha256": "90cdaef02467c8c56f08f280768ce2ed1cb0303b35b4df1d614a1d11ae2a4fd2",
+    "worker_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb"
+  },
+  "target_context_tokens": 15000,
+  "trigger_state": "RED",
+  "turns": [
+    {
+      "action_kind": null,
+      "generation_metrics": {
+        "context_boundary_tokens": 14997,
+        "generated_tokens": 11,
+        "generation_uncached_prompt_tokens": 3,
+        "kv_bits": 8,
+        "prefix_cache_reused": false,
+        "prompt_boundary_cache_used": false,
+        "prompt_cache_trimmable": true,
+        "prompt_tokens": 15000,
+        "uncached_context_tokens": 14997,
+        "uncached_prompt_tokens": 15000
+      },
+      "parseable_action": false,
+      "raw_sha256": "3609ddd14599a9d5c6152eb00020b60f378a665b6d63877efb598b502329eaa7",
+      "turn": 1,
+      "wall_ms": 273964.766
+    },
+    {
+      "action_kind": null,
+      "generation_metrics": {
+        "context_boundary_tokens": 15047,
+        "generated_tokens": 96,
+        "generation_uncached_prompt_tokens": 3,
+        "kv_bits": 8,
+        "prefix_cache_reused": true,
+        "prompt_boundary_cache_used": false,
+        "prompt_cache_trimmable": true,
+        "prompt_tokens": 15050,
+        "uncached_context_tokens": 47,
+        "uncached_prompt_tokens": 50
+      },
+      "parseable_action": false,
+      "raw_sha256": "3c794fed4d61f48bf9862776db2a8a72bd599c3329be929b25117bf6adeb2778",
+      "turn": 2,
+      "wall_ms": 23404.88
+    }
+  ]
+}

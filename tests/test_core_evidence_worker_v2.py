@@ -459,6 +459,82 @@ def test_required_next_phase_tracks_edit_verify_and_finish(
     assert state.required_next_phase().startswith("finish_or")
 
 
+def test_request_criteria_plan_can_be_required_before_mutation(
+    tmp_path: Path,
+) -> None:
+    for directory in ("scripts", "tests", "configs"):
+        (tmp_path / directory).mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert True\n"
+    )
+    (tmp_path / "configs" / "x.json").write_text("{}\n")
+    local = config()
+    local["budgets"]["require_plan_before_mutation"] = True
+    state = worker.RepositoryState(tmp_path, local)
+    state.read("scripts/x.py", 1, 10)
+    state.read("tests/test_x.py", 1, 10)
+    state.read("configs/x.json", 1, 10)
+    assert state.required_next_phase() == (
+        "record_request_criteria_plan_before_edit"
+    )
+    with pytest.raises(worker.WorkerFault, match="plan_required"):
+        state.replace("scripts/x.py", "x = 1", "x = 2")
+
+    result = state.execute({
+        "action": "plan",
+        "criteria": [
+            "Return the bounded value.",
+            "Preserve the existing test behavior.",
+        ],
+        "target_paths": ["scripts/x.py"],
+        "implementation": "Replace the unbounded constant.",
+        "verification": "Run the paired test and compile the module.",
+    })
+
+    assert result["advisory_only"] is True
+    assert state.required_next_phase().startswith("edit_now")
+    assert state.replace("scripts/x.py", "x = 1", "x = 2")["changed"]
+
+
+def test_recovery_instruction_respects_verify_repair_and_finish_phases(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert True\n"
+    )
+    state = worker.RepositoryState(tmp_path, permissive_config())
+    state.replace("scripts/x.py", "x = 1", "x = 2")
+    assert "NEXT ACTION MUST BE verify" in state.recovery_instruction(
+        "duplicate_read_span_no_new_information"
+    )
+    assert state.verify([], [], [])["passed"] is True
+    assert "NEXT ACTION MUST BE finish" in state.recovery_instruction(
+        "duplicate_read_span_no_new_information"
+    )
+
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert False\n"
+    )
+    failing = worker.RepositoryState(tmp_path, permissive_config())
+    failing.replace("scripts/x.py", "x = 2", "x = 3")
+    assert failing.verify([], [], [])["passed"] is False
+    assert "bounded" in failing.recovery_instruction(
+        "duplicate_read_span_no_new_information"
+    )
+
+
+def test_verification_targets_ignore_non_string_model_values() -> None:
+    assert worker.strings([
+        "scripts/x.py",
+        {"path": "scripts/y.py"},
+        3,
+    ]) == ["scripts/x.py"]
+
+
 def test_created_file_and_unified_diff_end_with_newline(
     tmp_path: Path,
 ) -> None:

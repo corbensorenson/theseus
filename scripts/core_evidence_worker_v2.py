@@ -295,6 +295,7 @@ def run_worker(
         "verification_receipts": state.verification_receipts,
         "effect_inventory": state.effect_inventory(),
         "action_summary": state.action_summary(),
+        "advisory_plan": state.advisory_plan,
         "repair_attempts": state.repair_attempts,
         "format_repairs": format_repairs,
         "terminal_reason": terminal_reason,
@@ -334,6 +335,7 @@ class RepositoryState:
         self.read_paths: set[str] = set()
         self.read_spans: set[tuple[str, int, int]] = set()
         self.abstention_reason: str | None = None
+        self.advisory_plan: dict[str, Any] | None = None
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         kind = str(action.get("action") or "")
@@ -366,6 +368,8 @@ class RepositoryState:
                 strings(action.get("py_compile")),
                 strings(action.get("json")),
             )
+        elif kind == "plan":
+            result = self.record_plan(action)
         elif kind == "finish":
             if not self.changed_paths():
                 return {"ok": False, "terminal": False, "fault": "no_changed_paths"}
@@ -530,6 +534,12 @@ class RepositoryState:
             and self.verification_receipts[-1]["passed"]
         ):
             return "finish_or_make_only_request_required_additional_edits"
+        if (
+            self.inspection_complete()
+            and self.config["budgets"].get("require_plan_before_mutation")
+            and self.advisory_plan is None
+        ):
+            return "record_request_criteria_plan_before_edit"
         if self.inspection_complete():
             return "edit_now_or_abstain_with_specific_missing_information"
         return "inspect_request_relevant_implementation_config_and_test"
@@ -562,6 +572,11 @@ class RepositoryState:
             and not any(path.startswith("tests/") for path in self.read_paths)
         ):
             raise WorkerFault("test_read_required_before_mutation")
+        if (
+            budgets.get("require_plan_before_mutation")
+            and self.advisory_plan is None
+        ):
+            raise WorkerFault("request_criteria_plan_required_before_mutation")
         if self.mutations >= int(budgets["maximum_file_mutations"]):
             raise WorkerFault("mutation_budget_exhausted")
         if self.failed_verification_seen:
@@ -570,6 +585,46 @@ class RepositoryState:
             self.repair_attempts += 1
             self.failed_verification_seen = False
         self.mutations += 1
+
+    def record_plan(self, action: dict[str, Any]) -> dict[str, Any]:
+        if not self.inspection_complete():
+            raise WorkerFault("plan_requires_complete_inspection")
+        if self.changed_paths():
+            raise WorkerFault("plan_must_precede_mutation")
+        criteria = action.get("criteria")
+        target_paths = action.get("target_paths")
+        implementation = action.get("implementation")
+        verification = action.get("verification")
+        if (
+            not isinstance(criteria, list)
+            or not criteria
+            or len(criteria) > 12
+            or any(not isinstance(item, str) or not item.strip() for item in criteria)
+            or not isinstance(target_paths, list)
+            or not target_paths
+            or len(target_paths) > 8
+            or any(
+                not isinstance(path, str) or path not in self.baseline
+                for path in target_paths
+            )
+            or not isinstance(implementation, str)
+            or not implementation.strip()
+            or not isinstance(verification, str)
+            or not verification.strip()
+        ):
+            raise WorkerFault("request_criteria_plan_schema_invalid")
+        self.advisory_plan = {
+            "criteria": [item.strip()[:500] for item in criteria],
+            "target_paths": target_paths,
+            "implementation": implementation.strip()[:2000],
+            "verification": verification.strip()[:1000],
+        }
+        return {
+            "ok": True,
+            "advisory_only": True,
+            "candidate_authored_success_claim": False,
+            "plan": self.advisory_plan,
+        }
 
     def relevant_paths(
         self,
@@ -609,6 +664,32 @@ class RepositoryState:
             return (
                 "NEXT ACTION MUST BE read on an existing relevant test. "
                 f"Target-blind suggestions: {tests or unread}. Do not create a test yet."
+            )
+        phase = self.required_next_phase()
+        if phase == "repair_from_last_failure_before_reverification":
+            return (
+                "Candidate verification failed. NEXT ACTION MUST BE a bounded repair "
+                "with replace/create/delete using the failure_summaries already "
+                "returned. Do not read, search, verify, finish, or abandon the "
+                "provisional patch."
+            )
+        if phase == "verify_changed_paths":
+            return (
+                "A provisional effect exists without verification. NEXT ACTION MUST "
+                "BE verify with empty pytest, py_compile, and json arrays so the "
+                "controller selects checks. Do not read, search, or mutate again."
+            )
+        if phase.startswith("finish_or"):
+            return (
+                "The current provisional effect has green candidate verification. "
+                "NEXT ACTION MUST BE finish. Do not read, search, mutate, or verify "
+                "again."
+            )
+        if "request_criteria_plan_required" in fault:
+            return (
+                "NEXT ACTION MUST BE plan. Copy every acceptance criterion from the "
+                "natural request, name only inspected existing target paths, describe "
+                "the general implementation, and state how it will be verified."
             )
         if "duplicate_read_span" in fault and self.inspection_complete():
             return (
@@ -912,6 +993,10 @@ class LocalMlxModel:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         from mlx_lm import load
+        from mlx_lm.models.cache import (
+            can_trim_prompt_cache,
+            make_prompt_cache,
+        )
         from mlx_lm.server import LRUPromptCache
         from mlx_lm.sample_utils import (
             make_logits_processors,
@@ -924,6 +1009,9 @@ class LocalMlxModel:
         self.snapshot_manifest_sha256 = snapshot_manifest(self.snapshot)
         self.model, self.tokenizer = load(str(self.snapshot), lazy=False)
         mx.eval(self.model.parameters())
+        self.prompt_cache_trimmable = can_trim_prompt_cache(
+            make_prompt_cache(self.model)
+        )
         self.sampler = make_sampler(temp=float(card["temperature"]))
         self.logits_processors = make_logits_processors(
             repetition_penalty=float(card["repetition_penalty"]),
@@ -937,6 +1025,15 @@ class LocalMlxModel:
             str(card["repo_id"]),
             str(card["revision"]),
         )
+        self.generation_cache_kwargs = {
+            key: card[key]
+            for key in (
+                "kv_bits",
+                "kv_group_size",
+                "quantized_kv_start",
+            )
+            if card.get(key) is not None
+        }
         self.last_generation_metrics: dict[str, Any] = {}
 
     def generate(self, messages: list[dict[str, str]]) -> str:
@@ -978,17 +1075,48 @@ class LocalMlxModel:
                 sampler=self.sampler,
                 logits_processors=self.logits_processors,
                 prompt_cache=cache,
+                **self.generation_cache_kwargs,
             )
             for _ in stream:
                 pass
 
-        (
-            prompt_cache,
-            uncached_tokens,
-            cache_reused,
-            uncached_context_tokens,
-        ) = (
-            prepare_prompt_boundary_cache(
+        cache_key = None
+        if self.prompt_cache_trimmable:
+            prompt_cache, uncached_tokens = (
+                self.prompt_cache.fetch_nearest_cache(
+                    self.model_key, prompt_tokens
+                )
+            )
+            cache_reused = prompt_cache is not None
+            if prompt_cache is None:
+                prompt_cache = make_prompt_cache(self.model)
+            else:
+                # fetch_nearest_cache returns a private copy. The stored source
+                # would otherwise remain resident through generation, doubling
+                # long-context KV memory and causing 14B Metal OOM on this host.
+                # This single-request worker can move ownership to the fetched
+                # copy and reinsert its updated state after generation.
+                self.prompt_cache.trim_to(n_sequences=0)
+                mx.clear_cache()
+            template_suffix_tokens = max(
+                0, len(prompt_tokens) - len(context_tokens)
+            )
+            generation_uncached_tokens = min(
+                len(uncached_tokens), template_suffix_tokens
+            )
+            uncached_context_tokens = (
+                len(uncached_tokens) - generation_uncached_tokens
+            )
+            total_uncached_tokens = len(uncached_tokens)
+            cache_key = prompt_tokens[:]
+            boundary_cache_used = False
+        else:
+            (
+                prompt_cache,
+                uncached_tokens,
+                cache_reused,
+                uncached_context_tokens,
+            ) = prepare_prompt_boundary_cache(
                 self.prompt_cache,
                 self.model_key,
                 prompt_tokens,
@@ -996,7 +1124,11 @@ class LocalMlxModel:
                 make_cache=lambda: make_prompt_cache(self.model),
                 prefill=prefill,
             )
-        )
+            generation_uncached_tokens = len(uncached_tokens)
+            total_uncached_tokens = (
+                uncached_context_tokens + generation_uncached_tokens
+            )
+            boundary_cache_used = True
         stream = stream_generate(
             self.model,
             self.tokenizer,
@@ -1005,12 +1137,15 @@ class LocalMlxModel:
             sampler=self.sampler,
             logits_processors=self.logits_processors,
             prompt_cache=prompt_cache,
+            **self.generation_cache_kwargs,
         )
         text = ""
         complete = None
         generated_tokens = 0
         try:
             for response in stream:
+                if cache_key is not None:
+                    cache_key.append(int(response.token))
                 generated_tokens += 1
                 text += response.text
                 complete = complete_action_json(text)
@@ -1018,17 +1153,21 @@ class LocalMlxModel:
                     break
         finally:
             stream.close()
+            if cache_key is not None:
+                self.prompt_cache.insert_cache(
+                    self.model_key, cache_key, prompt_cache
+                )
         self.last_generation_metrics = {
             "prompt_tokens": len(prompt_tokens),
-            "uncached_prompt_tokens": (
-                uncached_context_tokens + len(uncached_tokens)
-            ),
+            "uncached_prompt_tokens": total_uncached_tokens,
             "uncached_context_tokens": uncached_context_tokens,
-            "generation_uncached_prompt_tokens": len(uncached_tokens),
+            "generation_uncached_prompt_tokens": generation_uncached_tokens,
             "context_boundary_tokens": len(context_tokens),
             "generated_tokens": generated_tokens,
             "prefix_cache_reused": cache_reused,
-            "prompt_boundary_cache_used": True,
+            "prompt_boundary_cache_used": boundary_cache_used,
+            "prompt_cache_trimmable": self.prompt_cache_trimmable,
+            "kv_bits": self.generation_cache_kwargs.get("kv_bits"),
         }
         return complete if complete is not None else text
 
@@ -1057,6 +1196,7 @@ Allowed actions, with exact JSON shapes:
 {"action":"replace","path":"scripts/x.py","old":"exact existing text","new":"replacement"}
 {"action":"create","path":"tests/test_x.py","content":"complete nonempty file"}
 {"action":"delete","path":"obsolete allowed path"}
+{"action":"plan","criteria":["request-derived criterion"],"target_paths":["scripts/x.py"],"implementation":"general edit strategy","verification":"checks to run"}
 {"action":"verify","pytest":[],"py_compile":[],"json":[]}
 {"action":"finish"} or {"action":"abstain","reason":"specific missing information"}
 Encode exactly one chosen action as one JSON object. For replace, old and new are
@@ -1342,6 +1482,11 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
             key: strings(action.get(key))[:16]
             for key in ("pytest", "py_compile", "json")
         }
+    if kind == "plan":
+        return {
+            "criterion_count": len(action.get("criteria") or []),
+            "target_path_count": len(action.get("target_paths") or []),
+        }
     return {}
 
 
@@ -1494,7 +1639,11 @@ def emit_event(
 
 
 def strings(value: Any) -> list[str]:
-    return [str(item) for item in value] if isinstance(value, list) else []
+    return (
+        [item for item in value if isinstance(item, str)]
+        if isinstance(value, list)
+        else []
+    )
 
 
 def read_json(path: Path) -> dict[str, Any]:

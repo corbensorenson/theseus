@@ -1,0 +1,68 @@
+{
+  "checks": {
+    "both_actions_parseable": false,
+    "both_turns_completed": false,
+    "second_turn_processes_less_than_full_prompt": false,
+    "second_turn_reuses_prefix": false,
+    "target_context_reached": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "local_model_inference_calls": 2,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T07:55:53.756030Z",
+  "faults": [
+    {
+      "fault": "RuntimeError:[METAL] Command buffer execution failed: Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory).",
+      "turn": 2,
+      "wall_ms": 10804.688
+    }
+  ],
+  "maximum_inference": "This establishes long-context local runtime mechanics and measured host resource behavior only. It cannot establish repository competence or subsystem effects.",
+  "model_identity": {
+    "repo_id": "mlx-community/Qwen2.5-Coder-14B-Instruct-4bit",
+    "revision": "29efdbab55a161237ab1e432a3abaf6c7ae2b477",
+    "snapshot_manifest_sha256": "e4f7ec07d655084a6f75d1a6a9b96d29bbff9615e263041768a9fa5ad2e34265"
+  },
+  "policy": "project_theseus_local_model_long_context_qualification_v1",
+  "runtime": {
+    "load_wall_ms": 4819.878,
+    "peak_rss_mib": 4623.562,
+    "swap_after_mib": 6403.75,
+    "swap_before_mib": 5991.5,
+    "swap_growth_mib": 412.25
+  },
+  "scope": "runtime_resource_mechanics_only_no_competence_claim",
+  "source_identities": {
+    "config_sha256": "8d4ce4d2737fe7143c9558bdca70997d39b1928e52a405e9597a25b8c3d90be2",
+    "qualification_sha256": "90cdaef02467c8c56f08f280768ce2ed1cb0303b35b4df1d614a1d11ae2a4fd2",
+    "worker_sha256": "cbbbaf913afb1ea1dc2df4fd076a006f046435193dad2cf7b744ebb185d07068"
+  },
+  "target_context_tokens": 15000,
+  "trigger_state": "RED",
+  "turns": [
+    {
+      "action_kind": null,
+      "generation_metrics": {
+        "context_boundary_tokens": 14997,
+        "generated_tokens": 96,
+        "generation_uncached_prompt_tokens": 3,
+        "kv_bits": 8,
+        "prefix_cache_reused": false,
+        "prompt_boundary_cache_used": false,
+        "prompt_cache_trimmable": true,
+        "prompt_tokens": 15000,
+        "uncached_context_tokens": 14997,
+        "uncached_prompt_tokens": 15000
+      },
+      "parseable_action": false,
+      "raw_sha256": "592f113c75f5117c6bc7eb6fafca92f4b3059e42ba23e92a73cb2dc8206b93a5",
+      "turn": 1,
+      "wall_ms": 292982.593
+    }
+  ]
+}

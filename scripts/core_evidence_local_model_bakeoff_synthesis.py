@@ -66,10 +66,17 @@ def synthesize(
     ranked = sorted(eligible, key=selection_key)
     selected = ranked[0] if ranked else None
     adequate = bool(selected and selected["adequacy"]["passes"])
+    terminal_rules = plan.get("terminal_rules") or {}
     terminal = (
-        "FREEZE_WINNER_FOR_NEW_SOURCE_DISJOINT_QUALIFICATION"
+        str(terminal_rules.get(
+            "winner_at_or_above_floor",
+            "FREEZE_WINNER_FOR_NEW_SOURCE_DISJOINT_QUALIFICATION",
+        ))
         if adequate
-        else "NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION"
+        else str(terminal_rules.get(
+            "winner_below_adequacy_floor",
+            "NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION",
+        ))
     )
     diagnostic = sorted(
         rows,

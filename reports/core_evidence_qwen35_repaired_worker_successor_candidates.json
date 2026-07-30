@@ -1,0 +1,753 @@
+{
+  "candidate_id": "qwen35_9b_repaired_worker",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T07:25:40.823108Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 0,
+    "planned": 3,
+    "sealed": 3,
+    "skipped": 0
+  },
+  "faults": [],
+  "maximum_inference": "This consumed-task run supports local model selection only. It cannot support competence, generalization, or subsystem claims.",
+  "model_identity": {
+    "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+  },
+  "policy": "project_theseus_local_model_bakeoff_candidates_v1",
+  "runtime": {
+    "wall_ms": 794143.229
+  },
+  "scope": "consumed_development_model_selection_no_capability_claim",
+  "source_identities": {
+    "bakeoff_runner_sha256": "02dfbeb84a21da1f3217972dd83ac8baf776b78ac06f2a5b888de3e382ba03e7",
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "plan_sha256": "7813c2f4af5777441363f08faac02dfc4baa56d4e58cbfda2e350183243d8358",
+    "task_manifest_sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522",
+    "worker_sha256": "d766bd4aee72262895c343e16a352d98c3c7b6d6e3b3ff755681b75cf4240b66"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 10,
+        "action_counts": {
+          "finish": 1,
+          "read": 7,
+          "replace": 1,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "configs/artifact_retention_budget_policy.json",
+          "scripts/artifact_retention_reference.py",
+          "tests/test_artifact_retention_reference.py"
+        ],
+        "failed_actions": 0,
+        "file_mutations": 1,
+        "pre_mutation_read_actions": 7
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 10,
+          "action_counts": {
+            "finish": 1,
+            "read": 7,
+            "replace": 1,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "configs/artifact_retention_budget_policy.json",
+            "scripts/artifact_retention_reference.py",
+            "tests/test_artifact_retention_reference.py"
+          ],
+          "failed_actions": 0,
+          "file_mutations": 1,
+          "pre_mutation_read_actions": 7
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "a37a8f9fc62e2293fb6a394c5e633349e81f058b7bb4b5259859cd4191123736",
+            "before_sha256": "bc8728c3967852baa2ccbf9311e789e14d795329c6d232e337c44f39dc920b33",
+            "effect": "modify",
+            "path": "scripts/artifact_retention_reference.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 10,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "55913116ebe2da732e9e380e7541fa1d7d07005684c8fd3e70e36b075378de30",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "--- a/scripts/artifact_retention_reference.py\n+++ b/scripts/artifact_retention_reference.py\n@@ -422,6 +422,9 @@\n \n def normalize_checkpoint_ref(value: Any) -> str:\n     text = str(value or \"\").strip().rstrip(\".,:;\\\"'\")\n+    # Reject references containing backslash or NUL control\n+    if \"\\\\\" in text or \"\\x00\" in text:\n+        return \"\"\n     if not text.startswith(\"checkpoints/\") or \"..\" in Path(text).parts:\n         return \"\"\n     return text\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/artifact_retention_reference.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 311941.302
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_artifact_retention_reference.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/artifact_retention_reference.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_artifact_retention_reference.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/artifact_retention_reference.py"
+            ],
+            "denied_candidate_targets": [],
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_artifact_retention_reference.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": "..................                                                       [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n18 passed, 1 warning in 0.42s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/artifact_retention_reference.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/artifact_retention_reference.py"
+              ],
+              "pytest": [
+                "tests/test_artifact_retention_reference.py"
+              ]
+            },
+            "wall_ms": 808.957
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "688c57610ad196f4422f0c66c9ff97256465e079945a46f49cbb6f5b501a98ef",
+      "candidate_seal": {
+        "candidate_output_sha256": "688c57610ad196f4422f0c66c9ff97256465e079945a46f49cbb6f5b501a98ef",
+        "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+        "finished_utc": "2026-07-30T07:17:39.963206Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T07:12:27.756764Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+        "worker_source_sha256": "d766bd4aee72262895c343e16a352d98c3c7b6d6e3b3ff755681b75cf4240b66",
+        "worker_wall_ms": 312195.847
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "a37a8f9fc62e2293fb6a394c5e633349e81f058b7bb4b5259859cd4191123736",
+          "before_sha256": "bc8728c3967852baa2ccbf9311e789e14d795329c6d232e337c44f39dc920b33",
+          "effect": "modify",
+          "path": "scripts/artifact_retention_reference.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 10,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-local8b-retention-path",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "--- a/scripts/artifact_retention_reference.py\n+++ b/scripts/artifact_retention_reference.py\n@@ -422,6 +422,9 @@\n \n def normalize_checkpoint_ref(value: Any) -> str:\n     text = str(value or \"\").strip().rstrip(\".,:;\\\"'\")\n+    # Reject references containing backslash or NUL control\n+    if \"\\\\\" in text or \"\\x00\" in text:\n+        return \"\"\n     if not text.startswith(\"checkpoints/\") or \"..\" in Path(text).parts:\n         return \"\"\n     return text\n",
+      "proposed_paths": [
+        "scripts/artifact_retention_reference.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_artifact_retention_reference.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/artifact_retention_reference.py"
+          ],
+          "denied_candidate_targets": [],
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_artifact_retention_reference.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": "..................                                                       [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n18 passed, 1 warning in 0.42s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/artifact_retention_reference.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/artifact_retention_reference.py"
+            ],
+            "pytest": [
+              "tests/test_artifact_retention_reference.py"
+            ]
+          },
+          "wall_ms": 808.957
+        }
+      ],
+      "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 9,
+        "action_counts": {
+          "finish": 1,
+          "read": 6,
+          "replace": 1,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "configs/policy_update_lease.json",
+          "scripts/policy_update_lease.py",
+          "tests/test_policy_update_lease.py"
+        ],
+        "failed_actions": 1,
+        "file_mutations": 1,
+        "pre_mutation_read_actions": 5
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 9,
+          "action_counts": {
+            "finish": 1,
+            "read": 6,
+            "replace": 1,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "configs/policy_update_lease.json",
+            "scripts/policy_update_lease.py",
+            "tests/test_policy_update_lease.py"
+          ],
+          "failed_actions": 1,
+          "file_mutations": 1,
+          "pre_mutation_read_actions": 5
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "79337db51037a9a03a43a147d92a3efdebc4815a4b99e88d65f2d42674dbf1e2",
+            "before_sha256": "ab2ecb58e2d7735c65e7075608162139dc99751706d5c69dda4c46944f832b95",
+            "effect": "modify",
+            "path": "scripts/policy_update_lease.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 9,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "e6920365431829a348c53f7deab4ae5161179b1616d9b320db18ccec9b1c388c",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "--- a/scripts/policy_update_lease.py\n+++ b/scripts/policy_update_lease.py\n@@ -199,13 +199,25 @@\n \n def verify_journal(lease: dict[str, Any]) -> bool:\n     prior = digest([lease[\"lease_id\"], lease[\"baseline_digest\"]])\n-    for sequence, row in enumerate(lease.get(\"journal\") or [], 1):\n+    journal = lease.get(\"journal\") or []\n+    for sequence, row in enumerate(journal, 1):\n+        # Fail closed unless every entry retains the lease target_id and state_path\n+        if row.get(\"target_id\") != lease[\"target_id\"] or row.get(\"state_path\") != lease[\"state_path\"]:\n+            return False\n         if row.get(\"sequence\") != sequence or row.get(\"prior_entry_digest\") != prior:\n             return False\n         expected = digest({key: value for key, value in row.items() if key != \"entry_digest\"})\n         if row.get(\"entry_digest\") != expected:\n             return False\n         prior = row[\"entry_digest\"]\n+    # Final entry must equal current_digest and sequence must equal journal length\n+    if not journal:\n+        return False\n+    final_entry = journal[-1]\n+    if final_entry.get(\"after_digest\") != lease[\"current_digest\"]:\n+        return False\n+    if final_entry.get(\"sequence\") != len(journal):\n+        return False\n     return True\n \n \n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/policy_update_lease.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 233691.551
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_governance_architecture_kernel.py tests/test_policy_update_lease.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/policy_update_lease.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_governance_architecture_kernel.py tests/test_policy_update_lease.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/policy_update_lease.py"
+            ],
+            "denied_candidate_targets": [],
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_governance_architecture_kernel.py",
+                  "tests/test_policy_update_lease.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": "........                                                                 [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n8 passed, 1 warning in 0.53s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/policy_update_lease.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/policy_update_lease.py"
+              ],
+              "pytest": [
+                "tests/test_governance_architecture_kernel.py",
+                "tests/test_policy_update_lease.py"
+              ]
+            },
+            "wall_ms": 870.399
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "48e4b6f41c1e6592774c7e32ea25da4a597c205108db91bfb3960cf11d640197",
+      "candidate_seal": {
+        "candidate_output_sha256": "48e4b6f41c1e6592774c7e32ea25da4a597c205108db91bfb3960cf11d640197",
+        "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+        "finished_utc": "2026-07-30T07:21:35.332790Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T07:17:41.393004Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+        "worker_source_sha256": "d766bd4aee72262895c343e16a352d98c3c7b6d6e3b3ff755681b75cf4240b66",
+        "worker_wall_ms": 233932.786
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "79337db51037a9a03a43a147d92a3efdebc4815a4b99e88d65f2d42674dbf1e2",
+          "before_sha256": "ab2ecb58e2d7735c65e7075608162139dc99751706d5c69dda4c46944f832b95",
+          "effect": "modify",
+          "path": "scripts/policy_update_lease.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 9,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-local8b-policy-journal",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "--- a/scripts/policy_update_lease.py\n+++ b/scripts/policy_update_lease.py\n@@ -199,13 +199,25 @@\n \n def verify_journal(lease: dict[str, Any]) -> bool:\n     prior = digest([lease[\"lease_id\"], lease[\"baseline_digest\"]])\n-    for sequence, row in enumerate(lease.get(\"journal\") or [], 1):\n+    journal = lease.get(\"journal\") or []\n+    for sequence, row in enumerate(journal, 1):\n+        # Fail closed unless every entry retains the lease target_id and state_path\n+        if row.get(\"target_id\") != lease[\"target_id\"] or row.get(\"state_path\") != lease[\"state_path\"]:\n+            return False\n         if row.get(\"sequence\") != sequence or row.get(\"prior_entry_digest\") != prior:\n             return False\n         expected = digest({key: value for key, value in row.items() if key != \"entry_digest\"})\n         if row.get(\"entry_digest\") != expected:\n             return False\n         prior = row[\"entry_digest\"]\n+    # Final entry must equal current_digest and sequence must equal journal length\n+    if not journal:\n+        return False\n+    final_entry = journal[-1]\n+    if final_entry.get(\"after_digest\") != lease[\"current_digest\"]:\n+        return False\n+    if final_entry.get(\"sequence\") != len(journal):\n+        return False\n     return True\n \n \n",
+      "proposed_paths": [
+        "scripts/policy_update_lease.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_governance_architecture_kernel.py tests/test_policy_update_lease.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/policy_update_lease.py"
+          ],
+          "denied_candidate_targets": [],
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_governance_architecture_kernel.py",
+                "tests/test_policy_update_lease.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": "........                                                                 [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n8 passed, 1 warning in 0.53s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/policy_update_lease.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/policy_update_lease.py"
+            ],
+            "pytest": [
+              "tests/test_governance_architecture_kernel.py",
+              "tests/test_policy_update_lease.py"
+            ]
+          },
+          "wall_ms": 870.399
+        }
+      ],
+      "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 14,
+        "action_counts": {
+          "read": 12,
+          "replace": 1,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "scripts/gvr_state_machine.py",
+          "scripts/kerc_semantic_corpus_verify.py",
+          "tests/test_gvr_state_machine.py"
+        ],
+        "failed_actions": 9,
+        "file_mutations": 1,
+        "pre_mutation_read_actions": 3
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 14,
+          "action_counts": {
+            "read": 12,
+            "replace": 1,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "scripts/gvr_state_machine.py",
+            "scripts/kerc_semantic_corpus_verify.py",
+            "tests/test_gvr_state_machine.py"
+          ],
+          "failed_actions": 9,
+          "file_mutations": 1,
+          "pre_mutation_read_actions": 3
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "2e2a5c0c421d6d3ff1a40eafe7f4990bb239d548b451a9e6ea8c70ff2d2df27a",
+            "before_sha256": "a125f6f504cc44c3833b824e56e4edb073c3f30906c37717038688dc1ee3538e",
+            "effect": "modify",
+            "path": "scripts/gvr_state_machine.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 14,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "d5540c6a6b973254f5d21816258b0342d7135290633010ad2c228c273fa83601",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "--- a/scripts/gvr_state_machine.py\n+++ b/scripts/gvr_state_machine.py\n@@ -148,6 +148,10 @@\n         expected = digest({key: value for key, value in row.items() if key != \"transition_digest\"})\n         if row.get(\"transition_digest\") != expected:\n             return False\n+        if row.get(\"artifact_sha256\") != candidate.get(\"current_artifact_sha256\"):\n+            return False\n+        if not isinstance(row, dict):\n+            return False\n         prior_state = row[\"to\"]\n     return prior_state == candidate.get(\"state\")\n \n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/gvr_state_machine.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "final_candidate_verification_not_green",
+          "stalled_repeated_denied_action"
+        ],
+        "runtime": {
+          "wall_ms": 243648.894
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "stalled_repeated_denied_action",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_gvr_state_machine.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/gvr_state_machine.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_gvr_state_machine.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/gvr_state_machine.py"
+            ],
+            "denied_candidate_targets": [
+              "{'path': 'scripts/gvr_state_machine.py'}"
+            ],
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_gvr_state_machine.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n____ test_reference_fixture_separates_learned_assisted_and_fallback_credit _____\n\n    def test_reference_fixture_separates_learned_assisted_and_fallback_credit() -> None:\n        report = gvr.run_reference_fixture()\n>       assert report[\"trigger_state\"] == \"GREEN\"\nE       AssertionError: assert 'RED' == 'GREEN'\nE         \nE         - GREEN\nE         + RED\n\ntests/test_gvr_state_machine.py:17: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_gvr_state_machine.py::test_reference_fixture_separates_learned_assisted_and_fallback_credit\n1 failed, 1 passed, 1 warning in 0.27s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_gvr_state_machine.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n____ test_reference_fixture_separates_learned_assisted_and_fallback_credit _____\n\n    def test_reference_fixture_separates_learned_assisted_and_fallback_credit() -> None:\n        report = gvr.run_reference_fixture()\n>       assert report[\"trigger_state\"] == \"GREEN\"\nE       AssertionError: assert 'RED' == 'GREEN'\nE         \nE         - GREEN\nE         + RED\n\ntests/test_gvr_state_machine.py:17: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_gvr_state_machine.py::test_reference_fixture_separates_learned_assisted_and_fallback_credit\n1 failed, 1 passed, 1 warning in 0.27s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/gvr_state_machine.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/gvr_state_machine.py"
+              ],
+              "pytest": [
+                "tests/test_gvr_state_machine.py"
+              ]
+            },
+            "wall_ms": 1457.86
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "b110f011e7a87efaf5a83dbfdf5d84bc9eadf57e1515126334c80a6a342f3d10",
+      "candidate_seal": {
+        "candidate_output_sha256": "b110f011e7a87efaf5a83dbfdf5d84bc9eadf57e1515126334c80a6a342f3d10",
+        "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+        "finished_utc": "2026-07-30T07:25:40.502302Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T07:21:36.588111Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+        "worker_source_sha256": "d766bd4aee72262895c343e16a352d98c3c7b6d6e3b3ff755681b75cf4240b66",
+        "worker_wall_ms": 243906.893
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [
+        {
+          "after_sha256": "2e2a5c0c421d6d3ff1a40eafe7f4990bb239d548b451a9e6ea8c70ff2d2df27a",
+          "before_sha256": "a125f6f504cc44c3833b824e56e4edb073c3f30906c37717038688dc1ee3538e",
+          "effect": "modify",
+          "path": "scripts/gvr_state_machine.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 14,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-local8b-gvr-history",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "--- a/scripts/gvr_state_machine.py\n+++ b/scripts/gvr_state_machine.py\n@@ -148,6 +148,10 @@\n         expected = digest({key: value for key, value in row.items() if key != \"transition_digest\"})\n         if row.get(\"transition_digest\") != expected:\n             return False\n+        if row.get(\"artifact_sha256\") != candidate.get(\"current_artifact_sha256\"):\n+            return False\n+        if not isinstance(row, dict):\n+            return False\n         prior_state = row[\"to\"]\n     return prior_state == candidate.get(\"state\")\n \n",
+      "proposed_paths": [
+        "scripts/gvr_state_machine.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "final_candidate_verification_not_green",
+        "stalled_repeated_denied_action"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "stalled_repeated_denied_action",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_gvr_state_machine.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/gvr_state_machine.py"
+          ],
+          "denied_candidate_targets": [
+            "{'path': 'scripts/gvr_state_machine.py'}"
+          ],
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_gvr_state_machine.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n____ test_reference_fixture_separates_learned_assisted_and_fallback_credit _____\n\n    def test_reference_fixture_separates_learned_assisted_and_fallback_credit() -> None:\n        report = gvr.run_reference_fixture()\n>       assert report[\"trigger_state\"] == \"GREEN\"\nE       AssertionError: assert 'RED' == 'GREEN'\nE         \nE         - GREEN\nE         + RED\n\ntests/test_gvr_state_machine.py:17: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_gvr_state_machine.py::test_reference_fixture_separates_learned_assisted_and_fallback_credit\n1 failed, 1 passed, 1 warning in 0.27s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_gvr_state_machine.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n____ test_reference_fixture_separates_learned_assisted_and_fallback_credit _____\n\n    def test_reference_fixture_separates_learned_assisted_and_fallback_credit() -> None:\n        report = gvr.run_reference_fixture()\n>       assert report[\"trigger_state\"] == \"GREEN\"\nE       AssertionError: assert 'RED' == 'GREEN'\nE         \nE         - GREEN\nE         + RED\n\ntests/test_gvr_state_machine.py:17: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_gvr_state_machine.py::test_reference_fixture_separates_learned_assisted_and_fallback_credit\n1 failed, 1 passed, 1 warning in 0.27s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/gvr_state_machine.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/gvr_state_machine.py"
+            ],
+            "pytest": [
+              "tests/test_gvr_state_machine.py"
+            ]
+          },
+          "wall_ms": 1457.86
+        }
+      ],
+      "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

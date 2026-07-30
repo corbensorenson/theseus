@@ -575,6 +575,38 @@ wall diagnosis before considering a measured 14B-class hardware-frontier
 candidate. Do not add a larger model merely because the repaired 9B path has
 not yet been tested.
 
+That successor is complete. All `3/3` tasks sealed with zero infrastructure
+failure, unsafe effect, external inference, teacher use, public/D2
+consumption, or rollback failure. Total worker wall time fell from 5,159,752 ms
+with two task timeouts to 794,143 ms with none. The exactly repeated first task
+fell from about 25.9 minutes to 4.8 minutes (`5.4x`), while late verify/finish
+turns fell from roughly 250 seconds each to 10–13 seconds. This validates the
+completed-message cache repair as a real end-to-end acceleration.
+
+Functional competence improved but remains below the preregistered floor:
+`1/3` useful, `0/3` unsafe, `3/3` exact rollback. The retention patch passed
+all hidden request-derived assertions. The policy-journal patch passed three
+of four but called `.get` on a malformed row before checking that it was an
+object. The GVR patch missed candidate/source/identity binding, placed its row
+type check after row access, failed candidate verification, and then ignored
+the required repair/finish phase. Record
+`REMAINING_LOCAL_MODEL_OR_WORKER_WALL`; do not consume a fresh cohort and do
+not attribute either miss to VCM, governance, routing, planning, or reuse.
+
+Before a final local-model choice, close three generic worker defects on these
+consumed tasks: make fault recovery obey the current edit/verify/repair/finish
+phase; ignore non-string candidate verification targets; and require an
+advisory, request-derived acceptance-criteria plan before mutation. The plan is
+candidate-authored scaffolding, never a success flag or subsystem credit.
+Compare the repaired planned Qwen3.5 worker against one measured
+Qwen2.5-Coder-14B hardware-frontier candidate. The pinned 14B 4-bit MLX model
+loaded and emitted the exact action in the trivial offline preflight, but grew
+host swap by 483 MiB from an already elevated baseline. It is not eligible
+until a production-shaped long-context preflight demonstrates practical
+resident memory, swap behavior, latency, stability, and rollback. Use a
+trimmable-cache path and qualified KV-cache precision where this reduces peak
+memory without changing functional outcomes.
+
 ## Neural Verdict Campaign
 
 This is the only long-training program that remains on the roadmap.
