@@ -1,0 +1,45 @@
+{
+  "policy": "project_theseus_repository_stack_development_interrupted_disposition_v1",
+  "event_trace": "runtime/core_evidence_repository_stack_development_worker_v4_phase_first_full_events.jsonl",
+  "event_trace_sha256": "d2a4bb2b56d5e8ac7db5fb282e136c6f3734c846648f58ca5ad45829ee7535dc",
+  "event_count": 7,
+  "disposition": "INCONCLUSIVE_IMPLEMENTATION_POST_PLAN_INSPECTION_STARVATION",
+  "capability_or_subsystem_claim_allowed": false,
+  "operator_interrupted": true,
+  "reason_for_interrupt": "The phase-first protocol allowed TMax to recover from one duplicate source read, inspect an independent test, and emit a valid five-criterion/two-path plan. The controller then rejected two attempts to inspect additional exact source spans because it treated the minimum inspection floor as the end of inspection, even though the configured five-read ceiling had remaining capacity. Continuing could not test edit synthesis under adequate context.",
+  "positive_mechanics": {
+    "phase_directive_visible": true,
+    "independent_test_read_after_recovery": true,
+    "full_stack_plan_accepted": true,
+    "accepted_plan_criterion_count": 5,
+    "accepted_plan_target_path_count": 2,
+    "authority_scope_nonempty": true
+  },
+  "wall": {
+    "owner": "worker_controller_inspection_phase_contract",
+    "post_plan_reads_rejected": 2,
+    "configured_maximum_pre_mutation_reads": 5,
+    "successful_reads_before_plan": 3,
+    "empty_out_of_range_read_incorrectly_credited": true,
+    "root_cause": "inspection_complete represented the minimum source/test floor but was also used to prohibit all later navigation. The model could plan after broad context but could not retrieve the exact planned source span needed for a bounded anchor edit.",
+    "local_model_capability_disposition": "NOT_DIAGNOSED_BECAUSE_CONTROLLER_DENIED_BOUNDED_PLANNED_CONTEXT"
+  },
+  "repair": {
+    "successor": "Worker-v4 development with bounded post-plan target reads",
+    "out_of_range_reads_rejected_without_credit": true,
+    "post_plan_reads_limited_to_existing_plan_target_paths": true,
+    "post_plan_reads_limited_by_existing_five_read_ceiling": true,
+    "list_and_search_remain_forbidden_after_plan": true,
+    "mutation_authority_unchanged": true,
+    "focused_regression_tests_added": true,
+    "fresh_requalification_required": true
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

@@ -371,6 +371,12 @@ class RepositoryState:
                 and
                 not self.changed_paths()
                 and self.inspection_complete()
+                and not (
+                    kind == "read"
+                    and self.post_plan_read_allowed(
+                        str(action.get("path") or "")
+                    )
+                )
             ):
                 raise WorkerFault(
                     "navigation_forbidden_after_inspection_complete"
@@ -480,7 +486,11 @@ class RepositoryState:
                 and self.advisory_plan is None
             ):
                 return {"plan", "abstain"}
-            return mutations | {"abstain"}
+            return mutations | (
+                {"read", "abstain"}
+                if self.post_plan_read_available()
+                else {"abstain"}
+            )
         return navigation | {"abstain"}
 
     def enforce_phase_action(self, kind: str) -> None:
@@ -490,6 +500,27 @@ class RepositoryState:
                 "action_not_allowed_in_current_phase:"
                 + ",".join(sorted(allowed))
             )
+
+    def post_plan_read_available(self) -> bool:
+        if self.advisory_plan is None or self.changed_paths():
+            return False
+        maximum = int(
+            self.config["budgets"].get(
+                "maximum_pre_mutation_read_actions",
+                self.config["budgets"]["maximum_agent_turns"],
+            )
+        )
+        return self.read_actions < maximum and any(
+            path in self.baseline
+            for path in self.advisory_plan["target_paths"]
+        )
+
+    def post_plan_read_allowed(self, relative: str) -> bool:
+        return bool(
+            self.post_plan_read_available()
+            and relative in self.advisory_plan["target_paths"]
+            and relative in self.baseline
+        )
 
     def planned_missing_effect_paths(self) -> list[str]:
         if self.advisory_plan is None:
@@ -634,6 +665,8 @@ class RepositoryState:
             raise WorkerFault("pre_mutation_inspection_ceiling_reached")
         lines = path.read_text(encoding="utf-8").splitlines()
         start = max(1, start)
+        if start > len(lines):
+            raise WorkerFault(f"read_start_beyond_file_end:{len(lines)}")
         end = min(max(start, end), start + maximum - 1)
         minimum = min(
             maximum,
@@ -881,6 +914,13 @@ class RepositoryState:
                 "The controller rejected a phase regression. NEXT ACTION MUST "
                 f"match {self.required_next_phase()}. Allowed action kinds: "
                 f"{sorted(self.allowed_phase_actions())}."
+            )
+        if "read_start_beyond_file_end" in fault:
+            line_count = fault.rsplit(":", 1)[-1]
+            return (
+                "The requested read began beyond the file end and earned no "
+                "inspection credit. NEXT ACTION MUST use a start_line between "
+                f"1 and {line_count} on an allowed existing path."
             )
         if (
             self.config["budgets"]["require_test_read_before_mutation"]

@@ -142,6 +142,22 @@ def test_insert_before_rejects_ambiguous_anchor_and_large_content(
         state.insert_before("scripts/policy.py", "anchor", "too large")
 
 
+def test_out_of_range_read_is_rejected_without_inspection_credit(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "x = 1\n", encoding="utf-8"
+    )
+    state = worker.RepositoryState(tmp_path, config())
+
+    with pytest.raises(worker.WorkerFault, match="read_start_beyond_file_end:1"):
+        state.read("scripts/policy.py", 900, 1200)
+
+    assert state.read_actions == 0
+    assert state.read_paths == set()
+
+
 def test_hidden_field_and_git_metadata_are_rejected(tmp_path: Path) -> None:
     (tmp_path / ".git").mkdir()
     with pytest.raises(worker.WorkerFault, match="visible_fields"):
@@ -965,7 +981,7 @@ def test_phase_contract_requires_all_planned_paths_then_verify_then_finish(
     (tmp_path / "scripts").mkdir()
     (tmp_path / "tests").mkdir()
     (tmp_path / "scripts" / "peer_clock.py").write_text(
-        "def age():\n    return -1\n"
+        "def age():\n    return -1\n" + ("# request context\n" * 100)
     )
     (tmp_path / "tests" / "test_clock_behavior.py").write_text(
         "from scripts.peer_clock import age\n"
@@ -976,6 +992,7 @@ def test_phase_contract_requires_all_planned_paths_then_verify_then_finish(
     local["budgets"]["require_plan_before_mutation"] = True
     local["budgets"]["enforce_request_scoped_effect_paths"] = True
     local["budgets"]["enforce_phase_action_contract"] = True
+    local["budgets"]["forbid_navigation_after_inspection_complete"] = True
     state = worker.RepositoryState(
         tmp_path,
         local,
@@ -1004,6 +1021,24 @@ def test_phase_contract_requires_all_planned_paths_then_verify_then_finish(
         "implementation": "Bound the age and add tests.",
         "verification": "Run the focused tests.",
     })
+    assert "read" in state.allowed_phase_actions()
+    with pytest.raises(
+        worker.WorkerFault,
+        match="navigation_forbidden_after_inspection_complete",
+    ):
+        state.execute({
+            "action": "read",
+            "path": "tests/test_clock_behavior.py",
+            "start_line": 1,
+            "end_line": 80,
+        })
+    planned_read = state.execute({
+        "action": "read",
+        "path": "scripts/peer_clock.py",
+        "start_line": 81,
+        "end_line": 160,
+    })
+    assert "# request context" in planned_read["content"]
     state.execute({
         "action": "replace",
         "path": "scripts/peer_clock.py",

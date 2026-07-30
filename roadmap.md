@@ -1074,6 +1074,24 @@ if it can, freeze Worker-v4 and its adapter before authoring and consuming a
 new source-disjoint qualification cohort. This repair still transfers no
 Worker-v3 qualification credit.
 
+That replay confirmed the phase repair: TMax recovered to an independent test
+read and emitted a valid five-criterion/two-path plan. It then requested two
+additional spans from the planned implementation path. The controller rejected
+both because `inspection_complete` represented the minimum source/test floor
+but was also being used as a maximum, despite unused capacity under the
+five-read ceiling. An earlier read beginning after the file end had also
+returned empty content and incorrectly earned inspection credit. Preserve this
+run as `INCONCLUSIVE_IMPLEMENTATION_POST_PLAN_INSPECTION_STARVATION`; it is not
+a local-model or edit-synthesis failure.
+
+Worker-v4 now rejects out-of-range reads before they affect inspection
+accounting and permits post-plan `read` actions only for existing paths in the
+controller-bound plan, only until the existing read ceiling. List/search and
+unplanned-path navigation remain forbidden, and effect authority is unchanged.
+The next replay is still the same single consumed-development full-stack arm.
+Only after it reaches a real edit, verification, or honestly attributable
+model wall may the worker be frozen for fresh qualification.
+
 ## Neural Verdict Campaign
 
 This is the only long-training program that remains on the roadmap.
