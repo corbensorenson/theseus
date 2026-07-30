@@ -2,6 +2,9 @@
   "policy": "project_theseus_core_evidence_subsystem_adequacy_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
   "qualified_worker_disposition": "reports/core_evidence_tmax_fresh_v1_qualification_disposition.json",
+  "qualified_worker_freeze": "configs/core_evidence_tmax_fresh_v1_qualification_freeze.json",
+  "current_worker_source": "scripts/core_evidence_worker_v2.py",
+  "active_worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
   "required_worker_disposition": "QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS",
   "registry": "configs/project_manifest_registry.json",
   "owners": [
@@ -52,11 +55,17 @@
       "implementation_ids": [
         "impl.theseus_plan_compiler.v1"
       ],
+      "candidate_entrypoints": [
+        "scripts/core_evidence_repository_stack_adapter.py",
+        "scripts/core_evidence_repository_stack_development.py"
+      ],
       "required_role": "planning",
       "tests": [
         "tests/test_verifier_guided_search.py",
         "tests/test_assistant_reflexive_dispatch.py",
-        "tests/test_semantic_ir.py"
+        "tests/test_semantic_ir.py",
+        "tests/test_core_evidence_repository_stack_adapter.py",
+        "tests/test_core_evidence_repository_stack_development.py"
       ],
       "required_interventions": [
         "typed_plan",

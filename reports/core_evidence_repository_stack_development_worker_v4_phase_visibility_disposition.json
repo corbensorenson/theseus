@@ -1,0 +1,44 @@
+{
+  "policy": "project_theseus_repository_stack_development_interrupted_disposition_v1",
+  "event_trace": "runtime/core_evidence_repository_stack_development_worker_v4_full_events.jsonl",
+  "event_trace_sha256": "381537c2c96b06a489b9a2ca4c736c52e42add969542d8266d2d61838d58f4e4",
+  "event_count": 6,
+  "disposition": "INCONCLUSIVE_IMPLEMENTATION_CONTROLLER_PHASE_VISIBILITY",
+  "capability_or_subsystem_claim_allowed": false,
+  "operator_interrupted": true,
+  "reason_for_interrupt": "The bounded full-stack replay spent six local-model calls inspecting request-relevant implementation and test context, then emitted a read after the controller had transitioned to plan-only. The resulting recovery generation produced no auditable action before interruption. Continuing could not distinguish model competence from the discovered harness information-flow defect.",
+  "positive_mechanics": {
+    "target_free_alignment_audit_green": true,
+    "request_relevant_source_reads": 4,
+    "independent_test_reads": 2,
+    "request_scoped_effect_paths_nonempty": true,
+    "external_inference_calls": 0
+  },
+  "wall": {
+    "owner": "worker_controller_tool_result_protocol",
+    "last_fault": "WorkerFault:action_not_allowed_in_current_phase:abstain,plan",
+    "required_phase_at_fault": "record_request_criteria_plan_before_edit",
+    "root_cause": "Successful read content was serialized before the controller state in a lexically sorted TOOL_RESULT object and then truncated at the tool-result character ceiling. Large reads could therefore hide state.required_next_phase and the legal action set from the local model.",
+    "local_model_capability_disposition": "NOT_DIAGNOSED_BECAUSE_CONTROLLER_WITHHELD_REQUIRED_PHASE_STATE"
+  },
+  "repair": {
+    "successor": "Worker-v4 development with phase-first tool-result protocol",
+    "phase_directive_precedes_truncatable_payload": true,
+    "directive_fields": [
+      "required_next_phase",
+      "allowed_action_kinds"
+    ],
+    "directive_is_controller_owned_and_target_blind": true,
+    "focused_regression_test_added": true,
+    "worker_v3_qualification_transfers": false,
+    "fresh_requalification_required": true
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "policy": "project_theseus_local_8b_stack_worker_v1",
+  "model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "temperature": 0.0,
+    "maximum_action_tokens": 1536,
+    "repetition_penalty": 1.05,
+    "repetition_context_size": 128
+  },
+  "budgets": {
+    "maximum_agent_turns": 18,
+    "maximum_format_retries": 3,
+    "maximum_file_mutations": 16,
+    "maximum_repair_attempts": 2,
+    "maximum_repeated_denied_actions": 3,
+    "minimum_pre_mutation_read_actions": 2,
+    "minimum_pre_mutation_distinct_paths": 2,
+    "maximum_pre_mutation_read_actions": 5,
+    "maximum_pre_mutation_navigation_actions": 6,
+    "minimum_read_context_lines": 80,
+    "require_test_read_before_mutation": true,
+    "require_plan_before_mutation": true,
+    "bind_plan_target_paths_to_request_scope": true,
+    "default_plan_verification_strategy": true,
+    "require_existing_integration_before_new_implementation": true,
+    "enforce_request_scoped_effect_paths": true,
+    "forbid_navigation_after_inspection_complete": true,
+    "enforce_phase_action_contract": true,
+    "maximum_created_file_characters": 2400,
+    "maximum_insert_characters": 4000,
+    "structured_test_creation_required": true,
+    "maximum_structured_tests": 3,
+    "maximum_structured_test_body_characters": 500,
+    "maximum_read_lines": 180,
+    "maximum_search_results": 12,
+    "maximum_tool_result_characters": 6000,
+    "maximum_retained_tool_turns": 18,
+    "maximum_initial_retrieval_characters": 6000,
+    "maximum_patch_bytes": 262144,
+    "verification_timeout_seconds": 180
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "learned_generation_credit": 1,
+    "candidate_snapshot_has_git_metadata": false,
+    "arbitrary_shell": false
+  }
+}

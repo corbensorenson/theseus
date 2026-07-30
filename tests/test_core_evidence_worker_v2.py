@@ -93,6 +93,55 @@ def test_injected_agent_produces_real_verified_diff(tmp_path: Path) -> None:
     assert events[-1]["terminal"] is True
 
 
+def test_insert_before_adds_bounded_helper_at_unique_anchor(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    path = tmp_path / "scripts" / "policy.py"
+    path.write_text(
+        "def existing():\n    return True\n\n"
+        "def next_function():\n    return False\n",
+        encoding="utf-8",
+    )
+    local = permissive_config()
+    local["budgets"]["maximum_insert_characters"] = 200
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="In scripts/policy.py, add helper before next_function.",
+    )
+
+    result = state.insert_before(
+        "scripts/policy.py",
+        "def next_function():",
+        "def helper():\n    return 'bounded'",
+    )
+
+    assert result["ok"] is True
+    text = path.read_text(encoding="utf-8")
+    assert text.index("def helper") < text.index("def next_function")
+
+
+def test_insert_before_rejects_ambiguous_anchor_and_large_content(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    path = tmp_path / "scripts" / "policy.py"
+    path.write_text("anchor\nanchor\n", encoding="utf-8")
+    local = permissive_config()
+    local["budgets"]["maximum_insert_characters"] = 5
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="In scripts/policy.py, add a bounded helper.",
+    )
+    with pytest.raises(worker.WorkerFault, match="anchor_occurrence_count"):
+        state.insert_before("scripts/policy.py", "anchor", "small")
+    path.write_text("anchor\n", encoding="utf-8")
+    with pytest.raises(worker.WorkerFault, match="character_ceiling"):
+        state.insert_before("scripts/policy.py", "anchor", "too large")
+
+
 def test_hidden_field_and_git_metadata_are_rejected(tmp_path: Path) -> None:
     (tmp_path / ".git").mkdir()
     with pytest.raises(worker.WorkerFault, match="visible_fields"):
@@ -208,6 +257,48 @@ def test_first_complete_action_can_stop_generation_before_trailing_text() -> Non
         "query": "needle",
     }
     assert worker.complete_action_json('{"action":"read"') is None
+
+
+def test_tool_result_keeps_phase_directive_before_truncated_read(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    source = tmp_path / "scripts" / "policy.py"
+    source.write_text("x = 1\n" * 300, encoding="utf-8")
+    test = tmp_path / "tests" / "test_policy.py"
+    test.write_text("def test_policy():\n    assert True\n", encoding="utf-8")
+    local = permissive_config()
+    local["budgets"].update({
+        "minimum_pre_mutation_read_actions": 2,
+        "minimum_pre_mutation_distinct_paths": 2,
+        "require_test_read_before_mutation": True,
+        "require_plan_before_mutation": True,
+        "enforce_phase_action_contract": True,
+    })
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "In scripts/policy.py, update policy and add focused tests in "
+            "tests/test_policy.py."
+        ),
+    )
+    state.read("scripts/policy.py", 1, 180)
+    result = state.read("tests/test_policy.py", 1, 80)
+
+    large_result = {**result, "content": result["content"] + ("z" * 2000)}
+    message = worker.tool_result_message(
+        large_result,
+        state,
+        maximum_characters=320,
+    )
+
+    assert len(message) == 320
+    assert message.startswith("PHASE_DIRECTIVE\n")
+    assert '"allowed_action_kinds":["abstain","plan"]' in message
+    assert '"required_next_phase":"record_request_criteria_plan_before_edit"' in message
+    assert message.index("PHASE_DIRECTIVE") < message.index("TOOL_RESULT")
 
 
 def test_observed_replace_concatenation_is_repaired_and_counted(
@@ -342,7 +433,7 @@ def test_duplicate_read_after_complete_inspection_forces_decision(
         "duplicate_read_span_no_new_information"
     )
 
-    assert "NEXT ACTION MUST BE replace/create/delete" in guidance
+    assert "NEXT ACTION MUST BE replace/insert_before/create/delete" in guidance
     assert "Do not read or search again" in guidance
 
 
@@ -977,7 +1068,8 @@ def test_failed_verification_requires_one_bounded_repair_then_reverify(
     })
     assert result["passed"] is False
     assert state.allowed_phase_actions() == {
-        "replace", "create", "create_test", "delete", "read", "abstain"
+        "replace", "insert_before", "create", "create_test", "delete", "read",
+        "abstain",
     }
     reread = state.execute({
         "action": "read",

@@ -4562,7 +4562,7 @@
       "canonical_entrypoint": "scripts/theseus_plan_compiler.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve typed DAG, governed VCM packet, artifact graph, verifier, and residual trace outputs.",
-      "verification_command": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/relational_dimension_compiler.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_relational_dimension_compiler.py tests/test_vcm_semantic_memory.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate",
+      "verification_command": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/relational_dimension_compiler.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py scripts/core_evidence_repository_stack_adapter.py scripts/core_evidence_repository_stack_development.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_relational_dimension_compiler.py tests/test_vcm_semantic_memory.py tests/test_core_evidence_repository_stack_adapter.py tests/test_core_evidence_repository_stack_development.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate",
       "role": "planning",
       "trust_tier": "governed_local",
       "dependencies": [
@@ -4572,6 +4572,12 @@
         "reports/vcm_task_contexts.json",
         "scripts/vcm_context_governor_gate.py",
         "scripts/theseus_plan_compiler.py",
+        "scripts/core_evidence_repository_stack_adapter.py",
+        "scripts/core_evidence_repository_stack_development.py",
+        "configs/core_evidence_repository_stack_adapter.json",
+        "configs/core_evidence_repository_stack_development_public.json",
+        "configs/core_evidence_repository_stack_development_evaluator.json",
+        "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
         "scripts/viea_spine_records.py",
         "scripts/viea_spine_record_gate.py",
         "scripts/semantic_ir.py",
@@ -4590,7 +4596,10 @@
         "scripts/neural_seed_report_io.py",
         "tests/test_semantic_ir.py",
         "tests/test_relational_dimension_compiler.py",
-        "tests/test_kernel_english_protocol.py"
+        "tests/test_kernel_english_protocol.py",
+        "tests/test_core_evidence_repository_stack_adapter.py",
+        "tests/test_core_evidence_repository_stack_development.py",
+        "tests/fixtures/core_evidence_repository_stack_development_hidden/procedural_effect_separation_case.py"
       ],
       "evidence_outputs": [
         "reports/theseus_plan_compiler.json",
@@ -4720,7 +4729,7 @@
             "reports/viea_verified_procedural_tools.json",
             "reports/viea_research_implementation_matrix.json"
           ],
-          "verification_command": "python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/viea_spine_record_gate.py --gate",
+          "verification_command": "python3 -m pytest -q tests/test_core_evidence_repository_stack_adapter.py tests/test_core_evidence_repository_stack_development.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/viea_spine_record_gate.py --gate",
           "freshness_required": true,
           "dependency_closure": [
             "configs/project_manifest_registry.json",
@@ -4728,7 +4737,15 @@
             "configs/viea_spine_record_contracts.json",
             "reports/vcm_task_contexts.json",
             "scripts/vcm_context_governor_gate.py",
-            "scripts/theseus_plan_compiler.py"
+            "scripts/theseus_plan_compiler.py",
+            "scripts/core_evidence_repository_stack_adapter.py",
+            "scripts/core_evidence_repository_stack_development.py",
+            "configs/core_evidence_repository_stack_adapter.json",
+            "configs/core_evidence_repository_stack_development_public.json",
+            "configs/core_evidence_repository_stack_development_evaluator.json",
+            "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
+            "tests/test_core_evidence_repository_stack_adapter.py",
+            "tests/test_core_evidence_repository_stack_development.py"
           ]
         },
         "observability_binding": {

@@ -1,0 +1,1120 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T14:45:22.300797Z",
+  "denominators": {
+    "candidate_patches": 0,
+    "candidate_verification_green": 0,
+    "model_dispatches": 2,
+    "pre_generation_denials": 0,
+    "tasks": 1,
+    "variant_attempts": 2
+  },
+  "faults": [],
+  "maximum_inference": "This engineering report can expose generic integration defects and prompt-level behavior differences on already-consumed development tasks. It cannot support fresh capability or subsystem-efficacy claims.",
+  "policy": "project_theseus_repository_stack_consumed_development_v1",
+  "report_payload_sha256": "dc93b08ed925519767a33e197399200f89d3cf4ee9bd4c81ecc8624b53da1b63",
+  "runtime": {
+    "wall_ms": 673993.696
+  },
+  "scope": "consumed_development_causal_smoke_not_blind_evidence",
+  "source": {
+    "E0_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+    "adapter_config_sha256": "ae18cbb44cdbe96df1a522072b80cfa35683122bc0972efe87fd68c4ed36690b",
+    "adapter_source_sha256": "50005af833cbbe27e45db9134cb6b12be1e8e04337a95c9e2d206d6636d72d22",
+    "commit": "fdce8704e20fe3fc21520a03fdf97fdff63921db",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+    "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
+  },
+  "tasks": [
+    {
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "family": "resource_governance",
+      "opaque_task_id": "task-78bd624ca478d41a",
+      "variant_results": [
+        {
+          "adapter_receipt": {
+            "audit": {
+              "candidate_output_consulted": false,
+              "context_source_path": "configs/selected_route_sustained_qualification.json",
+              "controller_must_honor_dispatch_allowed": true,
+              "forbidden_visible_fields_present": [],
+              "hidden_tests_consulted": false,
+              "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+              "parent_source_commit": "3e307cb2b85c26e720a72a408e81773a103ec593",
+              "semantic_fact_count": 15,
+              "semantic_fact_set_sha256": "221be359a19f45f38b44a8a377fcdd797029418f79b40e78e8f34afd5dd76be0",
+              "target_identity_consulted": false,
+              "target_patch_consulted": false,
+              "visible_field_names": [
+                "allowed_runtime_context",
+                "authority_grant",
+                "natural_request",
+                "parent_source_commit"
+              ]
+            },
+            "authority_receipt": {
+              "authority_labels": [
+                "local_snapshot_read",
+                "local_snapshot_write",
+                "local_verification",
+                "exact_rollback"
+              ],
+              "candidate_claims_authoritative": false,
+              "effect_scope": "disposable_parent_snapshot_only",
+              "exact_rollback_required": true,
+              "grant": "temporary_effect_with_exact_rollback",
+              "mutation_allowed": true,
+              "policy": "project_theseus_repository_authority_receipt_v1",
+              "supported": true,
+              "typed_faults": []
+            },
+            "compiled_plan": {
+              "acceptance_tests": [
+                "request_derived_behavior_verified",
+                "effect_scope_valid",
+                "exact_rollback_available"
+              ],
+              "contract_hash": "sha256:38d5c3551e3dfdca6b90a160c5f51d90d9e9ba903dc1100718dfd1b5b3f675d8",
+              "goal_id": "repository_request_72fa1c7255e5",
+              "hard_failures": [],
+              "steps": [
+                {
+                  "acceptance_refs": [
+                    "request_derived_behavior_verified"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [],
+                  "id": "inspect",
+                  "op": "OBSERVE",
+                  "outputs": [
+                    "request_grounded_repository_context"
+                  ],
+                  "title": "Inspect request-relevant implementation, analogous context, and tests"
+                },
+                {
+                  "acceptance_refs": [
+                    "effect_scope_valid"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [
+                    "repository_request_72fa1c7255e5.inspect"
+                  ],
+                  "id": "edit",
+                  "op": "IMPLEMENT",
+                  "outputs": [
+                    "candidate_unified_diff"
+                  ],
+                  "title": "Produce the smallest request-complete repository effect"
+                },
+                {
+                  "acceptance_refs": [
+                    "request_derived_behavior_verified"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [
+                    "repository_request_72fa1c7255e5.edit"
+                  ],
+                  "id": "verify",
+                  "op": "VERIFY",
+                  "outputs": [
+                    "verification_receipt"
+                  ],
+                  "title": "Run request-relevant checks selected from actual changed paths"
+                },
+                {
+                  "acceptance_refs": [
+                    "exact_rollback_available"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [
+                    "repository_request_72fa1c7255e5.verify"
+                  ],
+                  "id": "seal",
+                  "op": "SEAL",
+                  "outputs": [
+                    "sealed_candidate",
+                    "rollback_obligation"
+                  ],
+                  "title": "Seal the diff and rollback obligation without judging success"
+                }
+              ],
+              "trigger_state": "GREEN"
+            },
+            "counters": {
+              "D2_cases_consumed": 0,
+              "E2_heldout_cases_consumed": 0,
+              "external_inference_calls": 0,
+              "learned_generation_credit": 0,
+              "public_calibration_cases_consumed": 0,
+              "teacher_calls": 0,
+              "user_facing_effects": 0
+            },
+            "dispatch_allowed": true,
+            "policy": "project_theseus_repository_stack_adapter_v1",
+            "procedural_reuse_receipt": {
+              "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+              "effect_authority_granted": false,
+              "guard_id": "2c9806a4b400da7d",
+              "learned_generation_claim_allowed": false,
+              "mode": "verified_reuse",
+              "policy": "project_theseus_repository_procedural_reuse_receipt_v1",
+              "ready": true,
+              "selected_route_id": "default.local_planning_assistant_metadata_only_v1",
+              "typed_faults": []
+            },
+            "route_receipt": {
+              "decision_inputs": {
+                "mutation_allowed": true,
+                "plan_green": true,
+                "procedural_reuse_ready": true,
+                "vcm_ready": true
+              },
+              "policy": "project_theseus_repository_least_sufficient_route_v1",
+              "requested_policy": "least_sufficient",
+              "routing_grants_effect_authority": false,
+              "selected_route": "full_governance",
+              "typed_faults": []
+            },
+            "typed_faults": [],
+            "variant_id": "full_stack",
+            "vcm_receipt": {
+              "adequacy_state": "governed_sufficient_for_repository_request",
+              "authority_ceiling": [
+                "local_snapshot_read",
+                "local_snapshot_write",
+                "local_verification",
+                "exact_rollback"
+              ],
+              "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/9ba2862de533bd413d9baf30",
+              "closure_state": "closed",
+              "consumer_id": "core_evidence.repository_stack_adapter",
+              "deletion_obligations": [],
+              "external_inference_calls": 0,
+              "fallback_return_count": 0,
+              "full_packet_evidence_required": true,
+              "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+              "governor_receipt_id": "964ac870f486f2699c64e55c",
+              "lease_expires_utc": "2026-07-30T14:49:09.398797Z",
+              "lease_id": "d47ef2f27c2560ed260bf6a5",
+              "lease_state": "active",
+              "omissions": [
+                "raw_payload_text_not_embedded",
+                "raw_prompt_not_embedded",
+                "context_packet_contains_refs_hashes_and_policy_only"
+              ],
+              "packet_id": "9ba2862de533bd413d9baf30",
+              "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+              "permitted_uses": [
+                "target_blind_repository_inspection",
+                "local_patch_planning"
+              ],
+              "policy": "project_theseus_vcm_consumer_abi_v1",
+              "public_training_rows_written": 0,
+              "purpose": "repository_request",
+              "raw_private_text_stored": false,
+              "raw_prompt_stored": false,
+              "read_write_set_digest": "11598e91fe6a2f7469cedcc7",
+              "ready": true,
+              "record_types": [
+                "authority_use_receipt",
+                "context_abi_record",
+                "context_adequacy",
+                "context_lease_receipt",
+                "context_transaction",
+                "failure_boundary"
+              ],
+              "representation_certificate_id": "d61afffa9a9e18894f93940b",
+              "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+              "semantic_index_path": "reports/virtual_context_memory_index.json",
+              "snapshot_branch_id": "ca7176b82f64004342f234d0",
+              "source_ref_count": 1,
+              "source_ref_digest": "b2222521716e35108aef097f",
+              "taint_labels": [],
+              "typed_faults": [],
+              "validation": {
+                "faults": [],
+                "passed": true
+              }
+            }
+          },
+          "candidate": {
+            "D2_cases_consumed": 0,
+            "action_summary": {
+              "action_count": 9,
+              "action_counts": {
+                "abstain": 1,
+                "plan": 3,
+                "read": 5
+              },
+              "distinct_read_paths": [
+                "configs/selected_route_sustained_qualification.json",
+                "scripts/selected_route_sustained_qualification.py",
+                "tests/test_selected_route_sustained_qualification.py"
+              ],
+              "failed_actions": 4,
+              "file_mutations": 0,
+              "pre_mutation_navigation_actions": 4,
+              "pre_mutation_read_actions": 4
+            },
+            "candidate_output": {
+              "D2_cases_consumed": 0,
+              "abstained": true,
+              "abstention_reason": "request_scoped_effect_paths is empty but request requires modifying scripts/selected_route_sustained_qualification.py to gate on laptop availability. Cannot proceed without controller granting effect authority for that specific path or providing it in request_scoped_effect_paths.",
+              "action_summary": {
+                "action_count": 9,
+                "action_counts": {
+                  "abstain": 1,
+                  "plan": 3,
+                  "read": 5
+                },
+                "distinct_read_paths": [
+                  "configs/selected_route_sustained_qualification.json",
+                  "scripts/selected_route_sustained_qualification.py",
+                  "tests/test_selected_route_sustained_qualification.py"
+                ],
+                "failed_actions": 4,
+                "file_mutations": 0,
+                "pre_mutation_navigation_actions": 4,
+                "pre_mutation_read_actions": 4
+              },
+              "advisory_plan": null,
+              "candidate_authored_success_flags": [],
+              "effect_inventory": [],
+              "external_inference_calls": 0,
+              "format_faults": 0,
+              "format_repairs": 0,
+              "learned_generation_credit": 1,
+              "local_model_inference_calls": 9,
+              "model_identity": {
+                "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+                "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+                "runtime": "mlx_lm_local_metal",
+                "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+              },
+              "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+              "non_claims": [
+                "This local third-party model is not the Theseus student.",
+                "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+              ],
+              "parent_source_commit": "3e307cb2b85c26e720a72a408e81773a103ec593",
+              "patch_unified_diff": "",
+              "policy": "project_theseus_local_repository_worker_v2",
+              "proposed_paths": [],
+              "public_calibration_cases_consumed": 0,
+              "repair_attempts": 0,
+              "residuals": [
+                "no_effect_capable_patch",
+                "explicit_abstention"
+              ],
+              "runtime": {
+                "wall_ms": 348220.71
+              },
+              "teacher_calls": 0,
+              "terminal_reason": "explicit_abstention",
+              "user_facing_effects": 0,
+              "verification_commands": [],
+              "verification_receipts": [],
+              "worker_id": "theseus_local_repository_worker_v2",
+              "worker_kind": "bounded_local_learned_repository_patch_agent"
+            },
+            "candidate_output_sha256": "7ef6f90e8cb224804e50522da39eca5bd379da60e840ee2ad54793d4f5344752",
+            "candidate_seal": {
+              "candidate_output_sha256": "7ef6f90e8cb224804e50522da39eca5bd379da60e840ee2ad54793d4f5344752",
+              "config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+              "finished_utc": "2026-07-30T14:39:58.134954Z",
+              "parent_archive_sha256": "770462a5c69abfe2a75be6ebd63a81ee972150c5088f3f6a9889c61e8d0cbf76",
+              "started_utc": "2026-07-30T14:34:09.429837Z",
+              "target_opened_before_seal": false,
+              "worker_input_sha256": "d7018c989dd376acfc8d17e7af7d0265bfbcdfbbba89f8e8268601b970d6603a",
+              "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+              "worker_wall_ms": 348701.414
+            },
+            "candidate_verification_green": false,
+            "effect_inventory": [],
+            "external_inference_calls": 0,
+            "format_repairs": 0,
+            "input_adapter_receipt": {
+              "audit": {
+                "candidate_output_consulted": false,
+                "context_source_path": "configs/selected_route_sustained_qualification.json",
+                "controller_must_honor_dispatch_allowed": true,
+                "forbidden_visible_fields_present": [],
+                "hidden_tests_consulted": false,
+                "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+                "parent_source_commit": "3e307cb2b85c26e720a72a408e81773a103ec593",
+                "semantic_fact_count": 15,
+                "semantic_fact_set_sha256": "221be359a19f45f38b44a8a377fcdd797029418f79b40e78e8f34afd5dd76be0",
+                "target_identity_consulted": false,
+                "target_patch_consulted": false,
+                "visible_field_names": [
+                  "allowed_runtime_context",
+                  "authority_grant",
+                  "natural_request",
+                  "parent_source_commit"
+                ]
+              },
+              "authority_receipt": {
+                "authority_labels": [
+                  "local_snapshot_read",
+                  "local_snapshot_write",
+                  "local_verification",
+                  "exact_rollback"
+                ],
+                "candidate_claims_authoritative": false,
+                "effect_scope": "disposable_parent_snapshot_only",
+                "exact_rollback_required": true,
+                "grant": "temporary_effect_with_exact_rollback",
+                "mutation_allowed": true,
+                "policy": "project_theseus_repository_authority_receipt_v1",
+                "supported": true,
+                "typed_faults": []
+              },
+              "compiled_plan": {
+                "acceptance_tests": [
+                  "request_derived_behavior_verified",
+                  "effect_scope_valid",
+                  "exact_rollback_available"
+                ],
+                "contract_hash": "sha256:38d5c3551e3dfdca6b90a160c5f51d90d9e9ba903dc1100718dfd1b5b3f675d8",
+                "goal_id": "repository_request_72fa1c7255e5",
+                "hard_failures": [],
+                "steps": [
+                  {
+                    "acceptance_refs": [
+                      "request_derived_behavior_verified"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [],
+                    "id": "inspect",
+                    "op": "OBSERVE",
+                    "outputs": [
+                      "request_grounded_repository_context"
+                    ],
+                    "title": "Inspect request-relevant implementation, analogous context, and tests"
+                  },
+                  {
+                    "acceptance_refs": [
+                      "effect_scope_valid"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [
+                      "repository_request_72fa1c7255e5.inspect"
+                    ],
+                    "id": "edit",
+                    "op": "IMPLEMENT",
+                    "outputs": [
+                      "candidate_unified_diff"
+                    ],
+                    "title": "Produce the smallest request-complete repository effect"
+                  },
+                  {
+                    "acceptance_refs": [
+                      "request_derived_behavior_verified"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [
+                      "repository_request_72fa1c7255e5.edit"
+                    ],
+                    "id": "verify",
+                    "op": "VERIFY",
+                    "outputs": [
+                      "verification_receipt"
+                    ],
+                    "title": "Run request-relevant checks selected from actual changed paths"
+                  },
+                  {
+                    "acceptance_refs": [
+                      "exact_rollback_available"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [
+                      "repository_request_72fa1c7255e5.verify"
+                    ],
+                    "id": "seal",
+                    "op": "SEAL",
+                    "outputs": [
+                      "sealed_candidate",
+                      "rollback_obligation"
+                    ],
+                    "title": "Seal the diff and rollback obligation without judging success"
+                  }
+                ],
+                "trigger_state": "GREEN"
+              },
+              "counters": {
+                "D2_cases_consumed": 0,
+                "E2_heldout_cases_consumed": 0,
+                "external_inference_calls": 0,
+                "learned_generation_credit": 0,
+                "public_calibration_cases_consumed": 0,
+                "teacher_calls": 0,
+                "user_facing_effects": 0
+              },
+              "dispatch_allowed": true,
+              "policy": "project_theseus_repository_stack_adapter_v1",
+              "procedural_reuse_receipt": {
+                "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+                "effect_authority_granted": false,
+                "guard_id": "2c9806a4b400da7d",
+                "learned_generation_claim_allowed": false,
+                "mode": "verified_reuse",
+                "policy": "project_theseus_repository_procedural_reuse_receipt_v1",
+                "ready": true,
+                "selected_route_id": "default.local_planning_assistant_metadata_only_v1",
+                "typed_faults": []
+              },
+              "route_receipt": {
+                "decision_inputs": {
+                  "mutation_allowed": true,
+                  "plan_green": true,
+                  "procedural_reuse_ready": true,
+                  "vcm_ready": true
+                },
+                "policy": "project_theseus_repository_least_sufficient_route_v1",
+                "requested_policy": "least_sufficient",
+                "routing_grants_effect_authority": false,
+                "selected_route": "full_governance",
+                "typed_faults": []
+              },
+              "typed_faults": [],
+              "variant_id": "full_stack",
+              "vcm_receipt": {
+                "adequacy_state": "governed_sufficient_for_repository_request",
+                "authority_ceiling": [
+                  "local_snapshot_read",
+                  "local_snapshot_write",
+                  "local_verification",
+                  "exact_rollback"
+                ],
+                "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/9ba2862de533bd413d9baf30",
+                "closure_state": "closed",
+                "consumer_id": "core_evidence.repository_stack_adapter",
+                "deletion_obligations": [],
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+                "full_packet_evidence_required": true,
+                "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+                "governor_receipt_id": "964ac870f486f2699c64e55c",
+                "lease_expires_utc": "2026-07-30T14:49:09.398797Z",
+                "lease_id": "d47ef2f27c2560ed260bf6a5",
+                "lease_state": "active",
+                "omissions": [
+                  "raw_payload_text_not_embedded",
+                  "raw_prompt_not_embedded",
+                  "context_packet_contains_refs_hashes_and_policy_only"
+                ],
+                "packet_id": "9ba2862de533bd413d9baf30",
+                "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+                "permitted_uses": [
+                  "target_blind_repository_inspection",
+                  "local_patch_planning"
+                ],
+                "policy": "project_theseus_vcm_consumer_abi_v1",
+                "public_training_rows_written": 0,
+                "purpose": "repository_request",
+                "raw_private_text_stored": false,
+                "raw_prompt_stored": false,
+                "read_write_set_digest": "11598e91fe6a2f7469cedcc7",
+                "ready": true,
+                "record_types": [
+                  "authority_use_receipt",
+                  "context_abi_record",
+                  "context_adequacy",
+                  "context_lease_receipt",
+                  "context_transaction",
+                  "failure_boundary"
+                ],
+                "representation_certificate_id": "d61afffa9a9e18894f93940b",
+                "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+                "semantic_index_path": "reports/virtual_context_memory_index.json",
+                "snapshot_branch_id": "ca7176b82f64004342f234d0",
+                "source_ref_count": 1,
+                "source_ref_digest": "b2222521716e35108aef097f",
+                "taint_labels": [],
+                "typed_faults": [],
+                "validation": {
+                  "faults": [],
+                  "passed": true
+                }
+              }
+            },
+            "learned_generation_credit": 1,
+            "local_model_inference_calls": 9,
+            "model_identity": {
+              "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+              "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+              "runtime": "mlx_lm_local_metal",
+              "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+            },
+            "opaque_task_id": "task-78bd624ca478d41a",
+            "parent_archive_sha256": "770462a5c69abfe2a75be6ebd63a81ee972150c5088f3f6a9889c61e8d0cbf76",
+            "patch_unified_diff": "",
+            "proposed_paths": [],
+            "public_calibration_cases_consumed": 0,
+            "repair_attempts": 0,
+            "residuals": [
+              "no_effect_capable_patch",
+              "explicit_abstention"
+            ],
+            "sealed_before_target_open": true,
+            "teacher_calls": 0,
+            "terminal_reason": "explicit_abstention",
+            "verification_receipts": [],
+            "worker_input_sha256": "d7018c989dd376acfc8d17e7af7d0265bfbcdfbbba89f8e8268601b970d6603a",
+            "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "dispatch_allowed": true,
+          "pre_generation_denied": false,
+          "variant_id": "full_stack"
+        },
+        {
+          "adapter_receipt": {
+            "audit": {
+              "candidate_output_consulted": false,
+              "context_source_path": "configs/selected_route_sustained_qualification.json",
+              "controller_must_honor_dispatch_allowed": true,
+              "forbidden_visible_fields_present": [],
+              "hidden_tests_consulted": false,
+              "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+              "parent_source_commit": "3e307cb2b85c26e720a72a408e81773a103ec593",
+              "semantic_fact_count": 11,
+              "semantic_fact_set_sha256": "3caa9fb460902e8120bef040bbc5465d45f85425d1626fddf83fd6d3fd1f3fd9",
+              "target_identity_consulted": false,
+              "target_patch_consulted": false,
+              "visible_field_names": [
+                "allowed_runtime_context",
+                "authority_grant",
+                "natural_request",
+                "parent_source_commit"
+              ]
+            },
+            "authority_receipt": {
+              "authority_labels": [
+                "local_snapshot_read",
+                "local_snapshot_write",
+                "local_verification",
+                "exact_rollback"
+              ],
+              "candidate_claims_authoritative": false,
+              "effect_scope": "disposable_parent_snapshot_only",
+              "exact_rollback_required": true,
+              "grant": "temporary_effect_with_exact_rollback",
+              "mutation_allowed": true,
+              "policy": "project_theseus_repository_authority_receipt_v1",
+              "supported": true,
+              "typed_faults": []
+            },
+            "compiled_plan": {
+              "acceptance_tests": [
+                "request_derived_behavior_verified",
+                "effect_scope_valid",
+                "exact_rollback_available"
+              ],
+              "contract_hash": "sha256:3886e4e4bdd5b91a305a8495102641f4cb38c6d311d4468c5a89c9870b11035f",
+              "goal_id": "repository_request_72fa1c7255e5",
+              "hard_failures": [],
+              "steps": [
+                {
+                  "acceptance_refs": [
+                    "request_derived_behavior_verified"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [],
+                  "id": "inspect",
+                  "op": "OBSERVE",
+                  "outputs": [
+                    "request_grounded_repository_context"
+                  ],
+                  "title": "Inspect request-relevant implementation, analogous context, and tests"
+                },
+                {
+                  "acceptance_refs": [
+                    "effect_scope_valid"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [
+                    "repository_request_72fa1c7255e5.inspect"
+                  ],
+                  "id": "edit",
+                  "op": "IMPLEMENT",
+                  "outputs": [
+                    "candidate_unified_diff"
+                  ],
+                  "title": "Produce the smallest request-complete repository effect"
+                },
+                {
+                  "acceptance_refs": [
+                    "request_derived_behavior_verified"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [
+                    "repository_request_72fa1c7255e5.edit"
+                  ],
+                  "id": "verify",
+                  "op": "VERIFY",
+                  "outputs": [
+                    "verification_receipt"
+                  ],
+                  "title": "Run request-relevant checks selected from actual changed paths"
+                },
+                {
+                  "acceptance_refs": [
+                    "exact_rollback_available"
+                  ],
+                  "context_ready": true,
+                  "depends_on": [
+                    "repository_request_72fa1c7255e5.verify"
+                  ],
+                  "id": "seal",
+                  "op": "SEAL",
+                  "outputs": [
+                    "sealed_candidate",
+                    "rollback_obligation"
+                  ],
+                  "title": "Seal the diff and rollback obligation without judging success"
+                }
+              ],
+              "trigger_state": "GREEN"
+            },
+            "counters": {
+              "D2_cases_consumed": 0,
+              "E2_heldout_cases_consumed": 0,
+              "external_inference_calls": 0,
+              "learned_generation_credit": 0,
+              "public_calibration_cases_consumed": 0,
+              "teacher_calls": 0,
+              "user_facing_effects": 0
+            },
+            "dispatch_allowed": true,
+            "policy": "project_theseus_repository_stack_adapter_v1",
+            "procedural_reuse_receipt": {
+              "effect_authority_granted": false,
+              "learned_generation_claim_allowed": false,
+              "mode": "fresh_execution",
+              "policy": "project_theseus_repository_procedural_reuse_receipt_v1",
+              "ready": true,
+              "selected_route_id": "",
+              "typed_faults": []
+            },
+            "route_receipt": {
+              "decision_inputs": {
+                "mutation_allowed": true,
+                "plan_green": true,
+                "procedural_reuse_ready": true,
+                "vcm_ready": true
+              },
+              "policy": "project_theseus_repository_least_sufficient_route_v1",
+              "requested_policy": "direct",
+              "routing_grants_effect_authority": false,
+              "selected_route": "direct",
+              "typed_faults": []
+            },
+            "typed_faults": [],
+            "variant_id": "direct",
+            "vcm_receipt": {
+              "adequacy_state": "governed_sufficient_for_repository_request",
+              "authority_ceiling": [
+                "local_snapshot_read",
+                "local_snapshot_write",
+                "local_verification",
+                "exact_rollback"
+              ],
+              "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/91a6e9b8d642c740a2f7234f",
+              "closure_state": "closed",
+              "consumer_id": "core_evidence.repository_stack_adapter",
+              "deletion_obligations": [],
+              "external_inference_calls": 0,
+              "fallback_return_count": 0,
+              "full_packet_evidence_required": true,
+              "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+              "governor_receipt_id": "964ac870f486f2699c64e55c",
+              "lease_expires_utc": "2026-07-30T14:54:59.671719Z",
+              "lease_id": "d5f03817b952352767554fc3",
+              "lease_state": "active",
+              "omissions": [
+                "raw_payload_text_not_embedded",
+                "raw_prompt_not_embedded",
+                "context_packet_contains_refs_hashes_and_policy_only"
+              ],
+              "packet_id": "91a6e9b8d642c740a2f7234f",
+              "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+              "permitted_uses": [
+                "target_blind_repository_inspection",
+                "local_patch_planning"
+              ],
+              "policy": "project_theseus_vcm_consumer_abi_v1",
+              "public_training_rows_written": 0,
+              "purpose": "repository_request",
+              "raw_private_text_stored": false,
+              "raw_prompt_stored": false,
+              "read_write_set_digest": "4d2a1e53a6cb1f9e86e9eb8b",
+              "ready": true,
+              "record_types": [
+                "authority_use_receipt",
+                "context_abi_record",
+                "context_adequacy",
+                "context_lease_receipt",
+                "context_transaction",
+                "failure_boundary"
+              ],
+              "representation_certificate_id": "4185b21f58eabaa0d4c8f8fd",
+              "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+              "semantic_index_path": "reports/virtual_context_memory_index.json",
+              "snapshot_branch_id": "e309f188bb8e6b2b90186340",
+              "source_ref_count": 1,
+              "source_ref_digest": "a11ba0e9097974a4505c8b08",
+              "taint_labels": [],
+              "typed_faults": [],
+              "validation": {
+                "faults": [],
+                "passed": true
+              }
+            }
+          },
+          "candidate": {
+            "D2_cases_consumed": 0,
+            "action_summary": {
+              "action_count": 9,
+              "action_counts": {
+                "abstain": 1,
+                "plan": 3,
+                "read": 5
+              },
+              "distinct_read_paths": [
+                "configs/selected_route_sustained_qualification.json",
+                "scripts/selected_route_sustained_qualification.py",
+                "tests/test_selected_route_sustained_qualification.py"
+              ],
+              "failed_actions": 4,
+              "file_mutations": 0,
+              "pre_mutation_navigation_actions": 4,
+              "pre_mutation_read_actions": 4
+            },
+            "candidate_output": {
+              "D2_cases_consumed": 0,
+              "abstained": true,
+              "abstention_reason": "request_scoped_effect_paths is empty, but the request requires modifying scripts/selected_route_sustained_qualification.py to gate on laptop availability. The controller has not authorized this path for mutation. Cannot proceed without explicit effect_paths authorization or by using a test-only approach that doesn't require mutating the script.",
+              "action_summary": {
+                "action_count": 9,
+                "action_counts": {
+                  "abstain": 1,
+                  "plan": 3,
+                  "read": 5
+                },
+                "distinct_read_paths": [
+                  "configs/selected_route_sustained_qualification.json",
+                  "scripts/selected_route_sustained_qualification.py",
+                  "tests/test_selected_route_sustained_qualification.py"
+                ],
+                "failed_actions": 4,
+                "file_mutations": 0,
+                "pre_mutation_navigation_actions": 4,
+                "pre_mutation_read_actions": 4
+              },
+              "advisory_plan": null,
+              "candidate_authored_success_flags": [],
+              "effect_inventory": [],
+              "external_inference_calls": 0,
+              "format_faults": 0,
+              "format_repairs": 0,
+              "learned_generation_credit": 1,
+              "local_model_inference_calls": 9,
+              "model_identity": {
+                "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+                "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+                "runtime": "mlx_lm_local_metal",
+                "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+              },
+              "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+              "non_claims": [
+                "This local third-party model is not the Theseus student.",
+                "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+              ],
+              "parent_source_commit": "3e307cb2b85c26e720a72a408e81773a103ec593",
+              "patch_unified_diff": "",
+              "policy": "project_theseus_local_repository_worker_v2",
+              "proposed_paths": [],
+              "public_calibration_cases_consumed": 0,
+              "repair_attempts": 0,
+              "residuals": [
+                "no_effect_capable_patch",
+                "explicit_abstention"
+              ],
+              "runtime": {
+                "wall_ms": 321745.212
+              },
+              "teacher_calls": 0,
+              "terminal_reason": "explicit_abstention",
+              "user_facing_effects": 0,
+              "verification_commands": [],
+              "verification_receipts": [],
+              "worker_id": "theseus_local_repository_worker_v2",
+              "worker_kind": "bounded_local_learned_repository_patch_agent"
+            },
+            "candidate_output_sha256": "575507df1c3233e89407efd12163f5f54e812b0407307e10bc6f63f6d2ad0e74",
+            "candidate_seal": {
+              "candidate_output_sha256": "575507df1c3233e89407efd12163f5f54e812b0407307e10bc6f63f6d2ad0e74",
+              "config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+              "finished_utc": "2026-07-30T14:45:21.955417Z",
+              "parent_archive_sha256": "770462a5c69abfe2a75be6ebd63a81ee972150c5088f3f6a9889c61e8d0cbf76",
+              "started_utc": "2026-07-30T14:39:59.704341Z",
+              "target_opened_before_seal": false,
+              "worker_input_sha256": "0f9668f0c0a74fe739c8933402ca62fe84d1491c7769f88f39146800a5d1737c",
+              "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+              "worker_wall_ms": 322246.562
+            },
+            "candidate_verification_green": false,
+            "effect_inventory": [],
+            "external_inference_calls": 0,
+            "format_repairs": 0,
+            "input_adapter_receipt": {
+              "audit": {
+                "candidate_output_consulted": false,
+                "context_source_path": "configs/selected_route_sustained_qualification.json",
+                "controller_must_honor_dispatch_allowed": true,
+                "forbidden_visible_fields_present": [],
+                "hidden_tests_consulted": false,
+                "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+                "parent_source_commit": "3e307cb2b85c26e720a72a408e81773a103ec593",
+                "semantic_fact_count": 11,
+                "semantic_fact_set_sha256": "3caa9fb460902e8120bef040bbc5465d45f85425d1626fddf83fd6d3fd1f3fd9",
+                "target_identity_consulted": false,
+                "target_patch_consulted": false,
+                "visible_field_names": [
+                  "allowed_runtime_context",
+                  "authority_grant",
+                  "natural_request",
+                  "parent_source_commit"
+                ]
+              },
+              "authority_receipt": {
+                "authority_labels": [
+                  "local_snapshot_read",
+                  "local_snapshot_write",
+                  "local_verification",
+                  "exact_rollback"
+                ],
+                "candidate_claims_authoritative": false,
+                "effect_scope": "disposable_parent_snapshot_only",
+                "exact_rollback_required": true,
+                "grant": "temporary_effect_with_exact_rollback",
+                "mutation_allowed": true,
+                "policy": "project_theseus_repository_authority_receipt_v1",
+                "supported": true,
+                "typed_faults": []
+              },
+              "compiled_plan": {
+                "acceptance_tests": [
+                  "request_derived_behavior_verified",
+                  "effect_scope_valid",
+                  "exact_rollback_available"
+                ],
+                "contract_hash": "sha256:3886e4e4bdd5b91a305a8495102641f4cb38c6d311d4468c5a89c9870b11035f",
+                "goal_id": "repository_request_72fa1c7255e5",
+                "hard_failures": [],
+                "steps": [
+                  {
+                    "acceptance_refs": [
+                      "request_derived_behavior_verified"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [],
+                    "id": "inspect",
+                    "op": "OBSERVE",
+                    "outputs": [
+                      "request_grounded_repository_context"
+                    ],
+                    "title": "Inspect request-relevant implementation, analogous context, and tests"
+                  },
+                  {
+                    "acceptance_refs": [
+                      "effect_scope_valid"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [
+                      "repository_request_72fa1c7255e5.inspect"
+                    ],
+                    "id": "edit",
+                    "op": "IMPLEMENT",
+                    "outputs": [
+                      "candidate_unified_diff"
+                    ],
+                    "title": "Produce the smallest request-complete repository effect"
+                  },
+                  {
+                    "acceptance_refs": [
+                      "request_derived_behavior_verified"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [
+                      "repository_request_72fa1c7255e5.edit"
+                    ],
+                    "id": "verify",
+                    "op": "VERIFY",
+                    "outputs": [
+                      "verification_receipt"
+                    ],
+                    "title": "Run request-relevant checks selected from actual changed paths"
+                  },
+                  {
+                    "acceptance_refs": [
+                      "exact_rollback_available"
+                    ],
+                    "context_ready": true,
+                    "depends_on": [
+                      "repository_request_72fa1c7255e5.verify"
+                    ],
+                    "id": "seal",
+                    "op": "SEAL",
+                    "outputs": [
+                      "sealed_candidate",
+                      "rollback_obligation"
+                    ],
+                    "title": "Seal the diff and rollback obligation without judging success"
+                  }
+                ],
+                "trigger_state": "GREEN"
+              },
+              "counters": {
+                "D2_cases_consumed": 0,
+                "E2_heldout_cases_consumed": 0,
+                "external_inference_calls": 0,
+                "learned_generation_credit": 0,
+                "public_calibration_cases_consumed": 0,
+                "teacher_calls": 0,
+                "user_facing_effects": 0
+              },
+              "dispatch_allowed": true,
+              "policy": "project_theseus_repository_stack_adapter_v1",
+              "procedural_reuse_receipt": {
+                "effect_authority_granted": false,
+                "learned_generation_claim_allowed": false,
+                "mode": "fresh_execution",
+                "policy": "project_theseus_repository_procedural_reuse_receipt_v1",
+                "ready": true,
+                "selected_route_id": "",
+                "typed_faults": []
+              },
+              "route_receipt": {
+                "decision_inputs": {
+                  "mutation_allowed": true,
+                  "plan_green": true,
+                  "procedural_reuse_ready": true,
+                  "vcm_ready": true
+                },
+                "policy": "project_theseus_repository_least_sufficient_route_v1",
+                "requested_policy": "direct",
+                "routing_grants_effect_authority": false,
+                "selected_route": "direct",
+                "typed_faults": []
+              },
+              "typed_faults": [],
+              "variant_id": "direct",
+              "vcm_receipt": {
+                "adequacy_state": "governed_sufficient_for_repository_request",
+                "authority_ceiling": [
+                  "local_snapshot_read",
+                  "local_snapshot_write",
+                  "local_verification",
+                  "exact_rollback"
+                ],
+                "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/91a6e9b8d642c740a2f7234f",
+                "closure_state": "closed",
+                "consumer_id": "core_evidence.repository_stack_adapter",
+                "deletion_obligations": [],
+                "external_inference_calls": 0,
+                "fallback_return_count": 0,
+                "full_packet_evidence_required": true,
+                "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+                "governor_receipt_id": "964ac870f486f2699c64e55c",
+                "lease_expires_utc": "2026-07-30T14:54:59.671719Z",
+                "lease_id": "d5f03817b952352767554fc3",
+                "lease_state": "active",
+                "omissions": [
+                  "raw_payload_text_not_embedded",
+                  "raw_prompt_not_embedded",
+                  "context_packet_contains_refs_hashes_and_policy_only"
+                ],
+                "packet_id": "91a6e9b8d642c740a2f7234f",
+                "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+                "permitted_uses": [
+                  "target_blind_repository_inspection",
+                  "local_patch_planning"
+                ],
+                "policy": "project_theseus_vcm_consumer_abi_v1",
+                "public_training_rows_written": 0,
+                "purpose": "repository_request",
+                "raw_private_text_stored": false,
+                "raw_prompt_stored": false,
+                "read_write_set_digest": "4d2a1e53a6cb1f9e86e9eb8b",
+                "ready": true,
+                "record_types": [
+                  "authority_use_receipt",
+                  "context_abi_record",
+                  "context_adequacy",
+                  "context_lease_receipt",
+                  "context_transaction",
+                  "failure_boundary"
+                ],
+                "representation_certificate_id": "4185b21f58eabaa0d4c8f8fd",
+                "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+                "semantic_index_path": "reports/virtual_context_memory_index.json",
+                "snapshot_branch_id": "e309f188bb8e6b2b90186340",
+                "source_ref_count": 1,
+                "source_ref_digest": "a11ba0e9097974a4505c8b08",
+                "taint_labels": [],
+                "typed_faults": [],
+                "validation": {
+                  "faults": [],
+                  "passed": true
+                }
+              }
+            },
+            "learned_generation_credit": 1,
+            "local_model_inference_calls": 9,
+            "model_identity": {
+              "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+              "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+              "runtime": "mlx_lm_local_metal",
+              "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+            },
+            "opaque_task_id": "task-78bd624ca478d41a",
+            "parent_archive_sha256": "770462a5c69abfe2a75be6ebd63a81ee972150c5088f3f6a9889c61e8d0cbf76",
+            "patch_unified_diff": "",
+            "proposed_paths": [],
+            "public_calibration_cases_consumed": 0,
+            "repair_attempts": 0,
+            "residuals": [
+              "no_effect_capable_patch",
+              "explicit_abstention"
+            ],
+            "sealed_before_target_open": true,
+            "teacher_calls": 0,
+            "terminal_reason": "explicit_abstention",
+            "verification_receipts": [],
+            "worker_input_sha256": "0f9668f0c0a74fe739c8933402ca62fe84d1491c7769f88f39146800a5d1737c",
+            "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "dispatch_allowed": true,
+          "pre_generation_denied": false,
+          "variant_id": "direct"
+        }
+      ]
+    }
+  ],
+  "trigger_state": "GREEN",
+  "variant_ids": [
+    "full_stack",
+    "direct"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "policy": "project_theseus_repository_stack_development_disposition_v1",
+  "source_report": "reports/core_evidence_repository_stack_development_full_vs_direct.json",
+  "disposition": "INVALID_EXPERIMENT_SHARED_INPUT_ALIASING",
+  "capability_or_subsystem_claim_allowed": false,
+  "rerun_for_capability_credit_allowed": false,
+  "development_repair_and_replay_allowed": true,
+  "observed_worker_input_sha256": "d3f6bbd533250f004ced502870c2b6f3cc45d8731691a23d6753824f64b92e71",
+  "affected_variants": [
+    "full_stack",
+    "direct"
+  ],
+  "reason": "The full-stack adapter appended its context to the caller-owned allowed_runtime_context list in place. The reused task object therefore exposed the same full-stack worker input to the subsequent direct arm.",
+  "independent_diagnostics": {
+    "worker_input_identities_equal": true,
+    "action_summaries_equal": true,
+    "local_model_inference_calls_each": 9,
+    "patches_each": 0,
+    "terminal_reason_each": "explicit_abstention",
+    "result_interpretation": "The observed equality is an invalid intervention, not evidence of a tie or no subsystem effect."
+  },
+  "repair": {
+    "caller_owned_context_copy_required": true,
+    "fresh_task_copy_per_variant_required": true,
+    "distinct_model_visible_variant_input_hash_veto_required": true,
+    "relative_event_path_repair_required": true
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

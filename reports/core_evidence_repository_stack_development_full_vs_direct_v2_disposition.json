@@ -1,0 +1,47 @@
+{
+  "policy": "project_theseus_repository_stack_development_disposition_v1",
+  "source_report": "reports/core_evidence_repository_stack_development_full_vs_direct_v2.json",
+  "disposition": "INCONCLUSIVE_EXPERIMENT_EMPTY_REQUEST_EFFECT_SCOPE",
+  "capability_or_subsystem_claim_allowed": false,
+  "development_repair_allowed": true,
+  "intervention_integrity": {
+    "worker_input_identities_distinct": true,
+    "full_stack_worker_input_sha256": "d7018c989dd376acfc8d17e7af7d0265bfbcdfbbba89f8e8268601b970d6603a",
+    "direct_worker_input_sha256": "0f9668f0c0a74fe739c8933402ca62fe84d1491c7769f88f39146800a5d1737c",
+    "target_patch_consulted": false,
+    "hidden_tests_consulted": false
+  },
+  "observed": {
+    "full_stack": {
+      "local_model_inference_calls": 9,
+      "prompt_tokens_summed_across_turns": 77882,
+      "generation_wall_ms_summed": 331595.573,
+      "patch_present": false,
+      "terminal_reason": "explicit_abstention"
+    },
+    "direct": {
+      "local_model_inference_calls": 9,
+      "prompt_tokens_summed_across_turns": 60920,
+      "generation_wall_ms_summed": 305623.715,
+      "patch_present": false,
+      "terminal_reason": "explicit_abstention"
+    },
+    "full_stack_prompt_token_overhead_ratio": 1.2784,
+    "full_stack_generation_wall_overhead_ratio": 1.0850
+  },
+  "wall": "The natural request named no repository path. Worker-v3 derives mutation authority only from paths explicitly visible in the request, so both plans were rebound to an empty effect set and could not become valid edits.",
+  "repair": {
+    "weaken_request_derived_authority": false,
+    "full_governance_hold_empty_scope_before_inference": true,
+    "use_explicit_path_target_free_development_surface": true,
+    "remove_model_visible_audit_receipt_bloat": true
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

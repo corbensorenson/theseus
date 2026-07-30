@@ -1,0 +1,71 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T14:49:31.635712Z",
+  "evaluator_manifest_sha256": "245e50b268515d6e1094d449bd0f4e02c46e145a0283cd93337cc4e5248b558b",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "policy": "project_theseus_local_8b_functional_alignment_audit_v1",
+  "report_payload_sha256": "80ab16cf1054a59f20a82598460b594bf1878e366ba0d7a88a659c0c11fe6cca",
+  "runtime": {
+    "wall_ms": 1974.49
+  },
+  "scope": "prospective_pre_generation_request_test_alignment",
+  "summary": {
+    "aligned_task_count": 1,
+    "target_commit_count": 0,
+    "target_patch_count": 0,
+    "task_count": 1
+  },
+  "tasks": [
+    {
+      "acceptance_contract_sha256": "adfb55f4f4f2a6a276f7e7013bfdb001ec09f11a838f25cb2e457735cf3054ab",
+      "allowed_effect_path_set_sha256": "04a3d9a659dc2d6332a4606dae5d38d4447f9dec31326e8092b353949abe36f2",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_procedural_effect_separation_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_procedural_effect_separation_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n_______________________ test_routes_are_bound_separately _______________________\n\n    def test_routes_are_bound_separately() -> None:\n        # request_contract:procedural_and_effect_routes_bound_separately\n        route = \"default.local_planning_assistant_metadata_only_v1\"\n>       result = adoption.audit_adopted_route_effect_reference(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            assistant_report=report(\n                procedural_route=route,\n                effect_route=\"assistant.route_authority_effect\",\n            ),\n            adopted_route_ids={route},\n        )\nE       AttributeError: module 'procedural_adoption_hidden' has no attribute 'audit_adopted_route_effect_reference'\n\ntests/functional_hidden/test_procedural_effect_separation_case.py:106: AttributeError\n_______________________ test_unadopted_route_is_rejected _______________________\n\n    def test_unadopted_route_is_rejected() -> None:\n        # request_contract:unadopted_procedural_route_rejected\n>       result = adoption.audit_adopted_route_effect_reference(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            assistant_report=report(\n                procedural_route=\"default.unadopted\",\n                effect_route=\"assistant.route_authority_effect\",\n            ),\n            adopted_route_ids={\"default.expected\"},\n        )\nE       AttributeError: module 'procedural_adoption_hidden' has no attribute 'audit_adopted_route_effect_reference'\n\ntests/functional_hidden/test_procedural_effect_separation_case.py:119: AttributeError\n________________ test_procedural_route_is_not_effect_authority _________________\n\n    def test_procedural_route_is_not_effect_authority() -> None:\n        # request_contract:procedural_route_cannot_grant_effect_authority\n        route = \"default.local_planning_assistant_metadata_only_v1\"\n>       result = adoption.audit_adopted_route_effect_reference(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            assistant_report=report(procedural_route=route, effect_route=route),\n            adopted_route_ids={route},\n        )\nE       AttributeError: module 'procedural_adoption_hidden' has no attribute 'audit_adopted_route_effect_reference'\n\ntests/functional_hidden/test_procedural_effect_separation_case.py:133: AttributeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_procedural_effect_separation_case.py::test_routes_are_bound_separately\nFAILED tests/functional_hidden/test_procedural_effect_separation_case.py::test_unadopted_route_is_rejected\nFAILED tests/functional_hidden/test_procedural_effect_separation_case.py::test_procedural_route_is_not_effect_authority\n3 failed, 1 warning in 0.29s\n",
+            "wall_ms": 478.862
+          }
+        ],
+        "wall_ms": 478.875
+      },
+      "expected_failure_markers": [
+        "request_contract:procedural_and_effect_routes_bound_separately",
+        "request_contract:procedural_route_cannot_grant_effect_authority",
+        "request_contract:unadopted_procedural_route_rejected"
+      ],
+      "hidden_test_source_set_sha256": "e303461857183fc8d968346d52471b3089765984cb4c69fa8627d9078e98e285",
+      "observed_failure_markers": [
+        "request_contract:procedural_and_effect_routes_bound_separately",
+        "request_contract:procedural_route_cannot_grant_effect_authority",
+        "request_contract:unadopted_procedural_route_rejected"
+      ],
+      "opaque_task_id": "task-stackdev-procedural-effect-separation",
+      "parent_source_commit": "7132f1535d43c5f3eb0fb5095f8b760da66a0f57",
+      "request_sha256": "b0d5d4186ca3b1368c8a037700d0cba277c31c0a678f5b15c2d0e6b2950f101c"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

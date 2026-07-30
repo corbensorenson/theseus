@@ -239,12 +239,27 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
     config = read_json(config_path)
     registry_path = resolve_repo_path(str(config["registry"]))
     disposition_path = resolve_repo_path(str(config["qualified_worker_disposition"]))
+    freeze_path = resolve_repo_path(str(config["qualified_worker_freeze"]))
+    worker_source_path = resolve_repo_path(str(config["current_worker_source"]))
+    active_worker_config_path = resolve_repo_path(str(config["active_worker_config"]))
     registry = read_json(registry_path)
     disposition = read_json(disposition_path)
+    freeze = read_json(freeze_path)
     if disposition.get("disposition") != config.get("required_worker_disposition"):
         raise ValueError("qualified worker disposition does not match config")
 
     implementations = implementation_index(registry)
+    frozen_source_identities = (
+        freeze.get("candidate_source_identities")
+        if isinstance(freeze.get("candidate_source_identities"), dict)
+        else {}
+    )
+    frozen_worker_sha256 = str(frozen_source_identities.get("worker_sha256") or "")
+    current_worker_sha256 = sha256_path(worker_source_path)
+    worker_identity_current = (
+        bool(frozen_worker_sha256)
+        and current_worker_sha256 == frozen_worker_sha256
+    )
     owner_rows = config.get("owners")
     if not isinstance(owner_rows, list) or not owner_rows:
         raise ValueError("owners must be a non-empty list")
@@ -271,7 +286,9 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
         == counts["owners"]
     )
     trigger_state = (
-        "GREEN_ADVANCE_TO_DEVELOPMENT_CAUSAL_SMOKES"
+        "RED_WORKER_REQUALIFICATION_REQUIRED"
+        if not worker_identity_current
+        else "GREEN_ADVANCE_TO_DEVELOPMENT_CAUSAL_SMOKES"
         if all_mechanics_green
         else "GREEN_INVENTORY_TESTS_NOT_RUN"
         if all_inventory_green and not run_tests
@@ -284,6 +301,20 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
         "config_sha256": sha256_path(config_path),
         "registry_sha256": sha256_path(registry_path),
         "qualified_worker_disposition_sha256": sha256_path(disposition_path),
+        "worker_identity": {
+            "historical_freeze": str(config["qualified_worker_freeze"]),
+            "historical_frozen_worker_sha256": frozen_worker_sha256,
+            "current_worker_source": str(config["current_worker_source"]),
+            "current_worker_sha256": current_worker_sha256,
+            "historical_identity_current": worker_identity_current,
+            "active_worker_config": str(config["active_worker_config"]),
+            "active_worker_config_sha256": sha256_path(active_worker_config_path),
+            "state": (
+                "CURRENT_QUALIFIED_IDENTITY"
+                if worker_identity_current
+                else "DEVELOPMENT_SUCCESSOR_REQUALIFICATION_REQUIRED"
+            ),
+        },
         "boundaries": config.get("boundaries"),
         "owners": owners,
         "counts": counts,

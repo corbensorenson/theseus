@@ -1,0 +1,32 @@
+{
+  "policy": "project_theseus_repository_stack_consumed_development_public_v1",
+  "cohort_id": "repository_stack_historical_development_v1",
+  "scope": "already_historical_non_E2_engineering_tasks_only",
+  "tasks": [
+    {
+      "opaque_task_id": "task-stackdev-procedural-effect-separation",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/procedural_memory_route_adoption_gate.py, add audit_adopted_route_effect_reference so the selected guarded procedural metadata route is validated separately from the effect authority route assistant.route_authority_effect. The effect transaction must accept only assistant.route_authority_effect, while the procedural route must be adopted, active, matched, guard-armed, make no learned-generation claim, and keep public-training, external-inference, and fallback counters at zero. Reject an unadopted procedural route and reject any transaction that uses the procedural route itself as effect authority. Add focused tests in tests/test_procedural_memory_route_adoption_gate.py.",
+      "parent_source_commit": "7132f1535d43c5f3eb0fb5095f8b760da66a0f57",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "partition": "development",
+      "denominator": "D1_DEVELOPMENT",
+      "effect_class": "bounded_repository_change"
+    }
+  ],
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "authoritative_target_patch_exposed_to_worker": false,
+    "fresh_capability_credit_allowed": false
+  }
+}

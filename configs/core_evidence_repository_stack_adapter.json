@@ -1,0 +1,97 @@
+{
+  "policy": "project_theseus_repository_stack_adapter_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "purpose": "Bind one target-blind natural repository request to the canonical VCM, planning, routing, authority, and verified-reuse surfaces before the qualified local worker acts.",
+  "canonical_inputs": {
+    "registry": "configs/project_manifest_registry.json",
+    "plan_compiler": "configs/theseus_plan_compiler.json",
+    "vcm_contexts": "reports/vcm_task_contexts.json",
+    "vcm_governor": "reports/vcm_context_governor.json",
+    "vcm_semantic_index": "reports/virtual_context_memory_index.json",
+    "deterministic_tool_registry": "reports/deterministic_tool_registry.json",
+    "deterministic_tool_report": "reports/deterministic_tool_substrate.json",
+    "procedural_adoption": "reports/procedural_memory_route_adoption.json"
+  },
+  "supported_authority_grants": {
+    "temporary_effect_with_exact_rollback": [
+      "local_snapshot_read",
+      "local_snapshot_write",
+      "local_verification",
+      "exact_rollback"
+    ],
+    "read_only_plan_only": [
+      "local_snapshot_read",
+      "local_plan"
+    ]
+  },
+  "variants": {
+    "full_stack": {
+      "planning": "typed",
+      "vcm": "correct_typed",
+      "routing": "least_sufficient",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    },
+    "direct": {
+      "planning": "none",
+      "vcm": "none",
+      "routing": "direct",
+      "governance": "worker_boundary_only",
+      "procedural_reuse": "fresh_execution"
+    },
+    "planning_none": {
+      "planning": "none",
+      "vcm": "correct_typed",
+      "routing": "least_sufficient",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    },
+    "vcm_information_matched_untyped": {
+      "planning": "typed",
+      "vcm": "information_matched_untyped",
+      "routing": "least_sufficient",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    },
+    "vcm_information_matched_shuffled": {
+      "planning": "typed",
+      "vcm": "information_matched_shuffled",
+      "routing": "least_sufficient",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    },
+    "vcm_stale": {
+      "planning": "typed",
+      "vcm": "stale",
+      "routing": "least_sufficient",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    },
+    "vcm_omission": {
+      "planning": "typed",
+      "vcm": "omission",
+      "routing": "least_sufficient",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    },
+    "conservative_hold": {
+      "planning": "typed",
+      "vcm": "correct_typed",
+      "routing": "conservative_hold",
+      "governance": "full",
+      "procedural_reuse": "verified_reuse"
+    }
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "candidate_snapshot_has_git_metadata": false,
+    "candidate_output_authoritative": false,
+    "all_effects": "disposable_parent_snapshot_only"
+  }
+}

@@ -1,7 +1,7 @@
 {
   "policy": "project_theseus_local_8b_stack_causal_campaign_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "state": "qualification_failed_model_and_subsystem_adequacy_active",
+  "state": "worker_v4_development_repair_requalification_required",
   "question": "Which existing Theseus components improve useful-safe natural repository work over the same fixed local 8B model under matched information and total lifecycle budgets?",
   "preserved_invalid_packet": {
     "disposition": "INVALID_EVALUATOR",
@@ -11,11 +11,14 @@
     "rerun_or_repair_authorized": false
   },
   "primary_model": {
-    "repo_id": "mlx-community/Qwen3-8B-4bit",
-    "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
     "runtime": "mlx_lm_local_metal",
     "enable_thinking": false,
     "temperature": 0.0,
+    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
+    "historical_qualification_disposition": "reports/core_evidence_tmax_fresh_v1_qualification_disposition.json",
+    "qualification_status": "NOT_TRANSFERRED_AFTER_WORKER_SOURCE_CHANGE",
     "credit": "third_party_local_learned_generation_not_theseus_student"
   },
   "competence_floor": {
@@ -25,10 +28,10 @@
     "change_after_freeze_forbidden": true
   },
   "ordered_stages": [
-    "L0_consumed_development_worker_repair",
-    "L1_prospective_request_and_functional_test_authoring",
-    "L2_independent_alignment_audit_and_freeze",
-    "L3_fresh_competence_qualification_once",
+    "L0_historical_tmax_worker_v3_qualification_preserved",
+    "L1_worker_v4_consumed_development_repair",
+    "L2_worker_v4_adapter_evaluator_and_budgets_freeze",
+    "L3_source_disjoint_worker_v4_qualification_once",
     "L4_matched_integrated_stack_comparison_if_qualified",
     "L5_governance_and_subsystem_causal_ablations_if_qualified",
     "L6_conditional_E2_and_second_model_replication",

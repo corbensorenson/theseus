@@ -1,0 +1,74 @@
+{
+  "policy": "project_theseus_local_8b_functional_evaluator_v1",
+  "cohort_id": "repository_stack_historical_development_v1",
+  "candidate_output_schema": {
+    "required_fields": [
+      "worker_id",
+      "natural_request_sha256",
+      "parent_source_commit",
+      "patch_unified_diff",
+      "proposed_paths",
+      "verification_commands",
+      "abstained"
+    ],
+    "maximum_patch_bytes": 262144,
+    "maximum_proposed_paths": 16
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-stackdev-procedural-effect-separation",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/procedural_memory_route_adoption_gate.py, add audit_adopted_route_effect_reference so the selected guarded procedural metadata route is validated separately from the effect authority route assistant.route_authority_effect. The effect transaction must accept only assistant.route_authority_effect, while the procedural route must be adopted, active, matched, guard-armed, make no learned-generation claim, and keep public-training, external-inference, and fallback counters at zero. Reject an unadopted procedural route and reject any transaction that uses the procedural route itself as effect authority. Add focused tests in tests/test_procedural_memory_route_adoption_gate.py.",
+      "parent_source_commit": "7132f1535d43c5f3eb0fb5095f8b760da66a0f57",
+      "allowed_effect_paths": [
+        "scripts/procedural_memory_route_adoption_gate.py",
+        "tests/test_procedural_memory_route_adoption_gate.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_repository_stack_development_hidden/procedural_effect_separation_case.py",
+          "destination": "tests/functional_hidden/test_procedural_effect_separation_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "procedural selection and effect authority are independently bound",
+          "request_quote": "the selected guarded procedural metadata route is validated separately from the effect authority route assistant.route_authority_effect",
+          "hidden_test": "tests/functional_hidden/test_procedural_effect_separation_case.py",
+          "assertion_marker": "request_contract:procedural_and_effect_routes_bound_separately"
+        },
+        {
+          "criterion": "unadopted procedural routes fail closed",
+          "request_quote": "Reject an unadopted procedural route",
+          "hidden_test": "tests/functional_hidden/test_procedural_effect_separation_case.py",
+          "assertion_marker": "request_contract:unadopted_procedural_route_rejected"
+        },
+        {
+          "criterion": "procedural metadata cannot become effect authority",
+          "request_quote": "reject any transaction that uses the procedural route itself as effect authority",
+          "hidden_test": "tests/functional_hidden/test_procedural_effect_separation_case.py",
+          "assertion_marker": "request_contract:procedural_route_cannot_grant_effect_authority"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:procedural_and_effect_routes_bound_separately",
+        "request_contract:unadopted_procedural_route_rejected",
+        "request_contract:procedural_route_cannot_grant_effect_authority"
+      ],
+      "verification_timeout_seconds": 180
+    }
+  ],
+  "boundaries": {
+    "authoritative_target_patch_used": false,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "candidate_authored_claims_trusted": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "fresh_capability_credit_allowed": false
+  }
+}

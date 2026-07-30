@@ -60,11 +60,11 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Dimension | Current state | Evidence boundary |
 | --- | --- | --- |
 | Repository | `LOCAL_ONLY_NOT_REMOTE_VERIFIED` | Documentation baseline `28a2fd17`; inspect Git for the current roadmap transaction and divergence from `origin/main` |
-| Project registry | `RED_STALE_ROUTE_EVIDENCE` | The unrelated resource/acceleration implementation is non-routable because its 24-hour dynamic resource snapshot expired; local-8B owner coverage remains complete |
+| Project registry | `GREEN` | Current registry gate has zero abstraction, stable-field, or routing blockers; all 17 route-evidence outputs are unblocked |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
-| D1 successor | `QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective repository tasks with 0 unsafe, 3/3 rollback, complete denominators, and no external inference; one frontier-selection task timed out |
-| D1 local-8B causal campaign | `SUBSYSTEM_MECHANICS_GREEN` | Governance, VCM, planning, routing, and verified reuse are registry-bound with focused mechanics green; consumed-development causal smokes and a frozen integrated ablation packet remain before E2 |
+| D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks, but its result does not transfer after the Worker-v4 bounded-insertion repair |
+| D1 local-8B causal campaign | `WORKER_V4_REQUALIFICATION_REQUIRED` | Request-bound mechanics and pre-generation interventions are implemented; consumed development exposed and repaired shared-input aliasing, empty-scope waste, receipt-token bloat, maximum-length edit serialization, and truncated phase-state visibility, so E2 stays sealed pending a successful development replay, new freeze, and source-disjoint qualification |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -72,7 +72,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Product usefulness | `EMPIRICAL_SUPPORT_INSUFFICIENT` | Existing support is mostly synthetic; the first explicit travel-mode task was honestly recorded as `missed` |
 | Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
 | Teacher accounting | `GREEN_ACCOUNTING` | 15 teacher-accepted rows among 115,429 accepted rows, about 0.013% |
-| Storage | `GREEN_MAINTENANCE` | About 40.8 GB reclaimed; roughly 40 GiB free after cleanup |
+| Storage | `MAINTENANCE_NEEDED` | About 40.8 GB was reclaimed earlier, but the current data volume has only roughly 16 GiB free |
 | Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
 | ASI Stack synchronization | `PIN_WARNING` | The live book manifest differs from the reviewed Theseus pin |
 
@@ -308,20 +308,24 @@ validated the latest transaction.
 
 In order:
 
-1. Preserve the terminal Worker v2 packet and keep E2 and D2 sealed.
-2. Repair the fixed offline Qwen3-8B worker on consumed development tasks,
-   recording mechanics improvements separately from useful work.
-3. Author prospective natural requests and hidden functional tests directly
-   from their visible acceptance semantics and parent state; use no historical
-   target patch.
-4. Independently audit baseline failure, request-test alignment, authority,
-   and source disjointness before freezing the qualification.
-5. Run competence qualification once. Only a valid pass unlocks model-only,
-   tool, governed, full-Theseus, hold, governance-replay, planning, VCM,
-   routing, and procedural-reuse comparisons.
-6. Produce scoped subsystem dispositions and a public-safe local-model with
+1. Keep E2, D2, public calibration, external inference, and teacher calls
+   sealed.
+2. Replay the one aligned consumed-development full-stack task with the
+   repaired phase-first TMax-9B/Worker-v4 protocol. Stop at the first terminal
+   success or precisely attributed implementation/model wall.
+3. If development succeeds, freeze Worker-v4, its request-bound adapter,
+   controller budgets, evaluator, rollback, and terminal rules together.
+4. Author a fresh source-disjoint qualification cohort from visible natural
+   acceptance semantics before inspecting any target implementation.
+5. Independently audit baseline failure, request-test alignment, authority,
+   contamination, and source disjointness; then consume the qualification
+   once.
+6. Only a valid competence pass unlocks the original E2 heldouts and the
+   matched model-only, direct, governed, full-stack, hold, planning, VCM,
+   routing, governance-replay, and procedural-reuse comparisons.
+7. Produce scoped subsystem dispositions and a public-safe local-model with
    Theseus versus without Theseus brief.
-7. Refresh exact step-11,416 readiness with the training hold installed only
+8. Refresh exact step-11,416 readiness with the training hold installed only
    after the causal campaign reaches a terminal result.
 
 ## Explicitly Not Immediate

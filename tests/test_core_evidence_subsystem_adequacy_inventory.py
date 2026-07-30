@@ -19,7 +19,11 @@ def test_checked_in_inventory_binds_registered_reuse_owner() -> None:
         run_tests=False,
     )
     owners = {row["owner_id"]: row for row in report["owners"]}
-    assert report["trigger_state"] == "GREEN_INVENTORY_TESTS_NOT_RUN"
+    assert report["trigger_state"] == "RED_WORKER_REQUALIFICATION_REQUIRED"
+    assert report["worker_identity"]["historical_identity_current"] is False
+    assert report["worker_identity"]["state"] == (
+        "DEVELOPMENT_SUCCESSOR_REQUALIFICATION_REQUIRED"
+    )
     assert owners["verified_reuse"]["state"] == "INVENTORY_GREEN_TESTS_NOT_RUN"
     assert owners["authority_governance"]["state"] == "INVENTORY_GREEN_TESTS_NOT_RUN"
     assert report["E2_heldouts_opened"] == 0

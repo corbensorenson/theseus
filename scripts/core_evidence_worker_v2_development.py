@@ -19,7 +19,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -169,6 +169,10 @@ def run_task(
     config_path: Path = CONFIG,
     events_path: Path = EVENTS,
     mlx_python: Path = MLX_PYTHON,
+    visible_transform: (
+        Callable[[dict[str, Any], Path], tuple[dict[str, Any], dict[str, Any]]]
+        | None
+    ) = None,
 ) -> dict[str, Any]:
     visible = {
         key: task[key] for key in (
@@ -194,6 +198,16 @@ def run_task(
             safe_extract(bundle, snapshot)
         if (snapshot / ".git").exists():
             raise ValueError("git metadata entered worker snapshot")
+        input_adapter_receipt: dict[str, Any] = {}
+        if visible_transform is not None:
+            visible, input_adapter_receipt = visible_transform(visible, snapshot)
+            if set(visible) != {
+                "natural_request",
+                "parent_source_commit",
+                "allowed_runtime_context",
+                "authority_grant",
+            }:
+                raise ValueError("visible transform changed worker field boundary")
         worker_input.write_text(
             json.dumps(visible, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
@@ -265,6 +279,7 @@ def run_task(
             "learned_generation_credit": candidate.get("learned_generation_credit"),
             "local_model_inference_calls": candidate.get("local_model_inference_calls"),
             "model_identity": candidate.get("model_identity"),
+            "input_adapter_receipt": input_adapter_receipt,
             "external_inference_calls": candidate.get("external_inference_calls"),
             "teacher_calls": candidate.get("teacher_calls"),
             "public_calibration_cases_consumed": candidate.get("public_calibration_cases_consumed"),

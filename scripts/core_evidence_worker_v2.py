@@ -246,9 +246,13 @@ def run_worker(
             {"role": "assistant", "content": raw[: int(budgets["maximum_tool_result_characters"])]},
             {
                 "role": "user",
-                "content": "TOOL_RESULT\n" + json.dumps(
-                    result, sort_keys=True
-                )[: int(budgets["maximum_tool_result_characters"])],
+                "content": tool_result_message(
+                    result,
+                    state,
+                    maximum_characters=int(
+                        budgets["maximum_tool_result_characters"]
+                    ),
+                ),
             },
         ])
         if result.get("terminal") is True:
@@ -351,7 +355,7 @@ class RepositoryState:
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         kind = str(action.get("action") or "")
         known_actions = {
-            "list", "search", "read", "replace", "create", "create_test",
+            "list", "search", "read", "replace", "insert_before", "create", "create_test",
             "delete",
             "verify", "plan", "finish", "abstain",
         }
@@ -398,6 +402,12 @@ class RepositoryState:
                 str(action.get("old") or ""),
                 str(action.get("new") or ""),
             )
+        elif kind == "insert_before":
+            result = self.insert_before(
+                str(action.get("path") or ""),
+                str(action.get("anchor") or ""),
+                str(action.get("content") or ""),
+            )
         elif kind == "create":
             result = self.create(
                 str(action.get("path") or ""),
@@ -440,7 +450,7 @@ class RepositoryState:
     def allowed_phase_actions(self) -> set[str]:
         """Return controller-owned legal actions for the current state."""
         navigation = {"list", "search", "read"}
-        mutations = {"replace", "create", "create_test", "delete"}
+        mutations = {"replace", "insert_before", "create", "create_test", "delete"}
         if not self.config["budgets"].get(
             "enforce_phase_action_contract", False
         ):
@@ -905,7 +915,7 @@ class RepositoryState:
             return (
                 "Candidate verification failed. NEXT ACTION MUST BE either one "
                 "exact read of a changed file needed to recover current text, "
-                "or a bounded repair with replace/create/create_test/delete "
+                "or a bounded repair with replace/insert_before/create/create_test/delete "
                 "using the failure_summaries already returned. Do not list, "
                 "search, verify, finish, or abandon the provisional patch "
                 "before making the repair."
@@ -931,7 +941,7 @@ class RepositoryState:
         if "duplicate_read_span" in fault and self.inspection_complete():
             return (
                 "The requested span was already returned and the required "
-                "inspection is complete. NEXT ACTION MUST BE replace/create/delete "
+                "inspection is complete. NEXT ACTION MUST BE replace/insert_before/create/delete "
                 "using exact text already read, or abstain with the specific missing "
                 "information. Do not read or search again."
             )
@@ -946,7 +956,7 @@ class RepositoryState:
         if "pre_mutation_inspection_ceiling_reached" in fault:
             return (
                 "Inspection reached its prospective budget. NEXT ACTION MUST BE "
-                "replace/create/delete using exact text already read, or abstain "
+                "replace/insert_before/create/delete using exact text already read, or abstain "
                 "with the specific missing information. Do not read or search again."
             )
         if "pre_mutation_navigation_ceiling_reached" in fault:
@@ -957,7 +967,7 @@ class RepositoryState:
                     if self.inspection_complete()
                     and self.advisory_plan is None
                     else (
-                        "replace/create/delete within request_scoped_effect_paths, "
+                        "replace/insert_before/create/delete within request_scoped_effect_paths, "
                         "or abstain with the specific missing information."
                         if self.inspection_complete()
                         else "abstain with the specific missing information."
@@ -973,7 +983,7 @@ class RepositoryState:
                     "plan from the natural request and inspected paths."
                     if self.advisory_plan is None
                     else (
-                        "replace/create/delete within "
+                        "replace/insert_before/create/delete within "
                         "request_scoped_effect_paths."
                     )
                 )
@@ -989,6 +999,12 @@ class RepositoryState:
                 "The proposed file was too large. Create only concise, focused "
                 "request-required tests with no redundant cases, comments, or "
                 "helpers, within the configured character ceiling."
+            )
+        if "insert_content_character_ceiling_exceeded" in fault:
+            return (
+                "The insertion was too large. NEXT ACTION MUST BE one compact "
+                "insert_before with only the smallest request-required helper, "
+                "using a short exact anchor already read and no tests or prose."
             )
         if "structured_test_creation_required" in fault:
             return (
@@ -1015,7 +1031,7 @@ class RepositoryState:
             or "no_changed_paths" in fault
         ):
             return (
-                "Do not verify or finish again. Produce a valid replace/create/delete "
+                "Do not verify or finish again. Produce a valid replace/insert_before/create/delete "
                 "effect. If exact text is unavailable, read the intended file first."
             )
         if "verification_requires_repair_after_failure" in fault:
@@ -1053,6 +1069,35 @@ class RepositoryState:
         self.before_mutation()
         write_normalized_text(path, text.replace(old, new, 1))
         return {"ok": True, "path": relative, "changed": True}
+
+    def insert_before(
+        self,
+        relative: str,
+        anchor: str,
+        content: str,
+    ) -> dict[str, Any]:
+        if not anchor or not content:
+            raise WorkerFault("insert_before_requires_anchor_and_content")
+        path = self.safe_path(relative)
+        text = path.read_text(encoding="utf-8")
+        occurrences = text.count(anchor)
+        if occurrences != 1:
+            raise WorkerFault(f"insert_anchor_occurrence_count:{occurrences}")
+        maximum = int(
+            self.config["budgets"].get("maximum_insert_characters", 4000)
+        )
+        if len(content) > maximum:
+            raise WorkerFault("insert_content_character_ceiling_exceeded")
+        self.require_request_scoped_effect(relative)
+        self.before_mutation()
+        insertion = content.rstrip() + "\n\n" + anchor
+        write_normalized_text(path, text.replace(anchor, insertion, 1))
+        return {
+            "ok": True,
+            "path": relative,
+            "changed": True,
+            "inserted_characters": len(content),
+        }
 
     def create(self, relative: str, content: str) -> dict[str, Any]:
         return self.create_file(
@@ -1640,6 +1685,7 @@ Allowed actions, with exact JSON shapes:
 {"action":"search","query":"literal or semantic terms"}
 {"action":"read","path":"scripts/x.py","start_line":1,"end_line":120}
 {"action":"replace","path":"scripts/x.py","old":"exact existing text","new":"replacement"}
+{"action":"insert_before","path":"scripts/x.py","anchor":"def next_function(","content":"compact complete helper"}
 {"action":"create","path":"tests/test_x.py","content":"complete nonempty file"}
 {"action":"create_test","path":"tests/test_x.py","preamble":"short imports only","tests":[{"name":"test_behavior","parameters":"tmp_path: Path","body":"request-derived assertions using target"}]}
 {"action":"delete","path":"obsolete allowed path"}
@@ -1650,6 +1696,9 @@ Encode exactly one chosen action as one JSON object. For replace, old and new ar
 mandatory, distinct, nonempty strings; copy old exactly from a read result. Never
 copy schema placeholders or invent a path. Use abstain only when the request cannot
 be safely completed.
+For a new helper in an existing file, prefer insert_before with one short exact
+anchor already read and compact content within the configured insertion ceiling.
+Do not emit a whole-file replacement or combine tests with an implementation edit.
 Use read/search before editing. A behavioral request requires behavioral code; changing only
 messages, comments, reports, or roadmap prose is not a solution. Inspect the primary
 implementation, an analogous implementation or config, and at least one relevant test before
@@ -1851,6 +1900,28 @@ def parse_action(raw: str) -> dict[str, Any]:
     return result
 
 
+def tool_result_message(
+    result: dict[str, Any],
+    state: RepositoryState,
+    *,
+    maximum_characters: int,
+) -> str:
+    """Keep controller phase authority visible ahead of truncatable payloads."""
+    directive = json.dumps(
+        {
+            "required_next_phase": state.required_next_phase(),
+            "allowed_action_kinds": sorted(state.allowed_phase_actions()),
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    prefix = "PHASE_DIRECTIVE\n" + directive + "\nTOOL_RESULT\n"
+    if len(prefix) >= maximum_characters:
+        raise WorkerFault("tool_result_ceiling_too_small_for_phase_directive")
+    payload = json.dumps(result, sort_keys=True)
+    return prefix + payload[: maximum_characters - len(prefix)]
+
+
 def repair_common_replace_concatenation(
     raw: str,
 ) -> dict[str, Any] | None:
@@ -1967,7 +2038,7 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
         return {"query": str(action.get("query") or "")[:200]}
     if kind == "list":
         return {"prefix": str(action.get("prefix") or "")[:200]}
-    if kind in {"read", "replace", "create", "create_test", "delete"}:
+    if kind in {"read", "replace", "insert_before", "create", "create_test", "delete"}:
         detail = {"path": str(action.get("path") or "")[:300]}
         if kind == "read":
             detail.update({
@@ -1978,6 +2049,11 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
             detail.update({
                 "old_characters": len(str(action.get("old") or "")),
                 "new_characters": len(str(action.get("new") or "")),
+            })
+        elif kind == "insert_before":
+            detail.update({
+                "anchor_characters": len(str(action.get("anchor") or "")),
+                "content_characters": len(str(action.get("content") or "")),
             })
         elif kind == "create":
             detail["content_characters"] = len(

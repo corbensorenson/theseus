@@ -1,0 +1,41 @@
+{
+  "policy": "project_theseus_repository_stack_development_interrupted_disposition_v1",
+  "event_trace": "runtime/core_evidence_repository_stack_development_effect_separation_full_vs_direct_events.jsonl",
+  "event_trace_sha256": "732ff18dcc725d63271e0da4909a80b8eb706844f0a6ed15b3af3db4ff8f6590",
+  "event_count": 10,
+  "disposition": "INCONCLUSIVE_IMPLEMENTATION_EDIT_ACTION_SERIALIZATION",
+  "capability_or_subsystem_claim_allowed": false,
+  "operator_interrupted": true,
+  "reason_for_interrupt": "After an accepted four-criterion/two-path plan, TMax emitted a 6,392-character incomplete edit action at the 1,536-token ceiling, then regressed into repeated phase-denied reads. Continuing the remaining turns and launching the direct arm could not add useful diagnostic information before repairing the action protocol.",
+  "positive_mechanics": {
+    "target_free_alignment_audit_green": true,
+    "full_stack_plan_accepted": true,
+    "accepted_plan_criterion_count": 4,
+    "accepted_plan_target_path_count": 2,
+    "authority_scope_nonempty": true
+  },
+  "wall": {
+    "owner": "worker_model_edit_protocol",
+    "generated_tokens_at_fault": 1536,
+    "raw_response_characters": 6392,
+    "generation_wall_ms": 286977.813,
+    "fault": "no complete JSON action",
+    "subsequent_phase_denied_reads": 2
+  },
+  "repair": {
+    "successor": "Worker-v4 development",
+    "bounded_unique_anchor_insert_before": true,
+    "maximum_insert_characters": 4000,
+    "separate_implementation_and_test_actions": true,
+    "worker_v3_qualification_transfers": false,
+    "fresh_requalification_required": true
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

@@ -916,7 +916,8 @@ weakness. Do not tune or rerun this consumed cohort.
 
 ### D1 Subsystem Adequacy Gate
 
-State: `MECHANICS_GREEN_CAUSAL_SMOKES_PENDING`; E2 heldouts remain sealed.
+State: `WORKER_V4_REQUALIFICATION_REQUIRED`; five subsystem owners remain
+mechanics-green and E2 heldouts remain sealed.
 
 Before the one-shot integrated comparison, qualify the existing canonical
 implementations so a later failure can be attributed to the subsystem rather
@@ -992,6 +993,86 @@ requests to test whether each intervention causally changes the qualified
 TMax worker's useful-safe result and joined lifecycle cost. Freeze the five
 implementations, ablation transformations, evaluator, and stop rules only
 after those smokes expose no generic defects. E2 remains unopened until then.
+
+The first request-bound integration is now implemented in
+`scripts/core_evidence_repository_stack_adapter.py` with its frozen candidate
+matrix in `configs/core_evidence_repository_stack_adapter.json`. It closes two
+material flaws in the earlier experiment design. First, authority is enforced
+by the controller before the mutating worker runs; displaying a grant to the
+model is not treated as enforcement, and read-only, unsupported, stale,
+omitted, or conservative-hold packets do not dispatch. Second, VCM typed,
+untyped, and shuffled arms preserve an independently hashed semantic fact set
+while changing representation, so a later difference is not confounded by
+extra information. The same visible natural request now compiles through the
+canonical plan compiler, receives a fail-closed VCM consumer packet,
+least-sufficient route receipt, guarded procedural metadata receipt, and
+independent rollback obligation before the selected worker sees it. Direct and
+planning-free controls are prompt-level interventions rather than post-hoc
+release labels.
+
+Nine focused adapter controls are green, including recursive hidden-field
+rejection and zero external/teacher/public/D2/E2 counters. This is still
+mechanics rather than causal evidence. Next, bind the adapter to the consumed
+development runner, execute the frozen prompt-level variants on the already
+consumed tasks, measure model/tool/token/verification/joined wall cost, and
+repair only generic integration defects. Do not open E2 or transfer the
+historical TMax/Worker-v3 qualification to a modified worker identity.
+
+The first consumed-development full/direct smoke is explicitly
+`INVALID_EXPERIMENT_SHARED_INPUT_ALIASING`. Both arms sealed the exact same
+worker-input hash because the first adapter invocation appended its structured
+context to a caller-owned list in place; the direct arm then inherited it and
+replayed the same nine-action abstention trace. This is not a tie and supports
+no subsystem claim. Preserve the invalid report and its disposition. The
+generic repair copies model-visible context and the task object per variant,
+uses absolute event paths, and makes equal worker-input identities across
+distinct dispatched variants a hard campaign fault. Replay is authorized only
+as consumed-development engineering diagnosis.
+
+The corrected replay used distinct inputs, but the legacy vague task had no
+request-derived effect paths and therefore could never produce a controller-
+authorized edit. Preserve it as `INCONCLUSIVE_EXPERIMENT`; full governance
+should now hold such tasks before inference, while the direct baseline may
+still expose its wasted cost. A new target-free development case based on a
+real historical procedural/effect-authority bug names both editable paths,
+passes a pre-generation alignment audit, and carries three request-derived
+hidden assertions without using a target commit or patch.
+
+On that adequate surface, full-stack planning successfully bound four
+criteria and both effect paths. Edit synthesis then hit the actual worker/model
+wall: TMax attempted one whole-helper `replace`, exhausted the 1,536-token
+action ceiling after 6,392 incomplete characters and almost five minutes, and
+regressed into denied reads. The run was stopped before wasting the remaining
+turns or launching the direct arm. Worker-v4 adds a unique-anchor,
+4,000-character `insert_before` action and explicitly separates implementation
+and test edits.
+
+That repair changes the worker source. The historical
+`QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS` remains valid only for
+its frozen identity and does not transfer to Worker-v4. The subsystem gate
+must report `RED_WORKER_REQUALIFICATION_REQUIRED` until Worker-v4 clears
+consumed development, is frozen with the integrated adapter, and passes one
+new source-disjoint qualification. Never rerun or tune against the consumed
+TMax-v3 qualification cohort. E2 remains sealed.
+
+The first Worker-v4 replay found another generic controller defect before any
+edit was attempted. TMax completed four request-relevant source reads and two
+test reads, but the controller's successful read result serialized the large
+file content before its phase state and then truncated the result. The model
+therefore could not reliably see that the legal action set had changed to
+`plan` or `abstain`; its next read was correctly rejected, but that rejection
+cannot diagnose model competence. Preserve the trace as
+`INCONCLUSIVE_IMPLEMENTATION_CONTROLLER_PHASE_VISIBILITY`.
+
+Worker-v4 now places a compact controller-owned, target-blind phase directive
+ahead of every truncatable tool payload. It always exposes
+`required_next_phase` and `allowed_action_kinds`, and a focused regression
+proves those fields survive a large read result. Re-run only the single
+consumed-development full-stack arm to determine whether the repaired worker
+can plan, edit, verify, and finish. If it cannot, issue the next scoped wall;
+if it can, freeze Worker-v4 and its adapter before authoring and consuming a
+new source-disjoint qualification cohort. This repair still transfers no
+Worker-v3 qualification credit.
 
 ## Neural Verdict Campaign
 
