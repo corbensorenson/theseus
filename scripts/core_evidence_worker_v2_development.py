@@ -34,9 +34,22 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--task-index", type=int, default=0)
     parser.add_argument("--task-limit", type=int, default=1)
+    parser.add_argument("--task-manifest", default="")
+    parser.add_argument("--config", default=str(CONFIG))
+    parser.add_argument("--mlx-python", default=str(MLX_PYTHON))
+    parser.add_argument("--events-out", default=str(EVENTS))
     parser.add_argument("--out", default=str(OUT))
     args = parser.parse_args()
-    report = run(args.task_index, args.task_limit)
+    report = run(
+        args.task_index,
+        args.task_limit,
+        task_manifest=(
+            Path(args.task_manifest) if args.task_manifest else None
+        ),
+        config_path=Path(args.config),
+        mlx_python=Path(args.mlx_python),
+        events_path=Path(args.events_out),
+    )
     Path(args.out).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -50,23 +63,56 @@ def main() -> int:
     return 0 if not report["faults"] else 2
 
 
-def run(task_index: int, task_limit: int) -> dict[str, Any]:
+def run(
+    task_index: int,
+    task_limit: int,
+    *,
+    task_manifest: Path | None = None,
+    config_path: Path = CONFIG,
+    mlx_python: Path = MLX_PYTHON,
+    events_path: Path = EVENTS,
+) -> dict[str, Any]:
     started = time.perf_counter()
-    if EVENTS.exists():
-        EVENTS.unlink()
+    config_path = config_path.resolve()
+    # Preserve the venv entry-point path. Resolving its symlink to the base
+    # interpreter discards pyvenv.cfg discovery and loses installed MLX-LM.
+    mlx_python = (
+        mlx_python
+        if mlx_python.is_absolute()
+        else ROOT / mlx_python
+    )
+    events_path = events_path.resolve()
+    if task_manifest is not None:
+        task_manifest = task_manifest.resolve()
+    if events_path.exists():
+        events_path.unlink()
     e0 = read_json(E0)
-    config = read_json(CONFIG)
-    public_tasks = [
-        row for row in dicts(dict_value(e0.get("public_packet")).get("tasks"))
-        if row.get("partition") == "development"
-        and row.get("denominator") == "D1_DEVELOPMENT"
-    ]
+    config = read_json(config_path)
+    if task_manifest is None:
+        public_tasks = [
+            row
+            for row in dicts(
+                dict_value(e0.get("public_packet")).get("tasks")
+            )
+            if row.get("partition") == "development"
+            and row.get("denominator") == "D1_DEVELOPMENT"
+        ]
+    else:
+        public_tasks = dicts(read_json(task_manifest).get("tasks"))
     selected = public_tasks[task_index:task_index + task_limit]
     rows = []
     faults = []
     for task in selected:
         try:
-            rows.append(run_task(task, config))
+            rows.append(
+                run_task(
+                    task,
+                    config,
+                    config_path=config_path,
+                    events_path=events_path,
+                    mlx_python=mlx_python,
+                )
+            )
         except (OSError, ValueError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
             faults.append({
                 "opaque_task_id": task.get("opaque_task_id"),
@@ -80,8 +126,14 @@ def run(task_index: int, task_limit: int) -> dict[str, Any]:
         "source": {
             "commit": git("rev-parse", "HEAD"),
             "worker_sha256": sha256_file(ROOT / "scripts" / "core_evidence_worker_v2.py"),
-            "config_sha256": sha256_file(CONFIG),
+            "config_sha256": sha256_file(config_path),
             "E0_preregistration_sha256": e0.get("preregistration_sha256"),
+            "task_manifest_sha256": (
+                sha256_file(task_manifest)
+                if task_manifest is not None
+                else None
+            ),
+            "runtime_python_sha256": sha256_file(mlx_python),
         },
         "tasks": rows,
         "faults": faults,

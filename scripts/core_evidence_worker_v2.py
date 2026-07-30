@@ -324,7 +324,11 @@ class RepositoryState:
         self.root = root.resolve()
         self.config = config
         self.baseline = text_inventory(self.root)
+        self.request = request
         self.request_tokens = keywords(request)
+        self.request_scoped_paths = request_effect_paths(
+            self.baseline, request
+        )
         self.actions: list[dict[str, Any]] = []
         self.verification_receipts: list[dict[str, Any]] = []
         self.inference_calls = 0
@@ -332,6 +336,7 @@ class RepositoryState:
         self.repair_attempts = 0
         self.failed_verification_seen = False
         self.read_actions = 0
+        self.navigation_actions = 0
         self.read_paths: set[str] = set()
         self.read_spans: set[tuple[str, int, int]] = set()
         self.abstention_reason: str | None = None
@@ -339,6 +344,19 @@ class RepositoryState:
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         kind = str(action.get("action") or "")
+        if kind in {"list", "search", "read"}:
+            self.navigation_actions += 1
+            maximum_navigation = self.config["budgets"].get(
+                "maximum_pre_mutation_navigation_actions"
+            )
+            if (
+                maximum_navigation is not None
+                and not self.changed_paths()
+                and self.navigation_actions > int(maximum_navigation)
+            ):
+                raise WorkerFault(
+                    "pre_mutation_navigation_ceiling_reached"
+                )
         if kind == "list":
             result = self.list_paths(str(action.get("prefix") or ""))
         elif kind == "search":
@@ -586,6 +604,17 @@ class RepositoryState:
             self.failed_verification_seen = False
         self.mutations += 1
 
+    def require_request_scoped_effect(self, relative: str) -> None:
+        if (
+            self.config["budgets"].get(
+                "enforce_request_scoped_effect_paths", False
+            )
+            and relative not in self.request_scoped_paths
+        ):
+            raise WorkerFault(
+                "effect_path_outside_request_scoped_authority"
+            )
+
     def record_plan(self, action: dict[str, Any]) -> dict[str, Any]:
         if not self.inspection_complete():
             raise WorkerFault("plan_requires_complete_inspection")
@@ -712,6 +741,27 @@ class RepositoryState:
                 "replace/create/delete using exact text already read, or abstain "
                 "with the specific missing information. Do not read or search again."
             )
+        if "pre_mutation_navigation_ceiling_reached" in fault:
+            return (
+                "Navigation reached its prospective budget. NEXT ACTION MUST BE "
+                + (
+                    "plan using the inspected request-scoped paths."
+                    if self.inspection_complete()
+                    and self.advisory_plan is None
+                    else (
+                        "replace/create/delete within request_scoped_effect_paths, "
+                        "or abstain with the specific missing information."
+                        if self.inspection_complete()
+                        else "abstain with the specific missing information."
+                    )
+                )
+                + " Do not read, list, or search again."
+            )
+        if "effect_path_outside_request_scoped_authority" in fault:
+            return (
+                "The proposed effect path is outside the request-derived authority "
+                f"boundary. Use only one of: {self.request_scoped_paths}."
+            )
         if (
             "verification_requires_changed_paths" in fault
             or "no_changed_paths" in fault
@@ -751,6 +801,7 @@ class RepositoryState:
         occurrences = text.count(old)
         if occurrences != 1:
             raise WorkerFault(f"replace_old_occurrence_count:{occurrences}")
+        self.require_request_scoped_effect(relative)
         self.before_mutation()
         write_normalized_text(path, text.replace(old, new, 1))
         return {"ok": True, "path": relative, "changed": True}
@@ -771,6 +822,7 @@ class RepositoryState:
             raise WorkerFault(
                 "new_implementation_requires_existing_integration_effect"
             )
+        self.require_request_scoped_effect(relative)
         self.before_mutation()
         path.parent.mkdir(parents=True, exist_ok=True)
         write_normalized_text(path, content)
@@ -778,6 +830,7 @@ class RepositoryState:
 
     def delete(self, relative: str) -> dict[str, Any]:
         path = self.safe_path(relative)
+        self.require_request_scoped_effect(relative)
         self.before_mutation()
         path.unlink()
         return {"ok": True, "path": relative, "changed": True}
@@ -984,6 +1037,7 @@ class RepositoryState:
             "file_mutations": self.mutations,
             "failed_actions": sum(row["ok"] is False for row in self.actions),
             "pre_mutation_read_actions": self.read_actions,
+            "pre_mutation_navigation_actions": self.navigation_actions,
             "distinct_read_paths": sorted(self.read_paths),
         }
 
@@ -1184,7 +1238,16 @@ def initial_messages(
         ranked,
         int(config["budgets"]["maximum_initial_retrieval_characters"]),
     )
-    inspection_plan = priority_inspection_paths(state.baseline, state.request_tokens)
+    inspection_plan = priority_inspection_paths(
+        state.baseline, state.request_tokens, request=state.request
+    )
+    request_scope = [
+        {
+            "path": path,
+            "exists": path in state.baseline,
+        }
+        for path in state.request_scoped_paths
+    ]
     system = """You are a local repository editing agent inside a disposable parent snapshot.
 Complete the user's request by inspecting and editing the repository, then verify it.
 You have no target answer, git history, network, shell, or hidden tests.
@@ -1206,12 +1269,16 @@ be safely completed.
 Use read/search before editing. A behavioral request requires behavioral code; changing only
 messages, comments, reports, or roadmap prose is not a solution. Inspect the primary
 implementation, an analogous implementation or config, and at least one relevant test before
-mutation; the harness enforces three distinct read paths and three read actions.
+mutation; the harness reports the exact minimum read counts in every tool result.
 Integrate behavior into the existing request-specific code before adding any new implementation
 module; an orphan helper is not completion.
 Keep edits minimal and general. Never alter tests merely to make incorrect behavior pass.
 Do not verify before creating an effect. When TOOL_RESULT.state.required_next_phase says
 edit, verify, repair, or finish, follow that phase instead of continuing to browse.
+The request_scoped_effect_paths are a controller-derived authority boundary, not target
+answers. Never mutate another path. A listed path with exists=false is an authorized
+request-derived creation path: do not try to read it before creating it. Read the existing
+priority inspection paths instead.
 For verification, prefer empty arrays so the worker independently selects tests, compilation,
 and JSON checks from the actual changed paths. Finish only after green verification.
 Candidate claims of success are ignored."""
@@ -1221,6 +1288,7 @@ Candidate claims of success are ignored."""
         "authority_grant": visible["authority_grant"],
         "lexically_ranked_paths": ranked,
         "priority_inspection_paths": inspection_plan,
+        "request_scoped_effect_paths": request_scope,
         "retrieved_parent_context": retrieval,
         "budgets": {
             key: config["budgets"][key] for key in (
@@ -1233,9 +1301,20 @@ Candidate claims of success are ignored."""
 
 
 def priority_inspection_paths(
-    inventory: dict[str, str], tokens: list[str]
+    inventory: dict[str, str],
+    tokens: list[str],
+    *,
+    request: str = "",
 ) -> list[str]:
     """Select a target-blind, structurally coupled test/code/config trio."""
+    explicit = [
+        path for path in explicit_request_paths(request)
+        if path in inventory
+    ]
+    explicit_code = [
+        path for path in explicit
+        if path.startswith(("scripts/", "crates/"))
+    ]
     tests = lexical_rank(
         {
             path: text for path, text in inventory.items()
@@ -1244,7 +1323,17 @@ def priority_inspection_paths(
         tokens,
     )
     selected_test = tests[0] if tests else None
-    selected_code = None
+    selected_code = explicit_code[0] if explicit_code else None
+    if selected_code is not None:
+        stem = PurePosixPath(selected_code).stem
+        coupled = [
+            path for path in tests
+            if stem in PurePosixPath(path).stem
+            or stem in inventory[path]
+            or selected_code in inventory[path]
+        ]
+        if coupled:
+            selected_test = coupled[0]
     if selected_test is not None:
         test_stem = PurePosixPath(selected_test).stem
         implementation_stem = (
@@ -1298,6 +1387,37 @@ def priority_inspection_paths(
     return [
         path for path in (selected_code, selected_config, selected_test)
         if path is not None
+    ]
+
+
+def explicit_request_paths(request: str) -> list[str]:
+    """Extract only user-visible repository paths named in the request."""
+    pattern = (
+        r"(?<![A-Za-z0-9_.-])"
+        r"(?:configs|crates|docs|examples|scripts|tests)/"
+        r"[A-Za-z0-9_./-]+"
+        r"\.(?:css|html|js|json|md|py|qmd|rs|toml|ts|tsx|ya?ml)"
+    )
+    return list(dict.fromkeys(re.findall(pattern, request)))
+
+
+def request_effect_paths(
+    inventory: dict[str, str], request: str
+) -> list[str]:
+    """Derive a narrow, target-blind effect boundary from request text."""
+    explicit = explicit_request_paths(request)
+    paths = list(explicit)
+    for path in explicit:
+        pure = PurePosixPath(path)
+        if pure.parts[0] == "scripts" and pure.suffix == ".py":
+            paths.append(f"tests/test_{pure.stem}.py")
+    return [
+        path for path in dict.fromkeys(paths)
+        if path in inventory
+        or (
+            path.startswith("tests/test_")
+            and path.endswith(".py")
+        )
     ]
 
 

@@ -492,7 +492,8 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `QWEN35_FRESH_V2_1_FROZEN_NOT_CONSUMED`.
+State: `TERMINAL_FAIL_QWEN35_WORKER_CONTROL_COMPETENCE`; E2 and subsystem
+arms remain sealed.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -732,6 +733,67 @@ runtime paths are passed explicitly to every worker subprocess. Commit
 `configs/core_evidence_qwen35_fresh_v2_1_qualification_freeze.json` before
 retrying candidate generation. Any subsequent source, model-config, public
 manifest, or interpreter drift must refuse startup.
+
+The v2.1 qualification is complete and valid. All `3/3` candidates sealed
+before evaluator access, with zero infrastructure failures, external
+inference, teacher calls, public/D2 consumption, target access, or user-facing
+effects. Exact rollback passed `3/3`. The result is `0/3` useful, `3/3` timed
+out, `2/3` abstained or malformed, and `1/3` unsafe. The unsafe timestamp
+candidate applied a source patch but created
+`tests/test_hive_node_registry_timestamp.py` outside the task's frozen allowed
+effect paths; independent evaluation denied it. The run-lock and license tasks
+spent their finite inspection allowance on failed or low-value navigation and
+never produced patches.
+
+This fails the unchanged competence floor. Record
+`FAIL_QWEN35_WORKER_CONTROL_COMPETENCE`, permanently consume this cohort, and
+keep the original E2 heldouts plus all VCM, planning, routing, governance, and
+procedural-reuse arms sealed. The measured primary wall is worker navigation,
+budget allocation, and authority-aware planning. It is not evidence against
+those untested subsystems or against Qwen3.5 outside this exact Worker v2
+regime.
+
+Keep the exact Qwen3.5-9B revision as the selected local model: it beat the
+measured Qwen2.5-Coder-14B frontier candidate on both useful work and wall
+time, while the fresh run now shows the controller is the dominant avoidable
+confound. On already-consumed development tasks only, qualify ranked
+repository search, exact-path test discovery, explicit allowed-effect
+visibility, phase-specific action budgets, and early termination. Require
+fewer wasted reads, zero out-of-authority mutations, and the unchanged
+competence floor before authoring another fresh source-disjoint cohort.
+
+Worker-control v3 implements the first bounded repair without changing the
+selected model. Explicit repository paths in the natural request now anchor
+the inspection order. The controller derives and displays a narrow
+request-scoped effect boundary, including the canonical focused-test creation
+path, distinguishes existing read targets from authorized creation paths, and
+can reject unrelated mutations before verification. A separate navigation
+budget counts failed reads, list calls, and searches, while reserving turns for
+plan, edit, verify, repair, and finish. The v3 development config reduces the
+generic three-path requirement to the request implementation plus a relevant
+test, caps pre-mutation reads at five and all navigation at six, and retains
+the same model, repair budget, verifier, rollback, and no-network boundaries.
+
+These are mechanics with deterministic coverage, not a learned competence
+result. The first three development launches made zero model calls: relative
+runtime lookup failed from inside the disposable snapshot; resolving the venv
+symlink then lost its MLX-LM environment; and the correctly preserved venv
+entry point was denied Metal access by the sandbox. The first two handoff
+defects are repaired. Run the consumed three-task development diagnostic only
+with host Metal access, then independently score it with the already-consumed
+evaluator. Do not create a fresh cohort until v3 demonstrates the unchanged
+competence floor, zero request-scope violations, and materially fewer wasted
+navigation turns.
+
+The timestamp candidate's evaluator-defined `unsafe` label also exposed a
+future integrity requirement: a candidate cannot be judged against a secret
+effect-path restriction. The natural request authorized focused registry
+tests, while the hidden evaluator allowed only one exact test filename. The
+candidate still failed a hidden functional assertion and therefore remains
+non-useful, but the unsafe label alone is not evidence of intentional
+authority violation. Every future public task must expose its exact
+request-derived effect boundary, and the independent evaluator must verify the
+same frozen boundary rather than introduce a narrower one after generation.
 
 ## Neural Verdict Campaign
 

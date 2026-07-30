@@ -1,0 +1,445 @@
+{
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v2",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "evaluator_manifest_opened": 0,
+    "external_inference_calls": 0,
+    "hidden_test_files_opened": 0,
+    "learned_generation_credit": 3,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T09:37:19.928138Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 0,
+    "planned": 3,
+    "sealed": 3,
+    "skipped": 0
+  },
+  "faults": [],
+  "freeze_manifest_sha256": "52079de5a89893f9c7d377c2adfbc7436e6f1fecb132b223ec98093507ed7b8a",
+  "maximum_inference": "This report proves only that target-blind candidates were generated and sealed. Competence requires the frozen independent evaluator.",
+  "policy": "project_theseus_local_8b_functional_qualification_candidates_v1",
+  "public_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+  "report_payload_sha256": "4f3a19ea26f738898d99cc885c9b6bf9f6cd7a42e62cfc765975e0b85c0e39a1",
+  "runtime": {
+    "wall_ms": 1160535.893
+  },
+  "scope": "prospective_target_blind_candidate_generation_only",
+  "source_identities": {
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "qualification_runner_sha256": "f07c207b7812c0bed4021ee9ecdf912788d0903afe3e517dd297a3a056ec7144",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "worker_config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+    "worker_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "list": 3,
+          "read": 11,
+          "search": 4
+        },
+        "distinct_read_paths": [
+          "scripts/code_lm_closure.py",
+          "scripts/code_lm_run_lock.py",
+          "scripts/operator_bounded_public_calibration.py",
+          "scripts/real_code_benchmark_runtime.py",
+          "scripts/run_training_ratchet_profile.py",
+          "scripts/strict_generator_mlx_rung_decode_sweep.py"
+        ],
+        "failed_actions": 3,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 8
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "list": 3,
+            "read": 11,
+            "search": 4
+          },
+          "distinct_read_paths": [
+            "scripts/code_lm_closure.py",
+            "scripts/code_lm_run_lock.py",
+            "scripts/operator_bounded_public_calibration.py",
+            "scripts/real_code_benchmark_runtime.py",
+            "scripts/run_training_ratchet_profile.py",
+            "scripts/strict_generator_mlx_rung_decode_sweep.py"
+          ],
+          "failed_actions": 3,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 8
+        },
+        "advisory_plan": null,
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "1c69b69338baa65c40c6bd51a9f3e89660e12d8772a91ccadb61a5dafc0e32eb",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 337320.163
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "07e817dac8a879ac1e01d6132a47c16ed251ea423ec186ff7041d3a06c0a62cb",
+      "candidate_seal": {
+        "candidate_output_sha256": "07e817dac8a879ac1e01d6132a47c16ed251ea423ec186ff7041d3a06c0a62cb",
+        "config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+        "finished_utc": "2026-07-30T09:23:37.835730Z",
+        "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+        "started_utc": "2026-07-30T09:18:00.225180Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "8801882f542e3e502392b8de70a130256c8afafbbf0186bcdc9f37c4700f00c0",
+        "worker_source_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb",
+        "worker_wall_ms": 337602.613
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [],
+      "worker_input_sha256": "8801882f542e3e502392b8de70a130256c8afafbbf0186bcdc9f37c4700f00c0",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "create": 1,
+          "list": 2,
+          "plan": 1,
+          "read": 11,
+          "replace": 1,
+          "search": 2
+        },
+        "distinct_read_paths": [
+          "scripts/hive_node_registry.py",
+          "tests/test_hive_authority_security.py",
+          "tests/test_hive_node_cli_paths.py"
+        ],
+        "failed_actions": 3,
+        "file_mutations": 2,
+        "pre_mutation_read_actions": 8
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "create": 1,
+            "list": 2,
+            "plan": 1,
+            "read": 11,
+            "replace": 1,
+            "search": 2
+          },
+          "distinct_read_paths": [
+            "scripts/hive_node_registry.py",
+            "tests/test_hive_authority_security.py",
+            "tests/test_hive_node_cli_paths.py"
+          ],
+          "failed_actions": 3,
+          "file_mutations": 2,
+          "pre_mutation_read_actions": 8
+        },
+        "advisory_plan": {
+          "criteria": [
+            "1. Modify timestamp_age_seconds to return None for timezone-naive timestamps instead of raising, 2. Reject timestamps more than 5 seconds in the future by returning None, 3. Clamp elapsed age to zero for timezone-aware ISO-8601 timestamps with Z or explicit UTC offsets when clock skew exceeds 5 seconds, 4. Add focused registry tests for timestamp_age_seconds behavior"
+          ],
+          "implementation": "Edit timestamp_age_seconds function: add try/except around datetime.fromisoformat to catch ValueError and return None, add check for future timestamps (>5s) to return None, ensure max(0.0, ...) clamps negative values to 0.0 for UTC timestamps",
+          "target_paths": [
+            "scripts/hive_node_registry.py"
+          ],
+          "verification": "Run pytest on test_hive_node_registry.py to verify timestamp_age_seconds behavior"
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "761e0026afde71f0895af8b7d99211104ca4e08c35aedb2c27e443c6da063d0a",
+            "before_sha256": "773c88a40d1cde7ffeee6d5aa51459afe6df6242c412e9b39a30cdb60a4e5eee",
+            "effect": "modify",
+            "path": "scripts/hive_node_registry.py"
+          },
+          {
+            "after_sha256": "e76562b0af642594a367f2840a5a74efcb691b94f69ca3fec0001117ce3b8279",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_hive_node_registry_timestamp.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "707d91be30fc3d0be031d7178cfe0b247c5417f7b9f37f2e319779c3e1b4ccf8",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+        "patch_unified_diff": "--- a/scripts/hive_node_registry.py\n+++ b/scripts/hive_node_registry.py\n@@ -660,7 +660,16 @@\n         dt = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\n     except ValueError:\n         return None\n-    return max(0.0, (datetime.now(timezone.utc) - dt).total_seconds())\n+    now_utc = datetime.now(timezone.utc)\n+    delta = now_utc - dt\n+    age_seconds = delta.total_seconds()\n+    # Reject timestamps more than 5 seconds in the future\n+    if age_seconds < 0.0 and abs(age_seconds) > 5.0:\n+        return None\n+    # For timezone-aware UTC timestamps, clamp negative age (clock skew) to zero\n+    if dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None and dt.tzinfo.utcoffset(dt).total_seconds() == 0.0:\n+        return max(0.0, age_seconds)\n+    return age_seconds\n \n \n def normalize_capabilities(raw: list[Any]) -> list[dict[str, Any]]:\n--- /dev/null\n+++ b/tests/test_hive_node_registry_timestamp.py\n@@ -0,0 +1,100 @@\n+\"\"\"Focused tests for timestamp_age_seconds in hive_node_registry.\"\"\"\n+\n+from __future__ import annotations\n+\n+import pytest\n+from datetime import datetime, timezone, timedelta\n+\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+ROOT_SCRIPTS = ROOT / \"scripts\"\n+if str(ROOT_SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(ROOT_SCRIPTS))\n+\n+import hive_node_registry\n+\n+\n+def test_timestamp_age_seconds_empty_string() -> None:\n+    \"\"\"Empty string returns None.\"\"\"\n+    result = hive_node_registry.timestamp_age_seconds(\"\")\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_whitespace_only() -> None:\n+    \"\"\"Whitespace-only string returns None.\"\"\"\n+    result = hive_node_registry.timestamp_age_seconds(\"   \")\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_invalid_format() -> None:\n+    \"\"\"Invalid ISO-8601 format returns None (fail closed).\"\"\"\n+    result = hive_node_registry.timestamp_age_seconds(\"not-a-date\")\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_naive_datetime_returns_none() -> None:\n+    \"\"\"Timezone-naive timestamps return None (fail closed).\"\"\"\n+    naive = datetime(2024, 1, 1, 12, 0, 0)\n+    stamp = naive.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_utc_timestamp() -> None:\n+    \"\"\"UTC timestamp with Z returns elapsed age.\"\"\"\n+    past = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)\n+    stamp = past.isoformat().replace(\"+00:00\", \"Z\")\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = (datetime.now(timezone.utc) - past).total_seconds()\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_explicit_utc_offset() -> None:\n+    \"\"\"Timestamp with explicit +00:00 offset returns elapsed age.\"\"\"\n+    past = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)\n+    stamp = past.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = (datetime.now(timezone.utc) - past).total_seconds()\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_future_beyond_five_seconds() -> None:\n+    \"\"\"Timestamps more than 5 seconds in the future return None.\"\"\"\n+    now = datetime.now(timezone.utc)\n+    future = now + timedelta(seconds=6)\n+    stamp = future.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_future_within_five_seconds() -> None:\n+    \"\"\"Timestamps within 5 seconds in the future return negative age (not clamped).\"\"\"\n+    now = datetime.now(timezone.utc)\n+    future = now + timedelta(seconds=3)\n+    stamp = future.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = (datetime.now(timezone.utc) - future).total_seconds()\n+    # Result should be negative (future), not clamped to zero\n+    assert result < 0.0\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_past_timestamp() -> None:\n+    \"\"\"Past timestamps return positive elapsed age.\"\"\"\n+    past = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)\n+    stamp = past.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = max(0.0, (datetime.now(timezone.utc) - past).total_seconds())\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_timezone_naive_with_offset_string() -> None:\n+    \"\"\"Timezone-naive timestamp with offset string returns None.\"\"\"\n+    naive = datetime(2024, 1, 1, 12, 0, 0)\n+    # This is a timezone-naive datetime but with an offset in the string\n+    stamp = naive.isoformat() + \"+05:00\"\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    # Since the parsed datetime will be timezone-aware but not UTC,\n+    # the behavior depends on how fromisoformat handles it\n+    # For now, we expect it to return a value (not None) since it's valid ISO-8601\n+    assert result is not None or result == 0.0\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/hive_node_registry.py",
+          "tests/test_hive_node_registry_timestamp.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "final_candidate_verification_not_green",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 503469.435
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "bf99294473c3e13f514077f4a6aa28d162426166b891e15e3b68f56424116b44",
+      "candidate_seal": {
+        "candidate_output_sha256": "bf99294473c3e13f514077f4a6aa28d162426166b891e15e3b68f56424116b44",
+        "config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+        "finished_utc": "2026-07-30T09:32:02.998040Z",
+        "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+        "started_utc": "2026-07-30T09:23:39.234580Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "989fff3ba8af0d54642b60cc5236c874fbc54ffbef271d27906ffa12245d2829",
+        "worker_source_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb",
+        "worker_wall_ms": 503751.594
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [
+        {
+          "after_sha256": "761e0026afde71f0895af8b7d99211104ca4e08c35aedb2c27e443c6da063d0a",
+          "before_sha256": "773c88a40d1cde7ffeee6d5aa51459afe6df6242c412e9b39a30cdb60a4e5eee",
+          "effect": "modify",
+          "path": "scripts/hive_node_registry.py"
+        },
+        {
+          "after_sha256": "e76562b0af642594a367f2840a5a74efcb691b94f69ca3fec0001117ce3b8279",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_hive_node_registry_timestamp.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+      "patch_unified_diff": "--- a/scripts/hive_node_registry.py\n+++ b/scripts/hive_node_registry.py\n@@ -660,7 +660,16 @@\n         dt = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\n     except ValueError:\n         return None\n-    return max(0.0, (datetime.now(timezone.utc) - dt).total_seconds())\n+    now_utc = datetime.now(timezone.utc)\n+    delta = now_utc - dt\n+    age_seconds = delta.total_seconds()\n+    # Reject timestamps more than 5 seconds in the future\n+    if age_seconds < 0.0 and abs(age_seconds) > 5.0:\n+        return None\n+    # For timezone-aware UTC timestamps, clamp negative age (clock skew) to zero\n+    if dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None and dt.tzinfo.utcoffset(dt).total_seconds() == 0.0:\n+        return max(0.0, age_seconds)\n+    return age_seconds\n \n \n def normalize_capabilities(raw: list[Any]) -> list[dict[str, Any]]:\n--- /dev/null\n+++ b/tests/test_hive_node_registry_timestamp.py\n@@ -0,0 +1,100 @@\n+\"\"\"Focused tests for timestamp_age_seconds in hive_node_registry.\"\"\"\n+\n+from __future__ import annotations\n+\n+import pytest\n+from datetime import datetime, timezone, timedelta\n+\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+ROOT_SCRIPTS = ROOT / \"scripts\"\n+if str(ROOT_SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(ROOT_SCRIPTS))\n+\n+import hive_node_registry\n+\n+\n+def test_timestamp_age_seconds_empty_string() -> None:\n+    \"\"\"Empty string returns None.\"\"\"\n+    result = hive_node_registry.timestamp_age_seconds(\"\")\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_whitespace_only() -> None:\n+    \"\"\"Whitespace-only string returns None.\"\"\"\n+    result = hive_node_registry.timestamp_age_seconds(\"   \")\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_invalid_format() -> None:\n+    \"\"\"Invalid ISO-8601 format returns None (fail closed).\"\"\"\n+    result = hive_node_registry.timestamp_age_seconds(\"not-a-date\")\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_naive_datetime_returns_none() -> None:\n+    \"\"\"Timezone-naive timestamps return None (fail closed).\"\"\"\n+    naive = datetime(2024, 1, 1, 12, 0, 0)\n+    stamp = naive.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_utc_timestamp() -> None:\n+    \"\"\"UTC timestamp with Z returns elapsed age.\"\"\"\n+    past = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)\n+    stamp = past.isoformat().replace(\"+00:00\", \"Z\")\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = (datetime.now(timezone.utc) - past).total_seconds()\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_explicit_utc_offset() -> None:\n+    \"\"\"Timestamp with explicit +00:00 offset returns elapsed age.\"\"\"\n+    past = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)\n+    stamp = past.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = (datetime.now(timezone.utc) - past).total_seconds()\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_future_beyond_five_seconds() -> None:\n+    \"\"\"Timestamps more than 5 seconds in the future return None.\"\"\"\n+    now = datetime.now(timezone.utc)\n+    future = now + timedelta(seconds=6)\n+    stamp = future.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_future_within_five_seconds() -> None:\n+    \"\"\"Timestamps within 5 seconds in the future return negative age (not clamped).\"\"\"\n+    now = datetime.now(timezone.utc)\n+    future = now + timedelta(seconds=3)\n+    stamp = future.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = (datetime.now(timezone.utc) - future).total_seconds()\n+    # Result should be negative (future), not clamped to zero\n+    assert result < 0.0\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_past_timestamp() -> None:\n+    \"\"\"Past timestamps return positive elapsed age.\"\"\"\n+    past = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)\n+    stamp = past.isoformat()\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    expected = max(0.0, (datetime.now(timezone.utc) - past).total_seconds())\n+    assert result == expected\n+\n+\n+def test_timestamp_age_seconds_timezone_naive_with_offset_string() -> None:\n+    \"\"\"Timezone-naive timestamp with offset string returns None.\"\"\"\n+    naive = datetime(2024, 1, 1, 12, 0, 0)\n+    # This is a timezone-naive datetime but with an offset in the string\n+    stamp = naive.isoformat() + \"+05:00\"\n+    result = hive_node_registry.timestamp_age_seconds(stamp)\n+    # Since the parsed datetime will be timezone-aware but not UTC,\n+    # the behavior depends on how fromisoformat handles it\n+    # For now, we expect it to return a value (not None) since it's valid ISO-8601\n+    assert result is not None or result == 0.0\n",
+      "proposed_paths": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry_timestamp.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "final_candidate_verification_not_green",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [],
+      "worker_input_sha256": "989fff3ba8af0d54642b60cc5236c874fbc54ffbef271d27906ffa12245d2829",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "read": 18
+        },
+        "distinct_read_paths": [
+          "scripts/training_data_admission_v1.py"
+        ],
+        "failed_actions": 10,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 8
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "read": 18
+          },
+          "distinct_read_paths": [
+            "scripts/training_data_admission_v1.py"
+          ],
+          "failed_actions": 10,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 8
+        },
+        "advisory_plan": null,
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "192d84dfdbc8f458b1ae9fac4a3a3c4e06d4710e8067798d3f17ddc85fe64d04",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 314635.135
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "beebd015b692baed49516479ef6211e87e04335ef22c6870470814dde334da45",
+      "candidate_seal": {
+        "candidate_output_sha256": "beebd015b692baed49516479ef6211e87e04335ef22c6870470814dde334da45",
+        "config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+        "finished_utc": "2026-07-30T09:37:19.547719Z",
+        "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+        "started_utc": "2026-07-30T09:32:04.631384Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "9bca0bfd5b3a1e34f9f70de4a182ec7fe751d667fa3c084d460dc5ef9f5e6a82",
+        "worker_source_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb",
+        "worker_wall_ms": 314908.776
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [],
+      "worker_input_sha256": "9bca0bfd5b3a1e34f9f70de4a182ec7fe751d667fa3c084d460dc5ef9f5e6a82",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,42 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "learned_generation_credit": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T09:46:39.006991Z",
+  "faults": [
+    {
+      "fault": "ValueError:worker_failed:returncode=-6:stderr=libc++abi: terminating due to uncaught exception of type std::runtime_error: [metal::load_device] No Metal device available. This typically occurs in headless, sandboxed, or virtualized macOS sessions where the GPU is not accessible.\n",
+      "opaque_task_id": "task-q35freshv2-run-lock-identity"
+    },
+    {
+      "fault": "ValueError:worker_failed:returncode=-6:stderr=libc++abi: terminating due to uncaught exception of type std::runtime_error: [metal::load_device] No Metal device available. This typically occurs in headless, sandboxed, or virtualized macOS sessions where the GPU is not accessible.\n",
+      "opaque_task_id": "task-q35freshv2-peer-time"
+    },
+    {
+      "fault": "ValueError:worker_failed:returncode=-6:stderr=libc++abi: terminating due to uncaught exception of type std::runtime_error: [metal::load_device] No Metal device available. This typically occurs in headless, sandboxed, or virtualized macOS sessions where the GPU is not accessible.\n",
+      "opaque_task_id": "task-q35freshv2-license-canonicalization"
+    }
+  ],
+  "maximum_inference": "This report can diagnose Worker v2 mechanics on consumed development tasks. It cannot support capability, generalization, or E2 claims.",
+  "policy": "project_theseus_worker_v2_consumed_development_diagnostic_v1",
+  "report_payload_sha256": "7ab3337dd9f39f287411bc59d4b8a46b980875051b1b7f039f27e74ceb60db52",
+  "runtime": {
+    "wall_ms": 3933.668
+  },
+  "scope": "consumed_development_only_not_blind_evidence",
+  "source": {
+    "E0_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+    "commit": "282fb6942fd693893cee723b08fbfe297207019b",
+    "config_sha256": "e3206dc76bb25980221374babc85a03b3b561d5710918620ae3cf491dab90ed7",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "task_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+    "worker_sha256": "8c0fd590bba64d95887690cf8440a7dcd074e5f7166ee0ae839363670a874075"
+  },
+  "tasks": [],
+  "trigger_state": "RED"
+}

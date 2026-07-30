@@ -631,3 +631,92 @@ def test_target_blind_priority_inspection_covers_code_config_and_test(
         "configs/canary.json",
         "tests/test_canary.py",
     ]
+
+
+def test_request_path_anchors_inspection_and_scoped_test_creation(
+    tmp_path: Path,
+) -> None:
+    for directory in ("scripts", "tests", "configs"):
+        (tmp_path / directory).mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return -1\n"
+    )
+    (tmp_path / "scripts" / "unrelated.py").write_text(
+        "def age():\n    return 0\n"
+    )
+    (tmp_path / "tests" / "test_clock_paths.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    (tmp_path / "configs" / "clock.json").write_text("{}\n")
+    inventory = worker.text_inventory(tmp_path)
+    request = "Fix scripts/peer_clock.py and add focused tests."
+
+    paths = worker.priority_inspection_paths(
+        inventory, worker.keywords(request), request=request
+    )
+
+    assert paths[0] == "scripts/peer_clock.py"
+    assert paths[-1] == "tests/test_clock_paths.py"
+    assert worker.request_effect_paths(inventory, request) == [
+        "scripts/peer_clock.py",
+        "tests/test_peer_clock.py",
+    ]
+
+
+def test_scoped_effect_boundary_denies_unrelated_test_path(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return -1\n"
+    )
+    local = permissive_config()
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="Fix scripts/peer_clock.py and add focused tests.",
+    )
+
+    with pytest.raises(
+        worker.WorkerFault,
+        match="effect_path_outside_request_scoped_authority",
+    ):
+        state.create(
+            "tests/test_peer_clock_timestamp.py",
+            "def test_age():\n    assert True\n",
+        )
+    assert state.create(
+        "tests/test_peer_clock.py",
+        "def test_age():\n    assert True\n",
+    )["changed"]
+
+
+def test_navigation_ceiling_counts_failed_reads_and_preserves_edit_budget(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    local = permissive_config()
+    local["budgets"]["maximum_pre_mutation_navigation_actions"] = 2
+    state = worker.RepositoryState(tmp_path, local)
+
+    with pytest.raises(worker.WorkerFault, match="file_missing"):
+        state.execute({
+            "action": "read",
+            "path": "tests/test_x.py",
+            "start_line": 1,
+            "end_line": 80,
+        })
+    assert state.execute({
+        "action": "read",
+        "path": "scripts/x.py",
+        "start_line": 1,
+        "end_line": 80,
+    })["ok"] is True
+    with pytest.raises(
+        worker.WorkerFault,
+        match="pre_mutation_navigation_ceiling",
+    ):
+        state.execute({"action": "search", "query": "x"})
