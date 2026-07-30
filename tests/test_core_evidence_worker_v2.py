@@ -173,7 +173,10 @@ def test_abstention_discards_every_provisional_effect(tmp_path: Path) -> None:
             "old": "x = 1",
             "new": "x = 2",
         }),
-        json.dumps({"action": "abstain"}),
+        json.dumps({
+            "action": "abstain",
+            "reason": "The request needs an unavailable schema.",
+        }),
     ])
     result = worker.run_worker(
         visible(), tmp_path, permissive_config(),
@@ -182,6 +185,9 @@ def test_abstention_discards_every_provisional_effect(tmp_path: Path) -> None:
     assert result["terminal_reason"] == "explicit_abstention"
     assert result["abstained"] is True
     assert result["patch_unified_diff"] == ""
+    assert result["abstention_reason"] == (
+        "The request needs an unavailable schema."
+    )
     assert (tmp_path / "scripts" / "x.py").read_text() == "x = 1\n"
 
 

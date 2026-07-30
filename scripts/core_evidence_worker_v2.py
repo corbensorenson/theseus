@@ -299,6 +299,7 @@ def run_worker(
         "format_repairs": format_repairs,
         "terminal_reason": terminal_reason,
         "abstained": not bool(patch),
+        "abstention_reason": state.abstention_reason,
         "residuals": residuals,
         "candidate_authored_success_flags": [],
         "runtime": {
@@ -332,6 +333,7 @@ class RepositoryState:
         self.read_actions = 0
         self.read_paths: set[str] = set()
         self.read_spans: set[tuple[str, int, int]] = set()
+        self.abstention_reason: str | None = None
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         kind = str(action.get("action") or "")
@@ -373,10 +375,12 @@ class RepositoryState:
         elif kind == "abstain":
             discarded_paths = self.changed_paths()
             self.restore_baseline()
+            self.abstention_reason = str(action.get("reason") or "")[:1000]
             result = {
                 "ok": True,
                 "terminal": True,
                 "reason": "explicit_abstention",
+                "abstention_reason": self.abstention_reason,
                 "discarded_paths": discarded_paths,
             }
         else:
@@ -1054,7 +1058,7 @@ Allowed actions, with exact JSON shapes:
 {"action":"create","path":"tests/test_x.py","content":"complete nonempty file"}
 {"action":"delete","path":"obsolete allowed path"}
 {"action":"verify","pytest":[],"py_compile":[],"json":[]}
-{"action":"finish"} or {"action":"abstain"}
+{"action":"finish"} or {"action":"abstain","reason":"specific missing information"}
 Encode exactly one chosen action as one JSON object. For replace, old and new are
 mandatory, distinct, nonempty strings; copy old exactly from a read result. Never
 copy schema placeholders or invent a path. Use abstain only when the request cannot

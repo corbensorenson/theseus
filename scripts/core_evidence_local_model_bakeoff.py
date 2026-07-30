@@ -21,9 +21,10 @@ PLAN = ROOT / "configs" / "core_evidence_local_model_bakeoff.json"
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate-id", required=True)
+    parser.add_argument("--plan", default=str(PLAN))
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
-    report = run(args.candidate_id)
+    report = run(args.candidate_id, Path(args.plan).resolve())
     Path(args.out).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -38,9 +39,9 @@ def main() -> int:
     return 0 if report["trigger_state"] == "GREEN" else 2
 
 
-def run(candidate_id: str) -> dict[str, Any]:
+def run(candidate_id: str, plan_path: Path = PLAN) -> dict[str, Any]:
     started = time.perf_counter()
-    plan = read_json(PLAN)
+    plan = read_json(plan_path)
     candidate = next(
         (
             row for row in plan["candidates"]
@@ -102,7 +103,7 @@ def run(candidate_id: str) -> dict[str, Any]:
             "config_sha256": sha256_file(config_path),
         },
         "source_identities": {
-            "plan_sha256": sha256_file(PLAN),
+            "plan_sha256": sha256_file(plan_path),
             "task_manifest_sha256": sha256_file(task_manifest_path),
             "worker_sha256": sha256_file(
                 ROOT / "scripts" / "core_evidence_worker_v2.py"
