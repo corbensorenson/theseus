@@ -63,8 +63,8 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Project registry | `GREEN` | Current registry gate has zero abstraction, stable-field, or routing blockers; all 17 route-evidence outputs are unblocked |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
-| D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks, but its result does not transfer after the Worker-v4 bounded-insertion repair |
-| D1 local-8B causal campaign | `WORKER_V4_REQUALIFICATION_REQUIRED` | Request-bound mechanics and pre-generation interventions are implemented; consumed development exposed and repaired shared-input aliasing, empty-scope waste, receipt-token bloat, maximum-length edit serialization, truncated phase-state visibility, empty-read credit, and post-plan inspection starvation, so E2 stays sealed pending a successful development replay, new freeze, and source-disjoint qualification |
+| D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks; the operator explicitly ratifies this third-party local worker for D1 stack evaluation only, never student/D2 credit, but its result does not transfer after Worker-v4 repairs |
+| D1 local-8B causal campaign | `WORKER_V4_REQUALIFICATION_REQUIRED` | Request-bound mechanics and pre-generation interventions are implemented; consumed development exposed and repaired shared-input aliasing, empty-scope waste, receipt-token bloat, maximum-length edit serialization, truncated phase-state visibility, empty-read credit, post-plan inspection starvation, and non-request-scoped test credit, so E2 stays sealed pending one final development replay, new freeze, and source-disjoint qualification |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -311,9 +311,9 @@ In order:
 1. Keep E2, D2, public calibration, external inference, and teacher calls
    sealed.
 2. Replay the one aligned consumed-development full-stack task with the
-   repaired phase-first, bounded post-plan-inspection TMax-9B/Worker-v4
-   protocol. Stop at the first terminal success or precisely attributed
-   implementation/model wall.
+   repaired phase-first, bounded post-plan-inspection, request-scoped-test
+   TMax-9B/Worker-v4 protocol. Stop at the first terminal success or precisely
+   attributed model wall; do not add another task-specific harness rescue.
 3. If development succeeds, freeze Worker-v4, its request-bound adapter,
    controller budgets, evaluator, rollback, and terminal rules together.
 4. Author a fresh source-disjoint qualification cohort from visible natural

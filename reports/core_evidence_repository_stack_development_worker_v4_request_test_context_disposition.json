@@ -1,0 +1,46 @@
+{
+  "policy": "project_theseus_repository_stack_development_interrupted_disposition_v1",
+  "event_trace": "runtime/core_evidence_repository_stack_development_worker_v4_bounded_inspection_full_events.jsonl",
+  "event_trace_sha256": "273a2cfad320b68bc324fec67570c0a8b04d0e8a7f375d04bcb3441676e65ed9",
+  "event_count": 9,
+  "disposition": "INCONCLUSIVE_IMPLEMENTATION_REQUEST_SCOPED_TEST_CONTEXT_NOT_ENFORCED",
+  "capability_or_subsystem_claim_allowed": false,
+  "operator_interrupted": true,
+  "reason_for_interrupt": "TMax recovered from an out-of-range read, consumed the bounded five-read inspection budget, emitted a valid five-criterion/two-path plan, and then twice requested another source span instead of editing. However, the controller allowed an unrelated test file to satisfy require_test_read_before_mutation even though the natural request explicitly named the relevant test path. The worker therefore reached its edit phase without request-scoped test context, leaving a material harness confound.",
+  "positive_mechanics": {
+    "out_of_range_read_rejected_without_credit": true,
+    "bounded_source_read_recovery": true,
+    "credited_source_reads": 4,
+    "credited_test_reads": 1,
+    "full_stack_plan_accepted": true,
+    "accepted_plan_criterion_count": 5,
+    "accepted_plan_target_path_count": 2,
+    "authority_scope_nonempty": true
+  },
+  "wall": {
+    "owner": "worker_controller_request_scoped_test_context",
+    "planned_path_read_attempts_after_ceiling": 2,
+    "configured_maximum_pre_mutation_reads": 5,
+    "request_named_test_path": "tests/test_procedural_memory_route_adoption_gate.py",
+    "actual_test_path_read": "tests/test_theseus_assistant_effect_transaction.py",
+    "root_cause": "The test-read gate accepted any tests/ path instead of preferring and requiring an existing test path explicitly named by the natural request.",
+    "local_model_capability_disposition": "NOT_DIAGNOSED_BECAUSE_REQUEST_SCOPED_TEST_CONTEXT_WAS_NOT_ENFORCED"
+  },
+  "repair": {
+    "successor": "Worker-v4 development with request-scoped test-read enforcement",
+    "explicit_existing_test_path_required_when_present": true,
+    "fallback_to_any_test_only_when_request_names_no_existing_test": true,
+    "hidden_tests_or_target_metadata_exposed": false,
+    "inspection_ceiling_unchanged": true,
+    "effect_authority_unchanged": true,
+    "fresh_requalification_required": true
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

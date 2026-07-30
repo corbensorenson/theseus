@@ -158,6 +158,43 @@ def test_out_of_range_read_is_rejected_without_inspection_credit(
     assert state.read_paths == set()
 
 
+def test_explicit_request_test_path_is_required_over_unrelated_test(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "x = 1\n", encoding="utf-8"
+    )
+    (tmp_path / "tests" / "test_policy.py").write_text(
+        "def test_policy():\n    assert True\n", encoding="utf-8"
+    )
+    (tmp_path / "tests" / "test_other.py").write_text(
+        "def test_other():\n    assert True\n", encoding="utf-8"
+    )
+    local = permissive_config()
+    local["budgets"]["require_test_read_before_mutation"] = True
+    local["budgets"]["maximum_pre_mutation_read_actions"] = 2
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "Update scripts/policy.py and add focused coverage in "
+            "tests/test_policy.py."
+        ),
+    )
+
+    state.read("scripts/policy.py", 1, 80)
+    with pytest.raises(worker.WorkerFault, match="last_inspection_slot"):
+        state.read("tests/test_other.py", 1, 80)
+    assert state.required_test_read_done() is False
+    with pytest.raises(worker.WorkerFault, match="test_read_required"):
+        state.before_mutation()
+
+    state.read("tests/test_policy.py", 1, 80)
+    assert state.required_test_read_done() is True
+
+
 def test_hidden_field_and_git_metadata_are_rejected(tmp_path: Path) -> None:
     (tmp_path / ".git").mkdir()
     with pytest.raises(worker.WorkerFault, match="visible_fields"):

@@ -19,7 +19,19 @@
     "worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
     "historical_qualification_disposition": "reports/core_evidence_tmax_fresh_v1_qualification_disposition.json",
     "qualification_status": "NOT_TRANSFERRED_AFTER_WORKER_SOURCE_CHANGE",
-    "credit": "third_party_local_learned_generation_not_theseus_student"
+    "credit": "third_party_local_learned_generation_not_theseus_student",
+    "operator_authorization": {
+      "state": "EXPLICITLY_RATIFIED_FOR_D1_STACK_EVALUATION_ONLY",
+      "date": "2026-07-30",
+      "scope": "Use the strongest locally runnable model to isolate governance, VCM, planning, routing, and verified-reuse effects.",
+      "never_claim": [
+        "Theseus student capability",
+        "from-scratch model capability",
+        "D2 capability",
+        "Theseus-trained weights"
+      ],
+      "serving_authority": "none_from_this_experiment"
+    }
   },
   "competence_floor": {
     "minimum_attempted_tasks": 3,

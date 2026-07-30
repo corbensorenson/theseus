@@ -211,8 +211,9 @@ def run_worker(
             "pre_mutation_inspection": {
                 "read_actions": state.read_actions,
                 "distinct_read_paths": sorted(state.read_paths),
-                "test_read_done": any(
-                    path.startswith("tests/") for path in state.read_paths
+                "test_read_done": state.required_test_read_done(),
+                "required_existing_test_paths": (
+                    state.request_scoped_existing_test_paths
                 ),
                 "required_read_actions": int(
                     budgets["minimum_pre_mutation_read_actions"]
@@ -339,6 +340,11 @@ class RepositoryState:
         self.request_scoped_paths = request_effect_paths(
             self.baseline, request
         )
+        self.request_scoped_existing_test_paths = [
+            path
+            for path in self.request_scoped_paths
+            if path.startswith("tests/") and path in self.baseline
+        ]
         self.actions: list[dict[str, Any]] = []
         self.verification_receipts: list[dict[str, Any]] = []
         self.inference_calls = 0
@@ -647,10 +653,8 @@ class RepositoryState:
         if (
             not self.changed_paths()
             and budgets.get("require_test_read_before_mutation", False)
-            and not any(
-                path.startswith("tests/") for path in self.read_paths
-            )
-            and not relative.startswith("tests/")
+            and not self.required_test_read_done()
+            and not self.is_required_test_read_path(relative)
             and maximum_pre_mutation_reads >= 2
             and any(
                 path.startswith("tests/") for path in self.baseline
@@ -735,9 +739,22 @@ class RepositoryState:
             >= int(budgets["minimum_pre_mutation_distinct_paths"])
             and (
                 not budgets["require_test_read_before_mutation"]
-                or any(path.startswith("tests/") for path in self.read_paths)
+                or self.required_test_read_done()
             )
         )
+
+    def required_test_read_done(self) -> bool:
+        if self.request_scoped_existing_test_paths:
+            return any(
+                path in self.read_paths
+                for path in self.request_scoped_existing_test_paths
+            )
+        return any(path.startswith("tests/") for path in self.read_paths)
+
+    def is_required_test_read_path(self, relative: str) -> bool:
+        if self.request_scoped_existing_test_paths:
+            return relative in self.request_scoped_existing_test_paths
+        return relative.startswith("tests/")
 
     def before_mutation(self) -> None:
         budgets = self.config["budgets"]
@@ -751,7 +768,7 @@ class RepositoryState:
             raise WorkerFault("insufficient_pre_mutation_distinct_paths")
         if (
             budgets["require_test_read_before_mutation"]
-            and not any(path.startswith("tests/") for path in self.read_paths)
+            and not self.required_test_read_done()
         ):
             raise WorkerFault("test_read_required_before_mutation")
         if (
@@ -909,6 +926,12 @@ class RepositoryState:
         tests = self.relevant_paths(
             prefix="tests/", unread_only=True, maximum=3
         )
+        if self.request_scoped_existing_test_paths:
+            tests = [
+                path
+                for path in self.request_scoped_existing_test_paths
+                if path not in self.read_paths
+            ] or list(self.request_scoped_existing_test_paths)
         if "action_not_allowed_in_current_phase" in fault:
             return (
                 "The controller rejected a phase regression. NEXT ACTION MUST "
@@ -924,9 +947,7 @@ class RepositoryState:
             )
         if (
             self.config["budgets"]["require_test_read_before_mutation"]
-            and not any(
-                path.startswith("tests/") for path in self.read_paths
-            )
+            and not self.required_test_read_done()
             and (
                 "file_missing_or_not_regular" in fault
                 or "duplicate_read_span" in fault

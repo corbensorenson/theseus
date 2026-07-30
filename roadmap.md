@@ -66,7 +66,7 @@ identifies them as the smallest causal next experiment.
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
 | D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
-| D1 local-8B successor | `QUALIFIED_PASS_PENDING_SUBSYSTEM_ADEQUACY` | Frozen TMax-9B/Worker-v3 cleared the fresh 2/3 floor with 0 unsafe and 3/3 rollback; E2 remains unopened while canonical subsystems earn ablation-ready adequacy |
+| D1 local-8B successor | `WORKER_V4_REQUALIFICATION_REQUIRED` | TMax-9B/Worker-v3 historically cleared the 2/3 floor with 0 unsafe and 3/3 rollback; generic Worker-v4 repairs invalidate transfer, so E2 remains unopened |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -914,6 +914,44 @@ ASI works. Fifteen rejected worker actions—especially repeated malformed
 structured-test payloads—remain an efficiency and controller-compatibility
 weakness. Do not tune or rerun this consumed cohort.
 
+#### 2026-07-30 External Review Reconciliation
+
+The operator explicitly ratifies a third-party open-weight local worker for D1
+stack evaluation only. This follows the prior instruction to identify and use
+the strongest locally runnable model for the governed-stack experiment. TMax
+is therefore not a quiet substitution for the Theseus student: every packet
+must continue to label it `third_party_local_learned_generation`, its result
+can support only a claim about the stack around that fixed worker, and it can
+never support from-scratch, student, D2, or Theseus-trained-weight capability
+credit. D2 remains the independent from-scratch modular-versus-dense
+experiment. This ratification grants no runtime-serving authority.
+
+The review recommendation to run E2/E3 immediately is directionally right but
+currently premature. Worker-v3's `2/3` qualification is historical after
+Worker-v4 changed the source contract. Five canonical subsystem owners remain
+mechanics-green, but E2 may open only after Worker-v4 clears consumed
+development, freezes, and passes one fresh source-disjoint qualification at
+the unchanged floor. This is evidence discipline, not another preparation
+lane.
+
+The repeated `mx.compile` and batch-one criticisms are rejected as stale scope
+errors. The selected production training call graph already compiles the
+forward/backward microbatch in
+`scripts/standard_causal_transformer_survival.py`, with compiled microbatch
+four and width quantum 64. The branch at
+`scripts/moecot_language_arm_training.py` that selects batch one applies only
+to ragged rows wider than the 8,192-token standard width; the selected trunk
+uses 512-token sequences and gives KERC zero campaign-one optimizer exposure.
+Do not create duplicate acceleration work unless a fresh selected-route
+profile contradicts those source-bound facts.
+
+The review's “18 files in flight” observation is also superseded: the
+request-bound experiment transaction and the bounded planned-context repair
+were committed as `db13860a` and `0252976c` before this reconciliation. New
+files created by the currently running bounded replay must be banked with its
+terminal disposition. The recommendation to keep D2 at `0` consumed is
+accepted without change.
+
 ### D1 Subsystem Adequacy Gate
 
 State: `WORKER_V4_REQUALIFICATION_REQUIRED`; five subsystem owners remain
@@ -1091,6 +1129,26 @@ unplanned-path navigation remain forbidden, and effect authority is unchanged.
 The next replay is still the same single consumed-development full-stack arm.
 Only after it reaches a real edit, verification, or honestly attributable
 model wall may the worker be frozen for fresh qualification.
+
+The bounded-inspection replay then recovered from an out-of-range read,
+consumed four valid source spans plus one test span, and produced another valid
+five-criterion/two-path plan. It twice requested more source context instead of
+editing and was stopped. That behavior is not yet clean model-negative
+evidence because the controller accepted
+`tests/test_theseus_assistant_effect_transaction.py` as its test context even
+though the natural request explicitly named
+`tests/test_procedural_memory_route_adoption_gate.py`. Preserve the run as
+`INCONCLUSIVE_IMPLEMENTATION_REQUEST_SCOPED_TEST_CONTEXT_NOT_ENFORCED`.
+
+The test-read contract now requires an existing test path explicitly named by
+the natural request whenever one exists. Only requests without such a path may
+fall back to a target-blind ranked test. Hidden evaluator tests and target
+metadata remain invisible, and the five-read ceiling is unchanged. One final
+consumed-development replay may test this generic repair. If TMax still cannot
+commit a legal edit after correct source and request-scoped test context, stop
+Worker-v4 development with a scoped local-model agent-control/edit-synthesis
+wall and select a materially stronger locally runnable worker or defer D1;
+do not add another harness feature merely to rescue this task.
 
 ## Neural Verdict Campaign
 
