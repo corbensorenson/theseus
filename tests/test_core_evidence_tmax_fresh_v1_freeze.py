@@ -48,9 +48,15 @@ def requested_scripts(manifest: dict) -> set[str]:
 def test_tmax_freeze_binds_current_candidate_sources_and_floor() -> None:
     public = read_json(PUBLIC_PATH)
     freeze = read_json(FREEZE_PATH)
+    worker_config = read_json(
+        ROOT / freeze["candidate_worker_config_path"]
+    )
 
     qualification.validate_frozen_inputs(public, freeze, PUBLIC_PATH)
 
+    assert worker_config["policy"] == (
+        "project_theseus_local_8b_stack_worker_v1"
+    )
     assert freeze["candidate_worker_config_path"] == (
         "configs/core_evidence_tmax_9b_worker_control_v3.json"
     )

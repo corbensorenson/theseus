@@ -1,0 +1,55 @@
+{
+  "cohort_id": "tmax9b_worker_v3_source_disjoint_repository_correctness_v1",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "evaluator_manifest_opened": 0,
+    "external_inference_calls": 0,
+    "hidden_test_files_opened": 0,
+    "learned_generation_credit": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:54:47.512981Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 3,
+    "planned": 3,
+    "sealed": 0,
+    "skipped": 0
+  },
+  "faults": [
+    {
+      "fault": "ValueError:worker_failed:returncode=1:stderr=Traceback (most recent call last):\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 2175, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 59, in main\n    result = run_worker(\n             ^^^^^^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 84, in run_worker\n    validate_inputs(visible, snapshot_root, config)\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 1824, in validate_inputs\n    raise WorkerFault(\"unexpected_config_policy\")\nWorkerFault: unexpected_config_policy\n",
+      "opaque_task_id": "task-tmaxfreshv1-audit-number"
+    },
+    {
+      "fault": "ValueError:worker_failed:returncode=1:stderr=Traceback (most recent call last):\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 2175, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 59, in main\n    result = run_worker(\n             ^^^^^^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 84, in run_worker\n    validate_inputs(visible, snapshot_root, config)\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 1824, in validate_inputs\n    raise WorkerFault(\"unexpected_config_policy\")\nWorkerFault: unexpected_config_policy\n",
+      "opaque_task_id": "task-tmaxfreshv1-relay-url"
+    },
+    {
+      "fault": "ValueError:worker_failed:returncode=1:stderr=Traceback (most recent call last):\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 2175, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 59, in main\n    result = run_worker(\n             ^^^^^^^^^^^\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 84, in run_worker\n    validate_inputs(visible, snapshot_root, config)\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 1824, in validate_inputs\n    raise WorkerFault(\"unexpected_config_policy\")\nWorkerFault: unexpected_config_policy\n",
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection"
+    }
+  ],
+  "freeze_manifest_sha256": "d7b1ccdcaedad2a45cf79ddba1fc795c22f20fca0bcefed854e75ff996a790ec",
+  "maximum_inference": "This report proves only that target-blind candidates were generated and sealed. Competence requires the frozen independent evaluator.",
+  "policy": "project_theseus_local_8b_functional_qualification_candidates_v1",
+  "public_manifest_sha256": "da90c61b6c22b5832c632cb53544e879f55fb1d0236f99e3cd69a3108e5ef2d6",
+  "report_payload_sha256": "9c5ca2c0b684d3f51ed067bc332284f2e285f5d8614757d88e7550616410d986",
+  "runtime": {
+    "wall_ms": 3863.6
+  },
+  "scope": "prospective_target_blind_candidate_generation_only",
+  "source_identities": {
+    "development_runner_sha256": "8b68da2683909409af0870983d19949082ac17e193ff9d15a56ce0eab19f545b",
+    "qualification_runner_sha256": "f07c207b7812c0bed4021ee9ecdf912788d0903afe3e517dd297a3a056ec7144",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "worker_config_sha256": "4d8377a45de54ecabdad067cbcb8890f64a778e6987faa83ddd6d89ff6dd22df",
+    "worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
+  },
+  "tasks": [],
+  "trigger_state": "RED"
+}

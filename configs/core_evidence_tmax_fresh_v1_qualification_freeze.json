@@ -15,7 +15,7 @@
     "development_runner_sha256": "8b68da2683909409af0870983d19949082ac17e193ff9d15a56ce0eab19f545b",
     "qualification_runner_sha256": "f07c207b7812c0bed4021ee9ecdf912788d0903afe3e517dd297a3a056ec7144",
     "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
-    "worker_config_sha256": "4d8377a45de54ecabdad067cbcb8890f64a778e6987faa83ddd6d89ff6dd22df",
+    "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
     "worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
   },
   "candidate_worker_config_path": "configs/core_evidence_tmax_9b_worker_control_v3.json",

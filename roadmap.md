@@ -878,6 +878,17 @@ after candidate generation terminates. Passing may unlock deterministic
 subsystem-adequacy work; failing must issue one scoped terminal disposition
 and preserve E2.
 
+The first committed launch stopped before model construction or generation.
+The TMax config used a new descriptive policy name, while Worker v3 accepts
+only its existing `project_theseus_local_8b_stack_worker_v1` contract. All
+three subprocesses failed input validation; model calls, event rows, sealed
+candidates, evaluator access, hidden-test access, target access, and learned
+credit are all zero. Record `INFRASTRUCTURE_BLOCKED_PRE_GENERATION`, repair the
+config policy, bind its new hash into a reissued freeze, add a regression
+check, and commit both the failed packet and repaired freeze before retrying.
+Because no candidate-visible generation occurred, this is a pre-generation
+infrastructure retry rather than reuse of a consumed measurement surface.
+
 ## Neural Verdict Campaign
 
 This is the only long-training program that remains on the roadmap.

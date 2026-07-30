@@ -1,5 +1,5 @@
 {
-  "policy": "project_theseus_local_worker_model_preflight_v1",
+  "policy": "project_theseus_local_8b_stack_worker_v1",
   "model": {
     "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
     "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
