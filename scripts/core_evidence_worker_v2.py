@@ -1685,11 +1685,19 @@ class LocalMlxModel:
         text = ""
         complete = None
         generated_tokens = 0
+        mlx_peak_memory_gib = 0.0
+        prompt_tokens_per_second = None
+        generation_tokens_per_second = None
         try:
             for response in stream:
                 if cache_key is not None:
                     cache_key.append(int(response.token))
                 generated_tokens += 1
+                mlx_peak_memory_gib = max(
+                    mlx_peak_memory_gib, float(response.peak_memory)
+                )
+                prompt_tokens_per_second = float(response.prompt_tps)
+                generation_tokens_per_second = float(response.generation_tps)
                 text += response.text
                 complete = complete_action_json(text)
                 if complete is not None:
@@ -1711,6 +1719,15 @@ class LocalMlxModel:
             "prompt_boundary_cache_used": boundary_cache_used,
             "prompt_cache_trimmable": self.prompt_cache_trimmable,
             "kv_bits": self.generation_cache_kwargs.get("kv_bits"),
+            "mlx_peak_memory_gib": round(mlx_peak_memory_gib, 3),
+            "prompt_tokens_per_second": (
+                None if prompt_tokens_per_second is None
+                else round(prompt_tokens_per_second, 3)
+            ),
+            "generation_tokens_per_second": (
+                None if generation_tokens_per_second is None
+                else round(generation_tokens_per_second, 3)
+            ),
         }
         return complete if complete is not None else text
 

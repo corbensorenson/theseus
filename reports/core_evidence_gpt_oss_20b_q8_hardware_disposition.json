@@ -1,0 +1,50 @@
+{
+  "policy": "project_theseus_local_model_hardware_disposition_v1",
+  "created_utc": "2026-07-30T16:37:14Z",
+  "trigger_state": "RED_METAL_OUT_OF_MEMORY_FIRST_GENERATION",
+  "scope": "exact_local_runtime_preflight_only_no_repository_task_consumed",
+  "model_identity": {
+    "repo_id": "mlx-community/gpt-oss-20b-MXFP4-Q8",
+    "revision": "773a7da77e569019bb0fd17a554b263738d669a3",
+    "snapshot_manifest_sha256": "0a98dfdc7264a4204386c4f87c9c9015caf8851b1a0c2d34f9f581c866d0f274",
+    "snapshot_logical_bytes": 12104218243,
+    "quantization": "native_mxfp4_experts_with_q8_attention_embedding_and_output_projections"
+  },
+  "host": {
+    "physical_memory_bytes": 17179869184,
+    "mlx_reported_model_requirement_mb": 11516,
+    "mlx_reported_recommended_maximum_mb": 10922,
+    "observed_live_swap_used_mib": 9901.38,
+    "post_failure_swap_used_mib": 8070.5
+  },
+  "attempt": {
+    "prompt": "one_trivial_exact_list_action",
+    "maximum_action_tokens": 96,
+    "model_load_completed": true,
+    "generation_started": true,
+    "generation_completed": false,
+    "exact_action_generated": false,
+    "failure": "RuntimeError:[METAL] Command buffer execution failed: Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory)"
+  },
+  "disposition": {
+    "hardware_runtime_eligible": false,
+    "retry_exact_artifact": false,
+    "repository_competence_evaluated": false,
+    "worker_competence_evaluated": false,
+    "E2_unlocked": false,
+    "D2_unlocked": false,
+    "next_allowed_step": "Remove this regenerable failed-model cache after banking its exact identity, then preflight the materially smaller pinned gpt-oss-20b MXFP4-Q4 conversion once. Do not infer that Q4 preserves Q8 capability; require consumed-development evidence."
+  },
+  "counters": {
+    "local_model_inference_attempts": 1,
+    "completed_local_model_outputs": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_cases_consumed": 0,
+    "repository_development_tasks_consumed": 0,
+    "user_facing_effects": 0
+  },
+  "maximum_inference": "This exact gpt-oss-20b Q8 MLX artifact cannot complete even a trivial first generation on this host in the observed operating state. It says nothing about gpt-oss generally, smaller quantizations, repository competence, governance, VCM, planning, routing, reuse, or the Theseus student."
+}
