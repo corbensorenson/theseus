@@ -4427,7 +4427,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-07-29",
-    "recommendation": "Run one evidence-first flagship with independent D1 governed-stack and D2 local-student denominators. While long training is held, obtain terminal natural results for live replay, governed repository work, least-sufficient routing, planning, VCM, and verified reuse. Preserve the exact modular-versus-dense campaign for the later neural verdict and sideline all mechanism expansion.",
+    "recommendation": "Run the Local 8B Stack Causal Proof successor under the existing flagship owner. Repair the fixed offline Qwen3-8B worker on consumed development tasks, then qualify it once on prospectively aligned request-derived functional tests. Only a valid competence pass unlocks matched model-only, tool, governed, full-stack, governance-replay, planning, VCM, routing, and verified-reuse comparisons. Preserve D2 and the original sealed E2 until their explicit gates pass.",
     "project_theseus_focus": [
       "freeze_natural_repository_replay_tasks_claims_routes_and_decision_rules",
       "reproduce_one_clean_live_public_safe_theseus_packet",
@@ -4436,7 +4436,10 @@
       "retain_every_negative_null_blocked_and_invalid_outcome",
       "produce_claim_scoped_public_safe_evidence_without_automatic_book_promotion",
       "refresh_step_11416_source_bound_readiness_without_removing_training_hold",
-      "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training"
+      "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training",
+      "repair_fixed_local_Qwen3_8B_worker_on_consumed_development_only",
+      "freeze_request_derived_functional_tests_without_target_patches",
+      "compare_same_local_model_with_and_without_governance_planning_VCM_routing_and_reuse"
     ],
     "implementation_outputs": [
       "existing_ASI-THESEUS-FLAGSHIP-01_preregistration_owner",
@@ -4470,7 +4473,7 @@
     "denominators": {
       "D1": {
         "question": "Does the existing local governed stack improve the joint useful-safe frontier over matched simpler routes on natural repository work at acceptable total lifecycle cost?",
-        "state": "ready_to_preregister",
+        "state": "active_local_8b_worker_development",
         "worker_boundary": "local_only_no_external_inference_no_teacher_calls_no_learned_student_credit",
         "noninterference": "D1 tasks, outcomes, tuning decisions, and support movement may not alter or enter D2."
       },

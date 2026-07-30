@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last reoriented: 2026-07-30 UTC, after qualification freeze commit `e04427a0`.
+Last reoriented: 2026-07-30 UTC, for the Local 8B Stack Causal Proof Campaign.
 
 This is the forward human execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; operating rules belong in `AGENTS.md`; detailed
@@ -66,6 +66,7 @@ identifies them as the smallest causal next experiment.
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
 | D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
+| D1 local-8B successor | `ACTIVE_DEVELOPMENT` | Fixed offline Qwen3-8B worker repair precedes prospective functional qualification and stack ablations |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -385,6 +386,82 @@ compiled microbatch four, and width quantum 64. Batch-one settings remain on
 separate eager source-conditioned/supervision routes, not the selected plain
 pretraining route. General acceleration remains frozen unless a fresh profile
 identifies a selected-route defect; it does not preempt Worker v2.
+
+### D1 Successor 2 — Local 8B Stack Causal Proof
+
+State: `ACTIVE_DEVELOPMENT`; no fresh qualification task has been generated.
+
+The active question is now causal:
+
+> With model identity, decoding, candidate-visible information, parent state,
+> and budgets held fixed, which parts of Theseus improve useful-safe natural
+> repository work over the same local 8B model without those parts?
+
+Use the installed `mlx-community/Qwen3-8B-4bit` revision
+`545dc4251c05440727734bcd94334791f6ab0192` with thinking disabled as the
+primary generator. It is third-party local learned generation, never
+Theseus-student credit. The Worker v2 `INVALID_EVALUATOR` packet remains
+immutable negative evidence about its evaluator; its three opened tasks may
+not be repaired, rerun, or reinterpreted.
+
+Run in this order:
+
+1. repair Worker v2 mechanics on already-consumed development tasks only;
+2. author natural development and qualification requests with observable
+   acceptance semantics and request-derived hidden functional tests;
+3. independently audit request/test alignment, source disjointness, authority,
+   and baseline failure before freezing any fresh partition;
+4. freeze worker, model, prompts, decoding, budgets, tasks, hidden tests,
+   evaluator, rescue ceiling, stop rules, and complete denominators;
+5. run the fresh competence qualification once under the unchanged `3` task,
+   `0.50` useful-rate, and `0.34` weakest-family floor;
+6. only after a valid pass, compare model-only, tool-worker, governed-worker,
+   full-Theseus, and conservative-hold routes;
+7. isolate governance by replaying sealed candidates through direct,
+   test-only, record-only, governed, and hold admission;
+8. run matched planning, VCM, routing, and verified-reuse interventions; and
+9. issue scoped subsystem and integrated-stack dispositions plus one
+   public-safe model-with-Theseus versus model-without-Theseus brief.
+
+The functional evaluator must not depend on an authoritative target patch.
+It applies a sealed candidate diff to the declared parent snapshot, overlays
+evaluator-owned tests derived prospectively from the visible request, runs
+those tests, inventories every effect, ignores candidate-authored success
+claims, and proves exact rollback. Hidden tests may test only semantics stated
+in the visible request. Baseline failure and request-test alignment must be
+established before candidate generation.
+
+The primary route comparison holds generation inputs and budgets constant.
+The subsystem interventions are:
+
+- full planning versus no planning;
+- correct typed VCM versus no VCM, information-matched untyped/shuffled
+  context, stale context, and omission-bearing context;
+- least-sufficient versus cheapest and maximal eligible routing;
+- verified procedural reuse versus fresh execution, with false-trigger, drift,
+  quarantine, decompilation, rollback, and retirement controls; and
+- prompt injection, leakage, path escape, symlink, out-of-snapshot, malformed,
+  no-op, candidate-claim, test-gaming, denied/revoked authority, stale
+  identity, post-seal mutation, partial-failure, and rollback adversaries.
+
+Measure complete attempted, released, useful, unsafe, false-blocked, rescued,
+malformed, abstained, denied, timed-out, infrastructure-failed, skipped, and
+rollback denominators; weakest-family utility; hidden functional results;
+latency; model calls and generated tokens; tool calls; repairs; verification;
+storage; residual burden; and total lifecycle cost. Blocking everything cannot
+win. Direct counterfactuals remain physically sandboxed and user-inert.
+
+The first repaired consumed development run improved mechanics from no patch to
+one cleanly applicable, candidate-verified, exactly rolled-back patch in eight
+local calls. Independent hidden evaluation remained `0/1`: the patch changed
+an error message rather than implementing the availability contract. Record
+this as `EDIT_SYNTHESIS_OR_REPAIR`, not useful work or qualification evidence.
+
+If qualification fails, stop with its causal wall and preserve E2. If it
+passes, consume the original sealed E2 once under its existing rules and keep
+that historical-target result separate from the prospective functional
+campaign. Replicate only decisive effects with a separately frozen local
+code-specialized 7–8B model, and only if that model is actually available.
 
 ## Neural Verdict Campaign
 

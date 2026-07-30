@@ -17,7 +17,7 @@ import core_evidence_worker_v2 as worker  # noqa: E402
 
 def config() -> dict:
     return json.loads(
-        (ROOT / "configs" / "core_evidence_worker_v2_development.json").read_text()
+        (ROOT / "configs" / "core_evidence_local_8b_worker.json").read_text()
     )
 
 
@@ -188,6 +188,41 @@ def test_first_complete_action_can_stop_generation_before_trailing_text() -> Non
     assert worker.complete_action_json('{"action":"read"') is None
 
 
+def test_observed_replace_concatenation_is_repaired_and_counted(
+    tmp_path: Path,
+) -> None:
+    raw = (
+        '{"action":"replace","path":"scripts/x.py",'
+        '"old":"x = 1"+"x = 2"}'
+    )
+    assert worker.repair_common_replace_concatenation(raw) == {
+        "action": "replace",
+        "path": "scripts/x.py",
+        "old": "x = 1",
+        "new": "x = 2",
+    }
+    assert worker.parse_action(raw)["_format_repaired"] is True
+    assert worker.repair_common_replace_concatenation(
+        '{"action":"create","path":"scripts/x.py","content":"a"+"b"}'
+    ) is None
+
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    actions = iter([
+        raw,
+        '{"action":"verify","pytest":[],"py_compile":[],"json":[]}',
+        '{"action":"finish"}',
+    ])
+    result = worker.run_worker(
+        visible(),
+        tmp_path,
+        permissive_config(),
+        generator=lambda _: next(actions),
+    )
+    assert result["format_repairs"] == 1
+    assert result["terminal_reason"] == "finished"
+
+
 def test_denied_tool_actions_do_not_consume_format_retry_budget(
     tmp_path: Path,
 ) -> None:
@@ -242,7 +277,9 @@ def test_mutation_requires_three_distinct_reads_including_a_test(
     for directory in ("scripts", "tests", "configs"):
         (tmp_path / directory).mkdir()
     (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
-    (tmp_path / "tests" / "test_x.py").write_text("assert True\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert True\n"
+    )
     (tmp_path / "configs" / "x.json").write_text("{}\n")
     state = worker.RepositoryState(tmp_path, config())
     state.read("scripts/x.py", 1, 10)
@@ -262,6 +299,57 @@ def test_duplicate_read_span_is_denied_as_no_new_information(
     state.read("scripts/x.py", 1, 10)
     with pytest.raises(worker.WorkerFault, match="duplicate_read_span"):
         state.read("scripts/x.py", 1, 10)
+
+
+def test_tiny_reads_expand_to_stable_context_blocks(tmp_path: Path) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text(
+        "".join(f"line_{index} = {index}\n" for index in range(1, 201))
+    )
+    state = worker.RepositoryState(tmp_path, config())
+    result = state.read("scripts/x.py", 114, 119)
+    assert result["start_line"] == 81
+    assert result["end_line"] == 160
+    with pytest.raises(worker.WorkerFault, match="duplicate_read_span"):
+        state.read("scripts/x.py", 120, 125)
+
+
+def test_pre_mutation_read_ceiling_requires_decision(tmp_path: Path) -> None:
+    (tmp_path / "scripts").mkdir()
+    local = config()
+    local["budgets"]["maximum_pre_mutation_read_actions"] = 1
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "scripts" / "y.py").write_text("y = 1\n")
+    state = worker.RepositoryState(tmp_path, local)
+    state.read("scripts/x.py", 1, 10)
+    with pytest.raises(
+        worker.WorkerFault, match="pre_mutation_inspection_ceiling"
+    ):
+        state.read("scripts/y.py", 1, 10)
+    assert "NEXT ACTION MUST BE" in state.recovery_instruction(
+        "pre_mutation_inspection_ceiling_reached"
+    )
+
+
+def test_required_next_phase_tracks_edit_verify_and_finish(
+    tmp_path: Path,
+) -> None:
+    for directory in ("scripts", "tests", "configs"):
+        (tmp_path / directory).mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert True\n"
+    )
+    (tmp_path / "configs" / "x.json").write_text("{}\n")
+    state = worker.RepositoryState(tmp_path, config())
+    state.read("scripts/x.py", 1, 10)
+    state.read("tests/test_x.py", 1, 10)
+    state.read("configs/x.json", 1, 10)
+    assert state.required_next_phase().startswith("edit_now")
+    state.replace("scripts/x.py", "x = 1", "x = 2")
+    assert state.required_next_phase() == "verify_changed_paths"
+    assert state.verify([], [], [])["passed"] is True
+    assert state.required_next_phase().startswith("finish_or")
 
 
 def test_created_file_and_unified_diff_end_with_newline(

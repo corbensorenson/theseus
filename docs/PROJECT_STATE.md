@@ -18,7 +18,9 @@ planning, VCM, reuse, and routing efficiency remain inconclusive. The Worker v2
 successor sealed and rolled back three fresh local attempts safely, but its
 qualification is `INVALID_EVALUATOR` because every visible request named the
 wrong hidden target surface. Training is held, D2 and E2 remain untouched, and
-no worker-competence conclusion is authorized.
+no worker-competence conclusion is authorized. The active successor fixes
+Qwen3-8B as the local generator and replaces historical-target grading with
+prospective request-derived functional tests before any subsystem comparison.
 
 ## How Truth Is Resolved
 
@@ -59,10 +61,11 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Dimension | Current state | Evidence boundary |
 | --- | --- | --- |
 | Repository | `LOCAL_ONLY_NOT_REMOTE_VERIFIED` | Documentation baseline `28a2fd17`; inspect Git for the current roadmap transaction and divergence from `origin/main` |
-| Project registry | `GREEN` | Zero routing blockers and zero hard governance violations |
+| Project registry | `RED_STALE_ROUTE_EVIDENCE` | The unrelated resource/acceleration implementation is non-routable because its 24-hour dynamic resource snapshot expired; local-8B owner coverage remains complete |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
 | D1 successor | `TERMINAL_INVALID_EVALUATOR` | Fresh run sealed 3/3 candidates, rolled back 3/3, and released 0 unsafe effects, but all three requests named the wrong authoritative target surfaces. Competence is not evaluable; E2 remains sealed |
+| D1 local-8B causal campaign | `ACTIVE_DEVELOPMENT` | Offline Qwen3-8B is fixed as the primary generator; consumed-task controller repair is active before prospective functional qualification |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -306,18 +309,21 @@ validated the latest transaction.
 
 In order:
 
-1. Keep the E2 heldout and D2 surfaces sealed; do not lower the competence
-   floor or weaken the evaluator.
-2. Preserve the terminal Worker v2 candidate/evaluation/disposition packet.
-   Do not rerun, repair, narrow, or replace its opened cohort.
-3. Revisit Worker qualification only under a new user-authorized goal with an
-   independently authored request/target cohort and prospective alignment
-   audit. E2 still requires a valid competence-floor pass.
-4. Refresh exact step-11,416 source-bound readiness with the training hold
-   installed.
-5. Push current local commits and observe hosted CI.
-6. When a future multi-day compute window exists, qualify once, complete the
-   modular and both dense candidates, and consume D2 exactly once.
+1. Preserve the terminal Worker v2 packet and keep E2 and D2 sealed.
+2. Repair the fixed offline Qwen3-8B worker on consumed development tasks,
+   recording mechanics improvements separately from useful work.
+3. Author prospective natural requests and hidden functional tests directly
+   from their visible acceptance semantics and parent state; use no historical
+   target patch.
+4. Independently audit baseline failure, request-test alignment, authority,
+   and source disjointness before freezing the qualification.
+5. Run competence qualification once. Only a valid pass unlocks model-only,
+   tool, governed, full-Theseus, hold, governance-replay, planning, VCM,
+   routing, and procedural-reuse comparisons.
+6. Produce scoped subsystem dispositions and a public-safe local-model with
+   Theseus versus without Theseus brief.
+7. Refresh exact step-11,416 readiness with the training hold installed only
+   after the causal campaign reaches a terminal result.
 
 ## Explicitly Not Immediate
 

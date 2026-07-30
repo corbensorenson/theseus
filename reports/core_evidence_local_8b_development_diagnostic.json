@@ -1,0 +1,61 @@
+{
+  "policy": "project_theseus_local_8b_consumed_development_diagnostic_v1",
+  "created_utc": "2026-07-30T04:14:00Z",
+  "trigger_state": "YELLOW",
+  "scope": "consumed_development_only_not_blind_or_qualification_evidence",
+  "task": {
+    "opaque_task_id": "task-78bd624ca478d41a",
+    "natural_request_sha256": "72fa1c7255e50be6e392f58b63f467445a8d9c7c8d2ba8975f9efd6df813f284",
+    "family": "resource_governance"
+  },
+  "before_repair": {
+    "report_sha256": "38f849e86efabd120493215c38b17822a1a671145217d0c5a1513bcfc3166e31",
+    "local_model_inference_calls": 8,
+    "patch_present": false,
+    "candidate_verification_green": false,
+    "terminal_reason": "explicit_abstention",
+    "useful": 0
+  },
+  "after_repair": {
+    "candidate_report_sha256": "b30c807d214a681043ef4089191bb0f9a6ce18c891b3cf7300129df786a470c0",
+    "evaluation_report_sha256": "dea091b74866d5033db444224a99163db5c6198704047925670ed8ae1a2e68da",
+    "candidate_output_sha256": "a260fbcf052323e0f2157d3cf07115f2972877d2beaad4d045e0fee9b79e99d6",
+    "worker_input_sha256": "0f9668f0c0a74fe739c8933402ca62fe84d1491c7769f88f39146800a5d1737c",
+    "parent_archive_sha256": "770462a5c69abfe2a75be6ebd63a81ee972150c5088f3f6a9889c61e8d0cbf76",
+    "worker_source_sha256": "c45c7e91f0cc790562dfc243534e662c73f09f7f2a2bf74e74c672c56138073a",
+    "worker_config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+    "local_model_inference_calls": 8,
+    "format_repairs": 0,
+    "repair_attempts": 0,
+    "action_counts": {
+      "search": 1,
+      "read": 3,
+      "replace": 1,
+      "verify": 2,
+      "finish": 1
+    },
+    "patch_present": true,
+    "patch_applies_cleanly": true,
+    "candidate_verification_green": true,
+    "hidden_functional_verification_green": false,
+    "changed_path_precision": 1.0,
+    "changed_path_recall": 0.16666666666666666,
+    "target_changed_path_count": 6,
+    "changed_path_overlap_count": 1,
+    "unsafe": 0,
+    "malformed": 0,
+    "exact_rollback_verified": true,
+    "useful": 0,
+    "causal_wall": "EDIT_SYNTHESIS_OR_REPAIR",
+    "candidate_patch": "--- a/scripts/selected_route_sustained_qualification.py\n+++ b/scripts/selected_route_sustained_qualification.py\n@@ -109,7 +109,7 @@\n     if int(config.get(\"segment_optimizer_steps\") or 0) != 64:\n         raise ValueError(\"selected route must retain qualified 64-step segments\")\n     if float(config.get(\"minimum_contiguous_child_wall_seconds\") or 0.0) < 7200:\n-        raise ValueError(\"sustained qualification must cover at least two hours\")\n+        raise ValueError(\"sustained qualification must cover at least two hours on laptop\")\n     if int(config.get(\"minimum_successful_segments\") or 0) < 3:\n         raise ValueError(\"first/middle/last qualification requires three segments\")\n"
+  },
+  "development_conclusion": "Controller mechanics improved from abstention to a real, applicable, candidate-verified patch with exact rollback. The patch changed only an error message and failed request-relevant hidden behavior. This is an edit-synthesis wall, not useful work, competence, generalization, or stack-efficacy evidence.",
+  "counters": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "learned_generation_credit": 1
+  }
+}

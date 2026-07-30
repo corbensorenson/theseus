@@ -24,7 +24,7 @@ from typing import Any, Callable
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG = ROOT / "configs" / "core_evidence_worker_v2_development.json"
+DEFAULT_CONFIG = ROOT / "configs" / "core_evidence_local_8b_worker.json"
 ALLOWED_SUFFIXES = {
     ".css", ".html", ".js", ".json", ".md", ".py", ".qmd", ".rs", ".toml",
     ".ts", ".tsx", ".yml", ".yaml",
@@ -92,6 +92,7 @@ def run_worker(
     messages = initial_messages(visible, state, config)
     budgets = config["budgets"]
     format_faults = 0
+    format_repairs = 0
     terminal_reason = "turn_budget_exhausted"
     previous_stagnant_signature: str | None = None
     repeated_stagnant_actions = 0
@@ -116,6 +117,8 @@ def run_worker(
         action_kind = "parse_fault"
         try:
             action = parse_action(raw)
+            if action.pop("_format_repaired", False):
+                format_repairs += 1
             action_kind = str(action.get("action") or "")
             action_detail = safe_action_detail(action)
         except (json.JSONDecodeError, KeyError, TypeError) as exc:
@@ -199,6 +202,7 @@ def run_worker(
                 and state.verification_receipts[-1]["passed"]
             ),
             "repair_attempts": state.repair_attempts,
+            "format_repairs": format_repairs,
             "pre_mutation_inspection": {
                 "read_actions": state.read_actions,
                 "distinct_read_paths": sorted(state.read_paths),
@@ -213,6 +217,7 @@ def run_worker(
                 ),
             },
             "remaining_turns": int(budgets["maximum_agent_turns"]) - turn,
+            "required_next_phase": state.required_next_phase(),
         }
         emit_event(event_sink, {
             "turn": turn,
@@ -291,6 +296,7 @@ def run_worker(
         "effect_inventory": state.effect_inventory(),
         "action_summary": state.action_summary(),
         "repair_attempts": state.repair_attempts,
+        "format_repairs": format_repairs,
         "terminal_reason": terminal_reason,
         "abstained": not bool(patch),
         "residuals": residuals,
@@ -466,10 +472,32 @@ class RepositoryState:
 
     def read(self, relative: str, start: int, end: int) -> dict[str, Any]:
         path = self.safe_path(relative)
-        maximum = int(self.config["budgets"]["maximum_read_lines"])
+        budgets = self.config["budgets"]
+        maximum = int(budgets["maximum_read_lines"])
+        maximum_pre_mutation_reads = int(
+            budgets.get(
+                "maximum_pre_mutation_read_actions",
+                budgets["maximum_agent_turns"],
+            )
+        )
+        if (
+            not self.changed_paths()
+            and self.read_actions >= maximum_pre_mutation_reads
+        ):
+            raise WorkerFault("pre_mutation_inspection_ceiling_reached")
+        lines = path.read_text(encoding="utf-8").splitlines()
         start = max(1, start)
         end = min(max(start, end), start + maximum - 1)
-        lines = path.read_text(encoding="utf-8").splitlines()
+        minimum = min(
+            maximum,
+            max(1, int(budgets.get("minimum_read_context_lines", 1))),
+        )
+        if end - start + 1 < minimum:
+            # Normalize tiny reads to stable context blocks. This prevents a
+            # local model from spending its whole budget crawling six lines
+            # at a time while keeping repeated blocks detectable.
+            start = ((start - 1) // minimum) * minimum + 1
+            end = min(len(lines), start + minimum - 1)
         span = (relative, start, min(end, len(lines)))
         if span in self.read_spans:
             raise WorkerFault("duplicate_read_span_no_new_information")
@@ -484,6 +512,34 @@ class RepositoryState:
             "end_line": min(end, len(lines)),
             "content": "\n".join(numbered),
         }
+
+    def required_next_phase(self) -> str:
+        """Return controller-owned progress guidance, not a success claim."""
+        changed = self.changed_paths()
+        if self.failed_verification_seen:
+            return "repair_from_last_failure_before_reverification"
+        if changed and not self.verification_receipts:
+            return "verify_changed_paths"
+        if (
+            changed
+            and self.verification_receipts
+            and self.verification_receipts[-1]["passed"]
+        ):
+            return "finish_or_make_only_request_required_additional_edits"
+        budgets = self.config["budgets"]
+        inspection_complete = bool(
+            self.read_actions
+            >= int(budgets["minimum_pre_mutation_read_actions"])
+            and len(self.read_paths)
+            >= int(budgets["minimum_pre_mutation_distinct_paths"])
+            and (
+                not budgets["require_test_read_before_mutation"]
+                or any(path.startswith("tests/") for path in self.read_paths)
+            )
+        )
+        if inspection_complete:
+            return "edit_now_or_abstain_with_specific_missing_information"
+        return "inspect_request_relevant_implementation_config_and_test"
 
     def before_mutation(self) -> None:
         budgets = self.config["budgets"]
@@ -555,6 +611,12 @@ class RepositoryState:
             return (
                 "NEXT ACTION MUST BE read on a new relevant existing path. "
                 f"Target-blind suggestions: {unread}."
+            )
+        if "pre_mutation_inspection_ceiling_reached" in fault:
+            return (
+                "Inspection reached its prospective budget. NEXT ACTION MUST BE "
+                "replace/create/delete using exact text already read, or abstain "
+                "with the specific missing information. Do not read or search again."
             )
         if (
             "verification_requires_changed_paths" in fault
@@ -936,11 +998,19 @@ def initial_messages(
 Complete the user's request by inspecting and editing the repository, then verify it.
 You have no target answer, git history, network, shell, or hidden tests.
 Return exactly one JSON object per turn and no Markdown.
-Allowed action schemas: list(prefix); search(query); read(path,start_line,end_line);
-replace(path,old,new); create(path,content); delete(path);
-verify(pytest,py_compile,json); finish(); abstain().
-Encode the chosen action and its named fields as one JSON object. Never copy schema
-placeholders or invent a path. Use abstain only when the request cannot be safely completed.
+Allowed actions, with exact JSON shapes:
+{"action":"list","prefix":"scripts/"}
+{"action":"search","query":"literal or semantic terms"}
+{"action":"read","path":"scripts/x.py","start_line":1,"end_line":120}
+{"action":"replace","path":"scripts/x.py","old":"exact existing text","new":"replacement"}
+{"action":"create","path":"tests/test_x.py","content":"complete nonempty file"}
+{"action":"delete","path":"obsolete allowed path"}
+{"action":"verify","pytest":[],"py_compile":[],"json":[]}
+{"action":"finish"} or {"action":"abstain"}
+Encode exactly one chosen action as one JSON object. For replace, old and new are
+mandatory, distinct, nonempty strings; copy old exactly from a read result. Never
+copy schema placeholders or invent a path. Use abstain only when the request cannot
+be safely completed.
 Use read/search before editing. A behavioral request requires behavioral code; changing only
 messages, comments, reports, or roadmap prose is not a solution. Inspect the primary
 implementation, an analogous implementation or config, and at least one relevant test before
@@ -948,6 +1018,8 @@ mutation; the harness enforces three distinct read paths and three read actions.
 Integrate behavior into the existing request-specific code before adding any new implementation
 module; an orphan helper is not completion.
 Keep edits minimal and general. Never alter tests merely to make incorrect behavior pass.
+Do not verify before creating an effect. When TOOL_RESULT.state.required_next_phase says
+edit, verify, repair, or finish, follow that phase instead of continuing to browse.
 For verification, prefer empty arrays so the worker independently selects tests, compilation,
 and JSON checks from the actual changed paths. Finish only after green verification.
 Candidate claims of success are ignored."""
@@ -1046,7 +1118,10 @@ def validate_inputs(
         raise WorkerFault("forbidden_visible_field")
     if (snapshot_root / ".git").exists():
         raise WorkerFault("git_metadata_forbidden")
-    if config.get("policy") != "project_theseus_local_repository_worker_v2_development_v1":
+    if config.get("policy") not in {
+        "project_theseus_local_repository_worker_v2_development_v1",
+        "project_theseus_local_8b_stack_worker_v1",
+    }:
         raise WorkerFault("unexpected_config_policy")
     boundaries = config.get("boundaries") or {}
     required = {
@@ -1067,11 +1142,54 @@ def validate_inputs(
 def parse_action(raw: str) -> dict[str, Any]:
     complete = complete_action_json(raw)
     if complete is None:
+        repaired = repair_common_replace_concatenation(raw)
+        if repaired is not None:
+            return {**repaired, "_format_repaired": True}
         raise json.JSONDecodeError("no complete JSON action", raw, 0)
     result = json.loads(complete)
     if not isinstance(result, dict):
         raise WorkerFault("action_must_be_object")
     return result
+
+
+def repair_common_replace_concatenation(
+    raw: str,
+) -> dict[str, Any] | None:
+    """Repair one observed Qwen tool-format error without semantic inference.
+
+    Qwen sometimes emits ``"old":"..."+"..."`` where the second literal was
+    plainly intended as ``new``. Only the exact replace-action shape is
+    accepted, and each use is surfaced in candidate accounting.
+    """
+    string_literal = r'"(?:\\.|[^"\\])*"'
+    match = re.fullmatch(
+        rf"""\s*\{{\s*
+        "action"\s*:\s*"replace"\s*,\s*
+        "path"\s*:\s*(?P<path>{string_literal})\s*,\s*
+        "old"\s*:\s*(?P<old>{string_literal})\s*
+        \+\s*(?P<new>{string_literal})\s*
+        \}}\s*""",
+        raw,
+        flags=re.VERBOSE,
+    )
+    if match is None:
+        return None
+    try:
+        path = json.loads(match.group("path"))
+        old = json.loads(match.group("old"))
+        new = json.loads(match.group("new"))
+    except json.JSONDecodeError:
+        return None
+    if not all(isinstance(value, str) for value in (path, old, new)):
+        return None
+    if not path or not old or not new or old == new:
+        return None
+    return {
+        "action": "replace",
+        "path": path,
+        "old": old,
+        "new": new,
+    }
 
 
 def complete_action_json(raw: str) -> str | None:
@@ -1108,6 +1226,15 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
                 "start_line": int(action.get("start_line") or 1),
                 "end_line": int(action.get("end_line") or 240),
             })
+        elif kind == "replace":
+            detail.update({
+                "old_characters": len(str(action.get("old") or "")),
+                "new_characters": len(str(action.get("new") or "")),
+            })
+        elif kind == "create":
+            detail["content_characters"] = len(
+                str(action.get("content") or "")
+            )
         return detail
     if kind == "verify":
         return {

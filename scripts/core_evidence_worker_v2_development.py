@@ -23,7 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONFIG = ROOT / "configs" / "core_evidence_worker_v2_development.json"
+CONFIG = ROOT / "configs" / "core_evidence_local_8b_worker.json"
 E0 = ROOT / "reports" / "core_evidence_e0_preregistration.json"
 OUT = ROOT / "reports" / "core_evidence_worker_v2_development.json"
 EVENTS = ROOT / "runtime" / "core_evidence_worker_v2_development_events.jsonl"
@@ -200,6 +200,7 @@ def run_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
             "effect_inventory": candidate.get("effect_inventory"),
             "action_summary": candidate.get("action_summary"),
             "repair_attempts": candidate.get("repair_attempts"),
+            "format_repairs": candidate.get("format_repairs"),
             "terminal_reason": candidate.get("terminal_reason"),
             "residuals": candidate.get("residuals"),
             "learned_generation_credit": candidate.get("learned_generation_credit"),
