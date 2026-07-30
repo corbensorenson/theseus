@@ -1,0 +1,42 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "local_model_inference_calls": 1,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:35:41.833397Z",
+  "maximum_inference": "This proves only offline runtime compatibility and exact action format on one trivial prompt, not repository competence.",
+  "model_identity": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+  },
+  "output": {
+    "characters": 36,
+    "exact_action_valid": true,
+    "raw_sha256": "1699bb6a29dd27b47cb8b7e676189075890274ac727a9707d3028d1aee729539"
+  },
+  "policy": "project_theseus_local_model_runtime_preflight_v1",
+  "runtime": {
+    "context_boundary_tokens": 46,
+    "generated_tokens": 9,
+    "generation_uncached_prompt_tokens": 7,
+    "generation_wall_ms": 24335.383,
+    "kv_bits": null,
+    "load_wall_ms": 6496.515,
+    "peak_rss_mib": 4621.016,
+    "prefix_cache_reused": false,
+    "prompt_boundary_cache_used": true,
+    "prompt_cache_trimmable": false,
+    "prompt_tokens": 53,
+    "swap_after_mib": 6468.06,
+    "swap_before_mib": 5975.25,
+    "swap_growth_mib": 492.81,
+    "uncached_context_tokens": 46,
+    "uncached_prompt_tokens": 53
+  },
+  "trigger_state": "GREEN"
+}

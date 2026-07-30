@@ -1,0 +1,100 @@
+{
+  "created_utc": "2026-07-30T12:51:52Z",
+  "policy": "project_theseus_local_model_successor_selection_v1",
+  "trigger_state": "GREEN_HARDWARE_RUNTIME_ELIGIBLE",
+  "scope": "model_selection_and_runtime_mechanics_only_no_repository_competence_claim",
+  "candidate": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "source_model": "allenai/tmax-9b",
+    "base_model": "Qwen/Qwen3.5-9B",
+    "license": "Apache-2.0",
+    "runtime": "mlx-lm 0.31.3 text-only Qwen3.5 path",
+    "quantization": {
+      "bits": 8,
+      "group_size": 64,
+      "mode": "affine"
+    },
+    "learned_credit": "third_party_local_learned_generation_not_theseus_student"
+  },
+  "upstream_evidence": {
+    "source": "https://huggingface.co/allenai/tmax-9b",
+    "status": "third_party_report_not_reproduced_by_theseus",
+    "reported_comparison": {
+      "Terminal_Bench_Lite": {
+        "Qwen3.5_9B": 41.9,
+        "TMax_9B": 57.2
+      },
+      "Terminal_Bench_2_1": {
+        "Qwen3.5_9B": 16.1,
+        "TMax_9B": 28.8
+      },
+      "Terminal_Bench_2_0": {
+        "Qwen3.5_9B": 21.1,
+        "TMax_9B": 27.2
+      }
+    },
+    "maximum_inference": "The upstream result motivates a terminal-editing successor hypothesis; it is not Theseus evidence and does not unlock a capability claim."
+  },
+  "local_runtime_evidence": {
+    "exact_action_preflight": {
+      "report": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+      "report_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+      "trigger_state": "GREEN",
+      "load_wall_ms": 6496.515,
+      "generation_wall_ms": 24335.383,
+      "swap_growth_mib": 492.81,
+      "exact_action_valid": true
+    },
+    "matched_8k_context": {
+      "tmax_report": "reports/core_evidence_tmax_9b_long_context_8k_qualification.json",
+      "tmax_report_sha256": "34475bab3046e4bc1596029a8a4d672f6e4c263ac780d1dcd0bfe89924bdd210",
+      "qwen35_4bit_report": "reports/core_evidence_qwen35_9b_long_context_8k_matched.json",
+      "qwen35_4bit_report_sha256": "142532802363db627ffd5cea3a2f0d63735c13071911f3687c553befe60422ff",
+      "tmax_first_wall_ms": 130252.368,
+      "qwen35_4bit_first_wall_ms": 131331.267,
+      "tmax_second_cached_wall_ms": 3485.371,
+      "qwen35_4bit_second_cached_wall_ms": 3496.11,
+      "tmax_swap_growth_mib": -25.19,
+      "qwen35_4bit_swap_growth_mib": -144.0,
+      "interpretation": "No material latency or swap penalty was observed for TMax at the matched 8k station."
+    },
+    "production_15k_context": {
+      "report": "reports/core_evidence_tmax_9b_long_context_15k_qualification.json",
+      "report_sha256": "7319dcbc53badd84e6c518c952711a5c8d51bac2e1abb304394c21da5c2c51c5",
+      "trigger_state": "GREEN",
+      "context_tokens": 15004,
+      "first_wall_ms": 266068.345,
+      "second_cached_wall_ms": 3586.27,
+      "swap_growth_mib": 672.81,
+      "both_actions_parseable": true,
+      "prefix_cache_reused": true
+    }
+  },
+  "storage": {
+    "removed_cache": "mlx-community/Qwen2.5-Coder-14B-Instruct-4bit",
+    "removed_cache_gib": 7.7,
+    "reproducibility_status": "exact revision and negative model-bakeoff evidence remain committed",
+    "downloaded_candidate_cache_gib": 8.9
+  },
+  "qualification_gate": {
+    "hardware_runtime_eligible": true,
+    "repository_competence_evaluated": false,
+    "fresh_cohort_frozen": true,
+    "fresh_cohort_consumed": false,
+    "E2_unlocked": false,
+    "integrated_subsystems_unlocked": false
+  },
+  "counters": {
+    "local_model_inference_calls": 7,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "user_facing_effects": 0
+  },
+  "maximum_inference": "TMax-9B is hardware/runtime eligible for one prospectively frozen source-disjoint qualification. No repository competence, governance, VCM, planning, routing, reuse, Theseus-student, AGI, or ASI claim is authorized."
+}

@@ -1,0 +1,81 @@
+{
+  "checks": {
+    "both_actions_parseable": true,
+    "both_turns_completed": true,
+    "second_turn_processes_less_than_full_prompt": true,
+    "second_turn_reuses_prefix": true,
+    "target_context_reached": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "local_model_inference_calls": 2,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:38:26.357040Z",
+  "faults": [],
+  "maximum_inference": "This establishes long-context local runtime mechanics and measured host resource behavior only. It cannot establish repository competence or subsystem effects.",
+  "model_identity": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+  },
+  "policy": "project_theseus_local_model_long_context_qualification_v1",
+  "runtime": {
+    "load_wall_ms": 6696.377,
+    "peak_rss_mib": 4565.469,
+    "swap_after_mib": 6026.81,
+    "swap_before_mib": 6052.0,
+    "swap_growth_mib": -25.19
+  },
+  "scope": "runtime_resource_mechanics_only_no_competence_claim",
+  "source_identities": {
+    "config_sha256": "4d8377a45de54ecabdad067cbcb8890f64a778e6987faa83ddd6d89ff6dd22df",
+    "qualification_sha256": "90cdaef02467c8c56f08f280768ce2ed1cb0303b35b4df1d614a1d11ae2a4fd2",
+    "worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
+  },
+  "target_context_tokens": 8000,
+  "trigger_state": "GREEN",
+  "turns": [
+    {
+      "action_kind": "list",
+      "generation_metrics": {
+        "context_boundary_tokens": 8007,
+        "generated_tokens": 9,
+        "generation_uncached_prompt_tokens": 7,
+        "kv_bits": null,
+        "prefix_cache_reused": false,
+        "prompt_boundary_cache_used": true,
+        "prompt_cache_trimmable": false,
+        "prompt_tokens": 8014,
+        "uncached_context_tokens": 8007,
+        "uncached_prompt_tokens": 8014
+      },
+      "parseable_action": true,
+      "raw_sha256": "1699bb6a29dd27b47cb8b7e676189075890274ac727a9707d3028d1aee729539",
+      "turn": 1,
+      "wall_ms": 130252.368
+    },
+    {
+      "action_kind": "list",
+      "generation_metrics": {
+        "context_boundary_tokens": 8057,
+        "generated_tokens": 9,
+        "generation_uncached_prompt_tokens": 7,
+        "kv_bits": null,
+        "prefix_cache_reused": true,
+        "prompt_boundary_cache_used": true,
+        "prompt_cache_trimmable": false,
+        "prompt_tokens": 8064,
+        "uncached_context_tokens": 50,
+        "uncached_prompt_tokens": 57
+      },
+      "parseable_action": true,
+      "raw_sha256": "1699bb6a29dd27b47cb8b7e676189075890274ac727a9707d3028d1aee729539",
+      "turn": 2,
+      "wall_ms": 3485.371
+    }
+  ]
+}

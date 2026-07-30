@@ -1,0 +1,147 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:50:41.051555Z",
+  "evaluator_manifest_sha256": "60d2efe3c1f53743bd99cc0ae60148387be2e4b88903500f4a4f4b2cfbc52be3",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "policy": "project_theseus_local_8b_functional_alignment_audit_v1",
+  "report_payload_sha256": "d72891c00bc4a6c7d375019e0280f688fef42dc9647cd3d0b2712cec071b3360",
+  "runtime": {
+    "wall_ms": 5289.112
+  },
+  "scope": "prospective_pre_generation_request_test_alignment",
+  "summary": {
+    "aligned_task_count": 3,
+    "target_commit_count": 0,
+    "target_patch_count": 0,
+    "task_count": 3
+  },
+  "tasks": [
+    {
+      "acceptance_contract_sha256": "cc69ba6e598c6a8b6a711012f64be760e2f1b6c58215a6c64cc4cfd7f961667b",
+      "allowed_effect_path_set_sha256": "c5f48ca4fe90067bcc99d4f3d042546726adb93329ee13fbed7f25180574fca9",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_external_inference_number_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_external_inference_number_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n____________ test_boolean_and_nonfinite_audit_numbers_are_rejected _____________\n\n    def test_boolean_and_nonfinite_audit_numbers_are_rejected() -> None:\n        rejected = [\n            True,\n            False,\n            float(\"nan\"),\n            float(\"inf\"),\n            float(\"-inf\"),\n            \"nan\",\n            \"+Infinity\",\n            \"-inf\",\n        ]\n        observed = [audit.number(value) for value in rejected]\n>       assert observed == [0.0] * len(rejected) and all(\n            math.isfinite(value) for value in observed\n        ), \"request_contract:boolean_and_nonfinite_audit_numbers_rejected\"\nE       AssertionError: request_contract:boolean_and_nonfinite_audit_numbers_rejected\nE       assert ([1.0, 0.0, na...inf, nan, ...] == [0.0, 0.0, 0....0.0, 0.0, ...]\nE         \nE         At index 0 diff: 1.0 != 0.0\nE         Use -v to get more diff)\n\ntests/functional_hidden/test_external_inference_number_case.py:28: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_external_inference_number_case.py::test_boolean_and_nonfinite_audit_numbers_are_rejected\n1 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 576.922
+          }
+        ],
+        "wall_ms": 576.937
+      },
+      "expected_failure_markers": [
+        "request_contract:boolean_and_nonfinite_audit_numbers_rejected"
+      ],
+      "hidden_test_source_set_sha256": "3fbd8bb7420c8130b0d6a563c69871e882068aaeede69c7eea1b03ce30259a33",
+      "observed_failure_markers": [
+        "request_contract:boolean_and_nonfinite_audit_numbers_rejected"
+      ],
+      "opaque_task_id": "task-tmaxfreshv1-audit-number",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "request_sha256": "78906c7c8577143919fc815bd9fff808e178ca23b55998c3bb96358b191ba82b"
+    },
+    {
+      "acceptance_contract_sha256": "f8093c7ef589619e14bcbfed1bf022573116895c2f1f5fef7271a66dcc295d18",
+      "allowed_effect_path_set_sha256": "b2cfc59392a8cbe99a5f7fa4e0e77a7f955cd0a6630c74b354be846e66ee1f1d",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_relay_url_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_relay_url_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "F..                                                                      [100%]\n=================================== FAILURES ===================================\n________ test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity _________\n\n    def test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity() -> None:\n        invalid = [\n            \"not-a-url\",\n            \"http://relay.example/private\",\n            \"https:///missing-host\",\n            \"https://user:secret@relay.example/private\",\n            \"https://relay.example/private#fragment\",\n        ]\n>       assert all(\n            \"same_lan_or_private_tunnel_required_without_relay\"\n            in blockers(value)\n            for value in invalid\n        ), \"request_contract:unsafe_relay_urls_retain_connectivity_blocker\"\nE       AssertionError: request_contract:unsafe_relay_urls_retain_connectivity_blocker\nE       assert False\nE        +  where False = all(<generator object test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity.<locals>.<genexpr> at 0x104335540>)\n\ntests/functional_hidden/test_hive_relay_url_case.py:44: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_relay_url_case.py::test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity\n1 failed, 2 passed, 1 warning in 0.29s\n",
+            "wall_ms": 477.418
+          }
+        ],
+        "wall_ms": 477.432
+      },
+      "expected_failure_markers": [
+        "request_contract:unsafe_relay_urls_retain_connectivity_blocker"
+      ],
+      "hidden_test_source_set_sha256": "6a603040f7a9f82992cd101c520c1adc89dc9236ede18374ebd0869ef7586ed4",
+      "observed_failure_markers": [
+        "request_contract:unsafe_relay_urls_retain_connectivity_blocker"
+      ],
+      "opaque_task_id": "task-tmaxfreshv1-relay-url",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "request_sha256": "75180c1b91ed6768f2310ddf4b1790015a75d048cd061871385285abf224e1bf"
+    },
+    {
+      "acceptance_contract_sha256": "10048fc64487bf9d4ea098170944e9f9fc104eb5a21c7247551300e13c45b7fc",
+      "allowed_effect_path_set_sha256": "cec7ffec2ece1a7ce8470989ed205957fabef9fec15bcba431c09ccb93fd88d3",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_self_evolution_frontier_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_self_evolution_frontier_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n__________ test_malformed_boolean_and_nonfinite_residuals_are_ignored __________\n\n    def test_malformed_boolean_and_nonfinite_residuals_are_ignored() -> None:\n        ledger = [\n            frontier(\"bad-text\", \"not-a-number\"),\n            frontier(\"bad-bool\", True),\n            frontier(\"bad-nan\", \"nan\"),\n            frontier(\"bad-inf\", float(\"inf\")),\n            frontier(\"valid\", \"2.5\"),\n        ]\n        try:\n            selected = governor.active_frontier(ledger)\n        except Exception:\n            selected = {}\n>       assert selected.get(\"benchmark_name\") == \"valid\", (\n            \"request_contract:invalid_frontier_residuals_ignored\"\n        )\nE       AssertionError: request_contract:invalid_frontier_residuals_ignored\nE       assert None == 'valid'\nE        +  where None = <built-in method get of dict object at 0x103fe4f00>('benchmark_name')\nE        +    where <built-in method get of dict object at 0x103fe4f00> = {}.get\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:36: AssertionError\n____________ test_equal_residual_ties_use_ascending_stable_identity ____________\n\n    def test_equal_residual_ties_use_ascending_stable_identity() -> None:\n        ledger = [\n            frontier(\"zeta\", 3, \"reports/z.json\"),\n            frontier(\"alpha\", \"3.0\", \"reports/b.json\"),\n            frontier(\"alpha\", 3.0, \"reports/a.json\"),\n        ]\n        selected = governor.active_frontier(ledger)\n>       assert (\n            selected.get(\"benchmark_name\"),\n            selected.get(\"best_report\"),\n        ) == (\n            \"alpha\",\n            \"reports/a.json\",\n        ), \"request_contract:frontier_tie_break_is_deterministic\"\nE       AssertionError: request_contract:frontier_tie_break_is_deterministic\nE       assert ('zeta', 'reports/z.json') == ('alpha', 'reports/a.json')\nE         \nE         At index 0 diff: 'zeta' != 'alpha'\nE         Use -v to get more diff\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:52: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_malformed_boolean_and_nonfinite_residuals_are_ignored\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_equal_residual_ties_use_ascending_stable_identity\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 473.306
+          }
+        ],
+        "wall_ms": 473.32
+      },
+      "expected_failure_markers": [
+        "request_contract:frontier_tie_break_is_deterministic",
+        "request_contract:invalid_frontier_residuals_ignored"
+      ],
+      "hidden_test_source_set_sha256": "5da183a7f03d0eb4c0e44ce89829c43bff575ff1d25c4bf6cac2f9ce815ff90e",
+      "observed_failure_markers": [
+        "request_contract:frontier_tie_break_is_deterministic",
+        "request_contract:invalid_frontier_residuals_ignored"
+      ],
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "request_sha256": "2c51bcbb4371009e45b2c29203176a3cb98819056b138643e9a6b19892051df9"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

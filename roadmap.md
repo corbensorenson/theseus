@@ -829,6 +829,55 @@ a separately justified worker architecture change, followed by a new
 prospectively frozen source-disjoint qualification—not more tuning against
 these consumed targets.
 
+### D1 Successor 4 — TMax Terminal-Agent Qualification
+
+State: `FROZEN_UNCONSUMED`; E2 and subsystem arms remain sealed.
+
+An online model survey identified `allenai/tmax-9b`, a Qwen3.5-9B
+terminal-agent fine-tune, as a materially different model-side successor
+rather than another Worker-v3 tweak. Ai2 reports TMax-9B above base Qwen3.5-9B
+on Terminal Bench Lite (`57.2` versus `41.9`), Terminal Bench 2.1 (`28.8`
+versus `16.1`), and Terminal Bench 2.0 (`27.2` versus `21.1`). These are
+third-party upstream results, not Theseus evidence. The selected local artifact
+is the Apache-2.0, text-only, `mlx-lm 0.31.3`-compatible
+`mlx-community/Tmax-9B-MLX-8bit` revision `33812d6c...`.
+
+Local hardware qualification is green. The exact-action preflight loaded in
+6.5 seconds and returned the required raw JSON action. At a matched 8k-token
+station, TMax and the prior Qwen3.5-9B 4-bit worker had effectively identical
+cold-prefill (`130.3` versus `131.3` seconds) and cached-turn (`3.49` versus
+`3.50` seconds) latency with no positive swap growth. TMax then completed the
+production-shaped 15k-token, two-turn qualification with parseable actions,
+prefix-cache reuse, a 266.1-second cold prefill, a 3.59-second cached turn, and
+672.8 MiB swap growth. This authorizes a bounded qualification run, not a
+competence claim. The exact synthesis is recorded in
+`reports/core_evidence_tmax_9b_model_selection.json`.
+
+The obsolete 7.7-GiB Qwen2.5-Coder-14B cache was removed after its exact
+revision and negative evidence were committed. This made room for the 8.9-GiB
+TMax payload without deleting the active Qwen3/Qwen3.5 models or scientific
+evidence.
+
+A new three-task cohort is prospectively aligned against parent commit
+`e857ab84...`. It uses source files and causal patterns absent from all prior
+development and qualification surfaces: finite audit-number conversion,
+secure relay-URL validation, and finite deterministic frontier selection.
+Every request exposes observable semantics and exact effect authority. Hidden
+tests were authored from the requests and parent state, with no target patch
+or target commit. The alignment audit is `3/3 GREEN`: every parent fails every
+declared request-derived marker; target commit and patch counts are zero.
+
+`configs/core_evidence_tmax_fresh_v1_qualification_freeze.json` binds the exact
+TMax revision, 8-bit worker config, Worker v3 source, development and
+qualification runners, MLX Python executable, public manifest, hidden
+evaluator and tests, parent identities, effect boundaries, unchanged
+competence floor, complete denominators, exact rollback, and run-once stop
+rules. Commit this freeze before generation. Then generate all three
+candidates without evaluator access, seal them, and open the evaluator only
+after candidate generation terminates. Passing may unlock deterministic
+subsystem-adequacy work; failing must issue one scoped terminal disposition
+and preserve E2.
+
 ## Neural Verdict Campaign
 
 This is the only long-training program that remains on the roadmap.

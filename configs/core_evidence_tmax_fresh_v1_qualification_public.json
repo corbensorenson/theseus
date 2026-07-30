@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_local_8b_functional_qualification_public_v1",
+  "cohort_id": "tmax9b_worker_v3_source_disjoint_repository_correctness_v1",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-tmaxfreshv1-audit-number",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/external_inference_audit.py, make number accept only finite real numeric values and finite numeric strings. It must return 0.0 for booleans, NaN, positive or negative infinity, invalid strings, and non-numeric objects, while preserving finite integers, floats, decimal strings, and scientific-notation strings. Add focused external-inference audit tests.",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-tmaxfreshv1-relay-url",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/hive_fleet_readiness.py, when remote tasks are enabled and no trusted remote node is visible, treat a relay URL as satisfying private connectivity only when it is a syntactically valid HTTPS URL with a nonempty hostname and no embedded username, password, or fragment. Empty, malformed, HTTP, credential-bearing, and fragment-bearing relay values must retain the same_lan_or_private_tunnel_required_without_relay blocker. Preserve behavior when a trusted remote node exists or remote tasks are disabled. Add focused fleet-readiness tests.",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/self_evolution_governor.py, make active_frontier ignore frontier rows whose residual is a boolean, malformed, or non-finite; compare only finite numeric residuals, including numeric strings; return an empty dict when no valid frontier remains; and break equal-residual ties deterministically by ascending benchmark_name and then ascending best_report instead of input order. Preserve preferred-family and preferred-card filtering before global fallback. Add focused self-evolution governor tests.",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    }
+  ],
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "authoritative_target_patch_used": false
+  }
+}

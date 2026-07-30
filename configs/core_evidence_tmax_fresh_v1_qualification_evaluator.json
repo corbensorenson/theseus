@@ -1,0 +1,121 @@
+{
+  "policy": "project_theseus_local_8b_functional_evaluator_v1",
+  "cohort_id": "tmax9b_worker_v3_source_disjoint_repository_correctness_v1",
+  "candidate_output_schema": {
+    "required_fields": [
+      "worker_id",
+      "natural_request_sha256",
+      "parent_source_commit",
+      "patch_unified_diff",
+      "proposed_paths",
+      "verification_commands",
+      "abstained"
+    ],
+    "maximum_patch_bytes": 262144,
+    "maximum_proposed_paths": 16
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-tmaxfreshv1-audit-number",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/external_inference_audit.py, make number accept only finite real numeric values and finite numeric strings. It must return 0.0 for booleans, NaN, positive or negative infinity, invalid strings, and non-numeric objects, while preserving finite integers, floats, decimal strings, and scientific-notation strings. Add focused external-inference audit tests.",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "allowed_effect_paths": [
+        "scripts/external_inference_audit.py",
+        "tests/test_external_inference_audit.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_tmax_fresh_v1_hidden/external_inference_number_case.py",
+          "destination": "tests/functional_hidden/test_external_inference_number_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "boolean and non-finite audit values fail closed to zero",
+          "request_quote": "return 0.0 for booleans, NaN, positive or negative infinity",
+          "hidden_test": "tests/functional_hidden/test_external_inference_number_case.py",
+          "assertion_marker": "request_contract:boolean_and_nonfinite_audit_numbers_rejected"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:boolean_and_nonfinite_audit_numbers_rejected"
+      ],
+      "verification_timeout_seconds": 180
+    },
+    {
+      "opaque_task_id": "task-tmaxfreshv1-relay-url",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/hive_fleet_readiness.py, when remote tasks are enabled and no trusted remote node is visible, treat a relay URL as satisfying private connectivity only when it is a syntactically valid HTTPS URL with a nonempty hostname and no embedded username, password, or fragment. Empty, malformed, HTTP, credential-bearing, and fragment-bearing relay values must retain the same_lan_or_private_tunnel_required_without_relay blocker. Preserve behavior when a trusted remote node exists or remote tasks are disabled. Add focused fleet-readiness tests.",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "allowed_effect_paths": [
+        "scripts/hive_fleet_readiness.py",
+        "tests/test_hive_fleet_readiness.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_tmax_fresh_v1_hidden/hive_relay_url_case.py",
+          "destination": "tests/functional_hidden/test_hive_relay_url_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "unsafe relay values retain the private-connectivity blocker",
+          "request_quote": "Empty, malformed, HTTP, credential-bearing, and fragment-bearing relay values must retain the same_lan_or_private_tunnel_required_without_relay blocker",
+          "hidden_test": "tests/functional_hidden/test_hive_relay_url_case.py",
+          "assertion_marker": "request_contract:unsafe_relay_urls_retain_connectivity_blocker"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:unsafe_relay_urls_retain_connectivity_blocker"
+      ],
+      "verification_timeout_seconds": 180
+    },
+    {
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/self_evolution_governor.py, make active_frontier ignore frontier rows whose residual is a boolean, malformed, or non-finite; compare only finite numeric residuals, including numeric strings; return an empty dict when no valid frontier remains; and break equal-residual ties deterministically by ascending benchmark_name and then ascending best_report instead of input order. Preserve preferred-family and preferred-card filtering before global fallback. Add focused self-evolution governor tests.",
+      "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+      "allowed_effect_paths": [
+        "scripts/self_evolution_governor.py",
+        "tests/test_self_evolution_governor.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_tmax_fresh_v1_hidden/self_evolution_frontier_case.py",
+          "destination": "tests/functional_hidden/test_self_evolution_frontier_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "invalid residuals are ignored and all-invalid input returns empty",
+          "request_quote": "ignore frontier rows whose residual is a boolean, malformed, or non-finite",
+          "hidden_test": "tests/functional_hidden/test_self_evolution_frontier_case.py",
+          "assertion_marker": "request_contract:invalid_frontier_residuals_ignored"
+        },
+        {
+          "criterion": "equal residuals use an ascending stable identity tie break",
+          "request_quote": "break equal-residual ties deterministically by ascending benchmark_name and then ascending best_report",
+          "hidden_test": "tests/functional_hidden/test_self_evolution_frontier_case.py",
+          "assertion_marker": "request_contract:frontier_tie_break_is_deterministic"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:invalid_frontier_residuals_ignored",
+        "request_contract:frontier_tie_break_is_deterministic"
+      ],
+      "verification_timeout_seconds": 180
+    }
+  ],
+  "boundaries": {
+    "authoritative_target_patch_used": false,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "candidate_authored_claims_trusted": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}
