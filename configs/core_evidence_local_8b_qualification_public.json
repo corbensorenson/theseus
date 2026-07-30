@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_local_8b_functional_qualification_public_v1",
+  "cohort_id": "local_8b_prospective_repository_correctness_v1",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-local8b-retention-path",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/artifact_retention_reference.py, harden normalize_checkpoint_ref so it returns an empty string for checkpoint references containing a backslash or NUL control, while preserving valid checkpoints/... references after surrounding whitespace and terminal punctuation are stripped and continuing to reject parent-traversal segments. Existing artifact-retention tests must continue to pass.",
+      "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-local8b-policy-journal",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/policy_update_lease.py, make verify_journal fail closed unless every journal entry retains the lease target_id and state_path, the final entry after_digest equals current_digest, and the final entry sequence equals the journal length. Preserve the existing digest-chain checks and return False rather than raising for malformed journal rows. Existing policy-update lease tests must continue to pass.",
+      "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-local8b-gvr-history",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/gvr_state_machine.py, make verify_history fail closed when candidate_id no longer equals source_candidate_id or the digest of identity, when the final transition artifact_sha256 differs from current_artifact_sha256, or when any transition row is not an object. Preserve legal-transition and transition-digest validation, returning False instead of raising on malformed history. Existing GVR tests must continue to pass.",
+      "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    }
+  ],
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "authoritative_target_patch_used": false
+  }
+}

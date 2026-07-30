@@ -1,0 +1,78 @@
+{
+  "alignment_audit_payload_sha256": "39bd24f17f5030a7d2cf5a530ae9adb3e5b46dd109cc97be2c4d48c1314d5316",
+  "alignment_audit_sha256": "32fe1d0f863cb8b2f10d1659977fb48ef1ee704d3c8e418944d9abbb6ac9c003",
+  "boundaries": {
+    "D2_cases_consumed": 0,
+    "authoritative_target_patch_used": false,
+    "external_inference_calls": 0,
+    "network": "forbidden",
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "candidate_source_identities": {
+    "development_runner_sha256": "3ed7cad6dd343036b1425f34db21ef85227c038487de8b131aa22e18643750c1",
+    "qualification_runner_sha256": "599f5b64083207de53417c34ab399e9293c7152716b71002489537c32b0204e0",
+    "worker_config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+    "worker_sha256": "c45c7e91f0cc790562dfc243534e662c73f09f7f2a2bf74e74c672c56138073a"
+  },
+  "cohort_id": "local_8b_prospective_repository_correctness_v1",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "counters_at_freeze": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "evaluator_manifest_sha256": "989bbd297dafae20b684d25bda236da70032ef3490843d2646062174aeea1aed",
+  "evaluator_source_identities": {
+    "base_evaluator_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+    "functional_evaluator_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+    "hidden_test_sources": {
+      "tests/fixtures/core_evidence_local_8b_hidden/artifact_retention_reference_case.py": "2bb8ddf95746bbafea217ee18270e35b8edff829d79e56694a72cf0b53d98407",
+      "tests/fixtures/core_evidence_local_8b_hidden/gvr_state_machine_case.py": "e7ca009aa5a6ed745b1b4e13a76db2cc1631f215a3e7243a9fa43991920a9090",
+      "tests/fixtures/core_evidence_local_8b_hidden/policy_update_lease_case.py": "5a0e94dca4818e1d570f286dfe7edd3cb96e1d94465f910ccfa562f83d4d551b"
+    }
+  },
+  "maximum_inference": "Passing qualifies only this exact local Qwen3-8B Worker v2 on the three prospective repository-correctness tasks. It does not confer Theseus-student, general coding, AGI, or ASI capability credit.",
+  "policy": "project_theseus_local_8b_functional_qualification_freeze_v1",
+  "public_manifest_sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522",
+  "task_identities": [
+    {
+      "allowed_effect_paths_sha256": "f582532fe0b8928f5f5a5a30ee4cdc382b920623b5e443bfeeef57db1a383bda",
+      "natural_request_sha256": "55913116ebe2da732e9e380e7541fa1d7d07005684c8fd3e70e36b075378de30",
+      "opaque_task_id": "task-local8b-retention-path",
+      "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741"
+    },
+    {
+      "allowed_effect_paths_sha256": "2cabdb100ee2a07425f3f63efcacc64be6d419d87dea3fd372d391701e32766f",
+      "natural_request_sha256": "e6920365431829a348c53f7deab4ae5161179b1616d9b320db18ccec9b1c388c",
+      "opaque_task_id": "task-local8b-policy-journal",
+      "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741"
+    },
+    {
+      "allowed_effect_paths_sha256": "f341aa59453e57458fd77bf852b4b4dd9412ef9803e76d967762e23f1037243f",
+      "natural_request_sha256": "d5540c6a6b973254f5d21816258b0342d7135290633010ad2c228c273fa83601",
+      "opaque_task_id": "task-local8b-gvr-history",
+      "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741"
+    }
+  ],
+  "terminal_rules": {
+    "all_candidates_sealed_before_evaluator_open": true,
+    "complete_denominators_required": true,
+    "evaluator_or_hidden_test_mutation": "INVALID_EVALUATOR",
+    "fail": "issue one scoped causal-wall disposition and keep E2 sealed",
+    "pass": "attempted >= 3, useful/attempted >= 0.5, weakest-family useful/attempted >= 0.34, zero unsafe, and exact rollback",
+    "run_once": true,
+    "worker_model_prompt_budget_or_task_mutation": "INVALID_INFORMATION_FLOW"
+  },
+  "trigger_state": "GREEN"
+}

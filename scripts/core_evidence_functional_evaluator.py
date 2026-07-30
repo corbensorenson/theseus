@@ -48,23 +48,124 @@ class FunctionalEvaluationFault(ValueError):
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--candidate-report", required=True)
+    parser.add_argument("--candidate-report")
     parser.add_argument("--evaluator-manifest", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--audit-only", action="store_true")
     args = parser.parse_args()
-    report = evaluate_report(
-        Path(args.candidate_report),
-        Path(args.evaluator_manifest),
-    )
+    if args.audit_only:
+        report = audit_manifest(Path(args.evaluator_manifest))
+    elif args.candidate_report:
+        report = evaluate_report(
+            Path(args.candidate_report),
+            Path(args.evaluator_manifest),
+        )
+    else:
+        parser.error("--candidate-report is required unless --audit-only is used")
     Path(args.out).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    print(json.dumps({
-        "trigger_state": report["trigger_state"],
-        **report["denominators"],
-    }, indent=2, sort_keys=True))
+    summary = {"trigger_state": report["trigger_state"]}
+    summary.update(
+        report.get("denominators")
+        or report.get("summary")
+        or {}
+    )
+    print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if report["trigger_state"] == "GREEN" else 2
+
+
+def audit_manifest(
+    evaluator_manifest_path: Path,
+    *,
+    repo_root: Path = ROOT,
+) -> dict[str, Any]:
+    """Audit alignment and intended baseline failure before generation."""
+    started = time.perf_counter()
+    manifest = read_json(evaluator_manifest_path)
+    validate_manifest(manifest, repo_root)
+    rows = []
+    for task in dicts(manifest.get("tasks")):
+        parent = git(
+            repo_root,
+            "rev-parse",
+            f"{task['parent_source_commit']}^{{commit}}",
+        )
+        with tempfile.TemporaryDirectory(
+            prefix="theseus-functional-audit-"
+        ) as tmp:
+            root = Path(tmp)
+            archive = root / "parent.tar"
+            snapshot = root / "snapshot"
+            snapshot.mkdir()
+            base.create_archive(repo_root, parent, archive)
+            base.safe_extract(archive, snapshot)
+            overlay_hidden_tests(task, repo_root, snapshot)
+            receipt = run_hidden_tests(task, snapshot)
+        markers = strings(task.get("baseline_failure_markers"))
+        output = "\n".join(
+            str(result.get("stdout_tail") or "")
+            + str(result.get("stderr_tail") or "")
+            for result in dicts(receipt.get("results"))
+        )
+        observed = sorted(marker for marker in markers if marker in output)
+        passed = bool(not receipt["passed"] and observed == sorted(markers))
+        rows.append({
+            "opaque_task_id": str(task["opaque_task_id"]),
+            "parent_source_commit": parent,
+            "request_sha256": sha256_text(str(task["natural_request"])),
+            "allowed_effect_path_set_sha256": stable_hash(
+                sorted(strings(task.get("allowed_effect_paths")))
+            ),
+            "hidden_test_source_set_sha256": stable_hash(sorted(
+                str(row["source"])
+                for row in dicts(task.get("hidden_test_files"))
+            )),
+            "acceptance_contract_sha256": stable_hash(
+                task.get("acceptance_contract")
+            ),
+            "expected_failure_markers": sorted(markers),
+            "observed_failure_markers": observed,
+            "baseline_failed_as_expected": passed,
+            "baseline_verification_receipt": receipt,
+        })
+    trigger = "GREEN" if rows and all(
+        row["baseline_failed_as_expected"] for row in rows
+    ) else "RED"
+    report = {
+        "policy": "project_theseus_local_8b_functional_alignment_audit_v1",
+        "created_utc": now(),
+        "trigger_state": trigger,
+        "scope": "prospective_pre_generation_request_test_alignment",
+        "evaluator_manifest_sha256": sha256_file(evaluator_manifest_path),
+        "evaluator_source_sha256": sha256_file(Path(__file__)),
+        "tasks": rows,
+        "summary": {
+            "task_count": len(rows),
+            "aligned_task_count": sum(
+                int(row["baseline_failed_as_expected"]) for row in rows
+            ),
+            "target_commit_count": 0,
+            "target_patch_count": 0,
+        },
+        "counters": {
+            "candidate_generation_calls": 0,
+            "external_inference_calls": 0,
+            "teacher_calls": 0,
+            "public_calibration_cases_consumed": 0,
+            "D2_cases_consumed": 0,
+            "user_facing_effects": 0,
+        },
+        "runtime": {
+            "wall_ms": round((time.perf_counter() - started) * 1000.0, 3)
+        },
+    }
+    report["report_payload_sha256"] = stable_hash({
+        key: value for key, value in report.items()
+        if key not in {"created_utc", "runtime", "report_payload_sha256"}
+    })
+    return report
 
 
 def evaluate_report(
@@ -170,8 +271,14 @@ def evaluate_report(
 def validate_manifest(manifest: dict[str, Any], repo_root: Path) -> None:
     if manifest.get("policy") != POLICY:
         raise FunctionalEvaluationFault("unexpected_evaluator_policy")
-    if "target_commit" in json.dumps(manifest, sort_keys=True):
-        raise FunctionalEvaluationFault("target_commit_forbidden")
+    forbidden_keys = {"target_commit", "target_patch"}
+    observed_forbidden = sorted(
+        forbidden_keys.intersection(recursive_keys(manifest))
+    )
+    if observed_forbidden:
+        raise FunctionalEvaluationFault(
+            f"{observed_forbidden[0]}_forbidden"
+        )
     tasks = dicts(manifest.get("tasks"))
     if not tasks:
         raise FunctionalEvaluationFault("functional_tasks_missing")
@@ -532,6 +639,23 @@ def strings(value: Any) -> list[str]:
 
 def integer(value: Any) -> int:
     return int(value or 0)
+
+
+def recursive_keys(value: Any) -> set[str]:
+    if isinstance(value, dict):
+        return set(value).union(
+            *(
+                recursive_keys(child)
+                for child in value.values()
+            ),
+            set(),
+        )
+    if isinstance(value, list):
+        return set().union(
+            *(recursive_keys(child) for child in value),
+            set(),
+        )
+    return set()
 
 
 def read_json(path: Path) -> dict[str, Any]:

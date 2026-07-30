@@ -66,7 +66,7 @@ identifies them as the smallest causal next experiment.
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
 | D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
-| D1 local-8B successor | `ACTIVE_DEVELOPMENT` | Fixed offline Qwen3-8B worker repair precedes prospective functional qualification and stack ablations |
+| D1 local-8B successor | `QUALIFICATION_FROZEN_READY` | Three request-derived tasks passed the target-free parent-state audit; the one-shot local Qwen3-8B qualification is next |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -389,7 +389,7 @@ identifies a selected-route defect; it does not preempt Worker v2.
 
 ### D1 Successor 2 — Local 8B Stack Causal Proof
 
-State: `ACTIVE_DEVELOPMENT`; no fresh qualification task has been generated.
+State: `QUALIFICATION_FROZEN_READY`; candidate generation has not started.
 
 The active question is now causal:
 
@@ -456,6 +456,19 @@ one cleanly applicable, candidate-verified, exactly rolled-back patch in eight
 local calls. Independent hidden evaluation remained `0/1`: the patch changed
 an error message rather than implementing the availability contract. Record
 this as `EDIT_SYNTHESIS_OR_REPAIR`, not useful work or qualification evidence.
+
+The prospective qualification precondition is now closed. Three new
+repository-correctness requests were authored directly against the committed
+parent state, with nine hidden assertions traceable to exact request language.
+The independent parent-state audit is `GREEN`: all `3/3` tasks fail every
+requested assertion before any candidate patch, while target-commit,
+target-patch, model-call, teacher, public-calibration, D2, and user-effect
+counters remain zero. The public tasks, hidden tests, evaluator, fixed local
+Qwen3-8B worker, budgets, unchanged competence floor, and run-once stop rule
+are bound by
+`configs/core_evidence_local_8b_qualification_freeze.json`. The candidate
+runner reads only the public manifest and freeze; evaluator material remains
+unopened until all three candidates seal.
 
 If qualification fails, stop with its causal wall and preserve E2. If it
 passes, consume the original sealed E2 once under its existing rules and keep

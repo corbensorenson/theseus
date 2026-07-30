@@ -311,3 +311,30 @@ def test_target_commit_is_forbidden_from_functional_manifest(
         match="target_commit_forbidden",
     ):
         functional.validate_manifest(value, repo)
+
+
+def test_target_counter_names_do_not_trigger_exact_key_guard(
+    tmp_path: Path,
+) -> None:
+    repo, parent = repository(tmp_path)
+    value = manifest(parent)
+    value["boundaries"] = {
+        "target_commits_opened": 0,
+        "target_patches_opened": 0,
+    }
+    functional.validate_manifest(value, repo)
+
+
+def test_alignment_audit_requires_expected_parent_failures(
+    tmp_path: Path,
+) -> None:
+    repo, parent = repository(tmp_path)
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest(parent)))
+    report = functional.audit_manifest(manifest_path, repo_root=repo)
+    assert report["trigger_state"] == "GREEN"
+    assert report["summary"]["task_count"] == 1
+    assert report["summary"]["aligned_task_count"] == 1
+    assert report["summary"]["target_commit_count"] == 0
+    assert report["summary"]["target_patch_count"] == 0
+    assert report["counters"]["candidate_generation_calls"] == 0

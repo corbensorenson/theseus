@@ -9199,6 +9199,9 @@
         "configs/core_evidence_worker_v2_qualification_public.json",
         "configs/core_evidence_worker_v2_qualification_evaluator.json",
         "configs/core_evidence_worker_v2_qualification_freeze.json",
+        "configs/core_evidence_local_8b_qualification_public.json",
+        "configs/core_evidence_local_8b_qualification_evaluator.json",
+        "configs/core_evidence_local_8b_qualification_freeze.json",
         "scripts/core_evidence_campaign.py",
         "scripts/core_evidence_worker.py",
         "scripts/core_evidence_worker_v2.py",
@@ -9206,12 +9209,16 @@
         "scripts/core_evidence_worker_v2_evaluator.py",
         "scripts/core_evidence_worker_v2_qualification.py",
         "scripts/core_evidence_functional_evaluator.py",
+        "scripts/core_evidence_local_8b_freeze.py",
+        "scripts/core_evidence_local_8b_qualification.py",
         "scripts/core_evidence_synthesis.py",
         "tests/test_core_evidence_campaign.py",
         "tests/test_core_evidence_worker_v2.py",
         "tests/test_core_evidence_worker_v2_evaluator.py",
         "tests/test_core_evidence_worker_v2_qualification.py",
-        "tests/test_core_evidence_functional_evaluator.py"
+        "tests/test_core_evidence_functional_evaluator.py",
+        "tests/test_core_evidence_local_8b_qualification.py",
+        "tests/fixtures/core_evidence_local_8b_hidden/*.py"
       ],
       "canonical": "scripts/theseus_assistant_runtime.py",
       "report_outputs": [
@@ -9254,6 +9261,10 @@
         "reports/core_evidence_worker_v2_qualification_evaluation.json",
         "reports/core_evidence_worker_v2_qualification_disposition.json",
         "reports/core_evidence_local_8b_development_diagnostic.json",
+        "reports/core_evidence_local_8b_alignment_audit.json",
+        "reports/core_evidence_local_8b_qualification_candidates.json",
+        "reports/core_evidence_local_8b_qualification_evaluation.json",
+        "reports/core_evidence_local_8b_qualification_disposition.json",
         "docs/CORE_EVIDENCE_BRIEF.md",
         "docs/assets/core-evidence-useful-safe-frontier.svg"
       ],
