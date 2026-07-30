@@ -1335,10 +1335,22 @@ def local_snapshot(card: dict[str, Any]) -> Path:
         Path.home() / ".cache" / "huggingface" / "hub" / f"models--{repo}"
         / "snapshots" / str(card["revision"])
     )
-    required = {"config.json", "model.safetensors", "tokenizer.json", "tokenizer_config.json"}
-    if not path.is_dir() or not all((path / item).exists() for item in required):
+    if not path.is_dir() or not complete_model_snapshot(path):
         raise WorkerFault("complete_local_model_snapshot_missing")
     return path
+
+
+def complete_model_snapshot(path: Path) -> bool:
+    required = {"config.json", "tokenizer.json", "tokenizer_config.json"}
+    if not all((path / item).is_file() for item in required):
+        return False
+    if (path / "model.safetensors").is_file():
+        return True
+    index = path / "model.safetensors.index.json"
+    return bool(
+        index.is_file()
+        and list(path.glob("model-*-of-*.safetensors"))
+    )
 
 
 def snapshot_manifest(path: Path) -> str:

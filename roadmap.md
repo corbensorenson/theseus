@@ -66,7 +66,7 @@ identifies them as the smallest causal next experiment.
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
 | D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
-| D1 local-8B successor | `QUALIFICATION_FROZEN_READY` | Three request-derived tasks passed the target-free parent-state audit; the one-shot local Qwen3-8B qualification is next |
+| D1 local-8B successor | `TERMINAL_FAIL_LOCAL_MODEL_WORKER_COMPETENCE` | Valid 0/3 Qwen3-8B result; E2 and integrated stack arms remain sealed while a matched local-model and subsystem-adequacy gate runs |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -389,7 +389,7 @@ identifies a selected-route defect; it does not preempt Worker v2.
 
 ### D1 Successor 2 — Local 8B Stack Causal Proof
 
-State: `QUALIFICATION_FROZEN_READY`; candidate generation has not started.
+State: `TERMINAL_FAIL_LOCAL_MODEL_WORKER_COMPETENCE`; E2 remains sealed.
 
 The active question is now causal:
 
@@ -475,6 +475,68 @@ passes, consume the original sealed E2 once under its existing rules and keep
 that historical-target result separate from the prospective functional
 campaign. Replicate only decisive effects with a separately frozen local
 code-specialized 7–8B model, and only if that model is actually available.
+
+The irreversible qualification is complete and valid. All `3/3` candidates
+sealed before evaluator access, with zero infrastructure, external-inference,
+teacher, public-calibration, D2, unsafe, or user-facing events and `3/3` exact
+rollback. The result was `0/3` useful: two explicit abstentions and one cleanly
+applicable caller-side patch that failed all four request-derived journal
+assertions. The scoped walls are two `EDIT_SYNTHESIS_NO_PATCH` and one
+`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`. This fails the unchanged competence floor
+and authorizes no matched stack arm or E2 consumption.
+
+The result applies only to the exact Qwen3-8B revision, Worker v2, three tasks,
+budgets, evaluator, and M1 host. VCM, planning, routing, governance,
+procedural memory, other local models, and the Theseus student were not tested
+and may not inherit the failure.
+
+### D1 Successor 3 — Model And Subsystem Adequacy
+
+State: `ACTIVE_MODEL_BAKEOFF`; no successor qualification cohort exists.
+
+Before another causal stack campaign, remove two avoidable confounds.
+
+First, select the strongest hardware-feasible local model rather than assuming
+the already-installed general model is adequate. The consumed three-task
+cohort may now be used for development-only selection. Run the current
+Qwen3-8B, pinned Qwen2.5-Coder-7B-Instruct, and pinned Qwen3.5-9B under the
+same Worker v2 source, prompt, visible information, tools, action/repair
+budgets, request-derived evaluator, MLX 0.32 / MLX-LM 0.31.3 runtime, and M1
+host. Rank useful tasks first, then unsafe, malformed/abstained, model calls,
+and wall time. A winner below the unchanged competence floor is
+`NO_LOCAL_MODEL_ADEQUATE`; it does not unlock another fresh cohort.
+
+Kimi K3, Qwen3-Coder 30B/80B, Devstral 24B, and larger models are not primary
+Mac candidates merely because they are stronger elsewhere. They may enter
+only if their exact local quant passes a measured resident-memory, swap,
+stability, latency, license, and runtime-compatibility preflight on this
+16-GB M1. Do not impose a generic memory floor and do not let swap-heavy
+loading masquerade as a practical local winner.
+
+Second, require mechanism adequacy before any integrated failure may count
+against a Theseus subsystem:
+
+1. **VCM:** prove source/authority binding, loss and omission accounting,
+   taint preservation, stale/deleted rejection, consumer conformance, and
+   information-matched correct/no-VCM/shuffled/stale/omission interventions.
+2. **Planning:** prove executable-plan fidelity, dependency/order enforcement,
+   plan-to-effect traceability, and an information-matched no-plan control.
+3. **Routing:** prove candidate eligibility, least-sufficient selection,
+   oracle/regret accounting, cheapest/maximal controls, and no hardcoded
+   task-label path.
+4. **Governance:** prove independent effect observation, allowed/denied/revoked
+   authority behavior, unsafe-release and false-block accounting, partial
+   failure, mutation-after-seal detection, and exact rollback.
+5. **Procedural reuse:** prove source-disjoint trigger validity, verified reuse
+   versus fresh execution, drift and false-trigger handling, quarantine,
+   decompilation, rollback, retirement, and total lifecycle cost.
+
+Each subsystem first runs known-good positive controls, seeded negative
+controls, adversarial failure injection, and intervention-fidelity checks
+without a learned model. It then runs a small learned-consumer canary. A
+mechanics-green but behavior-uninformative surface is
+`INCONCLUSIVE_IMPLEMENTATION`, not subsystem falsification. Only
+adequacy-green implementations may enter the matched integrated stack arms.
 
 ## Neural Verdict Campaign
 

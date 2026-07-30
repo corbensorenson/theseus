@@ -1,7 +1,7 @@
 {
   "policy": "project_theseus_local_8b_stack_causal_campaign_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "state": "qualification_frozen_ready",
+  "state": "qualification_failed_model_and_subsystem_adequacy_active",
   "question": "Which existing Theseus components improve useful-safe natural repository work over the same fixed local 8B model under matched information and total lifecycle budgets?",
   "preserved_invalid_packet": {
     "disposition": "INVALID_EVALUATOR",

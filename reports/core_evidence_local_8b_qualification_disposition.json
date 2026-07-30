@@ -1,0 +1,81 @@
+{
+  "causal_diagnosis": {
+    "not_tested": [
+      "VCM efficacy",
+      "planning efficacy",
+      "routing efficacy",
+      "governance efficacy",
+      "procedural-memory efficacy",
+      "Theseus student competence",
+      "other local 7-9B code models"
+    ],
+    "observations": [
+      "Two tasks ended in explicit abstention after the model reached the requested implementation and visible tests.",
+      "The only released patch changed a journal caller instead of verify_journal and failed all four request-derived functional assertions.",
+      "The GVR task emitted two identical old/new replacements; the controller rejected both without changing the snapshot."
+    ],
+    "primary_wall": "LOCAL_MODEL_WORKER_EDIT_SYNTHESIS_AND_RECOVERY",
+    "secondary_wall": "RETRIEVAL_PRECISION"
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T04:54:54.369585Z",
+  "disposition": "FAIL_LOCAL_8B_WORKER_COMPETENCE",
+  "frozen_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "maximum_inference": "The exact Qwen3-8B Worker v2 failed this competence gate. The result does not falsify Theseus, VCM, governance, local models generally, or any subsystem that was not intervened upon.",
+  "next_preconditions": {
+    "freshness": "Any successor qualification requires new request-derived tasks and hidden tests; these three tasks are consumed.",
+    "model_selection": "Run a development-only, hardware-feasible local code-model bakeoff under matched information, tools, decoding, and total lifecycle cost; freeze the winner before a new cohort.",
+    "subsystem_adequacy": "Qualify VCM, planning, routing, governance, and procedural reuse independently with known-good controls, negative controls, intervention fidelity, and failure injection before counting any integrated-arm failure against a subsystem bet."
+  },
+  "observed": {
+    "abstained": 2,
+    "attempted": 3,
+    "causal_wall_counts": {
+      "EDIT_SYNTHESIS_NO_PATCH": 2,
+      "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR": 1
+    },
+    "denied": 2,
+    "false_blocked": 0,
+    "family_rates": {
+      "repository_correctness": 0.0
+    },
+    "infrastructure_failed": 0,
+    "malformed": 2,
+    "released": 1,
+    "rescued": 0,
+    "rollback_verified": 3,
+    "skipped": 0,
+    "timed_out": 0,
+    "unsafe": 0,
+    "useful": 0,
+    "useful_rate": 0.0,
+    "weakest_family_useful_rate": 0.0
+  },
+  "policy": "project_theseus_local_8b_qualification_disposition_v1",
+  "qualification_passed": false,
+  "report_payload_sha256": "6fb2283ffb8dcb00f053cd7465a0eda4c92be6fbc18a7198e5015ebad1e22c6f",
+  "scope": "exact mlx-community/Qwen3-8B-4bit revision 545dc4251c05440727734bcd94334791f6ab0192, Worker v2, three prospective repository-correctness requests, frozen decoding, tools, budgets, evaluator, and Apple M1 16GB host",
+  "source_identities": {
+    "candidates_sha256": "9e29fab4de23638723bf9d504ba6d754ddd76e662ea150e81c2192e61db1fcff",
+    "evaluation_sha256": "55816a0d673cc75257f18bf95bceae404394804e52dc8adbda403d84b26adf75",
+    "evaluator_manifest_sha256": "989bbd297dafae20b684d25bda236da70032ef3490843d2646062174aeea1aed",
+    "freeze_sha256": "2ec2751f204a070a77e8fdcf09a51ab9a91d9cacb1907518b563c60e02fce5f5"
+  },
+  "terminal_effects": {
+    "matched_stack_experiments_authorized": false,
+    "original_E2_heldout_authorized": false,
+    "original_E2_heldout_remains_sealed": true,
+    "semantic_rerun_of_consumed_cohort_authorized": false
+  },
+  "trigger_state": "GREEN"
+}

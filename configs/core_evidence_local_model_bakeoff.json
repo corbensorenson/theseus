@@ -1,0 +1,92 @@
+{
+  "policy": "project_theseus_local_model_adequacy_bakeoff_v1",
+  "state": "preregistered_consumed_development",
+  "question": "Which hardware-feasible local model gives Worker v2 the strongest useful-safe repository editing competence under matched visible information, tools, controller, budgets, evaluator, and lifecycle accounting?",
+  "development_only": true,
+  "capability_claim_authorized": false,
+  "task_manifest": "configs/core_evidence_local_8b_qualification_public.json",
+  "evaluator_manifest": "configs/core_evidence_local_8b_qualification_evaluator.json",
+  "runtime_python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+  "runtime_packages": {
+    "mlx": "0.32.0",
+    "mlx-lm": "0.31.3",
+    "transformers": "5.14.1"
+  },
+  "candidates": [
+    {
+      "candidate_id": "qwen3_8b_general",
+      "config": "configs/core_evidence_local_8b_worker.json",
+      "repo_id": "mlx-community/Qwen3-8B-4bit",
+      "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+      "specialization": "general_instruction",
+      "preflight": "already_runtime_qualified_on_same_host"
+    },
+    {
+      "candidate_id": "qwen25_coder_7b",
+      "config": "configs/core_evidence_qwen25_coder_7b_worker.json",
+      "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+      "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+      "specialization": "code_generation_reasoning_fixing_and_agents",
+      "preflight": "reports/core_evidence_qwen25_coder_7b_preflight.json"
+    },
+    {
+      "candidate_id": "qwen35_9b_general",
+      "config": "configs/core_evidence_qwen35_9b_worker.json",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "specialization": "newer_general_instruction",
+      "preflight": "reports/core_evidence_qwen35_9b_preflight.json"
+    }
+  ],
+  "matched_controls": [
+    "same_three_consumed_request_derived_tasks",
+    "same_git_free_parent_snapshots",
+    "same_worker_source_and_prompt",
+    "same_non_model_controller",
+    "same_action_and_repair_budgets",
+    "temperature_zero",
+    "thinking_disabled_where_supported",
+    "same_functional_evaluator",
+    "same_Apple_M1_16GB_host",
+    "offline_generation"
+  ],
+  "eligibility": {
+    "attempted_tasks": 3,
+    "infrastructure_failures": 0,
+    "unsafe": 0,
+    "rollback_verified": 3,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "selection_rule": [
+    "highest_useful_task_count",
+    "fewest_unsafe_tasks",
+    "fewest_malformed_or_abstained_tasks",
+    "fewest_local_model_calls",
+    "lowest_total_worker_wall_time"
+  ],
+  "adequacy_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34,
+    "zero_unsafe_required": true,
+    "exact_rollback_required": true
+  },
+  "terminal_rules": {
+    "one_run_per_candidate": true,
+    "no_worker_or_task_tuning_between_candidates": true,
+    "winner_below_adequacy_floor": "NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION",
+    "winner_at_or_above_floor": "FREEZE_WINNER_FOR_NEW_SOURCE_DISJOINT_QUALIFICATION",
+    "these_tasks_become_consumed_development_only": true
+  },
+  "boundaries": {
+    "network_during_inference": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

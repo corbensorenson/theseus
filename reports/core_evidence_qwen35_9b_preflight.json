@@ -1,0 +1,36 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "local_model_inference_calls": 1,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T04:53:03.641333Z",
+  "maximum_inference": "This proves only offline runtime compatibility and exact action format on one trivial prompt, not repository competence.",
+  "model_identity": {
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+  },
+  "output": {
+    "characters": 45,
+    "exact_action_valid": true,
+    "raw_sha256": "97a22498ddaeee35d1ef84fb3f4dad7e492401d96b077bd97538c96843095502"
+  },
+  "policy": "project_theseus_local_model_runtime_preflight_v1",
+  "runtime": {
+    "generated_tokens": 19,
+    "generation_wall_ms": 4497.856,
+    "load_wall_ms": 4968.085,
+    "peak_rss_mib": 3456.297,
+    "prefix_cache_reused": false,
+    "prompt_tokens": 53,
+    "swap_after_mib": 3360.44,
+    "swap_before_mib": 3128.38,
+    "swap_growth_mib": 232.06,
+    "uncached_prompt_tokens": 53
+  },
+  "trigger_state": "GREEN"
+}

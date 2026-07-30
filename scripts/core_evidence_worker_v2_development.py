@@ -110,7 +110,14 @@ def run(task_index: int, task_limit: int) -> dict[str, Any]:
     return report
 
 
-def run_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+def run_task(
+    task: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    config_path: Path = CONFIG,
+    events_path: Path = EVENTS,
+    mlx_python: Path = MLX_PYTHON,
+) -> dict[str, Any]:
     visible = {
         key: task[key] for key in (
             "natural_request", "parent_source_commit", "allowed_runtime_context",
@@ -124,7 +131,7 @@ def run_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
         archive = root / "parent.tar"
         worker_input = root / "input.json"
         worker_output = root / "output.json"
-        EVENTS.parent.mkdir(parents=True, exist_ok=True)
+        events_path.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(
             ["git", "archive", "--format=tar", f"--output={archive}", str(visible["parent_source_commit"])],
             cwd=ROOT,
@@ -142,13 +149,13 @@ def run_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
         started = time.perf_counter()
         process = subprocess.run(
             [
-                str(MLX_PYTHON),
+                str(mlx_python),
                 str(ROOT / "scripts" / "core_evidence_worker_v2.py"),
                 "--input", str(worker_input),
                 "--snapshot-root", str(snapshot),
                 "--out", str(worker_output),
-                "--config", str(CONFIG),
-                "--events-out", str(EVENTS),
+                "--config", str(config_path),
+                "--events-out", str(events_path),
             ],
             cwd=snapshot,
             capture_output=True,
@@ -179,7 +186,7 @@ def run_task(task: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
             "worker_source_sha256": sha256_file(
                 ROOT / "scripts" / "core_evidence_worker_v2.py"
             ),
-            "config_sha256": sha256_file(CONFIG),
+            "config_sha256": sha256_file(config_path),
             "started_utc": started_utc,
             "finished_utc": finished_utc,
             "worker_wall_ms": worker_wall_ms,

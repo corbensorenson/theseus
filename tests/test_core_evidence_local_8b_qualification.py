@@ -29,8 +29,15 @@ def read(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_frozen_qualification_inputs_validate() -> None:
-    qualification.validate_frozen_inputs(read(PUBLIC), read(FREEZE), PUBLIC)
+def test_completed_frozen_qualification_cannot_rerun_after_source_change() -> None:
+    with pytest.raises(ValueError, match="candidate_source_mutated_after_freeze"):
+        qualification.validate_frozen_inputs(read(PUBLIC), read(FREEZE), PUBLIC)
+    completed = read(
+        ROOT / "reports" / "core_evidence_local_8b_qualification_candidates.json"
+    )
+    assert completed["source_identities"] == read(FREEZE)[
+        "candidate_source_identities"
+    ]
 
 
 def test_freeze_binds_green_target_free_alignment_audit() -> None:

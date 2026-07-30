@@ -101,6 +101,22 @@ def test_hidden_field_and_git_metadata_are_rejected(tmp_path: Path) -> None:
         worker.validate_inputs(visible(), tmp_path, config())
 
 
+def test_complete_model_snapshot_accepts_single_and_sharded_weights(
+    tmp_path: Path,
+) -> None:
+    for name in ("config.json", "tokenizer.json", "tokenizer_config.json"):
+        (tmp_path / name).write_text("{}\n", encoding="utf-8")
+    assert worker.complete_model_snapshot(tmp_path) is False
+    (tmp_path / "model.safetensors.index.json").write_text(
+        "{}\n", encoding="utf-8"
+    )
+    (tmp_path / "model-00001-of-00002.safetensors").write_bytes(b"weights")
+    assert worker.complete_model_snapshot(tmp_path) is True
+    (tmp_path / "model-00001-of-00002.safetensors").unlink()
+    (tmp_path / "model.safetensors").write_bytes(b"weights")
+    assert worker.complete_model_snapshot(tmp_path) is True
+
+
 @pytest.mark.parametrize(
     "path",
     [

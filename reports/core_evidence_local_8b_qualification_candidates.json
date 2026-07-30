@@ -1,0 +1,516 @@
+{
+  "cohort_id": "local_8b_prospective_repository_correctness_v1",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "evaluator_manifest_opened": 0,
+    "external_inference_calls": 0,
+    "hidden_test_files_opened": 0,
+    "learned_generation_credit": 3,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T04:42:09.889121Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 0,
+    "planned": 3,
+    "sealed": 3,
+    "skipped": 0
+  },
+  "faults": [],
+  "freeze_manifest_sha256": "2ec2751f204a070a77e8fdcf09a51ab9a91d9cacb1907518b563c60e02fce5f5",
+  "maximum_inference": "This report proves only that target-blind candidates were generated and sealed. Competence requires the frozen independent evaluator.",
+  "policy": "project_theseus_local_8b_functional_qualification_candidates_v1",
+  "public_manifest_sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522",
+  "report_payload_sha256": "bea77fa1c6e1782f9ccf5cb806ffeae6065be95b0076a7b293b03269b649c717",
+  "runtime": {
+    "wall_ms": 707143.869
+  },
+  "scope": "prospective_target_blind_candidate_generation_only",
+  "source_identities": {
+    "development_runner_sha256": "3ed7cad6dd343036b1425f34db21ef85227c038487de8b131aa22e18643750c1",
+    "qualification_runner_sha256": "599f5b64083207de53417c34ab399e9293c7152716b71002489537c32b0204e0",
+    "worker_config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+    "worker_sha256": "c45c7e91f0cc790562dfc243534e662c73f09f7f2a2bf74e74c672c56138073a"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 9,
+        "action_counts": {
+          "abstain": 1,
+          "read": 6,
+          "search": 2
+        },
+        "distinct_read_paths": [
+          "docs/reference/virtual_context_memory_v1.0/Virtual_Context_Memory_Corben_Sorenson.md",
+          "scripts/artifact_retention_reference.py",
+          "scripts/theseus_artifact_retention.py",
+          "tests/test_artifact_retention_reference.py"
+        ],
+        "failed_actions": 2,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 9,
+          "action_counts": {
+            "abstain": 1,
+            "read": 6,
+            "search": 2
+          },
+          "distinct_read_paths": [
+            "docs/reference/virtual_context_memory_v1.0/Virtual_Context_Memory_Corben_Sorenson.md",
+            "scripts/artifact_retention_reference.py",
+            "scripts/theseus_artifact_retention.py",
+            "tests/test_artifact_retention_reference.py"
+          ],
+          "failed_actions": 2,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 4
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 9,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "55913116ebe2da732e9e380e7541fa1d7d07005684c8fd3e70e36b075378de30",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 248878.229
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "ce8ec9692b5f76ac3b85c832acb07c9cb4840e155476d6fa7fa0cad2d57525e9",
+      "candidate_seal": {
+        "candidate_output_sha256": "ce8ec9692b5f76ac3b85c832acb07c9cb4840e155476d6fa7fa0cad2d57525e9",
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "finished_utc": "2026-07-30T04:34:33.628867Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T04:30:23.673524Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+        "worker_source_sha256": "c45c7e91f0cc790562dfc243534e662c73f09f7f2a2bf74e74c672c56138073a",
+        "worker_wall_ms": 249951.653
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 9,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-local8b-retention-path",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 7,
+        "action_counts": {
+          "finish": 1,
+          "read": 3,
+          "replace": 1,
+          "search": 1,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "configs/policy_update_lease.json",
+          "scripts/policy_update_lease.py",
+          "tests/test_policy_update_lease.py"
+        ],
+        "failed_actions": 0,
+        "file_mutations": 1,
+        "pre_mutation_read_actions": 3
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "action_summary": {
+          "action_count": 7,
+          "action_counts": {
+            "finish": 1,
+            "read": 3,
+            "replace": 1,
+            "search": 1,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "configs/policy_update_lease.json",
+            "scripts/policy_update_lease.py",
+            "tests/test_policy_update_lease.py"
+          ],
+          "failed_actions": 0,
+          "file_mutations": 1,
+          "pre_mutation_read_actions": 3
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "2a50d1677d455e60e789e2fb819f16259387959043e7f97e3bf4a59502fa04bb",
+            "before_sha256": "ab2ecb58e2d7735c65e7075608162139dc99751706d5c69dda4c46944f832b95",
+            "effect": "modify",
+            "path": "scripts/policy_update_lease.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 7,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "e6920365431829a348c53f7deab4ae5161179b1616d9b320db18ccec9b1c388c",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "--- a/scripts/policy_update_lease.py\n+++ b/scripts/policy_update_lease.py\n@@ -177,7 +177,7 @@\n     assert_active(lease)\n     if len(lease[\"observations\"]) < int(lease[\"monitor_window\"][\"minimum_observations\"]):\n         raise PolicyUpdateLeaseFault(\"monitor_window_incomplete\")\n-    if not lease[\"journal\"] or not verify_journal(lease):\n+    if not lease.get(\"journal\") or not verify_journal(lease):\n         raise PolicyUpdateLeaseFault(\"journal_invalid\")\n     result = copy.deepcopy(lease)\n     result[\"state\"] = \"committed\"\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/policy_update_lease.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 179758.339
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_governance_architecture_kernel.py tests/test_policy_update_lease.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/policy_update_lease.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_governance_architecture_kernel.py tests/test_policy_update_lease.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/policy_update_lease.py"
+            ],
+            "denied_candidate_targets": [],
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_governance_architecture_kernel.py",
+                  "tests/test_policy_update_lease.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": "........                                                                 [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n8 passed, 1 warning in 0.54s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/policy_update_lease.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/policy_update_lease.py"
+              ],
+              "pytest": [
+                "tests/test_governance_architecture_kernel.py",
+                "tests/test_policy_update_lease.py"
+              ]
+            },
+            "wall_ms": 996.314
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "98a369c0ed20cfcfc534b58fb5e648802b583ca7752896db2573dc52b22fca10",
+      "candidate_seal": {
+        "candidate_output_sha256": "98a369c0ed20cfcfc534b58fb5e648802b583ca7752896db2573dc52b22fca10",
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "finished_utc": "2026-07-30T04:37:35.781612Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T04:34:35.159215Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+        "worker_source_sha256": "c45c7e91f0cc790562dfc243534e662c73f09f7f2a2bf74e74c672c56138073a",
+        "worker_wall_ms": 180601.804
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "2a50d1677d455e60e789e2fb819f16259387959043e7f97e3bf4a59502fa04bb",
+          "before_sha256": "ab2ecb58e2d7735c65e7075608162139dc99751706d5c69dda4c46944f832b95",
+          "effect": "modify",
+          "path": "scripts/policy_update_lease.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 7,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-local8b-policy-journal",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "--- a/scripts/policy_update_lease.py\n+++ b/scripts/policy_update_lease.py\n@@ -177,7 +177,7 @@\n     assert_active(lease)\n     if len(lease[\"observations\"]) < int(lease[\"monitor_window\"][\"minimum_observations\"]):\n         raise PolicyUpdateLeaseFault(\"monitor_window_incomplete\")\n-    if not lease[\"journal\"] or not verify_journal(lease):\n+    if not lease.get(\"journal\") or not verify_journal(lease):\n         raise PolicyUpdateLeaseFault(\"journal_invalid\")\n     result = copy.deepcopy(lease)\n     result[\"state\"] = \"committed\"\n",
+      "proposed_paths": [
+        "scripts/policy_update_lease.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_governance_architecture_kernel.py tests/test_policy_update_lease.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/policy_update_lease.py"
+          ],
+          "denied_candidate_targets": [],
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_governance_architecture_kernel.py",
+                "tests/test_policy_update_lease.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": "........                                                                 [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n8 passed, 1 warning in 0.54s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/policy_update_lease.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/policy_update_lease.py"
+            ],
+            "pytest": [
+              "tests/test_governance_architecture_kernel.py",
+              "tests/test_policy_update_lease.py"
+            ]
+          },
+          "wall_ms": 996.314
+        }
+      ],
+      "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+      "worker_stderr_sha256": "4e6725381f7a8f559cef25be9109f9e7a8c383faec08336dac8d92473204f336",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 10,
+        "action_counts": {
+          "abstain": 1,
+          "read": 6,
+          "replace": 2,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "scripts/gvr_state_machine.py",
+          "scripts/kerc_semantic_corpus_verify.py",
+          "scripts/moecot_source_conditioned_pretraining.py",
+          "tests/test_gvr_state_machine.py"
+        ],
+        "failed_actions": 5,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 10,
+          "action_counts": {
+            "abstain": 1,
+            "read": 6,
+            "replace": 2,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "scripts/gvr_state_machine.py",
+            "scripts/kerc_semantic_corpus_verify.py",
+            "scripts/moecot_source_conditioned_pretraining.py",
+            "tests/test_gvr_state_machine.py"
+          ],
+          "failed_actions": 5,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 4
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 10,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "d5540c6a6b973254f5d21816258b0342d7135290633010ad2c228c273fa83601",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 271687.728
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "15bc8e7cae01cf6088c41d238d57ed7327d0bfa54c21052234cd045a1632a9d0",
+      "candidate_seal": {
+        "candidate_output_sha256": "15bc8e7cae01cf6088c41d238d57ed7327d0bfa54c21052234cd045a1632a9d0",
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "finished_utc": "2026-07-30T04:42:09.615270Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T04:37:37.197294Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+        "worker_source_sha256": "c45c7e91f0cc790562dfc243534e662c73f09f7f2a2bf74e74c672c56138073a",
+        "worker_wall_ms": 272411.705
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 10,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-local8b-gvr-history",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}
