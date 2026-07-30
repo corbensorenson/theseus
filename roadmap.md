@@ -297,18 +297,47 @@ evaluator integrity, infrastructure, or local-model competence. D1 is
 closes; E1's replayable authority/rollback result and the E5 brief remain valid
 and shareable at their existing mechanics-only scope.
 
-Development evidence remains non-blind and cannot unlock E2. On the first
-already-consumed task, Worker v2 now produces a real, cleanly applicable patch,
-independently recomputes its effect, selects the relevant existing test, and
-proves exact rollback with zero out-of-snapshot effects. It still completes
-`0/1`: the patch touched one of six target paths (precision `1.0`, recall
-`0.1667`), failed both candidate and hidden verification, exhausted its turn
-budget, and was assigned `EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`. A 4B local model
-copied tool examples and was rejected; 8B thinking mode spent 1,536 tokens and
-342.8 seconds without one action and was rejected; a mild repetition penalty
-closed a measured 1,536-token degenerate loop. Do not assemble or open the
-fresh qualification cohort until the remaining consumed-development tasks are
-run and this repair wall is either closed or declared terminal.
+Development evidence remains non-blind and cannot unlock E2. All three
+already-consumed tasks have now run through the independent evaluator:
+`0/3` useful, `3/3` exact rollback, `0/3` unsafe, and zero external inference,
+teacher, public-calibration, D2, or user-facing effects. The first task produced
+a cleanly applicable one-path patch with precision `1.0` and recall `0.1667`
+but failed candidate and hidden verification. The other two produced no patch.
+Their terminal walls are `EDIT_SYNTHESIS_OR_BOUNDED_REPAIR` and
+`EDIT_SYNTHESIS_NO_PATCH`; none is blind evidence of generalization.
+
+The diagnosis has two causal layers. First, Qwen3-8B can retrieve the right
+neighborhood and emit a real edit, but it is unreliable at exact multi-file
+edit synthesis and recovery. It copied a literal tool placeholder, emitted
+empty replacement fields, and repeated impossible verification actions. A 4B
+local model was weaker; 8B thinking mode spent 1,536 tokens and 342.8 seconds
+without one action. A code-specialized 7B candidate was not installed because
+the machine had no network route; it must not be represented as tested or
+available. Second, two historical natural requests are too terse to identify
+the hidden target semantics: “Remove arbitrary training launch limits” omits
+the user-presence/clock-window scope, and “Remove legacy canary memory floors”
+omits the pretraining-candidate/predicted-exhaustion scope. Hidden tests may not
+demand unstated semantics and then attribute the miss solely to competence.
+
+The repaired controller now uses target-blind structural retrieval to nominate
+a coupled implementation/config/test trio, gives fault-specific recovery
+instructions, refuses repeated verification before repair, stops three
+identical denied actions, and makes explicit abstention discard every
+provisional effect. On the adequately scoped consumed task it read the exact
+trio in its first three actions, reduced the run from 18 local calls and about
+940 seconds to 9 calls and about 270 seconds, consumed real failure summaries,
+and attempted one bounded repair. It remained `0/1` useful and terminated at
+`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`; this is improvement in controller mechanics,
+not competence.
+
+Before fresh qualification, add and freeze a request-adequacy audit: each task
+must identify the behavior or repository surface, state observable acceptance
+semantics, and be solvable from candidate-visible parent state without hidden
+history. This does not lower the competence floor. Assemble a small
+source-disjoint cohort from actionable natural requests, freeze its prompts and
+target identities before target inspection, and preserve the original four E2
+heldouts. Do not keep rerunning the three consumed tasks merely to tune against
+their opened targets.
 
 The repeated acceleration criticism in the July review is stale for the
 selected route: the production pretraining step already uses `mx.compile`,

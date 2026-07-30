@@ -82,17 +82,19 @@ def run_worker(
 ) -> dict[str, Any]:
     started = time.perf_counter()
     validate_inputs(visible, snapshot_root, config)
-    state = RepositoryState(snapshot_root, config)
+    request = str(visible["natural_request"])
+    state = RepositoryState(snapshot_root, config, request=request)
     local_model = None
     if generator is None:
         local_model = LocalMlxModel(config["model"])
         generator = local_model.generate
-    request = str(visible["natural_request"])
     request_id = sha256_text(request)[:16]
     messages = initial_messages(visible, state, config)
     budgets = config["budgets"]
     format_faults = 0
     terminal_reason = "turn_budget_exhausted"
+    previous_stagnant_signature: str | None = None
+    repeated_stagnant_actions = 0
     for turn in range(1, int(budgets["maximum_agent_turns"]) + 1):
         generation_started = time.perf_counter()
         retained = int(budgets.get("maximum_retained_tool_turns") or 6) * 2
@@ -150,14 +152,45 @@ def run_worker(
                     "action": action_kind,
                     "ok": False,
                 })
+                fault = f"{type(exc).__name__}:{exc}"
                 result = {
                     "ok": False,
-                    "fault": f"{type(exc).__name__}:{exc}",
-                    "instruction": (
-                        "The tool request was denied. Inspect the returned "
-                        "fault and choose a safe alternative action."
-                    ),
+                    "fault": fault,
+                    "instruction": state.recovery_instruction(str(exc)),
                 }
+        if result.get("ok") is not True and "instruction" not in result:
+            result["instruction"] = state.recovery_instruction(
+                str(result.get("fault") or "unsuccessful_action")
+            )
+        stagnant_signature = sha256_text(json.dumps({
+            "action": action_kind,
+            "detail": action_detail,
+            "fault": result.get("fault"),
+            "changed_paths": state.changed_paths(),
+            "verification_count": len(state.verification_receipts),
+        }, sort_keys=True))
+        if result.get("ok") is False:
+            repeated_stagnant_actions = (
+                repeated_stagnant_actions + 1
+                if stagnant_signature == previous_stagnant_signature
+                else 1
+            )
+            previous_stagnant_signature = stagnant_signature
+        else:
+            repeated_stagnant_actions = 0
+            previous_stagnant_signature = None
+        if repeated_stagnant_actions >= int(
+            budgets["maximum_repeated_denied_actions"]
+        ):
+            result.update({
+                "terminal": True,
+                "reason": "stalled_repeated_denied_action",
+                "instruction": (
+                    "The same denied action reached the configured repetition "
+                    "ceiling without "
+                    "repository progress; stop honestly instead of wasting budget."
+                ),
+            })
         result["state"] = {
             "changed_paths": state.changed_paths(),
             "verification_count": len(state.verification_receipts),
@@ -273,10 +306,17 @@ def run_worker(
 
 
 class RepositoryState:
-    def __init__(self, root: Path, config: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        root: Path,
+        config: dict[str, Any],
+        *,
+        request: str = "",
+    ) -> None:
         self.root = root.resolve()
         self.config = config
         self.baseline = text_inventory(self.root)
+        self.request_tokens = keywords(request)
         self.actions: list[dict[str, Any]] = []
         self.verification_receipts: list[dict[str, Any]] = []
         self.inference_calls = 0
@@ -324,6 +364,15 @@ class RepositoryState:
             if not self.verification_receipts or not self.verification_receipts[-1]["passed"]:
                 return {"ok": False, "terminal": False, "fault": "final_verification_not_green"}
             result = {"ok": True, "terminal": True, "reason": "finished"}
+        elif kind == "abstain":
+            discarded_paths = self.changed_paths()
+            self.restore_baseline()
+            result = {
+                "ok": True,
+                "terminal": True,
+                "reason": "explicit_abstention",
+                "discarded_paths": discarded_paths,
+            }
         else:
             raise WorkerFault(f"unknown_action:{kind}")
         self.actions.append({"action": kind, "ok": result.get("ok") is True})
@@ -460,6 +509,84 @@ class RepositoryState:
             self.failed_verification_seen = False
         self.mutations += 1
 
+    def relevant_paths(
+        self,
+        *,
+        prefix: str = "",
+        unread_only: bool = False,
+        maximum: int = 4,
+    ) -> list[str]:
+        inventory = {
+            path: text for path, text in self.baseline.items()
+            if (not prefix or path.startswith(prefix))
+            and (not unread_only or path not in self.read_paths)
+        }
+        return lexical_rank(inventory, self.request_tokens)[:maximum]
+
+    def restore_baseline(self) -> None:
+        """Discard every provisional text effect inside the disposable snapshot."""
+        current = text_inventory(self.root)
+        for relative in sorted(set(current) - set(self.baseline)):
+            self.safe_path(relative).unlink()
+        for relative, text in self.baseline.items():
+            if current.get(relative) == text:
+                continue
+            path = self.safe_path(
+                relative, must_exist=relative in current
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            write_normalized_text(path, text)
+        self.failed_verification_seen = False
+
+    def recovery_instruction(self, fault: str) -> str:
+        unread = self.relevant_paths(unread_only=True)
+        tests = self.relevant_paths(
+            prefix="tests/", unread_only=True, maximum=3
+        )
+        if "test_read_required_before_mutation" in fault:
+            return (
+                "NEXT ACTION MUST BE read on an existing relevant test. "
+                f"Target-blind suggestions: {tests or unread}. Do not create a test yet."
+            )
+        if (
+            "insufficient_pre_mutation" in fault
+            or "duplicate_read_span" in fault
+        ):
+            return (
+                "NEXT ACTION MUST BE read on a new relevant existing path. "
+                f"Target-blind suggestions: {unread}."
+            )
+        if (
+            "verification_requires_changed_paths" in fault
+            or "no_changed_paths" in fault
+        ):
+            return (
+                "Do not verify or finish again. Produce a valid replace/create/delete "
+                "effect. If exact text is unavailable, read the intended file first."
+            )
+        if "verification_requires_repair_after_failure" in fault:
+            return (
+                "Do not repeat verification. Use the failure_summaries from the last "
+                "receipt to make one bounded repair, then verify again."
+            )
+        if "final_verification_not_green" in fault:
+            return (
+                "Do not finish or repeat verification. Repair the failing behavior "
+                "from the last failure_summaries, then verify."
+            )
+        if (
+            "replace_requires_distinct_nonempty_old_text" in fault
+            or "replace_old_occurrence_count" in fault
+        ):
+            return (
+                "Read the intended file segment, then replace one exact, nonempty, "
+                "uniquely occurring old string with distinct new text."
+            )
+        return (
+            "Choose a different safe action that directly resolves this fault. "
+            f"Relevant unread paths: {unread}."
+        )
+
     def replace(self, relative: str, old: str, new: str) -> dict[str, Any]:
         if not old or old == new:
             raise WorkerFault("replace_requires_distinct_nonempty_old_text")
@@ -507,6 +634,8 @@ class RepositoryState:
     ) -> dict[str, Any]:
         if not self.changed_paths():
             raise WorkerFault("verification_requires_changed_paths")
+        if self.failed_verification_seen:
+            raise WorkerFault("verification_requires_repair_after_failure")
         automatic = self.automatic_verification_targets()
         denied_targets: list[str] = []
         pytest_targets = self.accept_verification_suggestions(
@@ -802,19 +931,16 @@ def initial_messages(
         ranked,
         int(config["budgets"]["maximum_initial_retrieval_characters"]),
     )
+    inspection_plan = priority_inspection_paths(state.baseline, state.request_tokens)
     system = """You are a local repository editing agent inside a disposable parent snapshot.
 Complete the user's request by inspecting and editing the repository, then verify it.
 You have no target answer, git history, network, shell, or hidden tests.
 Return exactly one JSON object per turn and no Markdown.
-Actions:
-{"action":"list","prefix":"scripts/"}
-{"action":"search","query":"request-specific identifier"}
-{"action":"read","path":"scripts/x.py","start_line":1,"end_line":240}
-{"action":"replace","path":"scripts/x.py","old":"exact unique text","new":"replacement text"}
-{"action":"create","path":"tests/test_x.py","content":"complete text"}
-{"action":"delete","path":"path"}
-{"action":"verify","pytest":["tests/test_x.py"],"py_compile":["scripts/x.py"],"json":["configs/x.json"]}
-{"action":"finish"}
+Allowed action schemas: list(prefix); search(query); read(path,start_line,end_line);
+replace(path,old,new); create(path,content); delete(path);
+verify(pytest,py_compile,json); finish(); abstain().
+Encode the chosen action and its named fields as one JSON object. Never copy schema
+placeholders or invent a path. Use abstain only when the request cannot be safely completed.
 Use read/search before editing. A behavioral request requires behavioral code; changing only
 messages, comments, reports, or roadmap prose is not a solution. Inspect the primary
 implementation, an analogous implementation or config, and at least one relevant test before
@@ -830,6 +956,7 @@ Candidate claims of success are ignored."""
         "allowed_runtime_context": visible["allowed_runtime_context"],
         "authority_grant": visible["authority_grant"],
         "lexically_ranked_paths": ranked,
+        "priority_inspection_paths": inspection_plan,
         "retrieved_parent_context": retrieval,
         "budgets": {
             key: config["budgets"][key] for key in (
@@ -839,6 +966,75 @@ Candidate claims of success are ignored."""
         },
     }, sort_keys=True)
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+def priority_inspection_paths(
+    inventory: dict[str, str], tokens: list[str]
+) -> list[str]:
+    """Select a target-blind, structurally coupled test/code/config trio."""
+    tests = lexical_rank(
+        {
+            path: text for path, text in inventory.items()
+            if path.startswith("tests/")
+        },
+        tokens,
+    )
+    selected_test = tests[0] if tests else None
+    selected_code = None
+    if selected_test is not None:
+        test_stem = PurePosixPath(selected_test).stem
+        implementation_stem = (
+            test_stem[5:] if test_stem.startswith("test_") else test_stem
+        )
+        matches = [
+            path for path in inventory
+            if path.startswith(("scripts/", "crates/"))
+            and PurePosixPath(path).stem == implementation_stem
+        ]
+        if matches:
+            selected_code = sorted(matches)[0]
+    if selected_code is None:
+        code = lexical_rank(
+            {
+                path: text for path, text in inventory.items()
+                if path.startswith(("scripts/", "crates/"))
+            },
+            tokens,
+        )
+        selected_code = code[0] if code else None
+
+    selected_config = None
+    if selected_code is not None:
+        referenced = sorted(set(re.findall(
+            r"""configs/[A-Za-z0-9_./-]+\.json""",
+            inventory[selected_code],
+        )))
+        existing = {
+            path: inventory[path] for path in referenced if path in inventory
+        }
+        ranked_references = lexical_rank(existing, tokens)
+        if ranked_references:
+            selected_config = ranked_references[0]
+        elif existing:
+            selected_config = sorted(existing)[0]
+    if selected_config is None:
+        configs = lexical_rank(
+            {
+                path: text for path, text in inventory.items()
+                if path.startswith("configs/")
+                and all(
+                    generic not in PurePosixPath(path).name
+                    for generic in ("manifest", "registry", "roadmap")
+                )
+            },
+            tokens,
+        )
+        selected_config = configs[0] if configs else None
+
+    return [
+        path for path in (selected_code, selected_config, selected_test)
+        if path is not None
+    ]
 
 
 def validate_inputs(
@@ -983,11 +1179,19 @@ def lexical_rank(inventory: dict[str, str], tokens: list[str]) -> list[str]:
     for path, text in inventory.items():
         path_text = path.lower().replace("_", " ").replace("-", " ")
         lowered = text.lower()
-        score = sum(4 for token in tokens if token in path_text)
-        score += sum(min(lowered.count(token), 8) for token in tokens)
+        # Binary term presence prevents giant registries from winning merely
+        # because they repeat generic words hundreds of times. Paths carry
+        # more intent than raw corpus frequency for repository work.
+        path_hits = sum(token in path_text for token in tokens)
+        content_hits = sum(token in lowered for token in tokens)
+        score = path_hits * 12 + content_hits
         if score:
-            scores.append((score, path))
-    return [path for _, path in sorted(scores, key=lambda row: (-row[0], row[1]))]
+            scores.append((score, path_hits, path))
+    return [
+        path for _, _, path in sorted(
+            scores, key=lambda row: (-row[0], -row[1], row[2])
+        )
+    ]
 
 
 def keywords(value: str) -> list[str]:

@@ -143,7 +143,30 @@ def test_noop_candidate_cannot_finish(tmp_path: Path) -> None:
 
     assert result["abstained"] is True
     assert result["patch_unified_diff"] == ""
+    assert result["terminal_reason"] == "stalled_repeated_denied_action"
     assert "no_effect_capable_patch" in result["residuals"]
+
+
+def test_abstention_discards_every_provisional_effect(tmp_path: Path) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    actions = iter([
+        json.dumps({
+            "action": "replace",
+            "path": "scripts/x.py",
+            "old": "x = 1",
+            "new": "x = 2",
+        }),
+        json.dumps({"action": "abstain"}),
+    ])
+    result = worker.run_worker(
+        visible(), tmp_path, permissive_config(),
+        generator=lambda _: next(actions),
+    )
+    assert result["terminal_reason"] == "explicit_abstention"
+    assert result["abstained"] is True
+    assert result["patch_unified_diff"] == ""
+    assert (tmp_path / "scripts" / "x.py").read_text() == "x = 1\n"
 
 
 def test_candidate_authored_flags_are_not_an_action(tmp_path: Path) -> None:
@@ -171,7 +194,10 @@ def test_denied_tool_actions_do_not_consume_format_retry_budget(
     (tmp_path / "scripts").mkdir()
     (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
     actions = iter(
-        [json.dumps({"action": "unsupported"})] * 5
+        [
+            json.dumps({"action": f"unsupported_{index}"})
+            for index in range(5)
+        ]
         + [
             json.dumps({
                 "action": "replace",
@@ -291,3 +317,46 @@ def test_repair_budget_is_enforced_after_failed_verification(tmp_path: Path) -> 
     state.failed_verification_seen = True
     with pytest.raises(worker.WorkerFault, match="repair_budget"):
         state.replace("scripts/x.py", "x = 3", "x = 4")
+
+
+def test_failed_verification_requires_repair_before_reverification(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text("assert False\n")
+    state = worker.RepositoryState(tmp_path, permissive_config())
+    state.replace("scripts/x.py", "x = 1", "x = 2")
+    assert state.verify(["tests/test_x.py"], [], [])["passed"] is False
+    with pytest.raises(
+        worker.WorkerFault, match="verification_requires_repair_after_failure"
+    ):
+        state.verify(["tests/test_x.py"], [], [])
+    assert "bounded repair" in state.recovery_instruction(
+        "verification_requires_repair_after_failure"
+    )
+
+
+def test_target_blind_priority_inspection_covers_code_config_and_test(
+    tmp_path: Path,
+) -> None:
+    for directory in ("scripts", "tests", "configs"):
+        (tmp_path / directory).mkdir()
+    (tmp_path / "scripts" / "canary.py").write_text(
+        "memory_floor = 8\n"
+    )
+    (tmp_path / "tests" / "test_canary.py").write_text(
+        "def test_memory_floor():\n    assert True\n"
+    )
+    (tmp_path / "configs" / "canary.json").write_text(
+        '{"memory_floor": 8}\n'
+    )
+    inventory = worker.text_inventory(tmp_path)
+    assert worker.priority_inspection_paths(
+        inventory, worker.keywords("remove canary memory floor")
+    ) == [
+        "scripts/canary.py",
+        "configs/canary.json",
+        "tests/test_canary.py",
+    ]

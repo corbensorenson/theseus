@@ -16,6 +16,7 @@
     "maximum_format_retries": 3,
     "maximum_file_mutations": 16,
     "maximum_repair_attempts": 2,
+    "maximum_repeated_denied_actions": 3,
     "minimum_pre_mutation_read_actions": 3,
     "minimum_pre_mutation_distinct_paths": 3,
     "require_test_read_before_mutation": true,
