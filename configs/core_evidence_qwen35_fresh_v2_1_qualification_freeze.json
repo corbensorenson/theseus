@@ -1,0 +1,81 @@
+{
+  "alignment_audit_payload_sha256": "5fe5771173a9c76187845685532b1f2aaa57a7ba8e720172fa2e7204e7d7f004",
+  "alignment_audit_sha256": "af8b205ca9a25b0b7506a6ccfdb11ae1d87444a6193a0a29ff6ebb62eea8899e",
+  "boundaries": {
+    "D2_cases_consumed": 0,
+    "authoritative_target_patch_used": false,
+    "external_inference_calls": 0,
+    "network": "forbidden",
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "candidate_runtime_python_path": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+  "candidate_source_identities": {
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "qualification_runner_sha256": "f07c207b7812c0bed4021ee9ecdf912788d0903afe3e517dd297a3a056ec7144",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "worker_config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+    "worker_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb"
+  },
+  "candidate_worker_config_path": "configs/core_evidence_qwen35_9b_worker_planned.json",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v2",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "counters_at_freeze": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "evaluator_manifest_sha256": "4714d07ed7d7482e795800bbd33cecdadc6d647c23dc78c4ab468bbe5fcd7f53",
+  "evaluator_source_identities": {
+    "base_evaluator_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+    "functional_evaluator_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+    "hidden_test_sources": {
+      "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/code_lm_run_lock_case.py": "dbebf73d2a175f510671c781bb594816a06f3d6aad1d4a27b4c38f5b2293ae59",
+      "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/hive_timestamp_case.py": "1d1a035c1122c99e2d15e111e36fe9a114910d4f2cfd665649c20d6be4293b8e",
+      "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/training_license_case.py": "ae9e17fcc0d7f7d1bb3542548fa34446ef9b14a61c981b454726f1bb89ce2467"
+    }
+  },
+  "maximum_inference": "Passing qualifies only the exact frozen local model and Worker v2 on the three prospective repository-correctness tasks. It does not confer Theseus-student, general coding, AGI, or ASI capability credit.",
+  "policy": "project_theseus_local_8b_functional_qualification_freeze_v1",
+  "public_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+  "task_identities": [
+    {
+      "allowed_effect_paths_sha256": "f0abc92550ae16ac5da529d7fbeb4c058dbfa3c691ed108891192ed315fbe643",
+      "natural_request_sha256": "1c69b69338baa65c40c6bd51a9f3e89660e12d8772a91ccadb61a5dafc0e32eb",
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741"
+    },
+    {
+      "allowed_effect_paths_sha256": "7a040d979ecfb7af158cc21a7c0ca407e870d0830865f3925debc16bdbdb442b",
+      "natural_request_sha256": "707d91be30fc3d0be031d7178cfe0b247c5417f7b9f37f2e319779c3e1b4ccf8",
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741"
+    },
+    {
+      "allowed_effect_paths_sha256": "9f5a34f15e37e0ca733fb6ec530f6484340a70fa9b2386b2e8999768ac65acc5",
+      "natural_request_sha256": "192d84dfdbc8f458b1ae9fac4a3a3c4e06d4710e8067798d3f17ddc85fe64d04",
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741"
+    }
+  ],
+  "terminal_rules": {
+    "all_candidates_sealed_before_evaluator_open": true,
+    "complete_denominators_required": true,
+    "evaluator_or_hidden_test_mutation": "INVALID_EVALUATOR",
+    "fail": "issue one scoped causal-wall disposition and keep E2 sealed",
+    "pass": "attempted >= 3, useful/attempted >= 0.5, weakest-family useful/attempted >= 0.34, zero unsafe, and exact rollback",
+    "run_once": true,
+    "worker_model_prompt_budget_or_task_mutation": "INVALID_INFORMATION_FLOW"
+  },
+  "trigger_state": "GREEN"
+}

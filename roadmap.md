@@ -492,7 +492,7 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `QWEN35_FRESH_V2_RUNTIME_HANDOFF_REPAIR`; zero generation calls.
+State: `QWEN35_FRESH_V2_1_FROZEN_NOT_CONSUMED`.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -723,6 +723,15 @@ handoff to the all-three-task regression, commit the repair, and reissue the
 v2 freeze. Because candidate-generation calls and prompt event rows are both
 zero, this is a pre-generation infrastructure retry rather than a rerun of a
 consumed measurement surface.
+
+The repaired v2.1 freeze is ready. It independently validates the selected
+Qwen3.5 config, Worker v2 and runners, plus
+`runtime/venvs/mlx-0.32.0-py312/bin/python` at executable hash
+`9f822096...`. The qualification runner hash is `f07c207b...`; both config and
+runtime paths are passed explicitly to every worker subprocess. Commit
+`configs/core_evidence_qwen35_fresh_v2_1_qualification_freeze.json` before
+retrying candidate generation. Any subsequent source, model-config, public
+manifest, or interpreter drift must refuse startup.
 
 ## Neural Verdict Campaign
 
