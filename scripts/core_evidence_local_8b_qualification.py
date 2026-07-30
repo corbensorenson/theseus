@@ -54,6 +54,7 @@ def run(public_path: Path, freeze_path: Path) -> dict[str, Any]:
     freeze = read_json(freeze_path)
     validate_frozen_inputs(public, freeze, public_path)
     worker_config_path = frozen_worker_config_path(freeze)
+    runtime_python_path = frozen_runtime_python_path(freeze)
     config = read_json(worker_config_path)
     rows: list[dict[str, Any]] = []
     faults: list[dict[str, str]] = []
@@ -64,6 +65,7 @@ def run(public_path: Path, freeze_path: Path) -> dict[str, Any]:
                     task,
                     config,
                     config_path=worker_config_path,
+                    mlx_python=runtime_python_path,
                 )
             )
         except Exception as exc:  # preserve a complete attempted denominator
@@ -89,7 +91,10 @@ def run(public_path: Path, freeze_path: Path) -> dict[str, Any]:
         "cohort_id": public["cohort_id"],
         "public_manifest_sha256": sha256_file(public_path),
         "freeze_manifest_sha256": sha256_file(freeze_path),
-        "source_identities": current_source_identities(worker_config_path),
+        "source_identities": current_source_identities(
+            worker_config_path,
+            runtime_python_path,
+        ),
         "tasks": rows,
         "faults": faults,
         "denominators": {
@@ -147,7 +152,8 @@ def validate_frozen_inputs(
     if sha256_file(public_path) != freeze.get("public_manifest_sha256"):
         raise ValueError("public_manifest_mutated_after_freeze")
     if current_source_identities(
-        frozen_worker_config_path(freeze)
+        frozen_worker_config_path(freeze),
+        frozen_runtime_python_path(freeze),
     ) != freeze.get("candidate_source_identities"):
         raise ValueError("candidate_source_mutated_after_freeze")
     if public.get("competence_floor") != {
@@ -181,12 +187,14 @@ def validate_frozen_inputs(
 
 def current_source_identities(
     worker_config_path: Path = WORKER_CONFIG,
+    runtime_python_path: Path = development.MLX_PYTHON,
 ) -> dict[str, str]:
     return {
         "worker_sha256": sha256_file(WORKER),
         "worker_config_sha256": sha256_file(worker_config_path),
         "development_runner_sha256": sha256_file(DEVELOPMENT_RUNNER),
         "qualification_runner_sha256": sha256_file(Path(__file__)),
+        "runtime_python_sha256": sha256_file(runtime_python_path),
     }
 
 
@@ -200,6 +208,25 @@ def frozen_worker_config_path(freeze: dict[str, Any]) -> Path:
         path.relative_to(ROOT.resolve())
     except ValueError as exc:
         raise ValueError("worker_config_outside_repository") from exc
+    return path
+
+
+def frozen_runtime_python_path(freeze: dict[str, Any]) -> Path:
+    frozen = freeze.get("candidate_runtime_python_path")
+    if not frozen:
+        return development.MLX_PYTHON.absolute()
+    raw = str(frozen)
+    path = Path(raw)
+    path = (
+        path if path.is_absolute() else ROOT / path
+    ).absolute()
+    expected_root = (ROOT / "runtime" / "venvs").absolute()
+    try:
+        path.relative_to(expected_root)
+    except ValueError as exc:
+        raise ValueError("runtime_python_outside_frozen_venvs") from exc
+    if not path.is_file():
+        raise ValueError("runtime_python_missing")
     return path
 
 

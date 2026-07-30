@@ -19,6 +19,9 @@ ALIGNMENT_AUDIT = (
     ROOT / "reports" / "core_evidence_local_8b_alignment_audit.json"
 )
 OUT = ROOT / "configs" / "core_evidence_local_8b_qualification_freeze.json"
+DEFAULT_RUNTIME_PYTHON = (
+    ROOT / "runtime" / "venvs" / "mlx-0.32.0-py312" / "bin" / "python"
+)
 
 
 def main() -> int:
@@ -30,6 +33,10 @@ def main() -> int:
         "--worker-config",
         default="configs/core_evidence_local_8b_worker.json",
     )
+    parser.add_argument(
+        "--runtime-python",
+        default=str(DEFAULT_RUNTIME_PYTHON.relative_to(ROOT)),
+    )
     parser.add_argument("--out", default=str(OUT))
     args = parser.parse_args()
     report = build(
@@ -37,6 +44,7 @@ def main() -> int:
         Path(args.evaluator_manifest),
         Path(args.alignment_audit),
         Path(args.worker_config),
+        Path(args.runtime_python),
     )
     Path(args.out).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
@@ -58,11 +66,13 @@ def build(
     worker_config_path: Path = (
         ROOT / "configs" / "core_evidence_local_8b_worker.json"
     ),
+    runtime_python_path: Path = DEFAULT_RUNTIME_PYTHON,
 ) -> dict[str, Any]:
     public = read_json(public_path)
     evaluator = read_json(evaluator_manifest_path)
     audit = read_json(alignment_audit_path)
     worker_config_path = resolve_under_root(worker_config_path)
+    runtime_python_path = resolve_runtime_under_root(runtime_python_path)
     validate_pair(public, evaluator, audit)
     hidden_sources = sorted({
         str(file["source"])
@@ -88,9 +98,13 @@ def build(
             "qualification_runner_sha256": sha256_file(
                 ROOT / "scripts" / "core_evidence_local_8b_qualification.py"
             ),
+            "runtime_python_sha256": sha256_file(runtime_python_path),
         },
         "candidate_worker_config_path": str(
             worker_config_path.relative_to(ROOT)
+        ),
+        "candidate_runtime_python_path": str(
+            runtime_python_path.relative_to(ROOT)
         ),
         "evaluator_source_identities": {
             "functional_evaluator_sha256": sha256_file(
@@ -205,6 +219,20 @@ def resolve_under_root(path: Path) -> Path:
     except ValueError as exc:
         raise ValueError("worker_config_outside_repository") from exc
     return resolved
+
+
+def resolve_runtime_under_root(path: Path) -> Path:
+    absolute = (
+        path if path.is_absolute() else ROOT / path
+    ).absolute()
+    expected_root = (ROOT / "runtime" / "venvs").absolute()
+    try:
+        absolute.relative_to(expected_root)
+    except ValueError as exc:
+        raise ValueError("runtime_python_outside_frozen_venvs") from exc
+    if not absolute.is_file():
+        raise ValueError("runtime_python_missing")
+    return absolute
 
 
 def sha256_file(path: Path) -> str:

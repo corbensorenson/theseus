@@ -1,0 +1,54 @@
+{
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v2",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "evaluator_manifest_opened": 0,
+    "external_inference_calls": 0,
+    "hidden_test_files_opened": 0,
+    "learned_generation_credit": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T09:14:25.936750Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 3,
+    "planned": 3,
+    "sealed": 0,
+    "skipped": 0
+  },
+  "faults": [
+    {
+      "fault": "ValueError:worker_failed:returncode=1:stderr=orenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 59, in main\n    result = run_worker(\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 89, in run_worker\n    local_model = LocalMlxModel(config[\"model\"])\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 1010, in __init__\n    self.model, self.tokenizer = load(str(self.snapshot), lazy=False)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 322, in load\n    model, config = load_model(model_path, lazy, model_config=model_config)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 201, in load_model\n    model_class, model_args_class = get_model_classes(config=config)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 75, in _get_classes\n    raise ValueError(msg)\nValueError: Model type qwen3_5 not supported.\n",
+      "opaque_task_id": "task-q35freshv2-run-lock-identity"
+    },
+    {
+      "fault": "ValueError:worker_failed:returncode=1:stderr=orenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 59, in main\n    result = run_worker(\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 89, in run_worker\n    local_model = LocalMlxModel(config[\"model\"])\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 1010, in __init__\n    self.model, self.tokenizer = load(str(self.snapshot), lazy=False)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 322, in load\n    model, config = load_model(model_path, lazy, model_config=model_config)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 201, in load_model\n    model_class, model_args_class = get_model_classes(config=config)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 75, in _get_classes\n    raise ValueError(msg)\nValueError: Model type qwen3_5 not supported.\n",
+      "opaque_task_id": "task-q35freshv2-peer-time"
+    },
+    {
+      "fault": "ValueError:worker_failed:returncode=1:stderr=orenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 59, in main\n    result = run_worker(\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 89, in run_worker\n    local_model = LocalMlxModel(config[\"model\"])\n  File \"/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py\", line 1010, in __init__\n    self.model, self.tokenizer = load(str(self.snapshot), lazy=False)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 322, in load\n    model, config = load_model(model_path, lazy, model_config=model_config)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 201, in load_model\n    model_class, model_args_class = get_model_classes(config=config)\n  File \"/Users/corbensorenson/miniforge3/lib/python3.9/site-packages/mlx_lm/utils.py\", line 75, in _get_classes\n    raise ValueError(msg)\nValueError: Model type qwen3_5 not supported.\n",
+      "opaque_task_id": "task-q35freshv2-license-canonicalization"
+    }
+  ],
+  "freeze_manifest_sha256": "321904e01a297b81575ef0e951edc4ff8f53ecfc4745c33643760e57c8e2c3ca",
+  "maximum_inference": "This report proves only that target-blind candidates were generated and sealed. Competence requires the frozen independent evaluator.",
+  "policy": "project_theseus_local_8b_functional_qualification_candidates_v1",
+  "public_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+  "report_payload_sha256": "702ebdcba4387578cb4b60d5fad711e9ec7f9fda21c290147bfd3b6527802b66",
+  "runtime": {
+    "wall_ms": 12082.806
+  },
+  "scope": "prospective_target_blind_candidate_generation_only",
+  "source_identities": {
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "qualification_runner_sha256": "ee86a86ccb031da068c47264c5b649b60963d0dd94099a8621ce91b0ccb7fa1e",
+    "worker_config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+    "worker_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb"
+  },
+  "tasks": [],
+  "trigger_state": "RED"
+}

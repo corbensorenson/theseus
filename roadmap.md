@@ -492,7 +492,7 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `QWEN35_FRESH_V2_FROZEN_NOT_CONSUMED`.
+State: `QWEN35_FRESH_V2_RUNTIME_HANDOFF_REPAIR`; zero generation calls.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -705,6 +705,24 @@ evaluator, exact parent commit, unchanged competence floor, and run-once
 rules. The candidate runner independently validates the freeze and the focused
 worker/freeze/evaluator suite is `52/52` green. Commit this freeze before the
 one-shot candidate process.
+
+The first v2 launch stopped before generation. All three subprocesses received
+the selected Qwen3.5 config, closing the prior defect, but still inherited the
+development helper's historical Miniforge Python executable. That environment
+cannot load model type `qwen3_5`; all three attempts failed during model
+construction in 12.1 seconds. No candidate sealed, every task has zero event
+rows, learned-generation credit is zero, and the evaluator and hidden tests
+remain unopened. Record `INFRASTRUCTURE_BLOCKED_PRE_GENERATION`, not a
+run-once consumption or model failure.
+
+Bind the repository MLX 0.32 / Python 3.12 interpreter path and executable
+content hash into the freeze, require it to live under `runtime/venvs`, and
+pass that exact path to every worker subprocess alongside the frozen model
+config. Preserve backward auditability for historical freezes, add the runtime
+handoff to the all-three-task regression, commit the repair, and reissue the
+v2 freeze. Because candidate-generation calls and prompt event rows are both
+zero, this is a pre-generation infrastructure retry rather than a rerun of a
+consumed measurement surface.
 
 ## Neural Verdict Campaign
 

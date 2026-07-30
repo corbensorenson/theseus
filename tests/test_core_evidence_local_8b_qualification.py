@@ -52,6 +52,9 @@ def test_freeze_binds_green_target_free_alignment_audit() -> None:
     assert value["candidate_worker_config_path"] == (
         "configs/core_evidence_local_8b_worker.json"
     )
+    assert value["candidate_runtime_python_path"] == (
+        "runtime/venvs/mlx-0.32.0-py312/bin/python"
+    )
 
 
 def test_freeze_can_bind_a_distinct_repository_worker_config(
@@ -109,12 +112,16 @@ def test_runner_passes_the_frozen_worker_config_to_every_subprocess(
     )
     freeze = {
         "candidate_worker_config_path": str(selected_config.relative_to(ROOT)),
+        "candidate_runtime_python_path": (
+            "runtime/venvs/mlx-0.32.0-py312/bin/python"
+        ),
     }
     public_path = tmp_path / "public.json"
     freeze_path = tmp_path / "freeze.json"
     public_path.write_text(json.dumps(public), encoding="utf-8")
     freeze_path.write_text(json.dumps(freeze), encoding="utf-8")
     observed: list[Path] = []
+    observed_runtimes: list[Path] = []
 
     monkeypatch.setattr(
         qualification,
@@ -127,9 +134,11 @@ def test_runner_passes_the_frozen_worker_config_to_every_subprocess(
         config: dict,
         *,
         config_path: Path,
+        mlx_python: Path,
     ) -> dict:
         assert config == read(selected_config)
         observed.append(config_path)
+        observed_runtimes.append(mlx_python)
         return {
             "opaque_task_id": task["opaque_task_id"],
             "sealed_before_target_open": True,
@@ -145,3 +154,7 @@ def test_runner_passes_the_frozen_worker_config_to_every_subprocess(
 
     assert report["trigger_state"] == "GREEN"
     assert observed == [selected_config] * 3
+    expected_runtime = (
+        ROOT / "runtime" / "venvs" / "mlx-0.32.0-py312" / "bin" / "python"
+    ).absolute()
+    assert observed_runtimes == [expected_runtime] * 3
