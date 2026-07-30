@@ -59,7 +59,13 @@ def run(public_path: Path, freeze_path: Path) -> dict[str, Any]:
     faults: list[dict[str, str]] = []
     for task in public["tasks"]:
         try:
-            rows.append(development.run_task(task, config))
+            rows.append(
+                development.run_task(
+                    task,
+                    config,
+                    config_path=worker_config_path,
+                )
+            )
         except Exception as exc:  # preserve a complete attempted denominator
             faults.append({
                 "opaque_task_id": str(task.get("opaque_task_id") or ""),

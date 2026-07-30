@@ -492,7 +492,7 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `QWEN35_FRESH_QUALIFICATION_FROZEN_NOT_CONSUMED`.
+State: `FIRST_FRESH_COHORT_INVALID_CONFIG_HANDOFF`; replacement cohort required.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -670,6 +670,23 @@ path from the freeze and verifies both repository containment and content
 identity, so it cannot silently fall back to the historical Qwen3 config.
 Run the candidate process once without evaluator access; only after all three
 outputs seal may the independent evaluator open the hidden fixtures.
+
+The first attempted run of that cohort is invalid and may not be resumed or
+rerun. The freeze correctly bound and the runner correctly hash-checked
+`configs/core_evidence_qwen35_9b_worker_planned.json`, but the call into the
+development helper omitted `config_path`; the helper therefore retained its
+historical Qwen3-8B default for the subprocess. Two public requests received
+one local model call each, no candidate sealed, and the evaluator, hidden
+tests, target commits, and target patches remained unopened. The process was
+interrupted immediately after the mismatch was identified.
+
+Record `INVALID_WORKER_CONFIG_HANDOFF`, not a model or subsystem failure. The
+exact surface is consumed and forbidden from rerun. The runner now passes the
+contained, hash-verified frozen config path explicitly on every task, with a
+regression test covering all three subprocess calls. Bank this repair, then
+author a completely new source-disjoint cohort against the repaired committed
+runner; do not recycle the two exposed requests or the unexposed third member
+of their already-frozen cohort.
 
 ## Neural Verdict Campaign
 

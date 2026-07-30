@@ -1,0 +1,58 @@
+{
+  "policy": "project_theseus_invalid_qualification_attempt_v1",
+  "created_utc": "2026-07-30T09:17:00Z",
+  "trigger_state": "RED",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v1",
+  "disposition": "INVALID_WORKER_CONFIG_HANDOFF",
+  "scope": "interrupted_pre_evaluator_candidate_generation",
+  "cause": {
+    "expected_worker_config_path": "configs/core_evidence_qwen35_9b_worker_planned.json",
+    "expected_worker_config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+    "expected_repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "expected_revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "observed_default_worker_config_path": "configs/core_evidence_local_8b_worker.json",
+    "observed_default_worker_config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+    "observed_default_repo_id": "mlx-community/Qwen3-8B-4bit",
+    "observed_default_revision": "545dc4251c05440727734bcd94334791f6ab0192",
+    "fault": "The qualification runner validated and loaded the frozen worker config but called development.run_task without config_path, allowing the development helper's historical default path to reach the worker subprocess.",
+    "repair": "Pass the independently contained and hash-verified frozen worker_config_path explicitly to every development.run_task call.",
+    "repair_regression_test": "tests/test_core_evidence_local_8b_qualification.py::test_runner_passes_the_frozen_worker_config_to_every_subprocess"
+  },
+  "consumption": {
+    "public_requests_exposed": 2,
+    "sealed_candidates": 0,
+    "evaluator_manifest_opened": 0,
+    "hidden_test_files_opened": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "exposed_request_ids": [
+      "76bcad744a915d7b",
+      "225b58548f611fbb"
+    ],
+    "unexposed_request_ids": [
+      "03ade3b62b9cc407"
+    ],
+    "observed_local_model_calls": 2
+  },
+  "source_identities": {
+    "public_manifest_path": "configs/core_evidence_qwen35_fresh_qualification_public.json",
+    "public_manifest_sha256": "b484b4831d2a08efc909195cd27cffe0acf8945b76d79cfc80c7af5fc3cb507f",
+    "freeze_path": "configs/core_evidence_qwen35_fresh_qualification_freeze.json",
+    "freeze_sha256": "39b2566ab83566e543c0d97eb27a6ba0e1ed6acd04a2f7d3e1391a8ce9957a1b",
+    "attempt_commit": "f06377f0",
+    "event_log": "runtime/core_evidence_worker_v2_development_events.jsonl"
+  },
+  "terminal_rules": {
+    "exact_surface_may_be_rerun": false,
+    "candidate_result_may_support_competence": false,
+    "candidate_result_may_support_model_comparison": false,
+    "candidate_result_may_support_subsystem_claims": false,
+    "next_action": "Bank the explicit config-path repair, then author and freeze a new source-disjoint cohort."
+  },
+  "maximum_inference": "This is an infrastructure-invalid candidate-generation attempt, not a negative result for Qwen3.5, Worker v2 competence, or any Theseus subsystem."
+}

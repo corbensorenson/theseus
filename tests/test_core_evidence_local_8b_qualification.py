@@ -95,3 +95,53 @@ def test_public_evaluator_request_mismatch_is_rejected() -> None:
         match="public_evaluator_natural_request_mismatch",
     ):
         freeze_builder.validate_pair(read(PUBLIC), evaluator, read(AUDIT))
+
+
+def test_runner_passes_the_frozen_worker_config_to_every_subprocess(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    selected_config = (
+        ROOT / "configs" / "core_evidence_qwen35_9b_worker_planned.json"
+    )
+    public = read(
+        ROOT / "configs" / "core_evidence_qwen35_fresh_qualification_public.json"
+    )
+    freeze = {
+        "candidate_worker_config_path": str(selected_config.relative_to(ROOT)),
+    }
+    public_path = tmp_path / "public.json"
+    freeze_path = tmp_path / "freeze.json"
+    public_path.write_text(json.dumps(public), encoding="utf-8")
+    freeze_path.write_text(json.dumps(freeze), encoding="utf-8")
+    observed: list[Path] = []
+
+    monkeypatch.setattr(
+        qualification,
+        "validate_frozen_inputs",
+        lambda *_args: None,
+    )
+
+    def fake_run_task(
+        task: dict,
+        config: dict,
+        *,
+        config_path: Path,
+    ) -> dict:
+        assert config == read(selected_config)
+        observed.append(config_path)
+        return {
+            "opaque_task_id": task["opaque_task_id"],
+            "sealed_before_target_open": True,
+            "learned_generation_credit": 1,
+        }
+
+    monkeypatch.setattr(
+        qualification.development,
+        "run_task",
+        fake_run_task,
+    )
+    report = qualification.run(public_path, freeze_path)
+
+    assert report["trigger_state"] == "GREEN"
+    assert observed == [selected_config] * 3
