@@ -492,7 +492,7 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `ACTIVE_MODEL_BAKEOFF`; no successor qualification cohort exists.
+State: `ACTIVE_QWEN35_WORKER_REPAIR`; no successor qualification cohort exists.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -537,6 +537,43 @@ without a learned model. It then runs a small learned-consumer canary. A
 mechanics-green but behavior-uninformative surface is
 `INCONCLUSIVE_IMPLEMENTATION`, not subsystem falsification. Only
 adequacy-green implementations may enter the matched integrated stack arms.
+
+The preregistered consumed-task model bakeoff is now complete. Qwen3-8B and
+Qwen2.5-Coder-7B were eligible but produced `0/3` useful, `0` unsafe, and
+`3/3` rollback each. Qwen2.5-Coder won their zero-useful tie on 26 model calls
+and 508,173 ms versus 37 calls and 1,659,496 ms, but remains below every useful
+competence floor. Qwen3.5-9B produced the only useful patch (`1/1` independently
+evaluated, `0` unsafe, exact rollback), but two other tasks exceeded the frozen
+1,800-second worker-process budget before sealing. It is therefore the
+diagnostic signal leader, not an eligible winner. The valid terminal
+disposition is `NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION`; do not consume
+a fresh cohort or unseal a subsystem arm.
+
+The Qwen3.5 traces localized two repairable worker/runtime confounds rather
+than a model-memory wall. First, MLX's ordinary streamed cache retained
+assistant-generation tokens, while Qwen3.5's hybrid recurrent cache could not
+trim to the next turn's diverging chat prefix. Every turn therefore re-prefilled
+the entire growing dialogue. Worker v2 now stores the stable
+completed-message boundary with a zero-token generation prefill and retains
+only the longest request-local cache. The exact two-turn Metal qualification
+is `GREEN`: the second turn reused the prefix, processed only 86 new context
+tokens plus the 7-token generation suffix instead of all 169 prompt tokens,
+returned parseable actions on both turns, and completed both turns in 10.493
+seconds total. Second, duplicate-read recovery no longer tells an
+inspection-complete model to browse another file; it requires an edit or
+specific abstention.
+
+Run one preregistered **Qwen3.5 repaired-worker successor canary** on the same
+consumed three-task cohort. This is development, not a rerun of blind
+qualification. Freeze the new worker hash, exact Qwen3.5 revision, completed-
+message cache mechanics, controller guidance, tasks, evaluator, budgets, and
+unchanged competence floor before running. If all three tasks seal with zero
+infrastructure failure and the model clears the floor, freeze that exact
+model/worker pair for a newly authored source-disjoint qualification. If it
+does not, preserve its hidden functional results and issue a scoped remaining-
+wall diagnosis before considering a measured 14B-class hardware-frontier
+candidate. Do not add a larger model merely because the repaired 9B path has
+not yet been tested.
 
 ## Neural Verdict Campaign
 

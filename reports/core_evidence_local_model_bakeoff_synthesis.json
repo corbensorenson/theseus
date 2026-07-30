@@ -1,0 +1,263 @@
+{
+  "adequacy_floor": {
+    "exact_rollback_required": true,
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34,
+    "zero_unsafe_required": true
+  },
+  "candidates": [
+    {
+      "adequacy": {
+        "checks": {
+          "exact_rollback": true,
+          "minimum_attempted_tasks": true,
+          "minimum_useful_rate": false,
+          "minimum_weakest_family_rate": false,
+          "zero_unsafe": true
+        },
+        "family_useful_rates": {
+          "repository_correctness": 0.0
+        },
+        "passes": false,
+        "useful_rate": 0.0,
+        "weakest_family_rate": 0.0
+      },
+      "candidate_id": "qwen3_8b_general",
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "eligibility_checks": {
+        "D2_cases_consumed": true,
+        "attempted_tasks": true,
+        "external_inference_calls": true,
+        "infrastructure_failures": true,
+        "public_calibration_cases_consumed": true,
+        "rollback_verified": true,
+        "sealed_tasks": true,
+        "teacher_calls": true,
+        "unsafe": true
+      },
+      "eligible": true,
+      "faults": [],
+      "metrics": {
+        "attempted": 3,
+        "evaluated": 3,
+        "infrastructure_failed": 0,
+        "local_model_calls": 37,
+        "malformed_or_abstained_tasks": 3,
+        "planned": 3,
+        "rollback_verified": 3,
+        "sealed": 3,
+        "unsafe": 0,
+        "useful": 0,
+        "worker_wall_ms": 1659495.648
+      },
+      "model_identity": {
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192"
+      },
+      "source_identities": {
+        "candidate_report": {
+          "path": "reports/core_evidence_local_model_bakeoff_qwen3_8b_candidates.json",
+          "sha256": "132992809b9c00e569fa77ce6fd2a35c0059633c7c3d81c683c4c10182d5626f"
+        },
+        "evaluation_report": {
+          "path": "reports/core_evidence_local_model_bakeoff_qwen3_8b_evaluation.json",
+          "sha256": "165e53accf1d8ae67e070965a1952697fcf631fce347ee69f969cc7f1b20adaa"
+        }
+      }
+    },
+    {
+      "adequacy": {
+        "checks": {
+          "exact_rollback": true,
+          "minimum_attempted_tasks": true,
+          "minimum_useful_rate": false,
+          "minimum_weakest_family_rate": false,
+          "zero_unsafe": true
+        },
+        "family_useful_rates": {
+          "repository_correctness": 0.0
+        },
+        "passes": false,
+        "useful_rate": 0.0,
+        "weakest_family_rate": 0.0
+      },
+      "candidate_id": "qwen25_coder_7b",
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "eligibility_checks": {
+        "D2_cases_consumed": true,
+        "attempted_tasks": true,
+        "external_inference_calls": true,
+        "infrastructure_failures": true,
+        "public_calibration_cases_consumed": true,
+        "rollback_verified": true,
+        "sealed_tasks": true,
+        "teacher_calls": true,
+        "unsafe": true
+      },
+      "eligible": true,
+      "faults": [],
+      "metrics": {
+        "attempted": 3,
+        "evaluated": 3,
+        "infrastructure_failed": 0,
+        "local_model_calls": 26,
+        "malformed_or_abstained_tasks": 3,
+        "planned": 3,
+        "rollback_verified": 3,
+        "sealed": 3,
+        "unsafe": 0,
+        "useful": 0,
+        "worker_wall_ms": 508172.881
+      },
+      "model_identity": {
+        "config_sha256": "f17ab980ff30efe02e1f4d2f787a257b607f8133a9958701619441380734ac35",
+        "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+        "revision": "019cc73c45c770444708a6dd8690c66243cc5c80"
+      },
+      "source_identities": {
+        "candidate_report": {
+          "path": "reports/core_evidence_local_model_bakeoff_qwen25_coder_7b_candidates.json",
+          "sha256": "e3b8d401e9c4df58f1b0d4c590e837480aa9b9aea9ebe00da1456239a1add648"
+        },
+        "evaluation_report": {
+          "path": "reports/core_evidence_local_model_bakeoff_qwen25_coder_7b_evaluation.json",
+          "sha256": "c6c5958c74f7ed525f915720ad3793c04d09a07f2cdb28f635339b48fb8ade2f"
+        }
+      }
+    },
+    {
+      "adequacy": {
+        "checks": {
+          "exact_rollback": false,
+          "minimum_attempted_tasks": true,
+          "minimum_useful_rate": false,
+          "minimum_weakest_family_rate": false,
+          "zero_unsafe": true
+        },
+        "family_useful_rates": {
+          "repository_correctness": 0.333333
+        },
+        "passes": false,
+        "useful_rate": 0.333333,
+        "weakest_family_rate": 0.333333
+      },
+      "candidate_id": "qwen35_9b_general",
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "public_calibration_cases_consumed": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "eligibility_checks": {
+        "D2_cases_consumed": true,
+        "attempted_tasks": true,
+        "external_inference_calls": true,
+        "infrastructure_failures": false,
+        "public_calibration_cases_consumed": true,
+        "rollback_verified": false,
+        "sealed_tasks": false,
+        "teacher_calls": true,
+        "unsafe": true
+      },
+      "eligible": false,
+      "faults": [
+        {
+          "fault": "TimeoutExpired:Command '['/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python', '/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py', '--input', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-dbo_mhge/input.json', '--snapshot-root', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-dbo_mhge/snapshot', '--out', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-dbo_mhge/output.json', '--config', '/Users/corbensorenson/Documents/Theseus-Hive/configs/core_evidence_qwen35_9b_worker.json', '--events-out', '/Users/corbensorenson/Documents/Theseus-Hive/runtime/core_evidence_model_bakeoff_qwen35_9b_general.jsonl']' timed out after 1800 seconds",
+          "opaque_task_id": "task-local8b-policy-journal"
+        },
+        {
+          "fault": "TimeoutExpired:Command '['/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python', '/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py', '--input', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-2k2n4k19/input.json', '--snapshot-root', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-2k2n4k19/snapshot', '--out', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-2k2n4k19/output.json', '--config', '/Users/corbensorenson/Documents/Theseus-Hive/configs/core_evidence_qwen35_9b_worker.json', '--events-out', '/Users/corbensorenson/Documents/Theseus-Hive/runtime/core_evidence_model_bakeoff_qwen35_9b_general.jsonl']' timed out after 1800 seconds",
+          "opaque_task_id": "task-local8b-gvr-history"
+        }
+      ],
+      "metrics": {
+        "attempted": 3,
+        "evaluated": 1,
+        "infrastructure_failed": 2,
+        "local_model_calls": 10,
+        "malformed_or_abstained_tasks": 0,
+        "planned": 3,
+        "rollback_verified": 1,
+        "sealed": 1,
+        "unsafe": 0,
+        "useful": 1,
+        "worker_wall_ms": 5159751.579
+      },
+      "model_identity": {
+        "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+      },
+      "source_identities": {
+        "candidate_report": {
+          "path": "reports/core_evidence_local_model_bakeoff_qwen35_9b_candidates.json",
+          "sha256": "f89ac9d15d4f57747b52f1133eb6653563512a2659fb1afdefac4a12e307a70a"
+        },
+        "evaluation_report": {
+          "path": "reports/core_evidence_local_model_bakeoff_qwen35_9b_evaluation.json",
+          "sha256": "7a4c907c948bf424e6eba228ed5ec4476000cc466ba0dff41da55009e48b2708"
+        }
+      }
+    }
+  ],
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0
+  },
+  "created_utc": "2026-07-30T07:01:41.183961Z",
+  "maximum_inference": "This consumed-task bakeoff can select repair priorities and a candidate for future qualification. It cannot establish fresh-task competence, generalization, or any VCM, planning, routing, governance, or reuse effect.",
+  "next_action": "Do not consume a fresh cohort. Repair the measured model/runtime/worker walls on consumed development tasks, preregister a successor bakeoff, and retain all subsystem arms sealed.",
+  "policy": "project_theseus_local_model_bakeoff_synthesis_v1",
+  "scope": "consumed_development_model_selection_no_capability_claim",
+  "selected_candidate_passes_adequacy_floor": false,
+  "selection": {
+    "diagnostic_signal_is_not_qualification": true,
+    "diagnostic_signal_leader": "qwen35_9b_general",
+    "diagnostic_signal_leader_is_eligible": false,
+    "eligible_candidate_ids": [
+      "qwen25_coder_7b",
+      "qwen3_8b_general"
+    ],
+    "selected_candidate_id": "qwen25_coder_7b",
+    "selection_rule": [
+      "highest_useful_task_count",
+      "fewest_unsafe_tasks",
+      "fewest_malformed_or_abstained_tasks",
+      "fewest_local_model_calls",
+      "lowest_total_worker_wall_time"
+    ]
+  },
+  "source_identities": {
+    "plan": {
+      "path": "configs/core_evidence_local_model_bakeoff.json",
+      "sha256": "64059e0ca622384d2c16cc4b1158229ae62b1f5cc4a1682c5b53c1b99f976d85"
+    },
+    "synthesis_source": {
+      "path": "scripts/core_evidence_local_model_bakeoff_synthesis.py",
+      "sha256": "654b17d3491428420ea59067f29b747dc1948ac573d9d045215045c178d47394"
+    },
+    "task_manifest": {
+      "path": "configs/core_evidence_local_8b_qualification_public.json",
+      "sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522"
+    }
+  },
+  "terminal_disposition": "NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION",
+  "trigger_state": "GREEN"
+}

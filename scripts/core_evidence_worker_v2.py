@@ -526,8 +526,13 @@ class RepositoryState:
             and self.verification_receipts[-1]["passed"]
         ):
             return "finish_or_make_only_request_required_additional_edits"
+        if self.inspection_complete():
+            return "edit_now_or_abstain_with_specific_missing_information"
+        return "inspect_request_relevant_implementation_config_and_test"
+
+    def inspection_complete(self) -> bool:
         budgets = self.config["budgets"]
-        inspection_complete = bool(
+        return bool(
             self.read_actions
             >= int(budgets["minimum_pre_mutation_read_actions"])
             and len(self.read_paths)
@@ -537,9 +542,6 @@ class RepositoryState:
                 or any(path.startswith("tests/") for path in self.read_paths)
             )
         )
-        if inspection_complete:
-            return "edit_now_or_abstain_with_specific_missing_information"
-        return "inspect_request_relevant_implementation_config_and_test"
 
     def before_mutation(self) -> None:
         budgets = self.config["budgets"]
@@ -603,6 +605,13 @@ class RepositoryState:
             return (
                 "NEXT ACTION MUST BE read on an existing relevant test. "
                 f"Target-blind suggestions: {tests or unread}. Do not create a test yet."
+            )
+        if "duplicate_read_span" in fault and self.inspection_complete():
+            return (
+                "The requested span was already returned and the required "
+                "inspection is complete. NEXT ACTION MUST BE replace/create/delete "
+                "using exact text already read, or abstain with the specific missing "
+                "information. Do not read or search again."
             )
         if (
             "insufficient_pre_mutation" in fault
@@ -916,7 +925,10 @@ class LocalMlxModel:
             repetition_penalty=float(card["repetition_penalty"]),
             repetition_context_size=int(card["repetition_context_size"]),
         )
-        self.prompt_cache = LRUPromptCache(max_size=2)
+        # This worker serves one request at a time, so only its longest dialogue
+        # boundary is useful. Keeping one entry also avoids retaining an extra
+        # full hybrid cache in unified memory.
+        self.prompt_cache = LRUPromptCache(max_size=1)
         self.model_key = (
             str(card["repo_id"]),
             str(card["revision"]),
@@ -925,12 +937,20 @@ class LocalMlxModel:
 
     def generate(self, messages: list[dict[str, str]]) -> str:
         from mlx_lm import stream_generate
+        from mlx_lm.generate import generate_step
         from mlx_lm.models.cache import make_prompt_cache
+        import mlx.core as mx
 
         prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
             add_generation_prompt=True,
+            **dict(self.card.get("chat_template_kwargs") or {}),
+        )
+        context_prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=False,
             **dict(self.card.get("chat_template_kwargs") or {}),
         )
         bos = self.tokenizer.bos_token
@@ -940,13 +960,39 @@ class LocalMlxModel:
                 bos is None or not prompt.startswith(bos)
             ),
         )
-        prompt_cache, uncached_tokens = self.prompt_cache.fetch_nearest_cache(
-            self.model_key, prompt_tokens
+        context_tokens = self.tokenizer.encode(
+            context_prompt,
+            add_special_tokens=(
+                bos is None or not context_prompt.startswith(bos)
+            ),
         )
-        cache_reused = prompt_cache is not None
-        if prompt_cache is None:
-            prompt_cache = make_prompt_cache(self.model)
-        cache_key = prompt_tokens[:]
+        def prefill(cache: list[Any], tokens: list[int]) -> None:
+            stream = generate_step(
+                mx.array(tokens),
+                self.model,
+                max_tokens=0,
+                sampler=self.sampler,
+                logits_processors=self.logits_processors,
+                prompt_cache=cache,
+            )
+            for _ in stream:
+                pass
+
+        (
+            prompt_cache,
+            uncached_tokens,
+            cache_reused,
+            uncached_context_tokens,
+        ) = (
+            prepare_prompt_boundary_cache(
+                self.prompt_cache,
+                self.model_key,
+                prompt_tokens,
+                context_tokens,
+                make_cache=lambda: make_prompt_cache(self.model),
+                prefill=prefill,
+            )
+        )
         stream = stream_generate(
             self.model,
             self.tokenizer,
@@ -961,7 +1007,6 @@ class LocalMlxModel:
         generated_tokens = 0
         try:
             for response in stream:
-                cache_key.append(int(response.token))
                 generated_tokens += 1
                 text += response.text
                 complete = complete_action_json(text)
@@ -969,14 +1014,17 @@ class LocalMlxModel:
                     break
         finally:
             stream.close()
-            self.prompt_cache.insert_cache(
-                self.model_key, cache_key, prompt_cache
-            )
         self.last_generation_metrics = {
             "prompt_tokens": len(prompt_tokens),
-            "uncached_prompt_tokens": len(uncached_tokens),
+            "uncached_prompt_tokens": (
+                uncached_context_tokens + len(uncached_tokens)
+            ),
+            "uncached_context_tokens": uncached_context_tokens,
+            "generation_uncached_prompt_tokens": len(uncached_tokens),
+            "context_boundary_tokens": len(context_tokens),
             "generated_tokens": generated_tokens,
             "prefix_cache_reused": cache_reused,
+            "prompt_boundary_cache_used": True,
         }
         return complete if complete is not None else text
 
@@ -1204,6 +1252,55 @@ def complete_action_json(raw: str) -> str | None:
     if not isinstance(result, dict):
         raise WorkerFault("action_must_be_object")
     return raw[start:start + consumed]
+
+
+def prepare_prompt_boundary_cache(
+    cache_store: Any,
+    model_key: Any,
+    prompt_tokens: list[int],
+    boundary_tokens: list[int],
+    *,
+    make_cache: Any,
+    prefill: Any,
+) -> tuple[Any, list[int], bool, int]:
+    """Create a reusable pre-generation cache even for hybrid recurrent models.
+
+    A normal streamed cache includes generated assistant tokens. Hybrid caches
+    cannot always be trimmed when the next chat turn diverges at that boundary,
+    which forces a full prompt prefill every turn. Prefilling through the
+    completed-message boundary with ``max_tokens=0`` records a prefix that is
+    stable when the next assistant/tool turn is rendered, without needing to
+    rewind recurrent state.
+    """
+    if (
+        not boundary_tokens
+        or prompt_tokens[:len(boundary_tokens)] != boundary_tokens
+    ):
+        raise WorkerFault("prompt_context_boundary_not_prefix")
+    boundary_cache, boundary_uncached = cache_store.fetch_nearest_cache(
+        model_key, boundary_tokens
+    )
+    reused = boundary_cache is not None
+    if boundary_cache is None:
+        boundary_cache = make_cache()
+    if boundary_uncached:
+        prefill(boundary_cache, boundary_uncached)
+    cache_store.insert_cache(model_key, boundary_tokens, boundary_cache)
+    generation_cache, generation_uncached = cache_store.fetch_nearest_cache(
+        model_key, prompt_tokens
+    )
+    expected_generation_suffix = prompt_tokens[len(boundary_tokens):]
+    if (
+        generation_cache is None
+        or generation_uncached != expected_generation_suffix
+    ):
+        raise WorkerFault("prompt_boundary_cache_retrieval_failed")
+    return (
+        generation_cache,
+        generation_uncached,
+        reused,
+        len(boundary_uncached),
+    )
 
 
 def write_normalized_text(path: Path, text: str) -> None:

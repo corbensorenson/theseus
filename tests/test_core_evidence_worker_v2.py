@@ -317,6 +317,91 @@ def test_duplicate_read_span_is_denied_as_no_new_information(
         state.read("scripts/x.py", 1, 10)
 
 
+def test_duplicate_read_after_complete_inspection_forces_decision(
+    tmp_path: Path,
+) -> None:
+    for directory in ("scripts", "tests", "configs"):
+        (tmp_path / directory).mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert True\n"
+    )
+    (tmp_path / "configs" / "x.json").write_text("{}\n")
+    state = worker.RepositoryState(tmp_path, config())
+    state.read("scripts/x.py", 1, 10)
+    state.read("tests/test_x.py", 1, 10)
+    state.read("configs/x.json", 1, 10)
+
+    guidance = state.recovery_instruction(
+        "duplicate_read_span_no_new_information"
+    )
+
+    assert "NEXT ACTION MUST BE replace/create/delete" in guidance
+    assert "Do not read or search again" in guidance
+
+
+def test_prompt_boundary_cache_reuses_untrimmable_prefix() -> None:
+    class FakeCacheStore:
+        def __init__(self) -> None:
+            self.entries: list[tuple[tuple[str, str], list[int], dict]] = []
+
+        def fetch_nearest_cache(self, model_key, tokens):
+            matches = [
+                (stored_tokens, value)
+                for key, stored_tokens, value in self.entries
+                if key == model_key and tokens[:len(stored_tokens)] == stored_tokens
+            ]
+            if not matches:
+                return None, tokens
+            stored_tokens, value = max(matches, key=lambda row: len(row[0]))
+            return dict(value), tokens[len(stored_tokens):]
+
+        def insert_cache(self, model_key, tokens, value):
+            self.entries = [
+                row for row in self.entries
+                if not (row[0] == model_key and row[1] == tokens)
+            ]
+            self.entries.append((model_key, list(tokens), dict(value)))
+
+    store = FakeCacheStore()
+    prefills = []
+
+    def prefill(value, tokens):
+        value["tokens"] = value.get("tokens", []) + list(tokens)
+        prefills.append(list(tokens))
+
+    first_cache, first_uncached, first_reused, first_new = (
+        worker.prepare_prompt_boundary_cache(
+            store,
+            ("model", "revision"),
+            [1, 2, 3, 4],
+            [1, 2, 3],
+            make_cache=lambda: {"tokens": []},
+            prefill=prefill,
+        )
+    )
+    second_cache, second_uncached, second_reused, second_new = (
+        worker.prepare_prompt_boundary_cache(
+            store,
+            ("model", "revision"),
+            [1, 2, 3, 5, 6],
+            [1, 2, 3, 5],
+            make_cache=lambda: {"tokens": []},
+            prefill=prefill,
+        )
+    )
+
+    assert first_reused is False
+    assert first_uncached == [4]
+    assert first_new == 3
+    assert first_cache["tokens"] == [1, 2, 3]
+    assert second_reused is True
+    assert second_uncached == [6]
+    assert second_new == 1
+    assert second_cache["tokens"] == [1, 2, 3, 5]
+    assert prefills == [[1, 2, 3], [5]]
+
+
 def test_tiny_reads_expand_to_stable_context_blocks(tmp_path: Path) -> None:
     (tmp_path / "scripts").mkdir()
     (tmp_path / "scripts" / "x.py").write_text(

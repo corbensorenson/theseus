@@ -1,0 +1,397 @@
+{
+  "candidate_id": "qwen25_coder_7b",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T05:32:45.850313Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 0,
+    "planned": 3,
+    "sealed": 3,
+    "skipped": 0
+  },
+  "faults": [],
+  "maximum_inference": "This consumed-task run supports local model selection only. It cannot support competence, generalization, or subsystem claims.",
+  "model_identity": {
+    "config_sha256": "f17ab980ff30efe02e1f4d2f787a257b607f8133a9958701619441380734ac35",
+    "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+    "revision": "019cc73c45c770444708a6dd8690c66243cc5c80"
+  },
+  "policy": "project_theseus_local_model_bakeoff_candidates_v1",
+  "runtime": {
+    "wall_ms": 508172.881
+  },
+  "scope": "consumed_development_model_selection_no_capability_claim",
+  "source_identities": {
+    "bakeoff_runner_sha256": "77b562bf90619207eed07fb2d0910f4e7211a8aba1317df1df25a70743194150",
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "plan_sha256": "64059e0ca622384d2c16cc4b1158229ae62b1f5cc4a1682c5b53c1b99f976d85",
+    "task_manifest_sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522",
+    "worker_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 2,
+        "action_counts": {
+          "abstain": 1,
+          "read": 1
+        },
+        "distinct_read_paths": [
+          "scripts/artifact_retention_reference.py"
+        ],
+        "failed_actions": 0,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 1
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 2,
+          "action_counts": {
+            "abstain": 1,
+            "read": 1
+          },
+          "distinct_read_paths": [
+            "scripts/artifact_retention_reference.py"
+          ],
+          "failed_actions": 0,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 1
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 3,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+          "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "0a32a6f7d5fb3d599538821d845d1a0ca873c52e669a49324c2f505538e994de"
+        },
+        "natural_request_sha256": "55913116ebe2da732e9e380e7541fa1d7d07005684c8fd3e70e36b075378de30",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 95293.347
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "11a475a24cf3d9cf5e52cfc01649460c8519492e5c61e5279c67b9e9e0e8321a",
+      "candidate_seal": {
+        "candidate_output_sha256": "11a475a24cf3d9cf5e52cfc01649460c8519492e5c61e5279c67b9e9e0e8321a",
+        "config_sha256": "f17ab980ff30efe02e1f4d2f787a257b607f8133a9958701619441380734ac35",
+        "finished_utc": "2026-07-30T05:25:54.071943Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T05:24:18.480092Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 95588.901
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 3,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+        "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "0a32a6f7d5fb3d599538821d845d1a0ca873c52e669a49324c2f505538e994de"
+      },
+      "opaque_task_id": "task-local8b-retention-path",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "abstain_with_specific_missing_information": 4,
+          "edit_now_or_abstain_with_specific_missing_information": 1,
+          "read": 12,
+          "replace": 1
+        },
+        "distinct_read_paths": [
+          "crates/symliquid-cli/src/code_lm_closure/broad_transfer_residual_policy/tests.rs",
+          "scripts/full_state_update_causality.py",
+          "scripts/kerc_semantic_corpus_verify.py",
+          "scripts/policy_update_lease.py",
+          "scripts/progressive_sequence_length_qualification.py",
+          "tests/test_full_state_update_causality.py",
+          "tests/test_policy_update_lease.py",
+          "tests/test_progressive_sequence_length_qualification.py"
+        ],
+        "failed_actions": 10,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 8
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "abstain_with_specific_missing_information": 4,
+            "edit_now_or_abstain_with_specific_missing_information": 1,
+            "read": 12,
+            "replace": 1
+          },
+          "distinct_read_paths": [
+            "crates/symliquid-cli/src/code_lm_closure/broad_transfer_residual_policy/tests.rs",
+            "scripts/full_state_update_causality.py",
+            "scripts/kerc_semantic_corpus_verify.py",
+            "scripts/policy_update_lease.py",
+            "scripts/progressive_sequence_length_qualification.py",
+            "tests/test_full_state_update_causality.py",
+            "tests/test_policy_update_lease.py",
+            "tests/test_progressive_sequence_length_qualification.py"
+          ],
+          "failed_actions": 10,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 8
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+          "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "0a32a6f7d5fb3d599538821d845d1a0ca873c52e669a49324c2f505538e994de"
+        },
+        "natural_request_sha256": "e6920365431829a348c53f7deab4ae5161179b1616d9b320db18ccec9b1c388c",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 320540.27
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "4cd99154b30115f685af456f294089523b7d5b264c2ae0f8dd7006c7663b8707",
+      "candidate_seal": {
+        "candidate_output_sha256": "4cd99154b30115f685af456f294089523b7d5b264c2ae0f8dd7006c7663b8707",
+        "config_sha256": "f17ab980ff30efe02e1f4d2f787a257b607f8133a9958701619441380734ac35",
+        "finished_utc": "2026-07-30T05:31:16.481670Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T05:25:55.450154Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 321022.135
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+        "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "0a32a6f7d5fb3d599538821d845d1a0ca873c52e669a49324c2f505538e994de"
+      },
+      "opaque_task_id": "task-local8b-policy-journal",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [],
+      "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 5,
+        "action_counts": {
+          "abstain": 1,
+          "read": 3,
+          "replace": 1
+        },
+        "distinct_read_paths": [
+          "scripts/gvr_state_machine.py",
+          "scripts/kerc_semantic_corpus_verify.py",
+          "tests/test_gvr_state_machine.py"
+        ],
+        "failed_actions": 1,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 3
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 5,
+          "action_counts": {
+            "abstain": 1,
+            "read": 3,
+            "replace": 1
+          },
+          "distinct_read_paths": [
+            "scripts/gvr_state_machine.py",
+            "scripts/kerc_semantic_corpus_verify.py",
+            "tests/test_gvr_state_machine.py"
+          ],
+          "failed_actions": 1,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 3
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 5,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+          "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "0a32a6f7d5fb3d599538821d845d1a0ca873c52e669a49324c2f505538e994de"
+        },
+        "natural_request_sha256": "d5540c6a6b973254f5d21816258b0342d7135290633010ad2c228c273fa83601",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 87313.433
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "236dbfb25b91223cefd4d02c6c060c3b05d8312a84ab68b1d5fcfa0e0f98e0a2",
+      "candidate_seal": {
+        "candidate_output_sha256": "236dbfb25b91223cefd4d02c6c060c3b05d8312a84ab68b1d5fcfa0e0f98e0a2",
+        "config_sha256": "f17ab980ff30efe02e1f4d2f787a257b607f8133a9958701619441380734ac35",
+        "finished_utc": "2026-07-30T05:32:45.616114Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T05:31:18.047012Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 87566.507
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 5,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+        "revision": "019cc73c45c770444708a6dd8690c66243cc5c80",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "0a32a6f7d5fb3d599538821d845d1a0ca873c52e669a49324c2f505538e994de"
+      },
+      "opaque_task_id": "task-local8b-gvr-history",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

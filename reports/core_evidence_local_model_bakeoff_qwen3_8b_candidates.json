@@ -1,0 +1,405 @@
+{
+  "candidate_id": "qwen3_8b_general",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T05:23:42.123892Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 0,
+    "planned": 3,
+    "sealed": 3,
+    "skipped": 0
+  },
+  "faults": [],
+  "maximum_inference": "This consumed-task run supports local model selection only. It cannot support competence, generalization, or subsystem claims.",
+  "model_identity": {
+    "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+    "repo_id": "mlx-community/Qwen3-8B-4bit",
+    "revision": "545dc4251c05440727734bcd94334791f6ab0192"
+  },
+  "policy": "project_theseus_local_model_bakeoff_candidates_v1",
+  "runtime": {
+    "wall_ms": 1659495.648
+  },
+  "scope": "consumed_development_model_selection_no_capability_claim",
+  "source_identities": {
+    "bakeoff_runner_sha256": "77b562bf90619207eed07fb2d0910f4e7211a8aba1317df1df25a70743194150",
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "plan_sha256": "64059e0ca622384d2c16cc4b1158229ae62b1f5cc4a1682c5b53c1b99f976d85",
+    "task_manifest_sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522",
+    "worker_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "read": 16,
+          "search": 2
+        },
+        "distinct_read_paths": [
+          "docs/reference/virtual_context_memory_v1.0/Virtual_Context_Memory_Corben_Sorenson.md",
+          "scripts/artifact_retention_reference.py",
+          "scripts/kerc_gum_entity_coreference.py",
+          "scripts/kerc_gum_entity_coreference_verify.py",
+          "scripts/standard_causal_transformer_preference.py",
+          "scripts/theseus_artifact_retention.py",
+          "scripts/theseus_artifact_retention_replay_gate.py",
+          "tests/test_artifact_retention_reference.py"
+        ],
+        "failed_actions": 8,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 8
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "read": 16,
+            "search": 2
+          },
+          "distinct_read_paths": [
+            "docs/reference/virtual_context_memory_v1.0/Virtual_Context_Memory_Corben_Sorenson.md",
+            "scripts/artifact_retention_reference.py",
+            "scripts/kerc_gum_entity_coreference.py",
+            "scripts/kerc_gum_entity_coreference_verify.py",
+            "scripts/standard_causal_transformer_preference.py",
+            "scripts/theseus_artifact_retention.py",
+            "scripts/theseus_artifact_retention_replay_gate.py",
+            "tests/test_artifact_retention_reference.py"
+          ],
+          "failed_actions": 8,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 8
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "55913116ebe2da732e9e380e7541fa1d7d07005684c8fd3e70e36b075378de30",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 1201639.616
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "224fe3b61432ff06e491d4486c0d01714371b93d8459eb738dad2fa920350b74",
+      "candidate_seal": {
+        "candidate_output_sha256": "224fe3b61432ff06e491d4486c0d01714371b93d8459eb738dad2fa920350b74",
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "finished_utc": "2026-07-30T05:16:06.783163Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T04:56:03.676783Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 1203120.896
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-local8b-retention-path",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [],
+      "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 9,
+        "action_counts": {
+          "abstain": 1,
+          "read": 6,
+          "search": 2
+        },
+        "distinct_read_paths": [
+          "configs/policy_update_lease.json",
+          "scripts/full_state_update_causality.py",
+          "scripts/policy_update_lease.py",
+          "tests/test_policy_update_lease.py"
+        ],
+        "failed_actions": 2,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 9,
+          "action_counts": {
+            "abstain": 1,
+            "read": 6,
+            "search": 2
+          },
+          "distinct_read_paths": [
+            "configs/policy_update_lease.json",
+            "scripts/full_state_update_causality.py",
+            "scripts/policy_update_lease.py",
+            "tests/test_policy_update_lease.py"
+          ],
+          "failed_actions": 2,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 4
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 9,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "e6920365431829a348c53f7deab4ae5161179b1616d9b320db18ccec9b1c388c",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 198387.104
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "0d1fe43833f6aad985922a012185efb6c11d61f5c8783cbe4ebf9a016395c8ba",
+      "candidate_seal": {
+        "candidate_output_sha256": "0d1fe43833f6aad985922a012185efb6c11d61f5c8783cbe4ebf9a016395c8ba",
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "finished_utc": "2026-07-30T05:19:27.420989Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T05:16:08.416904Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 199002.662
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 9,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-local8b-policy-journal",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "a36af1df7c4fefe7e3311962cd85b47d1d750bccf77f254abbc1aa16499ad2f7",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 10,
+        "action_counts": {
+          "abstain": 1,
+          "read": 6,
+          "replace": 2,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "scripts/gvr_state_machine.py",
+          "scripts/kerc_semantic_corpus_verify.py",
+          "scripts/moecot_source_conditioned_pretraining.py",
+          "tests/test_gvr_state_machine.py"
+        ],
+        "failed_actions": 5,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 10,
+          "action_counts": {
+            "abstain": 1,
+            "read": 6,
+            "replace": 2,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "scripts/gvr_state_machine.py",
+            "scripts/kerc_semantic_corpus_verify.py",
+            "scripts/moecot_source_conditioned_pretraining.py",
+            "tests/test_gvr_state_machine.py"
+          ],
+          "failed_actions": 5,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 4
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 10,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "d5540c6a6b973254f5d21816258b0342d7135290633010ad2c228c273fa83601",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 252133.247
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "053ead77e34d94d96151e82340c7c2e572fa0495ac0a45a7d367659a0d2eafbc",
+      "candidate_seal": {
+        "candidate_output_sha256": "053ead77e34d94d96151e82340c7c2e572fa0495ac0a45a7d367659a0d2eafbc",
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "finished_utc": "2026-07-30T05:23:41.806800Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T05:19:29.227617Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 252520.652
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 10,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-local8b-gvr-history",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "87e514b5021617b5ee2f6c95bff187ee42d3246d7d88f0afae19b801ab17bcee",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

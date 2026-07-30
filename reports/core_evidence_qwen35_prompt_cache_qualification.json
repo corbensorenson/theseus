@@ -1,0 +1,68 @@
+{
+  "checks": {
+    "both_outputs_parse_as_actions": true,
+    "both_turns_use_boundary_cache": true,
+    "first_turn_starts_without_prior_prefix": true,
+    "generation_prefill_is_only_template_suffix": true,
+    "second_turn_only_prefills_new_context_suffix": true,
+    "second_turn_reuses_prefix": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T07:09:15.951410Z",
+  "maximum_inference": "This probe establishes only local MLX action formatting and exact prompt-boundary cache reuse. It cannot establish repository competence or any subsystem effect.",
+  "model_identity": {
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+  },
+  "policy": "project_theseus_qwen35_prompt_cache_qualification_v1",
+  "runtime": {
+    "wall_ms": 10492.767
+  },
+  "scope": "runtime_mechanics_only_no_repository_competence_claim",
+  "source_identities": {
+    "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+    "qualification_sha256": "f55a0252cd323dd8f552f403af6e50fa98143dbad870dff882f0ded63b5690cc",
+    "worker_sha256": "f40e6a3c95e1f5ef6f0dc58d4b14008cd98bb20b95fd9b7abc5b39377290c0d6"
+  },
+  "trigger_state": "GREEN",
+  "turns": [
+    {
+      "action_kind": "read",
+      "generation_metrics": {
+        "context_boundary_tokens": 76,
+        "generated_tokens": 30,
+        "generation_uncached_prompt_tokens": 7,
+        "prefix_cache_reused": false,
+        "prompt_boundary_cache_used": true,
+        "prompt_tokens": 83,
+        "uncached_context_tokens": 76,
+        "uncached_prompt_tokens": 83
+      },
+      "parseable_action": true,
+      "raw_characters": 77,
+      "raw_sha256": "73ffed2d49613186ce4457108f134b2d1931166c9be9bd17be82b4c44d8e1706"
+    },
+    {
+      "action_kind": "edit",
+      "generation_metrics": {
+        "context_boundary_tokens": 162,
+        "generated_tokens": 40,
+        "generation_uncached_prompt_tokens": 7,
+        "prefix_cache_reused": true,
+        "prompt_boundary_cache_used": true,
+        "prompt_tokens": 169,
+        "uncached_context_tokens": 86,
+        "uncached_prompt_tokens": 93
+      },
+      "parseable_action": true,
+      "raw_characters": 101,
+      "raw_sha256": "37cdf424bf666631cb929c8478de941d330176c0fd7d2d4b6371b15afc30fb2d"
+    }
+  ]
+}

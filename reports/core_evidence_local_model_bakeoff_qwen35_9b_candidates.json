@@ -1,0 +1,277 @@
+{
+  "candidate_id": "qwen35_9b_general",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T06:59:15.420561Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 2,
+    "planned": 3,
+    "sealed": 1,
+    "skipped": 0
+  },
+  "faults": [
+    {
+      "fault": "TimeoutExpired:Command '['/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python', '/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py', '--input', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-dbo_mhge/input.json', '--snapshot-root', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-dbo_mhge/snapshot', '--out', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-dbo_mhge/output.json', '--config', '/Users/corbensorenson/Documents/Theseus-Hive/configs/core_evidence_qwen35_9b_worker.json', '--events-out', '/Users/corbensorenson/Documents/Theseus-Hive/runtime/core_evidence_model_bakeoff_qwen35_9b_general.jsonl']' timed out after 1800 seconds",
+      "opaque_task_id": "task-local8b-policy-journal"
+    },
+    {
+      "fault": "TimeoutExpired:Command '['/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python', '/Users/corbensorenson/Documents/Theseus-Hive/scripts/core_evidence_worker_v2.py', '--input', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-2k2n4k19/input.json', '--snapshot-root', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-2k2n4k19/snapshot', '--out', '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-2k2n4k19/output.json', '--config', '/Users/corbensorenson/Documents/Theseus-Hive/configs/core_evidence_qwen35_9b_worker.json', '--events-out', '/Users/corbensorenson/Documents/Theseus-Hive/runtime/core_evidence_model_bakeoff_qwen35_9b_general.jsonl']' timed out after 1800 seconds",
+      "opaque_task_id": "task-local8b-gvr-history"
+    }
+  ],
+  "maximum_inference": "This consumed-task run supports local model selection only. It cannot support competence, generalization, or subsystem claims.",
+  "model_identity": {
+    "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+  },
+  "policy": "project_theseus_local_model_bakeoff_candidates_v1",
+  "runtime": {
+    "wall_ms": 5159751.579
+  },
+  "scope": "consumed_development_model_selection_no_capability_claim",
+  "source_identities": {
+    "bakeoff_runner_sha256": "77b562bf90619207eed07fb2d0910f4e7211a8aba1317df1df25a70743194150",
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "plan_sha256": "64059e0ca622384d2c16cc4b1158229ae62b1f5cc4a1682c5b53c1b99f976d85",
+    "task_manifest_sha256": "9a86229c71f08d51af54a08a5982f053a671e69df828b90c1864d324a9c33522",
+    "worker_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 10,
+        "action_counts": {
+          "finish": 1,
+          "read": 7,
+          "replace": 1,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "configs/artifact_retention_budget_policy.json",
+          "scripts/artifact_retention_reference.py",
+          "tests/test_artifact_retention_reference.py"
+        ],
+        "failed_actions": 0,
+        "file_mutations": 1,
+        "pre_mutation_read_actions": 7
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "action_summary": {
+          "action_count": 10,
+          "action_counts": {
+            "finish": 1,
+            "read": 7,
+            "replace": 1,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "configs/artifact_retention_budget_policy.json",
+            "scripts/artifact_retention_reference.py",
+            "tests/test_artifact_retention_reference.py"
+          ],
+          "failed_actions": 0,
+          "file_mutations": 1,
+          "pre_mutation_read_actions": 7
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "a37a8f9fc62e2293fb6a394c5e633349e81f058b7bb4b5259859cd4191123736",
+            "before_sha256": "bc8728c3967852baa2ccbf9311e789e14d795329c6d232e337c44f39dc920b33",
+            "effect": "modify",
+            "path": "scripts/artifact_retention_reference.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 10,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "55913116ebe2da732e9e380e7541fa1d7d07005684c8fd3e70e36b075378de30",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "3c882f0c72a61b6ab89e71db1ca60f3fd3871741",
+        "patch_unified_diff": "--- a/scripts/artifact_retention_reference.py\n+++ b/scripts/artifact_retention_reference.py\n@@ -422,6 +422,9 @@\n \n def normalize_checkpoint_ref(value: Any) -> str:\n     text = str(value or \"\").strip().rstrip(\".,:;\\\"'\")\n+    # Reject references containing backslash or NUL control\n+    if \"\\\\\" in text or \"\\x00\" in text:\n+        return \"\"\n     if not text.startswith(\"checkpoints/\") or \"..\" in Path(text).parts:\n         return \"\"\n     return text\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/artifact_retention_reference.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 1555450.975
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_artifact_retention_reference.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/artifact_retention_reference.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_artifact_retention_reference.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/artifact_retention_reference.py"
+            ],
+            "denied_candidate_targets": [],
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_artifact_retention_reference.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": "..................                                                       [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n18 passed, 1 warning in 0.36s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/artifact_retention_reference.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/artifact_retention_reference.py"
+              ],
+              "pytest": [
+                "tests/test_artifact_retention_reference.py"
+              ]
+            },
+            "wall_ms": 834.484
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "cbf41a350089e599c13412c1185fc1f469a50fe70cdab2b69a8db046059f3909",
+      "candidate_seal": {
+        "candidate_output_sha256": "cbf41a350089e599c13412c1185fc1f469a50fe70cdab2b69a8db046059f3909",
+        "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+        "finished_utc": "2026-07-30T05:59:12.167803Z",
+        "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+        "started_utc": "2026-07-30T05:33:16.216155Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+        "worker_source_sha256": "090d2b5d55ce56cee823a0e29dfaa4c59b638e3d1e81f7b9b5f83799d4577427",
+        "worker_wall_ms": 1555840.272
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "a37a8f9fc62e2293fb6a394c5e633349e81f058b7bb4b5259859cd4191123736",
+          "before_sha256": "bc8728c3967852baa2ccbf9311e789e14d795329c6d232e337c44f39dc920b33",
+          "effect": "modify",
+          "path": "scripts/artifact_retention_reference.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 10,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-local8b-retention-path",
+      "parent_archive_sha256": "933e152cda230fc7f1df942450d60a6e38c169c6b897f5b55fb1cfd2596a7821",
+      "patch_unified_diff": "--- a/scripts/artifact_retention_reference.py\n+++ b/scripts/artifact_retention_reference.py\n@@ -422,6 +422,9 @@\n \n def normalize_checkpoint_ref(value: Any) -> str:\n     text = str(value or \"\").strip().rstrip(\".,:;\\\"'\")\n+    # Reject references containing backslash or NUL control\n+    if \"\\\\\" in text or \"\\x00\" in text:\n+        return \"\"\n     if not text.startswith(\"checkpoints/\") or \"..\" in Path(text).parts:\n         return \"\"\n     return text\n",
+      "proposed_paths": [
+        "scripts/artifact_retention_reference.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_artifact_retention_reference.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/artifact_retention_reference.py"
+          ],
+          "denied_candidate_targets": [],
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_artifact_retention_reference.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": "..................                                                       [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n18 passed, 1 warning in 0.36s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/artifact_retention_reference.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/artifact_retention_reference.py"
+            ],
+            "pytest": [
+              "tests/test_artifact_retention_reference.py"
+            ]
+          },
+          "wall_ms": 834.484
+        }
+      ],
+      "worker_input_sha256": "93e9edbbdf44e7ff2f8a7af4933dd56c6a8f5e7ee219171e9cc06565a4cb384a",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "RED"
+}
