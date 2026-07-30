@@ -1,0 +1,479 @@
+{
+  "assets": [
+    {
+      "asset_kind": "verified_procedural_route_lookahead",
+      "asset_sha256": "fd3bf3d551333685db6461e3f23fe919c258a6f4a15b5b41083486f5cea61dd9",
+      "candidate_generation_credit": "none",
+      "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "id": "procedural.asset.8a7da34f5571955c",
+      "learned_generation_claim_allowed": false,
+      "lifecycle_receipt_id": "procedural.lifecycle.c06dd4b2c89f8a44",
+      "lifecycle_state": "active",
+      "lookahead_tokens": [
+        "surface:local_assistant",
+        "lane:planning_assistant",
+        "intent:planning"
+      ],
+      "lookup_binding": {
+        "assistant_lane": "planning_assistant",
+        "intent": "planning",
+        "surface": "local_assistant"
+      },
+      "monitoring": [
+        "assistant_trace_schema_sha256",
+        "outcome distribution",
+        "VIEA receipt coverage",
+        "raw_private_text counter",
+        "public/external/fallback counters",
+        "assistant e2e regression status"
+      ],
+      "non_claims": [
+        "Procedural lookahead is workflow retrieval, not parametric learning.",
+        "This asset cannot support learned-generation or public-transfer claims.",
+        "A missing, ambiguous, stale, or drifted binding returns no route."
+      ],
+      "postconditions": [
+        "metadata-only dogfood event emitted",
+        "VIEA trace or receipt linked when available",
+        "accepted/missed/ignored/corrected/completed outcome preserved",
+        "procedural candidate remains non-default until replay regression exists"
+      ],
+      "preconditions": [
+        "assistant trace schema ready",
+        "prompt persisted as hash only",
+        "raw private text absent",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "VIEA receipt present before default routing"
+      ],
+      "public_training_rows_written": 0,
+      "replay_fixture_id": "replay.local_planning_assistant_metadata_only_v1",
+      "retirement_criteria": [
+        "assistant e2e regression fails twice consecutively",
+        "schema hash changes without steward review",
+        "raw private text appears in a candidate event",
+        "public-training, runtime-external-inference, or fallback counter becomes nonzero",
+        "lane is superseded by a registry-owned assistant route"
+      ],
+      "route_eligible": true,
+      "route_id": "canary.local_planning_assistant_metadata_only_v1"
+    },
+    {
+      "asset_kind": "verified_procedural_route_lookahead",
+      "asset_sha256": "6d83e0d426cf43b6aed44e890418809268e51d112ce208792cc9ae5ebfe7af0b",
+      "candidate_generation_credit": "none",
+      "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "id": "procedural.asset.e459203819557f87",
+      "learned_generation_claim_allowed": false,
+      "lifecycle_receipt_id": "procedural.lifecycle.77670e96fc02fab6",
+      "lifecycle_state": "active",
+      "lookahead_tokens": [
+        "surface:local_assistant",
+        "lane:chat_checkpoint",
+        "intent:chat"
+      ],
+      "lookup_binding": {
+        "assistant_lane": "chat_checkpoint",
+        "intent": "chat",
+        "surface": "local_assistant"
+      },
+      "monitoring": [
+        "assistant_trace_schema_sha256",
+        "outcome distribution",
+        "VIEA receipt coverage",
+        "raw_private_text counter",
+        "public/external/fallback counters",
+        "assistant e2e regression status"
+      ],
+      "non_claims": [
+        "Procedural lookahead is workflow retrieval, not parametric learning.",
+        "This asset cannot support learned-generation or public-transfer claims.",
+        "A missing, ambiguous, stale, or drifted binding returns no route."
+      ],
+      "postconditions": [
+        "metadata-only dogfood event emitted",
+        "VIEA trace or receipt linked when available",
+        "accepted/missed/ignored/corrected/completed outcome preserved",
+        "procedural candidate remains non-default until replay regression exists"
+      ],
+      "preconditions": [
+        "assistant trace schema ready",
+        "prompt persisted as hash only",
+        "raw private text absent",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "VIEA receipt present before default routing"
+      ],
+      "public_training_rows_written": 0,
+      "replay_fixture_id": "replay.local_chat_assistant_metadata_only_v1",
+      "retirement_criteria": [
+        "assistant e2e regression fails twice consecutively",
+        "schema hash changes without steward review",
+        "raw private text appears in a candidate event",
+        "public-training, runtime-external-inference, or fallback counter becomes nonzero",
+        "lane is superseded by a registry-owned assistant route"
+      ],
+      "route_eligible": true,
+      "route_id": "canary.local_chat_assistant_metadata_only_v1"
+    },
+    {
+      "asset_kind": "verified_procedural_route_lookahead",
+      "asset_sha256": "8e47f955e007c2909201901743e2351b8d0f4f2042656fe5304821816afb3a15",
+      "candidate_generation_credit": "none",
+      "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "id": "procedural.asset.18a679338ca1b6aa",
+      "learned_generation_claim_allowed": false,
+      "lifecycle_receipt_id": "procedural.lifecycle.fb7c5257fe5825b2",
+      "lifecycle_state": "active",
+      "lookahead_tokens": [
+        "surface:local_assistant",
+        "lane:tool_assistant",
+        "intent:tool"
+      ],
+      "lookup_binding": {
+        "assistant_lane": "tool_assistant",
+        "intent": "tool",
+        "surface": "local_assistant"
+      },
+      "monitoring": [
+        "assistant_trace_schema_sha256",
+        "outcome distribution",
+        "VIEA receipt coverage",
+        "raw_private_text counter",
+        "public/external/fallback counters",
+        "assistant e2e regression status"
+      ],
+      "non_claims": [
+        "Procedural lookahead is workflow retrieval, not parametric learning.",
+        "This asset cannot support learned-generation or public-transfer claims.",
+        "A missing, ambiguous, stale, or drifted binding returns no route."
+      ],
+      "postconditions": [
+        "metadata-only dogfood event emitted",
+        "VIEA trace or receipt linked when available",
+        "accepted/missed/ignored/corrected/completed outcome preserved",
+        "procedural candidate remains non-default until replay regression exists"
+      ],
+      "preconditions": [
+        "assistant trace schema ready",
+        "prompt persisted as hash only",
+        "raw private text absent",
+        "public_training_rows_written=0",
+        "external_inference_calls=0",
+        "fallback_return_count=0",
+        "VIEA receipt present before default routing"
+      ],
+      "public_training_rows_written": 0,
+      "replay_fixture_id": "replay.local_tool_assistant_metadata_only_v1",
+      "retirement_criteria": [
+        "assistant e2e regression fails twice consecutively",
+        "schema hash changes without steward review",
+        "raw private text appears in a candidate event",
+        "public-training, runtime-external-inference, or fallback counter becomes nonzero",
+        "lane is superseded by a registry-owned assistant route"
+      ],
+      "route_eligible": true,
+      "route_id": "canary.local_tool_assistant_metadata_only_v1"
+    }
+  ],
+  "created_utc": "2026-07-30T14:00:36.024275Z",
+  "hard_gaps": [],
+  "lifecycle_receipts": [
+    {
+      "authority_scope": "local_metadata_route_only",
+      "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+      "created_utc": "2026-07-30T14:00:36.024275Z",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "learned_generation_claim_allowed": false,
+      "lifecycle_state": "active",
+      "lookup_binding": {
+        "assistant_lane": "planning_assistant",
+        "intent": "planning",
+        "surface": "local_assistant"
+      },
+      "metrics": {
+        "consecutive_failure_count": 0,
+        "latest_event_age_days": 9.301462015983796,
+        "latest_event_utc": "2026-07-21T06:46:29.706094+00:00",
+        "matched_event_count": 101,
+        "monitor_window_event_count": 32,
+        "no_cheat_fault_count": 0,
+        "recent_useful_rate": 1.0,
+        "replay_passed": true
+      },
+      "public_training_rows_written": 0,
+      "reasons": [],
+      "receipt_id": "procedural.lifecycle.c06dd4b2c89f8a44",
+      "retired": false,
+      "rollback_triggered": false,
+      "route_id": "canary.local_planning_assistant_metadata_only_v1"
+    },
+    {
+      "authority_scope": "local_metadata_route_only",
+      "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
+      "created_utc": "2026-07-30T14:00:36.024275Z",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "learned_generation_claim_allowed": false,
+      "lifecycle_state": "active",
+      "lookup_binding": {
+        "assistant_lane": "chat_checkpoint",
+        "intent": "chat",
+        "surface": "local_assistant"
+      },
+      "metrics": {
+        "consecutive_failure_count": 0,
+        "latest_event_age_days": 1.7257924082986111,
+        "latest_event_utc": "2026-07-28T20:35:27.560198+00:00",
+        "matched_event_count": 156,
+        "monitor_window_event_count": 32,
+        "no_cheat_fault_count": 0,
+        "recent_useful_rate": 1.0,
+        "replay_passed": true
+      },
+      "public_training_rows_written": 0,
+      "reasons": [],
+      "receipt_id": "procedural.lifecycle.77670e96fc02fab6",
+      "retired": false,
+      "rollback_triggered": false,
+      "route_id": "canary.local_chat_assistant_metadata_only_v1"
+    },
+    {
+      "authority_scope": "local_metadata_route_only",
+      "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
+      "created_utc": "2026-07-30T14:00:36.024275Z",
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "learned_generation_claim_allowed": false,
+      "lifecycle_state": "active",
+      "lookup_binding": {
+        "assistant_lane": "tool_assistant",
+        "intent": "tool",
+        "surface": "local_assistant"
+      },
+      "metrics": {
+        "consecutive_failure_count": 0,
+        "latest_event_age_days": 9.301497953055556,
+        "latest_event_utc": "2026-07-21T06:46:26.601131+00:00",
+        "matched_event_count": 72,
+        "monitor_window_event_count": 32,
+        "no_cheat_fault_count": 0,
+        "recent_useful_rate": 1.0,
+        "replay_passed": true
+      },
+      "public_training_rows_written": 0,
+      "reasons": [],
+      "receipt_id": "procedural.lifecycle.fb7c5257fe5825b2",
+      "retired": false,
+      "rollback_triggered": false,
+      "route_id": "canary.local_tool_assistant_metadata_only_v1"
+    }
+  ],
+  "lookahead_trie": {
+    "asset_ids": [],
+    "children": {
+      "surface:local_assistant": {
+        "asset_ids": [],
+        "children": {
+          "lane:chat_checkpoint": {
+            "asset_ids": [],
+            "children": {
+              "intent:chat": {
+                "asset_ids": [
+                  "procedural.asset.e459203819557f87"
+                ],
+                "children": {}
+              }
+            }
+          },
+          "lane:planning_assistant": {
+            "asset_ids": [],
+            "children": {
+              "intent:planning": {
+                "asset_ids": [
+                  "procedural.asset.8a7da34f5571955c"
+                ],
+                "children": {}
+              }
+            }
+          },
+          "lane:tool_assistant": {
+            "asset_ids": [],
+            "children": {
+              "intent:tool": {
+                "asset_ids": [
+                  "procedural.asset.18a679338ca1b6aa"
+                ],
+                "children": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "trie_sha256": "7b49c2149388fae110f910718c0240fa7a64937ea9380929752812e70c472a0a"
+  },
+  "lookup_ablation": {
+    "claim_scope": "route-index functionality only; not assistant-quality or learned-generation evidence",
+    "equal_query_budget": true,
+    "fixture_count": 3,
+    "lookahead_selected_count": 3,
+    "no_lookahead_selected_count": 0,
+    "results": [
+      {
+        "asset_id": "procedural.asset.8a7da34f5571955c",
+        "lookahead_selected_correctly": true,
+        "lookahead_state": "SELECTED",
+        "no_lookahead_selected_correctly": false,
+        "no_lookahead_state": "NO_PROCEDURAL_SOURCE"
+      },
+      {
+        "asset_id": "procedural.asset.e459203819557f87",
+        "lookahead_selected_correctly": true,
+        "lookahead_state": "SELECTED",
+        "no_lookahead_selected_correctly": false,
+        "no_lookahead_state": "NO_PROCEDURAL_SOURCE"
+      },
+      {
+        "asset_id": "procedural.asset.18a679338ca1b6aa",
+        "lookahead_selected_correctly": true,
+        "lookahead_state": "SELECTED",
+        "no_lookahead_selected_correctly": false,
+        "no_lookahead_state": "NO_PROCEDURAL_SOURCE"
+      }
+    ]
+  },
+  "negative_controls": [
+    {
+      "evidence": {
+        "asset_id": "",
+        "candidate_asset_ids": [],
+        "state": "NO_ADMISSIBLE"
+      },
+      "id": "unknown_binding_abstains",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "asset_id": "",
+        "candidate_asset_ids": [
+          "procedural.asset.8a7da34f5571955c",
+          "procedural.asset.8a7da34f5571955c.collision"
+        ],
+        "state": "AMBIGUOUS"
+      },
+      "id": "ambiguous_binding_abstains",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "asset_id": "",
+        "candidate_asset_ids": [],
+        "created_utc": "2026-07-30T14:00:36.024275Z",
+        "state": "NO_ADMISSIBLE"
+      },
+      "id": "retired_asset_excluded",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "authority_scope": "local_metadata_route_only",
+        "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+        "created_utc": "2026-07-30T14:00:36.024275Z",
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "learned_generation_claim_allowed": false,
+        "lifecycle_state": "retired_stale",
+        "lookup_binding": {
+          "assistant_lane": "planning_assistant",
+          "intent": "planning",
+          "surface": "local_assistant"
+        },
+        "metrics": {
+          "consecutive_failure_count": 0,
+          "latest_event_age_days": 9707.58375028096,
+          "latest_event_utc": "2000-01-01T00:00:00Z",
+          "matched_event_count": 1,
+          "monitor_window_event_count": 1,
+          "no_cheat_fault_count": 0,
+          "recent_useful_rate": 1.0,
+          "replay_passed": true
+        },
+        "public_training_rows_written": 0,
+        "reasons": [
+          "source_trace_freshness_expired"
+        ],
+        "receipt_id": "procedural.lifecycle.6ee623bc165f3a23",
+        "retired": true,
+        "rollback_triggered": true,
+        "route_id": "canary.local_planning_assistant_metadata_only_v1"
+      },
+      "id": "stale_trace_retires_automatically",
+      "passed": true
+    },
+    {
+      "evidence": {
+        "authority_scope": "local_metadata_route_only",
+        "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
+        "created_utc": "2026-07-30T14:00:36.024275Z",
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "learned_generation_claim_allowed": false,
+        "lifecycle_state": "retired_drift",
+        "lookup_binding": {
+          "assistant_lane": "planning_assistant",
+          "intent": "planning",
+          "surface": "local_assistant"
+        },
+        "metrics": {
+          "consecutive_failure_count": 2,
+          "latest_event_age_days": 0.0,
+          "latest_event_utc": "2026-07-30T14:00:36.024275Z",
+          "matched_event_count": 2,
+          "monitor_window_event_count": 2,
+          "no_cheat_fault_count": 0,
+          "recent_useful_rate": 0.0,
+          "replay_passed": true
+        },
+        "public_training_rows_written": 0,
+        "reasons": [
+          "postcondition_outcome_drift"
+        ],
+        "receipt_id": "procedural.lifecycle.08e5b4ce8fa5791b",
+        "retired": true,
+        "rollback_triggered": true,
+        "route_id": "canary.local_planning_assistant_metadata_only_v1"
+      },
+      "id": "postcondition_drift_retires_and_rolls_back",
+      "passed": true
+    }
+  ],
+  "policy": "project_theseus_procedural_memory_assets_v1",
+  "summary": {
+    "active_asset_count": 3,
+    "asset_count": 3,
+    "diverse_binding_count": 3,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "hard_gap_count": 0,
+    "learned_generation_claim_count": 0,
+    "lifecycle_receipt_count": 3,
+    "lookahead_selected_count": 3,
+    "lookup_fixture_count": 3,
+    "negative_control_count": 5,
+    "negative_control_rejected_count": 5,
+    "no_lookahead_selected_count": 0,
+    "public_training_rows_written": 0,
+    "retired_asset_count": 0
+  },
+  "trigger_state": "GREEN"
+}

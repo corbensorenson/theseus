@@ -81,9 +81,9 @@ def build_report(
         str(row.get("id")) for row in default_routes
         if row.get("default_route_adopted") is True and row.get("id")
     }
-    effect_transaction_audit = audit_effect_complete_transaction(
-        assistant_report,
-        expected_route_ids=adopted_route_ids,
+    effect_reference_audit = audit_adopted_route_effect_reference(
+        assistant_report=assistant_report,
+        adopted_route_ids=adopted_route_ids,
     )
     records = [record for transaction in transactions for record in build_viea_records(transaction)]
     replacement_kernels = [
@@ -104,23 +104,24 @@ def build_report(
             "replayable-reference-backed"
             if replacement_kernels
             and all(row.get("state") == "GREEN" for row in replacement_kernels)
-            and effect_transaction_audit["valid"]
+            and effect_reference_audit["valid"]
             else "synthetic-test-backed"
             if replacement_kernels and all(row.get("support_state") == "synthetic-test-backed" for row in replacement_kernels)
             else "unsupported"
         ),
         "kernel_count": len(replacement_kernels),
         "kernels": replacement_kernels,
-        "effect_complete_transaction_audit": effect_transaction_audit,
+        "effect_complete_transaction_audit": effect_reference_audit["effect_transaction_audit"],
+        "adopted_route_effect_reference_audit": effect_reference_audit,
     }
     hard_gaps = [gap_item for transaction in transactions for gap_item in list_dicts(transaction.get("hard_gaps"))]
     if replacement_kernel["state"] != "GREEN":
         hard_gaps.append(gap("A2_replacement_transaction_kernel", "replacement_transaction_kernel_not_green", replacement_kernel))
-    if not effect_transaction_audit["valid"]:
+    if not effect_reference_audit["valid"]:
         hard_gaps.append(gap(
             "A2_replacement_transaction_kernel",
             "effect_complete_reference_not_valid",
-            effect_transaction_audit,
+            effect_reference_audit,
         ))
     warnings = [warning for transaction in transactions for warning in list_dicts(transaction.get("warnings"))]
     trigger_state = "GREEN"
@@ -140,9 +141,9 @@ def build_report(
         "default_route_guarded_count": sum(1 for row in default_routes if row.get("continued_regression_guard", {}).get("armed")),
         "a2_replacement_transaction_kernel_state": replacement_kernel["state"],
         "a2_replacement_transaction_kernel_support_state": replacement_kernel["support_state"],
-        "effect_complete_transaction_valid": effect_transaction_audit["valid"],
-        "effect_complete_invalid_control_count": effect_transaction_audit["expected_invalid_control_count"],
-        "effect_complete_invalid_rejected_count": effect_transaction_audit["expected_invalid_rejected_count"],
+        "effect_complete_transaction_valid": effect_reference_audit["valid"],
+        "effect_complete_invalid_control_count": effect_reference_audit["effect_transaction_audit"]["expected_invalid_control_count"],
+        "effect_complete_invalid_rejected_count": effect_reference_audit["effect_transaction_audit"]["expected_invalid_rejected_count"],
         "learned_generation_claim_count": sum(1 for row in default_routes if row.get("learned_generation_claim_allowed")),
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -160,7 +161,8 @@ def build_report(
         "adoption_transaction": transactions[0] if transactions else {},
         "adoption_transactions": transactions,
         "replacement_transaction_kernel": replacement_kernel,
-        "effect_complete_transaction_audit": effect_transaction_audit,
+        "effect_complete_transaction_audit": effect_reference_audit["effect_transaction_audit"],
+        "adopted_route_effect_reference_audit": effect_reference_audit,
         "default_routes": default_routes,
         "viea_route_adoption_records": records,
         "hard_gaps": hard_gaps,
@@ -174,6 +176,74 @@ def build_report(
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+    }
+
+
+def audit_adopted_route_effect_reference(
+    *,
+    assistant_report: dict[str, Any],
+    adopted_route_ids: set[str],
+) -> dict[str, Any]:
+    """Bind procedural selection and effect authority without conflating them."""
+
+    effect_route_id = "assistant.route_authority_effect"
+    effect_transaction_audit = audit_effect_complete_transaction(
+        assistant_report,
+        expected_route_ids={effect_route_id},
+    )
+    summary = dict_value(assistant_report.get("summary"))
+    procedural_packet = dict_value(assistant_report.get("procedural_default_route"))
+    selected_route = dict_value(procedural_packet.get("selected_route"))
+    selected_route_id = str(
+        selected_route.get("id")
+        or summary.get("procedural_default_route_id")
+        or ""
+    )
+    checks = {
+        "effect_transaction_valid": effect_transaction_audit.get("valid") is True,
+        "effect_authority_route_is_separate": (
+            str(effect_transaction_audit.get("route_id") or "") == effect_route_id
+            and effect_route_id not in adopted_route_ids
+        ),
+        "procedural_route_selected": selected_route_id in adopted_route_ids,
+        "procedural_route_active": (
+            procedural_packet.get("active") is True
+            and procedural_packet.get("ready") is True
+            and procedural_packet.get("trigger_state") == "GREEN"
+        ),
+        "procedural_binding_matched": get_path(
+            procedural_packet, ["selection", "matched"], False
+        ) is True,
+        "procedural_guard_armed": get_path(
+            selected_route, ["continued_regression_guard", "armed"], False
+        ) is True,
+        "procedural_route_does_not_claim_learned_generation": (
+            selected_route.get("learned_generation_claim_allowed") is False
+        ),
+        "procedural_no_cheat_counters_clean": all(
+            int_or(get_path(procedural_packet, [field], 0), 0) == 0
+            for field in (
+                "public_training_rows_written",
+                "external_inference_calls",
+                "fallback_return_count",
+            )
+        ),
+    }
+    failed = [name for name, passed in checks.items() if not passed]
+    return {
+        "policy": "project_theseus_adopted_route_effect_reference_audit_v1",
+        "valid": not failed,
+        "checks": checks,
+        "hard_gaps": failed,
+        "selected_procedural_route_id": selected_route_id,
+        "adopted_route_ids": sorted(adopted_route_ids),
+        "effect_authority_route_id": effect_route_id,
+        "effect_transaction_audit": effect_transaction_audit,
+        "maximum_inference": (
+            "The selected procedural metadata route and the separately authorized "
+            "effect route coexist in one effect-complete assistant transaction. "
+            "The procedural route does not itself grant effect authority."
+        ),
     }
 
 

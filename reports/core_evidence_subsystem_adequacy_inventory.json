@@ -1,0 +1,604 @@
+{
+  "created_utc": "2026-07-30T14:06:52.028892Z",
+  "policy": "project_theseus_core_evidence_subsystem_adequacy_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "config_sha256": "19a703e4714617a28f328d0ad128814ef556003a0dc3be1bf372665e0dfe1e62",
+  "registry_sha256": "613fa0c88116c3766bad9c7c56fa6c9e455d8e71cb389494aa79cd4bcd12b83b",
+  "qualified_worker_disposition_sha256": "3aa9a485ecef4fd8ee1ccbd8b6314f1cd31b1b99c79fe409589eea18dc9a1337",
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference": "forbidden",
+    "teacher_calls": "forbidden",
+    "public_benchmark_consumption": "forbidden",
+    "D2_consumption": "forbidden",
+    "E2_heldout_consumption": "forbidden",
+    "user_facing_effects": 0,
+    "learned_credit_from_mechanics": 0
+  },
+  "owners": [
+    {
+      "owner_id": "authority_governance",
+      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "required_interventions": [
+        "allowed",
+        "denied",
+        "revoked",
+        "confused_deputy",
+        "candidate_authored_success_inert",
+        "exact_rollback"
+      ],
+      "candidate_entrypoints": [],
+      "implementations": [
+        {
+          "implementation_id": "impl.core_control_plane.v1",
+          "status": "live",
+          "role": "governance",
+          "canonical_entrypoint": "scripts/theseus_control_plane.py",
+          "canonical_entrypoint_sha256": "cf8fb0bfd2055c76eaa53f643073ce368e793f66575f7565d0d8792966595d15",
+          "route_eligible": true,
+          "verification_command": "python3 scripts/theseus_control_plane.py"
+        },
+        {
+          "implementation_id": "impl.candidate_integrity_harness.v1",
+          "status": "live",
+          "role": "governance",
+          "canonical_entrypoint": "scripts/candidate_integrity.py",
+          "canonical_entrypoint_sha256": "7b850e415e423630d90664c51d5547afe14deb38324c60f00588b3dd6a8d1b91",
+          "route_eligible": true,
+          "verification_command": "python3 scripts/candidate_integrity.py --out reports/candidate_integrity_audit.json --markdown-out reports/candidate_integrity_audit.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/test_governance_architecture_kernel.py",
+          "exists": true,
+          "sha256": "fe9781c5c8cdfdcee8efa71b19be8bbd6f81197e374ae3755d20371fb6670522"
+        },
+        {
+          "path": "tests/test_hive_authority_security.py",
+          "exists": true,
+          "sha256": "30611c671edddb44d80b4b13790eb54278b82c2b5f43f718d25a7323ed1d34dd"
+        },
+        {
+          "path": "tests/test_autonomy_authority_security.py",
+          "exists": true,
+          "sha256": "39d2a01077fbba5bd30fb6cb84961bb3da36338e36a890d2ef0adf2b259bc611"
+        }
+      ],
+      "test_receipt": {
+        "run": true,
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_governance_architecture_kernel.py",
+          "tests/test_hive_authority_security.py",
+          "tests/test_autonomy_authority_security.py"
+        ],
+        "returncode": 0,
+        "passed": true,
+        "stdout_tail": "...............                                                          [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n15 passed, 1 warning in 0.77s\n",
+        "stderr_tail": ""
+      },
+      "findings": [
+        {
+          "check": "impl.core_control_plane.v1:live",
+          "passed": true,
+          "detail": "live"
+        },
+        {
+          "check": "impl.core_control_plane.v1:role",
+          "passed": true,
+          "detail": "governance"
+        },
+        {
+          "check": "impl.core_control_plane.v1:route_eligible",
+          "passed": true,
+          "detail": true
+        },
+        {
+          "check": "impl.core_control_plane.v1:canonical_entrypoint",
+          "passed": true,
+          "detail": "scripts/theseus_control_plane.py"
+        },
+        {
+          "check": "impl.core_control_plane.v1:verification_command",
+          "passed": true,
+          "detail": "python3 scripts/theseus_control_plane.py"
+        },
+        {
+          "check": "impl.candidate_integrity_harness.v1:live",
+          "passed": true,
+          "detail": "live"
+        },
+        {
+          "check": "impl.candidate_integrity_harness.v1:role",
+          "passed": true,
+          "detail": "governance"
+        },
+        {
+          "check": "impl.candidate_integrity_harness.v1:route_eligible",
+          "passed": true,
+          "detail": true
+        },
+        {
+          "check": "impl.candidate_integrity_harness.v1:canonical_entrypoint",
+          "passed": true,
+          "detail": "scripts/candidate_integrity.py"
+        },
+        {
+          "check": "impl.candidate_integrity_harness.v1:verification_command",
+          "passed": true,
+          "detail": "python3 scripts/candidate_integrity.py --out reports/candidate_integrity_audit.json --markdown-out reports/candidate_integrity_audit.md && python3 -m py_compile scripts/candidate_integrity.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py"
+        },
+        {
+          "check": "focused_tests_exist",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "check": "focused_tests_pass",
+          "passed": true,
+          "detail": 0
+        }
+      ]
+    },
+    {
+      "owner_id": "vcm",
+      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "required_interventions": [
+        "correct",
+        "omitted",
+        "stale",
+        "shuffled",
+        "tainted",
+        "over_budget",
+        "deletion_closed"
+      ],
+      "candidate_entrypoints": [],
+      "implementations": [
+        {
+          "implementation_id": "impl.vcm_memory.v1",
+          "status": "live",
+          "role": "vcm_context",
+          "canonical_entrypoint": "scripts/virtual_context_memory.py",
+          "canonical_entrypoint_sha256": "6332c012c0417013fcee33fcce7f293fffca1132f108016c8ac093cb5556f931",
+          "route_eligible": true,
+          "verification_command": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_semantic_memory.py scripts/kernel_english_protocol.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 -m pytest -q tests/test_vcm_semantic_memory.py tests/test_kernel_english_protocol.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/test_vcm_semantic_memory.py",
+          "exists": true,
+          "sha256": "fa05dbbdd17ca7d2dc3ffbe23ff7f25c1d19e21ac63d25a3e208893306cddfed"
+        },
+        {
+          "path": "tests/test_vcm_consumer_abi.py",
+          "exists": true,
+          "sha256": "8ea08f68c13d08b677229aff82766902c335793867b33c795f1ce3269f32ca0a"
+        },
+        {
+          "path": "tests/test_vcm_consumer_integration_archive.py",
+          "exists": true,
+          "sha256": "b589b048ea72bdaf581e3bc374086a9423259f50400b60d1aef4b5af6b656aa6"
+        }
+      ],
+      "test_receipt": {
+        "run": true,
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_vcm_semantic_memory.py",
+          "tests/test_vcm_consumer_abi.py",
+          "tests/test_vcm_consumer_integration_archive.py"
+        ],
+        "returncode": 0,
+        "passed": true,
+        "stdout_tail": ".........................                                              [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n25 passed, 1 warning, 2 subtests passed in 0.84s\n",
+        "stderr_tail": ""
+      },
+      "findings": [
+        {
+          "check": "impl.vcm_memory.v1:live",
+          "passed": true,
+          "detail": "live"
+        },
+        {
+          "check": "impl.vcm_memory.v1:role",
+          "passed": true,
+          "detail": "vcm_context"
+        },
+        {
+          "check": "impl.vcm_memory.v1:route_eligible",
+          "passed": true,
+          "detail": true
+        },
+        {
+          "check": "impl.vcm_memory.v1:canonical_entrypoint",
+          "passed": true,
+          "detail": "scripts/virtual_context_memory.py"
+        },
+        {
+          "check": "impl.vcm_memory.v1:verification_command",
+          "passed": true,
+          "detail": "python3 -m py_compile scripts/virtual_context_memory.py scripts/vcm_semantic_memory.py scripts/kernel_english_protocol.py scripts/vcm_consumer_abi.py scripts/vcm_consumer_integration_gate.py scripts/vcm_task_context_bridge.py scripts/vcm_native_runtime_probe.py scripts/macos_dependency_bootstrap.py scripts/neural_seed_candidate_generation.py scripts/code_lm_train_once_fanout.py scripts/code_lm_private_verifier.py scripts/theseus_deterministic_tool_substrate.py scripts/training_data_admission_v1.py scripts/theseus_plan_compiler.py scripts/theseus_assistant_runtime.py && python3 -m pytest -q tests/test_vcm_semantic_memory.py tests/test_kernel_english_protocol.py && python3 tests/test_vcm_consumer_abi.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/vcm_task_context_bridge.py && python3 scripts/vcm_native_runtime_probe.py && python3 scripts/vcm_consumer_integration_gate.py"
+        },
+        {
+          "check": "focused_tests_exist",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "check": "focused_tests_pass",
+          "passed": true,
+          "detail": 0
+        }
+      ]
+    },
+    {
+      "owner_id": "planning",
+      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "required_interventions": [
+        "typed_plan",
+        "direct_execution",
+        "malformed_plan",
+        "stale_plan",
+        "replan",
+        "verifier_bound_completion"
+      ],
+      "candidate_entrypoints": [],
+      "implementations": [
+        {
+          "implementation_id": "impl.theseus_plan_compiler.v1",
+          "status": "live",
+          "role": "planning",
+          "canonical_entrypoint": "scripts/theseus_plan_compiler.py",
+          "canonical_entrypoint_sha256": "581d6fd34cbf89a4483f0274d01765fa48d23a588b2f2cff9a8998b338bcf395",
+          "route_eligible": true,
+          "verification_command": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/relational_dimension_compiler.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_relational_dimension_compiler.py tests/test_vcm_semantic_memory.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/test_verifier_guided_search.py",
+          "exists": true,
+          "sha256": "e05a5d41718580d5933cedadafc27c71f8a6e0124ab4aeb466a6079c2577cf1a"
+        },
+        {
+          "path": "tests/test_assistant_reflexive_dispatch.py",
+          "exists": true,
+          "sha256": "217deb25e51e9efc231d22653eb3447552c7ee98f5c47e5b6d6a73124d468ad8"
+        },
+        {
+          "path": "tests/test_semantic_ir.py",
+          "exists": true,
+          "sha256": "19e2e5bf16d67132a703fa442a3a6e7069444b3afb0554a00414665a3f3b9ad7"
+        }
+      ],
+      "test_receipt": {
+        "run": true,
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_verifier_guided_search.py",
+          "tests/test_assistant_reflexive_dispatch.py",
+          "tests/test_semantic_ir.py"
+        ],
+        "returncode": 0,
+        "passed": true,
+        "stdout_tail": "...................................................                      [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n51 passed, 1 warning in 1.04s\n",
+        "stderr_tail": ""
+      },
+      "findings": [
+        {
+          "check": "impl.theseus_plan_compiler.v1:live",
+          "passed": true,
+          "detail": "live"
+        },
+        {
+          "check": "impl.theseus_plan_compiler.v1:role",
+          "passed": true,
+          "detail": "planning"
+        },
+        {
+          "check": "impl.theseus_plan_compiler.v1:route_eligible",
+          "passed": true,
+          "detail": true
+        },
+        {
+          "check": "impl.theseus_plan_compiler.v1:canonical_entrypoint",
+          "passed": true,
+          "detail": "scripts/theseus_plan_compiler.py"
+        },
+        {
+          "check": "impl.theseus_plan_compiler.v1:verification_command",
+          "passed": true,
+          "detail": "python3 -m py_compile scripts/kernel_english_protocol.py scripts/semantic_ir.py scripts/relational_dimension_compiler.py scripts/semantic_ir_obligation_gate.py scripts/vcm_semantic_memory.py && python3 -m pytest -q tests/test_kernel_english_protocol.py tests/test_semantic_ir.py tests/test_relational_dimension_compiler.py tests/test_vcm_semantic_memory.py && python3 scripts/vcm_context_governor_gate.py && python3 scripts/theseus_plan_compiler.py && python3 scripts/semantic_ir_obligation_gate.py && python3 scripts/viea_spine_record_gate.py --gate"
+        },
+        {
+          "check": "focused_tests_exist",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "check": "focused_tests_pass",
+          "passed": true,
+          "detail": 0
+        }
+      ]
+    },
+    {
+      "owner_id": "routing",
+      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "required_interventions": [
+        "full",
+        "direct",
+        "test_only",
+        "record_only",
+        "conservative_hold",
+        "ambiguous",
+        "least_sufficient"
+      ],
+      "candidate_entrypoints": [],
+      "implementations": [
+        {
+          "implementation_id": "impl.octopus_registry_gated_router.v1",
+          "status": "live",
+          "role": "planning",
+          "canonical_entrypoint": "scripts/octopus_router.py",
+          "canonical_entrypoint_sha256": "357511685b7b8da7cb314ad23f7e1039f98cbc726bd7a50dd2f9ad068259c10d",
+          "route_eligible": true,
+          "verification_command": "python3 scripts/octopus_router.py && python3 -m py_compile scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/test_octopus_router_integrity.py",
+          "exists": true,
+          "sha256": "2d155d9f80c0a2cb6d87a84996cc2dfb2e10696cda7c6476b500312bbae6f39b"
+        },
+        {
+          "path": "tests/test_assistant_reflexive_dispatch.py",
+          "exists": true,
+          "sha256": "217deb25e51e9efc231d22653eb3447552c7ee98f5c47e5b6d6a73124d468ad8"
+        }
+      ],
+      "test_receipt": {
+        "run": true,
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_octopus_router_integrity.py",
+          "tests/test_assistant_reflexive_dispatch.py"
+        ],
+        "returncode": 0,
+        "passed": true,
+        "stdout_tail": ".................                                                        [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 1 warning in 0.54s\n",
+        "stderr_tail": ""
+      },
+      "findings": [
+        {
+          "check": "impl.octopus_registry_gated_router.v1:live",
+          "passed": true,
+          "detail": "live"
+        },
+        {
+          "check": "impl.octopus_registry_gated_router.v1:role",
+          "passed": true,
+          "detail": "planning"
+        },
+        {
+          "check": "impl.octopus_registry_gated_router.v1:route_eligible",
+          "passed": true,
+          "detail": true
+        },
+        {
+          "check": "impl.octopus_registry_gated_router.v1:canonical_entrypoint",
+          "passed": true,
+          "detail": "scripts/octopus_router.py"
+        },
+        {
+          "check": "impl.octopus_registry_gated_router.v1:verification_command",
+          "passed": true,
+          "detail": "python3 scripts/octopus_router.py && python3 -m py_compile scripts/octopus_router.py scripts/neural_seed_candidate_generation.py scripts/neural_seed_report_io.py"
+        },
+        {
+          "check": "focused_tests_exist",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "check": "focused_tests_pass",
+          "passed": true,
+          "detail": 0
+        }
+      ]
+    },
+    {
+      "owner_id": "verified_reuse",
+      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "required_interventions": [
+        "fresh",
+        "verified_reuse",
+        "false_trigger",
+        "drift",
+        "quarantine",
+        "decompilation",
+        "rollback",
+        "retirement"
+      ],
+      "candidate_entrypoints": [
+        "scripts/procedural_memory_assets.py",
+        "scripts/procedural_memory_toolification_gate.py",
+        "scripts/procedural_memory_route_adoption_gate.py"
+      ],
+      "implementations": [
+        {
+          "implementation_id": "impl.procedural_memory_route.v1",
+          "status": "live",
+          "role": "planning",
+          "canonical_entrypoint": "scripts/procedural_memory_route_adoption_gate.py",
+          "canonical_entrypoint_sha256": "2986facbcf3ad3452117ad5f5399bfa264e741c5516cbc81f7a846cf179fb951",
+          "route_eligible": true,
+          "verification_command": "python3 -m pytest -q tests/test_procedural_memory_assets.py tests/test_procedural_memory_route_adoption_gate.py tests/test_theseus_assistant_effect_transaction.py && python3 scripts/procedural_memory_toolification_gate.py && python3 scripts/procedural_memory_canary_executor.py && python3 scripts/procedural_memory_route_adoption_gate.py"
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/test_procedural_memory_assets.py",
+          "exists": true,
+          "sha256": "fdf89b27511102a6b6845730ed19cfa68f089def9d2f145c6519d91e1a2b669e"
+        }
+      ],
+      "test_receipt": {
+        "run": true,
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_procedural_memory_assets.py"
+        ],
+        "returncode": 0,
+        "passed": true,
+        "stdout_tail": "......                                                                   [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n6 passed, 1 warning in 0.27s\n",
+        "stderr_tail": ""
+      },
+      "findings": [
+        {
+          "check": "impl.procedural_memory_route.v1:live",
+          "passed": true,
+          "detail": "live"
+        },
+        {
+          "check": "impl.procedural_memory_route.v1:role",
+          "passed": true,
+          "detail": "planning"
+        },
+        {
+          "check": "impl.procedural_memory_route.v1:route_eligible",
+          "passed": true,
+          "detail": true
+        },
+        {
+          "check": "impl.procedural_memory_route.v1:canonical_entrypoint",
+          "passed": true,
+          "detail": "scripts/procedural_memory_route_adoption_gate.py"
+        },
+        {
+          "check": "impl.procedural_memory_route.v1:verification_command",
+          "passed": true,
+          "detail": "python3 -m pytest -q tests/test_procedural_memory_assets.py tests/test_procedural_memory_route_adoption_gate.py tests/test_theseus_assistant_effect_transaction.py && python3 scripts/procedural_memory_toolification_gate.py && python3 scripts/procedural_memory_canary_executor.py && python3 scripts/procedural_memory_route_adoption_gate.py"
+        },
+        {
+          "check": "candidate_entrypoint:scripts/procedural_memory_assets.py:exists",
+          "passed": true,
+          "detail": "scripts/procedural_memory_assets.py"
+        },
+        {
+          "check": "candidate_entrypoint:scripts/procedural_memory_assets.py:registry_bound",
+          "passed": true,
+          "detail": [
+            "configs/procedural_memory_toolification.json",
+            "configs/project_manifest_registry.json",
+            "reports/procedural_memory_canary_execution.json",
+            "reports/procedural_memory_toolification.json",
+            "reports/theseus_assistant_effect_complete_canary.json",
+            "reports/theseus_project_registry.json",
+            "scripts/procedural_memory_assets.py",
+            "scripts/procedural_memory_canary_executor.py",
+            "scripts/procedural_memory_route_adoption_gate.py",
+            "scripts/procedural_memory_toolification_gate.py",
+            "scripts/theseus_assistant_runtime.py",
+            "tests/test_procedural_memory_assets.py",
+            "tests/test_procedural_memory_route_adoption_gate.py",
+            "tests/test_theseus_assistant_effect_transaction.py"
+          ]
+        },
+        {
+          "check": "candidate_entrypoint:scripts/procedural_memory_toolification_gate.py:exists",
+          "passed": true,
+          "detail": "scripts/procedural_memory_toolification_gate.py"
+        },
+        {
+          "check": "candidate_entrypoint:scripts/procedural_memory_toolification_gate.py:registry_bound",
+          "passed": true,
+          "detail": [
+            "configs/procedural_memory_toolification.json",
+            "configs/project_manifest_registry.json",
+            "reports/procedural_memory_canary_execution.json",
+            "reports/procedural_memory_toolification.json",
+            "reports/theseus_assistant_effect_complete_canary.json",
+            "reports/theseus_project_registry.json",
+            "scripts/procedural_memory_assets.py",
+            "scripts/procedural_memory_canary_executor.py",
+            "scripts/procedural_memory_route_adoption_gate.py",
+            "scripts/procedural_memory_toolification_gate.py",
+            "scripts/theseus_assistant_runtime.py",
+            "tests/test_procedural_memory_assets.py",
+            "tests/test_procedural_memory_route_adoption_gate.py",
+            "tests/test_theseus_assistant_effect_transaction.py"
+          ]
+        },
+        {
+          "check": "candidate_entrypoint:scripts/procedural_memory_route_adoption_gate.py:exists",
+          "passed": true,
+          "detail": "scripts/procedural_memory_route_adoption_gate.py"
+        },
+        {
+          "check": "candidate_entrypoint:scripts/procedural_memory_route_adoption_gate.py:registry_bound",
+          "passed": true,
+          "detail": [
+            "configs/procedural_memory_toolification.json",
+            "configs/project_manifest_registry.json",
+            "reports/procedural_memory_canary_execution.json",
+            "reports/procedural_memory_toolification.json",
+            "reports/theseus_assistant_effect_complete_canary.json",
+            "reports/theseus_project_registry.json",
+            "scripts/procedural_memory_assets.py",
+            "scripts/procedural_memory_canary_executor.py",
+            "scripts/procedural_memory_route_adoption_gate.py",
+            "scripts/procedural_memory_toolification_gate.py",
+            "scripts/theseus_assistant_runtime.py",
+            "tests/test_procedural_memory_assets.py",
+            "tests/test_procedural_memory_route_adoption_gate.py",
+            "tests/test_theseus_assistant_effect_transaction.py"
+          ]
+        },
+        {
+          "check": "focused_tests_exist",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "check": "focused_tests_pass",
+          "passed": true,
+          "detail": 0
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "owners": 5,
+    "mechanics_green": 5,
+    "inventory_green_tests_not_run": 0,
+    "inconclusive_implementation": 0
+  },
+  "trigger_state": "GREEN_ADVANCE_TO_DEVELOPMENT_CAUSAL_SMOKES",
+  "E2_heldouts_opened": 0,
+  "terminal_rules": {
+    "missing_or_unfaithful_owner": "INCONCLUSIVE_IMPLEMENTATION",
+    "mechanics_failure": "REPAIR_EXISTING_OWNER_ON_DEVELOPMENT_SURFACE",
+    "all_mechanics_green": "ADVANCE_TO_CONSUMED_DEVELOPMENT_CAUSAL_SMOKES",
+    "invalid_information_flow": "INVALID_INFORMATION_FLOW"
+  },
+  "maximum_inference": "This inventory can establish only that canonical subsystem implementations are registered and their focused mechanics tests pass. It cannot establish causal task lift, local-model competence beyond the frozen qualification, stack efficacy, AGI, or ASI."
+}

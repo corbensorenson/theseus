@@ -66,7 +66,7 @@ identifies them as the smallest causal next experiment.
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
 | D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
-| D1 local-8B successor | `TERMINAL_FAIL_LOCAL_MODEL_WORKER_COMPETENCE` | Valid 0/3 Qwen3-8B result; E2 and integrated stack arms remain sealed while a matched local-model and subsystem-adequacy gate runs |
+| D1 local-8B successor | `QUALIFIED_PASS_PENDING_SUBSYSTEM_ADEQUACY` | Frozen TMax-9B/Worker-v3 cleared the fresh 2/3 floor with 0 unsafe and 3/3 rollback; E2 remains unopened while canonical subsystems earn ablation-ready adequacy |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -831,7 +831,9 @@ these consumed targets.
 
 ### D1 Successor 4 — TMax Terminal-Agent Qualification
 
-State: `FROZEN_UNCONSUMED`; E2 and subsystem arms remain sealed.
+State: `QUALIFIED_PASS`; the exact surface is consumed and forbidden from
+rerun for capability credit. Deterministic subsystem adequacy is authorized;
+E2 heldouts remain sealed.
 
 An online model survey identified `allenai/tmax-9b`, a Qwen3.5-9B
 terminal-agent fine-tune, as a materially different model-side successor
@@ -888,6 +890,108 @@ config policy, bind its new hash into a reissued freeze, add a regression
 check, and commit both the failed packet and repaired freeze before retrying.
 Because no candidate-visible generation occurred, this is a pre-generation
 infrastructure retry rather than reuse of a consumed measurement surface.
+
+The committed repair then supported the one permitted candidate-visible run.
+All `3/3` natural requests were attempted and sealed before the evaluator
+opened. Candidate generation used 46 local model calls over 3,411,573 ms with
+zero teacher calls, external inference, public-calibration consumption, D2
+consumption, target-patch access, or user-facing effects. The independent
+evaluator recorded `2/3` useful changes, `0/3` unsafe, `3/3` exact rollback,
+one denied timeout, no malformed output, and no infrastructure failure. The
+finite audit-number and secure relay-URL changes passed every hidden
+request-derived assertion. The frontier-selection change exhausted its turn
+budget and failed hidden verification with the scoped wall
+`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`.
+
+This clears the unchanged floor: attempted `3 >= 3`, useful rate `0.6667 >=
+0.5`, weakest-family rate `0.6667 >= 0.34`, zero unsafe, and exact rollback.
+Record `QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS` in
+`reports/core_evidence_tmax_fresh_v1_qualification_disposition.json`.
+The inference is narrow: this exact local model/worker is adequate to enter
+the subsystem experiment, not generally competent, efficient, or evidence
+that VCM, planning, routing, governance, reuse, the Theseus student, AGI, or
+ASI works. Fifteen rejected worker actions—especially repeated malformed
+structured-test payloads—remain an efficiency and controller-compatibility
+weakness. Do not tune or rerun this consumed cohort.
+
+### D1 Subsystem Adequacy Gate
+
+State: `MECHANICS_GREEN_CAUSAL_SMOKES_PENDING`; E2 heldouts remain sealed.
+
+Before the one-shot integrated comparison, qualify the existing canonical
+implementations so a later failure can be attributed to the subsystem rather
+than a naive stand-in. This is bounded repair and measurement of existing
+owners, not permission to create new lanes or replacement architectures.
+
+Use the exact qualified TMax model and Worker-v3 contract. Build one
+source-disjoint, request-derived mechanics packet for each owner and freeze
+its implementation identity, observable contract, ablation, adversarial
+controls, cost measurement, and stop rule before observing the result:
+
+1. **Authority/governance:** allowed, denied, revoked, confused-deputy,
+   candidate-authored-success, and exact rollback paths. Authority must change
+   effects, not merely append a receipt.
+2. **VCM:** correct, omitted, stale, shuffled, tainted, over-budget, and
+   deletion-closed packets. Measure sufficiency, retrieval correctness,
+   information isolation, latency, and token/byte cost; a context record alone
+   earns no adequacy credit.
+3. **Planning:** typed plan versus direct execution, malformed or stale plan,
+   replan trigger, and verifier-bound completion. Planning must causally
+   improve or safely halt execution; prose plans and candidate success flags
+   are inert.
+4. **Routing:** full, direct, test-only, record-only, and conservative-hold
+   routes, including ambiguity and least-sufficient selection. Bind total
+   lifecycle cost and require the chosen route to match actual available
+   authority and context.
+5. **Verified reuse:** fresh execution versus source-disjoint reusable
+   procedure, plus false trigger, drift, quarantine, decompilation, rollback,
+   and retirement. Reuse must reduce joined cost without transferring hidden
+   target information.
+
+For each subsystem, first run deterministic contract and adversarial tests
+against the canonical path. Then run a small consumed-development causal
+smoke with the qualified local worker. Repair only generic defects exposed by
+those development smokes. Freeze all five implementations and ablation
+semantics together before opening any integrated E2 heldout. If any subsystem
+cannot produce a faithful causal intervention, mark it
+`INCONCLUSIVE_IMPLEMENTATION` and exclude its efficacy claim rather than
+substituting a toy proxy. If all owners are adequate, unseal the original four
+E2 heldouts once and run the matched full/direct/test-only/record-only/hold
+comparison with full denominators and joined cost.
+
+The first source-bound inventory found four registered live owners and one
+real gap: procedural reuse had replay, lifecycle, canary, adoption, and runtime
+code but no canonical registered implementation. Its focused mechanics were
+green, while default-route adoption initially failed because the global
+registry's measured resource receipt had expired and the adoption gate
+incorrectly required a procedural metadata route ID to equal the separate
+effect-authority route ID.
+
+Refresh the measured resource receipt; do not weaken its freshness rule. Repair
+the adoption audit to bind both identities independently: the guarded
+procedural route must be selected and match its caller context, while
+`assistant.route_authority_effect` alone owns the bounded effect. A
+current-source assistant replay now selects the procedural route, executes the
+separately authorized effect, independently observes it, and restores the
+exact prior identity. The adoption gate is `GREEN`, all three routes are
+guarded, all eight invalid effect controls reject, external/public/fallback
+counters are zero, and the replacement transaction is
+`replayable-reference-backed`.
+
+Register this existing route as `impl.procedural_memory_route.v1` under the
+planning execution spine with source-bound adoption evidence. The project
+registry is now `GREEN` with zero abstraction/SCF/routing blockers and 17/17
+route-evidence outputs unblocked. The reproducible inventory in
+`reports/core_evidence_subsystem_adequacy_inventory.json` records `5/5`
+mechanics-green owners: governance (`15` tests), VCM (`25` tests plus two
+subtests), planning (`51`), routing (`17`), and verified reuse (`6`).
+
+This is not subsystem efficacy. It closes owner identity, contract, negative
+control, and current mechanics confounds. Next, use only consumed-development
+requests to test whether each intervention causally changes the qualified
+TMax worker's useful-safe result and joined lifecycle cost. Freeze the five
+implementations, ablation transformations, evaluator, and stop rules only
+after those smokes expose no generic defects. E2 remains unopened until then.
 
 ## Neural Verdict Campaign
 

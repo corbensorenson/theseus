@@ -1,0 +1,992 @@
+{
+  "cohort_id": "tmax9b_worker_v3_source_disjoint_repository_correctness_v1",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "evaluator_manifest_opened": 0,
+    "external_inference_calls": 0,
+    "hidden_test_files_opened": 0,
+    "learned_generation_credit": 3,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T13:53:23.535415Z",
+  "denominators": {
+    "attempted": 3,
+    "infrastructure_failed": 0,
+    "planned": 3,
+    "sealed": 3,
+    "skipped": 0
+  },
+  "faults": [],
+  "freeze_manifest_sha256": "ddd39dcebe5f151c291180e21f1b31c6148c3820ba41e511940d88dea1068f49",
+  "maximum_inference": "This report proves only that target-blind candidates were generated and sealed. Competence requires the frozen independent evaluator.",
+  "policy": "project_theseus_local_8b_functional_qualification_candidates_v1",
+  "public_manifest_sha256": "da90c61b6c22b5832c632cb53544e879f55fb1d0236f99e3cd69a3108e5ef2d6",
+  "report_payload_sha256": "3de207d285412b828653cba64c12cb1f8777583ac3c7b649269ff727e704342c",
+  "runtime": {
+    "wall_ms": 3411573.3
+  },
+  "scope": "prospective_target_blind_candidate_generation_only",
+  "source_identities": {
+    "development_runner_sha256": "8b68da2683909409af0870983d19949082ac17e193ff9d15a56ce0eab19f545b",
+    "qualification_runner_sha256": "f07c207b7812c0bed4021ee9ecdf912788d0903afe3e517dd297a3a056ec7144",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+    "worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 12,
+        "action_counts": {
+          "create_test": 1,
+          "finish": 1,
+          "plan": 1,
+          "read": 5,
+          "replace": 2,
+          "verify": 2
+        },
+        "distinct_read_paths": [
+          "scripts/external_inference_audit.py",
+          "tests/test_external_inference_audit.py",
+          "tests/test_training_data_lineage_audit.py"
+        ],
+        "failed_actions": 1,
+        "file_mutations": 3,
+        "pre_mutation_navigation_actions": 5,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 12,
+          "action_counts": {
+            "create_test": 1,
+            "finish": 1,
+            "plan": 1,
+            "read": 5,
+            "replace": 2,
+            "verify": 2
+          },
+          "distinct_read_paths": [
+            "scripts/external_inference_audit.py",
+            "tests/test_external_inference_audit.py",
+            "tests/test_training_data_lineage_audit.py"
+          ],
+          "failed_actions": 1,
+          "file_mutations": 3,
+          "pre_mutation_navigation_actions": 5,
+          "pre_mutation_read_actions": 4
+        },
+        "advisory_plan": {
+          "criteria": [
+            "number() must accept only finite real numeric values and finite numeric strings; return 0.0 for booleans, NaN, +/-inf, invalid strings, non-numeric objects; preserve finite integers, floats, decimal strings, scientific notation"
+          ],
+          "implementation": "Replace the number() function (lines 589-593) with a new implementation that: 1) checks for bool first (return 0.0), 2) handles None (return 0.0), 3) uses math.isfinite() after float conversion to reject NaN/infinity, 4) returns 0.0 on any exception",
+          "target_paths": [
+            "scripts/external_inference_audit.py",
+            "tests/test_external_inference_audit.py"
+          ],
+          "verification": "Run pytest on tests/test_external_inference_audit.py after creating it with comprehensive tests for all edge cases"
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "a56dcda73860f8d4ab0552f140cfd02498b5a499d5cea61d223a8558e7a4a88f",
+            "before_sha256": "338c7121bcb72e53ae05c9e17bee63d99516497ca063806e5d39d8e1d253fcca",
+            "effect": "modify",
+            "path": "scripts/external_inference_audit.py"
+          },
+          {
+            "after_sha256": "f1a16e1a8516872d2b70562bd4040c03de79aacb46b7a4c37024fd297e15b755",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_external_inference_audit.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_faults": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 12,
+        "model_identity": {
+          "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+          "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+        },
+        "natural_request_sha256": "78906c7c8577143919fc815bd9fff808e178ca23b55998c3bb96358b191ba82b",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+        "patch_unified_diff": "--- a/scripts/external_inference_audit.py\n+++ b/scripts/external_inference_audit.py\n@@ -586,9 +586,20 @@\n     return True\n \n \n+import math\n+\n def number(value: Any) -> float:\n+    # Booleans must be rejected (they are subclass of int in Python)\n+    if isinstance(value, bool):\n+        return 0.0\n+    if value is None:\n+        return 0.0\n     try:\n-        return float(value)\n+        f = float(value)\n+        # Reject NaN and infinite values\n+        if not math.isfinite(f):\n+            return 0.0\n+        return f\n     except (TypeError, ValueError):\n         return 0.0\n \n--- /dev/null\n+++ b/tests/test_external_inference_audit.py\n@@ -0,0 +1,67 @@\n+from __future__ import annotations\n+\n+import math\n+import unittest\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+from external_inference_audit import number\n+\n+class ExternalInferenceAuditNumberTests(unittest.TestCase):\n+    def test_finite_integer_preserved(self) -> None:\n+        self.assertEqual(number(42), 42.0)\n+        self.assertEqual(number(-7), -7.0)\n+        self.assertEqual(number(0), 0.0)\n+\n+    def test_finite_float_preserved(self) -> None:\n+        self.assertAlmostEqual(number(3.14), 3.14)\n+        self.assertAlmostEqual(number(-2.5), -2.5)\n+        self.assertAlmostEqual(number(1e-10), 1e-10)\n+\n+    def test_decimal_string_preserved(self) -> None:\n+        self.assertAlmostEqual(number(\"3.14\"), 3.14)\n+        self.assertAlmostEqual(number(\"-2.5\"), -2.5)\n+        self.assertAlmostEqual(number(\"0\"), 0.0)\n+\n+    def test_scientific_notation_preserved(self) -> None:\n+        self.assertAlmostEqual(number(\"1e10\"), 1e10)\n+        self.assertAlmostEqual(number(\"-2.5e-3\"), -2.5e-3)\n+        self.assertAlmostEqual(number(\"1E+5\"), 1e5)\n+\n+    def test_boolean_returns_zero(self) -> None:\n+        self.assertEqual(number(True), 0.0)\n+        self.assertEqual(number(False), 0.0)\n+\n+    def test_none_returns_zero(self) -> None:\n+        self.assertEqual(number(None), 0.0)\n+\n+    def test_nan_returns_zero(self) -> None:\n+        self.assertEqual(number(float(\"nan\")), 0.0)\n+\n+    def test_positive_infinity_returns_zero(self) -> None:\n+        self.assertEqual(number(float(\"inf\")), 0.0)\n+\n+    def test_negative_infinity_returns_zero(self) -> None:\n+        self.assertEqual(number(float(\"-inf\")), 0.0)\n+\n+    def test_invalid_string_returns_zero(self) -> None:\n+        self.assertEqual(number(\"abc\"), 0.0)\n+        self.assertEqual(number(\"123abc\"), 0.0)\n+        self.assertEqual(number(\"\"), 0.0)\n+\n+    def test_non_numeric_object_returns_zero(self) -> None:\n+        self.assertEqual(number([1, 2, 3]), 0.0)\n+        self.assertEqual(number({\"a\": 1}), 0.0)\n+        self.assertEqual(number(object()), 0.0)\n+\n+    def test_complex_number_returns_zero(self) -> None:\n+        self.assertEqual(number(1+2j), 0.0)\n+\n+    def test_string_with_whitespace_decimal(self) -> None:\n+        self.assertAlmostEqual(number(\"  3.14  \"), 3.14)\n+        self.assertAlmostEqual(number(\"\\t-2.5\\n\"), -2.5)\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/external_inference_audit.py",
+          "tests/test_external_inference_audit.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 1,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 741483.94
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/external_inference_audit.py tests/test_external_inference_audit.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/external_inference_audit.py tests/test_external_inference_audit.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/external_inference_audit.py tests/test_external_inference_audit.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "1aa9465637838ee0f54d05fdc0e7373f4306f225fce372bfd50d8ba41a758fe9",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "____________\n\n    def test_finite_integer_preserved():\n>       self.assertEqual(number(42), 42.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:21: NameError\n____________________________ test_boolean_rejected _____________________________\n\n    def test_boolean_rejected():\n>       self.assertEqual(number(True), 0.0); self.assertEqual(number(False), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:25: NameError\n__________________________ test_infinity_nan_rejected __________________________\n\n    def test_infinity_nan_rejected():\n>       self.assertEqual(number(float('inf')), 0.0); self.assertEqual(number(float('-inf')), 0.0); self.assertEqual(number(float('nan')), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:29: NameError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_external_inference_audit.py::test_finite_integer_preserved\nFAILED tests/test_external_inference_audit.py::test_boolean_rejected - NameEr...\nFAILED tests/test_external_inference_audit.py::test_infinity_nan_rejected - N...\n3 failed, 1 warning in 0.30s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_external_inference_audit.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n________________________ test_finite_integer_preserved _________________________\n\n    def test_finite_integer_preserved():\n>       self.assertEqual(number(42), 42.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:21: NameError\n____________________________ test_boolean_rejected _____________________________\n\n    def test_boolean_rejected():\n>       self.assertEqual(number(True), 0.0); self.assertEqual(number(False), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:25: NameError\n__________________________ test_infinity_nan_rejected __________________________\n\n    def test_infinity_nan_rejected():\n>       self.assertEqual(number(float('inf')), 0.0); self.assertEqual(number(float('-inf')), 0.0); self.assertEqual(number(float('nan')), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:29: NameError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_external_inference_audit.py::test_finite_integer_preserved\nFAILED tests/test_external_inference_audit.py::test_boolean_rejected - NameEr...\nFAILED tests/test_external_inference_audit.py::test_infinity_nan_rejected - N...\n3 failed, 1 warning in 0.30s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/external_inference_audit.py",
+                  "tests/test_external_inference_audit.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/external_inference_audit.py",
+                "tests/test_external_inference_audit.py"
+              ],
+              "pytest": [
+                "tests/test_external_inference_audit.py"
+              ]
+            },
+            "wall_ms": 945.52
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/external_inference_audit.py tests/test_external_inference_audit.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "99bc0878130e81b6112cf9e8b81189e186ac7ff1a3a0b6589cabd3a5107ca9d7",
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_external_inference_audit.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ".............                                                            [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n13 passed, 1 warning in 0.28s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/external_inference_audit.py",
+                  "tests/test_external_inference_audit.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/external_inference_audit.py",
+                "tests/test_external_inference_audit.py"
+              ],
+              "pytest": [
+                "tests/test_external_inference_audit.py"
+              ]
+            },
+            "wall_ms": 921.648
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "e2b5d0542adae4102d42fd84e999fa322067ee1eedd31b30c27eaa286689b2cc",
+      "candidate_seal": {
+        "candidate_output_sha256": "e2b5d0542adae4102d42fd84e999fa322067ee1eedd31b30c27eaa286689b2cc",
+        "config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+        "finished_utc": "2026-07-30T13:08:54.748806Z",
+        "parent_archive_sha256": "4f6acfa2b7bf9874546ba7054fccb6f9ba45b42a2672ada080fa8056849023ba",
+        "started_utc": "2026-07-30T12:56:32.774298Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "7d8b229d744db14410ec4c23f611368fdb35086cf553282756f495b0108f141b",
+        "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+        "worker_wall_ms": 741967.166
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "a56dcda73860f8d4ab0552f140cfd02498b5a499d5cea61d223a8558e7a4a88f",
+          "before_sha256": "338c7121bcb72e53ae05c9e17bee63d99516497ca063806e5d39d8e1d253fcca",
+          "effect": "modify",
+          "path": "scripts/external_inference_audit.py"
+        },
+        {
+          "after_sha256": "f1a16e1a8516872d2b70562bd4040c03de79aacb46b7a4c37024fd297e15b755",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_external_inference_audit.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 12,
+      "model_identity": {
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+      },
+      "opaque_task_id": "task-tmaxfreshv1-audit-number",
+      "parent_archive_sha256": "4f6acfa2b7bf9874546ba7054fccb6f9ba45b42a2672ada080fa8056849023ba",
+      "patch_unified_diff": "--- a/scripts/external_inference_audit.py\n+++ b/scripts/external_inference_audit.py\n@@ -586,9 +586,20 @@\n     return True\n \n \n+import math\n+\n def number(value: Any) -> float:\n+    # Booleans must be rejected (they are subclass of int in Python)\n+    if isinstance(value, bool):\n+        return 0.0\n+    if value is None:\n+        return 0.0\n     try:\n-        return float(value)\n+        f = float(value)\n+        # Reject NaN and infinite values\n+        if not math.isfinite(f):\n+            return 0.0\n+        return f\n     except (TypeError, ValueError):\n         return 0.0\n \n--- /dev/null\n+++ b/tests/test_external_inference_audit.py\n@@ -0,0 +1,67 @@\n+from __future__ import annotations\n+\n+import math\n+import unittest\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+from external_inference_audit import number\n+\n+class ExternalInferenceAuditNumberTests(unittest.TestCase):\n+    def test_finite_integer_preserved(self) -> None:\n+        self.assertEqual(number(42), 42.0)\n+        self.assertEqual(number(-7), -7.0)\n+        self.assertEqual(number(0), 0.0)\n+\n+    def test_finite_float_preserved(self) -> None:\n+        self.assertAlmostEqual(number(3.14), 3.14)\n+        self.assertAlmostEqual(number(-2.5), -2.5)\n+        self.assertAlmostEqual(number(1e-10), 1e-10)\n+\n+    def test_decimal_string_preserved(self) -> None:\n+        self.assertAlmostEqual(number(\"3.14\"), 3.14)\n+        self.assertAlmostEqual(number(\"-2.5\"), -2.5)\n+        self.assertAlmostEqual(number(\"0\"), 0.0)\n+\n+    def test_scientific_notation_preserved(self) -> None:\n+        self.assertAlmostEqual(number(\"1e10\"), 1e10)\n+        self.assertAlmostEqual(number(\"-2.5e-3\"), -2.5e-3)\n+        self.assertAlmostEqual(number(\"1E+5\"), 1e5)\n+\n+    def test_boolean_returns_zero(self) -> None:\n+        self.assertEqual(number(True), 0.0)\n+        self.assertEqual(number(False), 0.0)\n+\n+    def test_none_returns_zero(self) -> None:\n+        self.assertEqual(number(None), 0.0)\n+\n+    def test_nan_returns_zero(self) -> None:\n+        self.assertEqual(number(float(\"nan\")), 0.0)\n+\n+    def test_positive_infinity_returns_zero(self) -> None:\n+        self.assertEqual(number(float(\"inf\")), 0.0)\n+\n+    def test_negative_infinity_returns_zero(self) -> None:\n+        self.assertEqual(number(float(\"-inf\")), 0.0)\n+\n+    def test_invalid_string_returns_zero(self) -> None:\n+        self.assertEqual(number(\"abc\"), 0.0)\n+        self.assertEqual(number(\"123abc\"), 0.0)\n+        self.assertEqual(number(\"\"), 0.0)\n+\n+    def test_non_numeric_object_returns_zero(self) -> None:\n+        self.assertEqual(number([1, 2, 3]), 0.0)\n+        self.assertEqual(number({\"a\": 1}), 0.0)\n+        self.assertEqual(number(object()), 0.0)\n+\n+    def test_complex_number_returns_zero(self) -> None:\n+        self.assertEqual(number(1+2j), 0.0)\n+\n+    def test_string_with_whitespace_decimal(self) -> None:\n+        self.assertAlmostEqual(number(\"  3.14  \"), 3.14)\n+        self.assertAlmostEqual(number(\"\\t-2.5\\n\"), -2.5)\n",
+      "proposed_paths": [
+        "scripts/external_inference_audit.py",
+        "tests/test_external_inference_audit.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 1,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/external_inference_audit.py tests/test_external_inference_audit.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "1aa9465637838ee0f54d05fdc0e7373f4306f225fce372bfd50d8ba41a758fe9",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "____________\n\n    def test_finite_integer_preserved():\n>       self.assertEqual(number(42), 42.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:21: NameError\n____________________________ test_boolean_rejected _____________________________\n\n    def test_boolean_rejected():\n>       self.assertEqual(number(True), 0.0); self.assertEqual(number(False), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:25: NameError\n__________________________ test_infinity_nan_rejected __________________________\n\n    def test_infinity_nan_rejected():\n>       self.assertEqual(number(float('inf')), 0.0); self.assertEqual(number(float('-inf')), 0.0); self.assertEqual(number(float('nan')), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:29: NameError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_external_inference_audit.py::test_finite_integer_preserved\nFAILED tests/test_external_inference_audit.py::test_boolean_rejected - NameEr...\nFAILED tests/test_external_inference_audit.py::test_infinity_nan_rejected - N...\n3 failed, 1 warning in 0.30s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_external_inference_audit.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n________________________ test_finite_integer_preserved _________________________\n\n    def test_finite_integer_preserved():\n>       self.assertEqual(number(42), 42.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:21: NameError\n____________________________ test_boolean_rejected _____________________________\n\n    def test_boolean_rejected():\n>       self.assertEqual(number(True), 0.0); self.assertEqual(number(False), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:25: NameError\n__________________________ test_infinity_nan_rejected __________________________\n\n    def test_infinity_nan_rejected():\n>       self.assertEqual(number(float('inf')), 0.0); self.assertEqual(number(float('-inf')), 0.0); self.assertEqual(number(float('nan')), 0.0)\n        ^^^^\nE       NameError: name 'self' is not defined\n\ntests/test_external_inference_audit.py:29: NameError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_external_inference_audit.py::test_finite_integer_preserved\nFAILED tests/test_external_inference_audit.py::test_boolean_rejected - NameEr...\nFAILED tests/test_external_inference_audit.py::test_infinity_nan_rejected - N...\n3 failed, 1 warning in 0.30s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/external_inference_audit.py",
+                "tests/test_external_inference_audit.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/external_inference_audit.py",
+              "tests/test_external_inference_audit.py"
+            ],
+            "pytest": [
+              "tests/test_external_inference_audit.py"
+            ]
+          },
+          "wall_ms": 945.52
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_external_inference_audit.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/external_inference_audit.py tests/test_external_inference_audit.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "99bc0878130e81b6112cf9e8b81189e186ac7ff1a3a0b6589cabd3a5107ca9d7",
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_external_inference_audit.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ".............                                                            [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n13 passed, 1 warning in 0.28s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/external_inference_audit.py",
+                "tests/test_external_inference_audit.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/external_inference_audit.py",
+              "tests/test_external_inference_audit.py"
+            ],
+            "pytest": [
+              "tests/test_external_inference_audit.py"
+            ]
+          },
+          "wall_ms": 921.648
+        }
+      ],
+      "worker_input_sha256": "7d8b229d744db14410ec4c23f611368fdb35086cf553282756f495b0108f141b",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 16,
+        "action_counts": {
+          "create": 1,
+          "create_test": 3,
+          "finish": 1,
+          "plan": 1,
+          "read": 7,
+          "replace": 2,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "scripts/hive_fleet_readiness.py",
+          "scripts/hive_node_registry.py",
+          "tests/test_hive_node_cli_paths.py"
+        ],
+        "failed_actions": 5,
+        "file_mutations": 3,
+        "pre_mutation_navigation_actions": 6,
+        "pre_mutation_read_actions": 5
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 16,
+          "action_counts": {
+            "create": 1,
+            "create_test": 3,
+            "finish": 1,
+            "plan": 1,
+            "read": 7,
+            "replace": 2,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "scripts/hive_fleet_readiness.py",
+            "scripts/hive_node_registry.py",
+            "tests/test_hive_node_cli_paths.py"
+          ],
+          "failed_actions": 5,
+          "file_mutations": 3,
+          "pre_mutation_navigation_actions": 6,
+          "pre_mutation_read_actions": 5
+        },
+        "advisory_plan": {
+          "criteria": [
+            "relay_url validation must require HTTPS scheme, nonempty hostname, no username/password/fragment when remote_tasks enabled and no trusted remote node exists"
+          ],
+          "implementation": "Add a helper function is_valid_private_relay_url() that checks: (1) starts with https://, (2) urlparse.hostname is truthy, (3) netloc has no @ (no credentials), (4) parsed.fragment is empty. Update blockers_for() to use this helper instead of just checking relay_url truthiness. Preserve existing behavior for trusted nodes and disabled remote tasks.",
+          "target_paths": [
+            "scripts/hive_fleet_readiness.py",
+            "tests/test_hive_fleet_readiness.py"
+          ],
+          "verification": "Create tests/test_hive_fleet_readiness.py with focused tests for relay URL validation edge cases (empty, http, https valid, with username, with password, with fragment, valid hostname)."
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "96f3719ed1c6ec6cb91fd435fc4583af0b8a6878210233f2ce0c777acf504299",
+            "before_sha256": "8373fe425348d99515c23d5b98a5b01f350ab41cccafac3de3979af7e95bace9",
+            "effect": "modify",
+            "path": "scripts/hive_fleet_readiness.py"
+          },
+          {
+            "after_sha256": "369b860adc673da8a2d477cd3219dcd26692b8b7978d7903532aa32dd9b50948",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_hive_fleet_readiness.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_faults": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 16,
+        "model_identity": {
+          "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+          "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+        },
+        "natural_request_sha256": "75180c1b91ed6768f2310ddf4b1790015a75d048cd061871385285abf224e1bf",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+        "patch_unified_diff": "--- a/scripts/hive_fleet_readiness.py\n+++ b/scripts/hive_fleet_readiness.py\n@@ -12,6 +12,7 @@\n import json\n import os\n import platform\n+import re\n import shutil\n import socket\n import subprocess\n@@ -19,6 +20,7 @@\n from datetime import datetime, timezone\n from pathlib import Path\n from typing import Any\n+from urllib.parse import urlparse\n \n \n ROOT = Path(__file__).resolve().parents[1]\n@@ -96,6 +98,34 @@\n     return 0\n \n \n+def is_valid_private_relay_url(relay_url: str) -> bool:\n+    \"\"\"Check if relay_url satisfies private connectivity requirements.\n+    \n+    Must be a syntactically valid HTTPS URL with:\n+    - nonempty hostname\n+    - no embedded username or password (no @ in netloc)\n+    - no fragment component\n+    \"\"\"\n+    if not relay_url:\n+        return False\n+    parsed = urlparse(relay_url)\n+    # Must be https\n+    if parsed.scheme.lower() != \"https\":\n+        return False\n+    # Must have nonempty hostname\n+    hostname = parsed.hostname\n+    if not hostname:\n+        return False\n+    # No credentials (no @ in netloc before the host)\n+    netloc = parsed.netloc\n+    if \"@\" in netloc:\n+        return False\n+    # No fragment\n+    if parsed.fragment:\n+        return False\n+    return True\n+\n+\n def blockers_for(system: str, policy: dict[str, Any], *, secret_present: bool, relay_url: str, registry: dict[str, Any]) -> list[str]:\n     blockers: list[str] = []\n     summary = registry.get(\"summary\") if isinstance(registry.get(\"summary\"), dict) else {}\n@@ -107,8 +137,10 @@\n         blockers.append(\"runtime_root_unavailable\")\n     if remote_tasks_enabled(policy) and not secret_present:\n         blockers.append(\"remote_task_secret_missing\")\n-    if remote_tasks_enabled(policy) and not relay_url and not remote_trusted:\n-        blockers.append(\"same_lan_or_private_tunnel_required_without_relay\")\n+    # When remote tasks enabled and no trusted remote node, relay_url must be valid private relay\n+    if remote_tasks_enabled(policy) and not remote_trusted:\n+        if not is_valid_private_relay_url(relay_url):\n+            blockers.append(\"same_lan_or_private_tunnel_required_without_relay\")\n     if remote_tasks_enabled(policy) and trusted_nodes <= 1:\n         blockers.append(\"no_trusted_remote_worker_visible\")\n     if not launch_command(system, port=8791)[\"script_exists\"]:\n--- /dev/null\n+++ b/tests/test_hive_fleet_readiness.py\n@@ -0,0 +1,37 @@\n+from __future__ import annotations\n+\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+import hive_fleet_readiness as target\n+\n+import sys\n+from pathlib import Path\n+import hive_fleet_readiness as hfr\n+\n+def test_is_valid_private_relay_url():\n+    assert not hfr.is_valid_private_relay_url(\"\")\n+    assert not hfr.is_valid_private_relay_url(None)\n+    assert not hfr.is_valid_private_relay_url(\"http://example.com\")\n+    assert hfr.is_valid_private_relay_url(\"https://relay.example.com\")\n+    assert not hfr.is_valid_private_relay_url(\"https://user@relay.example.com\")\n+    assert not hfr.is_valid_private_relay_url(\"https://relay.example.com#frag\")\n+\n+\n+def test_blockers_for_with_valid_relay_and_no_trusted_node():\n+    policy = {\"policy\": \"project_theseus_hive_policy_v0\", \"federation\": {\"tiers\": {\"private\": {\"remote_tasks\": True}}}}\n+    registry = {\"summary\": {\"trusted_node_count\": 1}, \"nodes\": []}\n+    blockers = hfr.blockers_for(\"linux\", policy, secret_present=False, relay_url=\"https://relay.example.com\", registry=registry)\n+    assert \"same_lan_or_private_tunnel_required_without_relay\" not in blockers\n+\n+\n+def test_blockers_for_with_invalid_relay_and_no_trusted_node():\n+    policy = {\"policy\": \"project_theseus_hive_policy_v0\", \"federation\": {\"tiers\": {\"private\": {\"remote_tasks\": True}}}}\n+    registry = {\"summary\": {\"trusted_node_count\": 1}, \"nodes\": []}\n+    blockers = hfr.blockers_for(\"linux\", policy, secret_present=False, relay_url=\"http://relay.example.com\", registry=registry)\n+    assert \"same_lan_or_private_tunnel_required_without_relay\" in blockers\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/hive_fleet_readiness.py",
+          "tests/test_hive_fleet_readiness.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 1070708.439
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_fleet_readiness.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_fleet_readiness.py tests/test_hive_fleet_readiness.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_fleet_readiness.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_fleet_readiness.py tests/test_hive_fleet_readiness.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "bc7227e3d45e54449b28fa96fb37cd3948bea3732511355bf083ebbefe0c98b7",
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_hive_fleet_readiness.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.28s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/hive_fleet_readiness.py",
+                  "tests/test_hive_fleet_readiness.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/hive_fleet_readiness.py",
+                "tests/test_hive_fleet_readiness.py"
+              ],
+              "pytest": [
+                "tests/test_hive_fleet_readiness.py"
+              ]
+            },
+            "wall_ms": 927.01
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "4dd476a43f670994ee2b8155afd0f2a36189ae4d9aedd6e23ed56207b8738721",
+      "candidate_seal": {
+        "candidate_output_sha256": "4dd476a43f670994ee2b8155afd0f2a36189ae4d9aedd6e23ed56207b8738721",
+        "config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+        "finished_utc": "2026-07-30T13:26:48.792804Z",
+        "parent_archive_sha256": "4f6acfa2b7bf9874546ba7054fccb6f9ba45b42a2672ada080fa8056849023ba",
+        "started_utc": "2026-07-30T13:08:56.438585Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "661e8a980da8f0c498e42bcac03b2f458e575171a6d7b271dc3371f602907218",
+        "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+        "worker_wall_ms": 1072351.917
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "96f3719ed1c6ec6cb91fd435fc4583af0b8a6878210233f2ce0c777acf504299",
+          "before_sha256": "8373fe425348d99515c23d5b98a5b01f350ab41cccafac3de3979af7e95bace9",
+          "effect": "modify",
+          "path": "scripts/hive_fleet_readiness.py"
+        },
+        {
+          "after_sha256": "369b860adc673da8a2d477cd3219dcd26692b8b7978d7903532aa32dd9b50948",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_hive_fleet_readiness.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 16,
+      "model_identity": {
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+      },
+      "opaque_task_id": "task-tmaxfreshv1-relay-url",
+      "parent_archive_sha256": "4f6acfa2b7bf9874546ba7054fccb6f9ba45b42a2672ada080fa8056849023ba",
+      "patch_unified_diff": "--- a/scripts/hive_fleet_readiness.py\n+++ b/scripts/hive_fleet_readiness.py\n@@ -12,6 +12,7 @@\n import json\n import os\n import platform\n+import re\n import shutil\n import socket\n import subprocess\n@@ -19,6 +20,7 @@\n from datetime import datetime, timezone\n from pathlib import Path\n from typing import Any\n+from urllib.parse import urlparse\n \n \n ROOT = Path(__file__).resolve().parents[1]\n@@ -96,6 +98,34 @@\n     return 0\n \n \n+def is_valid_private_relay_url(relay_url: str) -> bool:\n+    \"\"\"Check if relay_url satisfies private connectivity requirements.\n+    \n+    Must be a syntactically valid HTTPS URL with:\n+    - nonempty hostname\n+    - no embedded username or password (no @ in netloc)\n+    - no fragment component\n+    \"\"\"\n+    if not relay_url:\n+        return False\n+    parsed = urlparse(relay_url)\n+    # Must be https\n+    if parsed.scheme.lower() != \"https\":\n+        return False\n+    # Must have nonempty hostname\n+    hostname = parsed.hostname\n+    if not hostname:\n+        return False\n+    # No credentials (no @ in netloc before the host)\n+    netloc = parsed.netloc\n+    if \"@\" in netloc:\n+        return False\n+    # No fragment\n+    if parsed.fragment:\n+        return False\n+    return True\n+\n+\n def blockers_for(system: str, policy: dict[str, Any], *, secret_present: bool, relay_url: str, registry: dict[str, Any]) -> list[str]:\n     blockers: list[str] = []\n     summary = registry.get(\"summary\") if isinstance(registry.get(\"summary\"), dict) else {}\n@@ -107,8 +137,10 @@\n         blockers.append(\"runtime_root_unavailable\")\n     if remote_tasks_enabled(policy) and not secret_present:\n         blockers.append(\"remote_task_secret_missing\")\n-    if remote_tasks_enabled(policy) and not relay_url and not remote_trusted:\n-        blockers.append(\"same_lan_or_private_tunnel_required_without_relay\")\n+    # When remote tasks enabled and no trusted remote node, relay_url must be valid private relay\n+    if remote_tasks_enabled(policy) and not remote_trusted:\n+        if not is_valid_private_relay_url(relay_url):\n+            blockers.append(\"same_lan_or_private_tunnel_required_without_relay\")\n     if remote_tasks_enabled(policy) and trusted_nodes <= 1:\n         blockers.append(\"no_trusted_remote_worker_visible\")\n     if not launch_command(system, port=8791)[\"script_exists\"]:\n--- /dev/null\n+++ b/tests/test_hive_fleet_readiness.py\n@@ -0,0 +1,37 @@\n+from __future__ import annotations\n+\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+import hive_fleet_readiness as target\n+\n+import sys\n+from pathlib import Path\n+import hive_fleet_readiness as hfr\n+\n+def test_is_valid_private_relay_url():\n+    assert not hfr.is_valid_private_relay_url(\"\")\n+    assert not hfr.is_valid_private_relay_url(None)\n+    assert not hfr.is_valid_private_relay_url(\"http://example.com\")\n+    assert hfr.is_valid_private_relay_url(\"https://relay.example.com\")\n+    assert not hfr.is_valid_private_relay_url(\"https://user@relay.example.com\")\n+    assert not hfr.is_valid_private_relay_url(\"https://relay.example.com#frag\")\n+\n+\n+def test_blockers_for_with_valid_relay_and_no_trusted_node():\n+    policy = {\"policy\": \"project_theseus_hive_policy_v0\", \"federation\": {\"tiers\": {\"private\": {\"remote_tasks\": True}}}}\n+    registry = {\"summary\": {\"trusted_node_count\": 1}, \"nodes\": []}\n+    blockers = hfr.blockers_for(\"linux\", policy, secret_present=False, relay_url=\"https://relay.example.com\", registry=registry)\n+    assert \"same_lan_or_private_tunnel_required_without_relay\" not in blockers\n+\n+\n+def test_blockers_for_with_invalid_relay_and_no_trusted_node():\n+    policy = {\"policy\": \"project_theseus_hive_policy_v0\", \"federation\": {\"tiers\": {\"private\": {\"remote_tasks\": True}}}}\n+    registry = {\"summary\": {\"trusted_node_count\": 1}, \"nodes\": []}\n+    blockers = hfr.blockers_for(\"linux\", policy, secret_present=False, relay_url=\"http://relay.example.com\", registry=registry)\n+    assert \"same_lan_or_private_tunnel_required_without_relay\" in blockers\n",
+      "proposed_paths": [
+        "scripts/hive_fleet_readiness.py",
+        "tests/test_hive_fleet_readiness.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_fleet_readiness.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_fleet_readiness.py tests/test_hive_fleet_readiness.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "bc7227e3d45e54449b28fa96fb37cd3948bea3732511355bf083ebbefe0c98b7",
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_hive_fleet_readiness.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.28s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/hive_fleet_readiness.py",
+                "tests/test_hive_fleet_readiness.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/hive_fleet_readiness.py",
+              "tests/test_hive_fleet_readiness.py"
+            ],
+            "pytest": [
+              "tests/test_hive_fleet_readiness.py"
+            ]
+          },
+          "wall_ms": 927.01
+        }
+      ],
+      "worker_input_sha256": "661e8a980da8f0c498e42bcac03b2f458e575171a6d7b271dc3371f602907218",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "create": 3,
+          "create_test": 5,
+          "plan": 1,
+          "read": 6,
+          "replace": 2,
+          "verify": 1
+        },
+        "distinct_read_paths": [
+          "scripts/self_evolution_governor.py",
+          "tests/test_self_evolution_governor.py",
+          "tests/test_standard_causal_transformer_survival.py"
+        ],
+        "failed_actions": 9,
+        "file_mutations": 3,
+        "pre_mutation_navigation_actions": 5,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "create": 3,
+            "create_test": 5,
+            "plan": 1,
+            "read": 6,
+            "replace": 2,
+            "verify": 1
+          },
+          "distinct_read_paths": [
+            "scripts/self_evolution_governor.py",
+            "tests/test_self_evolution_governor.py",
+            "tests/test_standard_causal_transformer_survival.py"
+          ],
+          "failed_actions": 9,
+          "file_mutations": 3,
+          "pre_mutation_navigation_actions": 5,
+          "pre_mutation_read_actions": 4
+        },
+        "advisory_plan": {
+          "criteria": [
+            "active_frontier must filter out rows with boolean, malformed, or non-finite residuals; compare only finite numeric residuals including numeric strings; return empty dict when no valid frontier remains; break ties deterministically by ascending benchmark_name then best_report; preserve preferred-family and preferred-card filtering before global fallback"
+          ],
+          "implementation": "Replace active_frontier function (lines 531-548) to add robust residual parsing (float conversion with try/except), finiteness check (math.isfinite), tie-breaking sort key (benchmark_name, best_report), and early return on empty valid set. Create tests/test_self_evolution_governor.py with focused unit tests for the new behavior.",
+          "target_paths": [
+            "scripts/self_evolution_governor.py",
+            "tests/test_self_evolution_governor.py"
+          ],
+          "verification": "Run pytest on new test file and verify active_frontier returns correct results for edge cases (boolean residuals, non-finite, numeric strings, ties)."
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "0b9f1c61006aefa9e177bac65e876e42af0e992ea62c862d195f0ad479553a8b",
+            "before_sha256": "941a5117ed02c4eb551aa8b2104e93a9eb0ba6626747a6093d34cdb067961faa",
+            "effect": "modify",
+            "path": "scripts/self_evolution_governor.py"
+          },
+          {
+            "after_sha256": "262f0b928e0bdcc4dc416e85018067d4ce2e38a151c15bc6d14631017dbb0eb3",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_self_evolution_governor.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_faults": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+          "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+        },
+        "natural_request_sha256": "2c51bcbb4371009e45b2c29203176a3cb98819056b138643e9a6b19892051df9",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "e857ab8428470b9c807293eeb4ba0821fc04039d",
+        "patch_unified_diff": "--- a/scripts/self_evolution_governor.py\n+++ b/scripts/self_evolution_governor.py\n@@ -528,24 +528,65 @@\n     }\n \n \n+def _parse_residual(value: Any) -> float | None:\n+    \"\"\"Parse residual to float, returning None if invalid (bool, non-finite, malformed).\"\"\"\n+    if isinstance(value, bool):\n+        return None\n+    if isinstance(value, (int, float)):\n+        if not math.isfinite(value):\n+            return None\n+        return float(value)\n+    if isinstance(value, str):\n+        try:\n+            f = float(value)\n+            if math.isfinite(f):\n+                return f\n+        except ValueError:\n+            pass\n+        return None\n+    # Try dict access for 'residual' key if value is a dict-like object\n+    if isinstance(value, dict):\n+        raw = value.get(\"residual\")\n+        return _parse_residual(raw)\n+    return None\n+\n def active_frontier(ledger: Any, *, preferred_family: str = \"\", preferred_card_id: str = \"\") -> dict[str, Any]:\n+    import math\n     if not isinstance(ledger, list):\n         return {}\n     frontiers = [row for row in ledger if isinstance(row, dict) and row.get(\"lifecycle\") == \"frontier\"]\n     if not frontiers:\n         return {}\n-    preferred = [\n-        row\n-        for row in frontiers\n-        if row_frontier_family(row) == preferred_family\n-        and (not preferred_card_id or preferred_card_id in str(row.get(\"best_report\") or row.get(\"benchmark_name\") or \"\"))\n-    ]\n-    if preferred:\n-        return max(preferred, key=lambda row: float(row.get(\"residual\") or 0.0))\n-    preferred = [row for row in frontiers if row_frontier_family(row) == preferred_family]\n-    if preferred:\n-        return max(preferred, key=lambda row: float(row.get(\"residual\") or 0.0))\n-    return max(frontiers, key=lambda row: float(row.get(\"residual\") or 0.0))\n+    \n+    def get_valid_row(row: dict[str, Any]) -> tuple[float, str, str, dict[str, Any]] | None:\n+        residual = _parse_residual(row.get(\"residual\"))\n+        if residual is None:\n+            return None\n+        benchmark_name = str(row.get(\"benchmark_name\", \"\"))\n+        best_report = str(row.get(\"best_report\", \"\"))\n+        return (residual, benchmark_name, best_report, row)\n+    \n+    # Apply preferred filtering first\n+    if preferred_family:\n+        filtered = [row for row in frontiers if row_frontier_family(row) == preferred_family]\n+        preferred_candidates = [get_valid_row(row) for row in filtered]\n+        if preferred_card_id:\n+            preferred_candidates = [\n+                c for c in preferred_candidates\n+                if preferred_card_id in str(c[2]) or preferred_card_id in str(c[1])\n+            ]\n+        if preferred_candidates:\n+            # Sort by residual desc, then benchmark_name asc, then best_report asc\n+            preferred_candidates.sort(key=lambda x: (-x[0], x[1], x[2]))\n+            return dict(preferred_candidates[0][3])\n+    \n+    # Global fallback\n+    all_candidates = [get_valid_row(row) for row in frontiers]\n+    if all_candidates:\n+        all_candidates.sort(key=lambda x: (-x[0], x[1], x[2]))\n+        return dict(all_candidates[0][3])\n+    \n+    return {}\n \n \n def preferred_curriculum_family(state: dict[str, Any]) -> str:\n--- /dev/null\n+++ b/tests/test_self_evolution_governor.py\n@@ -0,0 +1,28 @@\n+from __future__ import annotations\n+import math\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+from self_evolution_governor import active_frontier, _parse_residual\n+\n+def test_parse_residual_valid():\n+    assert _parse_residual(1.5) == 1.5\n+    assert _parse_residual(\"42\") == 42.0\n+\n+def test_parse_residual_invalid():\n+    assert _parse_residual(True) is None\n+    assert _parse_residual(float('inf')) is None\n+    assert _parse_residual(\"not_a_number\") is None\n+\n+def test_active_frontier_ties():\n+    ledger = [\n+        {\"lifecycle\": \"frontier\", \"residual\": 10.0, \"benchmark_name\": \"b2\", \"best_report\": \"r2\"},\n+        {\"lifecycle\": \"frontier\", \"residual\": 10.0, \"benchmark_name\": \"b1\", \"best_report\": \"r1\"}\n+    ]\n+    result = active_frontier(ledger)\n+    assert result[\"benchmark_name\"] == \"b1\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/self_evolution_governor.py",
+          "tests/test_self_evolution_governor.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 1,
+        "residuals": [
+          "final_candidate_verification_not_green",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 1591320.608
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_self_evolution_governor.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/self_evolution_governor.py tests/test_self_evolution_governor.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_self_evolution_governor.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/self_evolution_governor.py tests/test_self_evolution_governor.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "4063d7e9d24dc9f15753a658de941385619251e4da12802515b16c53000e9d0b",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_self_evolution_governor.py",
+                "returncode": 2,
+                "stderr_tail": "",
+                "stdout_tail": ">:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-5ihwyonc/snapshot/tests/test_self_evolution_governor.py\", line 32\nE       assert result[\"benchmark_name\"] == \"b1\nE                                          ^\nE   SyntaxError: unterminated string literal (detected at line 32)\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_self_evolution_governor.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.38s\n"
+              },
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/self_evolution_governor.py tests/test_self_evolution_governor.py",
+                "returncode": 1,
+                "stderr_tail": "  File \"tests/test_self_evolution_governor.py\", line 32\n    assert result[\"benchmark_name\"] == \"b1\n                                       ^\nSyntaxError: unterminated string literal (detected at line 32)\n",
+                "stdout_tail": ""
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_self_evolution_governor.py"
+                ],
+                "returncode": 2,
+                "stderr_tail": "",
+                "stdout_tail": "\n==================================== ERRORS ====================================\n____________ ERROR collecting tests/test_self_evolution_governor.py ____________\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-5ihwyonc/snapshot/tests/test_self_evolution_governor.py\", line 32\nE       assert result[\"benchmark_name\"] == \"b1\nE                                          ^\nE   SyntaxError: unterminated string literal (detected at line 32)\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_self_evolution_governor.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.38s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/self_evolution_governor.py",
+                  "tests/test_self_evolution_governor.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "  File \"tests/test_self_evolution_governor.py\", line 32\n    assert result[\"benchmark_name\"] == \"b1\n                                       ^\nSyntaxError: unterminated string literal (detected at line 32)\n",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/self_evolution_governor.py",
+                "tests/test_self_evolution_governor.py"
+              ],
+              "pytest": [
+                "tests/test_self_evolution_governor.py"
+              ]
+            },
+            "wall_ms": 1039.292
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "37673eb1eebc3a1fe64e007056069d01342199d203da679395bf5732acf0b02f",
+      "candidate_seal": {
+        "candidate_output_sha256": "37673eb1eebc3a1fe64e007056069d01342199d203da679395bf5732acf0b02f",
+        "config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+        "finished_utc": "2026-07-30T13:53:23.088440Z",
+        "parent_archive_sha256": "4f6acfa2b7bf9874546ba7054fccb6f9ba45b42a2672ada080fa8056849023ba",
+        "started_utc": "2026-07-30T13:26:50.528054Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "6281c7bb83932f2dff9d0b4c39287c00b61a5efd4315bd38c55d3a73f71974e3",
+        "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+        "worker_wall_ms": 1592531.313
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [
+        {
+          "after_sha256": "0b9f1c61006aefa9e177bac65e876e42af0e992ea62c862d195f0ad479553a8b",
+          "before_sha256": "941a5117ed02c4eb551aa8b2104e93a9eb0ba6626747a6093d34cdb067961faa",
+          "effect": "modify",
+          "path": "scripts/self_evolution_governor.py"
+        },
+        {
+          "after_sha256": "262f0b928e0bdcc4dc416e85018067d4ce2e38a151c15bc6d14631017dbb0eb3",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_self_evolution_governor.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+      },
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection",
+      "parent_archive_sha256": "4f6acfa2b7bf9874546ba7054fccb6f9ba45b42a2672ada080fa8056849023ba",
+      "patch_unified_diff": "--- a/scripts/self_evolution_governor.py\n+++ b/scripts/self_evolution_governor.py\n@@ -528,24 +528,65 @@\n     }\n \n \n+def _parse_residual(value: Any) -> float | None:\n+    \"\"\"Parse residual to float, returning None if invalid (bool, non-finite, malformed).\"\"\"\n+    if isinstance(value, bool):\n+        return None\n+    if isinstance(value, (int, float)):\n+        if not math.isfinite(value):\n+            return None\n+        return float(value)\n+    if isinstance(value, str):\n+        try:\n+            f = float(value)\n+            if math.isfinite(f):\n+                return f\n+        except ValueError:\n+            pass\n+        return None\n+    # Try dict access for 'residual' key if value is a dict-like object\n+    if isinstance(value, dict):\n+        raw = value.get(\"residual\")\n+        return _parse_residual(raw)\n+    return None\n+\n def active_frontier(ledger: Any, *, preferred_family: str = \"\", preferred_card_id: str = \"\") -> dict[str, Any]:\n+    import math\n     if not isinstance(ledger, list):\n         return {}\n     frontiers = [row for row in ledger if isinstance(row, dict) and row.get(\"lifecycle\") == \"frontier\"]\n     if not frontiers:\n         return {}\n-    preferred = [\n-        row\n-        for row in frontiers\n-        if row_frontier_family(row) == preferred_family\n-        and (not preferred_card_id or preferred_card_id in str(row.get(\"best_report\") or row.get(\"benchmark_name\") or \"\"))\n-    ]\n-    if preferred:\n-        return max(preferred, key=lambda row: float(row.get(\"residual\") or 0.0))\n-    preferred = [row for row in frontiers if row_frontier_family(row) == preferred_family]\n-    if preferred:\n-        return max(preferred, key=lambda row: float(row.get(\"residual\") or 0.0))\n-    return max(frontiers, key=lambda row: float(row.get(\"residual\") or 0.0))\n+    \n+    def get_valid_row(row: dict[str, Any]) -> tuple[float, str, str, dict[str, Any]] | None:\n+        residual = _parse_residual(row.get(\"residual\"))\n+        if residual is None:\n+            return None\n+        benchmark_name = str(row.get(\"benchmark_name\", \"\"))\n+        best_report = str(row.get(\"best_report\", \"\"))\n+        return (residual, benchmark_name, best_report, row)\n+    \n+    # Apply preferred filtering first\n+    if preferred_family:\n+        filtered = [row for row in frontiers if row_frontier_family(row) == preferred_family]\n+        preferred_candidates = [get_valid_row(row) for row in filtered]\n+        if preferred_card_id:\n+            preferred_candidates = [\n+                c for c in preferred_candidates\n+                if preferred_card_id in str(c[2]) or preferred_card_id in str(c[1])\n+            ]\n+        if preferred_candidates:\n+            # Sort by residual desc, then benchmark_name asc, then best_report asc\n+            preferred_candidates.sort(key=lambda x: (-x[0], x[1], x[2]))\n+            return dict(preferred_candidates[0][3])\n+    \n+    # Global fallback\n+    all_candidates = [get_valid_row(row) for row in frontiers]\n+    if all_candidates:\n+        all_candidates.sort(key=lambda x: (-x[0], x[1], x[2]))\n+        return dict(all_candidates[0][3])\n+    \n+    return {}\n \n \n def preferred_curriculum_family(state: dict[str, Any]) -> str:\n--- /dev/null\n+++ b/tests/test_self_evolution_governor.py\n@@ -0,0 +1,28 @@\n+from __future__ import annotations\n+import math\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+from self_evolution_governor import active_frontier, _parse_residual\n+\n+def test_parse_residual_valid():\n+    assert _parse_residual(1.5) == 1.5\n+    assert _parse_residual(\"42\") == 42.0\n+\n+def test_parse_residual_invalid():\n+    assert _parse_residual(True) is None\n+    assert _parse_residual(float('inf')) is None\n+    assert _parse_residual(\"not_a_number\") is None\n+\n+def test_active_frontier_ties():\n+    ledger = [\n+        {\"lifecycle\": \"frontier\", \"residual\": 10.0, \"benchmark_name\": \"b2\", \"best_report\": \"r2\"},\n+        {\"lifecycle\": \"frontier\", \"residual\": 10.0, \"benchmark_name\": \"b1\", \"best_report\": \"r1\"}\n+    ]\n+    result = active_frontier(ledger)\n+    assert result[\"benchmark_name\"] == \"b1\n",
+      "proposed_paths": [
+        "scripts/self_evolution_governor.py",
+        "tests/test_self_evolution_governor.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 1,
+      "residuals": [
+        "final_candidate_verification_not_green",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_self_evolution_governor.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/self_evolution_governor.py tests/test_self_evolution_governor.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "4063d7e9d24dc9f15753a658de941385619251e4da12802515b16c53000e9d0b",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_self_evolution_governor.py",
+              "returncode": 2,
+              "stderr_tail": "",
+              "stdout_tail": ">:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-5ihwyonc/snapshot/tests/test_self_evolution_governor.py\", line 32\nE       assert result[\"benchmark_name\"] == \"b1\nE                                          ^\nE   SyntaxError: unterminated string literal (detected at line 32)\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_self_evolution_governor.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.38s\n"
+            },
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/self_evolution_governor.py tests/test_self_evolution_governor.py",
+              "returncode": 1,
+              "stderr_tail": "  File \"tests/test_self_evolution_governor.py\", line 32\n    assert result[\"benchmark_name\"] == \"b1\n                                       ^\nSyntaxError: unterminated string literal (detected at line 32)\n",
+              "stdout_tail": ""
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_self_evolution_governor.py"
+              ],
+              "returncode": 2,
+              "stderr_tail": "",
+              "stdout_tail": "\n==================================== ERRORS ====================================\n____________ ERROR collecting tests/test_self_evolution_governor.py ____________\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-5ihwyonc/snapshot/tests/test_self_evolution_governor.py\", line 32\nE       assert result[\"benchmark_name\"] == \"b1\nE                                          ^\nE   SyntaxError: unterminated string literal (detected at line 32)\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_self_evolution_governor.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.38s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/self_evolution_governor.py",
+                "tests/test_self_evolution_governor.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "  File \"tests/test_self_evolution_governor.py\", line 32\n    assert result[\"benchmark_name\"] == \"b1\n                                       ^\nSyntaxError: unterminated string literal (detected at line 32)\n",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/self_evolution_governor.py",
+              "tests/test_self_evolution_governor.py"
+            ],
+            "pytest": [
+              "tests/test_self_evolution_governor.py"
+            ]
+          },
+          "wall_ms": 1039.292
+        }
+      ],
+      "worker_input_sha256": "6281c7bb83932f2dff9d0b4c39287c00b61a5efd4315bd38c55d3a73f71974e3",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

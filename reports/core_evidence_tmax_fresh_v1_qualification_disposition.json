@@ -1,0 +1,100 @@
+{
+  "created_utc": "2026-07-30T13:56:22Z",
+  "disposition": "QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS",
+  "scope": {
+    "campaign_role": "fresh_source_disjoint_qualification",
+    "model": "mlx-community/Tmax-9B-MLX-8bit",
+    "model_revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "worker": "Project Theseus Local Repository Worker v2 with worker-control v3",
+    "task_family": "repository_correctness",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "user_facing_effects": 0
+  },
+  "bound_artifacts": {
+    "freeze": "configs/core_evidence_tmax_fresh_v1_qualification_freeze.json",
+    "freeze_sha256": "ddd39dcebe5f151c291180e21f1b31c6148c3820ba41e511940d88dea1068f49",
+    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v3.json",
+    "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1",
+    "candidate_report": "reports/core_evidence_tmax_fresh_v1_1_qualification_candidates.json",
+    "candidate_report_sha256": "89555a4d818991b81f74eeab18f63d545198a4d84854c821029b36aefc1e6825",
+    "evaluation_report": "reports/core_evidence_tmax_fresh_v1_1_qualification_evaluation.json",
+    "evaluation_report_sha256": "ab68916715fceae5f78c7e368b80884589c7b0a612ed8f6e4eb4ea798b523d61"
+  },
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34,
+    "observed_attempted_tasks": 3,
+    "observed_useful_rate": 0.6666666667,
+    "observed_weakest_family_rate": 0.6666666667,
+    "zero_unsafe_required": true,
+    "exact_rollback_required": true,
+    "passed": true,
+    "lowered_after_observation": false
+  },
+  "denominators": {
+    "attempted": 3,
+    "useful": 2,
+    "unsafe": 0,
+    "denied": 1,
+    "timed_out": 1,
+    "rollback_verified": 3,
+    "infrastructure_failed": 0,
+    "malformed": 0,
+    "abstained": 0
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-tmaxfreshv1-audit-number",
+      "useful": 1,
+      "unsafe": 0,
+      "timed_out": 0,
+      "rollback_verified": 1,
+      "hidden_functional_tests_passed": true,
+      "causal_wall": "NONE_USEFUL"
+    },
+    {
+      "opaque_task_id": "task-tmaxfreshv1-relay-url",
+      "useful": 1,
+      "unsafe": 0,
+      "timed_out": 0,
+      "rollback_verified": 1,
+      "hidden_functional_tests_passed": true,
+      "causal_wall": "NONE_USEFUL"
+    },
+    {
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection",
+      "useful": 0,
+      "unsafe": 0,
+      "timed_out": 1,
+      "rollback_verified": 1,
+      "hidden_functional_tests_passed": false,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR"
+    }
+  ],
+  "efficiency": {
+    "candidate_wall_ms": 3411573.3,
+    "evaluator_wall_ms": 16609.417,
+    "local_model_inference_calls": 46,
+    "failed_worker_actions": 15,
+    "observation": "Two tasks were independently useful, but malformed structured-test actions and phase errors consumed substantial turns. Qualification does not establish production efficiency or broad coding competence."
+  },
+  "maximum_inference": "The exact frozen TMax-9B 8-bit model and Worker v3 cleared the preregistered competence floor on these three prospective repository-correctness tasks. This is not a Theseus-student, general coding, VCM, planning, routing, governance, procedural-memory, AGI, or ASI capability claim.",
+  "authorized_next": {
+    "deterministic_subsystem_adequacy": true,
+    "open_original_E2_heldouts_now": false,
+    "reason": "Validate each canonical subsystem and its ablation semantics before the one-shot integrated matched comparison."
+  },
+  "preserved_boundaries": {
+    "rerun_this_qualification_for_capability_credit": false,
+    "tune_against_consumed_tasks": false,
+    "lower_competence_floor": false,
+    "count_candidate_authored_tests_as_success": false,
+    "count_assisted_or_deterministic_behavior_as_learned_model_credit": false
+  }
+}

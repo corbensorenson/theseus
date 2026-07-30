@@ -988,6 +988,29 @@
       ]
     },
     {
+      "id": "route.procedural_memory.source_bound",
+      "mode": "all",
+      "requirements": [
+        {
+          "id": "procedural_memory_adoption_gate",
+          "path": "reports/procedural_memory_route_adoption.json",
+          "freshness_mode": "source_bound",
+          "source_paths": [
+            "configs/procedural_memory_toolification.json",
+            "scripts/procedural_memory_assets.py",
+            "scripts/procedural_memory_toolification_gate.py",
+            "scripts/procedural_memory_canary_executor.py",
+            "scripts/procedural_memory_route_adoption_gate.py",
+            "scripts/theseus_assistant_runtime.py"
+          ],
+          "acceptance": {
+            "field": "trigger_state",
+            "allowed": ["GREEN"]
+          }
+        }
+      ]
+    },
+    {
       "id": "route.neural_seed.source_bound",
       "mode": "all",
       "requirements": [
@@ -7747,6 +7770,186 @@
           "state_relation_binding": "state relation hash/class is bound before claiming compatibility",
           "rehearsal_required": "durable state/effect migration requires rehearsal evidence or explicit non-solvent containment",
           "rollback_or_compensation": "rollback, dual-run, replay, or compensation objective is declared for stateful/effectful routes"
+        }
+      }
+    },
+    {
+      "id": "impl.procedural_memory_route.v1",
+      "route_evidence_contract_id": "route.procedural_memory.source_bound",
+      "abstraction_id": "planning_execution_spine",
+      "surface_id": "theseus_plan_compiler",
+      "status": "live",
+      "implementation_type": "verified_procedural_metadata_route",
+      "backend": "python_replay_canary_registry_adoption",
+      "canonical_entrypoint": "scripts/procedural_memory_route_adoption_gate.py",
+      "swappable_under_contract": true,
+      "replacement_policy": "A successor must preserve replay binding, ambiguity abstention, no-cheat blocking, lifecycle retirement, guarded adoption, separate effect authority, and exact rollback evidence.",
+      "verification_command": "python3 -m pytest -q tests/test_procedural_memory_assets.py tests/test_procedural_memory_route_adoption_gate.py tests/test_theseus_assistant_effect_transaction.py && python3 scripts/procedural_memory_toolification_gate.py && python3 scripts/procedural_memory_canary_executor.py && python3 scripts/procedural_memory_route_adoption_gate.py",
+      "role": "planning",
+      "trust_tier": "governed_local_metadata_route",
+      "dependencies": [
+        "configs/project_manifest_registry.json",
+        "configs/procedural_memory_toolification.json",
+        "scripts/procedural_memory_assets.py",
+        "scripts/procedural_memory_toolification_gate.py",
+        "scripts/procedural_memory_canary_executor.py",
+        "scripts/procedural_memory_route_adoption_gate.py",
+        "scripts/theseus_assistant_runtime.py",
+        "reports/procedural_memory_toolification.json",
+        "reports/procedural_memory_canary_execution.json",
+        "reports/theseus_project_registry.json",
+        "reports/theseus_assistant_effect_complete_canary.json",
+        "tests/test_procedural_memory_assets.py",
+        "tests/test_procedural_memory_route_adoption_gate.py",
+        "tests/test_theseus_assistant_effect_transaction.py"
+      ],
+      "evidence_outputs": [
+        "reports/procedural_memory_toolification.json",
+        "reports/procedural_memory_assets.json",
+        "reports/procedural_memory_canary_execution.json",
+        "reports/procedural_memory_route_adoption.json",
+        "reports/theseus_assistant_effect_complete_canary.json"
+      ],
+      "attd_hooks": {
+        "component": "project_registry",
+        "pressure_sources": [
+          "unregistered_procedural_route",
+          "stale_replay_or_canary",
+          "route_effect_authority_conflation",
+          "learned_generation_credit_leak"
+        ],
+        "maintenance_packet_prefix": "registry_impl_procedural_memory_route_v1"
+      },
+      "routing_eligibility": {
+        "eligible": true,
+        "roles": ["planning"],
+        "requires_fresh_evidence": true,
+        "requires_registry_green": true,
+        "runtime_serving_allowed": false,
+        "teacher_allowed": false,
+        "learned_generation_claim_allowed": false
+      },
+      "retirement_policy": "Disable the route on replay, canary, lifecycle, no-cheat, binding, registry, effect-authority, or rollback regression; retain the evidence and fall back to fresh execution.",
+      "stable_capability_binding": {
+        "field_id": "planning_execution_spine",
+        "contract_version": "1.0.0",
+        "artifact_identity": {
+          "revision_policy": "git_revision_plus_source_hash_before_qualification",
+          "provenance_policy": "bind config, source, replay, canary, registry, assistant effect transaction, and adoption report",
+          "mutable_instance_policy": "any route, lifecycle, replay, or guard change creates a qualification-relevant implementation revision"
+        },
+        "authority_request": {
+          "effect_classes": [
+            "read_verified_metadata_routes",
+            "write_route_and_lifecycle_receipts",
+            "select_metadata_route_without_effect_authority"
+          ],
+          "tools": "local_python_and_json_only",
+          "data_read": "registered metadata receipts and hash-bound assistant events",
+          "data_write": "registered evidence outputs and append-only lifecycle receipts",
+          "network": "disabled",
+          "delegation_depth": 0,
+          "external_inference_runtime_allowed": false,
+          "public_benchmark_training_allowed": false,
+          "arbitrary_remote_shell_allowed": false
+        },
+        "state_compatibility": {
+          "reads": [
+            "configs/procedural_memory_toolification.json",
+            "reports/procedural_memory_toolification.json",
+            "reports/procedural_memory_canary_execution.json",
+            "reports/theseus_project_registry.json",
+            "reports/theseus_assistant_effect_complete_canary.json"
+          ],
+          "writes": [
+            "reports/procedural_memory_assets.json",
+            "reports/procedural_memory_route_adoption.json",
+            "runtime/procedural_memory/lifecycle_ledger.jsonl"
+          ],
+          "migration_required": false,
+          "rollback_mode": "disable guarded default route and return to fresh execution while preserving receipts"
+        },
+        "deployment_profiles": [
+          "local_private_planning"
+        ],
+        "evidence_binding": {
+          "evidence_outputs": [
+            "reports/procedural_memory_toolification.json",
+            "reports/procedural_memory_assets.json",
+            "reports/procedural_memory_canary_execution.json",
+            "reports/procedural_memory_route_adoption.json",
+            "reports/theseus_assistant_effect_complete_canary.json"
+          ],
+          "verification_command": "python3 -m pytest -q tests/test_procedural_memory_assets.py tests/test_procedural_memory_route_adoption_gate.py tests/test_theseus_assistant_effect_transaction.py && python3 scripts/procedural_memory_toolification_gate.py && python3 scripts/procedural_memory_canary_executor.py && python3 scripts/procedural_memory_route_adoption_gate.py",
+          "freshness_required": true,
+          "dependency_closure": [
+            "configs/procedural_memory_toolification.json",
+            "scripts/procedural_memory_assets.py",
+            "scripts/procedural_memory_toolification_gate.py",
+            "scripts/procedural_memory_canary_executor.py",
+            "scripts/procedural_memory_route_adoption_gate.py",
+            "scripts/theseus_assistant_runtime.py"
+          ]
+        },
+        "observability_binding": {
+          "required_events": [
+            "verified_route_selected",
+            "ambiguous_or_unknown_abstained",
+            "lifecycle_retired_or_blocked",
+            "effect_authority_separately_verified",
+            "exact_rollback_verified"
+          ],
+          "decision_receipt": true,
+          "privacy_boundary": "hash-bound metadata and artifact references only; no raw private prompt text"
+        },
+        "content_binding": {
+          "exact_hash_binding_required": true,
+          "artifact_hash_policy": "bind source, config, route asset, lifecycle receipt, canary, and assistant effect transaction hashes",
+          "manifest_hash_policy": "bind the project manifest registry revision",
+          "contract_hash_policy": "bind the planning execution spine contract",
+          "dependency_closure_hash_policy": "bind every replay, canary, route, runtime, and evaluator dependency",
+          "evidence_bundle_hash_policy": "route authority requires source-bound GREEN adoption evidence"
+        },
+        "route_binding": {
+          "role_profiles": [
+            "primary",
+            "fallback",
+            "canary",
+            "abstention"
+          ],
+          "caller_context_binding": "surface, intent, assistant lane, and VCM task family must all match",
+          "validator_receipt_required": true,
+          "request_context_hash_policy": "material selection context is receipt-bound",
+          "fallback_binding": "fresh execution is a separate non-credit fallback; ambiguity, drift, or missing guards fail closed"
+        },
+        "claim_binding": {
+          "qualification_claims": "verified local metadata workflow reuse and guarded route adoption only",
+          "assumptions": "mechanics do not establish task-quality lift or learned model capability",
+          "defeaters": "stale replay, drift, no-cheat fault, binding mismatch, route/effect conflation, or rollback failure disables the route",
+          "waivers": "no waiver may grant effect authority or learned-generation credit",
+          "transfer_witnesses": "none beyond the exact bound local assistant profiles",
+          "evaluator_overlap_record_required": true
+        },
+        "lease_binding": {
+          "expiry_required": true,
+          "authority_grant_binding": "metadata route selection only; effect authority remains separate",
+          "state_binding": "lease binds route asset, lifecycle state, regression guard, and caller context",
+          "consequence_budget": "no external effect from procedural route selection",
+          "fail_closed_required": true
+        },
+        "adaptation_binding": {
+          "epoch_token_policy": "new trace epochs remain candidates until replay, canary, and adoption gates pass",
+          "updater_revision_policy": "asset builder and adoption gate revisions are pinned",
+          "data_receipts_policy": "only schema-clean governed local trace metadata is admitted",
+          "sentinel_binding": "raw-text, public-training, external-inference, fallback, ambiguity, and drift sentinels fail closed",
+          "journal_policy": "lifecycle receipts are append-only and idempotent",
+          "baseline_binding": "fresh execution remains the rollback baseline"
+        },
+        "migration_binding": {
+          "solvency_class_required": true,
+          "state_relation_binding": "successor must preserve route assets, lifecycle receipts, guards, and fresh-execution fallback",
+          "rehearsal_required": "replay, canary, effect-complete transaction, and invalid controls must pass before replacement",
+          "rollback_or_compensation": "disable adopted route and restore fresh execution with no effect-authority inheritance"
         }
       }
     },

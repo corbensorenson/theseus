@@ -1,0 +1,142 @@
+{
+  "policy": "project_theseus_core_evidence_subsystem_adequacy_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "qualified_worker_disposition": "reports/core_evidence_tmax_fresh_v1_qualification_disposition.json",
+  "required_worker_disposition": "QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS",
+  "registry": "configs/project_manifest_registry.json",
+  "owners": [
+    {
+      "owner_id": "authority_governance",
+      "implementation_ids": [
+        "impl.core_control_plane.v1",
+        "impl.candidate_integrity_harness.v1"
+      ],
+      "required_role": "governance",
+      "tests": [
+        "tests/test_governance_architecture_kernel.py",
+        "tests/test_hive_authority_security.py",
+        "tests/test_autonomy_authority_security.py"
+      ],
+      "required_interventions": [
+        "allowed",
+        "denied",
+        "revoked",
+        "confused_deputy",
+        "candidate_authored_success_inert",
+        "exact_rollback"
+      ]
+    },
+    {
+      "owner_id": "vcm",
+      "implementation_ids": [
+        "impl.vcm_memory.v1"
+      ],
+      "required_role": "vcm_context",
+      "tests": [
+        "tests/test_vcm_semantic_memory.py",
+        "tests/test_vcm_consumer_abi.py",
+        "tests/test_vcm_consumer_integration_archive.py"
+      ],
+      "required_interventions": [
+        "correct",
+        "omitted",
+        "stale",
+        "shuffled",
+        "tainted",
+        "over_budget",
+        "deletion_closed"
+      ]
+    },
+    {
+      "owner_id": "planning",
+      "implementation_ids": [
+        "impl.theseus_plan_compiler.v1"
+      ],
+      "required_role": "planning",
+      "tests": [
+        "tests/test_verifier_guided_search.py",
+        "tests/test_assistant_reflexive_dispatch.py",
+        "tests/test_semantic_ir.py"
+      ],
+      "required_interventions": [
+        "typed_plan",
+        "direct_execution",
+        "malformed_plan",
+        "stale_plan",
+        "replan",
+        "verifier_bound_completion"
+      ]
+    },
+    {
+      "owner_id": "routing",
+      "implementation_ids": [
+        "impl.octopus_registry_gated_router.v1"
+      ],
+      "required_role": "planning",
+      "tests": [
+        "tests/test_octopus_router_integrity.py",
+        "tests/test_assistant_reflexive_dispatch.py"
+      ],
+      "required_interventions": [
+        "full",
+        "direct",
+        "test_only",
+        "record_only",
+        "conservative_hold",
+        "ambiguous",
+        "least_sufficient"
+      ]
+    },
+    {
+      "owner_id": "verified_reuse",
+      "implementation_ids": [
+        "impl.procedural_memory_route.v1"
+      ],
+      "required_role": "planning",
+      "candidate_entrypoints": [
+        "scripts/procedural_memory_assets.py",
+        "scripts/procedural_memory_toolification_gate.py",
+        "scripts/procedural_memory_route_adoption_gate.py"
+      ],
+      "tests": [
+        "tests/test_procedural_memory_assets.py"
+      ],
+      "required_interventions": [
+        "fresh",
+        "verified_reuse",
+        "false_trigger",
+        "drift",
+        "quarantine",
+        "decompilation",
+        "rollback",
+        "retirement"
+      ]
+    }
+  ],
+  "adequacy_rules": {
+    "registered_live_implementation_required": true,
+    "registered_route_eligibility_required": true,
+    "canonical_entrypoint_required": true,
+    "focused_tests_required": true,
+    "focused_tests_must_pass": true,
+    "development_causal_smoke_required_after_mechanics": true,
+    "integrated_ablation_freeze_required_before_E2": true
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference": "forbidden",
+    "teacher_calls": "forbidden",
+    "public_benchmark_consumption": "forbidden",
+    "D2_consumption": "forbidden",
+    "E2_heldout_consumption": "forbidden",
+    "user_facing_effects": 0,
+    "learned_credit_from_mechanics": 0
+  },
+  "terminal_rules": {
+    "missing_or_unfaithful_owner": "INCONCLUSIVE_IMPLEMENTATION",
+    "mechanics_failure": "REPAIR_EXISTING_OWNER_ON_DEVELOPMENT_SURFACE",
+    "all_mechanics_green": "ADVANCE_TO_CONSUMED_DEVELOPMENT_CAUSAL_SMOKES",
+    "invalid_information_flow": "INVALID_INFORMATION_FLOW"
+  },
+  "maximum_inference": "This inventory can establish only that canonical subsystem implementations are registered and their focused mechanics tests pass. It cannot establish causal task lift, local-model competence beyond the frozen qualification, stack efficacy, AGI, or ASI."
+}

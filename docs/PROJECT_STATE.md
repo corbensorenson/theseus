@@ -11,16 +11,15 @@ training or serving action by itself.
 
 Theseus is a well-governed local AI research system with an exact resumable
 57.3M-parameter training lineage and replayable local authority/rollback
-mechanics, but it is not yet a demonstrated useful learned assistant. The first
-flagship D1 campaign terminated honestly: the frozen worker completed 0/3
-development tasks and 0/6 disjoint repeated-work tasks, so stack efficacy,
-planning, VCM, reuse, and routing efficiency remain inconclusive. The Worker v2
-successor sealed and rolled back three fresh local attempts safely, but its
-qualification is `INVALID_EVALUATOR` because every visible request named the
-wrong hidden target surface. Training is held, D2 and E2 remain untouched, and
-no worker-competence conclusion is authorized. The active successor fixes
-Qwen3-8B as the local generator and replaces historical-target grading with
-prospective request-derived functional tests before any subsystem comparison.
+mechanics, but it is not yet a demonstrated useful learned assistant. Earlier
+Qwen3/Qwen3.5 workers failed or invalidated their fresh qualification surfaces.
+The exact frozen TMax-9B/Worker-v3 successor has now cleared the prospective
+repository-correctness floor: 2/3 useful, 0 unsafe, and 3/3 exact rollback with
+zero external inference or teacher calls. That narrow result authorizes
+canonical VCM, planning, routing, governance, and verified-reuse adequacy work;
+it does not prove those subsystems, general coding competence, or the Theseus
+student. Training is held, D2 is untouched, and the original E2 heldouts remain
+sealed until the subsystem implementations and their ablations are faithful.
 
 ## How Truth Is Resolved
 
@@ -64,8 +63,8 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Project registry | `RED_STALE_ROUTE_EVIDENCE` | The unrelated resource/acceleration implementation is non-routable because its 24-hour dynamic resource snapshot expired; local-8B owner coverage remains complete |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
-| D1 successor | `TERMINAL_INVALID_EVALUATOR` | Fresh run sealed 3/3 candidates, rolled back 3/3, and released 0 unsafe effects, but all three requests named the wrong authoritative target surfaces. Competence is not evaluable; E2 remains sealed |
-| D1 local-8B causal campaign | `ACTIVE_DEVELOPMENT` | Offline Qwen3-8B is fixed as the primary generator; consumed-task controller repair is active before prospective functional qualification |
+| D1 successor | `QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective repository tasks with 0 unsafe, 3/3 rollback, complete denominators, and no external inference; one frontier-selection task timed out |
+| D1 local-8B causal campaign | `SUBSYSTEM_MECHANICS_GREEN` | Governance, VCM, planning, routing, and verified reuse are registry-bound with focused mechanics green; consumed-development causal smokes and a frozen integrated ablation packet remain before E2 |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |

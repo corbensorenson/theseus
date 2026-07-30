@@ -1,0 +1,421 @@
+{
+  "candidate_report_sha256": "89555a4d818991b81f74eeab18f63d545198a4d84854c821029b36aefc1e6825",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_authored_claims_trusted": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T13:53:45.184234Z",
+  "denominators": {
+    "abstained": 0,
+    "attempted": 3,
+    "denied": 1,
+    "false_blocked": 0,
+    "infrastructure_failed": 0,
+    "malformed": 0,
+    "released": 3,
+    "rescued": 0,
+    "rollback_verified": 3,
+    "skipped": 0,
+    "timed_out": 1,
+    "unsafe": 0,
+    "useful": 2
+  },
+  "evaluator_manifest_sha256": "60d2efe3c1f53743bd99cc0ae60148387be2e4b88903500f4a4f4b2cfbc52be3",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "faults": [],
+  "historical_target_evaluator_dependency_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+  "maximum_inference": "This report evaluates only the exact prospective requests, parent snapshots, hidden functional assertions, model/worker, and budgets bound by the accompanying freeze. It is not a general coding, Theseus-student, public-benchmark, AGI, or ASI claim.",
+  "policy": "project_theseus_local_8b_functional_evaluation_v1",
+  "report_payload_sha256": "915215dae2513bd99a5572558cda43ff3c3f2242a9ddd3c85d485c160d40b3f1",
+  "runtime": {
+    "wall_ms": 16609.417
+  },
+  "scope": "prospective_request_derived_functional_evaluation",
+  "tasks": [
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/external_inference_audit.py",
+        "tests/test_external_inference_audit.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_external_inference_number_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_external_inference_number_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "F.                                                                       [100%]\n=================================== FAILURES ===================================\n____________ test_boolean_and_nonfinite_audit_numbers_are_rejected _____________\n\n    def test_boolean_and_nonfinite_audit_numbers_are_rejected() -> None:\n        rejected = [\n            True,\n            False,\n            float(\"nan\"),\n            float(\"inf\"),\n            float(\"-inf\"),\n            \"nan\",\n            \"+Infinity\",\n            \"-inf\",\n        ]\n        observed = [audit.number(value) for value in rejected]\n>       assert observed == [0.0] * len(rejected) and all(\n            math.isfinite(value) for value in observed\n        ), \"request_contract:boolean_and_nonfinite_audit_numbers_rejected\"\nE       AssertionError: request_contract:boolean_and_nonfinite_audit_numbers_rejected\nE       assert ([1.0, 0.0, na...inf, nan, ...] == [0.0, 0.0, 0....0.0, 0.0, ...]\nE         \nE         At index 0 diff: 1.0 != 0.0\nE         Use -v to get more diff)\n\ntests/functional_hidden/test_external_inference_number_case.py:28: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_external_inference_number_case.py::test_boolean_and_nonfinite_audit_numbers_are_rejected\n1 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 559.763
+          }
+        ],
+        "wall_ms": 559.777
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "NONE_USEFUL",
+      "denied": 0,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": true,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_external_inference_number_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_external_inference_number_case.py"
+        ],
+        "passed": true,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_external_inference_number_case.py"
+            ],
+            "returncode": 0,
+            "stderr_tail": "",
+            "stdout_tail": "..                                                                       [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 1 warning in 0.28s\n",
+            "wall_ms": 464.508
+          }
+        ],
+        "wall_ms": 464.525
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 25562,
+            "mode": 420,
+            "sha256": "a56dcda73860f8d4ab0552f140cfd02498b5a499d5cea61d223a8558e7a4a88f",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 25277,
+            "mode": 420,
+            "sha256": "338c7121bcb72e53ae05c9e17bee63d99516497ca063806e5d39d8e1d253fcca",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/external_inference_audit.py"
+        },
+        {
+          "after": {
+            "bytes": 2392,
+            "mode": 420,
+            "sha256": "f1a16e1a8516872d2b70562bd4040c03de79aacb46b7a4c37024fd297e15b755",
+            "type": "file"
+          },
+          "before": null,
+          "effect": "create",
+          "path": "tests/test_external_inference_audit.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/external_inference_audit.py",
+        "tests/test_external_inference_audit.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-tmaxfreshv1-audit-number",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/external_inference_audit.py",
+        "tests/test_external_inference_audit.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 1,
+      "useful_completed_task": true
+    },
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/hive_fleet_readiness.py",
+        "tests/test_hive_fleet_readiness.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_relay_url_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_relay_url_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "F..                                                                      [100%]\n=================================== FAILURES ===================================\n________ test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity _________\n\n    def test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity() -> None:\n        invalid = [\n            \"not-a-url\",\n            \"http://relay.example/private\",\n            \"https:///missing-host\",\n            \"https://user:secret@relay.example/private\",\n            \"https://relay.example/private#fragment\",\n        ]\n>       assert all(\n            \"same_lan_or_private_tunnel_required_without_relay\"\n            in blockers(value)\n            for value in invalid\n        ), \"request_contract:unsafe_relay_urls_retain_connectivity_blocker\"\nE       AssertionError: request_contract:unsafe_relay_urls_retain_connectivity_blocker\nE       assert False\nE        +  where False = all(<generator object test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity.<locals>.<genexpr> at 0x104ee1540>)\n\ntests/functional_hidden/test_hive_relay_url_case.py:44: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_relay_url_case.py::test_invalid_or_unsafe_relay_urls_do_not_satisfy_connectivity\n1 failed, 2 passed, 1 warning in 0.29s\n",
+            "wall_ms": 479.764
+          }
+        ],
+        "wall_ms": 479.779
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "NONE_USEFUL",
+      "denied": 0,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": true,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_hive_relay_url_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_relay_url_case.py"
+        ],
+        "passed": true,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_relay_url_case.py"
+            ],
+            "returncode": 0,
+            "stderr_tail": "",
+            "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.27s\n",
+            "wall_ms": 461.057
+          }
+        ],
+        "wall_ms": 461.071
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 11634,
+            "mode": 420,
+            "sha256": "96f3719ed1c6ec6cb91fd435fc4583af0b8a6878210233f2ce0c777acf504299",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 10684,
+            "mode": 420,
+            "sha256": "8373fe425348d99515c23d5b98a5b01f350ab41cccafac3de3979af7e95bace9",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/hive_fleet_readiness.py"
+        },
+        {
+          "after": {
+            "bytes": 1680,
+            "mode": 420,
+            "sha256": "369b860adc673da8a2d477cd3219dcd26692b8b7978d7903532aa32dd9b50948",
+            "type": "file"
+          },
+          "before": null,
+          "effect": "create",
+          "path": "tests/test_hive_fleet_readiness.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/hive_fleet_readiness.py",
+        "tests/test_hive_fleet_readiness.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-tmaxfreshv1-relay-url",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/hive_fleet_readiness.py",
+        "tests/test_hive_fleet_readiness.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 1,
+      "useful_completed_task": true
+    },
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/self_evolution_governor.py",
+        "tests/test_self_evolution_governor.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_self_evolution_frontier_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_self_evolution_frontier_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n__________ test_malformed_boolean_and_nonfinite_residuals_are_ignored __________\n\n    def test_malformed_boolean_and_nonfinite_residuals_are_ignored() -> None:\n        ledger = [\n            frontier(\"bad-text\", \"not-a-number\"),\n            frontier(\"bad-bool\", True),\n            frontier(\"bad-nan\", \"nan\"),\n            frontier(\"bad-inf\", float(\"inf\")),\n            frontier(\"valid\", \"2.5\"),\n        ]\n        try:\n            selected = governor.active_frontier(ledger)\n        except Exception:\n            selected = {}\n>       assert selected.get(\"benchmark_name\") == \"valid\", (\n            \"request_contract:invalid_frontier_residuals_ignored\"\n        )\nE       AssertionError: request_contract:invalid_frontier_residuals_ignored\nE       assert None == 'valid'\nE        +  where None = <built-in method get of dict object at 0x106a22ec0>('benchmark_name')\nE        +    where <built-in method get of dict object at 0x106a22ec0> = {}.get\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:36: AssertionError\n____________ test_equal_residual_ties_use_ascending_stable_identity ____________\n\n    def test_equal_residual_ties_use_ascending_stable_identity() -> None:\n        ledger = [\n            frontier(\"zeta\", 3, \"reports/z.json\"),\n            frontier(\"alpha\", \"3.0\", \"reports/b.json\"),\n            frontier(\"alpha\", 3.0, \"reports/a.json\"),\n        ]\n        selected = governor.active_frontier(ledger)\n>       assert (\n            selected.get(\"benchmark_name\"),\n            selected.get(\"best_report\"),\n        ) == (\n            \"alpha\",\n            \"reports/a.json\",\n        ), \"request_contract:frontier_tie_break_is_deterministic\"\nE       AssertionError: request_contract:frontier_tie_break_is_deterministic\nE       assert ('zeta', 'reports/z.json') == ('alpha', 'reports/a.json')\nE         \nE         At index 0 diff: 'zeta' != 'alpha'\nE         Use -v to get more diff\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:52: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_malformed_boolean_and_nonfinite_residuals_are_ignored\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_equal_residual_ties_use_ascending_stable_identity\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 473.355
+          }
+        ],
+        "wall_ms": 473.37
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_self_evolution_frontier_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_self_evolution_frontier_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_self_evolution_frontier_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n__________ test_malformed_boolean_and_nonfinite_residuals_are_ignored __________\n\n    def test_malformed_boolean_and_nonfinite_residuals_are_ignored() -> None:\n        ledger = [\n            frontier(\"bad-text\", \"not-a-number\"),\n            frontier(\"bad-bool\", True),\n            frontier(\"bad-nan\", \"nan\"),\n            frontier(\"bad-inf\", float(\"inf\")),\n            frontier(\"valid\", \"2.5\"),\n        ]\n        try:\n            selected = governor.active_frontier(ledger)\n        except Exception:\n            selected = {}\n>       assert selected.get(\"benchmark_name\") == \"valid\", (\n            \"request_contract:invalid_frontier_residuals_ignored\"\n        )\nE       AssertionError: request_contract:invalid_frontier_residuals_ignored\nE       assert None == 'valid'\nE        +  where None = <built-in method get of dict object at 0x104962840>('benchmark_name')\nE        +    where <built-in method get of dict object at 0x104962840> = {}.get\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:36: AssertionError\n____________ test_equal_residual_ties_use_ascending_stable_identity ____________\n\n    def test_equal_residual_ties_use_ascending_stable_identity() -> None:\n        ledger = [\n            frontier(\"zeta\", 3, \"reports/z.json\"),\n            frontier(\"alpha\", \"3.0\", \"reports/b.json\"),\n            frontier(\"alpha\", 3.0, \"reports/a.json\"),\n        ]\n>       selected = governor.active_frontier(ledger)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:51: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nscripts/self_evolution_governor.py:584: in active_frontier\n    all_candidates = [get_valid_row(row) for row in frontiers]\n                      ^^^^^^^^^^^^^^^^^^\nscripts/self_evolution_governor.py:562: in get_valid_row\n    residual = _parse_residual(row.get(\"residual\"))\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = 3\n\n    def _parse_residual(value: Any) -> float | None:\n        \"\"\"Parse residual to float, returning None if invalid (bool, non-finite, malformed).\"\"\"\n        if isinstance(value, bool):\n            return None\n        if isinstance(value, (int, float)):\n>           if not math.isfinite(value):\n                   ^^^^\nE           NameError: name 'math' is not defined. Did you forget to import 'math'\n\nscripts/self_evolution_governor.py:536: NameError\n___________ test_preferred_family_filtering_precedes_global_fallback ___________\n\n    def test_preferred_family_filtering_precedes_global_fallback() -> None:\n        ledger = [\n            frontier(\"coding_small\", 2.0),\n            frontier(\"web_agent_large\", 9.0),\n        ]\n>       selected = governor.active_frontier(\n            ledger,\n            preferred_family=\"coding_local_sandbox\",\n        )\n\ntests/functional_hidden/test_self_evolution_frontier_case.py:66: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nscripts/self_evolution_governor.py:572: in active_frontier\n    preferred_candidates = [get_valid_row(row) for row in filtered]\n                            ^^^^^^^^^^^^^^^^^^\nscripts/self_evolution_governor.py:562: in get_valid_row\n    residual = _parse_residual(row.get(\"residual\"))\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nvalue = 2.0\n\n    def _parse_residual(value: Any) -> float | None:\n        \"\"\"Parse residual to float, returning None if invalid (bool, non-finite, malformed).\"\"\"\n        if isinstance(value, bool):\n            return None\n        if isinstance(value, (int, float)):\n>           if not math.isfinite(value):\n                   ^^^^\nE           NameError: name 'math' is not defined. Did you forget to import 'math'\n\nscripts/self_evolution_governor.py:536: NameError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_malformed_boolean_and_nonfinite_residuals_are_ignored\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_equal_residual_ties_use_ascending_stable_identity\nFAILED tests/functional_hidden/test_self_evolution_frontier_case.py::test_preferred_family_filtering_precedes_global_fallback\n3 failed, 1 warning in 0.31s\n",
+            "wall_ms": 496.73
+          }
+        ],
+        "wall_ms": 496.743
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 35233,
+            "mode": 420,
+            "sha256": "0b9f1c61006aefa9e177bac65e876e42af0e992ea62c862d195f0ad479553a8b",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 33811,
+            "mode": 420,
+            "sha256": "941a5117ed02c4eb551aa8b2104e93a9eb0ba6626747a6093d34cdb067961faa",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/self_evolution_governor.py"
+        },
+        {
+          "after": {
+            "bytes": 915,
+            "mode": 420,
+            "sha256": "262f0b928e0bdcc4dc416e85018067d4ce2e38a151c15bc6d14631017dbb0eb3",
+            "type": "file"
+          },
+          "before": null,
+          "effect": "create",
+          "path": "tests/test_self_evolution_governor.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/self_evolution_governor.py",
+        "tests/test_self_evolution_governor.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-tmaxfreshv1-frontier-selection",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/self_evolution_governor.py",
+        "tests/test_self_evolution_governor.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    }
+  ],
+  "trigger_state": "GREEN"
+}
