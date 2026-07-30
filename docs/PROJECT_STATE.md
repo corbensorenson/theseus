@@ -1,6 +1,6 @@
 # Project Theseus: Current State
 
-Last consolidated: 2026-07-29 UTC. Documentation baseline `28a2fd17`; this page
+Last consolidated: 2026-07-30 UTC. Documentation baseline `e04427a0`; this page
 is part of the following evidence-first roadmap transaction.
 
 This is the canonical human-readable current-state page. It describes what is
@@ -14,9 +14,11 @@ Theseus is a well-governed local AI research system with an exact resumable
 mechanics, but it is not yet a demonstrated useful learned assistant. The first
 flagship D1 campaign terminated honestly: the frozen worker completed 0/3
 development tasks and 0/6 disjoint repeated-work tasks, so stack efficacy,
-planning, VCM, reuse, and routing efficiency remain inconclusive. Training is
-held, D2 is untouched, and the smallest next causal experiment is a genuinely
-patch-producing local worker qualification—not another governance surface.
+planning, VCM, reuse, and routing efficiency remain inconclusive. The Worker v2
+successor sealed and rolled back three fresh local attempts safely, but its
+qualification is `INVALID_EVALUATOR` because every visible request named the
+wrong hidden target surface. Training is held, D2 and E2 remain untouched, and
+no worker-competence conclusion is authorized.
 
 ## How Truth Is Resolved
 
@@ -60,7 +62,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Project registry | `GREEN` | Zero routing blockers and zero hard governance violations |
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
-| D1 successor | `WORKER_V2_QUALIFICATION_FROZEN_NOT_RUN` | Consumed diagnosis is 0/3 useful, 3/3 exact rollback, 0/3 unsafe. Controller/evaluator and three actionable source-disjoint tasks are frozen; no fresh target patch has opened |
+| D1 successor | `TERMINAL_INVALID_EVALUATOR` | Fresh run sealed 3/3 candidates, rolled back 3/3, and released 0 unsafe effects, but all three requests named the wrong authoritative target surfaces. Competence is not evaluable; E2 remains sealed |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -306,11 +308,11 @@ In order:
 
 1. Keep the E2 heldout and D2 surfaces sealed; do not lower the competence
    floor or weaken the evaluator.
-2. Qualify a genuinely patch-producing local worker on the already-open
-   three-task development partition.
-3. Re-enter E2 heldout only if the frozen competence floor passes without
-   target leakage, external inference, teacher calls, or learned-credit
-   laundering.
+2. Preserve the terminal Worker v2 candidate/evaluation/disposition packet.
+   Do not rerun, repair, narrow, or replace its opened cohort.
+3. Revisit Worker qualification only under a new user-authorized goal with an
+   independently authored request/target cohort and prospective alignment
+   audit. E2 still requires a valid competence-floor pass.
 4. Refresh exact step-11,416 source-bound readiness with the training hold
    installed.
 5. Push current local commits and observe hosted CI.

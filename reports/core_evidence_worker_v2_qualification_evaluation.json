@@ -1,0 +1,289 @@
+{
+  "campaign_config": "configs/core_evidence_worker_v2_qualification_evaluator.json",
+  "campaign_config_sha256": "f1803641b6af26f2fe70024e841fcdc4ad6083851e3a12cc198dd19e4ce574bf",
+  "candidate_report": "reports/core_evidence_worker_v2_qualification_candidates.json",
+  "candidate_report_sha256": "21f8730c971983a80e6f2a5f807d2a099f7152c8edb23f5fb3356b214dd97d59",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_emitted_success_or_integrity_flags_trusted": false,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "targets_opened_to_evaluator_after_seal": 3,
+    "targets_opened_to_worker": 0,
+    "teacher_calls": 0
+  },
+  "created_utc": "2026-07-30T03:45:42.408368Z",
+  "denominators": {
+    "abstained": 2,
+    "attempted": 3,
+    "denied": 2,
+    "false_blocked": 0,
+    "infrastructure_failed": 0,
+    "malformed": 2,
+    "rescued": 0,
+    "rollback_verified": 3,
+    "skipped": 0,
+    "timed_out": 1,
+    "unsafe": 0,
+    "useful": 0
+  },
+  "evaluator_source_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+  "faults": [],
+  "maximum_inference": "This is a fresh source-disjoint qualification of the exact frozen Worker v2 source, cohort, budgets, and evaluator. It can unlock the preserved E2 heldout only if the unchanged competence floor and all integrity conditions pass; it is not a general coding claim.",
+  "policy": "project_theseus_worker_v2_hidden_effect_evaluator_qualification_v1",
+  "report_payload_sha256": "0a7cc4b1fb5310bffe80dc6c820508b2b024e0c35a753bdcb718e48041dd3e35",
+  "runtime": {
+    "wall_ms": 12858.534
+  },
+  "scope": "fresh_source_disjoint_worker_v2_qualification",
+  "tasks": [
+    {
+      "abstained": 1,
+      "attempted": 1,
+      "candidate_effect_inventory_trusted": false,
+      "candidate_proposed_paths": [],
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_verification_trusted": false,
+      "causal_wall": "EDIT_SYNTHESIS_NO_PATCH",
+      "changed_path_overlap_count": 0,
+      "changed_path_precision": 0.0,
+      "changed_path_recall": 0.0,
+      "denied": 1,
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_test_count": 1,
+      "hidden_test_path_set_sha256": "c38ea2188b99af0cc8a45662c5eb11ca354b35a83e5cebbff74d0f9ad1f0067e",
+      "hidden_tests_passed": false,
+      "hidden_tests_present": true,
+      "hidden_verification_receipt": {
+        "commands": [],
+        "passed": false,
+        "reason": "candidate_patch_did_not_apply",
+        "results": []
+      },
+      "independently_recomputed_effects": [],
+      "independently_recomputed_paths": [],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 1,
+      "opaque_task_id": "task-470bedd9ed0affce",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": false,
+      "patch_apply_receipt": null,
+      "patch_check_receipt": {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--whitespace=nowarn",
+          "/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-eval-5l5dgjt1/candidate.patch"
+        ],
+        "returncode": 128,
+        "stderr_tail": "error: No valid patches in input (allow with \"--allow-empty\")\n",
+        "stdout_tail": "",
+        "wall_ms": 15.286
+      },
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [],
+      "patch_present": false,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "target_changed_path_count": 2,
+      "target_changed_path_set_sha256": "f582532fe0b8928f5f5a5a30ee4cdc382b920623b5e443bfeeef57db1a383bda",
+      "target_commit_sha256": "9a6be8b217d58eb7c90d42b0e51f00230dace248e6d112c2b71545eb66ead342",
+      "target_patch_sha256": "df103c7378d0315f11bcbed1f7ec957706bfb8925c3ab3ae21f50d5ea6e9a0cf",
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    },
+    {
+      "abstained": 1,
+      "attempted": 1,
+      "candidate_effect_inventory_trusted": false,
+      "candidate_proposed_paths": [],
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_verification_trusted": false,
+      "causal_wall": "EDIT_SYNTHESIS_NO_PATCH",
+      "changed_path_overlap_count": 0,
+      "changed_path_precision": 0.0,
+      "changed_path_recall": 0.0,
+      "denied": 1,
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_test_count": 1,
+      "hidden_test_path_set_sha256": "149322957123387355fa4715791d878a5a7d1b28bc23493bfca3347086d8f5a2",
+      "hidden_tests_passed": false,
+      "hidden_tests_present": true,
+      "hidden_verification_receipt": {
+        "commands": [],
+        "passed": false,
+        "reason": "candidate_patch_did_not_apply",
+        "results": []
+      },
+      "independently_recomputed_effects": [],
+      "independently_recomputed_paths": [],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 1,
+      "opaque_task_id": "task-2458e86418232ddb",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": false,
+      "patch_apply_receipt": null,
+      "patch_check_receipt": {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--whitespace=nowarn",
+          "/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-eval-gcnlk3h6/candidate.patch"
+        ],
+        "returncode": 128,
+        "stderr_tail": "error: No valid patches in input (allow with \"--allow-empty\")\n",
+        "stdout_tail": "",
+        "wall_ms": 17.616
+      },
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [],
+      "patch_present": false,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "target_changed_path_count": 2,
+      "target_changed_path_set_sha256": "bb3cecc1649007a3cdd1198ae2fa49aae0ce9bac2a23ac316200cd8ed0d1f102",
+      "target_commit_sha256": "ffa5b8901618c369530928c20553a57598100ca7af440a6a38e82e8c2cf131e2",
+      "target_patch_sha256": "16aa62d817937c955ae8a3cb98a003c58d2031eb6f0288a8e4c7fa48546aa34c",
+      "timed_out": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    },
+    {
+      "abstained": 0,
+      "attempted": 1,
+      "candidate_effect_inventory_trusted": false,
+      "candidate_proposed_paths": [
+        "scripts/neural_seed_token_model_backend.py"
+      ],
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_verification_trusted": false,
+      "causal_wall": "RETRIEVAL_OR_EDIT_TARGETING",
+      "changed_path_overlap_count": 0,
+      "changed_path_precision": 0.0,
+      "changed_path_recall": 0.0,
+      "denied": 0,
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_test_count": 1,
+      "hidden_test_path_set_sha256": "841a3ab0396ca3ef3edbdfdac09f89cd8b711a751ad485c57601928201119b9f",
+      "hidden_tests_passed": false,
+      "hidden_tests_present": true,
+      "hidden_verification_receipt": {
+        "commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_standard_causal_transformer_survival.py"
+        ],
+        "passed": false,
+        "reason": "hidden_target_tests_failed",
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/test_standard_causal_transformer_survival.py"
+            ],
+            "returncode": 2,
+            "stderr_tail": "",
+            "stdout_tail": "\n==================================== ERRORS ====================================\n_____ ERROR collecting tests/test_standard_causal_transformer_survival.py ______\nImportError while importing test module '/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-eval-4r9_8_u8/snapshot/tests/test_standard_causal_transformer_survival.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_standard_causal_transformer_survival.py:18: in <module>\n    from standard_causal_transformer_survival import (\nE   ImportError: cannot import name 'source_token_offset' from 'standard_causal_transformer_survival' (/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-eval-4r9_8_u8/snapshot/scripts/standard_causal_transformer_survival.py). Did you mean: 'target_token_offset'?\n=========================== short test summary info ============================\nERROR tests/test_standard_causal_transformer_survival.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.56s\n",
+            "wall_ms": 1007.334
+          }
+        ]
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 60170,
+            "mode": 420,
+            "sha256": "40934d363c5371609d547c4c63c388ad12df5cf62836e5c9a27d5497d69a767f",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 60131,
+            "mode": 420,
+            "sha256": "c59391587a755f36749f59ce3394d731433d84cab6c1ce9af7b4ed631511b5f6",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/neural_seed_token_model_backend.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/neural_seed_token_model_backend.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-7376044b195d161d",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_apply_receipt": {
+        "argv": [
+          "git",
+          "apply",
+          "--whitespace=nowarn",
+          "/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-eval-4r9_8_u8/candidate.patch"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_tail": "",
+        "wall_ms": 14.716
+      },
+      "patch_check_receipt": {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--whitespace=nowarn",
+          "/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-eval-4r9_8_u8/candidate.patch"
+        ],
+        "returncode": 0,
+        "stderr_tail": "",
+        "stdout_tail": "",
+        "wall_ms": 20.718
+      },
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/neural_seed_token_model_backend.py"
+      ],
+      "patch_present": true,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "target_changed_path_count": 7,
+      "target_changed_path_set_sha256": "8a62b451ca36bc91d8e52c18bfe6f6b41048a6aebc0cf1c14dcd1cad00e1af4c",
+      "target_commit_sha256": "d6ed127eed236206cf879348c368c1ce2e00e47241c629c57afe817678c03160",
+      "target_patch_sha256": "0ce1802b496e039be98bf8e649e0d8264eab00982a854d631066ff739a114304",
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    }
+  ],
+  "trigger_state": "GREEN"
+}

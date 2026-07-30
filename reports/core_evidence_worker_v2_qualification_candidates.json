@@ -1,0 +1,592 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "learned_generation_credit": 3,
+    "public_calibration_cases_consumed": 0,
+    "targets_opened_before_all_candidates_sealed": 0,
+    "targets_opened_to_worker": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T03:45:09.880656Z",
+  "faults": [],
+  "maximum_inference": "Candidate generation alone supports no competence claim. The independent evaluator must open targets only after every candidate seal validates.",
+  "policy": "project_theseus_worker_v2_fresh_qualification_candidates_v1",
+  "qualification_freeze_manifest": "configs/core_evidence_worker_v2_qualification_freeze.json",
+  "qualification_freeze_manifest_sha256": "33bbffaf2cc993f49deeb5c946105ca28198bbeaf0f2c73fec5d813e1ef8ebef",
+  "qualification_public_manifest": "configs/core_evidence_worker_v2_qualification_public.json",
+  "qualification_public_manifest_sha256": "18f2547b1c82da42e8bdd7e300c91e0bee285c1d4b8eba85a9cd3e0d26f735dd",
+  "report_payload_sha256": "646669348010b16fcaae6c8b2903cf9644c50e1f9e9121c081496b31d19f6aad",
+  "runtime": {
+    "wall_ms": 1371946.191
+  },
+  "scope": "fresh_source_disjoint_qualification_candidates_not_yet_evaluated",
+  "source": {
+    "evaluator_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+    "qualification_runner_sha256": "7c87fb002ffe2ba29507280e8aa38f2877d898748d28e6e0c716b03ea14362da",
+    "worker_config_sha256": "ec52f92f45172292f26ff63fa164b0c26660a6b5c5c5fd2ce0dfe9a189fe0b1d",
+    "worker_sha256": "88085c1296ba9389a4466ea275489bd0b4c1eaa469ad569d7bc7c095b9f0bda8"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 11,
+        "action_counts": {
+          "abstain": 1,
+          "read": 3,
+          "replace": 4,
+          "search": 1,
+          "verify": 2
+        },
+        "distinct_read_paths": [
+          "scripts/report_evidence_integrity.py",
+          "scripts/report_evidence_store.py",
+          "tests/test_report_evidence_integrity.py"
+        ],
+        "failed_actions": 6,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 3
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 11,
+          "action_counts": {
+            "abstain": 1,
+            "read": 3,
+            "replace": 4,
+            "search": 1,
+            "verify": 2
+          },
+          "distinct_read_paths": [
+            "scripts/report_evidence_integrity.py",
+            "scripts/report_evidence_store.py",
+            "tests/test_report_evidence_integrity.py"
+          ],
+          "failed_actions": 6,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 3
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 11,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "0e1e1d603f3f42336fb4fc2ffec90ab97a79ae428be7c56124a8e999c9cf075b",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "264fc2e36601736b962e296755c24a5ee5b9e88f",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "explicit_abstention"
+        ],
+        "runtime": {
+          "wall_ms": 600386.007
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "explicit_abstention",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "96c22109853da09cfcda1547e98f63f26c40b277f800836d5d28ca8c6ec583c2",
+      "candidate_seal": {
+        "candidate_output_sha256": "96c22109853da09cfcda1547e98f63f26c40b277f800836d5d28ca8c6ec583c2",
+        "config_sha256": "ec52f92f45172292f26ff63fa164b0c26660a6b5c5c5fd2ce0dfe9a189fe0b1d",
+        "finished_utc": "2026-07-30T03:32:25.877221Z",
+        "parent_archive_sha256": "f4954148622a79504e7739f678fe5c3f9468ae41d9db4ef094c7f290c499b8e1",
+        "started_utc": "2026-07-30T03:22:21.266965Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "69e0147aa2b234947cb404a125e0fc41e89f1338d5acd6dc4b82fc96a6bcbd65",
+        "worker_source_sha256": "88085c1296ba9389a4466ea275489bd0b4c1eaa469ad569d7bc7c095b9f0bda8",
+        "worker_wall_ms": 604579.571
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 11,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-470bedd9ed0affce",
+      "parent_archive_sha256": "f4954148622a79504e7739f678fe5c3f9468ae41d9db4ef094c7f290c499b8e1",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "explicit_abstention"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "explicit_abstention",
+      "verification_receipts": [],
+      "worker_input_sha256": "69e0147aa2b234947cb404a125e0fc41e89f1338d5acd6dc4b82fc96a6bcbd65",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "read": 17,
+          "search": 1
+        },
+        "distinct_read_paths": [
+          "scripts/kerc_semantic_corpus.py",
+          "scripts/moecot_language_arm_training.py",
+          "tests/test_moecot_language_arm_training.py"
+        ],
+        "failed_actions": 0,
+        "file_mutations": 0,
+        "pre_mutation_read_actions": 17
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": true,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "read": 17,
+            "search": 1
+          },
+          "distinct_read_paths": [
+            "scripts/kerc_semantic_corpus.py",
+            "scripts/moecot_language_arm_training.py",
+            "tests/test_moecot_language_arm_training.py"
+          ],
+          "failed_actions": 0,
+          "file_mutations": 0,
+          "pre_mutation_read_actions": 17
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [],
+        "external_inference_calls": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "b87a62bd6f552c2a6eb83bcb9665345031b16edbc1d85888ba7c2ba77c0e0f4f",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "90a1c999e6d97af00031c88809b0bd4b4975fbf7",
+        "patch_unified_diff": "",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [
+          "no_effect_capable_patch",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 445250.063
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [],
+        "verification_receipts": [],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "357508265a446cc5b4dd77895bff3a3cca6a95401395dbbeef29d34662c54b49",
+      "candidate_seal": {
+        "candidate_output_sha256": "357508265a446cc5b4dd77895bff3a3cca6a95401395dbbeef29d34662c54b49",
+        "config_sha256": "ec52f92f45172292f26ff63fa164b0c26660a6b5c5c5fd2ce0dfe9a189fe0b1d",
+        "finished_utc": "2026-07-30T03:39:58.351741Z",
+        "parent_archive_sha256": "662cff726ce217d7439b4d36c7ec931ab44b7e3b9322e32dfd388d4563435de9",
+        "started_utc": "2026-07-30T03:32:28.344957Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "503708923ce98d6f4c2851d4bf2e8897bcc75f5a26bcf6c9643eeeae183cfede",
+        "worker_source_sha256": "88085c1296ba9389a4466ea275489bd0b4c1eaa469ad569d7bc7c095b9f0bda8",
+        "worker_wall_ms": 449909.141
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [],
+      "external_inference_calls": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-2458e86418232ddb",
+      "parent_archive_sha256": "662cff726ce217d7439b4d36c7ec931ab44b7e3b9322e32dfd388d4563435de9",
+      "patch_unified_diff": "",
+      "proposed_paths": [],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [
+        "no_effect_capable_patch",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [],
+      "worker_input_sha256": "503708923ce98d6f4c2851d4bf2e8897bcc75f5a26bcf6c9643eeeae183cfede",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 10,
+        "action_counts": {
+          "finish": 1,
+          "read": 4,
+          "replace": 1,
+          "search": 1,
+          "verify": 3
+        },
+        "distinct_read_paths": [
+          "scripts/neural_seed_token_decoder_comparator.py",
+          "scripts/neural_seed_token_model_backend.py",
+          "tests/test_neural_seed_open_vocab.py"
+        ],
+        "failed_actions": 1,
+        "file_mutations": 1,
+        "pre_mutation_read_actions": 4
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "action_summary": {
+          "action_count": 10,
+          "action_counts": {
+            "finish": 1,
+            "read": 4,
+            "replace": 1,
+            "search": 1,
+            "verify": 3
+          },
+          "distinct_read_paths": [
+            "scripts/neural_seed_token_decoder_comparator.py",
+            "scripts/neural_seed_token_model_backend.py",
+            "tests/test_neural_seed_open_vocab.py"
+          ],
+          "failed_actions": 1,
+          "file_mutations": 1,
+          "pre_mutation_read_actions": 4
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "40934d363c5371609d547c4c63c388ad12df5cf62836e5c9a27d5497d69a767f",
+            "before_sha256": "c59391587a755f36749f59ce3394d731433d84cab6c1ce9af7b4ed631511b5f6",
+            "effect": "modify",
+            "path": "scripts/neural_seed_token_model_backend.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 10,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3-8B-4bit",
+          "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+        },
+        "natural_request_sha256": "f8b7d8c7990701965a15c63f67e798616e4948e61f8826bcd13d8398962b808a",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "860de45b80bed71dc35b6b3780f9dc94c3619e9e",
+        "patch_unified_diff": "--- a/scripts/neural_seed_token_model_backend.py\n+++ b/scripts/neural_seed_token_model_backend.py\n@@ -468,6 +468,7 @@\n         tokenizer,\n         embedding,\n         token_kind=\"source\",\n+        report_copied_parameters=True,\n         torch=torch,\n     )\n     target_summary = initialize_embedding_module_from_bpe(\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/neural_seed_token_model_backend.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 0,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 305751.288
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_neural_seed_open_vocab.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_model_backend.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_neural_seed_open_vocab.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_model_backend.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_neural_seed_open_vocab.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_model_backend.py"
+            ],
+            "denied_candidate_targets": [],
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_neural_seed_open_vocab.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ".......                                                                  [100%]\n7 passed in 1.08s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/neural_seed_token_decoder_comparator.py",
+                  "scripts/neural_seed_token_decoder_rendering.py",
+                  "scripts/neural_seed_token_decoder_support.py",
+                  "scripts/neural_seed_token_model_backend.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/neural_seed_token_model_backend.py"
+              ],
+              "pytest": []
+            },
+            "wall_ms": 2556.018
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_neural_seed_open_vocab.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_model_backend.py"
+            ],
+            "denied_candidate_targets": [],
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_neural_seed_open_vocab.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ".......                                                                  [100%]\n7 passed in 0.94s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/neural_seed_token_decoder_comparator.py",
+                  "scripts/neural_seed_token_decoder_rendering.py",
+                  "scripts/neural_seed_token_decoder_support.py",
+                  "scripts/neural_seed_token_model_backend.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/neural_seed_token_model_backend.py"
+              ],
+              "pytest": []
+            },
+            "wall_ms": 3628.313
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "34c5026fa2e742aeec732157e7a0546aa7930f092c8be57ada1624604743465c",
+      "candidate_seal": {
+        "candidate_output_sha256": "34c5026fa2e742aeec732157e7a0546aa7930f092c8be57ada1624604743465c",
+        "config_sha256": "ec52f92f45172292f26ff63fa164b0c26660a6b5c5c5fd2ce0dfe9a189fe0b1d",
+        "finished_utc": "2026-07-30T03:45:09.596253Z",
+        "parent_archive_sha256": "304b32b202bec96f381a5ee70309058a84ff71d29e4080c9ab74b577aa22a00e",
+        "started_utc": "2026-07-30T03:40:00.119033Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "46fa52d7e00b572aa52323277f631beb42979202075371071f7937f0a39ab71d",
+        "worker_source_sha256": "88085c1296ba9389a4466ea275489bd0b4c1eaa469ad569d7bc7c095b9f0bda8",
+        "worker_wall_ms": 309468.516
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "40934d363c5371609d547c4c63c388ad12df5cf62836e5c9a27d5497d69a767f",
+          "before_sha256": "c59391587a755f36749f59ce3394d731433d84cab6c1ce9af7b4ed631511b5f6",
+          "effect": "modify",
+          "path": "scripts/neural_seed_token_model_backend.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 10,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "13b744a1380c2225c0f3832205ed2167b9bb90062dc97c9c931c725a429e5272"
+      },
+      "opaque_task_id": "task-7376044b195d161d",
+      "parent_archive_sha256": "304b32b202bec96f381a5ee70309058a84ff71d29e4080c9ab74b577aa22a00e",
+      "patch_unified_diff": "--- a/scripts/neural_seed_token_model_backend.py\n+++ b/scripts/neural_seed_token_model_backend.py\n@@ -468,6 +468,7 @@\n         tokenizer,\n         embedding,\n         token_kind=\"source\",\n+        report_copied_parameters=True,\n         torch=torch,\n     )\n     target_summary = initialize_embedding_module_from_bpe(\n",
+      "proposed_paths": [
+        "scripts/neural_seed_token_model_backend.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 0,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_neural_seed_open_vocab.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_model_backend.py"
+          ],
+          "denied_candidate_targets": [],
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_neural_seed_open_vocab.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ".......                                                                  [100%]\n7 passed in 1.08s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/neural_seed_token_decoder_comparator.py",
+                "scripts/neural_seed_token_decoder_rendering.py",
+                "scripts/neural_seed_token_decoder_support.py",
+                "scripts/neural_seed_token_model_backend.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/neural_seed_token_model_backend.py"
+            ],
+            "pytest": []
+          },
+          "wall_ms": 2556.018
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_neural_seed_open_vocab.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/neural_seed_token_decoder_comparator.py scripts/neural_seed_token_decoder_rendering.py scripts/neural_seed_token_decoder_support.py scripts/neural_seed_token_model_backend.py"
+          ],
+          "denied_candidate_targets": [],
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_neural_seed_open_vocab.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ".......                                                                  [100%]\n7 passed in 0.94s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/neural_seed_token_decoder_comparator.py",
+                "scripts/neural_seed_token_decoder_rendering.py",
+                "scripts/neural_seed_token_decoder_support.py",
+                "scripts/neural_seed_token_model_backend.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/neural_seed_token_model_backend.py"
+            ],
+            "pytest": []
+          },
+          "wall_ms": 3628.313
+        }
+      ],
+      "worker_input_sha256": "46fa52d7e00b572aa52323277f631beb42979202075371071f7937f0a39ab71d",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

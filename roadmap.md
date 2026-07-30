@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last reoriented: 2026-07-29 UTC, after documentation commit `28a2fd17`.
+Last reoriented: 2026-07-30 UTC, after qualification freeze commit `e04427a0`.
 
 This is the forward human execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; operating rules belong in `AGENTS.md`; detailed
@@ -263,7 +263,7 @@ result is negative.
 
 ### D1 Successor — Local Repository Worker v2
 
-State: `ACTIVE_DEVELOPMENT`; this is the sole active D1 successor.
+State: `TERMINAL_INVALID_EVALUATOR`; E2 remains sealed.
 
 E2 and E3 established a dependency, not another reason to rerun the same
 campaign: governance efficacy is unmeasurable while the frozen worker produces
@@ -339,7 +339,7 @@ target identities before target inspection, and preserve the original four E2
 heldouts. Do not keep rerunning the three consumed tasks merely to tune against
 their opened targets.
 
-That precondition is now closed. The fresh cohort, Worker v2 source, local-model
+That precondition was closed prospectively. The fresh cohort, Worker v2 source, local-model
 config, runner, evaluator, target identities, unchanged competence floor,
 complete-denominator rule, rescue/terminal rules, and zero-external-use
 boundaries are frozen in
@@ -349,15 +349,35 @@ share the `repository_correctness` family so the frozen weakest-family rule is
 meaningful. No target patch was opened while writing or freezing the public
 requests. Candidate generation reads only
 `configs/core_evidence_worker_v2_qualification_public.json`; authoritative
-target identities remain evaluator-only. State:
-`FRESH_QUALIFICATION_FROZEN_NOT_RUN`.
+target identities remained evaluator-only until all three candidates sealed.
 
-The next action is irreversible: run all three candidates once, seal all three
-before any target opens, then run the frozen independent evaluator. If useful
-rate is below `0.5`, weakest-family useful rate is below `0.34`, fewer than
-three tasks are attempted, or any information-flow/evaluator/rollback/boundary
-check fails, terminate Worker v2 qualification and keep the four E2 heldouts
-sealed. Do not repair, rerun, narrow, or replace a task after outcomes open.
+The irreversible run is complete. Candidate generation sealed all `3/3`
+outputs before any target opened, with zero external inference, teacher,
+public-calibration, D2, user-facing, or target-exposure events. The frozen
+evaluator recorded `0/3` useful, `0/3` unsafe, `3/3` exact rollback, two
+abstentions, two malformed/no-patch outcomes, and one cleanly applicable
+candidate patch that failed hidden verification.
+
+The post-open adequacy audit invalidated the cohort. Every detailed public
+request explicitly named primary implementation/test paths with zero overlap
+against its authoritative target patch:
+
+- report evidence store versus artifact-retention reference;
+- MoECOT language-arm training versus the KERC K5 learnability probe;
+- neural-seed token backend versus the standard causal transformer.
+
+The prompts were inferred from terse commit subjects and the wrong parent
+owners. A candidate could follow its visible request or match the hidden target,
+but not both. The terminal disposition is therefore `INVALID_EVALUATOR`, not
+`INCONCLUSIVE_WORKER_INADEQUATE`; exact evidence is in
+`reports/core_evidence_worker_v2_qualification_disposition.json`.
+
+The competence floor is not evaluable, no Worker v2 capability conclusion is
+authorized, and the original four E2 heldouts remain unopened. The frozen run
+may not be repaired, rerun, narrowed, or replaced after target open. Any future
+successor requires a new user-authorized goal and an independently authored
+request/target cohort with request-target alignment sealed by someone other
+than the worker implementation owner.
 
 The repeated acceleration criticism in the July review is stale for the
 selected route: the production pretraining step already uses `mx.compile`,

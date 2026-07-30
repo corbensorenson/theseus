@@ -9246,6 +9246,9 @@
         "reports/core_evidence_e3_mechanism_comparison.json",
         "reports/core_evidence_e4_disposition.json",
         "reports/core_evidence_e5_public_brief.json",
+        "reports/core_evidence_worker_v2_qualification_candidates.json",
+        "reports/core_evidence_worker_v2_qualification_evaluation.json",
+        "reports/core_evidence_worker_v2_qualification_disposition.json",
         "docs/CORE_EVIDENCE_BRIEF.md",
         "docs/assets/core-evidence-useful-safe-frontier.svg"
       ],

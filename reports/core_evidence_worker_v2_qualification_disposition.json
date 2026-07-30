@@ -1,0 +1,133 @@
+{
+  "policy": "project_theseus_worker_v2_qualification_terminal_disposition_v1",
+  "created_utc": "2026-07-30T03:46:39Z",
+  "trigger_state": "RED",
+  "terminal_disposition": "INVALID_EVALUATOR",
+  "terminal_wall": "EVALUATOR_VALIDITY_REQUEST_TARGET_MISALIGNMENT",
+  "report_payload_sha256": "f529690cc40293d5562954fbb9b20da5ffae2b9b1b0879ebe734777843e06836",
+  "source": {
+    "freeze_manifest": "configs/core_evidence_worker_v2_qualification_freeze.json",
+    "freeze_manifest_sha256": "33bbffaf2cc993f49deeb5c946105ca28198bbeaf0f2c73fec5d813e1ef8ebef",
+    "candidate_report": "reports/core_evidence_worker_v2_qualification_candidates.json",
+    "candidate_report_sha256": "21f8730c971983a80e6f2a5f807d2a099f7152c8edb23f5fb3356b214dd97d59",
+    "evaluation_report": "reports/core_evidence_worker_v2_qualification_evaluation.json",
+    "evaluation_report_sha256": "49afde8efcc01c4b741bb80ada51df2ad063f566cf77d4ac196803b3429f4308"
+  },
+  "frozen_run_observation": {
+    "attempted": 3,
+    "useful": 0,
+    "unsafe": 0,
+    "false_blocked": 0,
+    "rescued": 0,
+    "malformed": 2,
+    "abstained": 2,
+    "denied": 2,
+    "timed_out": 1,
+    "infrastructure_failed": 0,
+    "skipped": 0,
+    "rollback_verified": 3,
+    "candidate_seals_valid": 3,
+    "information_flow_valid": 3,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0
+  },
+  "post_open_request_target_adequacy_audit": {
+    "policy": "candidate_request_primary_surfaces_must_intersect_authoritative_target_surfaces_v1",
+    "passed": false,
+    "invalid_task_count": 3,
+    "tasks": [
+      {
+        "opaque_task_id": "task-470bedd9ed0affce",
+        "request_named_primary_paths": [
+          "scripts/report_evidence_store.py",
+          "tests/test_report_evidence_integrity.py"
+        ],
+        "authoritative_target_changed_paths": [
+          "scripts/artifact_retention_reference.py",
+          "tests/test_artifact_retention_reference.py"
+        ],
+        "path_overlap_count": 0,
+        "request_target_alignment_valid": false,
+        "disposition": "INVALID_EVALUATOR"
+      },
+      {
+        "opaque_task_id": "task-2458e86418232ddb",
+        "request_named_primary_paths": [
+          "scripts/moecot_language_arm_training.py",
+          "tests/test_moecot_language_arm_training.py"
+        ],
+        "authoritative_target_changed_paths": [
+          "scripts/kerc_k5_stage_learnability_probe.py",
+          "tests/test_kerc_k5_stage_learnability_probe.py"
+        ],
+        "path_overlap_count": 0,
+        "request_target_alignment_valid": false,
+        "disposition": "INVALID_EVALUATOR"
+      },
+      {
+        "opaque_task_id": "task-7376044b195d161d",
+        "request_named_primary_paths": [
+          "scripts/neural_seed_token_model_backend.py",
+          "tests/test_neural_seed_open_vocab.py"
+        ],
+        "authoritative_target_changed_paths": [
+          "configs/project_manifest_registry.json",
+          "configs/roadmap_implementation_matrix.json",
+          "docs/PROJECT_STATE.md",
+          "roadmap.md",
+          "scripts/blind_information_flow_audit.py",
+          "scripts/standard_causal_transformer_survival.py",
+          "tests/test_standard_causal_transformer_survival.py"
+        ],
+        "path_overlap_count": 0,
+        "request_target_alignment_valid": false,
+        "disposition": "INVALID_EVALUATOR"
+      }
+    ]
+  },
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_task_family_rate": 0.34,
+    "minimum_useful_rate": 0.5,
+    "valid_attempted_tasks": 0,
+    "evaluation_state": "NOT_EVALUABLE_INVALID_COHORT",
+    "passed": false
+  },
+  "e2_unlock": {
+    "authorized": false,
+    "original_four_task_e2_heldout_opened": false,
+    "reason": "Fresh Worker v2 qualification is invalid and cannot clear the competence floor."
+  },
+  "causal_diagnosis": {
+    "primary": "The fresh cohort was frozen without target inspection, but its detailed prompts were inferred from terse commit subjects and the wrong parent-repository owners. After target open, every prompt's explicitly named primary implementation/test paths had zero overlap with the authoritative target patch.",
+    "worker_observations_preserved_without_capability_inference": [
+      "Task 1 found and inspected the prompt-named owner, emitted malformed replacement actions, and explicitly abstained.",
+      "Task 2 found the prompt-named helper but exhausted its budget reading small spans without a patch.",
+      "Task 3 followed the prompt-named owner, produced a clean one-path patch, and passed candidate-selected verification; the authoritative target concerned a different seven-path subsystem."
+    ],
+    "not_attributable_from_this_run": [
+      "general local-model competence",
+      "general repository-worker competence",
+      "governance efficacy",
+      "ASI Stack efficacy"
+    ]
+  },
+  "terminal_rules": {
+    "rerun_authorized": false,
+    "repair_after_target_open_authorized": false,
+    "task_replacement_authorized": false,
+    "worker_or_evaluator_mutation_authorized": false,
+    "e2_must_remain_sealed": true
+  },
+  "maximum_inference": "The exact frozen Worker v2 mechanics sealed three local candidates, kept every forbidden-use counter at zero, and proved exact rollback on all three evaluator transactions. The qualification cohort is invalid because all three natural requests were misaligned with their hidden target patches; no competence or governance-efficacy conclusion is justified.",
+  "non_claims": [
+    "not a Worker v2 competence pass",
+    "not valid negative evidence about general local-model competence",
+    "not authorization to open E2",
+    "not authorization to rerun or replace the frozen cohort",
+    "not a Theseus-student capability result"
+  ]
+}
