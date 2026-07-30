@@ -127,7 +127,13 @@ def run_worker(
             result = {
                 "ok": False,
                 "fault": f"{type(exc).__name__}:{exc}",
-                "instruction": "Return exactly one valid JSON tool action.",
+                "instruction": (
+                    "Return exactly one complete valid JSON tool action within "
+                    "the action-token budget. Current required phase: "
+                    f"{state.required_next_phase()}. For create, include only "
+                    "concise request-required tests within the configured "
+                    "created-file character ceiling."
+                ),
             }
             if format_faults > int(budgets["maximum_format_retries"]):
                 terminal_reason = "format_retry_budget_exhausted"
@@ -147,7 +153,6 @@ def run_worker(
                 })
                 break
         else:
-            format_faults = 0
             try:
                 result = state.execute(action)
             except WorkerFault as exc:
@@ -298,6 +303,7 @@ def run_worker(
         "advisory_plan": state.advisory_plan,
         "repair_attempts": state.repair_attempts,
         "format_repairs": format_repairs,
+        "format_faults": format_faults,
         "terminal_reason": terminal_reason,
         "abstained": not bool(patch),
         "abstention_reason": state.abstention_reason,
@@ -338,14 +344,33 @@ class RepositoryState:
         self.read_actions = 0
         self.navigation_actions = 0
         self.read_paths: set[str] = set()
-        self.read_spans: set[tuple[str, int, int]] = set()
+        self.read_spans: set[tuple[str, int, int, str]] = set()
         self.abstention_reason: str | None = None
         self.advisory_plan: dict[str, Any] | None = None
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         kind = str(action.get("action") or "")
+        known_actions = {
+            "list", "search", "read", "replace", "create", "create_test",
+            "delete",
+            "verify", "plan", "finish", "abstain",
+        }
+        if kind not in known_actions:
+            raise WorkerFault(f"unknown_action:{kind}")
+        self.enforce_phase_action(kind)
         if kind in {"list", "search", "read"}:
             self.navigation_actions += 1
+            if (
+                self.config["budgets"].get(
+                    "forbid_navigation_after_inspection_complete", False
+                )
+                and
+                not self.changed_paths()
+                and self.inspection_complete()
+            ):
+                raise WorkerFault(
+                    "navigation_forbidden_after_inspection_complete"
+                )
             maximum_navigation = self.config["budgets"].get(
                 "maximum_pre_mutation_navigation_actions"
             )
@@ -378,6 +403,8 @@ class RepositoryState:
                 str(action.get("path") or ""),
                 str(action.get("content") or ""),
             )
+        elif kind == "create_test":
+            result = self.create_structured_test(action)
         elif kind == "delete":
             result = self.delete(str(action.get("path") or ""))
         elif kind == "verify":
@@ -409,6 +436,76 @@ class RepositoryState:
             raise WorkerFault(f"unknown_action:{kind}")
         self.actions.append({"action": kind, "ok": result.get("ok") is True})
         return result
+
+    def allowed_phase_actions(self) -> set[str]:
+        """Return controller-owned legal actions for the current state."""
+        navigation = {"list", "search", "read"}
+        mutations = {"replace", "create", "create_test", "delete"}
+        if not self.config["budgets"].get(
+            "enforce_phase_action_contract", False
+        ):
+            return navigation | mutations | {
+                "plan", "verify", "finish", "abstain"
+            }
+        if self.failed_verification_seen:
+            # A failed receipt can refer to candidate-created or modified text
+            # that was never present during initial inspection. Permit exact
+            # rereads during repair, but keep list/search and phase regression
+            # forbidden.
+            return mutations | {"read", "abstain"}
+        changed = self.changed_paths()
+        if changed:
+            if self.verification_current():
+                if self.verification_receipts[-1]["passed"]:
+                    return {"finish", "abstain"}
+                return mutations | {"abstain"}
+            if self.planned_missing_effect_paths():
+                return mutations | {"abstain"}
+            return {"verify", "abstain"}
+        if self.inspection_complete():
+            if (
+                self.config["budgets"].get(
+                    "require_plan_before_mutation", False
+                )
+                and self.advisory_plan is None
+            ):
+                return {"plan", "abstain"}
+            return mutations | {"abstain"}
+        return navigation | {"abstain"}
+
+    def enforce_phase_action(self, kind: str) -> None:
+        allowed = self.allowed_phase_actions()
+        if kind not in allowed:
+            raise WorkerFault(
+                "action_not_allowed_in_current_phase:"
+                + ",".join(sorted(allowed))
+            )
+
+    def planned_missing_effect_paths(self) -> list[str]:
+        if self.advisory_plan is None:
+            return []
+        changed = set(self.changed_paths())
+        return [
+            path
+            for path in self.advisory_plan["target_paths"]
+            if path not in changed
+        ]
+
+    def current_effect_sha256(self) -> str:
+        return sha256_text(
+            json.dumps(
+                self.effect_inventory(),
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+        )
+
+    def verification_current(self) -> bool:
+        return bool(
+            self.verification_receipts
+            and self.verification_receipts[-1].get("effect_sha256")
+            == self.current_effect_sha256()
+        )
 
     def safe_path(self, value: str, *, must_exist: bool = True) -> Path:
         pure = PurePosixPath(value)
@@ -508,6 +605,20 @@ class RepositoryState:
         )
         if (
             not self.changed_paths()
+            and budgets.get("require_test_read_before_mutation", False)
+            and not any(
+                path.startswith("tests/") for path in self.read_paths
+            )
+            and not relative.startswith("tests/")
+            and maximum_pre_mutation_reads >= 2
+            and any(
+                path.startswith("tests/") for path in self.baseline
+            )
+            and self.read_actions >= maximum_pre_mutation_reads - 1
+        ):
+            raise WorkerFault("last_inspection_slot_reserved_for_test")
+        if (
+            not self.changed_paths()
             and self.read_actions >= maximum_pre_mutation_reads
         ):
             raise WorkerFault("pre_mutation_inspection_ceiling_reached")
@@ -524,7 +635,14 @@ class RepositoryState:
             # at a time while keeping repeated blocks detectable.
             start = ((start - 1) // minimum) * minimum + 1
             end = min(len(lines), start + minimum - 1)
-        span = (relative, start, min(end, len(lines)))
+        # Content identity makes a post-mutation reread informative while still
+        # rejecting repeated reads of the same version and line range.
+        span = (
+            relative,
+            start,
+            min(end, len(lines)),
+            sha256_text("\n".join(lines)),
+        )
         if span in self.read_spans:
             raise WorkerFault("duplicate_read_span_no_new_information")
         self.read_spans.add(span)
@@ -544,11 +662,14 @@ class RepositoryState:
         changed = self.changed_paths()
         if self.failed_verification_seen:
             return "repair_from_last_failure_before_reverification"
-        if changed and not self.verification_receipts:
+        missing = self.planned_missing_effect_paths()
+        if changed and missing:
+            return "complete_planned_effect_paths:" + ",".join(missing)
+        if changed and not self.verification_current():
             return "verify_changed_paths"
         if (
             changed
-            and self.verification_receipts
+            and self.verification_current()
             and self.verification_receipts[-1]["passed"]
         ):
             return "finish_or_make_only_request_required_additional_edits"
@@ -621,27 +742,74 @@ class RepositoryState:
         if self.changed_paths():
             raise WorkerFault("plan_must_precede_mutation")
         criteria = action.get("criteria")
-        target_paths = action.get("target_paths")
+        candidate_target_paths = action.get("target_paths")
+        target_paths = (
+            list(self.request_scoped_paths)
+            if self.config["budgets"].get(
+                "bind_plan_target_paths_to_request_scope", False
+            )
+            else candidate_target_paths
+        )
         implementation = action.get("implementation")
-        verification = action.get("verification")
+        candidate_verification = action.get("verification")
+        verification = (
+            "controller_selects_checks_from_changed_paths_and_request"
+            if self.config["budgets"].get(
+                "default_plan_verification_strategy", False
+            )
+            and (
+                not isinstance(candidate_verification, str)
+                or not candidate_verification.strip()
+            )
+            else candidate_verification
+        )
         if (
             not isinstance(criteria, list)
             or not criteria
             or len(criteria) > 12
-            or any(not isinstance(item, str) or not item.strip() for item in criteria)
-            or not isinstance(target_paths, list)
+            or any(
+                not isinstance(item, str) or not item.strip()
+                for item in criteria
+            )
+        ):
+            raise WorkerFault(
+                "request_criteria_plan_schema_invalid:criteria"
+            )
+        if (
+            not isinstance(target_paths, list)
             or not target_paths
             or len(target_paths) > 8
             or any(
-                not isinstance(path, str) or path not in self.baseline
+                not isinstance(path, str)
+                or (
+                    path not in self.baseline
+                    and not (
+                        self.config["budgets"].get(
+                            "enforce_request_scoped_effect_paths", False
+                        )
+                        and path in self.request_scoped_paths
+                    )
+                )
                 for path in target_paths
             )
-            or not isinstance(implementation, str)
+        ):
+            raise WorkerFault(
+                "request_criteria_plan_schema_invalid:target_paths"
+            )
+        if (
+            not isinstance(implementation, str)
             or not implementation.strip()
-            or not isinstance(verification, str)
+        ):
+            raise WorkerFault(
+                "request_criteria_plan_schema_invalid:implementation"
+            )
+        if (
+            not isinstance(verification, str)
             or not verification.strip()
         ):
-            raise WorkerFault("request_criteria_plan_schema_invalid")
+            raise WorkerFault(
+                "request_criteria_plan_schema_invalid:verification"
+            )
         self.advisory_plan = {
             "criteria": [item.strip()[:500] for item in criteria],
             "target_paths": target_paths,
@@ -652,6 +820,14 @@ class RepositoryState:
             "ok": True,
             "advisory_only": True,
             "candidate_authored_success_claim": False,
+            "candidate_target_paths_ignored": bool(
+                self.config["budgets"].get(
+                    "bind_plan_target_paths_to_request_scope", False
+                )
+            ),
+            "candidate_verification_defaulted": (
+                verification != candidate_verification
+            ),
             "plan": self.advisory_plan,
         }
 
@@ -667,7 +843,8 @@ class RepositoryState:
             if (not prefix or path.startswith(prefix))
             and (not unread_only or path not in self.read_paths)
         }
-        return lexical_rank(inventory, self.request_tokens)[:maximum]
+        ranked = lexical_rank(inventory, self.request_tokens)
+        return (ranked or sorted(inventory))[:maximum]
 
     def restore_baseline(self) -> None:
         """Discard every provisional text effect inside the disposable snapshot."""
@@ -689,18 +866,49 @@ class RepositoryState:
         tests = self.relevant_paths(
             prefix="tests/", unread_only=True, maximum=3
         )
+        if "action_not_allowed_in_current_phase" in fault:
+            return (
+                "The controller rejected a phase regression. NEXT ACTION MUST "
+                f"match {self.required_next_phase()}. Allowed action kinds: "
+                f"{sorted(self.allowed_phase_actions())}."
+            )
+        if (
+            self.config["budgets"]["require_test_read_before_mutation"]
+            and not any(
+                path.startswith("tests/") for path in self.read_paths
+            )
+            and (
+                "file_missing_or_not_regular" in fault
+                or "duplicate_read_span" in fault
+            )
+        ):
+            return (
+                "The required test context is still missing. NEXT ACTION MUST "
+                "BE read on one existing test path from this controller-ranked "
+                f"list: {tests}. A request-scoped path marked exists=false is "
+                "authorized for later creation, not readable now."
+            )
         if "test_read_required_before_mutation" in fault:
             return (
                 "NEXT ACTION MUST BE read on an existing relevant test. "
                 f"Target-blind suggestions: {tests or unread}. Do not create a test yet."
             )
+        if "last_inspection_slot_reserved_for_test" in fault:
+            return (
+                "The controller reserved the final inspection slot for the "
+                "required independent test context. NEXT ACTION MUST BE read "
+                "on one existing test path from this target-blind ranked list: "
+                f"{tests}. Do not read the source again."
+            )
         phase = self.required_next_phase()
         if phase == "repair_from_last_failure_before_reverification":
             return (
-                "Candidate verification failed. NEXT ACTION MUST BE a bounded repair "
-                "with replace/create/delete using the failure_summaries already "
-                "returned. Do not read, search, verify, finish, or abandon the "
-                "provisional patch."
+                "Candidate verification failed. NEXT ACTION MUST BE either one "
+                "exact read of a changed file needed to recover current text, "
+                "or a bounded repair with replace/create/create_test/delete "
+                "using the failure_summaries already returned. Do not list, "
+                "search, verify, finish, or abandon the provisional patch "
+                "before making the repair."
             )
         if phase == "verify_changed_paths":
             return (
@@ -757,10 +965,50 @@ class RepositoryState:
                 )
                 + " Do not read, list, or search again."
             )
+        if "navigation_forbidden_after_inspection_complete" in fault:
+            return (
+                "Required source and test inspection is complete. NEXT ACTION "
+                "MUST BE "
+                + (
+                    "plan from the natural request and inspected paths."
+                    if self.advisory_plan is None
+                    else (
+                        "replace/create/delete within "
+                        "request_scoped_effect_paths."
+                    )
+                )
+                + " Do not read, list, or search again."
+            )
         if "effect_path_outside_request_scoped_authority" in fault:
             return (
                 "The proposed effect path is outside the request-derived authority "
                 f"boundary. Use only one of: {self.request_scoped_paths}."
+            )
+        if "created_file_character_ceiling_exceeded" in fault:
+            return (
+                "The proposed file was too large. Create only concise, focused "
+                "request-required tests with no redundant cases, comments, or "
+                "helpers, within the configured character ceiling."
+            )
+        if "structured_test_creation_required" in fault:
+            return (
+                "Use create_test, not create, for a new Python test. Supply "
+                "path, a short preamble, and at most three entries with name, "
+                "parameters, and concise body. The controller provides ROOT, "
+                "SCRIPTS, Path, sys, and imports the planned script as target."
+            )
+        if "structured_test_schema_invalid" in fault:
+            return (
+                "Return a smaller create_test action: at most three test rows; "
+                "each name must match test_[a-z0-9_]+; parameters must be one "
+                "line; each body must stay within its configured ceiling."
+            )
+        if "request_criteria_plan_schema_invalid" in fault:
+            return (
+                "Return one plan with a nonempty criteria list copied from the "
+                "natural request, a concrete implementation strategy, and a "
+                "nonempty verification strategy. Target paths are bound by the "
+                "controller to request_scoped_effect_paths; do not browse again."
             )
         if (
             "verification_requires_changed_paths" in fault
@@ -807,9 +1055,36 @@ class RepositoryState:
         return {"ok": True, "path": relative, "changed": True}
 
     def create(self, relative: str, content: str) -> dict[str, Any]:
+        return self.create_file(
+            relative, content, structured_test=False
+        )
+
+    def create_file(
+        self,
+        relative: str,
+        content: str,
+        *,
+        structured_test: bool,
+    ) -> dict[str, Any]:
         path = self.safe_path(relative, must_exist=False)
         if path.exists() or not content:
             raise WorkerFault("create_requires_new_nonempty_file")
+        if (
+            self.config["budgets"].get(
+                "structured_test_creation_required", False
+            )
+            and relative.startswith("tests/")
+            and not structured_test
+        ):
+            raise WorkerFault("structured_test_creation_required")
+        maximum_characters = self.config["budgets"].get(
+            "maximum_created_file_characters"
+        )
+        if (
+            maximum_characters is not None
+            and len(content) > int(maximum_characters)
+        ):
+            raise WorkerFault("created_file_character_ceiling_exceeded")
         if (
             self.config["budgets"][
                 "require_existing_integration_before_new_implementation"
@@ -827,6 +1102,117 @@ class RepositoryState:
         path.parent.mkdir(parents=True, exist_ok=True)
         write_normalized_text(path, content)
         return {"ok": True, "path": relative, "changed": True}
+
+    def create_structured_test(
+        self, action: dict[str, Any]
+    ) -> dict[str, Any]:
+        relative = str(action.get("path") or "")
+        if (
+            not relative.startswith("tests/test_")
+            or not relative.endswith(".py")
+        ):
+            raise WorkerFault("structured_test_path_invalid")
+        preamble = action.get("preamble")
+        tests = action.get("tests")
+        maximum_tests = int(
+            self.config["budgets"].get("maximum_structured_tests", 3)
+        )
+        maximum_body = int(
+            self.config["budgets"].get(
+                "maximum_structured_test_body_characters", 600
+            )
+        )
+        if (
+            not isinstance(preamble, str)
+            or not isinstance(tests, list)
+            or not tests
+            or len(tests) > maximum_tests
+        ):
+            raise WorkerFault("structured_test_schema_invalid")
+        preamble_lines = []
+        for line in preamble.splitlines():
+            stripped = line.strip()
+            if (
+                stripped
+                and not stripped.startswith("from __future__ import")
+                and (
+                    re.fullmatch(
+                        r"import [A-Za-z0-9_., ]+", stripped
+                    )
+                    or re.fullmatch(
+                        r"from [A-Za-z0-9_.]+ import "
+                        r"[A-Za-z0-9_., ()]+",
+                        stripped,
+                    )
+                )
+            ):
+                preamble_lines.append(stripped)
+        preamble_lines = list(dict.fromkeys(preamble_lines))[:12]
+        sanitized_preamble = "\n".join(preamble_lines)
+        rendered_tests = []
+        for row in tests:
+            if not isinstance(row, dict):
+                raise WorkerFault("structured_test_schema_invalid")
+            name = row.get("name")
+            parameters = row.get("parameters", "")
+            body = row.get("body")
+            if (
+                not isinstance(name, str)
+                or re.fullmatch(r"test_[a-z0-9_]+", name) is None
+                or not isinstance(parameters, str)
+                or len(parameters) > 200
+                or "\n" in parameters
+                or not isinstance(body, str)
+                or not body.strip()
+                or len(body) > maximum_body
+            ):
+                raise WorkerFault("structured_test_schema_invalid")
+            indented = "\n".join(
+                ("    " + line) if line else ""
+                for line in body.strip().splitlines()
+            )
+            rendered_tests.append(
+                f"def {name}({parameters.strip()}):\n{indented}\n"
+            )
+        source_candidates = [
+            path
+            for path in (
+                (self.advisory_plan or {}).get("target_paths") or []
+            )
+            if path.startswith("scripts/") and path.endswith(".py")
+        ]
+        if len(source_candidates) != 1:
+            raise WorkerFault(
+                "structured_test_requires_one_planned_script_target"
+            )
+        module = PurePosixPath(source_candidates[0]).stem
+        scaffold = (
+            "from __future__ import annotations\n\n"
+            "import sys\n"
+            "from pathlib import Path\n\n"
+            "ROOT = Path(__file__).resolve().parents[1]\n"
+            "SCRIPTS = ROOT / \"scripts\"\n"
+            "if str(SCRIPTS) not in sys.path:\n"
+            "    sys.path.insert(0, str(SCRIPTS))\n\n"
+            f"import {module} as target\n"
+        )
+        content = "\n\n".join(
+            part.rstrip()
+            for part in (
+                scaffold,
+                sanitized_preamble,
+                "\n\n".join(rendered_tests),
+            )
+            if part.strip()
+        ) + "\n"
+        result = self.create_file(
+            relative, content, structured_test=True
+        )
+        return {
+            **result,
+            "candidate_preamble_lines": len(preamble.splitlines()),
+            "accepted_import_lines": len(preamble_lines),
+        }
 
     def delete(self, relative: str) -> dict[str, Any]:
         path = self.safe_path(relative)
@@ -880,6 +1266,7 @@ class RepositoryState:
                 "results": [],
                 "denied_candidate_targets": denied_targets,
                 "selection": automatic,
+                "effect_sha256": self.current_effect_sha256(),
                 "wall_ms": 0.0,
             }
             self.verification_receipts.append(receipt)
@@ -927,6 +1314,7 @@ class RepositoryState:
             ],
             "denied_candidate_targets": denied_targets,
             "selection": automatic,
+            "effect_sha256": self.current_effect_sha256(),
             "wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
         }
         self.verification_receipts.append(receipt)
@@ -971,11 +1359,6 @@ class RepositoryState:
             direct = f"tests/test_{stem}.py"
             if direct in test_inventory:
                 pytest_targets.add(direct)
-            references = [
-                path for path, text in test_inventory.items()
-                if stem in text or changed_path in text
-            ][:4]
-            pytest_targets.update(references)
         return {
             "pytest": sorted(pytest_targets),
             "py_compile": sorted(py_compile_targets),
@@ -1258,6 +1641,7 @@ Allowed actions, with exact JSON shapes:
 {"action":"read","path":"scripts/x.py","start_line":1,"end_line":120}
 {"action":"replace","path":"scripts/x.py","old":"exact existing text","new":"replacement"}
 {"action":"create","path":"tests/test_x.py","content":"complete nonempty file"}
+{"action":"create_test","path":"tests/test_x.py","preamble":"short imports only","tests":[{"name":"test_behavior","parameters":"tmp_path: Path","body":"request-derived assertions using target"}]}
 {"action":"delete","path":"obsolete allowed path"}
 {"action":"plan","criteria":["request-derived criterion"],"target_paths":["scripts/x.py"],"implementation":"general edit strategy","verification":"checks to run"}
 {"action":"verify","pytest":[],"py_compile":[],"json":[]}
@@ -1279,6 +1663,9 @@ The request_scoped_effect_paths are a controller-derived authority boundary, not
 answers. Never mutate another path. A listed path with exists=false is an authorized
 request-derived creation path: do not try to read it before creating it. Read the existing
 priority inspection paths instead.
+For a new Python test, use create_test rather than create. The controller provides Path,
+ROOT, SCRIPTS, sys, and imports the one planned scripts/*.py target as target. Supply at
+most three concise request-derived tests; do not generate a comprehensive suite.
 For verification, prefer empty arrays so the worker independently selects tests, compilation,
 and JSON checks from the actual changed paths. Finish only after green verification.
 Candidate claims of success are ignored."""
@@ -1580,7 +1967,7 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
         return {"query": str(action.get("query") or "")[:200]}
     if kind == "list":
         return {"prefix": str(action.get("prefix") or "")[:200]}
-    if kind in {"read", "replace", "create", "delete"}:
+    if kind in {"read", "replace", "create", "create_test", "delete"}:
         detail = {"path": str(action.get("path") or "")[:300]}
         if kind == "read":
             detail.update({
@@ -1596,6 +1983,13 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
             detail["content_characters"] = len(
                 str(action.get("content") or "")
             )
+        elif kind == "create_test":
+            detail.update({
+                "preamble_characters": len(
+                    str(action.get("preamble") or "")
+                ),
+                "test_count": len(action.get("tests") or []),
+            })
         return detail
     if kind == "verify":
         return {

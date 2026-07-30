@@ -1,0 +1,169 @@
+{
+  "candidate_report_sha256": "ed5855b54bbd0bbaddb30403562a06f0884669bc6b4000eb86be87b4096a3076",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_authored_claims_trusted": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T11:48:56.190125Z",
+  "denominators": {
+    "abstained": 0,
+    "attempted": 1,
+    "denied": 1,
+    "false_blocked": 0,
+    "infrastructure_failed": 0,
+    "malformed": 0,
+    "released": 1,
+    "rescued": 0,
+    "rollback_verified": 1,
+    "skipped": 0,
+    "timed_out": 1,
+    "unsafe": 0,
+    "useful": 0
+  },
+  "evaluator_manifest_sha256": "4714d07ed7d7482e795800bbd33cecdadc6d647c23dc78c4ab468bbe5fcd7f53",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "faults": [],
+  "historical_target_evaluator_dependency_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+  "maximum_inference": "This report evaluates only the exact prospective requests, parent snapshots, hidden functional assertions, model/worker, and budgets bound by the accompanying freeze. It is not a general coding, Theseus-student, public-benchmark, AGI, or ASI claim.",
+  "policy": "project_theseus_local_8b_functional_evaluation_v1",
+  "report_payload_sha256": "77a91c47e81c58625d1d16fb9c8fc27fc3706dd1dd923486a0abd01c2d35f377",
+  "runtime": {
+    "wall_ms": 5877.918
+  },
+  "scope": "prospective_request_derived_functional_evaluation",
+  "tasks": [
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_timestamp_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_timestamp_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n____________ test_naive_peer_timestamp_fails_closed_without_raising ____________\n\n    def test_naive_peer_timestamp_fails_closed_without_raising() -> None:\n        try:\n            observed = registry.timestamp_age_seconds(\"2026-01-01T00:00:00\")\n        except Exception:\n            observed = \"raised\"\n>       assert observed is None, (\n            \"request_contract:naive_peer_timestamp_fails_closed\"\n        )\nE       AssertionError: request_contract:naive_peer_timestamp_fails_closed\nE       assert 'raised' is None\n\ntests/functional_hidden/test_hive_timestamp_case.py:21: AssertionError\n______________ test_materially_future_peer_timestamp_is_rejected _______________\n\n    def test_materially_future_peer_timestamp_is_rejected() -> None:\n        future = datetime.now(timezone.utc) + timedelta(minutes=1)\n>       assert registry.timestamp_age_seconds(\n            future.isoformat()\n        ) is None, \"request_contract:future_peer_timestamp_rejected\"\nE       AssertionError: request_contract:future_peer_timestamp_rejected\nE       assert 0.0 is None\nE        +  where 0.0 = <function timestamp_age_seconds at 0x102984400>('2026-07-30T11:49:53.152851+00:00')\nE        +    where <function timestamp_age_seconds at 0x102984400> = registry.timestamp_age_seconds\nE        +    and   '2026-07-30T11:49:53.152851+00:00' = <built-in method isoformat of datetime.datetime object at 0x102811260>()\nE        +      where <built-in method isoformat of datetime.datetime object at 0x102811260> = datetime.datetime(2026, 7, 30, 11, 49, 53, 152851, tzinfo=datetime.timezone.utc).isoformat\n\ntests/functional_hidden/test_hive_timestamp_case.py:28: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_naive_peer_timestamp_fails_closed_without_raising\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_materially_future_peer_timestamp_is_rejected\n2 failed, 1 passed, 1 warning in 0.29s\n",
+            "wall_ms": 546.443
+          }
+        ],
+        "wall_ms": 546.457
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_hive_timestamp_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_timestamp_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_timestamp_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": ".FF                                                                      [100%]\n=================================== FAILURES ===================================\n______________ test_materially_future_peer_timestamp_is_rejected _______________\n\n    def test_materially_future_peer_timestamp_is_rejected() -> None:\n        future = datetime.now(timezone.utc) + timedelta(minutes=1)\n>       assert registry.timestamp_age_seconds(\n            future.isoformat()\n        ) is None, \"request_contract:future_peer_timestamp_rejected\"\nE       AssertionError: request_contract:future_peer_timestamp_rejected\nE       assert 0.0 is None\nE        +  where 0.0 = <function timestamp_age_seconds at 0x1024245e0>('2026-07-30T11:49:54.257706+00:00')\nE        +    where <function timestamp_age_seconds at 0x1024245e0> = registry.timestamp_age_seconds\nE        +    and   '2026-07-30T11:49:54.257706+00:00' = <built-in method isoformat of datetime.datetime object at 0x102382370>()\nE        +      where <built-in method isoformat of datetime.datetime object at 0x102382370> = datetime.datetime(2026, 7, 30, 11, 49, 54, 257706, tzinfo=datetime.timezone.utc).isoformat\n\ntests/functional_hidden/test_hive_timestamp_case.py:28: AssertionError\n__________ test_timezone_aware_peer_timestamp_preserves_elapsed_time ___________\n\n    def test_timezone_aware_peer_timestamp_preserves_elapsed_time() -> None:\n        past = datetime.now(timezone.utc) - timedelta(seconds=30)\n        offset = past.astimezone(timezone(timedelta(hours=2)))\n        age = registry.timestamp_age_seconds(offset.isoformat())\n>       assert isinstance(age, float) and 25.0 <= age <= 40.0\nE       assert (False)\nE        +  where False = isinstance(None, float)\n\ntests/functional_hidden/test_hive_timestamp_case.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_materially_future_peer_timestamp_is_rejected\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_timezone_aware_peer_timestamp_preserves_elapsed_time\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 465.752
+          }
+        ],
+        "wall_ms": 465.766
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 42010,
+            "mode": 420,
+            "sha256": "1850bc7b487532ca842798e24b1d195411c256bdf45cf93448c88c836280745d",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 41550,
+            "mode": 420,
+            "sha256": "773c88a40d1cde7ffeee6d5aa51459afe6df6242c412e9b39a30cdb60a4e5eee",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/hive_node_registry.py"
+        },
+        {
+          "after": {
+            "bytes": 1642,
+            "mode": 420,
+            "sha256": "cce6a2b53ddda449c50f6c346b369ddbac37bdb225e54674980b1883e718c624",
+            "type": "file"
+          },
+          "before": null,
+          "effect": "create",
+          "path": "tests/test_hive_node_registry.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    }
+  ],
+  "trigger_state": "GREEN"
+}

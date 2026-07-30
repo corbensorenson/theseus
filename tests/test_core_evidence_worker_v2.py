@@ -720,3 +720,503 @@ def test_navigation_ceiling_counts_failed_reads_and_preserves_edit_budget(
         match="pre_mutation_navigation_ceiling",
     ):
         state.execute({"action": "search", "query": "x"})
+
+
+def test_final_pre_mutation_read_slot_is_reserved_for_test_context(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "large.py").write_text(
+        "\n".join(f"value_{index} = {index}" for index in range(400)) + "\n"
+    )
+    (tmp_path / "tests" / "test_large.py").write_text(
+        "def test_large():\n    assert True\n"
+    )
+    local = config()
+    local["budgets"]["maximum_pre_mutation_read_actions"] = 3
+    local["budgets"]["require_test_read_before_mutation"] = True
+    state = worker.RepositoryState(tmp_path, local)
+    state.execute({
+        "action": "read",
+        "path": "scripts/large.py",
+        "start_line": 1,
+        "end_line": 80,
+    })
+    state.execute({
+        "action": "read",
+        "path": "scripts/large.py",
+        "start_line": 81,
+        "end_line": 160,
+    })
+
+    with pytest.raises(
+        worker.WorkerFault,
+        match="last_inspection_slot_reserved_for_test",
+    ):
+        state.execute({
+            "action": "read",
+            "path": "scripts/large.py",
+            "start_line": 161,
+            "end_line": 240,
+        })
+    guidance = state.recovery_instruction(
+        "last_inspection_slot_reserved_for_test"
+    )
+    assert "tests/test_large.py" in guidance
+    assert state.execute({
+        "action": "read",
+        "path": "tests/test_large.py",
+        "start_line": 1,
+        "end_line": 80,
+    })["ok"] is True
+
+
+def test_missing_scoped_creation_path_redirects_to_existing_test(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return -1\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = config()
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="Fix scripts/peer_clock.py and add focused tests.",
+    )
+    state.read("scripts/peer_clock.py", 1, 80)
+
+    guidance = state.recovery_instruction(
+        "file_missing_or_not_regular"
+    )
+
+    assert "tests/test_clock_behavior.py" in guidance
+    assert "exists=false" in guidance
+
+
+def test_navigation_is_denied_once_required_inspection_is_complete(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "def test_x():\n    assert True\n"
+    )
+    local = config()
+    local["budgets"]["minimum_pre_mutation_read_actions"] = 2
+    local["budgets"]["minimum_pre_mutation_distinct_paths"] = 2
+    local["budgets"]["forbid_navigation_after_inspection_complete"] = True
+    state = worker.RepositoryState(tmp_path, local)
+    state.read("scripts/x.py", 1, 80)
+    state.read("tests/test_x.py", 1, 80)
+
+    with pytest.raises(
+        worker.WorkerFault,
+        match="navigation_forbidden_after_inspection_complete",
+    ):
+        state.execute({"action": "search", "query": "x"})
+    assert "NEXT ACTION MUST BE" in state.recovery_instruction(
+        "navigation_forbidden_after_inspection_complete"
+    )
+
+
+def test_plan_accepts_authorized_request_scoped_creation_path(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return -1\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = config()
+    local["budgets"]["minimum_pre_mutation_read_actions"] = 2
+    local["budgets"]["minimum_pre_mutation_distinct_paths"] = 2
+    local["budgets"]["require_plan_before_mutation"] = True
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="Fix scripts/peer_clock.py and add focused tests.",
+    )
+    state.read("scripts/peer_clock.py", 1, 80)
+    state.read("tests/test_clock_behavior.py", 1, 80)
+
+    result = state.record_plan({
+        "criteria": ["Return a bounded age."],
+        "target_paths": [
+            "scripts/peer_clock.py",
+            "tests/test_peer_clock.py",
+        ],
+        "implementation": "Bound the computed age and add focused tests.",
+        "verification": "Run the new focused test.",
+    })
+
+    assert result["ok"] is True
+    assert result["plan"]["target_paths"] == [
+        "scripts/peer_clock.py",
+        "tests/test_peer_clock.py",
+    ]
+
+
+def test_phase_contract_requires_all_planned_paths_then_verify_then_finish(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return -1\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = config()
+    local["budgets"]["minimum_pre_mutation_read_actions"] = 2
+    local["budgets"]["minimum_pre_mutation_distinct_paths"] = 2
+    local["budgets"]["require_plan_before_mutation"] = True
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    local["budgets"]["enforce_phase_action_contract"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="Fix scripts/peer_clock.py and add focused tests.",
+    )
+    state.execute({
+        "action": "read",
+        "path": "scripts/peer_clock.py",
+        "start_line": 1,
+        "end_line": 80,
+    })
+    state.execute({
+        "action": "read",
+        "path": "tests/test_clock_behavior.py",
+        "start_line": 1,
+        "end_line": 80,
+    })
+    assert state.allowed_phase_actions() == {"plan", "abstain"}
+    state.execute({
+        "action": "plan",
+        "criteria": ["Return a bounded age."],
+        "target_paths": [
+            "scripts/peer_clock.py",
+            "tests/test_peer_clock.py",
+        ],
+        "implementation": "Bound the age and add tests.",
+        "verification": "Run the focused tests.",
+    })
+    state.execute({
+        "action": "replace",
+        "path": "scripts/peer_clock.py",
+        "old": "return -1",
+        "new": "return 0",
+    })
+    assert state.required_next_phase() == (
+        "complete_planned_effect_paths:tests/test_peer_clock.py"
+    )
+    with pytest.raises(
+        worker.WorkerFault,
+        match="action_not_allowed_in_current_phase",
+    ):
+        state.execute({
+            "action": "verify",
+            "pytest": [],
+            "py_compile": [],
+            "json": [],
+        })
+    state.execute({
+        "action": "create",
+        "path": "tests/test_peer_clock.py",
+        "content": (
+            "from scripts.peer_clock import age\n\n"
+            "def test_age():\n    assert age() == 0\n"
+        ),
+    })
+    assert state.allowed_phase_actions() == {"verify", "abstain"}
+    state.execute({
+        "action": "verify",
+        "pytest": [],
+        "py_compile": [],
+        "json": [],
+    })
+    assert state.allowed_phase_actions() == {"finish", "abstain"}
+    assert state.execute({"action": "finish"})["terminal"] is True
+
+
+def test_failed_verification_requires_one_bounded_repair_then_reverify(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "from scripts.x import x\n\ndef test_x():\n    assert x == 2\n"
+    )
+    local = permissive_config()
+    local["budgets"]["enforce_phase_action_contract"] = True
+    state = worker.RepositoryState(tmp_path, local)
+    state.execute({
+        "action": "replace",
+        "path": "scripts/x.py",
+        "old": "x = 1",
+        "new": "x = 3",
+    })
+    result = state.execute({
+        "action": "verify",
+        "pytest": [],
+        "py_compile": [],
+        "json": [],
+    })
+    assert result["passed"] is False
+    assert state.allowed_phase_actions() == {
+        "replace", "create", "create_test", "delete", "read", "abstain"
+    }
+    reread = state.execute({
+        "action": "read",
+        "path": "scripts/x.py",
+        "start_line": 1,
+        "end_line": 80,
+    })
+    assert "x = 3" in reread["content"]
+    with pytest.raises(
+        worker.WorkerFault,
+        match="duplicate_read_span_no_new_information",
+    ):
+        state.execute({
+            "action": "read",
+            "path": "scripts/x.py",
+            "start_line": 1,
+            "end_line": 80,
+        })
+    state.execute({
+        "action": "replace",
+        "path": "scripts/x.py",
+        "old": "x = 3",
+        "new": "x = 2",
+    })
+    assert state.allowed_phase_actions() == {"verify", "abstain"}
+
+
+def test_created_file_character_ceiling_is_enforced(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "x.py").write_text("x = 1\n")
+    local = permissive_config()
+    local["budgets"]["maximum_created_file_characters"] = 10
+    state = worker.RepositoryState(tmp_path, local)
+
+    with pytest.raises(
+        worker.WorkerFault,
+        match="created_file_character_ceiling_exceeded",
+    ):
+        state.create("tests/test_x.py", "x" * 11)
+
+
+def test_structured_test_action_renders_bounded_model_authored_tests(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return 0\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = config()
+    local["budgets"]["minimum_pre_mutation_read_actions"] = 2
+    local["budgets"]["minimum_pre_mutation_distinct_paths"] = 2
+    local["budgets"]["require_plan_before_mutation"] = True
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    local["budgets"]["structured_test_creation_required"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="Fix scripts/peer_clock.py and add focused tests.",
+    )
+    state.read("scripts/peer_clock.py", 1, 80)
+    state.read("tests/test_clock_behavior.py", 1, 80)
+    state.record_plan({
+        "criteria": ["Return a nonnegative age."],
+        "target_paths": [
+            "scripts/peer_clock.py",
+            "tests/test_peer_clock.py",
+        ],
+        "implementation": "Bound the age and add a focused test.",
+        "verification": "Run the focused test.",
+    })
+    state.replace(
+        "scripts/peer_clock.py",
+        "return 0",
+        "return max(0, 0)",
+    )
+
+    result = state.execute({
+        "action": "create_test",
+        "path": "tests/test_peer_clock.py",
+        "preamble": "",
+        "tests": [{
+            "name": "test_age_is_nonnegative",
+            "parameters": "",
+            "body": "assert target.age() >= 0",
+        }],
+    })
+
+    rendered = (tmp_path / "tests" / "test_peer_clock.py").read_text()
+    assert result["changed"] is True
+    assert "import peer_clock as target" in rendered
+    assert "def test_age_is_nonnegative():" in rendered
+    assert "    assert target.age() >= 0" in rendered
+
+
+def test_structured_test_preamble_keeps_only_imports_and_drops_future(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return 0\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = permissive_config()
+    state = worker.RepositoryState(tmp_path, local)
+    state.advisory_plan = {
+        "criteria": ["age"],
+        "target_paths": [
+            "scripts/peer_clock.py",
+            "tests/test_peer_clock.py",
+        ],
+        "implementation": "test",
+        "verification": "test",
+    }
+
+    result = state.create_structured_test({
+        "path": "tests/test_peer_clock.py",
+        "preamble": (
+            "from __future__ import annotations\n"
+            "import os\n"
+            "HELPER = 3\n"
+            "def hidden_helper():\n    return 3\n"
+        ),
+        "tests": [{
+            "name": "test_age",
+            "parameters": "",
+            "body": "assert target.age() == 0",
+        }],
+    })
+
+    rendered = (tmp_path / "tests" / "test_peer_clock.py").read_text()
+    assert result["accepted_import_lines"] == 1
+    assert rendered.count("from __future__ import annotations") == 1
+    assert "import os" in rendered
+    assert "HELPER" not in rendered
+    assert "hidden_helper" not in rendered
+
+
+def test_plan_targets_can_be_bound_to_request_scoped_authority(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return 0\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = config()
+    local["budgets"]["minimum_pre_mutation_read_actions"] = 2
+    local["budgets"]["minimum_pre_mutation_distinct_paths"] = 2
+    local["budgets"]["bind_plan_target_paths_to_request_scope"] = True
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request="Fix scripts/peer_clock.py and add focused tests.",
+    )
+    state.read("scripts/peer_clock.py", 1, 80)
+    state.read("tests/test_clock_behavior.py", 1, 80)
+
+    result = state.record_plan({
+        "criteria": ["Return a nonnegative age."],
+        "target_paths": ["scripts/peer_clock.py"],
+        "implementation": "Bound the age and add a focused test.",
+        "verification": "Run the focused test.",
+    })
+
+    assert result["candidate_target_paths_ignored"] is True
+    assert result["plan"]["target_paths"] == [
+        "scripts/peer_clock.py",
+        "tests/test_peer_clock.py",
+    ]
+
+
+def test_plan_verification_can_default_to_controller_policy(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "peer_clock.py").write_text(
+        "def age():\n    return 0\n"
+    )
+    (tmp_path / "tests" / "test_clock_behavior.py").write_text(
+        "from scripts.peer_clock import age\n"
+    )
+    local = config()
+    local["budgets"]["minimum_pre_mutation_read_actions"] = 2
+    local["budgets"]["minimum_pre_mutation_distinct_paths"] = 2
+    local["budgets"]["default_plan_verification_strategy"] = True
+    state = worker.RepositoryState(tmp_path, local)
+    state.read("scripts/peer_clock.py", 1, 80)
+    state.read("tests/test_clock_behavior.py", 1, 80)
+
+    result = state.record_plan({
+        "criteria": ["Return a nonnegative age."],
+        "target_paths": ["scripts/peer_clock.py"],
+        "implementation": "Bound the age.",
+        "verification": "",
+    })
+
+    assert result["candidate_verification_defaulted"] is True
+    assert result["plan"]["verification"] == (
+        "controller_selects_checks_from_changed_paths_and_request"
+    )
+
+
+def test_automatic_verification_uses_direct_tests_not_broad_references(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "admission.py").write_text(
+        "def allowed():\n    return False\n"
+    )
+    (tmp_path / "tests" / "test_admission.py").write_text(
+        "import admission\n\ndef test_allowed():\n    assert admission.allowed()\n"
+    )
+    (tmp_path / "tests" / "test_unrelated_campaign.py").write_text(
+        "import admission\n\ndef test_runtime_asset():\n    assert False\n"
+    )
+    local = permissive_config()
+    state = worker.RepositoryState(tmp_path, local)
+    state.replace(
+        "scripts/admission.py",
+        "return False",
+        "return True",
+    )
+
+    selected = state.automatic_verification_targets()
+
+    assert selected["pytest"] == ["tests/test_admission.py"]

@@ -1,0 +1,555 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "learned_generation_credit": 1,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:26:02.361105Z",
+  "faults": [],
+  "maximum_inference": "This report can diagnose Worker v2 mechanics on consumed development tasks. It cannot support capability, generalization, or E2 claims.",
+  "policy": "project_theseus_worker_v2_consumed_development_diagnostic_v1",
+  "report_payload_sha256": "9643002aa2e6d0eb57d89be6837a519e719492ad822dac5c1d79b1efc7c335ca",
+  "runtime": {
+    "wall_ms": 743178.951
+  },
+  "scope": "consumed_development_only_not_blind_evidence",
+  "source": {
+    "E0_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+    "commit": "200ed3bc5b81fa8f3d43a3efaf97c42946551124",
+    "config_sha256": "16d61a6865a265cf689ebe979cc315bd269aa2a03c4e35af4d77dd936f941795",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "task_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+    "worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "create_test": 1,
+          "plan": 1,
+          "read": 8,
+          "replace": 5,
+          "verify": 3
+        },
+        "distinct_read_paths": [
+          "scripts/code_lm_run_lock.py",
+          "tests/test_code_lm_run_lock.py",
+          "tests/test_exact_decoder_block_join_qualification.py"
+        ],
+        "failed_actions": 5,
+        "file_mutations": 4,
+        "pre_mutation_navigation_actions": 7,
+        "pre_mutation_read_actions": 5
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "create_test": 1,
+            "plan": 1,
+            "read": 8,
+            "replace": 5,
+            "verify": 3
+          },
+          "distinct_read_paths": [
+            "scripts/code_lm_run_lock.py",
+            "tests/test_code_lm_run_lock.py",
+            "tests/test_exact_decoder_block_join_qualification.py"
+          ],
+          "failed_actions": 5,
+          "file_mutations": 4,
+          "pre_mutation_navigation_actions": 7,
+          "pre_mutation_read_actions": 5
+        },
+        "advisory_plan": {
+          "criteria": [
+            "release_run_lock must verify path identity via os.stat() inode/device/inode tuple before unlinking, always close fd, preserve any replacement lock created after acquisition, never unlink a different supplied lock path, and preserve normal acquire-and-release behavior"
+          ],
+          "implementation": "Add a stat-based identity check comparing (st_dev, st_ino) of the supplied path with the file descriptor's underlying file before attempting to unlink. Wrap the unlink in a try/except that catches FileNotFoundError and other OSErrors. Ensure os.close(fd) is called unconditionally at the start of release_run_lock. Add tests covering: same-path release, different-path release (should not unlink), fd already closed, stale lock detection, and replacement lock preservation.",
+          "target_paths": [
+            "scripts/code_lm_run_lock.py",
+            "tests/test_code_lm_run_lock.py"
+          ],
+          "verification": "controller_selects_checks_from_changed_paths_and_request"
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "7f4b54181fe1b2335edb06513bac0298cda5a30f63c4a6e763f79dd1d2884f8a",
+            "before_sha256": "a311c750b761e2096e6f3a1a6361e7263faad860be1299568f9a48f61deb2b6d",
+            "effect": "modify",
+            "path": "scripts/code_lm_run_lock.py"
+          },
+          {
+            "after_sha256": "de4786a4c496cf31447c10e4d3f5fd61b7c48b2822aff1cf641611a0b2960c98",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_code_lm_run_lock.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_faults": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "1c69b69338baa65c40c6bd51a9f3e89660e12d8772a91ccadb61a5dafc0e32eb",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+        "patch_unified_diff": "--- a/scripts/code_lm_run_lock.py\n+++ b/scripts/code_lm_run_lock.py\n@@ -41,13 +41,31 @@\n \n \n def release_run_lock(fd: int, path: Path) -> None:\n+    # Always close the descriptor first\n     try:\n         os.close(fd)\n     except OSError:\n         pass\n+    \n+    # Verify that the supplied path still names the same filesystem object\n+    # as the acquired file descriptor before attempting to unlink.\n+    try:\n+        fd_stat = os.fstat(fd)\n+        path_stat = path.stat()\n+        if (fd_stat.st_dev, fd_stat.st_ino) != (path_stat.st_dev, path_stat.st_ino):\n+            # Path has been replaced; do not unlink it.\n+            return\n+    except OSError:\n+        # Cannot stat either the fd or the path; skip unlink.\n+        return\n+    \n     try:\n         path.unlink()\n+    except FileNotFoundError:\n+        # Path was already removed by another process.\n+        pass\n     except OSError:\n+        # Any other OS error; skip unlink.\n         pass\n \n \n--- /dev/null\n+++ b/tests/test_code_lm_run_lock.py\n@@ -0,0 +1,111 @@\n+from __future__ import annotations\n+\n+import os\n+import stat\n+import sys\n+import tempfile\n+from pathlib import Path\n+\n+import pytest\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+from code_lm_run_lock import release_run_lock, acquire_run_lock, lock_stale_after_seconds\n+\n+\n+def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n+    \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n+    # Ensure the directory exists\n+    tmp_path.mkdir(parents=True, exist_ok=True)\n+    \n+    # If there's already a lock file, remove it first so O_EXCL succeeds\n+    lock_file = tmp_path / \"run.lock\"\n+    if lock_file.exists():\n+        lock_file.unlink()\n+    \n+    args = type(\"Args\", (), {\n+        \"lock_path\": \"\",\n+        \"rust_timeout_seconds\": 0,\n+        \"public_timeout_seconds\": 0,\n+        \"sts_timeout_seconds\": 0,\n+    })()\n+    fd = acquire_run_lock(args, tmp_path)\n+    if fd is None:\n+        raise RuntimeError(\"Failed to acquire lock\")\n+    return fd, lock_file\n+\n+\n+def test_release_closes_fd_and_unlinks_same_path() -> None:\n+    \"\"\"Normal case: release closes fd and unlinks the same path.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_path = Path(td)\n+        fd, lock_path = _make_temp_lock(tmp_path)\n+        try:\n+            release_run_lock(fd, lock_path)\n+        finally:\n+            os.close(fd)\n+        assert not lock_path.exists()\n+\n+\n+def test_release_does_not_unlink_different_path() -> None:\n+    \"\"\"Release should never unlink a different supplied lock path.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_base = Path(td)\n+        # Create two distinct lock files\n+        fd1, lock1 = _make_temp_lock(tmp_base)\n+        fd2, lock2 = _make_temp_lock(tmp_base)\n+        try:\n+            release_run_lock(fd1, lock2)  # Wrong path\n+            # lock2 should still exist; lock1 is closed but may or may not be unlinked\n+            assert lock2.exists()\n+        finally:\n+            os.close(fd1)\n+            os.close(fd2)\n+\n+\n+def test_release_handles_already_closed_fd() -> None:\n+    \"\"\"Release should handle an already-closed fd gracefully.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_path = Path(td)\n+        fd, lock_path = _make_temp_lock(tmp_path)\n+        os.close(fd)  # Close before calling release\n+        try:\n+            release_run_lock(fd, lock_path)\n+        except OSError:\n+            pytest.fail(\"release_run_lock raised OSError on already-closed fd\")\n+        # lock_path may or may not exist depending on whether it was unlinked\n+\n+\n+def test_release_handles_stale_lock() -> None:\n+    \"\"\"Release should handle a stale lock (old mtime).\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_path = Path(td)\n+        fd, lock_path = _make_temp_lock(tmp_path)\n+        # Touch the lock to make it appear fresh\n+        lock_path.touch()\n+        try:\n+            release_run_lock(fd, lock_path)\n+        finally:\n+            os.close(fd)\n+        # Lock should be unlinked if stale_after is exceeded\n+        assert not lock_path.exists()\n+\n+\n+def test_release_preserves_replacement_lock() -> None:\n+    \"\"\"If path has been replaced, release should not unlink the new path.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_base = Path(td)\n+        fd1, lock1 = _make_temp_lock(tmp_base)\n+        # Replace lock1 with a new file\n+        lock2 = tmp_base / \"run.lock.new\"\n+        lock2.write_text(\"replaced\\n\")\n+        try:\n+            release_run_lock(fd1, lock2)  # Different inode than fd1\n+            # lock2 should still exist\n+            assert lock2.exists()\n+        finally:\n+            os.close(fd1)\n+\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/code_lm_run_lock.py",
+          "tests/test_code_lm_run_lock.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 2,
+        "residuals": [
+          "final_candidate_verification_not_green",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 741737.574
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "4208007dff0f8163aeedafd560f207d5b3511fcd8a2097702d0bfa2fa89be648",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+                "returncode": 2,
+                "stderr_tail": "",
+                "stdout_tail": "ertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-vv0mir4t/snapshot/tests/test_code_lm_run_lock.py\", line 21\nE       with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\nE                                                 ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_code_lm_run_lock.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.40s\n"
+              },
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py",
+                "returncode": 1,
+                "stderr_tail": "  File \"tests/test_code_lm_run_lock.py\", line 21\n    with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\n                                              ^\nSyntaxError: unexpected character after line continuation character\n",
+                "stdout_tail": ""
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_code_lm_run_lock.py"
+                ],
+                "returncode": 2,
+                "stderr_tail": "",
+                "stdout_tail": "\n==================================== ERRORS ====================================\n_______________ ERROR collecting tests/test_code_lm_run_lock.py ________________\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-vv0mir4t/snapshot/tests/test_code_lm_run_lock.py\", line 21\nE       with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\nE                                                 ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_code_lm_run_lock.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.40s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/code_lm_run_lock.py",
+                  "tests/test_code_lm_run_lock.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "  File \"tests/test_code_lm_run_lock.py\", line 21\n    with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\n                                              ^\nSyntaxError: unexpected character after line continuation character\n",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/code_lm_run_lock.py",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "pytest": [
+                "tests/test_code_lm_run_lock.py"
+              ]
+            },
+            "wall_ms": 1022.803
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "5f5aa11cd61caafe524580fcdd30275dc9652fd7658f8f92ab843883deb1a71e",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpp5u2hy3m')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_code_lm_run_lock.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "yw0000gn/T/tmpr6gzipql')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n_______________________ test_release_handles_stale_lock ________________________\n\n    def test_release_handles_stale_lock() -> None:\n        \"\"\"Release should handle a stale lock (old mtime).\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_path = Path(td)\n>           fd, lock_path = _make_temp_lock(tmp_path)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:78: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmp3nic7yi4')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n___________________ test_release_preserves_replacement_lock ____________________\n\n    def test_release_preserves_replacement_lock() -> None:\n        \"\"\"If path has been replaced, release should not unlink the new path.\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_base = Path(td)\n>           fd1, lock1 = _make_temp_lock(tmp_base)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:93: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpp5u2hy3m')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/code_lm_run_lock.py",
+                  "tests/test_code_lm_run_lock.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/code_lm_run_lock.py",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "pytest": [
+                "tests/test_code_lm_run_lock.py"
+              ]
+            },
+            "wall_ms": 833.528
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "28d8d28032f215b607faec6ab53c176000f15ccdc686a919bff4db5d9cbd6939",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": " lock and return (fd, path).\"\"\"\n        # Ensure the directory exists\n        tmp_path.mkdir(parents=True, exist_ok=True)\n    \n        # If there's already a lock file, remove it first so O_EXCL succeeds\n        lock_file = tmp_path / \"run.lock\"\n        if lock_file.exists():\n            lock_file.unlink()\n    \n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:37: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_code_lm_run_lock.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "m_run_lock.py:37: RuntimeError\n_______________________ test_release_handles_stale_lock ________________________\n\n    def test_release_handles_stale_lock() -> None:\n        \"\"\"Release should handle a stale lock (old mtime).\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_path = Path(td)\n>           fd, lock_path = _make_temp_lock(tmp_path)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:86: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpytjvcqph')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        # Ensure the directory exists\n        tmp_path.mkdir(parents=True, exist_ok=True)\n    \n        # If there's already a lock file, remove it first so O_EXCL succeeds\n        lock_file = tmp_path / \"run.lock\"\n        if lock_file.exists():\n            lock_file.unlink()\n    \n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:37: RuntimeError\n___________________ test_release_preserves_replacement_lock ____________________\n\n    def test_release_preserves_replacement_lock() -> None:\n        \"\"\"If path has been replaced, release should not unlink the new path.\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_base = Path(td)\n>           fd1, lock1 = _make_temp_lock(tmp_base)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:101: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpu63onuil')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        # Ensure the directory exists\n        tmp_path.mkdir(parents=True, exist_ok=True)\n    \n        # If there's already a lock file, remove it first so O_EXCL succeeds\n        lock_file = tmp_path / \"run.lock\"\n        if lock_file.exists():\n            lock_file.unlink()\n    \n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:37: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/code_lm_run_lock.py",
+                  "tests/test_code_lm_run_lock.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/code_lm_run_lock.py",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "pytest": [
+                "tests/test_code_lm_run_lock.py"
+              ]
+            },
+            "wall_ms": 840.993
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "8b5a38de06334f993589f1778db748a4f492ec42e2fdca80d25ddb548024aa94",
+      "candidate_seal": {
+        "candidate_output_sha256": "8b5a38de06334f993589f1778db748a4f492ec42e2fdca80d25ddb548024aa94",
+        "config_sha256": "16d61a6865a265cf689ebe979cc315bd269aa2a03c4e35af4d77dd936f941795",
+        "finished_utc": "2026-07-30T12:26:01.965344Z",
+        "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+        "started_utc": "2026-07-30T12:13:40.024303Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "8801882f542e3e502392b8de70a130256c8afafbbf0186bcdc9f37c4700f00c0",
+        "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+        "worker_wall_ms": 741945.307
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [
+        {
+          "after_sha256": "7f4b54181fe1b2335edb06513bac0298cda5a30f63c4a6e763f79dd1d2884f8a",
+          "before_sha256": "a311c750b761e2096e6f3a1a6361e7263faad860be1299568f9a48f61deb2b6d",
+          "effect": "modify",
+          "path": "scripts/code_lm_run_lock.py"
+        },
+        {
+          "after_sha256": "de4786a4c496cf31447c10e4d3f5fd61b7c48b2822aff1cf641611a0b2960c98",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_code_lm_run_lock.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+      "patch_unified_diff": "--- a/scripts/code_lm_run_lock.py\n+++ b/scripts/code_lm_run_lock.py\n@@ -41,13 +41,31 @@\n \n \n def release_run_lock(fd: int, path: Path) -> None:\n+    # Always close the descriptor first\n     try:\n         os.close(fd)\n     except OSError:\n         pass\n+    \n+    # Verify that the supplied path still names the same filesystem object\n+    # as the acquired file descriptor before attempting to unlink.\n+    try:\n+        fd_stat = os.fstat(fd)\n+        path_stat = path.stat()\n+        if (fd_stat.st_dev, fd_stat.st_ino) != (path_stat.st_dev, path_stat.st_ino):\n+            # Path has been replaced; do not unlink it.\n+            return\n+    except OSError:\n+        # Cannot stat either the fd or the path; skip unlink.\n+        return\n+    \n     try:\n         path.unlink()\n+    except FileNotFoundError:\n+        # Path was already removed by another process.\n+        pass\n     except OSError:\n+        # Any other OS error; skip unlink.\n         pass\n \n \n--- /dev/null\n+++ b/tests/test_code_lm_run_lock.py\n@@ -0,0 +1,111 @@\n+from __future__ import annotations\n+\n+import os\n+import stat\n+import sys\n+import tempfile\n+from pathlib import Path\n+\n+import pytest\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+from code_lm_run_lock import release_run_lock, acquire_run_lock, lock_stale_after_seconds\n+\n+\n+def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n+    \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n+    # Ensure the directory exists\n+    tmp_path.mkdir(parents=True, exist_ok=True)\n+    \n+    # If there's already a lock file, remove it first so O_EXCL succeeds\n+    lock_file = tmp_path / \"run.lock\"\n+    if lock_file.exists():\n+        lock_file.unlink()\n+    \n+    args = type(\"Args\", (), {\n+        \"lock_path\": \"\",\n+        \"rust_timeout_seconds\": 0,\n+        \"public_timeout_seconds\": 0,\n+        \"sts_timeout_seconds\": 0,\n+    })()\n+    fd = acquire_run_lock(args, tmp_path)\n+    if fd is None:\n+        raise RuntimeError(\"Failed to acquire lock\")\n+    return fd, lock_file\n+\n+\n+def test_release_closes_fd_and_unlinks_same_path() -> None:\n+    \"\"\"Normal case: release closes fd and unlinks the same path.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_path = Path(td)\n+        fd, lock_path = _make_temp_lock(tmp_path)\n+        try:\n+            release_run_lock(fd, lock_path)\n+        finally:\n+            os.close(fd)\n+        assert not lock_path.exists()\n+\n+\n+def test_release_does_not_unlink_different_path() -> None:\n+    \"\"\"Release should never unlink a different supplied lock path.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_base = Path(td)\n+        # Create two distinct lock files\n+        fd1, lock1 = _make_temp_lock(tmp_base)\n+        fd2, lock2 = _make_temp_lock(tmp_base)\n+        try:\n+            release_run_lock(fd1, lock2)  # Wrong path\n+            # lock2 should still exist; lock1 is closed but may or may not be unlinked\n+            assert lock2.exists()\n+        finally:\n+            os.close(fd1)\n+            os.close(fd2)\n+\n+\n+def test_release_handles_already_closed_fd() -> None:\n+    \"\"\"Release should handle an already-closed fd gracefully.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_path = Path(td)\n+        fd, lock_path = _make_temp_lock(tmp_path)\n+        os.close(fd)  # Close before calling release\n+        try:\n+            release_run_lock(fd, lock_path)\n+        except OSError:\n+            pytest.fail(\"release_run_lock raised OSError on already-closed fd\")\n+        # lock_path may or may not exist depending on whether it was unlinked\n+\n+\n+def test_release_handles_stale_lock() -> None:\n+    \"\"\"Release should handle a stale lock (old mtime).\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_path = Path(td)\n+        fd, lock_path = _make_temp_lock(tmp_path)\n+        # Touch the lock to make it appear fresh\n+        lock_path.touch()\n+        try:\n+            release_run_lock(fd, lock_path)\n+        finally:\n+            os.close(fd)\n+        # Lock should be unlinked if stale_after is exceeded\n+        assert not lock_path.exists()\n+\n+\n+def test_release_preserves_replacement_lock() -> None:\n+    \"\"\"If path has been replaced, release should not unlink the new path.\"\"\"\n+    with tempfile.TemporaryDirectory() as td:\n+        tmp_base = Path(td)\n+        fd1, lock1 = _make_temp_lock(tmp_base)\n+        # Replace lock1 with a new file\n+        lock2 = tmp_base / \"run.lock.new\"\n+        lock2.write_text(\"replaced\\n\")\n+        try:\n+            release_run_lock(fd1, lock2)  # Different inode than fd1\n+            # lock2 should still exist\n+            assert lock2.exists()\n+        finally:\n+            os.close(fd1)\n+\n",
+      "proposed_paths": [
+        "scripts/code_lm_run_lock.py",
+        "tests/test_code_lm_run_lock.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 2,
+      "residuals": [
+        "final_candidate_verification_not_green",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "4208007dff0f8163aeedafd560f207d5b3511fcd8a2097702d0bfa2fa89be648",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+              "returncode": 2,
+              "stderr_tail": "",
+              "stdout_tail": "ertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-vv0mir4t/snapshot/tests/test_code_lm_run_lock.py\", line 21\nE       with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\nE                                                 ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_code_lm_run_lock.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.40s\n"
+            },
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py",
+              "returncode": 1,
+              "stderr_tail": "  File \"tests/test_code_lm_run_lock.py\", line 21\n    with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\n                                              ^\nSyntaxError: unexpected character after line continuation character\n",
+              "stdout_tail": ""
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "returncode": 2,
+              "stderr_tail": "",
+              "stdout_tail": "\n==================================== ERRORS ====================================\n_______________ ERROR collecting tests/test_code_lm_run_lock.py ________________\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-vv0mir4t/snapshot/tests/test_code_lm_run_lock.py\", line 21\nE       with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\nE                                                 ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_code_lm_run_lock.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.40s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/code_lm_run_lock.py",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "  File \"tests/test_code_lm_run_lock.py\", line 21\n    with tempfile.TemporaryDirectory() as td:\\n    tmp_path = Path(td)\\n    fd, lock_path = _make_temp_lock(tmp_path)\\n    try:\\n        release_run_lock(fd, lock_path)\\n    finally:\\n        os.close(fd)\\n    assert not lock_path.exists()\n                                              ^\nSyntaxError: unexpected character after line continuation character\n",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/code_lm_run_lock.py",
+              "tests/test_code_lm_run_lock.py"
+            ],
+            "pytest": [
+              "tests/test_code_lm_run_lock.py"
+            ]
+          },
+          "wall_ms": 1022.803
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "5f5aa11cd61caafe524580fcdd30275dc9652fd7658f8f92ab843883deb1a71e",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpp5u2hy3m')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "yw0000gn/T/tmpr6gzipql')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n_______________________ test_release_handles_stale_lock ________________________\n\n    def test_release_handles_stale_lock() -> None:\n        \"\"\"Release should handle a stale lock (old mtime).\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_path = Path(td)\n>           fd, lock_path = _make_temp_lock(tmp_path)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:78: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmp3nic7yi4')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n___________________ test_release_preserves_replacement_lock ____________________\n\n    def test_release_preserves_replacement_lock() -> None:\n        \"\"\"If path has been replaced, release should not unlink the new path.\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_base = Path(td)\n>           fd1, lock1 = _make_temp_lock(tmp_base)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:93: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpp5u2hy3m')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:29: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/code_lm_run_lock.py",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/code_lm_run_lock.py",
+              "tests/test_code_lm_run_lock.py"
+            ],
+            "pytest": [
+              "tests/test_code_lm_run_lock.py"
+            ]
+          },
+          "wall_ms": 833.528
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/code_lm_run_lock.py tests/test_code_lm_run_lock.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "28d8d28032f215b607faec6ab53c176000f15ccdc686a919bff4db5d9cbd6939",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_code_lm_run_lock.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": " lock and return (fd, path).\"\"\"\n        # Ensure the directory exists\n        tmp_path.mkdir(parents=True, exist_ok=True)\n    \n        # If there's already a lock file, remove it first so O_EXCL succeeds\n        lock_file = tmp_path / \"run.lock\"\n        if lock_file.exists():\n            lock_file.unlink()\n    \n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:37: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "m_run_lock.py:37: RuntimeError\n_______________________ test_release_handles_stale_lock ________________________\n\n    def test_release_handles_stale_lock() -> None:\n        \"\"\"Release should handle a stale lock (old mtime).\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_path = Path(td)\n>           fd, lock_path = _make_temp_lock(tmp_path)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:86: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpytjvcqph')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        # Ensure the directory exists\n        tmp_path.mkdir(parents=True, exist_ok=True)\n    \n        # If there's already a lock file, remove it first so O_EXCL succeeds\n        lock_file = tmp_path / \"run.lock\"\n        if lock_file.exists():\n            lock_file.unlink()\n    \n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:37: RuntimeError\n___________________ test_release_preserves_replacement_lock ____________________\n\n    def test_release_preserves_replacement_lock() -> None:\n        \"\"\"If path has been replaced, release should not unlink the new path.\"\"\"\n        with tempfile.TemporaryDirectory() as td:\n            tmp_base = Path(td)\n>           fd1, lock1 = _make_temp_lock(tmp_base)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_code_lm_run_lock.py:101: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ntmp_path = PosixPath('/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/tmpu63onuil')\n\n    def _make_temp_lock(tmp_path: Path, *, stale: bool = False) -> tuple[int, Path]:\n        \"\"\"Create a temporary run lock and return (fd, path).\"\"\"\n        # Ensure the directory exists\n        tmp_path.mkdir(parents=True, exist_ok=True)\n    \n        # If there's already a lock file, remove it first so O_EXCL succeeds\n        lock_file = tmp_path / \"run.lock\"\n        if lock_file.exists():\n            lock_file.unlink()\n    \n        args = type(\"Args\", (), {\n            \"lock_path\": \"\",\n            \"rust_timeout_seconds\": 0,\n            \"public_timeout_seconds\": 0,\n            \"sts_timeout_seconds\": 0,\n        })()\n        fd = acquire_run_lock(args, tmp_path)\n        if fd is None:\n>           raise RuntimeError(\"Failed to acquire lock\")\nE           RuntimeError: Failed to acquire lock\n\ntests/test_code_lm_run_lock.py:37: RuntimeError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_code_lm_run_lock.py::test_release_closes_fd_and_unlinks_same_path\nFAILED tests/test_code_lm_run_lock.py::test_release_does_not_unlink_different_path\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_already_closed_fd\nFAILED tests/test_code_lm_run_lock.py::test_release_handles_stale_lock - Runt...\nFAILED tests/test_code_lm_run_lock.py::test_release_preserves_replacement_lock\n5 failed, 1 warning in 0.28s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/code_lm_run_lock.py",
+                "tests/test_code_lm_run_lock.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/code_lm_run_lock.py",
+              "tests/test_code_lm_run_lock.py"
+            ],
+            "pytest": [
+              "tests/test_code_lm_run_lock.py"
+            ]
+          },
+          "wall_ms": 840.993
+        }
+      ],
+      "worker_input_sha256": "8801882f542e3e502392b8de70a130256c8afafbbf0186bcdc9f37c4700f00c0",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

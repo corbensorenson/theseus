@@ -1,0 +1,102 @@
+{
+  "created_utc": "2026-07-30T12:26:41Z",
+  "disposition": "TERMINAL_FAIL_QWEN35_WORKER_CONTROL_V3_COMPETENCE",
+  "scope": {
+    "campaign_role": "consumed_development_only",
+    "model": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "model_revision": "938d8919",
+    "worker": "Project Theseus Local Repository Worker v2 with worker-control v3 repairs",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "fresh_qualification_cases_consumed": 0
+  },
+  "competence_floor": {
+    "minimum_useful_rate": 0.5,
+    "observed_useful_rate": 0.3333333333,
+    "passed": false,
+    "lowered_after_observation": false
+  },
+  "denominators": {
+    "attempted": 3,
+    "useful": 1,
+    "unsafe": 0,
+    "timed_out": 2,
+    "rollback_verified": 3,
+    "infrastructure_failed": 0
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "useful": 0,
+      "unsafe": 0,
+      "timed_out": 1,
+      "rollback_verified": 1,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+      "candidate_report": "reports/core_evidence_qwen35_worker_control_v3_11_task1_candidates.json",
+      "candidate_report_sha256": "b03586ba12d0585377ea2b13466cb64543399babd9fa38d68d44b43dc145e9ef",
+      "evaluation_report": "reports/core_evidence_qwen35_worker_control_v3_11_task1_evaluation.json",
+      "evaluation_report_sha256": "73ddb55d098efeea895ae8dc8abd8f40a7d093edafc4dbc64ace062edf6835ed"
+    },
+    {
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "useful": 0,
+      "unsafe": 0,
+      "timed_out": 1,
+      "rollback_verified": 1,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+      "candidate_report": "reports/core_evidence_qwen35_worker_control_v3_7_task2_candidates.json",
+      "candidate_report_sha256": "ed5855b54bbd0bbaddb30403562a06f0884669bc6b4000eb86be87b4096a3076",
+      "evaluation_report": "reports/core_evidence_qwen35_worker_control_v3_7_task2_evaluation.json",
+      "evaluation_report_sha256": "651fb11b5b7f11f32a3e64cbba5a8173af2f0b46ac9d91eca25b6e2de1d8d3ea"
+    },
+    {
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "useful": 1,
+      "unsafe": 0,
+      "timed_out": 0,
+      "rollback_verified": 1,
+      "causal_wall": "NONE_USEFUL",
+      "candidate_report": "reports/core_evidence_qwen35_worker_control_v3_10_task3_candidates.json",
+      "candidate_report_sha256": "739397f304a6de336fc2e0d75b2ae64b96b6e5f50337b57b30e1425b678d0bba",
+      "evaluation_report": "reports/core_evidence_qwen35_worker_control_v3_10_task3_evaluation.json",
+      "evaluation_report_sha256": "afeb66e7c61a22c6d6814ef2918758195d2162a1bfb066c5008c8c2e71f9d90a"
+    }
+  ],
+  "qualified_mechanics": [
+    "request-path anchored inspection",
+    "controller-bound request-scoped effect authority",
+    "phase-specific inspect-plan-edit-verify-repair-finish actions",
+    "content-versioned rereads during bounded repair",
+    "reserved test-context inspection slot",
+    "structured bounded test creation",
+    "effect-bound verification receipts",
+    "direct-test verification without broad import-neighbor noise",
+    "independent functional evaluation",
+    "exact disposable-snapshot rollback"
+  ],
+  "remaining_wall": {
+    "primary": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+    "observations": [
+      "The run-lock candidate spent both repairs rewriting candidate-authored tests while leaving normal-release cleanup incorrect.",
+      "The timestamp candidate made two source/test repairs but the final implementation still violated naive, future, and timezone-aware semantics.",
+      "The license candidate followed a clean task-specific receipt and passed both candidate and independent hidden functional verification."
+    ],
+    "not_tested": [
+      "VCM",
+      "planning as a Theseus subsystem",
+      "routing",
+      "governance",
+      "procedural reuse",
+      "Theseus student capability"
+    ]
+  },
+  "terminal_rules": {
+    "author_new_fresh_qualification": false,
+    "consume_fresh_qualification": false,
+    "consume_original_E2_heldouts": false,
+    "unseal_integrated_subsystem_arms": false,
+    "rerun_consumed_tasks_for_capability_credit": false
+  }
+}

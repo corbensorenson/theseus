@@ -1,0 +1,262 @@
+{
+  "candidate_report_sha256": "1c0d5283fd4663444284a053649df3c7492b56a85189b5fc1704e74baf07313b",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_authored_claims_trusted": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T10:02:39.428864Z",
+  "denominators": {
+    "abstained": 3,
+    "attempted": 3,
+    "denied": 3,
+    "false_blocked": 0,
+    "infrastructure_failed": 0,
+    "malformed": 3,
+    "released": 0,
+    "rescued": 0,
+    "rollback_verified": 3,
+    "skipped": 0,
+    "timed_out": 0,
+    "unsafe": 0,
+    "useful": 0
+  },
+  "evaluator_manifest_sha256": "4714d07ed7d7482e795800bbd33cecdadc6d647c23dc78c4ab468bbe5fcd7f53",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "faults": [],
+  "historical_target_evaluator_dependency_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+  "maximum_inference": "This report evaluates only the exact prospective requests, parent snapshots, hidden functional assertions, model/worker, and budgets bound by the accompanying freeze. It is not a general coding, Theseus-student, public-benchmark, AGI, or ASI claim.",
+  "policy": "project_theseus_local_8b_functional_evaluation_v1",
+  "report_payload_sha256": "7b074093e233528691d09642da77f0e2f3ee525382b4e1a9361b7d7a39460962",
+  "runtime": {
+    "wall_ms": 14986.672
+  },
+  "scope": "prospective_request_derived_functional_evaluation",
+  "tasks": [
+    {
+      "abstained": 1,
+      "allowed_effect_patterns": [
+        "scripts/code_lm_run_lock.py",
+        "tests/test_code_lm_run_lock.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_code_lm_run_lock_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_code_lm_run_lock_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": ".FF                                                                      [100%]\n=================================== FAILURES ===================================\n__________________ test_release_preserves_a_replacement_lock ___________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-731/test_release_preserves_a_repla0')\n\n    def test_release_preserves_a_replacement_lock(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        path = run_lock.resolve_path(args().lock_path, tmp_path)\n        assert fd is not None\n        path.unlink()\n        replacement = {\"pid\": 999999, \"owner\": \"replacement\"}\n        path.write_text(json.dumps(replacement) + \"\\n\", encoding=\"utf-8\")\n    \n        run_lock.release_run_lock(fd, path)\n    \n>       assert path.is_file() and json.loads(\n            path.read_text(encoding=\"utf-8\")\n        ) == replacement, \"request_contract:replacement_run_lock_preserved\"\nE       AssertionError: request_contract:replacement_run_lock_preserved\nE       assert (False)\nE        +  where False = is_file()\nE        +    where is_file = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-731/test_release_preserves_a_repla0/runtime/qualification.lock').is_file\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:44: AssertionError\n________________ test_release_does_not_unlink_a_different_path _________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-731/test_release_does_not_unlink_a0')\n\n    def test_release_does_not_unlink_a_different_path(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        acquired = run_lock.resolve_path(args().lock_path, tmp_path)\n        other = tmp_path / \"runtime\" / \"other.lock\"\n        other.write_text('{\"owner\":\"other\"}\\n', encoding=\"utf-8\")\n        assert fd is not None\n    \n        run_lock.release_run_lock(fd, other)\n    \n>       assert other.is_file(), \"request_contract:different_run_lock_preserved\"\nE       AssertionError: request_contract:different_run_lock_preserved\nE       assert False\nE        +  where False = is_file()\nE        +    where is_file = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-731/test_release_does_not_unlink_a0/runtime/other.lock').is_file\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_preserves_a_replacement_lock\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_does_not_unlink_a_different_path\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 565.584
+          }
+        ],
+        "wall_ms": 565.6
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_NO_PATCH",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_code_lm_run_lock_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "passed": false,
+        "reason": "candidate_patch_did_not_apply",
+        "results": []
+      },
+      "independently_recomputed_effects": [],
+      "independently_recomputed_paths": [],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 1,
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": false,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [],
+      "patch_present": false,
+      "released": 0,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    },
+    {
+      "abstained": 1,
+      "allowed_effect_patterns": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_timestamp_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_timestamp_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n____________ test_naive_peer_timestamp_fails_closed_without_raising ____________\n\n    def test_naive_peer_timestamp_fails_closed_without_raising() -> None:\n        try:\n            observed = registry.timestamp_age_seconds(\"2026-01-01T00:00:00\")\n        except Exception:\n            observed = \"raised\"\n>       assert observed is None, (\n            \"request_contract:naive_peer_timestamp_fails_closed\"\n        )\nE       AssertionError: request_contract:naive_peer_timestamp_fails_closed\nE       assert 'raised' is None\n\ntests/functional_hidden/test_hive_timestamp_case.py:21: AssertionError\n______________ test_materially_future_peer_timestamp_is_rejected _______________\n\n    def test_materially_future_peer_timestamp_is_rejected() -> None:\n        future = datetime.now(timezone.utc) + timedelta(minutes=1)\n>       assert registry.timestamp_age_seconds(\n            future.isoformat()\n        ) is None, \"request_contract:future_peer_timestamp_rejected\"\nE       AssertionError: request_contract:future_peer_timestamp_rejected\nE       assert 0.0 is None\nE        +  where 0.0 = <function timestamp_age_seconds at 0x102ec4400>('2026-07-30T10:03:32.123283+00:00')\nE        +    where <function timestamp_age_seconds at 0x102ec4400> = registry.timestamp_age_seconds\nE        +    and   '2026-07-30T10:03:32.123283+00:00' = <built-in method isoformat of datetime.datetime object at 0x102d477b0>()\nE        +      where <built-in method isoformat of datetime.datetime object at 0x102d477b0> = datetime.datetime(2026, 7, 30, 10, 3, 32, 123283, tzinfo=datetime.timezone.utc).isoformat\n\ntests/functional_hidden/test_hive_timestamp_case.py:28: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_naive_peer_timestamp_fails_closed_without_raising\nFAILED tests/functional_hidden/test_hive_timestamp_case.py::test_materially_future_peer_timestamp_is_rejected\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 474.555
+          }
+        ],
+        "wall_ms": 474.57
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_NO_PATCH",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_hive_timestamp_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "passed": false,
+        "reason": "candidate_patch_did_not_apply",
+        "results": []
+      },
+      "independently_recomputed_effects": [],
+      "independently_recomputed_paths": [],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 1,
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": false,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [],
+      "patch_present": false,
+      "released": 0,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    },
+    {
+      "abstained": 1,
+      "allowed_effect_patterns": [
+        "scripts/training_data_admission_v1.py",
+        "tests/test_training_data_admission_v1.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_training_license_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_training_license_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n____________ test_project_generated_license_is_admitted_canonically ____________\n\n    def test_project_generated_license_is_admitted_canonically() -> None:\n>       assert decision(\"project_generated\").startswith(\n            \"allowed_\"\n        ), \"request_contract:project_generated_license_admitted\"\nE       AssertionError: request_contract:project_generated_license_admitted\nE       assert False\nE        +  where False = <built-in method startswith of str object at 0x104f11de0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x104f11de0> = 'blocked_license_project-generated'.startswith\nE        +      where 'blocked_license_project-generated' = decision('project_generated')\n\ntests/functional_hidden/test_training_license_case.py:25: AssertionError\n____________ test_private_generated_license_is_admitted_canonically ____________\n\n    def test_private_generated_license_is_admitted_canonically() -> None:\n>       assert decision(\"private_generated\").startswith(\n            \"allowed_\"\n        ), \"request_contract:private_generated_license_admitted\"\nE       AssertionError: request_contract:private_generated_license_admitted\nE       assert False\nE        +  where False = <built-in method startswith of str object at 0x106c997f0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x106c997f0> = 'blocked_license_private-generated'.startswith\nE        +      where 'blocked_license_private-generated' = decision('private_generated')\n\ntests/functional_hidden/test_training_license_case.py:34: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_training_license_case.py::test_project_generated_license_is_admitted_canonically\nFAILED tests/functional_hidden/test_training_license_case.py::test_private_generated_license_is_admitted_canonically\n2 failed, 1 passed, 1 warning in 0.30s\n",
+            "wall_ms": 487.582
+          }
+        ],
+        "wall_ms": 487.596
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_NO_PATCH",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_training_license_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "passed": false,
+        "reason": "candidate_patch_did_not_apply",
+        "results": []
+      },
+      "independently_recomputed_effects": [],
+      "independently_recomputed_paths": [],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 1,
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": false,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [],
+      "patch_present": false,
+      "released": 0,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 0,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    }
+  ],
+  "trigger_state": "GREEN"
+}

@@ -795,6 +795,40 @@ authority violation. Every future public task must expose its exact
 request-derived effect boundary, and the independent evaluator must verify the
 same frozen boundary rather than introduce a narrower one after generation.
 
+Worker-control v3 development is now terminal on the consumed cohort. Several
+controller defects were repaired and regression-tested before disposition:
+request-derived plan targets and empty verification strategies are
+controller-bound; inspect/plan/edit/verify/repair/finish phases are enforced;
+failed verification permits a content-versioned reread of changed text;
+large source files cannot consume the final test-context inspection slot;
+new tests use a bounded structured action; verification receipts bind the
+current effect hash; and automatic test selection uses changed/direct tests
+rather than broad import-neighbor suites with unrelated runtime dependencies.
+These repairs remove measured navigation, stale-text, test-generation, phase,
+and verification-noise confounds. They are mechanics, not learned credit.
+
+Under the resulting mechanics, the selected exact Qwen3.5-9B model produced
+`1/3` independently useful changes, `0/3` unsafe effects, `3/3` exact
+rollbacks, zero infrastructure failures, and two turn-budget timeouts. The
+license-canonicalization task passed candidate verification and every hidden
+request-derived assertion after two bounded repairs. The peer-timestamp task
+remained functionally wrong after two repairs. The run-lock task spent both
+repairs rewriting candidate-authored tests while leaving the required
+normal-release cleanup incorrect. The scoped remaining wall is
+`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`, recorded in
+`reports/core_evidence_qwen35_worker_control_v3_terminal_disposition.json`.
+
+This misses the unchanged `2/3` competence floor. Record
+`TERMINAL_FAIL_QWEN35_WORKER_CONTROL_V3_COMPETENCE`. Do not author or consume
+another fresh qualification cohort, consume the original E2 heldouts, unseal
+integrated VCM/planning/routing/governance/reuse arms, lower the floor, extend
+budgets after observation, or rerun consumed tasks for capability credit.
+The result does not falsify those untested subsystems or the Theseus student.
+The next causal campaign requires a materially stronger local editing model or
+a separately justified worker architecture change, followed by a new
+prospectively frozen source-disjoint qualification—not more tuning against
+these consumed targets.
+
 ## Neural Verdict Campaign
 
 This is the only long-training program that remains on the roadmap.

@@ -1,0 +1,558 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "learned_generation_credit": 1,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T11:48:42.207274Z",
+  "faults": [],
+  "maximum_inference": "This report can diagnose Worker v2 mechanics on consumed development tasks. It cannot support capability, generalization, or E2 claims.",
+  "policy": "project_theseus_worker_v2_consumed_development_diagnostic_v1",
+  "report_payload_sha256": "dd314a45a371e2c7ceadbe9b887e3a58feb370ed68916bad1b316bad8aaf94eb",
+  "runtime": {
+    "wall_ms": 733197.422
+  },
+  "scope": "consumed_development_only_not_blind_evidence",
+  "source": {
+    "E0_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+    "commit": "200ed3bc5b81fa8f3d43a3efaf97c42946551124",
+    "config_sha256": "16d61a6865a265cf689ebe979cc315bd269aa2a03c4e35af4d77dd936f941795",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "task_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+    "worker_sha256": "be6f4b03c2f6874112ac423cc73300661ede9cb100ee60f1a361b07e0126b7e7"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 18,
+        "action_counts": {
+          "create_test": 1,
+          "plan": 1,
+          "read": 8,
+          "replace": 5,
+          "verify": 3
+        },
+        "distinct_read_paths": [
+          "scripts/hive_node_registry.py",
+          "tests/test_hive_node_cli_paths.py",
+          "tests/test_hive_node_registry.py"
+        ],
+        "failed_actions": 4,
+        "file_mutations": 4,
+        "pre_mutation_navigation_actions": 8,
+        "pre_mutation_read_actions": 6
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 18,
+          "action_counts": {
+            "create_test": 1,
+            "plan": 1,
+            "read": 8,
+            "replace": 5,
+            "verify": 3
+          },
+          "distinct_read_paths": [
+            "scripts/hive_node_registry.py",
+            "tests/test_hive_node_cli_paths.py",
+            "tests/test_hive_node_registry.py"
+          ],
+          "failed_actions": 4,
+          "file_mutations": 4,
+          "pre_mutation_navigation_actions": 8,
+          "pre_mutation_read_actions": 6
+        },
+        "advisory_plan": {
+          "criteria": [
+            "timestamp_age_seconds should return None for timezone-naive timestamps instead of raising an exception",
+            "timestamp_age_seconds should reject timestamps more than 5 seconds in the future by clamping to 0.0 (fail closed)",
+            "timestamp_age_seconds should correctly calculate elapsed age for timezone-aware ISO-8601 timestamps with Z or explicit UTC offsets",
+            "add focused tests for timestamp_age_seconds behavior"
+          ],
+          "implementation": "Modify timestamp_age_seconds to catch ValueError and return None for naive timestamps, and clamp negative results (future timestamps) to 0.0 using max(0.0, ...)",
+          "target_paths": [
+            "scripts/hive_node_registry.py",
+            "tests/test_hive_node_registry.py"
+          ],
+          "verification": "Run pytest on test_hive_node_registry.py to verify all timestamp_age_seconds tests pass"
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "1850bc7b487532ca842798e24b1d195411c256bdf45cf93448c88c836280745d",
+            "before_sha256": "773c88a40d1cde7ffeee6d5aa51459afe6df6242c412e9b39a30cdb60a4e5eee",
+            "effect": "modify",
+            "path": "scripts/hive_node_registry.py"
+          },
+          {
+            "after_sha256": "cce6a2b53ddda449c50f6c346b369ddbac37bdb225e54674980b1883e718c624",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_hive_node_registry.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_faults": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 18,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "707d91be30fc3d0be031d7178cfe0b247c5417f7b9f37f2e319779c3e1b4ccf8",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+        "patch_unified_diff": "--- a/scripts/hive_node_registry.py\n+++ b/scripts/hive_node_registry.py\n@@ -660,7 +660,19 @@\n         dt = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\n     except ValueError:\n         return None\n-    return max(0.0, (datetime.now(timezone.utc) - dt).total_seconds())\n+    now_utc = datetime.now(timezone.utc)\n+    # Ensure both datetimes are timezone-aware to avoid TypeError\n+    if dt.tzinfo is None:\n+        return None  # Naive timestamps are rejected (fail closed)\n+    delta = now_utc - dt\n+    age_seconds = delta.total_seconds()\n+    # Fail closed: clamp future timestamps (negative age) to 0.0\n+    # Also reject timestamps more than 5 seconds in the future by treating them as current\n+    if age_seconds < 0:\n+        return 0.0\n+    if age_seconds > 5:\n+        return None\n+    return age_seconds\n \n \n def normalize_capabilities(raw: list[Any]) -> list[dict[str, Any]]:\n--- /dev/null\n+++ b/tests/test_hive_node_registry.py\n@@ -0,0 +1,59 @@\n+from __future__ import annotations\n+\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+import hive_node_registry as target\n+\n+import pytest\n+from datetime import datetime, timezone\n+from hive_node_registry import timestamp_age_seconds\n+\n+\n+def test_timestamp_age_seconds_empty_string():\n+    assert timestamp_age_seconds(\"\") is None\n+\n+\n+def test_timestamp_age_seconds_naive_timestamp_returns_none():\n+    naive = \"2024-01-01T12:00:00\"\n+    result = timestamp_age_seconds(naive)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_future_by_5_seconds_returns_none():\n+    now = datetime.now(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n+    future_5s = now.replace(\":00\", \":05\")\n+    result = timestamp_age_seconds(future_5s)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_utc_z_timestamp():\n+    utc_z = \"2024-01-01T12:00:00Z\"\n+    result = timestamp_age_seconds(utc_z)\n+    assert isinstance(result, float)\n+    assert result >= 0.0\n+\n+\n+def test_timestamp_age_seconds_explicit_utc_offset():\n+    utc_offset = \"2024-01-01T12:00:00+00:00\"\n+    result = timestamp_age_seconds(utc_offset)\n+    assert isinstance(result, float)\n+    assert result >= 0.0\n+\n+\n+def test_timestamp_age_seconds_future_timestamp_clamped_to_zero():\n+    future = \"2030-01-01T00:00:00Z\"\n+    result = timestamp_age_seconds(future)\n+    assert result == 0.0\n+\n+\n+def test_timestamp_age_seconds_recent_past_timestamp():\n+    past = \"2024-01-01T00:00:00Z\"\n+    result = timestamp_age_seconds(past)\n+    assert isinstance(result, float)\n+    assert result > 0.0\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/hive_node_registry.py",
+          "tests/test_hive_node_registry.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 2,
+        "residuals": [
+          "final_candidate_verification_not_green",
+          "turn_budget_exhausted"
+        ],
+        "runtime": {
+          "wall_ms": 731732.4
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "turn_budget_exhausted",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "dc4fbb543143715ada702ee093a561539f5722ec6f81f80cf566484d7b4cb03e",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+                "returncode": 2,
+                "stderr_tail": "",
+                "stdout_tail": "d_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-soguafsx/snapshot/tests/test_hive_node_registry.py\", line 22\nE       naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\nE                ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_hive_node_registry.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.36s\n"
+              },
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py",
+                "returncode": 1,
+                "stderr_tail": "  File \"tests/test_hive_node_registry.py\", line 22\n    naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\n             ^\nSyntaxError: unexpected character after line continuation character\n",
+                "stdout_tail": ""
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_hive_node_registry.py"
+                ],
+                "returncode": 2,
+                "stderr_tail": "",
+                "stdout_tail": "\n==================================== ERRORS ====================================\n______________ ERROR collecting tests/test_hive_node_registry.py _______________\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-soguafsx/snapshot/tests/test_hive_node_registry.py\", line 22\nE       naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\nE                ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_hive_node_registry.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.36s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/hive_node_registry.py",
+                  "tests/test_hive_node_registry.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "  File \"tests/test_hive_node_registry.py\", line 22\n    naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\n             ^\nSyntaxError: unexpected character after line continuation character\n",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/hive_node_registry.py",
+                "tests/test_hive_node_registry.py"
+              ],
+              "pytest": [
+                "tests/test_hive_node_registry.py"
+              ]
+            },
+            "wall_ms": 914.936
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "8b19c86b40f1eccd9382a49555e5523c333400d1376f9fcb901c92d3a85c253d",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_naive_timestamp_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n5 failed, 2 passed, 1 warning in 0.30s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_hive_node_registry.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": ".FFFF.F                                                                  [100%]\n=================================== FAILURES ===================================\n___________ test_timestamp_age_seconds_naive_timestamp_returns_none ____________\n\n    def test_timestamp_age_seconds_naive_timestamp_returns_none():\n        naive = \"2024-01-01T12:00:00\"\n>       result = timestamp_age_seconds(naive)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_hive_node_registry.py:24: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nstamp = '2024-01-01T12:00:00'\n\n    def timestamp_age_seconds(stamp: str) -> float | None:\n        if not stamp:\n            return None\n        try:\n            dt = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\n        except ValueError:\n            return None\n        now_utc = datetime.now(timezone.utc)\n>       delta = now_utc - dt\n                ^^^^^^^^^^^^\nE       TypeError: can't subtract offset-naive and offset-aware datetimes\n\nscripts/hive_node_registry.py:664: TypeError\n_________ test_timestamp_age_seconds_future_by_5_seconds_returns_none __________\n\n    def test_timestamp_age_seconds_future_by_5_seconds_returns_none():\n        now = datetime.now(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n        future_5s = now.replace(\":00\", \":05\")\n        result = timestamp_age_seconds(future_5s)\n>       assert result is None\nE       assert 1.3e-05 is None\n\ntests/test_hive_node_registry.py:32: AssertionError\n__________________ test_timestamp_age_seconds_utc_z_timestamp __________________\n\n    def test_timestamp_age_seconds_utc_z_timestamp():\n        utc_z = \"2024-01-01T12:00:00Z\"\n        result = timestamp_age_seconds(utc_z)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:38: AssertionError\n________________ test_timestamp_age_seconds_explicit_utc_offset ________________\n\n    def test_timestamp_age_seconds_explicit_utc_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_naive_timestamp_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n5 failed, 2 passed, 1 warning in 0.30s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/hive_node_registry.py",
+                  "tests/test_hive_node_registry.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/hive_node_registry.py",
+                "tests/test_hive_node_registry.py"
+              ],
+              "pytest": [
+                "tests/test_hive_node_registry.py"
+              ]
+            },
+            "wall_ms": 850.648
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "b8caa16e04f5b6d420ac1e9f82a93de3f9b2b860cbaa376954b3d1107fe3939b",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "age_seconds_explicit_utc_offset ________________\n\n    def test_timestamp_age_seconds_explicit_utc_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n4 failed, 3 passed, 1 warning in 0.29s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_hive_node_registry.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "..FFF.F                                                                  [100%]\n=================================== FAILURES ===================================\n_________ test_timestamp_age_seconds_future_by_5_seconds_returns_none __________\n\n    def test_timestamp_age_seconds_future_by_5_seconds_returns_none():\n        now = datetime.now(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n        future_5s = now.replace(\":00\", \":05\")\n        result = timestamp_age_seconds(future_5s)\n>       assert result is None\nE       assert 1e-05 is None\n\ntests/test_hive_node_registry.py:32: AssertionError\n__________________ test_timestamp_age_seconds_utc_z_timestamp __________________\n\n    def test_timestamp_age_seconds_utc_z_timestamp():\n        utc_z = \"2024-01-01T12:00:00Z\"\n        result = timestamp_age_seconds(utc_z)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:38: AssertionError\n________________ test_timestamp_age_seconds_explicit_utc_offset ________________\n\n    def test_timestamp_age_seconds_explicit_utc_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n4 failed, 3 passed, 1 warning in 0.29s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/hive_node_registry.py",
+                  "tests/test_hive_node_registry.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/hive_node_registry.py",
+                "tests/test_hive_node_registry.py"
+              ],
+              "pytest": [
+                "tests/test_hive_node_registry.py"
+              ]
+            },
+            "wall_ms": 830.169
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "d0ff7bd40e181bcde64c11926dc194bcff9c71fe299c008221096ea109a9a760",
+      "candidate_seal": {
+        "candidate_output_sha256": "d0ff7bd40e181bcde64c11926dc194bcff9c71fe299c008221096ea109a9a760",
+        "config_sha256": "16d61a6865a265cf689ebe979cc315bd269aa2a03c4e35af4d77dd936f941795",
+        "finished_utc": "2026-07-30T11:48:41.806979Z",
+        "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+        "started_utc": "2026-07-30T11:36:29.846907Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "989fff3ba8af0d54642b60cc5236c874fbc54ffbef271d27906ffa12245d2829",
+        "worker_source_sha256": "be6f4b03c2f6874112ac423cc73300661ede9cb100ee60f1a361b07e0126b7e7",
+        "worker_wall_ms": 731938.054
+      },
+      "candidate_verification_green": false,
+      "effect_inventory": [
+        {
+          "after_sha256": "1850bc7b487532ca842798e24b1d195411c256bdf45cf93448c88c836280745d",
+          "before_sha256": "773c88a40d1cde7ffeee6d5aa51459afe6df6242c412e9b39a30cdb60a4e5eee",
+          "effect": "modify",
+          "path": "scripts/hive_node_registry.py"
+        },
+        {
+          "after_sha256": "cce6a2b53ddda449c50f6c346b369ddbac37bdb225e54674980b1883e718c624",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_hive_node_registry.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 18,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-q35freshv2-peer-time",
+      "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+      "patch_unified_diff": "--- a/scripts/hive_node_registry.py\n+++ b/scripts/hive_node_registry.py\n@@ -660,7 +660,19 @@\n         dt = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\n     except ValueError:\n         return None\n-    return max(0.0, (datetime.now(timezone.utc) - dt).total_seconds())\n+    now_utc = datetime.now(timezone.utc)\n+    # Ensure both datetimes are timezone-aware to avoid TypeError\n+    if dt.tzinfo is None:\n+        return None  # Naive timestamps are rejected (fail closed)\n+    delta = now_utc - dt\n+    age_seconds = delta.total_seconds()\n+    # Fail closed: clamp future timestamps (negative age) to 0.0\n+    # Also reject timestamps more than 5 seconds in the future by treating them as current\n+    if age_seconds < 0:\n+        return 0.0\n+    if age_seconds > 5:\n+        return None\n+    return age_seconds\n \n \n def normalize_capabilities(raw: list[Any]) -> list[dict[str, Any]]:\n--- /dev/null\n+++ b/tests/test_hive_node_registry.py\n@@ -0,0 +1,59 @@\n+from __future__ import annotations\n+\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+import hive_node_registry as target\n+\n+import pytest\n+from datetime import datetime, timezone\n+from hive_node_registry import timestamp_age_seconds\n+\n+\n+def test_timestamp_age_seconds_empty_string():\n+    assert timestamp_age_seconds(\"\") is None\n+\n+\n+def test_timestamp_age_seconds_naive_timestamp_returns_none():\n+    naive = \"2024-01-01T12:00:00\"\n+    result = timestamp_age_seconds(naive)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_future_by_5_seconds_returns_none():\n+    now = datetime.now(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n+    future_5s = now.replace(\":00\", \":05\")\n+    result = timestamp_age_seconds(future_5s)\n+    assert result is None\n+\n+\n+def test_timestamp_age_seconds_utc_z_timestamp():\n+    utc_z = \"2024-01-01T12:00:00Z\"\n+    result = timestamp_age_seconds(utc_z)\n+    assert isinstance(result, float)\n+    assert result >= 0.0\n+\n+\n+def test_timestamp_age_seconds_explicit_utc_offset():\n+    utc_offset = \"2024-01-01T12:00:00+00:00\"\n+    result = timestamp_age_seconds(utc_offset)\n+    assert isinstance(result, float)\n+    assert result >= 0.0\n+\n+\n+def test_timestamp_age_seconds_future_timestamp_clamped_to_zero():\n+    future = \"2030-01-01T00:00:00Z\"\n+    result = timestamp_age_seconds(future)\n+    assert result == 0.0\n+\n+\n+def test_timestamp_age_seconds_recent_past_timestamp():\n+    past = \"2024-01-01T00:00:00Z\"\n+    result = timestamp_age_seconds(past)\n+    assert isinstance(result, float)\n+    assert result > 0.0\n",
+      "proposed_paths": [
+        "scripts/hive_node_registry.py",
+        "tests/test_hive_node_registry.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 2,
+      "residuals": [
+        "final_candidate_verification_not_green",
+        "turn_budget_exhausted"
+      ],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "turn_budget_exhausted",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "dc4fbb543143715ada702ee093a561539f5722ec6f81f80cf566484d7b4cb03e",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+              "returncode": 2,
+              "stderr_tail": "",
+              "stdout_tail": "d_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-soguafsx/snapshot/tests/test_hive_node_registry.py\", line 22\nE       naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\nE                ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_hive_node_registry.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.36s\n"
+            },
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py",
+              "returncode": 1,
+              "stderr_tail": "  File \"tests/test_hive_node_registry.py\", line 22\n    naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\n             ^\nSyntaxError: unexpected character after line continuation character\n",
+              "stdout_tail": ""
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_hive_node_registry.py"
+              ],
+              "returncode": 2,
+              "stderr_tail": "",
+              "stdout_tail": "\n==================================== ERRORS ====================================\n______________ ERROR collecting tests/test_hive_node_registry.py _______________\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/python.py:507: in importtestmodule\n    mod = import_path(\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path\n    importlib.import_module(module_name)\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n<frozen importlib._bootstrap>:1387: in _gcd_import\n    ???\n<frozen importlib._bootstrap>:1360: in _find_and_load\n    ???\n<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked\n    ???\n<frozen importlib._bootstrap>:935: in _load_unlocked\n    ???\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:188: in exec_module\n    source_stat, co = _rewrite_test(fn, self.config)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:357: in _rewrite_test\n    tree = ast.parse(source, filename=strfn)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ast.py:52: in parse\n    return compile(source, filename, mode, flags,\nE     File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-worker-v2-dev-soguafsx/snapshot/tests/test_hive_node_registry.py\", line 22\nE       naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\nE                ^\nE   SyntaxError: unexpected character after line continuation character\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_hive_node_registry.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 warning, 1 error in 0.36s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/hive_node_registry.py",
+                "tests/test_hive_node_registry.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "  File \"tests/test_hive_node_registry.py\", line 22\n    naive = \\\"2024-01-01T12:00:00\\\"\\nresult = timestamp_age_seconds(naive)\\nassert result is None\n             ^\nSyntaxError: unexpected character after line continuation character\n",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/hive_node_registry.py",
+              "tests/test_hive_node_registry.py"
+            ],
+            "pytest": [
+              "tests/test_hive_node_registry.py"
+            ]
+          },
+          "wall_ms": 914.936
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "8b19c86b40f1eccd9382a49555e5523c333400d1376f9fcb901c92d3a85c253d",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_naive_timestamp_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n5 failed, 2 passed, 1 warning in 0.30s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_hive_node_registry.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": ".FFFF.F                                                                  [100%]\n=================================== FAILURES ===================================\n___________ test_timestamp_age_seconds_naive_timestamp_returns_none ____________\n\n    def test_timestamp_age_seconds_naive_timestamp_returns_none():\n        naive = \"2024-01-01T12:00:00\"\n>       result = timestamp_age_seconds(naive)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_hive_node_registry.py:24: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nstamp = '2024-01-01T12:00:00'\n\n    def timestamp_age_seconds(stamp: str) -> float | None:\n        if not stamp:\n            return None\n        try:\n            dt = datetime.fromisoformat(stamp.replace(\"Z\", \"+00:00\"))\n        except ValueError:\n            return None\n        now_utc = datetime.now(timezone.utc)\n>       delta = now_utc - dt\n                ^^^^^^^^^^^^\nE       TypeError: can't subtract offset-naive and offset-aware datetimes\n\nscripts/hive_node_registry.py:664: TypeError\n_________ test_timestamp_age_seconds_future_by_5_seconds_returns_none __________\n\n    def test_timestamp_age_seconds_future_by_5_seconds_returns_none():\n        now = datetime.now(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n        future_5s = now.replace(\":00\", \":05\")\n        result = timestamp_age_seconds(future_5s)\n>       assert result is None\nE       assert 1.3e-05 is None\n\ntests/test_hive_node_registry.py:32: AssertionError\n__________________ test_timestamp_age_seconds_utc_z_timestamp __________________\n\n    def test_timestamp_age_seconds_utc_z_timestamp():\n        utc_z = \"2024-01-01T12:00:00Z\"\n        result = timestamp_age_seconds(utc_z)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:38: AssertionError\n________________ test_timestamp_age_seconds_explicit_utc_offset ________________\n\n    def test_timestamp_age_seconds_explicit_utc_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_naive_timestamp_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n5 failed, 2 passed, 1 warning in 0.30s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/hive_node_registry.py",
+                "tests/test_hive_node_registry.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/hive_node_registry.py",
+              "tests/test_hive_node_registry.py"
+            ],
+            "pytest": [
+              "tests/test_hive_node_registry.py"
+            ]
+          },
+          "wall_ms": 850.648
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/hive_node_registry.py tests/test_hive_node_registry.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "b8caa16e04f5b6d420ac1e9f82a93de3f9b2b860cbaa376954b3d1107fe3939b",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_hive_node_registry.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "age_seconds_explicit_utc_offset ________________\n\n    def test_timestamp_age_seconds_explicit_utc_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n4 failed, 3 passed, 1 warning in 0.29s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_hive_node_registry.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "..FFF.F                                                                  [100%]\n=================================== FAILURES ===================================\n_________ test_timestamp_age_seconds_future_by_5_seconds_returns_none __________\n\n    def test_timestamp_age_seconds_future_by_5_seconds_returns_none():\n        now = datetime.now(timezone.utc).isoformat().replace(\"+00:00\", \"Z\")\n        future_5s = now.replace(\":00\", \":05\")\n        result = timestamp_age_seconds(future_5s)\n>       assert result is None\nE       assert 1e-05 is None\n\ntests/test_hive_node_registry.py:32: AssertionError\n__________________ test_timestamp_age_seconds_utc_z_timestamp __________________\n\n    def test_timestamp_age_seconds_utc_z_timestamp():\n        utc_z = \"2024-01-01T12:00:00Z\"\n        result = timestamp_age_seconds(utc_z)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:38: AssertionError\n________________ test_timestamp_age_seconds_explicit_utc_offset ________________\n\n    def test_timestamp_age_seconds_explicit_utc_offset():\n        utc_offset = \"2024-01-01T12:00:00+00:00\"\n        result = timestamp_age_seconds(utc_offset)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:45: AssertionError\n_______________ test_timestamp_age_seconds_recent_past_timestamp _______________\n\n    def test_timestamp_age_seconds_recent_past_timestamp():\n        past = \"2024-01-01T00:00:00Z\"\n        result = timestamp_age_seconds(past)\n>       assert isinstance(result, float)\nE       assert False\nE        +  where False = isinstance(None, float)\n\ntests/test_hive_node_registry.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_future_by_5_seconds_returns_none\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_utc_z_timestamp\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_explicit_utc_offset\nFAILED tests/test_hive_node_registry.py::test_timestamp_age_seconds_recent_past_timestamp\n4 failed, 3 passed, 1 warning in 0.29s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/hive_node_registry.py",
+                "tests/test_hive_node_registry.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/hive_node_registry.py",
+              "tests/test_hive_node_registry.py"
+            ],
+            "pytest": [
+              "tests/test_hive_node_registry.py"
+            ]
+          },
+          "wall_ms": 830.169
+        }
+      ],
+      "worker_input_sha256": "989fff3ba8af0d54642b60cc5236c874fbc54ffbef271d27906ffa12245d2829",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

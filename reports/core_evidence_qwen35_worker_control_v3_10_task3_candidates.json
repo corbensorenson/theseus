@@ -1,0 +1,526 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "learned_generation_credit": 1,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:13:13.825811Z",
+  "faults": [],
+  "maximum_inference": "This report can diagnose Worker v2 mechanics on consumed development tasks. It cannot support capability, generalization, or E2 claims.",
+  "policy": "project_theseus_worker_v2_consumed_development_diagnostic_v1",
+  "report_payload_sha256": "c0bb14e4a666cbf29308864bfae6a73324e4502cdd8c686bc80ec4f066538999",
+  "runtime": {
+    "wall_ms": 480891.529
+  },
+  "scope": "consumed_development_only_not_blind_evidence",
+  "source": {
+    "E0_preregistration_sha256": "97d28226f39c62a11c81143fc31d44c9637466244b54088815102f37e2aced72",
+    "commit": "200ed3bc5b81fa8f3d43a3efaf97c42946551124",
+    "config_sha256": "16d61a6865a265cf689ebe979cc315bd269aa2a03c4e35af4d77dd936f941795",
+    "runtime_python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "task_manifest_sha256": "e4e6b5b9c60e8b747bb05fc3adbe9f4271a4e0ea1016b604d030605f75b5699a",
+    "worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19"
+  },
+  "tasks": [
+    {
+      "D2_cases_consumed": 0,
+      "action_summary": {
+        "action_count": 17,
+        "action_counts": {
+          "create_test": 1,
+          "finish": 1,
+          "plan": 1,
+          "read": 8,
+          "replace": 3,
+          "verify": 3
+        },
+        "distinct_read_paths": [
+          "scripts/training_data_admission_v1.py",
+          "tests/test_training_data_admission_archive.py"
+        ],
+        "failed_actions": 1,
+        "file_mutations": 4,
+        "pre_mutation_navigation_actions": 8,
+        "pre_mutation_read_actions": 7
+      },
+      "candidate_output": {
+        "D2_cases_consumed": 0,
+        "abstained": false,
+        "abstention_reason": null,
+        "action_summary": {
+          "action_count": 17,
+          "action_counts": {
+            "create_test": 1,
+            "finish": 1,
+            "plan": 1,
+            "read": 8,
+            "replace": 3,
+            "verify": 3
+          },
+          "distinct_read_paths": [
+            "scripts/training_data_admission_v1.py",
+            "tests/test_training_data_admission_archive.py"
+          ],
+          "failed_actions": 1,
+          "file_mutations": 4,
+          "pre_mutation_navigation_actions": 8,
+          "pre_mutation_read_actions": 7
+        },
+        "advisory_plan": {
+          "criteria": [
+            "normalize_license must use underscore-to-hyphen normalization to admit both project_generated and private_generated variants",
+            "license_decision must use normalized licenses for comparison against ALLOWED_LICENSES",
+            "add tests for license normalization with underscore/hyphen variants",
+            "add tests for license decision with generated license variants"
+          ],
+          "implementation": "Modify normalize_license to replace underscores with hyphens, then update license_decision to use the normalized form. Add test cases covering underscore and hyphen variants of project_generated and private_generated.",
+          "target_paths": [
+            "scripts/training_data_admission_v1.py",
+            "tests/test_training_data_admission_v1.py"
+          ],
+          "verification": "Run pytest on test_training_data_admission_archive.py to verify changes work correctly"
+        },
+        "candidate_authored_success_flags": [],
+        "effect_inventory": [
+          {
+            "after_sha256": "231e549195f2f73a5fc08a8180660626298eb24892884fdb5ac7d7de9b50448a",
+            "before_sha256": "e05ae31ec8a9ea92c9687930274a36f3f38a40643f2464d916ad19147d04f780",
+            "effect": "modify",
+            "path": "scripts/training_data_admission_v1.py"
+          },
+          {
+            "after_sha256": "29f60f75b0aa2e746f0f3852fe4dc52976caac367838cd8a2c9f423a7909784a",
+            "before_sha256": null,
+            "effect": "create",
+            "path": "tests/test_training_data_admission_v1.py"
+          }
+        ],
+        "external_inference_calls": 0,
+        "format_faults": 0,
+        "format_repairs": 0,
+        "learned_generation_credit": 1,
+        "local_model_inference_calls": 17,
+        "model_identity": {
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+        },
+        "natural_request_sha256": "192d84dfdbc8f458b1ae9fac4a3a3c4e06d4710e8067798d3f17ddc85fe64d04",
+        "non_claims": [
+          "This local third-party model is not the Theseus student.",
+          "Candidate verification is advisory; the hidden evaluator independently recomputes completion."
+        ],
+        "parent_source_commit": "f6f65f29d622087521427365a2eeb159d5a4b741",
+        "patch_unified_diff": "--- a/scripts/training_data_admission_v1.py\n+++ b/scripts/training_data_admission_v1.py\n@@ -44,8 +44,8 @@\n     \"odc-by\",\n     \"cc-by-4.0\",\n     \"project-internal\",\n-    \"project_generated\",\n-    \"private_generated\",\n+    \"project-generated\",\n+    \"private-generated\",\n }\n \n PUBLIC_BENCHMARK_TOKENS = {\n@@ -937,10 +937,15 @@\n         if private_train_path or dogfood_path:\n             return \"project_internal_private_generated\"\n         return \"blocked_missing_license\"\n-    blocked = [lic for lic in counts if lic and lic not in ALLOWED_LICENSES]\n+    # normalize all keys to canonical hyphen form before checking\n+    normalized_counts: Counter[str] = Counter()\n+    for lic in counts:\n+        if lic:\n+            normalized_counts[normalize_license(lic)] += counts[lic]\n+    blocked = [lic for lic in normalized_counts if lic and lic not in ALLOWED_LICENSES]\n     if blocked:\n         return \"blocked_license_\" + \"_\".join(sorted(blocked)[:3])\n-    return \"allowed_\" + \"_\".join(sorted(counts)[:3])\n+    return \"allowed_\" + \"_\".join(sorted(normalized_counts)[:3])\n \n \n def provenance_decision(rows: list[dict[str, Any]], rel_path: str) -> str:\n@@ -1033,7 +1038,13 @@\n \n \n def normalize_license(value: Any) -> str:\n-    return str(value or \"\").strip().lower().replace(\"_\", \"-\")\n+    s = str(value or \"\").strip().lower()\n+    # canonicalize to hyphen-separated form\n+    s = s.replace(\"_\", \"-\")\n+    # also collapse any remaining hyphens into a single run\n+    while \"--\" in s:\n+        s = s.replace(\"--\", \"-\")\n+    return s\n \n \n def normalize_text(value: Any) -> str:\n--- /dev/null\n+++ b/tests/test_training_data_admission_v1.py\n@@ -0,0 +1,37 @@\n+from __future__ import annotations\n+\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+import training_data_admission_v1 as target\n+\n+import json\n+import gzip\n+import sys\n+from pathlib import Path\n+from collections import Counter\n+import training_data_admission_v1 as admission\n+\n+def test_normalize_license_underscore_hyphen_equivalence():\n+    assert admission.normalize_license('project_generated') == 'project-generated'\n+    assert admission.normalize_license('private_generated') == 'private-generated'\n+    assert admission.normalize_license('PROJECT_GENERATED') == 'project-generated'\n+    assert admission.normalize_license('Private_Generated') == 'private-generated'\n+    assert admission.normalize_license('Apache-2.0') == 'apache-2.0'\n+    assert admission.normalize_license('MIT') == 'mit'\n+\n+\n+def test_normalize_license_double_hyphen_collapse():\n+    assert admission.normalize_license('some--license') == 'some-license'\n+    assert admission.normalize_license('some---license') == 'some-license'\n+\n+\n+def test_license_decision_with_generated_licenses():\n+    counts = Counter({'project-generated': 1, 'private-generated': 2})\n+    result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n+    assert result.startswith('allowed_')\n",
+        "policy": "project_theseus_local_repository_worker_v2",
+        "proposed_paths": [
+          "scripts/training_data_admission_v1.py",
+          "tests/test_training_data_admission_v1.py"
+        ],
+        "public_calibration_cases_consumed": 0,
+        "repair_attempts": 2,
+        "residuals": [],
+        "runtime": {
+          "wall_ms": 479454.466
+        },
+        "teacher_calls": 0,
+        "terminal_reason": "finished",
+        "user_facing_effects": 0,
+        "verification_commands": [
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+          "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+        ],
+        "verification_receipts": [
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "992aa957c3fcfe99c4efd512bd88326f2bccba1d1e4174655ff59195ba6f91ab",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x106bacc90>('allowed_')\nE        +    where <built-in method startswith of str object at 0x106bacc90> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.30s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_training_data_admission_v1.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x106bacc90>('allowed_')\nE        +    where <built-in method startswith of str object at 0x106bacc90> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.30s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/training_data_admission_v1.py",
+                  "tests/test_training_data_admission_v1.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/training_data_admission_v1.py",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "pytest": [
+                "tests/test_training_data_admission_v1.py"
+              ]
+            },
+            "wall_ms": 911.68
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "bf56e1847867c596be52fca29b68691fe4d519739c11a48852e0deeda00675a0",
+            "failure_summaries": [
+              {
+                "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x102960cf0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x102960cf0> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.31s\n"
+              }
+            ],
+            "passed": false,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_training_data_admission_v1.py"
+                ],
+                "returncode": 1,
+                "stderr_tail": "",
+                "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x102960cf0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x102960cf0> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.31s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/training_data_admission_v1.py",
+                  "tests/test_training_data_admission_v1.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/training_data_admission_v1.py",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "pytest": [
+                "tests/test_training_data_admission_v1.py"
+              ]
+            },
+            "wall_ms": 841.101
+          },
+          {
+            "commands": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+            ],
+            "denied_candidate_targets": [],
+            "effect_sha256": "e38deb630629bc1224c0e85f05413bb9a92acec314382537ecfadf26e810972b",
+            "failure_summaries": [],
+            "passed": true,
+            "results": [
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "pytest",
+                  "-q",
+                  "-p",
+                  "no:cacheprovider",
+                  "tests/test_training_data_admission_v1.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.29s\n"
+              },
+              {
+                "argv": [
+                  "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                  "-m",
+                  "py_compile",
+                  "scripts/training_data_admission_v1.py",
+                  "tests/test_training_data_admission_v1.py"
+                ],
+                "returncode": 0,
+                "stderr_tail": "",
+                "stdout_tail": ""
+              }
+            ],
+            "selection": {
+              "json": [],
+              "py_compile": [
+                "scripts/training_data_admission_v1.py",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "pytest": [
+                "tests/test_training_data_admission_v1.py"
+              ]
+            },
+            "wall_ms": 829.975
+          }
+        ],
+        "worker_id": "theseus_local_repository_worker_v2",
+        "worker_kind": "bounded_local_learned_repository_patch_agent"
+      },
+      "candidate_output_sha256": "2455cac3f5730af3f9c267b86d8e3af346329e258a1aa5587b69e87f2f2f4caa",
+      "candidate_seal": {
+        "candidate_output_sha256": "2455cac3f5730af3f9c267b86d8e3af346329e258a1aa5587b69e87f2f2f4caa",
+        "config_sha256": "16d61a6865a265cf689ebe979cc315bd269aa2a03c4e35af4d77dd936f941795",
+        "finished_utc": "2026-07-30T12:13:13.477643Z",
+        "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+        "started_utc": "2026-07-30T12:05:13.778242Z",
+        "target_opened_before_seal": false,
+        "worker_input_sha256": "9bca0bfd5b3a1e34f9f70de4a182ec7fe751d667fa3c084d460dc5ef9f5e6a82",
+        "worker_source_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
+        "worker_wall_ms": 479684.456
+      },
+      "candidate_verification_green": true,
+      "effect_inventory": [
+        {
+          "after_sha256": "231e549195f2f73a5fc08a8180660626298eb24892884fdb5ac7d7de9b50448a",
+          "before_sha256": "e05ae31ec8a9ea92c9687930274a36f3f38a40643f2464d916ad19147d04f780",
+          "effect": "modify",
+          "path": "scripts/training_data_admission_v1.py"
+        },
+        {
+          "after_sha256": "29f60f75b0aa2e746f0f3852fe4dc52976caac367838cd8a2c9f423a7909784a",
+          "before_sha256": null,
+          "effect": "create",
+          "path": "tests/test_training_data_admission_v1.py"
+        }
+      ],
+      "external_inference_calls": 0,
+      "format_repairs": 0,
+      "learned_generation_credit": 1,
+      "local_model_inference_calls": 17,
+      "model_identity": {
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf"
+      },
+      "opaque_task_id": "task-q35freshv2-license-canonicalization",
+      "parent_archive_sha256": "fa238e29860c3dfa22543a70c52b608d4c3fbbc167b2723083584c0fc6c0ef3c",
+      "patch_unified_diff": "--- a/scripts/training_data_admission_v1.py\n+++ b/scripts/training_data_admission_v1.py\n@@ -44,8 +44,8 @@\n     \"odc-by\",\n     \"cc-by-4.0\",\n     \"project-internal\",\n-    \"project_generated\",\n-    \"private_generated\",\n+    \"project-generated\",\n+    \"private-generated\",\n }\n \n PUBLIC_BENCHMARK_TOKENS = {\n@@ -937,10 +937,15 @@\n         if private_train_path or dogfood_path:\n             return \"project_internal_private_generated\"\n         return \"blocked_missing_license\"\n-    blocked = [lic for lic in counts if lic and lic not in ALLOWED_LICENSES]\n+    # normalize all keys to canonical hyphen form before checking\n+    normalized_counts: Counter[str] = Counter()\n+    for lic in counts:\n+        if lic:\n+            normalized_counts[normalize_license(lic)] += counts[lic]\n+    blocked = [lic for lic in normalized_counts if lic and lic not in ALLOWED_LICENSES]\n     if blocked:\n         return \"blocked_license_\" + \"_\".join(sorted(blocked)[:3])\n-    return \"allowed_\" + \"_\".join(sorted(counts)[:3])\n+    return \"allowed_\" + \"_\".join(sorted(normalized_counts)[:3])\n \n \n def provenance_decision(rows: list[dict[str, Any]], rel_path: str) -> str:\n@@ -1033,7 +1038,13 @@\n \n \n def normalize_license(value: Any) -> str:\n-    return str(value or \"\").strip().lower().replace(\"_\", \"-\")\n+    s = str(value or \"\").strip().lower()\n+    # canonicalize to hyphen-separated form\n+    s = s.replace(\"_\", \"-\")\n+    # also collapse any remaining hyphens into a single run\n+    while \"--\" in s:\n+        s = s.replace(\"--\", \"-\")\n+    return s\n \n \n def normalize_text(value: Any) -> str:\n--- /dev/null\n+++ b/tests/test_training_data_admission_v1.py\n@@ -0,0 +1,37 @@\n+from __future__ import annotations\n+\n+import sys\n+from pathlib import Path\n+\n+ROOT = Path(__file__).resolve().parents[1]\n+SCRIPTS = ROOT / \"scripts\"\n+if str(SCRIPTS) not in sys.path:\n+    sys.path.insert(0, str(SCRIPTS))\n+\n+import training_data_admission_v1 as target\n+\n+import json\n+import gzip\n+import sys\n+from pathlib import Path\n+from collections import Counter\n+import training_data_admission_v1 as admission\n+\n+def test_normalize_license_underscore_hyphen_equivalence():\n+    assert admission.normalize_license('project_generated') == 'project-generated'\n+    assert admission.normalize_license('private_generated') == 'private-generated'\n+    assert admission.normalize_license('PROJECT_GENERATED') == 'project-generated'\n+    assert admission.normalize_license('Private_Generated') == 'private-generated'\n+    assert admission.normalize_license('Apache-2.0') == 'apache-2.0'\n+    assert admission.normalize_license('MIT') == 'mit'\n+\n+\n+def test_normalize_license_double_hyphen_collapse():\n+    assert admission.normalize_license('some--license') == 'some-license'\n+    assert admission.normalize_license('some---license') == 'some-license'\n+\n+\n+def test_license_decision_with_generated_licenses():\n+    counts = Counter({'project-generated': 1, 'private-generated': 2})\n+    result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n+    assert result.startswith('allowed_')\n",
+      "proposed_paths": [
+        "scripts/training_data_admission_v1.py",
+        "tests/test_training_data_admission_v1.py"
+      ],
+      "public_calibration_cases_consumed": 0,
+      "repair_attempts": 2,
+      "residuals": [],
+      "sealed_before_target_open": true,
+      "teacher_calls": 0,
+      "terminal_reason": "finished",
+      "verification_receipts": [
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "992aa957c3fcfe99c4efd512bd88326f2bccba1d1e4174655ff59195ba6f91ab",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x106bacc90>('allowed_')\nE        +    where <built-in method startswith of str object at 0x106bacc90> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.30s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x106bacc90>('allowed_')\nE        +    where <built-in method startswith of str object at 0x106bacc90> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.30s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/training_data_admission_v1.py",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/training_data_admission_v1.py",
+              "tests/test_training_data_admission_v1.py"
+            ],
+            "pytest": [
+              "tests/test_training_data_admission_v1.py"
+            ]
+          },
+          "wall_ms": 911.68
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "bf56e1847867c596be52fca29b68691fe4d519739c11a48852e0deeda00675a0",
+          "failure_summaries": [
+            {
+              "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x102960cf0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x102960cf0> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.31s\n"
+            }
+          ],
+          "passed": false,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "returncode": 1,
+              "stderr_tail": "",
+              "stdout_tail": "..F                                                                      [100%]\n=================================== FAILURES ===================================\n________________ test_license_decision_with_generated_licenses _________________\n\n    def test_license_decision_with_generated_licenses():\n        counts = Counter({'project-generated': 1, 'private-generated': 2})\n        result = admission.license_decision(counts, private_train_path=False, dogfood_path=False)\n>       assert result.startswith('allowed_')\nE       AssertionError: assert False\nE        +  where False = <built-in method startswith of str object at 0x102960cf0>('allowed_')\nE        +    where <built-in method startswith of str object at 0x102960cf0> = 'blocked_license_private-generated_project-generated'.startswith\n\ntests/test_training_data_admission_v1.py:37: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/test_training_data_admission_v1.py::test_license_decision_with_generated_licenses\n1 failed, 2 passed, 1 warning in 0.31s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/training_data_admission_v1.py",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/training_data_admission_v1.py",
+              "tests/test_training_data_admission_v1.py"
+            ],
+            "pytest": [
+              "tests/test_training_data_admission_v1.py"
+            ]
+          },
+          "wall_ms": 841.101
+        },
+        {
+          "commands": [
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m pytest -q -p no:cacheprovider tests/test_training_data_admission_v1.py",
+            "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3 -m py_compile scripts/training_data_admission_v1.py tests/test_training_data_admission_v1.py"
+          ],
+          "denied_candidate_targets": [],
+          "effect_sha256": "e38deb630629bc1224c0e85f05413bb9a92acec314382537ecfadf26e810972b",
+          "failure_summaries": [],
+          "passed": true,
+          "results": [
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "no:cacheprovider",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": "...                                                                      [100%]\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 0.29s\n"
+            },
+            {
+              "argv": [
+                "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+                "-m",
+                "py_compile",
+                "scripts/training_data_admission_v1.py",
+                "tests/test_training_data_admission_v1.py"
+              ],
+              "returncode": 0,
+              "stderr_tail": "",
+              "stdout_tail": ""
+            }
+          ],
+          "selection": {
+            "json": [],
+            "py_compile": [
+              "scripts/training_data_admission_v1.py",
+              "tests/test_training_data_admission_v1.py"
+            ],
+            "pytest": [
+              "tests/test_training_data_admission_v1.py"
+            ]
+          },
+          "wall_ms": 829.975
+        }
+      ],
+      "worker_input_sha256": "9bca0bfd5b3a1e34f9f70de4a182ec7fe751d667fa3c084d460dc5ef9f5e6a82",
+      "worker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worker_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

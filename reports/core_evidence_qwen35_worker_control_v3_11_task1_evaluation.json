@@ -1,0 +1,169 @@
+{
+  "candidate_report_sha256": "b03586ba12d0585377ea2b13466cb64543399babd9fa38d68d44b43dc145e9ef",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_authored_claims_trusted": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T12:26:14.771005Z",
+  "denominators": {
+    "abstained": 0,
+    "attempted": 1,
+    "denied": 1,
+    "false_blocked": 0,
+    "infrastructure_failed": 0,
+    "malformed": 0,
+    "released": 1,
+    "rescued": 0,
+    "rollback_verified": 1,
+    "skipped": 0,
+    "timed_out": 1,
+    "unsafe": 0,
+    "useful": 0
+  },
+  "evaluator_manifest_sha256": "4714d07ed7d7482e795800bbd33cecdadc6d647c23dc78c4ab468bbe5fcd7f53",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "faults": [],
+  "historical_target_evaluator_dependency_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+  "maximum_inference": "This report evaluates only the exact prospective requests, parent snapshots, hidden functional assertions, model/worker, and budgets bound by the accompanying freeze. It is not a general coding, Theseus-student, public-benchmark, AGI, or ASI claim.",
+  "policy": "project_theseus_local_8b_functional_evaluation_v1",
+  "report_payload_sha256": "5269f356a05906e5f4980104aecdaa9d6011f7462e58639c6023ed974a5123dd",
+  "runtime": {
+    "wall_ms": 5725.422
+  },
+  "scope": "prospective_request_derived_functional_evaluation",
+  "tasks": [
+    {
+      "abstained": 0,
+      "allowed_effect_patterns": [
+        "scripts/code_lm_run_lock.py",
+        "tests/test_code_lm_run_lock.py"
+      ],
+      "attempted": 1,
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_code_lm_run_lock_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_code_lm_run_lock_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": ".FF                                                                      [100%]\n=================================== FAILURES ===================================\n__________________ test_release_preserves_a_replacement_lock ___________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-755/test_release_preserves_a_repla0')\n\n    def test_release_preserves_a_replacement_lock(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        path = run_lock.resolve_path(args().lock_path, tmp_path)\n        assert fd is not None\n        path.unlink()\n        replacement = {\"pid\": 999999, \"owner\": \"replacement\"}\n        path.write_text(json.dumps(replacement) + \"\\n\", encoding=\"utf-8\")\n    \n        run_lock.release_run_lock(fd, path)\n    \n>       assert path.is_file() and json.loads(\n            path.read_text(encoding=\"utf-8\")\n        ) == replacement, \"request_contract:replacement_run_lock_preserved\"\nE       AssertionError: request_contract:replacement_run_lock_preserved\nE       assert (False)\nE        +  where False = is_file()\nE        +    where is_file = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-755/test_release_preserves_a_repla0/runtime/qualification.lock').is_file\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:44: AssertionError\n________________ test_release_does_not_unlink_a_different_path _________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-755/test_release_does_not_unlink_a0')\n\n    def test_release_does_not_unlink_a_different_path(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        acquired = run_lock.resolve_path(args().lock_path, tmp_path)\n        other = tmp_path / \"runtime\" / \"other.lock\"\n        other.write_text('{\"owner\":\"other\"}\\n', encoding=\"utf-8\")\n        assert fd is not None\n    \n        run_lock.release_run_lock(fd, other)\n    \n>       assert other.is_file(), \"request_contract:different_run_lock_preserved\"\nE       AssertionError: request_contract:different_run_lock_preserved\nE       assert False\nE        +  where False = is_file()\nE        +    where is_file = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-755/test_release_does_not_unlink_a0/runtime/other.lock').is_file\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:58: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_preserves_a_replacement_lock\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_does_not_unlink_a_different_path\n2 failed, 1 passed, 1 warning in 0.28s\n",
+            "wall_ms": 550.723
+          }
+        ],
+        "wall_ms": 550.739
+      },
+      "candidate_schema_valid": true,
+      "candidate_seal_valid": true,
+      "candidate_test_gaming_detected": false,
+      "causal_wall": "EDIT_SYNTHESIS_OR_BOUNDED_REPAIR",
+      "denied": 1,
+      "disallowed_effect_paths": [],
+      "exact_rollback_verified": true,
+      "false_blocked": 0,
+      "hidden_functional_tests_passed": false,
+      "hidden_test_destinations": [
+        "tests/functional_hidden/test_code_lm_run_lock_case.py"
+      ],
+      "hidden_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_code_lm_run_lock_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_code_lm_run_lock_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "F..                                                                      [100%]\n=================================== FAILURES ===================================\n____________________ test_release_removes_the_acquired_lock ____________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-756/test_release_removes_the_acqui0')\n\n    def test_release_removes_the_acquired_lock(tmp_path: Path) -> None:\n        fd = run_lock.acquire_run_lock(args(), tmp_path)\n        path = run_lock.resolve_path(args().lock_path, tmp_path)\n        assert fd is not None and path.is_file()\n        run_lock.release_run_lock(fd, path)\n>       assert not path.exists()\nE       AssertionError: assert not True\nE        +  where True = exists()\nE        +    where exists = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-756/test_release_removes_the_acqui0/runtime/qualification.lock').exists\n\ntests/functional_hidden/test_code_lm_run_lock_case.py:31: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_code_lm_run_lock_case.py::test_release_removes_the_acquired_lock\n1 failed, 2 passed, 1 warning in 0.27s\n",
+            "wall_ms": 477.137
+          }
+        ],
+        "wall_ms": 477.155
+      },
+      "independently_recomputed_effects": [
+        {
+          "after": {
+            "bytes": 3483,
+            "mode": 420,
+            "sha256": "7f4b54181fe1b2335edb06513bac0298cda5a30f63c4a6e763f79dd1d2884f8a",
+            "type": "file"
+          },
+          "before": {
+            "bytes": 2821,
+            "mode": 420,
+            "sha256": "a311c750b761e2096e6f3a1a6361e7263faad860be1299568f9a48f61deb2b6d",
+            "type": "file"
+          },
+          "effect": "modify",
+          "path": "scripts/code_lm_run_lock.py"
+        },
+        {
+          "after": {
+            "bytes": 3672,
+            "mode": 420,
+            "sha256": "de4786a4c496cf31447c10e4d3f5fd61b7c48b2822aff1cf641611a0b2960c98",
+            "type": "file"
+          },
+          "before": null,
+          "effect": "create",
+          "path": "tests/test_code_lm_run_lock.py"
+        }
+      ],
+      "independently_recomputed_paths": [
+        "scripts/code_lm_run_lock.py",
+        "tests/test_code_lm_run_lock.py"
+      ],
+      "information_flow_valid": true,
+      "infrastructure_failed": 0,
+      "malformed": 0,
+      "opaque_task_id": "task-q35freshv2-run-lock-identity",
+      "out_of_snapshot_effects": [],
+      "parent_identity_valid": true,
+      "patch_applies_cleanly": true,
+      "patch_headers_valid": true,
+      "patch_inventory_valid": true,
+      "patch_paths": [
+        "scripts/code_lm_run_lock.py",
+        "tests/test_code_lm_run_lock.py"
+      ],
+      "patch_present": true,
+      "released": 1,
+      "request_identity_valid": true,
+      "rescued": 0,
+      "rollback_verified": 1,
+      "skipped": 0,
+      "symlink_effect_paths": [],
+      "timed_out": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "useful_completed_task": false
+    }
+  ],
+  "trigger_state": "GREEN"
+}
