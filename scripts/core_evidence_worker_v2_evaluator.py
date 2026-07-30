@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -40,6 +41,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate-report", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--campaign-config")
     parser.add_argument("--task-index", type=int, default=0)
     parser.add_argument("--task-limit", type=int, default=100)
     args = parser.parse_args()
@@ -47,6 +49,9 @@ def main() -> int:
         Path(args.candidate_report),
         task_index=args.task_index,
         task_limit=args.task_limit,
+        campaign_config_path=(
+            Path(args.campaign_config) if args.campaign_config else None
+        ),
     )
     Path(args.out).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
@@ -69,14 +74,33 @@ def evaluate_report(
     task_index: int,
     task_limit: int,
     repo_root: Path = ROOT,
+    campaign_config_path: Path | None = None,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     candidate_report = read_json(candidate_report_path)
-    campaign = read_json(repo_root / "configs" / "core_evidence_campaign.json")
+    campaign_path = (
+        campaign_config_path
+        or repo_root / "configs" / "core_evidence_campaign.json"
+    )
+    campaign = read_json(campaign_path)
+    fresh_qualification = campaign.get("policy") == (
+        "project_theseus_worker_v2_fresh_qualification_evaluator_v1"
+    )
+    denominator = str(
+        campaign.get("evaluation_denominator") or "D1_DEVELOPMENT"
+    )
+    if fresh_qualification:
+        validate_fresh_candidate_set(
+            candidate_report,
+            candidate_report_path,
+            campaign,
+            campaign_path,
+            repo_root,
+        )
     authoritative = {
         opaque_task_id(str(row["source_task_id"])): row
         for row in dicts(campaign.get("tasks"))
-        if row.get("denominator") == "D1_DEVELOPMENT"
+        if row.get("denominator") == denominator
     }
     selected = dicts(candidate_report.get("tasks"))[
         task_index:task_index + task_limit
@@ -116,10 +140,20 @@ def evaluate_report(
         for key in count_fields
     }
     report = {
-        "policy": "project_theseus_worker_v2_hidden_effect_evaluator_development_v1",
+        "policy": (
+            "project_theseus_worker_v2_hidden_effect_evaluator_qualification_v1"
+            if fresh_qualification
+            else "project_theseus_worker_v2_hidden_effect_evaluator_development_v1"
+        ),
         "created_utc": now(),
         "trigger_state": "GREEN" if not faults else "RED",
-        "scope": "consumed_development_only_not_blind_evidence",
+        "scope": (
+            "fresh_source_disjoint_worker_v2_qualification"
+            if fresh_qualification
+            else "consumed_development_only_not_blind_evidence"
+        ),
+        "campaign_config": relative(campaign_path, repo_root),
+        "campaign_config_sha256": sha256_file(campaign_path),
         "candidate_report": relative(candidate_report_path, repo_root),
         "candidate_report_sha256": sha256_file(candidate_report_path),
         "evaluator_source_sha256": sha256_file(Path(__file__)),
@@ -139,8 +173,15 @@ def evaluate_report(
             "wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
         },
         "maximum_inference": (
-            "This diagnoses Worker v2 on already-consumed development tasks. "
-            "It is not fresh qualification or evidence of generalization."
+            "This is a fresh source-disjoint qualification of the exact frozen "
+            "Worker v2 source, cohort, budgets, and evaluator. It can unlock the "
+            "preserved E2 heldout only if the unchanged competence floor and all "
+            "integrity conditions pass; it is not a general coding claim."
+            if fresh_qualification
+            else (
+                "This diagnoses Worker v2 on already-consumed development tasks. "
+                "It is not fresh qualification or evidence of generalization."
+            )
         ),
     }
     report["report_payload_sha256"] = stable_hash({
@@ -148,6 +189,77 @@ def evaluate_report(
         if key not in {"created_utc", "runtime", "report_payload_sha256"}
     })
     return report
+
+
+def validate_fresh_candidate_set(
+    candidate_report: dict[str, Any],
+    candidate_report_path: Path,
+    campaign: dict[str, Any],
+    campaign_path: Path,
+    repo_root: Path,
+) -> None:
+    if candidate_report.get("policy") != (
+        "project_theseus_worker_v2_fresh_qualification_candidates_v1"
+    ):
+        raise EvaluationFault("unexpected fresh candidate report policy")
+    if candidate_report.get("trigger_state") != "GREEN":
+        raise EvaluationFault("fresh candidate generation not green")
+    if dicts(candidate_report.get("faults")):
+        raise EvaluationFault("fresh candidate report contains faults")
+    rows = dicts(candidate_report.get("tasks"))
+    if len(rows) != 3:
+        raise EvaluationFault("fresh qualification requires three candidates")
+    if not all(
+        row.get("sealed_before_target_open") is True
+        and mapping(row.get("candidate_seal")).get(
+            "target_opened_before_seal"
+        ) is False
+        for row in rows
+    ):
+        raise EvaluationFault("candidate set was not sealed before target open")
+    counters = mapping(candidate_report.get("counters"))
+    if any(int(counters.get(key) or 0) != 0 for key in (
+        "external_inference_calls",
+        "teacher_calls",
+        "public_calibration_cases_consumed",
+        "D2_cases_consumed",
+        "targets_opened_to_worker",
+        "targets_opened_before_all_candidates_sealed",
+        "user_facing_effects",
+    )):
+        raise EvaluationFault("fresh candidate boundary counter nonzero")
+    freeze_relative = str(campaign.get("freeze_manifest") or "")
+    freeze_path = (repo_root / freeze_relative).resolve()
+    if not freeze_path.is_relative_to(repo_root.resolve()):
+        raise EvaluationFault("qualification freeze path escape")
+    freeze_manifest = read_json(freeze_path)
+    if freeze_manifest.get("policy") != (
+        "project_theseus_worker_v2_fresh_qualification_freeze_v1"
+    ):
+        raise EvaluationFault("unexpected qualification freeze policy")
+    if freeze_manifest.get("evaluator_manifest_sha256") != sha256_file(
+        campaign_path
+    ):
+        raise EvaluationFault("evaluator task manifest mutated after freeze")
+    freeze = mapping(freeze_manifest.get("source_identities"))
+    source = mapping(candidate_report.get("source"))
+    expected_source = freeze
+    if source != expected_source:
+        raise EvaluationFault("fresh candidate source identity mismatch")
+    if expected_source.get("evaluator_sha256") != sha256_file(Path(__file__)):
+        raise EvaluationFault("evaluator mutated after qualification freeze")
+    if (
+        candidate_report.get("qualification_public_manifest_sha256")
+        != freeze_manifest.get("public_manifest_sha256")
+    ):
+        raise EvaluationFault("public cohort identity mismatch")
+    if candidate_report.get(
+        "qualification_freeze_manifest_sha256"
+    ) != sha256_file(freeze_path):
+        raise EvaluationFault("qualification freeze identity mismatch")
+    report_digest = sha256_file(candidate_report_path)
+    if not re.fullmatch(r"[0-9a-f]{64}", report_digest):
+        raise EvaluationFault("candidate report digest invalid")
 
 
 def evaluate_candidate(

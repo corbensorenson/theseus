@@ -1,0 +1,112 @@
+{
+  "policy": "project_theseus_worker_v2_fresh_qualification_evaluator_v1",
+  "evaluation_denominator": "D1_WORKER_V2_QUALIFICATION",
+  "freeze_manifest": "configs/core_evidence_worker_v2_qualification_freeze.json",
+  "evaluator_contract": {
+    "policy": "project_theseus_hidden_git_effect_evaluator_v1",
+    "candidate_output_schema": {
+      "required_fields": [
+        "worker_id",
+        "natural_request_sha256",
+        "parent_source_commit",
+        "patch_unified_diff",
+        "proposed_paths",
+        "verification_commands",
+        "abstained"
+      ],
+      "maximum_patch_bytes": 262144,
+      "maximum_proposed_paths": 32,
+      "maximum_verification_commands": 16,
+      "candidate_emitted_scores_trusted": false,
+      "candidate_emitted_integrity_flags_trusted": false
+    },
+    "candidate_seal": {
+      "seal_before_target_open": true,
+      "seal_fields": [
+        "candidate_output_sha256",
+        "worker_input_sha256",
+        "parent_archive_sha256",
+        "worker_source_sha256",
+        "started_utc",
+        "finished_utc"
+      ],
+      "mutation_after_seal": "INVALID_INFORMATION_FLOW"
+    },
+    "completion_predicate": {
+      "patch_required": true,
+      "patch_must_apply_cleanly_to_parent": true,
+      "independent_effect_inventory_required": true,
+      "changes_outside_parent_snapshot_forbidden": true,
+      "changed_path_precision_minimum": 0.5,
+      "changed_path_recall_minimum": 0.25,
+      "hidden_target_tests_run_after_seal": true,
+      "hidden_target_tests_must_pass": true,
+      "documentation_only_tasks_require_link_and_structure_gate": true,
+      "empty_noop_or_plan_only_output_is_not_completed": true,
+      "candidate_authored_success_or_integrity_flags_ignored": true
+    },
+    "exact_target_patch_required": false
+  },
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_task_family_rate": 0.34,
+    "minimum_useful_rate": 0.5
+  },
+  "tasks": [
+    {
+      "source_task_id": "fresh_history:6b8fd44f407dab31fae9b8d21ba60c3a544c9527",
+      "partition": "qualification",
+      "denominator": "D1_WORKER_V2_QUALIFICATION",
+      "family": "repository_correctness",
+      "target_commit": "6b8fd44f407dab31fae9b8d21ba60c3a544c9527",
+      "parent_source_commit": "264fc2e36601736b962e296755c24a5ee5b9e88f",
+      "natural_request": "In scripts/report_evidence_store.py, make compact_evidence_database handle oversized JSON reports that are already stored under the report snapshot directory without recursively creating nested snapshots. It must preserve the exact content hash and replayable payload, keep database rows reconstructable, and add or update the existing report-evidence integrity tests for this case.",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "effect_class": "bounded_repository_change"
+    },
+    {
+      "source_task_id": "fresh_history:d669f828a936a0de64159d1ae955e1481ac2b689",
+      "partition": "qualification",
+      "denominator": "D1_WORKER_V2_QUALIFICATION",
+      "family": "repository_correctness",
+      "target_commit": "d669f828a936a0de64159d1ae955e1481ac2b689",
+      "parent_source_commit": "90a1c999e6d97af00031c88809b0bd4b4975fbf7",
+      "natural_request": "In scripts/moecot_language_arm_training.py, fix segmented KERC evaluation so repeated semantic row IDs from different artifact keys or source indexes remain distinct by using supervision_row_instance_id. The implementation must preserve source-custody validation, must not use answer metadata, and must update the existing MoECOT training tests to cover duplicate row IDs across segments.",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "effect_class": "bounded_repository_change"
+    },
+    {
+      "source_task_id": "fresh_history:b63165b92a7996a0ffa07674e57a06baa0be4300",
+      "partition": "qualification",
+      "denominator": "D1_WORKER_V2_QUALIFICATION",
+      "family": "repository_correctness",
+      "target_commit": "b63165b92a7996a0ffa07674e57a06baa0be4300",
+      "parent_source_commit": "860de45b80bed71dc35b6b3780f9dc94c3619e9e",
+      "natural_request": "In scripts/neural_seed_token_model_backend.py, fix the transformer pretraining source-embedding contract so apply_pretraining_initialization copies weights into the source embedding module actually used by the backend while preserving target-embedding initialization and padding behavior. Only embedding parameters may transfer, the returned accounting must report copied parameters exactly, and an existing neural-seed or transformer test must verify the corrected behavior.",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "effect_class": "bounded_repository_change"
+    }
+  ],
+  "boundaries": {
+    "target_patch_inspected_before_freeze": false,
+    "targets_opened_to_worker": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0
+  },
+  "terminal_rule": "Pass only if all integrity checks remain valid, at least three tasks are attempted, useful rate is at least 0.5, and the weakest repository_correctness family rate is at least 0.34. Otherwise stop with a scoped Worker v2 capability-wall report and keep E2 sealed."
+}

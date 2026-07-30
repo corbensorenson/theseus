@@ -1,0 +1,62 @@
+{
+  "policy": "project_theseus_worker_v2_fresh_qualification_public_v1",
+  "cohort_id": "worker_v2_fresh_source_disjoint_repository_correctness_v1",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_task_family_rate": 0.34,
+    "minimum_useful_rate": 0.5
+  },
+  "request_adequacy_policy": {
+    "minimum_words": 24,
+    "minimum_observable_acceptance_terms": 3,
+    "minimum_repository_identifiers": 2,
+    "verification_expectation_required": true,
+    "target_patch_inspected_before_freeze": false
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-470bedd9ed0affce",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/report_evidence_store.py, make compact_evidence_database handle oversized JSON reports that are already stored under the report snapshot directory without recursively creating nested snapshots. It must preserve the exact content hash and replayable payload, keep database rows reconstructable, and add or update the existing report-evidence integrity tests for this case.",
+      "parent_source_commit": "264fc2e36601736b962e296755c24a5ee5b9e88f",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-2458e86418232ddb",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/moecot_language_arm_training.py, fix segmented KERC evaluation so repeated semantic row IDs from different artifact keys or source indexes remain distinct by using supervision_row_instance_id. The implementation must preserve source-custody validation, must not use answer metadata, and must update the existing MoECOT training tests to cover duplicate row IDs across segments.",
+      "parent_source_commit": "90a1c999e6d97af00031c88809b0bd4b4975fbf7",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-7376044b195d161d",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/neural_seed_token_model_backend.py, fix the transformer pretraining source-embedding contract so apply_pretraining_initialization copies weights into the source embedding module actually used by the backend while preserving target-embedding initialization and padding behavior. Only embedding parameters may transfer, the returned accounting must report copied parameters exactly, and an existing neural-seed or transformer test must verify the corrected behavior.",
+      "parent_source_commit": "860de45b80bed71dc35b6b3780f9dc94c3619e9e",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    }
+  ],
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "target_fields_visible_to_worker": 0,
+    "candidate_snapshot_has_git_metadata": false
+  },
+  "maximum_inference": "This manifest freezes three actionable, source-disjoint natural repository requests and parent identities. It contains no target commit, target patch, hidden test, answer, or derived target field and grants no competence claim before independent evaluation."
+}

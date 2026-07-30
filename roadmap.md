@@ -339,6 +339,26 @@ target identities before target inspection, and preserve the original four E2
 heldouts. Do not keep rerunning the three consumed tasks merely to tune against
 their opened targets.
 
+That precondition is now closed. The fresh cohort, Worker v2 source, local-model
+config, runner, evaluator, target identities, unchanged competence floor,
+complete-denominator rule, rescue/terminal rules, and zero-external-use
+boundaries are frozen in
+`configs/core_evidence_worker_v2_qualification_freeze.json`. All three requests
+pass the prospective adequacy audit, use distinct parent/target histories, and
+share the `repository_correctness` family so the frozen weakest-family rule is
+meaningful. No target patch was opened while writing or freezing the public
+requests. Candidate generation reads only
+`configs/core_evidence_worker_v2_qualification_public.json`; authoritative
+target identities remain evaluator-only. State:
+`FRESH_QUALIFICATION_FROZEN_NOT_RUN`.
+
+The next action is irreversible: run all three candidates once, seal all three
+before any target opens, then run the frozen independent evaluator. If useful
+rate is below `0.5`, weakest-family useful rate is below `0.34`, fewer than
+three tasks are attempted, or any information-flow/evaluator/rollback/boundary
+check fails, terminate Worker v2 qualification and keep the four E2 heldouts
+sealed. Do not repair, rerun, narrow, or replace a task after outcomes open.
+
 The repeated acceleration criticism in the July review is stale for the
 selected route: the production pretraining step already uses `mx.compile`,
 compiled microbatch four, and width quantum 64. Batch-one settings remain on

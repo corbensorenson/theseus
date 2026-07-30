@@ -1,0 +1,56 @@
+{
+  "policy": "project_theseus_worker_v2_fresh_qualification_freeze_v1",
+  "cohort_id": "worker_v2_fresh_source_disjoint_repository_correctness_v1",
+  "public_manifest_sha256": "18f2547b1c82da42e8bdd7e300c91e0bee285c1d4b8eba85a9cd3e0d26f735dd",
+  "evaluator_manifest_sha256": "f1803641b6af26f2fe70024e841fcdc4ad6083851e3a12cc198dd19e4ce574bf",
+  "source_identities": {
+    "worker_sha256": "88085c1296ba9389a4466ea275489bd0b4c1eaa469ad569d7bc7c095b9f0bda8",
+    "worker_config_sha256": "ec52f92f45172292f26ff63fa164b0c26660a6b5c5c5fd2ce0dfe9a189fe0b1d",
+    "qualification_runner_sha256": "7c87fb002ffe2ba29507280e8aa38f2877d898748d28e6e0c716b03ea14362da",
+    "evaluator_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674"
+  },
+  "target_identities": [
+    {
+      "opaque_task_id": "task-470bedd9ed0affce",
+      "parent_source_commit": "264fc2e36601736b962e296755c24a5ee5b9e88f",
+      "target_commit": "6b8fd44f407dab31fae9b8d21ba60c3a544c9527"
+    },
+    {
+      "opaque_task_id": "task-2458e86418232ddb",
+      "parent_source_commit": "90a1c999e6d97af00031c88809b0bd4b4975fbf7",
+      "target_commit": "d669f828a936a0de64159d1ae955e1481ac2b689"
+    },
+    {
+      "opaque_task_id": "task-7376044b195d161d",
+      "parent_source_commit": "860de45b80bed71dc35b6b3780f9dc94c3619e9e",
+      "target_commit": "b63165b92a7996a0ffa07674e57a06baa0be4300"
+    }
+  ],
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_task_family_rate": 0.34,
+    "minimum_useful_rate": 0.5
+  },
+  "terminal_rules": {
+    "run_once": true,
+    "minimum_attempted_tasks": 3,
+    "complete_denominators_required": true,
+    "all_candidate_seals_before_any_target_open": true,
+    "target_patch_inspected_before_freeze": false,
+    "evaluator_mutation_after_freeze": "INVALID_EVALUATOR",
+    "worker_or_budget_mutation_after_freeze": "INVALID_INFORMATION_FLOW",
+    "pass": "competence floor and all information-flow, evaluator, rollback, and boundary checks pass",
+    "fail": "issue scoped terminal capability-wall diagnosis and keep E2 sealed"
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "candidate_snapshot_has_git_metadata": false,
+    "arbitrary_shell": false
+  },
+  "maximum_inference": "This freezes the exact Worker v2 source, budgets, public cohort, evaluator-only target identities, evaluator, unchanged competence floor, and stop rules before any target patch is opened. Passing can unlock the preserved E2 heldout once; failure supports only a scoped Worker v2 capability-wall diagnosis."
+}
