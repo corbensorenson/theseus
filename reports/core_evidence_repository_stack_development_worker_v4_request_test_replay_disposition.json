@@ -1,0 +1,26 @@
+{
+  "policy": "project_theseus_repository_stack_development_interrupted_disposition_v1",
+  "event_trace": "runtime/core_evidence_repository_stack_development_worker_v4_request_test_full_events.jsonl",
+  "event_trace_sha256": "7e307c73ec75712f8ba2ebcbaf7a32c46d2c642fde653d47fc394d9d132eb947",
+  "event_count": 6,
+  "disposition": "INVALID_EXPERIMENT_NO_RELEVANT_SURFACE_CHANGE",
+  "capability_or_subsystem_claim_allowed": false,
+  "operator_interrupted": true,
+  "reason_for_interrupt": "The replay was launched under the mistaken belief that the request-named test existed in the frozen parent. It does not. The generic request-scoped existing-test hardening therefore left this task's model-visible inspection contract unchanged. After the trace repeated the same four-source/analogous-test prefix, the run was stopped before another redundant plan/edit sequence.",
+  "source_state_correction": {
+    "parent_source_commit": "7132f1535d43c5f3eb0fb5095f8b760da66a0f57",
+    "request_named_test_path": "tests/test_procedural_memory_route_adoption_gate.py",
+    "request_named_test_existed_at_parent": false,
+    "request_named_test_authority": "authorized_creation_path",
+    "generic_hardening_relevant_to_this_task": false
+  },
+  "superseding_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

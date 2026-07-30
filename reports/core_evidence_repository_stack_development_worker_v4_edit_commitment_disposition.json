@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_repository_stack_development_terminal_disposition_v1",
+  "event_trace": "runtime/core_evidence_repository_stack_development_worker_v4_bounded_inspection_full_events.jsonl",
+  "event_trace_sha256": "273a2cfad320b68bc324fec67570c0a8b04d0e8a7f375d04bcb3441676e65ed9",
+  "event_count": 9,
+  "disposition": "TERMINAL_FAIL_TMAX9B_WORKER_V4_EDIT_COMMITMENT",
+  "capability_or_subsystem_claim_allowed": false,
+  "development_task_reuse_for_worker_tuning_forbidden": true,
+  "reason": "On the aligned consumed-development task, the exact TMax-9B/Worker-v4 full-stack arm received four valid source spans, one independently selected analogous existing test, a visible bounded effect scope, a compact insert_before primitive, and an accepted five-criterion/two-path plan. After the five-read ceiling, it twice emitted prohibited read actions instead of any legal edit or explicit abstention. All previously observed generic controller confounds had been removed or shown irrelevant to this parent snapshot.",
+  "adequacy": {
+    "target_free_alignment_audit_green": true,
+    "baseline_hidden_tests_failed_as_expected": 3,
+    "request_named_test_was_authorized_creation_path": true,
+    "request_named_test_existed_at_parent": false,
+    "analogous_existing_test_read": "tests/test_theseus_assistant_effect_transaction.py",
+    "valid_source_reads": 4,
+    "valid_test_reads": 1,
+    "accepted_plan_criterion_count": 5,
+    "accepted_plan_target_path_count": 2,
+    "post_plan_illegal_read_count": 2,
+    "candidate_patch_count": 0,
+    "verification_count": 0,
+    "rollback_effect_count": 0
+  },
+  "wall": {
+    "owner": "local_model_worker_protocol",
+    "scope": "TMax-9B revision 33812d6cf04f88856f25eb828de4f3144a194560 with committed Worker-v4 source at 0252976c on this consumed development task and budget",
+    "causal_wall": "POST_PLAN_EDIT_COMMITMENT_OR_EXPLICIT_ABSTENTION",
+    "not_claimed": [
+      "general TMax coding incompetence",
+      "governance inefficacy",
+      "VCM inefficacy",
+      "planning inefficacy",
+      "routing inefficacy",
+      "procedural-memory inefficacy",
+      "Theseus student incompetence"
+    ]
+  },
+  "terminal_rule": {
+    "further_worker_v4_rescue_on_this_task": "forbidden",
+    "worker_v4_freeze_or_fresh_qualification": "forbidden",
+    "E2": "sealed",
+    "next_allowed_branch": "prospectively qualify one materially stronger locally runnable model/worker identity, or defer D1"
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

@@ -66,7 +66,7 @@ identifies them as the smallest causal next experiment.
 | Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
 | D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
-| D1 local-8B successor | `WORKER_V4_REQUALIFICATION_REQUIRED` | TMax-9B/Worker-v3 historically cleared the 2/3 floor with 0 unsafe and 3/3 rollback; generic Worker-v4 repairs invalidate transfer, so E2 remains unopened |
+| D1 local-8B successor | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | TMax-9B/Worker-v3 historically cleared the 2/3 floor, but integrated Worker-v4 could not commit an edit after adequate bounded inspection and planning; E2 remains unopened pending a materially stronger successor |
 | D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
 | Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
 | Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
@@ -954,8 +954,9 @@ accepted without change.
 
 ### D1 Subsystem Adequacy Gate
 
-State: `WORKER_V4_REQUALIFICATION_REQUIRED`; five subsystem owners remain
-mechanics-green and E2 heldouts remain sealed.
+State: `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT`; five subsystem owners
+remain mechanics-green, Worker-v4 promotion is forbidden, and E2 heldouts
+remain sealed.
 
 Before the one-shot integrated comparison, qualify the existing canonical
 implementations so a later failure can be attributed to the subsystem rather
@@ -1131,24 +1132,46 @@ Only after it reaches a real edit, verification, or honestly attributable
 model wall may the worker be frozen for fresh qualification.
 
 The bounded-inspection replay then recovered from an out-of-range read,
-consumed four valid source spans plus one test span, and produced another valid
-five-criterion/two-path plan. It twice requested more source context instead of
-editing and was stopped. That behavior is not yet clean model-negative
-evidence because the controller accepted
-`tests/test_theseus_assistant_effect_transaction.py` as its test context even
-though the natural request explicitly named
-`tests/test_procedural_memory_route_adoption_gate.py`. Preserve the run as
-`INCONCLUSIVE_IMPLEMENTATION_REQUEST_SCOPED_TEST_CONTEXT_NOT_ENFORCED`.
+consumed four valid source spans plus one analogous existing test, and produced
+another valid five-criterion/two-path plan. It twice requested more source
+context instead of editing and was stopped. The first disposition incorrectly
+treated the request-named
+`tests/test_procedural_memory_route_adoption_gate.py` as an existing readable
+path by checking the current worktree instead of frozen parent
+`7132f153...`. At that parent the file does not exist; it is an authorized
+creation path. The controller's analogous-test fallback was therefore correct.
+Preserve the mistaken disposition as
+`INVALID_DIAGNOSIS_PARENT_TEST_PATH_ABSENT`.
 
-The test-read contract now requires an existing test path explicitly named by
-the natural request whenever one exists. Only requests without such a path may
-fall back to a target-blind ranked test. Hidden evaluator tests and target
-metadata remain invisible, and the five-read ceiling is unchanged. One final
-consumed-development replay may test this generic repair. If TMax still cannot
-commit a legal edit after correct source and request-scoped test context, stop
-Worker-v4 development with a scoped local-model agent-control/edit-synthesis
-wall and select a materially stronger locally runnable worker or defer D1;
-do not add another harness feature merely to rescue this task.
+Record the superseding scoped result as
+`TERMINAL_FAIL_TMAX9B_WORKER_V4_EDIT_COMMITMENT`. For this exact TMax revision,
+Worker-v4 source, consumed task, context, and budget, the worker could inspect,
+plan, and recover from controller faults but could not commit a legal edit or
+explicitly abstain after the inspection ceiling. It produced no patch and
+never reached verification. This is not evidence against governance, VCM,
+planning, routing, procedural memory, or the Theseus student.
+
+A generic hardening remains: when a request-named test already exists in its
+parent snapshot, it—not an unrelated test—is required before mutation. That
+hardening did not change this surface. A mistakenly launched replay was stopped
+after reproducing the unchanged inspection prefix and is
+`INVALID_EXPERIMENT_NO_RELEVANT_SURFACE_CHANGE`.
+
+Worker-v4 may not be tuned or replayed again on this task, frozen, or promoted
+to fresh qualification. E2 remains sealed. The next allowed D1 branch is to
+prospectively preflight one materially stronger locally runnable model/worker
+identity, then require it to clear consumed development before a new
+source-disjoint qualification. Current primary-source review identifies
+[`gpt-oss-20b`](https://huggingface.co/openai/gpt-oss-20b) as the strongest
+plausible next hardware-bound candidate: OpenAI documents agentic tool use,
+structured outputs, 3.6B active parameters, and operation within 16 GB using
+its native MXFP4 weights; a pinned
+[MLX conversion](https://huggingface.co/mlx-community/gpt-oss-20b-MXFP4-Q8)
+exists. [Devstral Small 2](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512)
+is a stronger coding-specific alternative but its own model card specifies a
+32-GB Mac, so it is not a credible candidate on this host. Neither model is
+claimed installed, runnable, or superior until exact disk, load,
+action-protocol, latency, memory, swap, and rollback preflights pass.
 
 ## Neural Verdict Campaign
 

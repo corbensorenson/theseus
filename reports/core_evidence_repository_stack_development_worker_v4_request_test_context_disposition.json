@@ -3,10 +3,10 @@
   "event_trace": "runtime/core_evidence_repository_stack_development_worker_v4_bounded_inspection_full_events.jsonl",
   "event_trace_sha256": "273a2cfad320b68bc324fec67570c0a8b04d0e8a7f375d04bcb3441676e65ed9",
   "event_count": 9,
-  "disposition": "INCONCLUSIVE_IMPLEMENTATION_REQUEST_SCOPED_TEST_CONTEXT_NOT_ENFORCED",
+  "disposition": "INVALID_DIAGNOSIS_PARENT_TEST_PATH_ABSENT",
   "capability_or_subsystem_claim_allowed": false,
   "operator_interrupted": true,
-  "reason_for_interrupt": "TMax recovered from an out-of-range read, consumed the bounded five-read inspection budget, emitted a valid five-criterion/two-path plan, and then twice requested another source span instead of editing. However, the controller allowed an unrelated test file to satisfy require_test_read_before_mutation even though the natural request explicitly named the relevant test path. The worker therefore reached its edit phase without request-scoped test context, leaving a material harness confound.",
+  "reason_for_interrupt": "The original disposition incorrectly treated tests/test_procedural_memory_route_adoption_gate.py as an existing readable path. At frozen parent 7132f1535d43c5f3eb0fb5095f8b760da66a0f57 that file does not exist; the natural request authorizes its creation. The controller therefore correctly used an analogous existing test to satisfy independent test-context inspection. The claimed harness confound is absent and this diagnosis is invalid.",
   "positive_mechanics": {
     "out_of_range_read_rejected_without_credit": true,
     "bounded_source_read_recovery": true,
@@ -18,22 +18,25 @@
     "authority_scope_nonempty": true
   },
   "wall": {
-    "owner": "worker_controller_request_scoped_test_context",
+    "owner": "disposition_source_state_audit",
     "planned_path_read_attempts_after_ceiling": 2,
     "configured_maximum_pre_mutation_reads": 5,
     "request_named_test_path": "tests/test_procedural_memory_route_adoption_gate.py",
     "actual_test_path_read": "tests/test_theseus_assistant_effect_transaction.py",
-    "root_cause": "The test-read gate accepted any tests/ path instead of preferring and requiring an existing test path explicitly named by the natural request.",
-    "local_model_capability_disposition": "NOT_DIAGNOSED_BECAUSE_REQUEST_SCOPED_TEST_CONTEXT_WAS_NOT_ENFORCED"
+    "request_named_test_existed_at_parent": false,
+    "root_cause": "The disposition owner checked the current worktree instead of the frozen parent snapshot when deciding whether the request-named test was readable.",
+    "local_model_capability_disposition": "SEE_SUPERSEDING_TERMINAL_DEVELOPMENT_DISPOSITION"
   },
   "repair": {
-    "successor": "Worker-v4 development with request-scoped test-read enforcement",
+    "superseded_by": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
+    "generic_test_read_hardening_retained": true,
+    "generic_hardening_changed_this_surface": false,
     "explicit_existing_test_path_required_when_present": true,
     "fallback_to_any_test_only_when_request_names_no_existing_test": true,
     "hidden_tests_or_target_metadata_exposed": false,
     "inspection_ceiling_unchanged": true,
     "effect_authority_unchanged": true,
-    "fresh_requalification_required": true
+    "fresh_requalification_required": false
   },
   "boundaries": {
     "external_inference_calls": 0,

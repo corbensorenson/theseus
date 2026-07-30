@@ -239,14 +239,22 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
     config = read_json(config_path)
     registry_path = resolve_repo_path(str(config["registry"]))
     disposition_path = resolve_repo_path(str(config["qualified_worker_disposition"]))
+    terminal_disposition_path = resolve_repo_path(
+        str(config["development_terminal_disposition"])
+    )
     freeze_path = resolve_repo_path(str(config["qualified_worker_freeze"]))
     worker_source_path = resolve_repo_path(str(config["current_worker_source"]))
     active_worker_config_path = resolve_repo_path(str(config["active_worker_config"]))
     registry = read_json(registry_path)
     disposition = read_json(disposition_path)
+    terminal_disposition = read_json(terminal_disposition_path)
     freeze = read_json(freeze_path)
     if disposition.get("disposition") != config.get("required_worker_disposition"):
         raise ValueError("qualified worker disposition does not match config")
+    if terminal_disposition.get("disposition") != config.get(
+        "required_development_terminal_disposition"
+    ):
+        raise ValueError("development terminal disposition does not match config")
 
     implementations = implementation_index(registry)
     frozen_source_identities = (
@@ -286,7 +294,10 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
         == counts["owners"]
     )
     trigger_state = (
-        "RED_WORKER_REQUALIFICATION_REQUIRED"
+        "RED_WORKER_SUCCESSOR_REQUIRED"
+        if config.get("active_worker_state")
+        == "TERMINAL_FAIL_SELECT_MATERIALLY_STRONGER_LOCAL_SUCCESSOR"
+        else "RED_WORKER_REQUALIFICATION_REQUIRED"
         if not worker_identity_current
         else "GREEN_ADVANCE_TO_DEVELOPMENT_CAUSAL_SMOKES"
         if all_mechanics_green
@@ -301,6 +312,12 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
         "config_sha256": sha256_path(config_path),
         "registry_sha256": sha256_path(registry_path),
         "qualified_worker_disposition_sha256": sha256_path(disposition_path),
+        "development_terminal_disposition": str(
+            config["development_terminal_disposition"]
+        ),
+        "development_terminal_disposition_sha256": sha256_path(
+            terminal_disposition_path
+        ),
         "worker_identity": {
             "historical_freeze": str(config["qualified_worker_freeze"]),
             "historical_frozen_worker_sha256": frozen_worker_sha256,
@@ -310,7 +327,10 @@ def build_report(config_path: Path, *, run_tests: bool) -> dict[str, Any]:
             "active_worker_config": str(config["active_worker_config"]),
             "active_worker_config_sha256": sha256_path(active_worker_config_path),
             "state": (
-                "CURRENT_QUALIFIED_IDENTITY"
+                "DEVELOPMENT_SUCCESSOR_TERMINAL_FAIL_SELECT_STRONGER_MODEL"
+                if config.get("active_worker_state")
+                == "TERMINAL_FAIL_SELECT_MATERIALLY_STRONGER_LOCAL_SUCCESSOR"
+                else "CURRENT_QUALIFIED_IDENTITY"
                 if worker_identity_current
                 else "DEVELOPMENT_SUCCESSOR_REQUALIFICATION_REQUIRED"
             ),

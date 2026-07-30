@@ -1,7 +1,7 @@
 {
   "policy": "project_theseus_local_8b_stack_causal_campaign_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "state": "worker_v4_development_repair_requalification_required",
+  "state": "tmax_worker_v4_terminal_fail_successor_selection_required",
   "question": "Which existing Theseus components improve useful-safe natural repository work over the same fixed local 8B model under matched information and total lifecycle budgets?",
   "preserved_invalid_packet": {
     "disposition": "INVALID_EVALUATOR",
@@ -18,7 +18,8 @@
     "temperature": 0.0,
     "worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
     "historical_qualification_disposition": "reports/core_evidence_tmax_fresh_v1_qualification_disposition.json",
-    "qualification_status": "NOT_TRANSFERRED_AFTER_WORKER_SOURCE_CHANGE",
+    "development_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
+    "qualification_status": "TERMINAL_FAIL_DEVELOPMENT_SUCCESSOR_SELECTION_REQUIRED",
     "credit": "third_party_local_learned_generation_not_theseus_student",
     "operator_authorization": {
       "state": "EXPLICITLY_RATIFIED_FOR_D1_STACK_EVALUATION_ONLY",
@@ -41,9 +42,9 @@
   },
   "ordered_stages": [
     "L0_historical_tmax_worker_v3_qualification_preserved",
-    "L1_worker_v4_consumed_development_repair",
-    "L2_worker_v4_adapter_evaluator_and_budgets_freeze",
-    "L3_source_disjoint_worker_v4_qualification_once",
+    "L1_tmax_worker_v4_consumed_development_terminal_fail",
+    "L2_materially_stronger_local_successor_selection_and_preflight",
+    "L3_successor_consumed_development_then_source_disjoint_qualification_once",
     "L4_matched_integrated_stack_comparison_if_qualified",
     "L5_governance_and_subsystem_causal_ablations_if_qualified",
     "L6_conditional_E2_and_second_model_replication",

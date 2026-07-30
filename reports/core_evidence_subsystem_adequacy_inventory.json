@@ -1,10 +1,12 @@
 {
-  "created_utc": "2026-07-30T16:12:21.748273Z",
+  "created_utc": "2026-07-30T16:24:33.311256Z",
   "policy": "project_theseus_core_evidence_subsystem_adequacy_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "config_sha256": "083e5a5aa77663e2c7ce2c2bbcb103622c5fc15fb2f658e64677f5fac8914f5d",
+  "config_sha256": "5048bbfb44565d0675fcea743bdd21092d5b3262a0f8ed2b97c9115cd1454b76",
   "registry_sha256": "8161ec7383436560f7dfe9dade673eb82f0fcdabd64e82979b27f88bff098743",
   "qualified_worker_disposition_sha256": "3aa9a485ecef4fd8ee1ccbd8b6314f1cd31b1b99c79fe409589eea18dc9a1337",
+  "development_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
+  "development_terminal_disposition_sha256": "a23c91ed6569ea5806d0b9b5022a745457b4c380c2d55c8bb65f5daf8b5e994d",
   "worker_identity": {
     "historical_freeze": "configs/core_evidence_tmax_fresh_v1_qualification_freeze.json",
     "historical_frozen_worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
@@ -13,7 +15,7 @@
     "historical_identity_current": false,
     "active_worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
     "active_worker_config_sha256": "6b0c9c0a207ffc92cb739ea3d43b7ce2be4c34320f4db232cb7019c812905163",
-    "state": "DEVELOPMENT_SUCCESSOR_REQUALIFICATION_REQUIRED"
+    "state": "DEVELOPMENT_SUCCESSOR_TERMINAL_FAIL_SELECT_STRONGER_MODEL"
   },
   "boundaries": {
     "network": "forbidden",
@@ -88,7 +90,7 @@
         ],
         "returncode": 0,
         "passed": true,
-        "stdout_tail": "...............                                                          [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n15 passed, 1 warning in 1.01s\n",
+        "stdout_tail": "...............                                                          [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n15 passed, 1 warning in 0.80s\n",
         "stderr_tail": ""
       },
       "findings": [
@@ -208,7 +210,7 @@
         ],
         "returncode": 0,
         "passed": true,
-        "stdout_tail": ".........................                                              [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n25 passed, 1 warning, 2 subtests passed in 1.15s\n",
+        "stdout_tail": ".........................                                              [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n25 passed, 1 warning, 2 subtests passed in 0.85s\n",
         "stderr_tail": ""
       },
       "findings": [
@@ -317,7 +319,7 @@
         ],
         "returncode": 0,
         "passed": true,
-        "stdout_tail": "....................................................................     [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n68 passed, 1 warning in 2.46s\n",
+        "stdout_tail": "....................................................................     [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n68 passed, 1 warning in 1.99s\n",
         "stderr_tail": ""
       },
       "findings": [
@@ -496,7 +498,7 @@
         ],
         "returncode": 0,
         "passed": true,
-        "stdout_tail": ".................                                                        [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 1 warning in 0.67s\n",
+        "stdout_tail": ".................                                                        [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 1 warning in 0.54s\n",
         "stderr_tail": ""
       },
       "findings": [
@@ -584,7 +586,7 @@
         ],
         "returncode": 0,
         "passed": true,
-        "stdout_tail": "......                                                                   [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n6 passed, 1 warning in 0.33s\n",
+        "stdout_tail": "......                                                                   [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n6 passed, 1 warning in 0.27s\n",
         "stderr_tail": ""
       },
       "findings": [
@@ -707,7 +709,7 @@
     "inventory_green_tests_not_run": 0,
     "inconclusive_implementation": 0
   },
-  "trigger_state": "RED_WORKER_REQUALIFICATION_REQUIRED",
+  "trigger_state": "RED_WORKER_SUCCESSOR_REQUIRED",
   "E2_heldouts_opened": 0,
   "terminal_rules": {
     "missing_or_unfaithful_owner": "INCONCLUSIVE_IMPLEMENTATION",

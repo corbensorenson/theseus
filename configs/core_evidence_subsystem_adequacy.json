@@ -6,6 +6,9 @@
   "current_worker_source": "scripts/core_evidence_worker_v2.py",
   "active_worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
   "required_worker_disposition": "QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS",
+  "development_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
+  "required_development_terminal_disposition": "TERMINAL_FAIL_TMAX9B_WORKER_V4_EDIT_COMMITMENT",
+  "active_worker_state": "TERMINAL_FAIL_SELECT_MATERIALLY_STRONGER_LOCAL_SUCCESSOR",
   "registry": "configs/project_manifest_registry.json",
   "owners": [
     {

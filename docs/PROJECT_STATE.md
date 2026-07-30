@@ -64,7 +64,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
 | D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks; the operator explicitly ratifies this third-party local worker for D1 stack evaluation only, never student/D2 credit, but its result does not transfer after Worker-v4 repairs |
-| D1 local-8B causal campaign | `WORKER_V4_REQUALIFICATION_REQUIRED` | Request-bound mechanics and pre-generation interventions are implemented; consumed development exposed and repaired shared-input aliasing, empty-scope waste, receipt-token bloat, maximum-length edit serialization, truncated phase-state visibility, empty-read credit, post-plan inspection starvation, and non-request-scoped test credit, so E2 stays sealed pending one final development replay, new freeze, and source-disjoint qualification |
+| D1 local-8B causal campaign | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | After generic controller repairs, TMax inspected four source spans and an analogous test, accepted a five-criterion/two-path plan, then twice regressed to forbidden reads instead of editing or abstaining. No patch or verification occurred; E2 stays sealed and a materially stronger local successor is required |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
 | Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
@@ -310,23 +310,27 @@ In order:
 
 1. Keep E2, D2, public calibration, external inference, and teacher calls
    sealed.
-2. Replay the one aligned consumed-development full-stack task with the
-   repaired phase-first, bounded post-plan-inspection, request-scoped-test
-   TMax-9B/Worker-v4 protocol. Stop at the first terminal success or precisely
-   attributed model wall; do not add another task-specific harness rescue.
-3. If development succeeds, freeze Worker-v4, its request-bound adapter,
-   controller budgets, evaluator, rollback, and terminal rules together.
-4. Author a fresh source-disjoint qualification cohort from visible natural
+2. Do not tune or rerun TMax/Worker-v4 on the consumed procedural-effect task.
+   Preserve its terminal post-plan edit-commitment disposition and the
+   superseded source-state diagnosis.
+3. Preflight one materially stronger locally runnable successor without
+   claiming installation or competence. The first candidate is
+   `gpt-oss-20b` MXFP4/MLX because its official contract targets 16-GB
+   operation and agentic structured tool use; Devstral Small 2 requires a
+   32-GB Mac and is resource-ineligible here.
+4. Require the successor to clear consumed development, then freeze its model,
+   worker, adapter, evaluator, budgets, rollback, and terminal rules.
+5. Author a fresh source-disjoint qualification cohort from visible natural
    acceptance semantics before inspecting any target implementation.
-5. Independently audit baseline failure, request-test alignment, authority,
+6. Independently audit baseline failure, request-test alignment, authority,
    contamination, and source disjointness; then consume the qualification
    once.
-6. Only a valid competence pass unlocks the original E2 heldouts and the
+7. Only a valid competence pass unlocks the original E2 heldouts and the
    matched model-only, direct, governed, full-stack, hold, planning, VCM,
    routing, governance-replay, and procedural-reuse comparisons.
-7. Produce scoped subsystem dispositions and a public-safe local-model with
+8. Produce scoped subsystem dispositions and a public-safe local-model with
    Theseus versus without Theseus brief.
-8. Refresh exact step-11,416 readiness with the training hold installed only
+9. Refresh exact step-11,416 readiness with the training hold installed only
    after the causal campaign reaches a terminal result.
 
 ## Explicitly Not Immediate
