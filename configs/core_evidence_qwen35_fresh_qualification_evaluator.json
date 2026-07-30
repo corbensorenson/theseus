@@ -1,0 +1,149 @@
+{
+  "policy": "project_theseus_local_8b_functional_evaluator_v1",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v1",
+  "candidate_output_schema": {
+    "required_fields": [
+      "worker_id",
+      "natural_request_sha256",
+      "parent_source_commit",
+      "patch_unified_diff",
+      "proposed_paths",
+      "verification_commands",
+      "abstained"
+    ],
+    "maximum_patch_bytes": 262144,
+    "maximum_proposed_paths": 16
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-q35fresh-bonjour-signature",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/hive_node_peer_registry.py, make the Bonjour HMAC signature bind every advertised TXT field that affects peer identity, routing, roles, or capabilities: txtvers, hive_id, node_id, node_name, api_url, relay_url, roles, and caps. verify_bonjour_txt must also require sig_alg to equal hmac-sha256. Preserve valid signed discovery and extend the existing Hive authority-security tests.",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "allowed_effect_paths": [
+        "scripts/hive_node_peer_registry.py",
+        "tests/test_hive_authority_security.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_qwen35_fresh_hidden/hive_bonjour_signature_case.py",
+          "destination": "tests/functional_hidden/test_hive_bonjour_signature_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "Bonjour signature binds every advertised peer field",
+          "request_quote": "bind every advertised TXT field that affects peer identity, routing, roles, or capabilities",
+          "hidden_test": "tests/functional_hidden/test_hive_bonjour_signature_case.py",
+          "assertion_marker": "request_contract:bonjour_signature_binds_advertised_fields"
+        },
+        {
+          "criterion": "Bonjour signature algorithm is enforced",
+          "request_quote": "verify_bonjour_txt must also require sig_alg to equal hmac-sha256",
+          "hidden_test": "tests/functional_hidden/test_hive_bonjour_signature_case.py",
+          "assertion_marker": "request_contract:bonjour_signature_algorithm_enforced"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:bonjour_signature_binds_advertised_fields",
+        "request_contract:bonjour_signature_algorithm_enforced"
+      ],
+      "verification_timeout_seconds": 180
+    },
+    {
+      "opaque_task_id": "task-q35fresh-viea-script-path",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/viea_action_executor.py, make validate_action canonicalize executable script paths and reject relative or absolute parent traversal and symlink-resolved escapes outside the repository scripts directory before applying the per-kind filename allowlist. Preserve legitimate allowlisted scripts and add focused executor tests for traversal and symlink cases.",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "allowed_effect_paths": [
+        "scripts/viea_action_executor.py",
+        "tests/test_viea_action_executor.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_qwen35_fresh_hidden/viea_action_path_case.py",
+          "destination": "tests/functional_hidden/test_viea_action_path_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "relative parent traversal is rejected",
+          "request_quote": "reject relative or absolute parent traversal",
+          "hidden_test": "tests/functional_hidden/test_viea_action_path_case.py",
+          "assertion_marker": "request_contract:viea_relative_script_traversal_rejected"
+        },
+        {
+          "criterion": "absolute parent traversal is rejected",
+          "request_quote": "reject relative or absolute parent traversal",
+          "hidden_test": "tests/functional_hidden/test_viea_action_path_case.py",
+          "assertion_marker": "request_contract:viea_absolute_script_traversal_rejected"
+        },
+        {
+          "criterion": "symlink-resolved script escape is rejected",
+          "request_quote": "symlink-resolved escapes outside the repository scripts directory",
+          "hidden_test": "tests/functional_hidden/test_viea_action_path_case.py",
+          "assertion_marker": "request_contract:viea_symlink_script_escape_rejected"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:viea_relative_script_traversal_rejected",
+        "request_contract:viea_absolute_script_traversal_rejected",
+        "request_contract:viea_symlink_script_escape_rejected"
+      ],
+      "verification_timeout_seconds": 180
+    },
+    {
+      "opaque_task_id": "task-q35fresh-evidence-pack-hash",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/report_evidence_integrity.py, add pack_payload_sha256 to every standard evidence pack, computed deterministically over every other pack field except validation_state and pack_payload_sha256 itself. validate_evidence_pack must reject a missing or mismatched payload hash so command and compact-receipt tampering cannot retain GREEN validation. Preserve the existing source-digest and no-cheat checks and extend the existing integrity tests.",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "allowed_effect_paths": [
+        "scripts/report_evidence_integrity.py",
+        "tests/test_report_evidence_integrity.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_qwen35_fresh_hidden/evidence_pack_hash_case.py",
+          "destination": "tests/functional_hidden/test_evidence_pack_hash_case.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "standard evidence packs carry a deterministic payload hash",
+          "request_quote": "add pack_payload_sha256 to every standard evidence pack",
+          "hidden_test": "tests/functional_hidden/test_evidence_pack_hash_case.py",
+          "assertion_marker": "request_contract:evidence_pack_payload_hash_present"
+        },
+        {
+          "criterion": "command projection tampering is rejected",
+          "request_quote": "command and compact-receipt tampering cannot retain GREEN validation",
+          "hidden_test": "tests/functional_hidden/test_evidence_pack_hash_case.py",
+          "assertion_marker": "request_contract:evidence_pack_command_tamper_rejected"
+        },
+        {
+          "criterion": "receipt projection tampering is rejected",
+          "request_quote": "command and compact-receipt tampering cannot retain GREEN validation",
+          "hidden_test": "tests/functional_hidden/test_evidence_pack_hash_case.py",
+          "assertion_marker": "request_contract:evidence_pack_receipt_tamper_rejected"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:evidence_pack_payload_hash_present",
+        "request_contract:evidence_pack_command_tamper_rejected",
+        "request_contract:evidence_pack_receipt_tamper_rejected"
+      ],
+      "verification_timeout_seconds": 180
+    }
+  ],
+  "boundaries": {
+    "authoritative_target_patch_used": false,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "candidate_authored_claims_trusted": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0
+  }
+}

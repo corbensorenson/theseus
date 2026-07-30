@@ -53,7 +53,8 @@ def run(public_path: Path, freeze_path: Path) -> dict[str, Any]:
     public = read_json(public_path)
     freeze = read_json(freeze_path)
     validate_frozen_inputs(public, freeze, public_path)
-    config = read_json(WORKER_CONFIG)
+    worker_config_path = frozen_worker_config_path(freeze)
+    config = read_json(worker_config_path)
     rows: list[dict[str, Any]] = []
     faults: list[dict[str, str]] = []
     for task in public["tasks"]:
@@ -82,7 +83,7 @@ def run(public_path: Path, freeze_path: Path) -> dict[str, Any]:
         "cohort_id": public["cohort_id"],
         "public_manifest_sha256": sha256_file(public_path),
         "freeze_manifest_sha256": sha256_file(freeze_path),
-        "source_identities": current_source_identities(),
+        "source_identities": current_source_identities(worker_config_path),
         "tasks": rows,
         "faults": faults,
         "denominators": {
@@ -139,7 +140,9 @@ def validate_frozen_inputs(
         raise ValueError("cohort_identity_mismatch")
     if sha256_file(public_path) != freeze.get("public_manifest_sha256"):
         raise ValueError("public_manifest_mutated_after_freeze")
-    if current_source_identities() != freeze.get("candidate_source_identities"):
+    if current_source_identities(
+        frozen_worker_config_path(freeze)
+    ) != freeze.get("candidate_source_identities"):
         raise ValueError("candidate_source_mutated_after_freeze")
     if public.get("competence_floor") != {
         "minimum_attempted_tasks": 3,
@@ -170,13 +173,28 @@ def validate_frozen_inputs(
             raise ValueError("authority_grant_changed")
 
 
-def current_source_identities() -> dict[str, str]:
+def current_source_identities(
+    worker_config_path: Path = WORKER_CONFIG,
+) -> dict[str, str]:
     return {
         "worker_sha256": sha256_file(WORKER),
-        "worker_config_sha256": sha256_file(WORKER_CONFIG),
+        "worker_config_sha256": sha256_file(worker_config_path),
         "development_runner_sha256": sha256_file(DEVELOPMENT_RUNNER),
         "qualification_runner_sha256": sha256_file(Path(__file__)),
     }
+
+
+def frozen_worker_config_path(freeze: dict[str, Any]) -> Path:
+    raw = str(
+        freeze.get("candidate_worker_config_path")
+        or WORKER_CONFIG.relative_to(ROOT)
+    )
+    path = (ROOT / raw).resolve()
+    try:
+        path.relative_to(ROOT.resolve())
+    except ValueError as exc:
+        raise ValueError("worker_config_outside_repository") from exc
+    return path
 
 
 def read_json(path: Path) -> dict[str, Any]:

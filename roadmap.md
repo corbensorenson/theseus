@@ -492,8 +492,7 @@ and may not inherit the failure.
 
 ### D1 Successor 3 — Model And Subsystem Adequacy
 
-State: `QWEN35_PLANNED_WORKER_SELECTED_FOR_FRESH_QUALIFICATION`; no successor
-qualification cohort has yet been consumed.
+State: `QWEN35_FRESH_QUALIFICATION_FROZEN_NOT_CONSUMED`.
 
 Before another causal stack campaign, remove two avoidable confounds.
 
@@ -651,6 +650,26 @@ If the frozen worker clears the existing floor with complete denominators,
 unlock deterministic subsystem-adequacy work. If it fails, issue the scoped
 retrieval, plan, edit-synthesis, test-selection, repair, or termination wall
 and keep all integrated VCM/governance arms sealed.
+
+The new source-disjoint cohort is now frozen but unconsumed. Its three natural
+requests target source files and defect patterns absent from every prior
+qualification: Bonjour HMAC binding across advertised peer fields and
+`sig_alg`; canonical containment of relative, absolute, and symlink-resolved
+VIEA executable paths; and a deterministic self-hash over standard evidence
+pack projections. No authoritative target patch exists. The independent
+alignment audit is `GREEN`: all `3/3` exact parent snapshots expose every
+request-derived failure marker before generation, with target-commit and
+target-patch counts both zero.
+
+`configs/core_evidence_qwen35_fresh_qualification_freeze.json` binds the public
+manifest, hidden evaluator and tests, alignment audit, exact parent commit,
+Qwen3.5 planned-worker config, Worker v2 and runner hashes, unchanged
+competence floor, complete-denominator requirement, exact rollback, and
+run-once stop rules. The qualification runner now obtains its worker-config
+path from the freeze and verifies both repository containment and content
+identity, so it cannot silently fall back to the historical Qwen3 config.
+Run the candidate process once without evaluator access; only after all three
+outputs seal may the independent evaluator open the hidden fixtures.
 
 ## Neural Verdict Campaign
 

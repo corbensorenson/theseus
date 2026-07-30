@@ -1,0 +1,155 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-30T09:05:00.284833Z",
+  "evaluator_manifest_sha256": "9bc1e27bbfdd93189d7ba87a10894d57bef3ccdf39cdb133eb65d1b47e2eaec6",
+  "evaluator_source_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+  "policy": "project_theseus_local_8b_functional_alignment_audit_v1",
+  "report_payload_sha256": "04efa2a216c882ab05280063baec3cce73fec3d3f7afb2359b0559a79d8998f1",
+  "runtime": {
+    "wall_ms": 5450.95
+  },
+  "scope": "prospective_pre_generation_request_test_alignment",
+  "summary": {
+    "aligned_task_count": 3,
+    "target_commit_count": 0,
+    "target_patch_count": 0,
+    "task_count": 3
+  },
+  "tasks": [
+    {
+      "acceptance_contract_sha256": "901a1bfb900cff40a791907f9c411bdffcec35d0012fe7b6ca4f2eb207b25d41",
+      "allowed_effect_path_set_sha256": "15d2c1cdc4980a285c882a699299898e11de49ff2ad3c4831d21eb2bfda7aaa7",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_hive_bonjour_signature_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_hive_bonjour_signature_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FF                                                                       [100%]\n=================================== FAILURES ===================================\n___________ test_bonjour_signature_binds_every_advertised_peer_field ___________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1026e3560>\n\n    def test_bonjour_signature_binds_every_advertised_peer_field(monkeypatch) -> None:\n        policy, original = signed_txt(monkeypatch)\n        mutations = {\n            \"txtvers\": \"2\",\n            \"node_name\": \"Attacker\",\n            \"relay_url\": \"http://attacker.invalid:9999\",\n            \"roles\": \"coordinator\",\n            \"caps\": \"unbounded-execution\",\n        }\n        for field, replacement in mutations.items():\n            tampered = dict(original)\n            tampered[field] = replacement\n>           assert not registry.verify_bonjour_txt(\n                policy,\n                tampered,\n            ), f\"request_contract:bonjour_signature_binds_advertised_fields:{field}\"\nE           AssertionError: request_contract:bonjour_signature_binds_advertised_fields:txtvers\nE           assert not True\nE            +  where True = <function verify_bonjour_txt at 0x1027f5c60>({'security': {'discovery_secret_env': 'THESEUS_HIVE_DISCOVERY_SECRET'}}, {'api_url': 'http://127.0.0.1:8787', 'caps': 'mlx,metal', 'hive_id': 'fixture-hive', 'node_id': 'worker-a', ...})\nE            +    where <function verify_bonjour_txt at 0x1027f5c60> = registry.verify_bonjour_txt\n\ntests/functional_hidden/test_hive_bonjour_signature_case.py:50: AssertionError\n_________________ test_bonjour_signature_algorithm_is_enforced _________________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1026e1d90>\n\n    def test_bonjour_signature_algorithm_is_enforced(monkeypatch) -> None:\n        policy, txt = signed_txt(monkeypatch)\n        txt[\"sig_alg\"] = \"none\"\n>       assert not registry.verify_bonjour_txt(\n            policy,\n            txt,\n        ), \"request_contract:bonjour_signature_algorithm_enforced\"\nE       AssertionError: request_contract:bonjour_signature_algorithm_enforced\nE       assert not True\nE        +  where True = <function verify_bonjour_txt at 0x1027f5c60>({'security': {'discovery_secret_env': 'THESEUS_HIVE_DISCOVERY_SECRET'}}, {'api_url': 'http://127.0.0.1:8787', 'caps': 'mlx,metal', 'hive_id': 'fixture-hive', 'node_id': 'worker-a', ...})\nE        +    where <function verify_bonjour_txt at 0x1027f5c60> = registry.verify_bonjour_txt\n\ntests/functional_hidden/test_hive_bonjour_signature_case.py:59: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_hive_bonjour_signature_case.py::test_bonjour_signature_binds_every_advertised_peer_field\nFAILED tests/functional_hidden/test_hive_bonjour_signature_case.py::test_bonjour_signature_algorithm_is_enforced\n2 failed, 1 warning in 0.28s\n",
+            "wall_ms": 470.836
+          }
+        ],
+        "wall_ms": 470.85
+      },
+      "expected_failure_markers": [
+        "request_contract:bonjour_signature_algorithm_enforced",
+        "request_contract:bonjour_signature_binds_advertised_fields"
+      ],
+      "hidden_test_source_set_sha256": "ea50ca4507fb41c43da23bad9d6e2716e5a66547fd8eaafca7bc6b8aff99dce2",
+      "observed_failure_markers": [
+        "request_contract:bonjour_signature_algorithm_enforced",
+        "request_contract:bonjour_signature_binds_advertised_fields"
+      ],
+      "opaque_task_id": "task-q35fresh-bonjour-signature",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "request_sha256": "76bcad744a915d7b18e7ae4a8b4f02fd62d92d31f5b2594d28131be23a20b3a8"
+    },
+    {
+      "acceptance_contract_sha256": "494c79ca05d1323d21e1803aa4deef097d17a6c7c684dd9a324683eac6a18c9c",
+      "allowed_effect_path_set_sha256": "99eaffee95455b1f6d4272d955e1d502e5cc42c6a3576f383bd38ef45e048eb9",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_viea_action_path_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_viea_action_path_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FFF.                                                                     [100%]\n=================================== FAILURES ===================================\n__________________ test_relative_parent_traversal_is_rejected __________________\n\n    def test_relative_parent_traversal_is_rejected() -> None:\n        result = executor.validate_action(\n            action(\n                \"scripts/../outside/long_horizon_programming_curriculum.py\"\n            ),\n            allow_teacher=False,\n        )\n>       assert result[\"allowed\"] is False, (\n            \"request_contract:viea_relative_script_traversal_rejected\"\n        )\nE       AssertionError: request_contract:viea_relative_script_traversal_rejected\nE       assert True is False\n\ntests/functional_hidden/test_viea_action_path_case.py:30: AssertionError\n__________________ test_absolute_parent_traversal_is_rejected __________________\n\n    def test_absolute_parent_traversal_is_rejected() -> None:\n        escaped = (\n            executor.ROOT\n            / \"scripts\"\n            / \"..\"\n            / \"outside\"\n            / \"long_horizon_programming_curriculum.py\"\n        )\n        result = executor.validate_action(\n            action(str(escaped)),\n            allow_teacher=False,\n        )\n>       assert result[\"allowed\"] is False, (\n            \"request_contract:viea_absolute_script_traversal_rejected\"\n        )\nE       AssertionError: request_contract:viea_absolute_script_traversal_rejected\nE       assert True is False\n\ntests/functional_hidden/test_viea_action_path_case.py:47: AssertionError\n___________________ test_symlink_resolved_escape_is_rejected ___________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-717/test_symlink_resolved_escape_i0')\n\n    def test_symlink_resolved_escape_is_rejected(tmp_path: Path) -> None:\n        outside = tmp_path / \"outside\"\n        outside.mkdir()\n        escaped_script = outside / \"long_horizon_programming_curriculum.py\"\n        escaped_script.write_text(\"raise SystemExit(0)\\n\", encoding=\"utf-8\")\n        link = executor.ROOT / \"scripts\" / \"qualification-escape-link\"\n        try:\n            link.symlink_to(outside, target_is_directory=True)\n            result = executor.validate_action(\n                action(\n                    \"scripts/qualification-escape-link/\"\n                    \"long_horizon_programming_curriculum.py\"\n                ),\n                allow_teacher=False,\n            )\n>           assert result[\"allowed\"] is False, (\n                \"request_contract:viea_symlink_script_escape_rejected\"\n            )\nE           AssertionError: request_contract:viea_symlink_script_escape_rejected\nE           assert True is False\n\ntests/functional_hidden/test_viea_action_path_case.py:67: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_viea_action_path_case.py::test_relative_parent_traversal_is_rejected\nFAILED tests/functional_hidden/test_viea_action_path_case.py::test_absolute_parent_traversal_is_rejected\nFAILED tests/functional_hidden/test_viea_action_path_case.py::test_symlink_resolved_escape_is_rejected\n3 failed, 1 passed, 1 warning in 0.27s\n",
+            "wall_ms": 547.538
+          }
+        ],
+        "wall_ms": 547.582
+      },
+      "expected_failure_markers": [
+        "request_contract:viea_absolute_script_traversal_rejected",
+        "request_contract:viea_relative_script_traversal_rejected",
+        "request_contract:viea_symlink_script_escape_rejected"
+      ],
+      "hidden_test_source_set_sha256": "3a03a196b4a675ff90ab06ce10863bc8532434759e396cb6623a74ca5402eddb",
+      "observed_failure_markers": [
+        "request_contract:viea_absolute_script_traversal_rejected",
+        "request_contract:viea_relative_script_traversal_rejected",
+        "request_contract:viea_symlink_script_escape_rejected"
+      ],
+      "opaque_task_id": "task-q35fresh-viea-script-path",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "request_sha256": "225b58548f611fbbff9e19dc8bfdf5d16ed82799f28a392844b187dcd0b39253"
+    },
+    {
+      "acceptance_contract_sha256": "827840912b6c690877a31278a78f3a6108795a25677f63f1bfa39c3ac186668b",
+      "allowed_effect_path_set_sha256": "a4432544933ef2916123ddd61f59e7c3a6aec2a68320e01d26f7fbdec676b004",
+      "baseline_failed_as_expected": true,
+      "baseline_verification_receipt": {
+        "commands": [
+          "python -m pytest tests/functional_hidden/test_evidence_pack_hash_case.py"
+        ],
+        "passed": false,
+        "results": [
+          {
+            "argv": [
+              "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+              "-m",
+              "pytest",
+              "-q",
+              "-p",
+              "no:cacheprovider",
+              "tests/functional_hidden/test_evidence_pack_hash_case.py"
+            ],
+            "returncode": 1,
+            "stderr_tail": "",
+            "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n__________________ test_standard_pack_has_valid_payload_hash ___________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-718/test_standard_pack_has_valid_p0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x105163fb0>\n\n    def test_standard_pack_has_valid_payload_hash(\n        tmp_path: Path,\n        monkeypatch,\n    ) -> None:\n        pack = build_pack(tmp_path, monkeypatch)\n>       assert isinstance(pack.get(\"pack_payload_sha256\"), str) and len(\n            pack[\"pack_payload_sha256\"]\n        ) == 64, \"request_contract:evidence_pack_payload_hash_present\"\nE       AssertionError: request_contract:evidence_pack_payload_hash_present\nE       assert (False)\nE        +  where False = isinstance(None, str)\nE        +    where None = <built-in method get of dict object at 0x105273a00>('pack_payload_sha256')\nE        +      where <built-in method get of dict object at 0x105273a00> = {'baseline_receipt': {'absence_is_explicit': True, 'matched_section_count': 0, 'sections': []}, 'claim_boundaries': ['...ds': ['python3 fixture_gate.py --gate'], 'content_projection': 'digest_commands_counts_and_claim_boundaries_only', ...}.get\n\ntests/functional_hidden/test_evidence_pack_hash_case.py:47: AssertionError\n____________ test_command_projection_tampering_breaks_payload_hash _____________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-718/test_command_projection_tamper0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x104251970>\n\n    def test_command_projection_tampering_breaks_payload_hash(\n        tmp_path: Path,\n        monkeypatch,\n    ) -> None:\n        pack = build_pack(tmp_path, monkeypatch)\n        pack[\"commands\"] = [\"python3 attacker.py\"]\n>       assert not integrity.validate_evidence_pack(\n            pack\n        ), \"request_contract:evidence_pack_command_tamper_rejected\"\nE       AssertionError: request_contract:evidence_pack_command_tamper_rejected\nE       assert not True\nE        +  where True = <function validate_evidence_pack at 0x105111800>({'baseline_receipt': {'absence_is_explicit': True, 'matched_section_count': 0, 'sections': []}, 'claim_boundaries': ['...'], 'commands': ['python3 attacker.py'], 'content_projection': 'digest_commands_counts_and_claim_boundaries_only', ...})\nE        +    where <function validate_evidence_pack at 0x105111800> = integrity.validate_evidence_pack\n\ntests/functional_hidden/test_evidence_pack_hash_case.py:59: AssertionError\n____________ test_receipt_projection_tampering_breaks_payload_hash _____________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-718/test_receipt_projection_tamper0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x105165340>\n\n    def test_receipt_projection_tampering_breaks_payload_hash(\n        tmp_path: Path,\n        monkeypatch,\n    ) -> None:\n        pack = build_pack(tmp_path, monkeypatch)\n        pack[\"baseline_receipt\"] = {\"fabricated\": True}\n>       assert not integrity.validate_evidence_pack(\n            pack\n        ), \"request_contract:evidence_pack_receipt_tamper_rejected\"\nE       AssertionError: request_contract:evidence_pack_receipt_tamper_rejected\nE       assert not True\nE        +  where True = <function validate_evidence_pack at 0x105111800>({'baseline_receipt': {'fabricated': True}, 'claim_boundaries': ['fixture scope only'], 'commands': ['python3 fixture_gate.py --gate'], 'content_projection': 'digest_commands_counts_and_claim_boundaries_only', ...})\nE        +    where <function validate_evidence_pack at 0x105111800> = integrity.validate_evidence_pack\n\ntests/functional_hidden/test_evidence_pack_hash_case.py:70: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_evidence_pack_hash_case.py::test_standard_pack_has_valid_payload_hash\nFAILED tests/functional_hidden/test_evidence_pack_hash_case.py::test_command_projection_tampering_breaks_payload_hash\nFAILED tests/functional_hidden/test_evidence_pack_hash_case.py::test_receipt_projection_tampering_breaks_payload_hash\n3 failed, 1 warning in 0.28s\n",
+            "wall_ms": 479.758
+          }
+        ],
+        "wall_ms": 479.769
+      },
+      "expected_failure_markers": [
+        "request_contract:evidence_pack_command_tamper_rejected",
+        "request_contract:evidence_pack_payload_hash_present",
+        "request_contract:evidence_pack_receipt_tamper_rejected"
+      ],
+      "hidden_test_source_set_sha256": "ae66cb63af91c191ea4056aea32b0a1e66c3f719a505d2ece7f7092c4071b1f2",
+      "observed_failure_markers": [
+        "request_contract:evidence_pack_command_tamper_rejected",
+        "request_contract:evidence_pack_payload_hash_present",
+        "request_contract:evidence_pack_receipt_tamper_rejected"
+      ],
+      "opaque_task_id": "task-q35fresh-evidence-pack-hash",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "request_sha256": "03ade3b62b9cc407fb06f2399e875fa1bad87181d2ca0647eaafd727e1699430"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

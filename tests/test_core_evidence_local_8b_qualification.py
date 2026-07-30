@@ -49,6 +49,33 @@ def test_freeze_binds_green_target_free_alignment_audit() -> None:
     assert len(
         value["evaluator_source_identities"]["hidden_test_sources"]
     ) == 3
+    assert value["candidate_worker_config_path"] == (
+        "configs/core_evidence_local_8b_worker.json"
+    )
+
+
+def test_freeze_can_bind_a_distinct_repository_worker_config(
+    tmp_path: Path,
+) -> None:
+    config = tmp_path / "outside.json"
+    config.write_text("{}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="worker_config_outside_repository"):
+        freeze_builder.build(PUBLIC, EVALUATOR, AUDIT, config)
+
+    value = freeze_builder.build(
+        PUBLIC,
+        EVALUATOR,
+        AUDIT,
+        ROOT / "configs" / "core_evidence_qwen35_9b_worker_planned.json",
+    )
+    assert value["candidate_worker_config_path"] == (
+        "configs/core_evidence_qwen35_9b_worker_planned.json"
+    )
+    assert value["candidate_source_identities"]["worker_config_sha256"] == (
+        qualification.sha256_file(
+            ROOT / "configs" / "core_evidence_qwen35_9b_worker_planned.json"
+        )
+    )
 
 
 def test_public_task_mutation_is_rejected(tmp_path: Path) -> None:

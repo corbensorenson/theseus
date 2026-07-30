@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_local_8b_functional_qualification_public_v1",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v1",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-q35fresh-bonjour-signature",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/hive_node_peer_registry.py, make the Bonjour HMAC signature bind every advertised TXT field that affects peer identity, routing, roles, or capabilities: txtvers, hive_id, node_id, node_name, api_url, relay_url, roles, and caps. verify_bonjour_txt must also require sig_alg to equal hmac-sha256. Preserve valid signed discovery and extend the existing Hive authority-security tests.",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-q35fresh-viea-script-path",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/viea_action_executor.py, make validate_action canonicalize executable script paths and reject relative or absolute parent traversal and symlink-resolved escapes outside the repository scripts directory before applying the per-kind filename allowlist. Preserve legitimate allowlisted scripts and add focused executor tests for traversal and symlink cases.",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    },
+    {
+      "opaque_task_id": "task-q35fresh-evidence-pack-hash",
+      "family": "repository_correctness",
+      "natural_request": "In scripts/report_evidence_integrity.py, add pack_payload_sha256 to every standard evidence pack, computed deterministically over every other pack field except validation_state and pack_payload_sha256 itself. validate_evidence_pack must reject a missing or mismatched payload hash so command and compact-receipt tampering cannot retain GREEN validation. Preserve the existing source-digest and no-cheat checks and extend the existing integrity tests.",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback"
+    }
+  ],
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "authoritative_target_patch_used": false
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "alignment_audit_payload_sha256": "04efa2a216c882ab05280063baec3cce73fec3d3f7afb2359b0559a79d8998f1",
+  "alignment_audit_sha256": "f8d924467ce69793397c719b8b4fc1e1f6bf127a0aeaca755a3f7e90473cf90f",
+  "boundaries": {
+    "D2_cases_consumed": 0,
+    "authoritative_target_patch_used": false,
+    "external_inference_calls": 0,
+    "network": "forbidden",
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "candidate_source_identities": {
+    "development_runner_sha256": "52774091f6b42a990ec3600fa5378ab34a196fb4990b8032894b303251842fe1",
+    "qualification_runner_sha256": "c0072afb95faedbb4e9de439d615a1c7d4a9b113c19441e73d1700db1c14fe4d",
+    "worker_config_sha256": "29dde8ad5cee123b30f3555b6f39a2ae8cad12a835ff5a0f9f3b6304c5b41c65",
+    "worker_sha256": "1b5e3460cdc6d8eb6bce003be9dbe7aa0387d299d06590ba83d337825d119eeb"
+  },
+  "candidate_worker_config_path": "configs/core_evidence_qwen35_9b_worker_planned.json",
+  "cohort_id": "qwen35_planned_worker_source_disjoint_repository_correctness_v1",
+  "competence_floor": {
+    "minimum_attempted_tasks": 3,
+    "minimum_useful_rate": 0.5,
+    "minimum_weakest_family_rate": 0.34
+  },
+  "counters_at_freeze": {
+    "D2_cases_consumed": 0,
+    "candidate_generation_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "evaluator_manifest_sha256": "9bc1e27bbfdd93189d7ba87a10894d57bef3ccdf39cdb133eb65d1b47e2eaec6",
+  "evaluator_source_identities": {
+    "base_evaluator_sha256": "8cc74b718da2194ff04935852285eed76f21970cce341632184ec7143c3c9674",
+    "functional_evaluator_sha256": "3443d03c0f5d15fb9d3292081b2c2a3a0344efd996c940a50a52c31460ccdbba",
+    "hidden_test_sources": {
+      "tests/fixtures/core_evidence_qwen35_fresh_hidden/evidence_pack_hash_case.py": "db9ab826eac11b4aefa5f015a77a4e71b96a2a536283de75b4e572be7d6e50ae",
+      "tests/fixtures/core_evidence_qwen35_fresh_hidden/hive_bonjour_signature_case.py": "6bd4dab2ee24e076b908287c2ccf683764f4a9865b52d41b9af6ea7dc4100cf2",
+      "tests/fixtures/core_evidence_qwen35_fresh_hidden/viea_action_path_case.py": "79ab5a53197bdfcb0e6ab0a373b2a5103a92217d6e19b9dab704cd9e708d11d3"
+    }
+  },
+  "maximum_inference": "Passing qualifies only the exact frozen local model and Worker v2 on the three prospective repository-correctness tasks. It does not confer Theseus-student, general coding, AGI, or ASI capability credit.",
+  "policy": "project_theseus_local_8b_functional_qualification_freeze_v1",
+  "public_manifest_sha256": "b484b4831d2a08efc909195cd27cffe0acf8945b76d79cfc80c7af5fc3cb507f",
+  "task_identities": [
+    {
+      "allowed_effect_paths_sha256": "15d2c1cdc4980a285c882a699299898e11de49ff2ad3c4831d21eb2bfda7aaa7",
+      "natural_request_sha256": "76bcad744a915d7b18e7ae4a8b4f02fd62d92d31f5b2594d28131be23a20b3a8",
+      "opaque_task_id": "task-q35fresh-bonjour-signature",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b"
+    },
+    {
+      "allowed_effect_paths_sha256": "99eaffee95455b1f6d4272d955e1d502e5cc42c6a3576f383bd38ef45e048eb9",
+      "natural_request_sha256": "225b58548f611fbbff9e19dc8bfdf5d16ed82799f28a392844b187dcd0b39253",
+      "opaque_task_id": "task-q35fresh-viea-script-path",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b"
+    },
+    {
+      "allowed_effect_paths_sha256": "a4432544933ef2916123ddd61f59e7c3a6aec2a68320e01d26f7fbdec676b004",
+      "natural_request_sha256": "03ade3b62b9cc407fb06f2399e875fa1bad87181d2ca0647eaafd727e1699430",
+      "opaque_task_id": "task-q35fresh-evidence-pack-hash",
+      "parent_source_commit": "0e8b8afd4c2d8ba32917041ad75ab4768b0e9a5b"
+    }
+  ],
+  "terminal_rules": {
+    "all_candidates_sealed_before_evaluator_open": true,
+    "complete_denominators_required": true,
+    "evaluator_or_hidden_test_mutation": "INVALID_EVALUATOR",
+    "fail": "issue one scoped causal-wall disposition and keep E2 sealed",
+    "pass": "attempted >= 3, useful/attempted >= 0.5, weakest-family useful/attempted >= 0.34, zero unsafe, and exact rollback",
+    "run_once": true,
+    "worker_model_prompt_budget_or_task_mutation": "INVALID_INFORMATION_FLOW"
+  },
+  "trigger_state": "GREEN"
+}

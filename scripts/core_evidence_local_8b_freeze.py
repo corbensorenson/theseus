@@ -26,12 +26,17 @@ def main() -> int:
     parser.add_argument("--public", default=str(PUBLIC))
     parser.add_argument("--evaluator-manifest", default=str(EVALUATOR_MANIFEST))
     parser.add_argument("--alignment-audit", default=str(ALIGNMENT_AUDIT))
+    parser.add_argument(
+        "--worker-config",
+        default="configs/core_evidence_local_8b_worker.json",
+    )
     parser.add_argument("--out", default=str(OUT))
     args = parser.parse_args()
     report = build(
         Path(args.public),
         Path(args.evaluator_manifest),
         Path(args.alignment_audit),
+        Path(args.worker_config),
     )
     Path(args.out).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
@@ -50,10 +55,14 @@ def build(
     public_path: Path,
     evaluator_manifest_path: Path,
     alignment_audit_path: Path,
+    worker_config_path: Path = (
+        ROOT / "configs" / "core_evidence_local_8b_worker.json"
+    ),
 ) -> dict[str, Any]:
     public = read_json(public_path)
     evaluator = read_json(evaluator_manifest_path)
     audit = read_json(alignment_audit_path)
+    worker_config_path = resolve_under_root(worker_config_path)
     validate_pair(public, evaluator, audit)
     hidden_sources = sorted({
         str(file["source"])
@@ -72,9 +81,7 @@ def build(
             "worker_sha256": sha256_file(
                 ROOT / "scripts" / "core_evidence_worker_v2.py"
             ),
-            "worker_config_sha256": sha256_file(
-                ROOT / "configs" / "core_evidence_local_8b_worker.json"
-            ),
+            "worker_config_sha256": sha256_file(worker_config_path),
             "development_runner_sha256": sha256_file(
                 ROOT / "scripts" / "core_evidence_worker_v2_development.py"
             ),
@@ -82,6 +89,9 @@ def build(
                 ROOT / "scripts" / "core_evidence_local_8b_qualification.py"
             ),
         },
+        "candidate_worker_config_path": str(
+            worker_config_path.relative_to(ROOT)
+        ),
         "evaluator_source_identities": {
             "functional_evaluator_sha256": sha256_file(
                 ROOT / "scripts" / "core_evidence_functional_evaluator.py"
@@ -132,7 +142,7 @@ def build(
             "target_patches_opened": 0,
         },
         "maximum_inference": (
-            "Passing qualifies only this exact local Qwen3-8B Worker v2 on the "
+            "Passing qualifies only the exact frozen local model and Worker v2 on the "
             "three prospective repository-correctness tasks. It does not confer "
             "Theseus-student, general coding, AGI, or ASI capability credit."
         ),
@@ -185,6 +195,16 @@ def read_json(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"expected JSON object:{path}")
     return value
+
+
+def resolve_under_root(path: Path) -> Path:
+    resolved = path if path.is_absolute() else ROOT / path
+    resolved = resolved.resolve()
+    try:
+        resolved.relative_to(ROOT.resolve())
+    except ValueError as exc:
+        raise ValueError("worker_config_outside_repository") from exc
+    return resolved
 
 
 def sha256_file(path: Path) -> str:
