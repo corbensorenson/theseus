@@ -7,6 +7,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -14,6 +16,22 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import theseus_assistant_runtime as assistant  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def source_bound_route_readiness(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep dispatch tests independent of ignored, generated runtime reports."""
+    original_read_json = assistant.read_json
+
+    def read_json(path: Path, default: object) -> object:
+        resolved = Path(path)
+        if resolved == assistant.REPORTS / "deterministic_tool_registry.json":
+            return {"trigger_state": "GREEN", "tools": [{"tool_id": "fixture.read_only"}]}
+        if resolved == assistant.REPORTS / "theseus_plan_compiler.json":
+            return {"trigger_state": "GREEN", "summary": {"compiled_goal_count": 1}}
+        return original_read_json(resolved, default)
+
+    monkeypatch.setattr(assistant, "read_json", read_json)
 
 
 def config() -> dict:

@@ -1286,20 +1286,20 @@
       "mode": "all",
       "requirements": [
         {
-          "id": "assistant_product_gate",
-          "path": "reports/theseus_assistant_product_lane_gate.json",
+          "id": "assistant_live_local_model_route_integrity",
+          "path": "reports/theseus_assistant_p1_live_route_integrity_r2.json",
           "freshness_mode": "source_bound",
           "source_paths": [
-            "scripts/reflexive_dispatch.py",
-            "scripts/theseus_assistant_e2e.py",
+            "configs/theseus_assistant_runtime.json",
+            "configs/core_evidence_tmax_9b_worker_control_v3.json",
             "scripts/theseus_assistant_runtime.py",
-            "scripts/theseus_assistant_product_lane_gate.py",
-            "configs/reflexive_router_contract.json",
-            "configs/reflexive_router_profile.json"
+            "scripts/theseus_assistant_route_integrity.py",
+            "scripts/theseus_local_inference_backend.py",
+            "reports/core_evidence_tmax_9b_runtime_preflight.json"
           ],
           "acceptance": {
-            "field": "trigger_state",
-            "allowed": ["GREEN", "YELLOW"]
+            "field": "ready",
+            "allowed": [true]
           }
         }
       ]
@@ -6685,16 +6685,21 @@
       "surface_id": "theseus_assistant_runtime",
       "status": "live",
       "implementation_type": "local_assistant_runtime",
-      "backend": "python_local_runtime_events",
+      "backend": "frozen_tmax_mlx_local_runtime_with_status_compatibility",
       "canonical_entrypoint": "scripts/theseus_assistant_runtime.py",
       "swappable_under_contract": true,
-      "replacement_policy": "A successor must preserve zero external runtime inference and dogfood outcome event semantics.",
-      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+      "replacement_policy": "A successor must preserve the exact-model direct/integrated comparison contract, fail-closed route integrity, zero external runtime inference, and dogfood outcome event semantics.",
+      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_theseus_assistant_route_integrity.py tests/test_theseus_assistant_runtime_local_modes.py tests/test_theseus_local_inference_backend.py && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "role": "runtime_serving",
       "trust_tier": "local_runtime_only",
       "dependencies": [
         "configs/project_manifest_registry.json",
+        "configs/theseus_assistant_runtime.json",
         "scripts/theseus_assistant_runtime.py",
+        "scripts/theseus_assistant_route_integrity.py",
+        "scripts/theseus_local_inference_backend.py",
+        "configs/core_evidence_tmax_9b_worker_control_v3.json",
+        "reports/core_evidence_tmax_9b_runtime_preflight.json",
         "scripts/reflexive_dispatch.py",
         "scripts/viea_spine_records.py",
         "configs/reflexive_router_contract.json",
@@ -6735,7 +6740,8 @@
         "reports/assistant_code_private_replay_probe.md",
         "reports/theseus_assistant_state_report.json",
         "reports/theseus_assistant_state_report.md",
-        "reports/theseus_assistant_product_lane_gate.json"
+        "reports/theseus_assistant_product_lane_gate.json",
+        "reports/theseus_assistant_p1_live_route_integrity_r2.json"
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -9402,6 +9408,8 @@
       "status": "live",
       "patterns": [
         "scripts/theseus_assistant_runtime.py",
+        "scripts/theseus_assistant_route_integrity.py",
+        "scripts/theseus_local_inference_backend.py",
         "scripts/reflexive_dispatch.py",
         "scripts/viea_spine_records.py",
         "scripts/theseus_assistant_e2e.py",
@@ -9445,6 +9453,9 @@
         "tests/test_core_evidence_functional_evaluator.py",
         "tests/test_core_evidence_local_8b_qualification.py",
         "tests/test_core_evidence_local_8b_disposition.py",
+        "tests/test_theseus_assistant_route_integrity.py",
+        "tests/test_theseus_assistant_runtime_local_modes.py",
+        "tests/test_theseus_local_inference_backend.py",
         "tests/fixtures/core_evidence_local_8b_hidden/*.py"
       ],
       "canonical": "scripts/theseus_assistant_runtime.py",
@@ -9478,6 +9489,7 @@
         "reports/theseus_assistant_state_report.json",
         "reports/theseus_assistant_state_report.md",
         "reports/theseus_assistant_product_lane_gate.json",
+        "reports/theseus_assistant_p1_live_route_integrity_r2.json",
         "reports/core_evidence_e0_preregistration.json",
         "reports/core_evidence_e1_replay.json",
         "reports/core_evidence_e2_governed_comparison.json",
@@ -9499,7 +9511,7 @@
         "docs/assets/core-evidence-useful-safe-frontier.svg"
       ],
       "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_core_evidence_campaign.py tests/test_core_evidence_worker_v2.py tests/test_core_evidence_worker_v2_evaluator.py tests/test_core_evidence_worker_v2_qualification.py tests/test_core_evidence_functional_evaluator.py && python3 scripts/core_evidence_campaign.py --gate && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
-      "cleanup_policy": "canonical user-facing assistant loop; must compose checkpoint session memory, VCM context, dogfood feedback, deterministic tools, planning, and practical code routing rather than creating parallel chat lanes",
+      "cleanup_policy": "canonical user-facing assistant loop; the frozen local model, route-integrity gate, VCM, dogfood feedback, deterministic tools, planning, and practical code routing must remain behind this one runtime rather than becoming parallel chat lanes",
       "abstraction_id": "assistant_runtime_contract",
       "major_surface": true,
       "routing_roles": [

@@ -1,8 +1,37 @@
 {
-  "policy": "project_theseus_assistant_runtime_v0",
-  "purpose": "Canonical local assistant path for multi-turn Theseus interaction, VCM context, deterministic tool evidence, dogfood feedback, and practical code-task routing.",
+  "policy": "project_theseus_assistant_runtime_v1",
+  "purpose": "Canonical local assistant path with a frozen offline TMax backend, matched direct and integrated execution modes, VCM context, deterministic tool evidence, route-integrity release control, dogfood feedback, and practical code-task routing.",
   "default_session_id": "local_assistant",
   "checkpoint_id": "live",
+  "default_execution_mode": "status_checkpoint",
+  "local_inference": {
+    "backend_entrypoint": "scripts/theseus_local_inference_backend.py",
+    "python_executable": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v3.json",
+    "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+    "required_runtime_preflight_state": "GREEN",
+    "required_repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "required_revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "required_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "product_maximum_tokens": 512,
+    "maximum_context_pages": 8,
+    "maximum_context_characters": 12000,
+    "timeout_seconds": 720,
+    "maximum_model_calls_per_request": 1,
+    "supported_execution_modes": [
+      "direct_local_model",
+      "integrated_local_model"
+    ],
+    "matched_pair_contract": {
+      "same_model_repo_revision_snapshot": true,
+      "same_mlx_runtime": true,
+      "same_decoder_and_product_token_budget": true,
+      "same_structural_release_verifier": "theseus_local_response_integrity_verifier_v1",
+      "same_effect_sandbox": "theseus_assistant_no_automatic_effects_v1",
+      "automatic_source_effects": 0,
+      "external_inference_calls": 0
+    }
+  },
   "assistant_trace_schema": "configs/assistant_trace_schema.json",
   "reflexive_router_contract": "configs/reflexive_router_contract.json",
   "reflexive_router_profile": "local_private_assistant",
@@ -176,7 +205,9 @@
     "chat": {
       "assistant_lane": "chat_checkpoint",
       "vcm_task_family": "operator_chat",
-      "runtime": "scripts/checkpoint_chat.py"
+      "runtime": "scripts/theseus_assistant_runtime.py",
+      "status_backend": "scripts/checkpoint_chat.py",
+      "local_inference_backend": "scripts/theseus_local_inference_backend.py"
     },
     "code": {
       "assistant_lane": "code_assistant",

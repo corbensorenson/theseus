@@ -24,6 +24,7 @@ from typing import Any
 import viea_spine_records
 import vcm_consumer_abi
 import reflexive_dispatch
+import theseus_assistant_route_integrity as route_integrity
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,6 +75,12 @@ def main() -> int:
     parser.add_argument("--checkpoint-id", default="")
     parser.add_argument("--session-id", default="")
     parser.add_argument("--prompt", required=True)
+    parser.add_argument(
+        "--execution-mode",
+        default="",
+        choices=["", "status_checkpoint", "direct_local_model", "integrated_local_model"],
+        help="Use the legacy status responder or the fixed-model direct/integrated local inference path.",
+    )
     parser.add_argument("--surface", default="local_assistant")
     parser.add_argument("--intent", default="auto", choices=["auto", "chat", "code", "tool", "planning"])
     parser.add_argument("--principal", default="local-user")
@@ -121,6 +128,23 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     prompt = str(args.prompt or "")
     session_id = safe_slug(args.session_id or config.get("default_session_id") or "local_assistant")
     checkpoint_id = str(args.checkpoint_id or config.get("checkpoint_id") or "live")
+    execution_mode = str(
+        getattr(args, "execution_mode", "")
+        or config.get("default_execution_mode")
+        or "status_checkpoint"
+    )
+    if execution_mode == route_integrity.DIRECT_MODE:
+        return build_direct_local_model_report(
+            args=args,
+            config=config,
+            trace_schema=trace_schema,
+            allowed_feedback=allowed_feedback,
+            created_utc=created_utc,
+            prompt=prompt,
+            session_id=session_id,
+            checkpoint_id=checkpoint_id,
+            started=started,
+        )
     requested_intent = classify_intent(prompt, args.intent)
     context_refresh = [] if args.skip_context_refresh else refresh_context(config)
     materialized_view_receipt = assistant_materialized_view_receipt()
@@ -252,45 +276,123 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     checkpoint_prompt = prompt
     if structured_execution.get("active") is True:
         checkpoint_prompt = structured_execution_prompt(prompt, structured_execution, tool_evidence, plan_context)
-    chat_result = (
-        run_checkpoint_chat(
-            prompt=checkpoint_prompt,
-            session_id=session_id,
-            checkpoint_id=checkpoint_id,
-            out=checkpoint_out,
+    local_model_contract: dict[str, Any] = {}
+    generation_request: dict[str, Any] = {}
+    route_integrity_receipt: dict[str, Any] = {
+        "policy": route_integrity.ROUTE_POLICY,
+        "execution_mode": execution_mode,
+        "ready": True,
+        "release_allowed": True,
+        "disposition": "NOT_APPLICABLE_STATUS_CHECKPOINT",
+    }
+    if execution_mode == route_integrity.INTEGRATED_MODE:
+        local_config = dict(config.get("local_inference") or {})
+        local_model_contract = route_integrity.load_model_contract(
+            str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"),
+            str(local_config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"),
+            maximum_tokens=int(local_config.get("product_maximum_tokens") or 0),
+            required_repo_id=str(local_config.get("required_repo_id") or ""),
+            required_revision=str(local_config.get("required_revision") or ""),
+            required_snapshot_manifest_sha256=str(local_config.get("required_snapshot_manifest_sha256") or ""),
         )
-        if execution_prepared
-        else {
-            "returncode": None,
-            "skipped": True,
-            "skip_reason": (
-                f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
-                if not dispatch_prepared
-                else f"structured_execution_{structured_execution.get('terminal_outcome')}"
-            ),
-            "stderr_tail": "",
-        }
-    )
-    checkpoint_payload = read_json(checkpoint_out, {}) if execution_prepared else {}
+        generation_request = route_integrity.build_generation_request(
+            execution_mode=execution_mode,
+            prompt=prompt,
+            model_identity=dict(local_model_contract.get("identity") or {}),
+            selected_context=selected_context,
+            compiled_context=read_json(REPORTS / "virtual_context_compiled_context.json", {}),
+            reflexive_dispatch=reflexive_trace,
+            reflexive_verification=reflexive_verification,
+            structured_execution=structured_execution,
+            tool_evidence=tool_evidence,
+            plan_context=plan_context,
+            procedural_route=procedural_default_route,
+            effect_canary=effect_canary,
+            maximum_context_pages=int(local_config.get("maximum_context_pages") or 8),
+            maximum_context_characters=int(local_config.get("maximum_context_characters") or 12000),
+        )
+        local_ready = (
+            execution_prepared
+            and local_model_contract.get("ready") is True
+            and generation_request.get("ready") is True
+        )
+        chat_result = (
+            run_local_inference(
+                prompt=str(generation_request.get("model_prompt") or ""),
+                session_id=session_id,
+                execution_mode=execution_mode,
+                route_context_digest=str(get_path(generation_request, ["binding", "route_packet_sha256"], "")),
+                config=local_config,
+                out=checkpoint_out,
+            )
+            if local_ready
+            else {
+                "id": "local_inference",
+                "returncode": None,
+                "skipped": True,
+                "skip_reason": (
+                    f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
+                    if not execution_prepared
+                    else "local_model_contract_or_generation_request_not_ready"
+                ),
+                "stderr_tail": "",
+            }
+        )
+    else:
+        chat_result = (
+            run_checkpoint_chat(
+                prompt=checkpoint_prompt,
+                session_id=session_id,
+                checkpoint_id=checkpoint_id,
+                out=checkpoint_out,
+            )
+            if execution_prepared
+            else {
+                "id": "checkpoint_chat",
+                "returncode": None,
+                "skipped": True,
+                "skip_reason": (
+                    f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
+                    if not dispatch_prepared
+                    else f"structured_execution_{structured_execution.get('terminal_outcome')}"
+                ),
+                "stderr_tail": "",
+            }
+        )
+    checkpoint_payload = read_json(checkpoint_out, {}) if chat_result.get("returncode") == 0 else {}
     response = checkpoint_payload.get("response") if isinstance(checkpoint_payload.get("response"), dict) else {}
     checkpoint_session = checkpoint_payload.get("session") if isinstance(checkpoint_payload.get("session"), dict) else {}
+    if execution_mode == route_integrity.INTEGRATED_MODE:
+        route_integrity_receipt = route_integrity.build_route_integrity_receipt(
+            execution_mode=execution_mode,
+            request_binding=dict(generation_request.get("binding") or {}),
+            expected_model_identity=dict(local_model_contract.get("identity") or {}),
+            backend_payload=checkpoint_payload,
+        )
     teacher_policy = teacher_policy_packet()
     benchmark_status = benchmark_status_packet(prompt)
-    assistant_text = compose_assistant_text(
-        intent=intent,
-        base_text=str(response.get("answer") or ""),
-        code_route=code_route,
-        code_private_probe=code_private_probe,
-        tool_context=tool_context,
-        tool_evidence=tool_evidence,
-        plan_context=plan_context,
-        procedural_default_route=procedural_default_route,
-        teacher_policy=teacher_policy,
-        benchmark_status=benchmark_status,
-        vcm_governor=vcm_governor,
-        selected_context=selected_context,
-        checkpoint_session=checkpoint_session,
-    ) if dispatch_prepared else reflexive_terminal_text(reflexive_trace)
+    if execution_mode == route_integrity.INTEGRATED_MODE:
+        assistant_text = (
+            str(response.get("answer") or "").strip()
+            if route_integrity_receipt.get("release_allowed") is True
+            else "Local response held: the live Theseus route-integrity gate did not authorize release."
+        )
+    else:
+        assistant_text = compose_assistant_text(
+            intent=intent,
+            base_text=str(response.get("answer") or ""),
+            code_route=code_route,
+            code_private_probe=code_private_probe,
+            tool_context=tool_context,
+            tool_evidence=tool_evidence,
+            plan_context=plan_context,
+            procedural_default_route=procedural_default_route,
+            teacher_policy=teacher_policy,
+            benchmark_status=benchmark_status,
+            vcm_governor=vcm_governor,
+            selected_context=selected_context,
+            checkpoint_session=checkpoint_session,
+        ) if dispatch_prepared else reflexive_terminal_text(reflexive_trace)
     feedback = normalize_feedback(args.feedback, allowed_feedback)
     dogfood = {}
     if dispatch_prepared and not args.skip_dogfood and feedback:
@@ -309,6 +411,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         prompt_summary=redacted_intent_summary(prompt, intent),
         args=args,
         config=config,
+        execution_mode=execution_mode,
         intent=intent,
         reflexive_dispatch_trace=reflexive_trace,
         route=route,
@@ -340,6 +443,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         row for row in vcm_consumer_packet.get("records", []) if isinstance(row, dict)
     )
     gates = build_gates(
+        execution_mode=execution_mode,
         chat_result=chat_result,
         response=response,
         assistant_text=assistant_text,
@@ -378,12 +482,34 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "hard",
         )
     )
+    if execution_mode == route_integrity.INTEGRATED_MODE:
+        gates.append(
+            gate(
+                "live_route_integrity_release_authorized",
+                route_integrity_receipt.get("ready") is True
+                and route_integrity_receipt.get("release_allowed") is True,
+                {
+                    "disposition": route_integrity_receipt.get("disposition"),
+                    "failed_checks": route_integrity_receipt.get("failed_checks"),
+                    "receipt_sha256": route_integrity_receipt.get("receipt_sha256"),
+                },
+                "hard",
+            )
+        )
     hard_failures = [gate for gate in gates if gate["severity"] == "hard" and not gate["passed"]]
     warning_failures = [gate for gate in gates if gate["severity"] == "warning" and not gate["passed"]]
     trigger_state = "GREEN" if not hard_failures else "RED"
     if trigger_state == "GREEN" and warning_failures:
         trigger_state = "YELLOW"
     summary = {
+        "execution_mode": execution_mode,
+        "local_model_identity_sha256": get_path(local_model_contract, ["identity", "identity_sha256"], ""),
+        "local_model_contract_ready": local_model_contract.get("ready") if local_model_contract else None,
+        "generation_request_ready": generation_request.get("ready") if generation_request else None,
+        "route_integrity_ready": route_integrity_receipt.get("ready"),
+        "route_integrity_release_allowed": route_integrity_receipt.get("release_allowed"),
+        "route_integrity_disposition": route_integrity_receipt.get("disposition"),
+        "route_integrity_failed_checks": route_integrity_receipt.get("failed_checks", []),
         "requested_intent": requested_intent,
         "intent": intent,
         "session_id": session_id,
@@ -498,7 +624,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         "effect_canary_rollback_complete": get_path(effect_canary, ["rollback", "complete"], False),
     }
     return {
-        "policy": "project_theseus_assistant_runtime_v0",
+        "policy": "project_theseus_assistant_runtime_v1",
         "created_utc": created_utc,
         "trigger_state": trigger_state,
         "summary": summary,
@@ -526,6 +652,15 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             "stderr_tail": chat_result.get("stderr_tail"),
             "session": checkpoint_session,
         },
+        "generation_backend": {
+            "id": chat_result.get("id"),
+            "returncode": chat_result.get("returncode"),
+            "out": rel(checkpoint_out),
+            "execution_mode": execution_mode,
+        },
+        "local_model_contract": local_model_contract,
+        "generation_request_binding": dict(generation_request.get("binding") or {}),
+        "route_integrity": route_integrity_receipt,
         "vcm_context_packet": compact_vcm_context(selected_context),
         "vcm_context_governor": vcm_governor,
         "vcm_consumer_abi": vcm_consumer_packet,
@@ -778,6 +913,259 @@ def run_checkpoint_chat(*, prompt: str, session_id: str, checkpoint_id: str, out
         rel(out),
     ]
     return run_command("checkpoint_chat", command, 180)
+
+
+def run_local_inference(
+    *,
+    prompt: str,
+    session_id: str,
+    execution_mode: str,
+    route_context_digest: str,
+    config: dict[str, Any],
+    out: Path,
+) -> dict[str, Any]:
+    """Invoke the offline model without placing raw prompt text in argv."""
+    command = [
+        str(resolve(str(config.get("python_executable") or "runtime/venvs/mlx-0.32.0-py312/bin/python"))),
+        str(resolve(str(config.get("backend_entrypoint") or "scripts/theseus_local_inference_backend.py"))),
+        "--config",
+        rel(resolve(str(config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"))),
+        "--runtime-preflight",
+        rel(resolve(str(config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"))),
+        "--session-id",
+        session_id,
+        "--execution-mode",
+        execution_mode,
+        "--route-context-digest",
+        route_context_digest,
+        "--maximum-tokens",
+        str(int(config.get("product_maximum_tokens") or 0)),
+        "--required-repo-id",
+        str(config.get("required_repo_id") or ""),
+        "--required-revision",
+        str(config.get("required_revision") or ""),
+        "--required-snapshot-manifest-sha256",
+        str(config.get("required_snapshot_manifest_sha256") or ""),
+        "--out",
+        rel(out),
+    ]
+    started = time.perf_counter()
+    try:
+        result = subprocess.run(
+            command,
+            cwd=ROOT,
+            text=True,
+            input=prompt,
+            capture_output=True,
+            timeout=max(1, int(config.get("timeout_seconds") or 720)),
+        )
+        return {
+            "id": "local_inference",
+            "command": command,
+            "prompt_transport": "stdin_not_argv",
+            "returncode": result.returncode,
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+            "stdout_tail": result.stdout[-1200:],
+            "stderr_tail": result.stderr[-1200:],
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "id": "local_inference",
+            "command": command,
+            "prompt_transport": "stdin_not_argv",
+            "returncode": 124,
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+            "stdout_tail": (exc.stdout or "")[-1200:] if isinstance(exc.stdout, str) else "",
+            "stderr_tail": (exc.stderr or "")[-1200:] if isinstance(exc.stderr, str) else "",
+            "timed_out": True,
+        }
+    except OSError as exc:
+        return {
+            "id": "local_inference",
+            "command": command,
+            "prompt_transport": "stdin_not_argv",
+            "returncode": 127,
+            "runtime_ms": int((time.perf_counter() - started) * 1000),
+            "stdout_tail": "",
+            "stderr_tail": f"{type(exc).__name__}: {exc}",
+        }
+
+
+def build_direct_local_model_report(
+    *,
+    args: argparse.Namespace,
+    config: dict[str, Any],
+    trace_schema: dict[str, Any],
+    allowed_feedback: set[str],
+    created_utc: str,
+    prompt: str,
+    session_id: str,
+    checkpoint_id: str,
+    started: float,
+) -> dict[str, Any]:
+    """Run the matched fixed-model baseline without VCM, planning, or routing."""
+    local_config = dict(config.get("local_inference") or {})
+    model_contract = route_integrity.load_model_contract(
+        str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"),
+        str(local_config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"),
+        maximum_tokens=int(local_config.get("product_maximum_tokens") or 0),
+        required_repo_id=str(local_config.get("required_repo_id") or ""),
+        required_revision=str(local_config.get("required_revision") or ""),
+        required_snapshot_manifest_sha256=str(local_config.get("required_snapshot_manifest_sha256") or ""),
+    )
+    request = route_integrity.build_generation_request(
+        execution_mode=route_integrity.DIRECT_MODE,
+        prompt=prompt,
+        model_identity=dict(model_contract.get("identity") or {}),
+    )
+    backend_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
+    ready_to_infer = (
+        model_contract.get("ready") is True
+        and request.get("ready") is True
+        and not bool(getattr(args, "effect_canary", False))
+    )
+    backend_run = (
+        run_local_inference(
+            prompt=str(request.get("model_prompt") or ""),
+            session_id=session_id,
+            execution_mode=route_integrity.DIRECT_MODE,
+            route_context_digest=str(get_path(request, ["binding", "route_packet_sha256"], "")),
+            config=local_config,
+            out=backend_out,
+        )
+        if ready_to_infer
+        else {
+            "id": "local_inference",
+            "returncode": None,
+            "skipped": True,
+            "skip_reason": (
+                "direct_mode_effect_request_denied"
+                if bool(getattr(args, "effect_canary", False))
+                else "local_model_contract_or_generation_request_not_ready"
+            ),
+            "stderr_tail": "",
+        }
+    )
+    backend_payload = read_json(backend_out, {}) if backend_run.get("returncode") == 0 else {}
+    integrity = route_integrity.build_route_integrity_receipt(
+        execution_mode=route_integrity.DIRECT_MODE,
+        request_binding=dict(request.get("binding") or {}),
+        expected_model_identity=dict(model_contract.get("identity") or {}),
+        backend_payload=backend_payload,
+    )
+    backend_response = dict(backend_payload.get("response") or {})
+    release_allowed = integrity.get("release_allowed") is True
+    response = backend_response if release_allowed else {
+        "mode": "held_route_integrity_failure",
+        "answer": "",
+        "teacher_recommended": False,
+        "evidence": {"route_integrity_receipt_sha256": integrity.get("receipt_sha256")},
+    }
+    assistant_text = (
+        str(backend_response.get("answer") or "").strip()
+        if release_allowed
+        else "Local response held: the direct fixed-model route-integrity gate did not authorize release."
+    )
+    feedback = normalize_feedback(str(getattr(args, "feedback", "") or ""), allowed_feedback)
+    dogfood: dict[str, Any] = {}
+    if release_allowed and not bool(getattr(args, "skip_dogfood", False)) and feedback:
+        dogfood = run_dogfood_feedback(
+            feedback=feedback,
+            surface=str(getattr(args, "surface", "local_assistant") or "local_assistant"),
+            lane="direct_fixed_model_runtime",
+            intent_summary=redacted_intent_summary(prompt, classify_intent(prompt, str(getattr(args, "intent", "auto") or "auto"))),
+            artifact_refs=[rel(resolve(args.out)), rel(backend_out)],
+            error_family=str(getattr(args, "error_family", "") or ""),
+            duration_ms=int((time.perf_counter() - started) * 1000),
+        )
+    gates = [
+        gate("local_model_contract_ready", model_contract.get("ready") is True, model_contract.get("faults"), "hard"),
+        gate("direct_generation_request_ready", request.get("ready") is True, request.get("faults"), "hard"),
+        gate("direct_mode_has_no_effect_authority", not bool(getattr(args, "effect_canary", False)), {"effect_canary": bool(getattr(args, "effect_canary", False))}, "hard"),
+        gate("local_inference_completed", backend_run.get("returncode") == 0, backend_run, "hard"),
+        gate("live_route_integrity_release_authorized", release_allowed, {"failed_checks": integrity.get("failed_checks")}, "hard"),
+        gate("raw_text_training_disabled", config.get("raw_text_training_allowed") is False, config.get("raw_text_training_allowed"), "hard"),
+        gate("runtime_external_inference_disabled", config.get("external_inference_at_runtime_allowed") is False, config.get("external_inference_at_runtime_allowed"), "hard"),
+        gate("public_benchmark_training_disabled", config.get("public_benchmark_training_allowed") is False, config.get("public_benchmark_training_allowed"), "hard"),
+        gate("fallback_returns_disabled", config.get("fallback_returns_allowed") is False, config.get("fallback_returns_allowed"), "hard"),
+    ]
+    hard_failures = [row for row in gates if row["severity"] == "hard" and not row["passed"]]
+    trigger_state = "RED" if hard_failures else "GREEN"
+    intent = classify_intent(prompt, str(getattr(args, "intent", "auto") or "auto"))
+    session = dict(backend_payload.get("session") or {})
+    summary = {
+        "execution_mode": route_integrity.DIRECT_MODE,
+        "requested_intent": intent,
+        "intent": intent,
+        "session_id": session_id,
+        "checkpoint_id": checkpoint_id,
+        "assistant_lane": "direct_fixed_model_runtime",
+        "local_model_identity_sha256": get_path(model_contract, ["identity", "identity_sha256"], ""),
+        "local_model_contract_ready": model_contract.get("ready"),
+        "generation_request_ready": request.get("ready"),
+        "route_integrity_ready": integrity.get("ready"),
+        "route_integrity_release_allowed": release_allowed,
+        "route_integrity_disposition": integrity.get("disposition"),
+        "route_integrity_failed_checks": integrity.get("failed_checks", []),
+        "checkpoint_chat_returncode": backend_run.get("returncode"),
+        "checkpoint_history_turns_loaded": session.get("history_turns_loaded", 0),
+        "checkpoint_session_path": session.get("session_path", ""),
+        "assistant_text_chars": len(assistant_text),
+        "feedback": feedback,
+        "dogfood_event_written": get_path(dogfood, ["event", "event_written"], False),
+        "dogfood_training_rows_written": get_path(dogfood, ["training_bridge", "training_rows_written"], 0),
+        "assistant_trace_schema": trace_schema.get("path"),
+        "assistant_trace_schema_sha256": trace_schema.get("sha256"),
+        "assistant_trace_schema_ready": assistant_trace_schema_ready(trace_schema),
+        "runtime_ms": int((time.perf_counter() - started) * 1000),
+        "public_training_rows_written": 0,
+        "runtime_external_inference_calls": 0,
+        "fallback_return_count": 0,
+    }
+    return {
+        "policy": "project_theseus_assistant_runtime_v1",
+        "created_utc": created_utc,
+        "trigger_state": trigger_state,
+        "summary": summary,
+        "inputs": {
+            "config": rel(resolve(args.config)),
+            "prompt_sha256": sha256_text(prompt),
+            "surface": str(getattr(args, "surface", "local_assistant") or "local_assistant"),
+            "principal": str(getattr(args, "principal", "local-user") or "local-user"),
+            "origin": str(getattr(args, "origin", "local_user_control") or "local_user_control"),
+        },
+        "outputs": {
+            "report": rel(resolve(args.out)),
+            "markdown": rel(resolve(args.markdown_out)),
+            "conversation_events": rel(conversation_events_path(args.events_out)),
+            "assistant_viea_trace": rel(resolve(args.viea_trace_out)),
+        },
+        "response": response,
+        "assistant_text": assistant_text,
+        "generation_backend": {
+            "id": backend_run.get("id"),
+            "returncode": backend_run.get("returncode"),
+            "out": rel(backend_out),
+            "execution_mode": route_integrity.DIRECT_MODE,
+        },
+        "checkpoint_chat": {
+            "returncode": backend_run.get("returncode"),
+            "out": rel(backend_out),
+            "stderr_tail": backend_run.get("stderr_tail"),
+            "session": session,
+        },
+        "local_model_contract": model_contract,
+        "generation_request_binding": dict(request.get("binding") or {}),
+        "route_integrity": integrity,
+        "dogfood": dogfood,
+        "assistant_trace_schema": trace_schema,
+        "assistant_viea_trace": [],
+        "context_refresh": [],
+        "gates": gates,
+        "external_inference_calls": 0,
+        "public_training_rows_written": 0,
+        "fallback_return_count": 0,
+    }
 
 
 def run_dogfood_feedback(
@@ -1501,6 +1889,7 @@ def build_assistant_viea_trace(
     prompt_summary: str,
     args: argparse.Namespace,
     config: dict[str, Any],
+    execution_mode: str,
     intent: str,
     reflexive_dispatch_trace: dict[str, Any],
     route: dict[str, Any],
@@ -1559,6 +1948,8 @@ def build_assistant_viea_trace(
     context_hash = stable_hash(vcm_packet)
     route_id = stable_id("assistant_route", intent, route.get("assistant_lane"), route.get("vcm_task_family"))
     node_id = stable_id("assistant_node", run_id, intent, route_id)
+    generation_node = "local_inference" if execution_mode in route_integrity.LOCAL_MODEL_MODES else "checkpoint_chat"
+    generation_kind = "frozen_tmax_local_inference" if generation_node == "local_inference" else "local_checkpoint_chat"
     trace_base = {
         "policy": "project_theseus_assistant_viea_trace_v1",
         "created_utc": created_utc,
@@ -1768,8 +2159,17 @@ def build_assistant_viea_trace(
         {
             "command_contract_id": command_id,
             "dag_id": stable_id("assistant_plan_dag", run_id, node_id),
-            "nodes": assistant_plan_nodes(intent, node_id, code_private_probe, tool_evidence, plan_context, procedural_default_route),
-            "edges": [["context_read", "checkpoint_chat"], ["checkpoint_chat", "answer_compose"], ["answer_compose", "trace_emit"]],
+            "nodes": assistant_plan_nodes(
+                intent,
+                node_id,
+                code_private_probe,
+                tool_evidence,
+                plan_context,
+                procedural_default_route,
+                generation_node=generation_node,
+                generation_kind=generation_kind,
+            ),
+            "edges": [["context_read", generation_node], [generation_node, "answer_compose"], ["answer_compose", "trace_emit"]],
             "route_id": route_id,
             "procedural_default_route_id": get_path(procedural_default_route, ["selected_route", "id"], ""),
             "procedural_default_route_ready": procedural_default_route.get("ready"),
@@ -1786,9 +2186,17 @@ def build_assistant_viea_trace(
         "runtime_adapter_invocation",
         {
             "typed_job_id": job_id,
-            "adapter": "checkpoint_chat_and_registered_assistant_subtools",
+            "adapter": (
+                "frozen_tmax_local_inference_and_registered_assistant_subtools"
+                if generation_node == "local_inference"
+                else "checkpoint_chat_and_registered_assistant_subtools"
+            ),
             "commands": [
-                "python3 scripts/checkpoint_chat.py --prompt <redacted_prompt_sha256> --out " + rel(checkpoint_out),
+                (
+                    "scripts/theseus_local_inference_backend.py --prompt-stdin --out " + rel(checkpoint_out)
+                    if generation_node == "local_inference"
+                    else "python3 scripts/checkpoint_chat.py --prompt <redacted_prompt_sha256> --out " + rel(checkpoint_out)
+                ),
                 "registered_context_refresh_commands" if not args.skip_context_refresh else "context_refresh_skipped",
             ],
             "sandbox": "local_process",
@@ -1916,7 +2324,15 @@ def build_assistant_viea_trace(
         {
             "typed_job_id": job_id,
             "budget_class": "local_interactive_assistant",
-            "timeout_policy_seconds": {"checkpoint_chat": 180, "context_refresh": 120, "tool_evidence": 180},
+            "timeout_policy_seconds": {
+                generation_node: (
+                    int(get_path(config, ["local_inference", "timeout_seconds"], 720) or 720)
+                    if generation_node == "local_inference"
+                    else 180
+                ),
+                "context_refresh": 120,
+                "tool_evidence": 180,
+            },
             "verification_tax_included": bool(code_private_probe.get("active") or tool_evidence.get("active")),
             "viea_materialized_view_record_count": materialized_view_receipt.get("record_count"),
             "route_validator_resource_route_record_count": route_validator_receipt.get("resource_route_record_count"),
@@ -1929,13 +2345,18 @@ def build_assistant_viea_trace(
         "generation_mode",
         {
             "typed_job_id": job_id,
-            "mode": "local_checkpoint_chat_plus_registered_evidence",
+            "mode": (
+                "frozen_tmax_local_inference_plus_executed_registered_route"
+                if generation_node == "local_inference"
+                else "local_checkpoint_chat_plus_registered_evidence"
+            ),
             "model_only_claim": False,
             "tool_assisted_claim": bool(tool_evidence.get("active")),
             "private_verifier_receipt_ready": private_verifier_receipt.get("ready"),
             "procedural_default_route_active": procedural_default_route.get("active"),
             "procedural_default_route_ready": procedural_default_route.get("ready"),
-            "learned_generation_claim": False,
+            "learned_generation_claim": generation_node == "local_inference",
+            "theseus_student_credit": False,
             "deterministic_tool_credit_separate": True,
             "fallback_return_count": 0,
         },
@@ -2047,11 +2468,14 @@ def assistant_plan_nodes(
     tool_evidence: dict[str, Any],
     plan_context: dict[str, Any],
     procedural_default_route: dict[str, Any],
+    *,
+    generation_node: str = "checkpoint_chat",
+    generation_kind: str = "local_checkpoint_chat",
 ) -> list[dict[str, Any]]:
     nodes = [
         {"node_id": f"{node_id}:context_read", "kind": "context_read", "verifier": "context_adequacy_gate"},
         {"node_id": f"{node_id}:private_verifier_receipt", "kind": "private_verifier_spine_receipt", "verifier": "private_verifier_spine_v1"},
-        {"node_id": f"{node_id}:checkpoint_chat", "kind": "local_checkpoint_chat", "verifier": "assistant_answer_present"},
+        {"node_id": f"{node_id}:{generation_node}", "kind": generation_kind, "verifier": "assistant_answer_present"},
         {"node_id": f"{node_id}:answer_compose", "kind": "answer_composition", "verifier": "no_external_runtime_inference"},
         {"node_id": f"{node_id}:trace_emit", "kind": "viea_trace_emit", "verifier": "assistant_viea_trace_complete"},
     ]
@@ -2655,6 +3079,7 @@ def teacher_policy_packet() -> dict[str, Any]:
 
 def build_gates(
     *,
+    execution_mode: str,
     chat_result: dict[str, Any],
     response: dict[str, Any],
     assistant_text: str,
@@ -2726,7 +3151,15 @@ def build_gates(
         gate("checkpoint_chat_completed", dispatch_safely_stopped or chat_result.get("returncode") == 0, chat_result, "hard"),
         gate(
             "checkpoint_session_memory_available",
-            dispatch_safely_stopped or (bool(checkpoint_session.get("session_id")) and checkpoint_session.get("session_path") is not None),
+            dispatch_safely_stopped
+            or (
+                bool(checkpoint_session.get("session_id"))
+                and (
+                    checkpoint_session.get("session_path") is not None
+                    if execution_mode == "status_checkpoint"
+                    else checkpoint_session.get("persistence") == "disabled_no_raw_text_retention"
+                )
+            ),
             checkpoint_session,
             "hard",
         ),
