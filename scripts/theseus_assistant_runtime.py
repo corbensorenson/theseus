@@ -10,6 +10,8 @@ serve external inference, or emit fallback answers.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import contextvars
 import hashlib
 import json
 import os
@@ -19,7 +21,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Iterator
 
 import viea_spine_records
 import vcm_consumer_abi
@@ -68,6 +70,10 @@ ROUTE_VALIDATOR_VIEW_GROUPS = [
     "resource_route_records",
 ]
 
+_LOCAL_INFERENCE_RUNNER: contextvars.ContextVar[Callable[..., dict[str, Any]] | None] = (
+    contextvars.ContextVar("theseus_local_inference_runner", default=None)
+)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -104,6 +110,12 @@ def main() -> int:
     )
     parser.add_argument("--effect-target", default=rel(DEFAULT_EFFECT_TARGET))
     parser.add_argument("--print-answer", action="store_true")
+    parser.add_argument(
+        "--local-maximum-tokens",
+        type=int,
+        default=0,
+        help="Explicit per-run local decoder budget; zero preserves the product configuration.",
+    )
     args = parser.parse_args()
 
     started = time.perf_counter()
@@ -122,6 +134,12 @@ def main() -> int:
 
 def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     config = read_json(resolve(args.config), {})
+    local_maximum_tokens = int(getattr(args, "local_maximum_tokens", 0) or 0)
+    if local_maximum_tokens:
+        config = dict(config)
+        local_config = dict(config.get("local_inference") or {})
+        local_config["product_maximum_tokens"] = local_maximum_tokens
+        config["local_inference"] = local_config
     trace_schema = load_assistant_trace_schema(config)
     allowed_feedback = allowed_feedback_values(trace_schema)
     created_utc = now()
@@ -925,6 +943,16 @@ def run_local_inference(
     out: Path,
 ) -> dict[str, Any]:
     """Invoke the offline model without placing raw prompt text in argv."""
+    runner = _LOCAL_INFERENCE_RUNNER.get()
+    if runner is not None:
+        return runner(
+            prompt=prompt,
+            session_id=session_id,
+            execution_mode=execution_mode,
+            route_context_digest=route_context_digest,
+            config=config,
+            out=out,
+        )
     command = [
         str(resolve(str(config.get("python_executable") or "runtime/venvs/mlx-0.32.0-py312/bin/python"))),
         str(resolve(str(config.get("backend_entrypoint") or "scripts/theseus_local_inference_backend.py"))),
@@ -989,6 +1017,18 @@ def run_local_inference(
             "stdout_tail": "",
             "stderr_tail": f"{type(exc).__name__}: {exc}",
         }
+
+
+@contextlib.contextmanager
+def bind_local_inference_runner(
+    runner: Callable[..., dict[str, Any]],
+) -> Iterator[None]:
+    """Bind an in-process backend for one controlled experimental context."""
+    token = _LOCAL_INFERENCE_RUNNER.set(runner)
+    try:
+        yield
+    finally:
+        _LOCAL_INFERENCE_RUNNER.reset(token)
 
 
 def build_direct_local_model_report(

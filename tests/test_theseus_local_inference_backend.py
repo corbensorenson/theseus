@@ -162,3 +162,44 @@ def test_canonical_frozen_identity_cannot_drift_with_a_self_consistent_preflight
 
     assert contract["ready"] is False
     assert "frozen_model_revision_mismatch" in contract["faults"]
+
+
+def test_persistent_session_loads_once_across_matched_arm_requests(
+    tmp_path: Path, monkeypatch
+) -> None:
+    snapshot = tmp_path / "snapshot"
+    write_snapshot(snapshot)
+    worker, preflight = write_contract_files(tmp_path, snapshot)
+    monkeypatch.setattr(backend, "local_snapshot", lambda _card: snapshot)
+    monkeypatch.setattr(
+        backend,
+        "package_versions",
+        lambda: {"mlx_lm": "0.31.3", "mlx": "0.32.0", "python": "3.12"},
+    )
+
+    session = backend.PersistentLocalInferenceSession(
+        worker_config_path=worker,
+        runtime_preflight_path=preflight,
+        maximum_tokens=32,
+        session_id="matched-pair",
+        model_factory=FakeModel,
+    )
+    direct = session.generate_report(
+        execution_mode="direct_local_model",
+        route_context_digest="d" * 64,
+        request_session_id="direct",
+        prompt="first prompt",
+    )
+    integrated = session.generate_report(
+        execution_mode="integrated_local_model",
+        route_context_digest="e" * 64,
+        request_session_id="integrated",
+        prompt="second prompt",
+    )
+
+    assert session.ready is True
+    assert session.model_load_count == 1
+    assert session.inference_calls == 2
+    assert direct["backend"]["persistent_session_id"] == "matched-pair"
+    assert integrated["metrics"]["persistent_session_inference_calls"] == 2
+    assert direct["backend"]["identity"] == integrated["backend"]["identity"]

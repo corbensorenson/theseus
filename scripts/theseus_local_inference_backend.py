@@ -44,6 +44,177 @@ class BackendFault(RuntimeError):
     pass
 
 
+class PersistentLocalInferenceSession:
+    """Load one frozen model once and issue isolated, receipt-bound requests."""
+
+    def __init__(
+        self,
+        *,
+        worker_config_path: Path,
+        runtime_preflight_path: Path,
+        maximum_tokens: int,
+        required_repo_id: str = "",
+        required_revision: str = "",
+        required_snapshot_manifest_sha256: str = "",
+        session_id: str = "p2a_frozen_pair",
+        model_factory: Callable[[dict[str, Any], Path, int], Any] | None = None,
+    ) -> None:
+        os.environ["HF_HUB_OFFLINE"] = "1"
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+        self.session_id = session_id
+        self.maximum_tokens = maximum_tokens
+        self.contract = route_integrity.load_model_contract(
+            worker_config_path,
+            runtime_preflight_path,
+            maximum_tokens=maximum_tokens,
+            required_repo_id=required_repo_id,
+            required_revision=required_revision,
+            required_snapshot_manifest_sha256=required_snapshot_manifest_sha256,
+        )
+        self.identity = dict(self.contract.get("identity") or {})
+        self.card = dict(self.contract.get("model_card") or {})
+        self.snapshot = local_snapshot(self.card)
+        self.faults = list(self.contract.get("faults") or [])
+        if not complete_model_snapshot(self.snapshot):
+            self.faults.append("complete_local_model_snapshot_missing")
+        self.observed_manifest = (
+            snapshot_manifest(self.snapshot) if complete_model_snapshot(self.snapshot) else ""
+        )
+        if self.observed_manifest != self.identity.get("snapshot_manifest_sha256"):
+            self.faults.append("local_snapshot_manifest_mismatch")
+        self.runtime_versions = package_versions()
+        if not self.runtime_versions.get("mlx_lm") or not self.runtime_versions.get("mlx"):
+            self.faults.append("qualified_mlx_runtime_missing")
+        self.faults = sorted(set(self.faults))
+        self.model: Any | None = None
+        self.model_load_count = 0
+        self.inference_calls = 0
+        if not self.faults:
+            factory = model_factory or LocalMlxChatModel
+            self.model = factory(self.card, self.snapshot, maximum_tokens)
+            self.model_load_count = 1
+
+    @property
+    def ready(self) -> bool:
+        return not self.faults and self.model is not None and self.model_load_count == 1
+
+    def generate_report(
+        self,
+        *,
+        execution_mode: str,
+        route_context_digest: str,
+        request_session_id: str,
+        prompt: str,
+    ) -> dict[str, Any]:
+        started = time.perf_counter()
+        faults = list(self.faults)
+        if execution_mode not in route_integrity.LOCAL_MODEL_MODES:
+            faults.append("unsupported_execution_mode")
+        if len(route_context_digest) != 64:
+            faults.append("route_context_digest_invalid")
+        if not prompt.strip():
+            faults.append("empty_model_prompt")
+        answer = ""
+        generation_metrics: dict[str, Any] = {}
+        request_inference_calls = 0
+        if not faults and self.model is not None:
+            try:
+                raw_answer = str(
+                    self.model.generate(
+                        [
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": prompt},
+                        ]
+                    )
+                    or ""
+                )
+                answer = sanitize_generated_text(raw_answer)
+                generation_metrics = dict(getattr(self.model, "last_generation_metrics", {}) or {})
+                generation_metrics["terminal_marker_stripped"] = raw_answer.strip() != answer
+                request_inference_calls = 1
+                self.inference_calls += 1
+                if not answer:
+                    faults.append("empty_local_model_response")
+            except Exception as exc:
+                faults.append(f"local_model_generation_failed:{type(exc).__name__}")
+        trigger_state = "GREEN" if not faults else "RED"
+        return {
+            "policy": BACKEND_POLICY,
+            "created_utc": now(),
+            "trigger_state": trigger_state,
+            "preflight_only": False,
+            "faults": sorted(set(faults)),
+            "backend": {
+                "identity": self.identity,
+                "local_snapshot": str(self.snapshot),
+                "local_snapshot_manifest_sha256": self.observed_manifest,
+                "runtime_versions": self.runtime_versions,
+                "network": "forbidden_offline_environment",
+                "persistent_session_id": self.session_id,
+                "model_load_count": self.model_load_count,
+            },
+            "request": {
+                "execution_mode": execution_mode,
+                "prompt_sha256": route_integrity.sha256_text(prompt),
+                "route_context_digest": route_context_digest,
+                "raw_prompt_stored": False,
+            },
+            "response": {
+                "mode": "frozen_tmax_local_inference",
+                "answer": answer if trigger_state == "GREEN" else "",
+                "teacher_recommended": False,
+                "evidence": {
+                    "backend_policy": BACKEND_POLICY,
+                    "model_identity_sha256": self.identity.get("identity_sha256"),
+                    "route_context_digest": route_context_digest,
+                },
+            },
+            "session": {
+                "session_id": request_session_id,
+                "history_turns_loaded": 0,
+                "session_path": "",
+                "persistence": "disabled_no_raw_text_retention",
+            },
+            "metrics": {
+                **generation_metrics,
+                "local_model_inference_calls": request_inference_calls,
+                "persistent_session_inference_calls": self.inference_calls,
+                "model_load_count": self.model_load_count,
+                "runtime_ms": int((time.perf_counter() - started) * 1000),
+            },
+            "external_inference_calls": 0,
+            "teacher_calls": 0,
+            "public_calibration_cases_consumed": 0,
+            "D2_cases_consumed": 0,
+            "public_training_rows_written": 0,
+            "fallback_return_count": 0,
+            "user_facing_effects": 0,
+        }
+
+    def runtime_runner(self, **kwargs: Any) -> dict[str, Any]:
+        """Adapter for ``theseus_assistant_runtime.bind_local_inference_runner``."""
+        out = Path(kwargs["out"])
+        report = self.generate_report(
+            execution_mode=str(kwargs["execution_mode"]),
+            route_context_digest=str(kwargs["route_context_digest"]),
+            request_session_id=str(kwargs["session_id"]),
+            prompt=str(kwargs["prompt"]),
+        )
+        write_json(out, report)
+        return {
+            "id": "local_inference",
+            "command": ["persistent_in_process_frozen_backend"],
+            "prompt_transport": "in_process_ephemeral_not_argv",
+            "returncode": 0 if report.get("trigger_state") == "GREEN" else 2,
+            "runtime_ms": int(get_path(report, ["metrics", "runtime_ms"], 0) or 0),
+            "stdout_tail": "",
+            "stderr_tail": "",
+            "persistent_backend": True,
+            "persistent_session_id": self.session_id,
+            "model_load_count": self.model_load_count,
+        }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=rel(DEFAULT_WORKER_CONFIG))

@@ -157,6 +157,7 @@ def args(tmp_path: Path, mode: str) -> argparse.Namespace:
         effect_canary=False,
         effect_target="runtime/assistant_effects/default_route_authority.json",
         print_answer=False,
+        local_maximum_tokens=0,
     )
 
 
@@ -226,3 +227,44 @@ def test_canonical_runtime_runs_matched_direct_and_integrated_paths_without_real
     assert integrity.compare_matched_pair(
         direct["route_integrity"], integrated["route_integrity"]
     )["ready"] is True
+
+
+def test_runtime_experimental_token_override_is_explicit_and_context_scoped(
+    tmp_path: Path, monkeypatch
+) -> None:
+    bind_source_route_readiness(monkeypatch)
+    observed: dict[str, object] = {}
+
+    def fake_runner(**kwargs: object) -> dict:
+        observed["maximum_tokens"] = dict(kwargs["config"])["product_maximum_tokens"]
+        local = dict(kwargs["config"])
+        identity = integrity.load_model_contract(
+            local["worker_config"],
+            local["runtime_preflight"],
+            maximum_tokens=local["product_maximum_tokens"],
+        )["identity"]
+        payload = {
+            "policy": "project_theseus_local_inference_backend_v1",
+            "trigger_state": "GREEN",
+            "backend": {"identity": identity},
+            "request": {
+                "execution_mode": kwargs["execution_mode"],
+                "prompt_sha256": runtime.sha256_text(str(kwargs["prompt"])),
+                "route_context_digest": kwargs["route_context_digest"],
+            },
+            "response": {"answer": "typed edit", "teacher_recommended": False},
+            "session": {"session_id": kwargs["session_id"], "history_turns_loaded": 0},
+            "metrics": {"local_model_inference_calls": 1},
+            "external_inference_calls": 0,
+        }
+        runtime.write_json(Path(kwargs["out"]), payload)
+        return {"id": "local_inference", "returncode": 0, "stderr_tail": ""}
+
+    request_args = args(tmp_path, integrity.DIRECT_MODE)
+    request_args.local_maximum_tokens = 1536
+    with runtime.bind_local_inference_runner(fake_runner):
+        report = runtime.build_report(request_args, time.perf_counter())
+
+    assert report["trigger_state"] == "GREEN"
+    assert observed["maximum_tokens"] == 1536
+    assert runtime._LOCAL_INFERENCE_RUNNER.get() is None

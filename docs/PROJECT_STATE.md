@@ -2,7 +2,8 @@
 
 Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
 `cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
-page includes the bounded 13-claim causal-binding transaction.
+page includes the bounded 13-claim causal-binding transaction and the
+audit-GREEN P2A instrument.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -17,9 +18,8 @@ infrastructure, not the goal by themselves. P1 now proves that the exact local
 model traverses the canonical direct and integrated routes, but P2-001 and its
 only repair produced no applicable candidate under the 512-token protocol.
 Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. The next
-step is P2A: one concise typed-edit successor instrument using an autonomously
-acquired, license-compatible,
-machine-verifiable task. In parallel, the neural campaign remains held on clean
+step is to bind one autonomously acquired, license-compatible,
+machine-verifiable task to the implemented P2A instrument. In parallel, the neural campaign remains held on clean
 source binding and migration from manual holds to bounded machine-readable
 launch and one-shot evaluation authority. No forward phase depends on Corben
 supplying tasks, labels, approvals, or timing.
@@ -74,6 +74,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated modes invoke the exact offline TMax snapshot; the deterministic status path remains for maintenance compatibility |
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
+| P2A successor instrument | `IMPLEMENTED_AUDIT_GREEN_AWAITING_TASK` | One persistent exact-TMax load, a bound 1,536-token decoder, at most two calls per arm, atomic typed edits, visible-verifier repair, route-blind hidden evaluation, and rollback recomputation pass the mechanics suite; empirical adequacy is not yet established |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
 | Training | `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING` | `runtime/control/neural_seed_yield_after_segment` is present; removal must move to the exact automated launch controller |
@@ -110,7 +111,9 @@ subsystem efficacy remains `INCONCLUSIVE_IMPLEMENTATION`; P3, P4, and all
 subsystem-specific claim experiments remain blocked until P2A proves instrument
 adequacy.
 
-P2A will use a deterministic task selected from a sealed, license-compatible
+P2A now implements a persistent frozen backend, concise line-addressed edits,
+atomic application, one verifier-fed repair, and independent route-blind
+evaluation. It will use a deterministic task selected from a sealed, license-compatible
 online repository pool. Candidate-visible inputs are the natural request,
 parent snapshot, callable surface, and allowed context; later patches, hidden
 tests, commit identity, source-task metadata, and answer-derived labels remain
@@ -425,9 +428,8 @@ In order:
    exact identities, causal variables, adequacy requirements, strongest
    controls, decisions, and maximum-inference boundaries are now fixed; the
    binding changes no book support state.
-3. Implement P2A with persistent exact TMax, shared typed actions, 1,024-1,536
-   output tokens, at most two calls per arm, one visible-verifier repair, and an
-   independent hidden evaluator.
+3. Keep the audit-GREEN P2A implementation frozen while its source transaction
+   is bound; do not tune it after the online task pool is opened.
 4. Build a sealed license-compatible online task pool and run P2A
    automatically. Open P3 on adequacy; otherwise qualify one stronger local
    model under a new denominator. Do not replay P2-001.

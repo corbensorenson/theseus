@@ -1,0 +1,64 @@
+{
+  "policy": "project_theseus_p2a_frozen_model_instrument_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+  "purpose": "Adequate direct-versus-integrated real-work instrument; this is infrastructure and cannot support a subsystem claim.",
+  "runtime_config": "configs/theseus_assistant_runtime.json",
+  "frozen_model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+    "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+    "maximum_generation_tokens_per_call": 1536,
+    "maximum_model_calls_per_arm": 2,
+    "persistent_model_loads_per_pair": 1,
+    "temperature": 0.0
+  },
+  "matched_arm_contract": {
+    "arm_order": [
+      "direct_local_model",
+      "integrated_local_model"
+    ],
+    "same_source_snapshot": true,
+    "same_natural_request": true,
+    "same_candidate_visible_repository_context": true,
+    "same_typed_edit_protocol": "theseus_line_edit_v1",
+    "same_patch_application": true,
+    "same_visible_verifier": true,
+    "same_hidden_evaluator_after_seal": true,
+    "same_decoder_and_budget_caps": true,
+    "one_visible_verifier_repair_allowed": true,
+    "route_label_hidden_from_evaluator": true
+  },
+  "candidate_protocol": {
+    "version": "theseus_line_edit_v1",
+    "maximum_actions_per_candidate": 8,
+    "maximum_replacement_bytes": 65536,
+    "allowed_operation": "REPLACE",
+    "line_coordinates": "one_based_inclusive_against_current_disposable_snapshot",
+    "grammar": "THESEUS_EDIT_V1\\nREPLACE <relative-path> <start-line> <end-line>\\n<<<\\n<replacement text>\\n>>>\\nEND"
+  },
+  "repository_tools": {
+    "network_during_generation": "forbidden",
+    "source_acquisition": "pre-generation licensed online repository archive",
+    "candidate_visible_search": "task-bound literal search results only",
+    "candidate_visible_reads": "task-bound line ranges only",
+    "effect_root": "disposable_source_snapshot_only"
+  },
+  "adequacy_rule": {
+    "instrument_adequate": "At least one arm emits a parseable authorized edit, the harness applies it, and an independent hidden evaluator reaches a correctness decision inside frozen budgets.",
+    "both_arms_malformed": "P2A_INSTRUMENT_INADEQUATE",
+    "missing_persistence_or_pair_match": "INVALID_P2A_INSTRUMENT",
+    "model_failure_after_adequate_instrument": "SCOPED_TO_EXACT_FROZEN_MODEL_TASK_AND_BUDGET"
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0,
+    "ASI_stack_support_state_effect": "none"
+  }
+}

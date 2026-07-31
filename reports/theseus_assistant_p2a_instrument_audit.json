@@ -1,0 +1,39 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-31T23:53:46.275581Z",
+  "faults": [],
+  "instrument_sha256": "de89fd73d7a3b8ececf6d0e6c9358b352a849f31bb55510ca313fe43c1432101",
+  "model_identity": {
+    "decoder": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "kv_bits": null,
+      "kv_group_size": null,
+      "maximum_tokens": 1536,
+      "quantized_kv_start": null,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "temperature": 0.0,
+      "worker_maximum_action_tokens": 1536
+    },
+    "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+    "identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "runtime": "mlx_lm_local_metal",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1"
+  },
+  "policy": "project_theseus_p2a_instrument_audit_v1",
+  "runtime_ms": 2.741,
+  "trigger_state": "GREEN"
+}
