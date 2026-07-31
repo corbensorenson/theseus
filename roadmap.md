@@ -58,6 +58,24 @@ promote or retire a major idea. The proof program tests one decision-relevant
 mechanism at a time and preserves the strong baseline, matched budget,
 weak-tail, cost, and rollback requirements in the operating charter.
 
+### Bound high-leverage claim portfolio
+
+The exact claim identities are pinned to AI_book commit `17c6ece…` and its
+manifest digest in the implementation matrix. They are deliberately split by
+what kind of experiment can decide them:
+
+| Role | Exact chapter-core claims | Decision boundary |
+| --- | --- | --- |
+| Integrity prerequisites | `integrated-reference-architecture.core`; `evidence-states-and-claim-discipline.core` | Must pass before evidence is interpreted; they establish trace/claim mechanics, not usefulness |
+| P4 causal candidates | `virtual-context-abi.core`; `planning-as-a-control-layer.core`; `cognitive-compilation-and-semantic-ir.core`; `verification-bandwidth-and-context-adequacy.core`; `routing-heads-and-specialist-cores.core`; `procedural-memory-and-cognitive-loop-closure.core`; `system-boundaries-and-authority.core`; `capability-replacement-and-rollback.core` | P3 residuals activate exactly one faithful intervention; order only breaks ties |
+| Independent D2 claim | `replaceable-cognitive-substrates-beyond-transformer-monoculture.core` | Modular language arms versus dense-active and dense-total under the sealed neural contract |
+| Synthesis claims | `the-efficient-asi-hypothesis.core`; `asi-is-a-stack-not-a-model.core` | Require multiple independently causal survivors and fresh matched composition evidence; no single P4 ablation can decide them |
+
+`project-theseus-as-report-first-implementation-reference.core` remains an
+evidence-handoff obligation rather than a headline scientific claim. A clean
+report packet is necessary for book review but is not evidence that an ASI
+Stack mechanism works.
+
 ## Direction Recovery
 
 The previous local-model plan had the right controlled-variable idea but joined
@@ -199,7 +217,7 @@ mechanism. P2-001 may not be replayed for fresh credit.
 
 #### P2A — Establish an adequate autonomous coding instrument
 
-State: `READY_AFTER_TRANSACTION_RECOVERY`.
+State: `READY_FOR_IMPLEMENTATION`.
 
 P2-001 ended an exact instrument version; it did not end the fixed-model
 strategy. Create one prospectively named successor instrument and change the
@@ -299,16 +317,20 @@ intervention. Do not run a factorial or make record production the dependent
 variable. P4 is the causal development stage for the book's major subsystem
 claims; P2A and P3 exist to make these comparisons interpretable.
 
-| Order | Book idea | Required live comparison |
-| --- | --- | --- |
-| 0 | Integrated reference architecture and evidence states | Prove request-to-effect and blocked/rollback traces have no orphan records or decorative mechanisms |
-| 1 | Virtual Context ABI | Correct, omitted, stale, shuffled, and tainted context where the actual model consumes the selected content |
-| 2 | Planning as a control layer | Executed typed obligations versus information-matched direct work, including replan after a real failed step |
-| 3 | Verification bandwidth | Fixed-minimal versus risk/adequacy-routed verification on false accept, false reject, repair, and total cost |
-| 4 | Least-sufficient routing | Always-direct, always-maximal, and routed capability/tool budgets with route regret |
-| 5 | Procedural memory and cognitive compilation | Fresh slow path versus a verified repeated workflow with false-trigger, drift, decompilation, retirement, and retained slow path |
-| 6 | System boundaries and rollback | Allowed, denied, revoked, confused-deputy, partial-effect, and exact-rollback paths with false-block cost |
-| 7 | Capability replacement ratchet | Shadow, canary, monitor, regression, and effect-complete rollback for a measured winner |
+P3 residuals select the first matching eligible mechanism; the order below is
+only a deterministic tie-break, not permission to run every row.
+
+| Order | Exact claim | Causal variable | Strongest required contrasts |
+| --- | --- | --- | --- |
+| 0 | Integrated architecture + evidence-state prerequisites | Downstream-consumed trace joins and independent claim transitions | Direct, record-only, context-decoration-only, producer self-score |
+| 1 | `virtual-context-abi.core` | Source-bound admitted model-visible context | No context, information-matched plain context, maximal ungoverned context, stale/shuffled/tainted/revoked interventions |
+| 2 | `planning-as-a-control-layer.core` | Executed typed dependencies and feedback-driven replanning | Information-matched direct, non-executing plan text, strong static workflow |
+| 3 | `cognitive-compilation-and-semantic-ir.core` | Typed lowering, stable identities, target validation, and dependency-local repair | Natural-language plan, direct target generation, deterministic compiler-only |
+| 4 | `verification-bandwidth-and-context-adequacy.core` | Risk/adequacy-routed real verification work | Fixed minimal, fixed maximal, random/cost-only allocation with held candidates |
+| 5 | `routing-heads-and-specialist-cores.core` | Least-sufficient eligible route changing real capability/tool/budget access | Always-direct, always-maximal, random/cost-only, oracle route ceiling |
+| 6 | `procedural-memory-and-cognitive-loop-closure.core` | Trace-derived verified parameterized procedure | Fresh slow path, retrieval-only, checklist reuse, hand-authored script |
+| 7 | `system-boundaries-and-authority.core` | Live revocable authority tuple at dispatch/effect time | Coarse allowlist, ambient authority, conservative hold |
+| 8 | `capability-replacement-and-rollback.core` | Prospective shadow/canary/monitor/commit/recovery transaction | Ad-hoc swap, pointer rollback, retain-prior control |
 
 A failed proxy, underpowered local model, or incomplete runtime receives
 `INCONCLUSIVE_IMPLEMENTATION` or `INCONCLUSIVE_EXPERIMENT`; it cannot retire the
@@ -359,7 +381,7 @@ Maintenance serves P or N and does not become another research program:
 | Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated learned-generation modes use the exact offline TMax snapshot; the status shim remains a maintenance-compatible mode |
 | Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
-| Autonomous instrument successor | `P2A_READY_AFTER_CLAIM_BINDING` | Same frozen TMax gets one new concise typed-edit protocol; success opens P3, failure triggers automated qualification of one stronger local model |
+| Autonomous instrument successor | `P2A_READY_FOR_IMPLEMENTATION` | The exact 13-claim portfolio and mechanism contracts are bound; same frozen TMax now gets one concise typed-edit protocol, with success opening P3 and failure creating one new local-model instrument identity |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 produced zero independently evaluable candidates; no route or subsystem won |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
@@ -373,12 +395,10 @@ Maintenance serves P or N and does not become another research program:
 1. Keep the isolated source-bound P1 implementation and terminal P2-001
    evidence immutable; do not mix neural, release, cleanup, or Rust work into
    their transactions.
-2. Use the reconciled immutable 84-chapter book pin (84/84 rows, zero unmapped,
-   636 Codex-test obligations, 204 pending/partial) to bind the ordered P4
-   mechanisms to the highest-leverage exact claim identities,
-   causal implementations, adequacy requirements, matched controls, and
-   maximum inferences. Do not rewrite the book broadly or change any support
-   state from planning evidence.
+2. Preserve the source-bound 84-chapter pin and 13-claim causal portfolio. Its
+   exact identities, causal variables, adequacy requirements, strongest
+   controls, decisions, and maximum inferences are now the experiment
+   contract; the binding changes no book support state.
 3. Implement P2A as a new prospectively frozen instrument: persistent exact
    TMax, concise typed edits, shared action tools, 1,024-1,536 output tokens,
    one visible-verifier repair, and independent hidden evaluation.

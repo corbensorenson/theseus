@@ -1,8 +1,8 @@
 # Project Theseus: Current State
 
 Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
-`cfa101d9`; this page is part of the bounded 84-chapter reconciliation
-transaction.
+`cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
+page includes the bounded 13-claim causal-binding transaction.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -17,8 +17,8 @@ infrastructure, not the goal by themselves. P1 now proves that the exact local
 model traverses the canonical direct and integrated routes, but P2-001 and its
 only repair produced no applicable candidate under the 512-token protocol.
 Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. The next
-step is claim/mechanism binding followed by P2A: one concise typed-edit
-successor instrument using an autonomously acquired, license-compatible,
+step is P2A: one concise typed-edit successor instrument using an autonomously
+acquired, license-compatible,
 machine-verifiable task. In parallel, the neural campaign remains held on clean
 source binding and migration from manual holds to bounded machine-readable
 launch and one-shot evaluation authority. No forward phase depends on Corben
@@ -66,7 +66,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Primary scientific objective | `ASI_STACK_CAUSAL_PROOF_ACTIVE` | P2A/P3 establish an adequate autonomous instrument; P4/P5 test and qualify one major subsystem claim at a time; N tests modular specialization against dense controls |
 | Repository | `PUBLIC_REMOTE_UNSAFE_HISTORY_PUSH_FROZEN` | The public remote and its history contain material excluded by the current boundary; the current local full-tree audit has 529 forbidden tracked paths |
 | Project registry | `GREEN` | Current registry gate has zero abstraction, stable-field, or routing blockers; all 17 route-evidence outputs are unblocked |
-| Roadmap gate | `YELLOW` | Zero roadmap hard gaps; the exact committed 84-chapter book pin has zero drift, while the nested pre-training gate retains one unrelated source-binding blocker |
+| Roadmap gate | `YELLOW` | Zero roadmap hard gaps; the exact committed 84-chapter snapshot remains authoritative, one later dirty AI_book manifest edit is intake-only, and the nested pre-training gate retains one unrelated source-binding blocker |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
 | D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks and was historically admitted for D1 stack evaluation only, never student/D2 credit; its result does not transfer after Worker-v4 repairs |
 | D1 local-8B causal campaign | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | After generic controller repairs, TMax inspected four source spans and an analogous test, accepted a five-criterion/two-path plan, then twice regressed to forbidden reads instead of editing or abstaining. No patch or verification occurred. E2 stays sealed; a later D1 qualification must prospectively freeze a competent local identity after L0 selection, but model shopping is not a prerequisite for L0 work |
@@ -85,6 +85,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Storage | `RETENTION_POLICY_PENDING` | Current trees are roughly 2.0 GiB / 7,379 report files and 41 GiB / 249,010 runtime files. A machine-readable retention controller and custody must identify safe targets before deletion; checkpoints, corpora, and negative evidence are not implicitly eligible |
 | Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
 | ASI Stack synchronization | `RECONCILED_84_OF_84` | Immutable book commit `17c6ece…` is bound in exact order with zero unmapped chapters and no automatic support movement |
+| ASI Stack claim portfolio | `BOUND_13_EXACT_CLAIMS` | Two integrity prerequisites, eight one-variable P4 candidates, one independent D2 neural claim, and two synthesis claims now have exact causal, adequacy, control, decision, and maximum-inference contracts |
 
 ## The Active Local-Model Program
 
@@ -420,11 +421,10 @@ In order:
 1. Keep the isolated source-bound P1 implementation and terminal P2-001
    evidence immutable; do not mix subsystem, neural, release, cleanup, or Rust
    work into their transactions.
-2. Use the reconciled immutable 84-chapter pin (84/84 rows, zero unmapped, 636
-   Codex-test obligations, 204 pending/partial) to bind the ordered P4
-   mechanisms to the highest-leverage exact claim identities, adequacy
-   requirements, matched controls, decision rules, and maximum-inference
-   boundaries. The reconciliation changes no book support state.
+2. Preserve the source-bound 84-chapter pin and 13-claim causal portfolio. The
+   exact identities, causal variables, adequacy requirements, strongest
+   controls, decisions, and maximum-inference boundaries are now fixed; the
+   binding changes no book support state.
 3. Implement P2A with persistent exact TMax, shared typed actions, 1,024-1,536
    output tokens, at most two calls per arm, one visible-verifier repair, and an
    independent hidden evaluator.

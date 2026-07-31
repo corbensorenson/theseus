@@ -1888,7 +1888,7 @@
     "decision": "Advance the historical 54-chapter pin to the current committed 84-chapter living-book manifest without creating a lane or changing claim support. Preserve the prior 54 Theseus dispositions, bind the 30 admitted chapters to existing owners, and use claim-level P2A/P3/P4/D1/D2 evidence as the only route back to book review.",
     "current_theseus_evidence": "Source binding and backlog ownership are complete for all 84 chapters. Chapter implementation, mechanism efficacy, usefulness, safety, and support remain governed by their independent evidence states and activation gates.",
     "new_required_work": [
-      "select a bounded highest-leverage claim set and bind faithful causal mechanisms, adequacy requirements, matched controls, decision rules, and maximum inference",
+      "execute the bound 13-claim portfolio through P2A/P3 and exactly one residual-selected P4 mechanism",
       "build and qualify P2A before consuming any P3 or P4 task evidence",
       "acquire and seal a licensed source-disjoint machine-verifiable task pool",
       "return only independently reviewed claim-level evidence to the book with no automatic support promotion"
@@ -3746,7 +3746,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "active_P1_runtime_integration_and_parallel_neural_readiness",
+    "execution_state": "active_claim_bindings_complete_P2A_implementation_and_parallel_neural_readiness",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -4415,10 +4415,10 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-07-31",
-    "recommendation": "Restore ASI Stack causal proof as the primary objective. Preserve the completed P1 route-integrity result and terminal P2 evidence, recover their source transactions, then build P2A as an adequate autonomous typed-edit instrument. Use a sealed license-compatible online task pool, not Corben-supplied work. In parallel, refresh step-11,416 neural source/custody readiness and replace interactive launch authority with a bounded machine-readable controller. Preserve D1, D2, public calibration, and all prior negative or interrupted evidence.",
+    "recommendation": "Execute the source-bound ASI Stack causal-proof program. Preserve P1, terminal P2, the reconciled 84-chapter pin, and the exact 13-claim causal portfolio; then build P2A as an adequate autonomous typed-edit instrument. Use a sealed license-compatible online task pool, not Corben-supplied work. In parallel, refresh step-11,416 neural source/custody readiness and replace interactive launch authority with a bounded machine-readable controller. Preserve D1, D2, public calibration, and all prior negative or interrupted evidence.",
     "project_theseus_focus": [
-      "reconcile_the_reviewed_54_chapter_pin_with_the_committed_84_chapter_manifest_without_support_movement",
-      "source_bind_the_completed_P1_backend_direct_mode_and_live_route_integrity_transaction",
+      "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
+      "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
       "preserve_P1_as_route_mechanics_only_not_utility_or_book_claim_evidence",
       "preserve_terminal_P2_001_and_build_one_prospectively_frozen_P2A_typed_edit_instrument",
       "acquire_license_compatible_online_tasks_under_provenance_contamination_and_no_cheat_gates",
@@ -4427,7 +4427,7 @@
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "refresh_step_11416_source_and_custody_readiness_with_training_hold_installed",
       "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training",
-      "split_the_88_file_dirty_transaction_before_source_binding"
+      "preserve_remaining_mixed_neural_Rust_release_and_cleanup_work_outside_the_bound_P1_P2_roadmap_transactions"
     ],
     "implementation_outputs": [
       "existing_ASI-THESEUS-FLAGSHIP-01_preregistration_owner",
@@ -4458,12 +4458,12 @@
   "core_evidence_campaign": {
     "policy": "project_theseus_core_evidence_campaign_v1",
     "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-    "state": "active_ASI_Stack_claim_proof_P2A_instrument_recovery_neural_N0_parallel",
+    "state": "active_claim_bindings_complete_P2A_implementation_neural_N0_parallel",
     "objective": "Produce claim-bearing causal evidence for the highest-leverage ASI Stack mechanisms. Qualify a frozen local model as an adequate autonomous measurement instrument, compare one causally active subsystem at a time against strong matched controls, and advance the independent modular-versus-dense neural verdict in parallel.",
     "denominators": {
       "L0": {
         "question": "After route integrity is proved, which causally active Theseus subsystem changes improve useful completion or total contract cost relative to the same frozen local model on a matched direct runtime?",
-        "state": "blocked_on_transaction_recovery_and_P2A_instrument_adequacy",
+        "state": "blocked_on_P2A_instrument_adequacy",
         "owner": "configs/core_evidence_subsystem_adequacy.json development_dogfood",
         "worker_boundary": "same_frozen_model_decoder_snapshot_effect_sandbox_and_independent_evaluator_no_external_inference_no_teacher_calls_no_theseus_student_credit",
         "reuse_policy": "development tasks and outcomes may be inspected and reused for repair",
@@ -4483,18 +4483,389 @@
       }
     },
     "claim_ids": [
-      "asi-is-a-stack-not-a-model.core",
-      "the-efficient-asi-hypothesis.core",
-      "system-boundaries-and-authority.core",
-      "planning-as-a-control-layer.core",
-      "virtual-context-abi.core",
-      "verification-bandwidth-and-context-adequacy.core",
-      "procedural-memory-and-cognitive-loop-closure.core",
-      "routing-heads-and-specialist-cores.core",
-      "capability-replacement-and-rollback.core",
-      "evidence-states-and-claim-discipline.core",
       "integrated-reference-architecture.core",
-      "project-theseus-as-report-first-implementation-reference.core"
+      "evidence-states-and-claim-discipline.core",
+      "virtual-context-abi.core",
+      "planning-as-a-control-layer.core",
+      "cognitive-compilation-and-semantic-ir.core",
+      "verification-bandwidth-and-context-adequacy.core",
+      "routing-heads-and-specialist-cores.core",
+      "procedural-memory-and-cognitive-loop-closure.core",
+      "system-boundaries-and-authority.core",
+      "capability-replacement-and-rollback.core",
+      "replaceable-cognitive-substrates-beyond-transformer-monoculture.core",
+      "the-efficient-asi-hypothesis.core",
+      "asi-is-a-stack-not-a-model.core"
+    ],
+    "claim_binding_policy": {
+      "policy": "asi_stack_high_leverage_claim_binding_v1",
+      "state": "complete",
+      "completed_date": "2026-07-31",
+      "selected_claim_count": 13,
+      "source_book_commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+      "source_book_manifest_sha256": "ab8db6fddc6a367beac24d16866d0dc687b85cc796f5fc4086833b752bbfae4e",
+      "selection_factors": [
+        "centrality to the ASI Stack architecture rather than implementation convenience",
+        "a causally interventionable mechanism rather than a label, schema, or report count",
+        "decision value for near-term Theseus design",
+        "ability to receive a strong information-, model-, tool-, budget-, verifier-, and total-cost-matched control",
+        "adequacy can be established without Corben-supplied tasks or labels",
+        "positive and negative results can be bounded without proxy-to-architecture overreach"
+      ],
+      "integrity_prerequisite_claim_ids": [
+        "integrated-reference-architecture.core",
+        "evidence-states-and-claim-discipline.core"
+      ],
+      "ordered_p4_candidate_claim_ids": [
+        "virtual-context-abi.core",
+        "planning-as-a-control-layer.core",
+        "cognitive-compilation-and-semantic-ir.core",
+        "verification-bandwidth-and-context-adequacy.core",
+        "routing-heads-and-specialist-cores.core",
+        "procedural-memory-and-cognitive-loop-closure.core",
+        "system-boundaries-and-authority.core",
+        "capability-replacement-and-rollback.core"
+      ],
+      "independent_d2_claim_ids": [
+        "replaceable-cognitive-substrates-beyond-transformer-monoculture.core"
+      ],
+      "synthesis_claim_ids": [
+        "the-efficient-asi-hypothesis.core",
+        "asi-is-a-stack-not-a-model.core"
+      ],
+      "evidence_handoff_only_claim_ids": [
+        "project-theseus-as-report-first-implementation-reference.core"
+      ],
+      "activation_rule": "P3 residuals choose the first eligible P4 claim with a matching causal defect; order breaks ties only. Exactly one intervention is active, all other optional mechanisms remain fixed, and no P4 development outcome moves a book support state.",
+      "global_adequacy_rule": "Before interpreting a result, prove instrument competence, live downstream mechanism use, learnability or effect reachability where applicable, intervention sensitivity, checkpoint/reload or rollback fidelity where stateful, strong matched controls, complete denominators, multiple task types, uncertainty, weak tails, independent hidden evaluation, source disjointness, and total-system cost. Missing conditions force INCONCLUSIVE_IMPLEMENTATION or INCONCLUSIVE_EXPERIMENT.",
+      "global_decision_rule": {
+        "P4_SURVIVOR": "The faithful intervention improves its preregistered primary estimand over the strongest eligible matched control, passes safety and rollback vetoes, retains weak-tail and cost visibility, and survives mechanism-specific positive and negative controls. This is development evidence only.",
+        "P4_REPAIR_OR_NARROW": "The mechanism is causally live but competence, power, cost, weak-tail, or construct-validity gates are insufficient; repair the exact owner or narrow the scope without a negative architecture claim.",
+        "P4_NEGATIVE_SCOPED": "Only an adequate, powered, faithful implementation with strong matched controls may support a negative conclusion, and only for its exact model, task distribution, implementation, budget, evaluator, and operating regime.",
+        "D1_CLAIM_CANDIDATE": "A P4 survivor moves to one fresh source-disjoint D1 only after the exact minimum worthwhile effect, uncertainty method, competence floor, weak-tail ceiling, cost boundary, and terminal rules are frozen.",
+        "SUPPORT_EFFECT": "none until independent book-side claim review accepts a claim-specific evidence transition"
+      }
+    },
+    "claim_test_bindings": [
+      {
+        "claim_id": "integrated-reference-architecture.core",
+        "core_claim_sha256": "b0e333efe0e728dbe39d70c2f907a0a31a74bdeb45f5c856ab8b88047d090570",
+        "role": "integrity_prerequisite",
+        "owner_work_package_id": "ASI-03",
+        "stage": "P1_then_T4",
+        "causal_variable": "Downstream-consumed typed owner contracts joined through actual state and effects, versus record-only or prompt-decoration integration.",
+        "primary_estimand": "Orphan, stale-parent, unacknowledged-effect, authority-drift, residual-loss, and rollback-closure error rates across allowed, blocked, failed, revoked, and rolled-back paths.",
+        "faithful_mechanism": [
+          "Every enabled owner changes a downstream-consumed input, action, hold, or verification decision.",
+          "Canonical state, actual effect observation, terminal acknowledgement, evidence delta, residual, and rollback remain joinable by stable identities.",
+          "Record emission alone cannot satisfy the mechanism."
+        ],
+        "adequacy_requirements": [
+          "At least one natural allowed path and one blocked or rollback path reach terminal reconciliation.",
+          "Independent effect observation and mutation tests catch orphan effects, stale receipts, missing acknowledgements, authority widening, and erased residuals.",
+          "The same fixed model, task, tools, information, and budgets are used in live, record-only, and direct controls."
+        ],
+        "matched_controls": ["direct runtime", "record-only integration", "context-decoration-only integration"],
+        "decision_rule": "This prerequisite passes only when the live join has zero critical join violations and the record-only/decorative controls fail the corresponding causal mutations. It is not selected as a usefulness winner.",
+        "maximum_inference_positive": "The exact local paths implement a causally live, auditable cross-layer join.",
+        "maximum_inference_negative": "A failure diagnoses the exact integration implementation; it cannot falsify stack architecture or any downstream subsystem."
+      },
+      {
+        "claim_id": "evidence-states-and-claim-discipline.core",
+        "core_claim_sha256": "4a41e0764eeffff954b41f49b23b745a85f5f8665453183b39b9669471b14fb8",
+        "role": "integrity_prerequisite",
+        "owner_work_package_id": "ASI-20",
+        "stage": "all_stages_and_book_handoff",
+        "causal_variable": "Independent claim-specific transition enforcement with a non-aggregating evidence vector, versus flat GREEN labels or producer self-certification.",
+        "primary_estimand": "False promotion, missed downgrade, scope-widening, stale-evidence acceptance, and unsupported-inference rates.",
+        "faithful_mechanism": [
+          "Claim identity, text, scope, label, support, lifecycle, disposition, evidence roles, counterevidence, and non-claims remain distinct.",
+          "An independent consumer recomputes candidate integrity and transition eligibility from retained artifacts.",
+          "Negative, null, invalid, blocked, and stale evidence remain in lineage."
+        ],
+        "adequacy_requirements": [
+          "Known-positive and known-invalid transitions cover promotion, no-change, narrowing, downgrade, refutation, deprecation, and invalid information flow.",
+          "Producer-emitted pass flags are ignored and adversarial scope/lineage mutations are rejected.",
+          "Book projection is downstream of accepted transitions and cannot write support automatically."
+        ],
+        "matched_controls": ["flat status label", "producer self-score", "claim ledger without independent transition gate"],
+        "decision_rule": "Any false promotion or authority-widening projection is a hard integrity failure; passing establishes transition mechanics only.",
+        "maximum_inference_positive": "The exact claim-transition implementation preserves the declared evidence boundary under tested mutations.",
+        "maximum_inference_negative": "A failure invalidates affected evidence packets; it does not imply the underlying scientific claim is false."
+      },
+      {
+        "claim_id": "virtual-context-abi.core",
+        "core_claim_sha256": "7c2401f7881d45347e51d62d7d82c9dbc453bd6f31b0cbcf0a12b0253a6b6973",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-12",
+        "stage": "P4_priority_1_if_P3_context_residual",
+        "causal_variable": "Source-bound, versioned, policy-admitted model-visible context selected through the VCM ABI.",
+        "primary_estimand": "Useful completion and requirement preservation on context-dependent tasks, with stale/tainted unsafe release, false block, latency, token cost, retrieval cost, and residual burden co-primary for disposition.",
+        "faithful_mechanism": [
+          "The actual selected packet reaches the model and is cited in the downstream route receipt.",
+          "Correct, omitted, stale, shuffled, wrong-scope, tainted, revoked, and over-budget packets exercise distinct live paths.",
+          "Admission, truth, adequacy, model use, and usefulness remain separate states."
+        ],
+        "adequacy_requirements": [
+          "Eligible tasks require repository state not recoverable from the natural request alone.",
+          "An information-matched plain-context control separates ABI selection/governance from merely providing more tokens.",
+          "A known-positive task proves the fixed model can use the required context, and taint/staleness controls can change release or hold behavior.",
+          "Hidden evaluation receives no source task ID, answer, patch, tests, or answer-derived metadata through candidate-visible fields."
+        ],
+        "matched_controls": ["direct without added context", "information-matched plain context", "maximal ungoverned context"],
+        "intervention_controls": ["omit", "shuffle", "stale version", "wrong scope", "taint", "revoke"],
+        "decision_rule": "Survive P4 only if correct VCM context beats the strongest eligible control on the primary task outcome while stale, tainted, wrong-scope, and revoked variants do not create unsafe gains, and total cost remains visible.",
+        "maximum_inference_positive": "VCM improved the measured local context-dependent task family for the exact fixed model and policy.",
+        "maximum_inference_negative": "A qualified null or loss applies only to this VCM implementation, model, task family, context budget, and evaluator; an inadequate model-use or task-dependence gate is inconclusive."
+      },
+      {
+        "claim_id": "planning-as-a-control-layer.core",
+        "core_claim_sha256": "7bacf6ba10f82496adf9f7b57fa276f91021ac47f85cde14477c62a9b45af03e",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-08",
+        "stage": "P4_priority_2_if_P3_dependency_or_replan_residual",
+        "causal_variable": "A versioned typed partial-order plan whose satisfied dependencies control dispatch and whose live feedback triggers scoped replanning.",
+        "primary_estimand": "Useful completion, obligation coverage, dependency violations, wasted actions, repair/replan success, latency, total cost, and residuals.",
+        "faithful_mechanism": [
+          "Plan nodes are executed through their declared dependency, authority, resource, verifier, stop, and recovery predicates.",
+          "A real failed or changed step invalidates the affected future subgraph and changes downstream dispatch.",
+          "A rendered plan that does not control execution is the record-only control, not the treatment."
+        ],
+        "adequacy_requirements": [
+          "Tasks contain real dependency order, at least one feasible alternative, and a prospectively injected or naturally occurring replan trigger.",
+          "The direct and plan-text controls receive information and model/tool budgets matched to the live planner.",
+          "Known-positive dependency and replan cases prove the runtime can reach the mechanism.",
+          "All candidate plans, blocked nodes, retries, failed steps, human-equivalent repairs, and costs remain in the denominator."
+        ],
+        "matched_controls": ["information-matched direct execution", "plan text not controlling dispatch", "strong static workflow or human-authored plan when applicable"],
+        "intervention_controls": ["remove dependency", "invert dependency", "suppress replan", "corrupt assumption", "record-only plan"],
+        "decision_rule": "Survive P4 only if live planning improves completed obligations or reduces dependency/repair waste relative to the strongest control without extra authority, hidden retries, safety regression, or unaccounted cost.",
+        "maximum_inference_positive": "Executed planning helped the exact task regime and fixed model under the frozen plan policy.",
+        "maximum_inference_negative": "A qualified negative applies only to this planning policy and regime; plan-text or non-dispatch failures are implementation-inadequate, not evidence against planning."
+      },
+      {
+        "claim_id": "cognitive-compilation-and-semantic-ir.core",
+        "core_claim_sha256": "5372bb85802c06f411fd74815a1d8e3bc2288568f680226324d03b6a0e91a6ac",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-12",
+        "stage": "P4_priority_3_if_P3_translation_or_repair_residual",
+        "causal_variable": "Typed source-to-semantic-to-target lowering with stable obligation identities, explicit loss/ambiguity, target validation, and dependency-local repair.",
+        "primary_estimand": "Target-artifact correctness, exact requirement and non-goal preservation, repair locality, rebuild scope, latency, total cost, and residual semantic loss.",
+        "faithful_mechanism": [
+          "The fixed model consumes or produces the typed representation; a deterministic renderer cannot receive learned-generation credit.",
+          "Source, semantic, target, and actual artifact identities remain linked through each pass and validation result.",
+          "Repair changes the dependency-closed semantic units and revalidates the actual target artifact."
+        ],
+        "adequacy_requirements": [
+          "Tasks contain multiple interacting requirements, negative constraints, and at least one repairable localized defect.",
+          "Natural-language structured-plan and information/token-matched direct controls receive the same target verifier.",
+          "Field corruption, omission, ambiguity, split/merge, and stale-identity interventions cause predicted validator failures.",
+          "Compiler/template output is separately accounted and cannot make a model-only claim positive."
+        ],
+        "matched_controls": ["information-matched natural-language plan", "direct target generation", "deterministic compiler-only baseline"],
+        "intervention_controls": ["drop obligation", "flip non-goal", "corrupt stable identity", "hide ambiguity", "over-broad repair"],
+        "decision_rule": "Survive P4 only if Semantic IR improves target correctness or requirement preservation and repair locality beyond both natural-language and compiler-only controls under matched total cost.",
+        "maximum_inference_positive": "The exact Semantic IR and lowering path improved the tested translation/repair regime.",
+        "maximum_inference_negative": "A result cannot falsify cognitive compilation if the representation is a hand-authored proxy, the model never uses it, target validation is weak, or the deterministic compiler supplies the answer."
+      },
+      {
+        "claim_id": "verification-bandwidth-and-context-adequacy.core",
+        "core_claim_sha256": "bf659bd5e5549e92285484edfc8315a1837ef1f431ee626d7b37d5fb330019b0",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-14",
+        "stage": "P4_priority_4_if_P3_false_accept_false_reject_or_cost_residual",
+        "causal_variable": "Prospective risk- and adequacy-routed verification effort with explicit attempted and unattempted obligations.",
+        "primary_estimand": "False accept, false reject, repair yield, unresolved-risk detection, verification latency/cost, and marginal useful error caught per added verification cost.",
+        "faithful_mechanism": [
+          "The allocator changes an actual verifier, test, review, counterexample search, or hold action before the hidden outcome is known.",
+          "Candidate answers are held fixed when isolating verification allocation.",
+          "Evaluator dependency, disagreement, infeasible obligations, unattempted work, and escalation remain visible."
+        ],
+        "adequacy_requirements": [
+          "The cohort includes easy, hard, invalid, repairable, and abstention-worthy candidates with competent known-positive verifier controls.",
+          "Minimal, maximal, and adaptive arms share candidates, tools, evaluator, and total budget accounting.",
+          "Risk labels and route features are prompt-derived or independently observed, never answer-derived hidden metadata.",
+          "The hidden evaluator is independent of the allocator and candidate producer."
+        ],
+        "matched_controls": ["fixed minimal verification", "fixed maximal verification", "random or cost-only allocation"],
+        "intervention_controls": ["withhold high-value verifier", "shuffle risk", "erase disagreement", "force early stop"],
+        "decision_rule": "Survive P4 only if adaptive allocation improves the useful error/cost frontier over both fixed baselines without worsening the preregistered high-risk weak tail or unsafe release count.",
+        "maximum_inference_positive": "Adaptive verification allocation improved the exact candidate and risk distribution under the measured budget.",
+        "maximum_inference_negative": "A null with an incompetent verifier, homogeneous cohort, leaked risk labels, or no resource scarcity is inconclusive for verification bandwidth."
+      },
+      {
+        "claim_id": "routing-heads-and-specialist-cores.core",
+        "core_claim_sha256": "be6cc5847aae0b0e95fac0e4b7b056bd7ac3d7e81d8946afbc30d0647457c123",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-24",
+        "stage": "P4_priority_5_if_P3_route_or_budget_residual",
+        "causal_variable": "Least-sufficient eligible route selection that changes real specialist, tool, context, verification, or budget access under a scoped lease.",
+        "primary_estimand": "End-task useful completion and safety, route regret against an oracle ceiling, abstention/calibration, latency, total cost, weakest route family, and residuals.",
+        "faithful_mechanism": [
+          "Routes expose materially distinct eligible capabilities or budgets; changing a label alone cannot count.",
+          "Route success and answer success are evaluated separately.",
+          "Rejected candidates, fallback, abstention, clarification, capacity, load, and actual dispatch remain in the packet."
+        ],
+        "adequacy_requirements": [
+          "Known-positive tasks establish that different routes are genuinely best for different prompt-visible conditions.",
+          "The router receives no answer-family, hidden test, source-task, or decoder metadata derived from the target.",
+          "Always-direct, always-maximal, random/cost-only, and oracle-ceiling controls share the same candidate registry and total accounting.",
+          "At least two route families have nonzero competent coverage before a negative result is interpreted."
+        ],
+        "matched_controls": ["always direct/generalist", "always maximal", "random or cost-only router", "oracle route ceiling"],
+        "intervention_controls": ["shuffle admissible route features", "remove best route", "stale readiness", "deny authority", "force fallback"],
+        "decision_rule": "Survive P4 only if the governed router improves end-task useful-safe-total-cost performance or reduces cost at fixed quality versus always-maximal and always-direct, with bounded route regret and no weak-tail veto.",
+        "maximum_inference_positive": "The exact system router improved route choice for the tested local registry and workload; this is not learned specialist or student credit.",
+        "maximum_inference_negative": "A negative is scoped to the exact router, candidate registry, route diversity, model, and workload; labels or incompetent specialists make it inconclusive."
+      },
+      {
+        "claim_id": "procedural-memory-and-cognitive-loop-closure.core",
+        "core_claim_sha256": "3e10933937a21f8a5004e9a72fec216c8b25b8b63528f80785d40baea5c8f243",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-10",
+        "stage": "P4_priority_6_if_P3_repeated_work_residual",
+        "causal_variable": "A verified parameterized procedure synthesized from complete repeated-work traces and invoked through a fresh scoped lease.",
+        "primary_estimand": "Amortized useful completion, unsafe or false reuse, false trigger, latency, token/tool/human-equivalent cost, maintenance/revalidation cost, rollback, and retained residuals.",
+        "faithful_mechanism": [
+          "The candidate procedure is induced from a complete trace cluster containing failures and abstentions, not hand-authored as the answer.",
+          "Preconditions, parameters, authority, effects, verifier, rollback, drift, revision, decompilation, and retirement are executable.",
+          "Retrieval, checklist prompting, deterministic scripts, learned tool use, and compiled procedure remain separate baselines and credit channels."
+        ],
+        "adequacy_requirements": [
+          "A naturally repeated source-disjoint workflow supplies enough comparable successes, failures, repairs, and counterexamples to infer a candidate.",
+          "Fresh heldout repetitions and false-trigger cases are unavailable to the procedure producer.",
+          "A drift injection and dependency change exercise revalidation, quarantine, decompilation, or retirement.",
+          "Compilation and ongoing maintenance cost are charged before any efficiency inference."
+        ],
+        "matched_controls": ["fresh slow path", "retrieval-only memory", "prompt/checklist reuse", "hand-authored or deterministic script"],
+        "intervention_controls": ["false trigger", "missing precondition", "parameter shift", "dependency drift", "revoked lease"],
+        "decision_rule": "Survive P4 only if a genuinely trace-derived verified procedure improves amortized useful-safe-total-cost performance on fresh repetitions and passes false-trigger, drift, rollback, and retirement gates.",
+        "maximum_inference_positive": "The exact repeated workflow was safely compressed into useful procedural memory for the tested horizon.",
+        "maximum_inference_negative": "A hand-authored catalog, insufficient repeats, noncausal clustering, or no fresh reuse makes the core compilation claim untested."
+      },
+      {
+        "claim_id": "system-boundaries-and-authority.core",
+        "core_claim_sha256": "57c4887a6f4c0469fe3d196cdb56afbe508d3d52367cd7f7d0dcc23cd873fa7a",
+        "role": "p4_causal_candidate_and_common_safety_constraint",
+        "owner_work_package_id": "ASI-30",
+        "stage": "P4_priority_7_if_P3_authority_false_block_or_effect_residual",
+        "causal_variable": "A versioned revocable authority tuple enforced at dispatch and effect time rather than ambient capability or a coarse permission flag.",
+        "primary_estimand": "Unauthorized effect rate, confused-deputy success, post-revocation effect, false block, useful release, effect-observation completeness, rollback/compensation closure, latency, and total governance cost.",
+        "faithful_mechanism": [
+          "Principal, domain, operation, target, permission, scope, ceiling, delegation, epoch, expiry, uses, approval, dispatch, effect, and receipt obligations bind one live route.",
+          "Approval and execution are distinct; downstream components cannot widen or replay authority.",
+          "Independent effect observation and exact denial/rollback receipts close the transaction."
+        ],
+        "adequacy_requirements": [
+          "Disposable real effects cover allowed, denied, expired, revoked, confused-deputy, partial-effect, one-shot replay, and rollback paths.",
+          "Coarse allowlist, ambient-authority, and conservative-hold controls face the same benign and adversarial requests.",
+          "The treatment may improve safety but cannot borrow hidden task information or a stronger evaluator.",
+          "False-block cost and missed useful work are measured alongside unsafe release."
+        ],
+        "matched_controls": ["coarse capability allowlist", "ambient process authority", "conservative deny/hold"],
+        "intervention_controls": ["principal swap", "target swap", "permission escalation", "stale epoch", "expired grant", "missing dispatch receipt", "one-shot replay"],
+        "decision_rule": "Survive P4 only if the tuple eliminates unauthorized effects relative to permissive controls and reduces false blocks relative to conservative hold, with complete effect and rollback closure.",
+        "maximum_inference_positive": "The exact local authority tuple improved the useful-safety frontier for tested disposable effect classes.",
+        "maximum_inference_negative": "Local sandbox evidence cannot establish public-service security, legal authorization, hardware roots, or all effect classes."
+      },
+      {
+        "claim_id": "capability-replacement-and-rollback.core",
+        "core_claim_sha256": "0e378dc0bee5395109782250e1232bf1b987ef6f14c1d703455c46e848776341",
+        "role": "p4_causal_candidate",
+        "owner_work_package_id": "ASI-06",
+        "stage": "P4_priority_8_after_a_measured_candidate_winner",
+        "causal_variable": "A prospective field-scoped shadow/canary/monitor/commit/rollback transaction with complete state and effect custody.",
+        "primary_estimand": "Regression and incident detection, unsafe promotion, false rejection, recovery objective attainment, recovery time/cost, state/effect closure, descendant invalidation, and residuals.",
+        "faithful_mechanism": [
+          "A real measured winner and prior implementation are content-bound before transaction evidence is observed.",
+          "Checkpoint authority, state/effect inventory, evaluator/monitor dependencies, canary population, delay, triggers, commit point, recovery objective, and irreversible residuals are prospective.",
+          "Rollback executes against actual state and effects; a pointer swap or reported boolean is inadequate."
+        ],
+        "adequacy_requirements": [
+          "Learnability or utility qualification, checkpoint/reload, migration, intervention, canary, monitor-delay, partial-commit, rollback, and compensation tests pass.",
+          "Ad-hoc swap and no-replacement controls use the same candidate, traffic, monitors, and recovery opportunity.",
+          "Fault injection covers stale cache, credential, descendant, external-effect, partial-default, monitor-blind, and irreversible cases.",
+          "Every failed or rolled-back candidate remains in the denominator."
+        ],
+        "matched_controls": ["ad-hoc component swap", "manual pointer rollback", "retain prior implementation"],
+        "intervention_controls": ["partial commit", "stale checkpoint", "monitor delay", "hidden descendant", "irreversible effect", "failed compensation"],
+        "decision_rule": "Survive P4 only if the prospective transaction catches or contains failures missed by ad-hoc replacement and meets its exact recovery objective without unacceptable false rejection or lifecycle cost.",
+        "maximum_inference_positive": "The exact local field replacement was recoverable to its stated objective for the tested inventory and effects.",
+        "maximum_inference_negative": "Failure is scoped to the exact field and recovery design; local inventory restoration never implies semantic or production recovery, and an inadequate inventory is an implementation failure."
+      },
+      {
+        "claim_id": "replaceable-cognitive-substrates-beyond-transformer-monoculture.core",
+        "core_claim_sha256": "040bd9ddf0e070ebb34ad36567e7399af986c8d18f537bacf2245e548e757a5c",
+        "role": "independent_d2_neural_claim",
+        "owner_work_package_id": "ASI-13",
+        "stage": "N0_to_N4_on_sealed_D2",
+        "causal_variable": "Five independently trained governed language arms behind the Cognitive Kernel ABI and Octopus route, versus matched dense-active and dense-total transformers.",
+        "primary_estimand": "Model-only source-disjoint functional utility, weakest-arm utility, route and composition success, calibration, training/inference/verifier/rollback cost, memory, wall time, and residuals.",
+        "faithful_mechanism": [
+          "English, Python, JS/TS, HTML/CSS, and Rust arms have independent learned state and exact route/composition receipts.",
+          "Modular and dense controls receive matched raw data, unique positions, total compute, tuning opportunity, inference and verifier budgets, and total-system cost accounting.",
+          "Templates, tools, retrieval, deterministic renderers, route labels, and fallbacks receive zero learned-generation credit."
+        ],
+        "adequacy_requirements": [
+          "Multiple seeds, gradient/overfit/checkpoint/reload/intervention/ablation sanity checks, exact state custody, and independent evaluator integrity pass.",
+          "At least one arm has nonzero model-only competence before route/composition claims are interpreted.",
+          "Dense-active and dense-total controls complete their matched regimes; failed runs and weakest arms remain in the denominator.",
+          "D2 is consumed once and remains disjoint from P3, P4, D1, public calibration, and training data."
+        ],
+        "matched_controls": ["mixed dense active-parameter control", "mixed dense total-parameter control", "single-arm and oracle-route ceilings"],
+        "intervention_controls": ["arm ablation", "route shuffle", "wrong arm", "composition removal", "state reset", "tool/template zero-credit recomputation"],
+        "decision_rule": "A positive scoped modular verdict requires the prospectively frozen D2 primary endpoint and weak-tail gates to beat the dense-active control with dense-total results reported and total costs reconciled. A negative requires the same adequacy; otherwise record INCONCLUSIVE_IMPLEMENTATION or INCONCLUSIVE_EXPERIMENT.",
+        "maximum_inference_positive": "The exact locally trained modular system improved the frozen D2 regime; it does not establish general modular superiority or ASI.",
+        "maximum_inference_negative": "A qualified negative narrows only the exact architecture, data, scale, objective, optimizer, compute, evaluator, and regime; it cannot falsify modular cognition broadly."
+      },
+      {
+        "claim_id": "the-efficient-asi-hypothesis.core",
+        "core_claim_sha256": "3474aae76623a5256f260c2e90dab115a6cc9b66d8c025e1a6e5def1299e118a",
+        "role": "synthesis_claim",
+        "owner_work_package_id": "ASI-15",
+        "stage": "after_routing_or_procedural_survivors_and_fresh_D1",
+        "causal_variable": "Lowest-cost quality-eligible route selection plus verified reuse on repeated work, with all hidden lifecycle and residual costs charged.",
+        "primary_estimand": "Useful-task success per total contract cost at a fixed quality, authority, safety, rollback, and residual predicate.",
+        "faithful_mechanism": [
+          "At least one route-selection mechanism and one verified-reuse or compression mechanism are independently causally live.",
+          "Context, verification, repair, human-equivalent review, maintenance, revalidation, migration, rollback, and residual costs are attributed.",
+          "Fallback remains tested and available or is explicitly unavailable."
+        ],
+        "adequacy_requirements": [
+          "Repeated source-disjoint workloads contain multiple genuinely eligible routes and reuse opportunities.",
+          "Always-maximal and always-cheapest controls use the same model, information, tools, evaluator, quality predicate, and outcome horizon.",
+          "Quality, safety, authority, weak-tail, and residual gates are fixed before cost comparison.",
+          "One cheap success, shorter output, or assigned counter cannot satisfy the claim."
+        ],
+        "matched_controls": ["always maximal route", "always cheapest route", "no reuse", "strongest single surviving mechanism"],
+        "decision_rule": "Consider claim-level D1 evidence only if the combined policy improves useful success per measured total contract cost over both route extremes at the same quality/safety predicate and does not hide residual or maintenance burden.",
+        "maximum_inference_positive": "The exact repeated local workload supports a bounded efficiency result for the tested route and reuse policy.",
+        "maximum_inference_negative": "A negative is scoped to the measured candidate set and cost model; missing routes, short horizons, or unmeasured maintenance make it inconclusive."
+      },
+      {
+        "claim_id": "asi-is-a-stack-not-a-model.core",
+        "core_claim_sha256": "012d5158ce38b51405232f14e0aa1187353204d7a8576d82bb277c9bf8ef2c92",
+        "role": "umbrella_synthesis_claim",
+        "owner_work_package_id": "ASI-03",
+        "stage": "after_multiple_independent_D1_survivors_and_D2_report",
+        "causal_variable": "A governed composition of independently useful layers with distinct owners and live contracts, versus an information/tool/budget-matched monolithic model-agent and the best single surviving layer.",
+        "primary_estimand": "Joint useful completion, unsafe release, false block, rollback closure, total lifecycle cost, weakest task family, and marginal contribution of each retained layer.",
+        "faithful_mechanism": [
+          "At least two non-overlapping optional mechanisms earn independent causal evidence before their composition is interpreted.",
+          "The cross-layer join proves actual downstream use and preserves authority, state, effect, evidence, residual, and rollback boundaries.",
+          "A shared prompt, wrapper, schema collection, or report graph cannot count as a stack treatment."
+        ],
+        "adequacy_requirements": [
+          "The monolithic and best-single-mechanism controls receive matched model, information, tools, compute, retries, verifier, authority envelope, and total cost accounting.",
+          "Layer ablations and interaction tests show complementary marginal contribution rather than one dominant component or extra budget.",
+          "Multiple task types, seeds or orderings where stochastic, uncertainty, weak tails, failures, and source-disjoint reproduction are retained.",
+          "D2 substrate behavior remains a separate denominator and cannot be borrowed as D1 stack efficacy."
+        ],
+        "matched_controls": ["matched monolithic model-agent", "best single surviving mechanism", "record-only stack", "full stack with one-layer ablations"],
+        "decision_rule": "A bounded positive synthesis requires the governed composition to improve the joint useful-safe-total-cost frontier over both the matched monolith and best single mechanism while at least two layer ablations show independent marginal value. No single P4 result can decide it.",
+        "maximum_inference_positive": "The tested local composition supports a governed-stack advantage for its exact model, task distribution, layers, budgets, and evaluator.",
+        "maximum_inference_negative": "A qualified negative narrows only the exact composition; one inadequate layer, model, task pool, or integration cannot falsify the stack thesis broadly."
+      }
     ],
     "immediate_stages": [
       {
@@ -5964,7 +6335,7 @@
       "missing_items": [
         "P2A instrument adequacy followed by ten distinct machine-selected tasks from a sealed license-compatible online pool with independent correctness, safety, rollback, cost, and residual accounting"
       ],
-      "smallest_next_patch": "After transaction recovery, qualify P2A on one sealed online task with shared typed actions and independent evaluation. If adequate, run P3 on ten deterministically selected tasks and use the residual to select one P4 ASI Stack mechanism. Tool-assisted success remains separate from learned-model credit.",
+      "smallest_next_patch": "Implement and qualify P2A on one sealed online task with shared typed actions and independent evaluation. If adequate, run P3 on ten deterministically selected tasks and use the residual to select one bound P4 ASI Stack mechanism. Tool-assisted success remains separate from learned-model credit.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the assistant trace schema and dogfood outcome boundary.\" --intent planning --feedback completed --session-id assistant_trace_schema_smoke --out reports/theseus_assistant_trace_schema_smoke.json --markdown-out reports/theseus_assistant_trace_schema_smoke.md --events-out reports/theseus_assistant_trace_schema_events.jsonl --viea-trace-out reports/theseus_assistant_trace_schema_trace.jsonl --skip-context-refresh",
         "reports/theseus_assistant_trace_schema_smoke.json summary.assistant_trace_schema_ready=true",
@@ -7961,7 +8332,7 @@
         "configs/project_steward.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Use the reconciled 84-chapter pin to bind the smallest highest-leverage claim set to P2A/P3/P4/D1/D2 causal contracts. Return terminal public-safe claim dispositions to book review without automatic support movement; do not broaden into chapter prose, reader derivatives, or publication work.",
+      "smallest_next_patch": "Use the bound 13-claim portfolio to implement P2A, acquire the sealed task pool, run P3, and activate exactly one residual-matched P4 mechanism. Return terminal public-safe claim dispositions to book review without automatic support movement; do not broaden into chapter prose, reader derivatives, or publication work.",
       "integration_smoke": [
         "python3 scripts/roadmap_implementation_gate.py --gate",
         "python3 scripts/module_definition_of_done_gate.py",
@@ -7985,7 +8356,8 @@
         "exact 84-chapter manifest-order and book-owned-field synchronization at immutable AI_book commit 17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
         "636-test inventory with 204 planned/partial obligations surfaced",
         "30 newly admitted chapters bound to existing tracks and work-package owners with no new lanes",
-        "all 84 rows carry explicit maturity, evidence, route, activation, test, residual, and maximum-inference boundaries"
+        "all 84 rows carry explicit maturity, evidence, route, activation, test, residual, and maximum-inference boundaries",
+        "13 exact chapter-core claims are bound to two integrity prerequisites, eight one-variable P4 candidates, one independent D2 neural test, and two synthesis decisions; the report-first Theseus claim remains handoff-only"
       ]
     }
   ],
@@ -8095,7 +8467,7 @@
       },
       {
         "id": "T3",
-        "state": "P1_complete_P2_terminal_P2A_ready_after_transaction_recovery_no_learned_credit",
+        "state": "P1_complete_P2_terminal_claim_bindings_complete_P2A_ready_for_implementation_no_learned_credit",
         "depends_on": [],
         "exit": "The fixed local model is joined to the canonical runtime; route integrity proves the integrated subsystems are causally live; a successor typed-edit instrument reaches independent correctness evaluation; then ten deterministically selected tasks from a sealed license-compatible online pool record complete paired outcomes and costs. L0 grants no learned or claim-bearing credit."
       },
@@ -8140,7 +8512,7 @@
       "forbidden_shared_state": ["hidden answers", "held-out outcomes", "private payloads", "implied support movement"],
       "support_state_effect": "none_from_roadmap_or_handoff_alone"
     },
-    "rule": "The primary goal is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. Immediate substrate work is transaction recovery followed by P2A instrument adequacy and P3 autonomous pairs; P4 tests one book mechanism and P5 provides fresh D1 qualification. Neural N0 source/custody readiness proceeds in parallel; N1/N2 require the automated launch/resource/rollback controller, never user presence. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
+    "rule": "The primary goal is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. The 84-chapter pin and 13-claim causal portfolio are source-bound; immediate work is P2A instrument adequacy and P3 autonomous pairs, then exactly one residual-selected P4 mechanism and fresh P5/D1 qualification. Neural N0 source/custody readiness proceeds in parallel; N1/N2 require the automated launch/resource/rollback controller, never user presence. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
     "why": "Theseus currently has a canonical control-plane runtime without the frozen local model and a local-model worker without the canonical control plane. Joining those halves is the smallest honest step. Only causally live mechanisms and useful natural outcomes can justify subsystem A/B work; record production, route labels, and context decoration cannot.",
     "allowed_parallel_work": [
       "P1 frozen TMax backend integration behind the existing canonical assistant runtime",

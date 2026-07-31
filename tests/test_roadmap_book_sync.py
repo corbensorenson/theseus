@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -153,6 +155,97 @@ class RoadmapBookSyncTests(unittest.TestCase):
         self.assertIn(
             "runtime forbidden-field taint",
             packages["ASI-32"]["acceptance_boundary"],
+        )
+
+    def test_high_leverage_claim_bindings_are_exact_and_decision_bounded(self) -> None:
+        campaign = self.matrix["core_evidence_campaign"]
+        policy = campaign["claim_binding_policy"]
+        bindings = campaign["claim_test_bindings"]
+        binding_ids = [row["claim_id"] for row in bindings]
+
+        self.assertEqual(13, len(bindings))
+        self.assertEqual(campaign["claim_ids"], binding_ids)
+        self.assertEqual(13, len(set(binding_ids)))
+        self.assertEqual(
+            self.matrix["latest_ai_book_reconciliation"]["book_commit"],
+            policy["source_book_commit"],
+        )
+        self.assertEqual(
+            self.matrix["latest_ai_book_reconciliation"]["manifest_sha256"],
+            policy["source_book_manifest_sha256"],
+        )
+
+        raw = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.book_root),
+                "show",
+                f"{policy['source_book_commit']}:book_structure.json",
+            ],
+            check=True,
+            capture_output=True,
+        ).stdout
+        manifest = json.loads(raw)
+        book_claims = {
+            f"{chapter['id']}.core": chapter["core_claim"]
+            for part in manifest["parts"]
+            for chapter in part["chapters"]
+        }
+
+        required_fields = {
+            "claim_id",
+            "core_claim_sha256",
+            "role",
+            "owner_work_package_id",
+            "stage",
+            "causal_variable",
+            "primary_estimand",
+            "faithful_mechanism",
+            "adequacy_requirements",
+            "matched_controls",
+            "decision_rule",
+            "maximum_inference_positive",
+            "maximum_inference_negative",
+        }
+        for row in bindings:
+            self.assertFalse(
+                [field for field in required_fields if not row.get(field)],
+                row["claim_id"],
+            )
+            self.assertIn(row["claim_id"], book_claims)
+            self.assertEqual(
+                hashlib.sha256(book_claims[row["claim_id"]].encode()).hexdigest(),
+                row["core_claim_sha256"],
+                row["claim_id"],
+            )
+            self.assertGreaterEqual(len(row["faithful_mechanism"]), 3)
+            self.assertGreaterEqual(len(row["adequacy_requirements"]), 3)
+            self.assertGreaterEqual(len(row["matched_controls"]), 3)
+
+        self.assertEqual(
+            2, sum(row["role"] == "integrity_prerequisite" for row in bindings)
+        )
+        self.assertEqual(
+            8, sum(row["role"].startswith("p4_causal_candidate") for row in bindings)
+        )
+        self.assertEqual(
+            1, sum(row["role"] == "independent_d2_neural_claim" for row in bindings)
+        )
+        self.assertEqual(
+            2, sum(row["role"].endswith("synthesis_claim") for row in bindings)
+        )
+        self.assertEqual(
+            policy["ordered_p4_candidate_claim_ids"],
+            [row["claim_id"] for row in bindings if row["role"].startswith("p4")],
+        )
+        self.assertNotIn(
+            "project-theseus-as-report-first-implementation-reference.core",
+            binding_ids,
+        )
+        self.assertEqual(
+            "none until independent book-side claim review accepts a claim-specific evidence transition",
+            policy["global_decision_rule"]["SUPPORT_EFFECT"],
         )
 
 
