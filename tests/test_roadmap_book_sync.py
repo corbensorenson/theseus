@@ -41,9 +41,9 @@ class RoadmapBookSyncTests(unittest.TestCase):
             summary["book_manifest_commit"],
         )
         self.assertEqual(0, summary["book_manifest_source_field_drift_count"])
-        self.assertEqual(54, summary["book_manifest_chapter_count"])
-        self.assertEqual(511, summary["book_codex_test_count"])
-        self.assertEqual(109, summary["book_pending_or_partial_codex_test_count"])
+        self.assertEqual(84, summary["book_manifest_chapter_count"])
+        self.assertEqual(636, summary["book_codex_test_count"])
+        self.assertEqual(204, summary["book_pending_or_partial_codex_test_count"])
 
     def test_reordered_rows_fail_closed(self) -> None:
         matrix = copy.deepcopy(self.matrix)
@@ -80,7 +80,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
         report = self.audit(matrix)
         self.assertIn("pinned_book_manifest_unavailable", self.gap_kinds(report))
 
-    def test_84_chapter_reconciliation_queue_is_explicit_and_non_authorizing(self) -> None:
+    def test_84_chapter_reconciliation_is_exact_owned_and_non_authorizing(self) -> None:
         review = self.matrix[
             "latest_deep_technical_and_asi_stack_review_reconciliation"
         ]
@@ -88,28 +88,55 @@ class RoadmapBookSyncTests(unittest.TestCase):
         intake = self.matrix["asi_stack_completion_program"]["live_book_intake"]
 
         self.assertEqual(84, audit["book_committed_chapter_count"])
-        self.assertEqual(54, audit["authoritative_theseus_crosswalk_row_count"])
-        self.assertEqual(30, audit["unmapped_current_chapter_count"])
-        self.assertEqual(
-            30, len(set(audit["unmapped_current_chapter_ids"]))
-        )
+        self.assertEqual(84, audit["authoritative_theseus_crosswalk_row_count"])
+        self.assertEqual(0, audit["unmapped_current_chapter_count"])
+        self.assertEqual([], audit["unmapped_current_chapter_ids"])
         self.assertEqual(84, intake["observed_chapter_count"])
-        self.assertEqual(30, intake["unmapped_current_chapter_count"])
-        self.assertTrue(
+        self.assertEqual(84, intake["authoritative_crosswalk_row_count"])
+        self.assertEqual(0, intake["unmapped_current_chapter_count"])
+        self.assertFalse(
             self.matrix["asi_stack_completion_program"][
                 "authoritative_book_pin_unchanged"
             ]
         )
-        self.assertIn(
-            "no automatic runtime or support-state effect",
+        self.assertTrue(
+            self.matrix["asi_stack_completion_program"][
+                "authoritative_book_pin_advanced"
+            ]
+        )
+        self.assertEqual(
+            "source_binding_complete",
             next(
-                row["acceptance_boundary"]
+                row["state"]
                 for row in self.matrix["asi_stack_completion_program"][
                     "work_packages"
                 ]
                 if row["id"] == "ASI-00"
             ),
         )
+        self.assertIn(
+            "changes neither runtime authority nor book support",
+            intake["rule"],
+        )
+
+        required_disposition_fields = {
+            "shared_field_disposition",
+            "owner_work_package_id",
+            "mechanism_maturity",
+            "evidence_maturity",
+            "route_maturity",
+            "activation_gate",
+            "bound_test",
+            "residual",
+            "maximum_inference",
+        }
+        rows = self.matrix["book_chapter_implementation_crosswalk"]
+        self.assertEqual(84, len(rows))
+        for row in rows:
+            self.assertFalse(
+                [field for field in required_disposition_fields if not row.get(field)],
+                row["chapter_id"],
+            )
 
     def test_security_and_evaluator_review_work_has_bounded_owners(self) -> None:
         program = self.matrix["asi_stack_completion_program"]

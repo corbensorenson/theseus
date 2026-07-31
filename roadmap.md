@@ -1,6 +1,7 @@
 # Project Theseus Roadmap
 
-Last reoriented: 2026-07-30 UTC, for the Local 8B Stack Causal Proof Campaign.
+Last corrected: 2026-07-31 UTC, to restore ASI Stack hypothesis proof as the
+primary goal and remove the user-dependent assistant loop.
 
 This is the forward human execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; operating rules belong in `AGENTS.md`; detailed
@@ -10,72 +11,395 @@ canonical implementations and route authority belong in
 
 ## North Star
 
-Build a private, locally trained assistant that Corben uses daily, serves with
-zero external inference, improves through governed evidence, and drives
-accepted live-teacher share toward zero.
+The primary goal of Theseus is to rigorously test and earn evidence for the
+largest, highest-leverage ideas in *The ASI Stack*. Theseus is the experimental
+implementation: it must turn book mechanisms into real causal interventions,
+compare them with strong matched controls, and preserve positive, negative, and
+inconclusive evidence at exactly the scope earned.
+
+The resulting system must remain private and locally served, use zero external
+inference at serving time, and drive accepted live-teacher share toward zero.
+Autonomous machine-verifiable work is the measurement substrate; it is not a
+personal-assistant product goal and is not the reason the project exists.
 
 The immediate objective is narrower:
 
-> Produce the fastest honest conclusions about whether the Theseus stack is
-> useful, efficient, governable, and improved by modular learned specialists.
+> Qualify a fixed, genuinely runnable local model as an adequate measurement
+> instrument; use it on autonomously acquired, license-compatible,
+> machine-verifiable work; then test one major ASI Stack mechanism at a time
+> through matched direct, integrated, intervention, and ablation evidence.
 
-Progress is now a terminal experimental result, not another implemented
-subsystem. A positive, negative, inconclusive, or blocked result counts when it
-answers its preregistered question at the strongest scope the evidence earned.
+No forward phase may depend on Corben providing tasks, preference labels,
+acceptance decisions, routine approvals, or a convenient time window. Bounded
+authority, resource ceilings, task selection, stop conditions, and promotion
+rules must be encoded in machine-readable policy. Work outside that policy
+fails closed with a recorded wall; it does not become an interactive gate.
 
-## Program Reorientation
+Progress is a stronger claim-bearing experiment, a measured causal result, a
+more adequate implementation, or an honest terminal finding—not another
+implemented subsystem or report. A useful completed task is necessary
+instrument evidence, not the north star by itself. Positive, negative,
+inconclusive, blocked, and invalid results count only at the exact scope their
+evidence earned.
 
-The ASI Stack currently contains 84 chapter-core claims, all conservatively at
-`argument`. Theseus cannot prove all of them at once. It will instead run one
-flagship evidence program in which each experiment advances several claims.
+### ASI Stack proof contract
 
-There are two independent denominators:
+Each selected book idea must move through the same evidence ladder:
 
-1. **D1 — governed-stack efficacy:** natural repository work performed through
-   the existing local stack and matched simpler routes. This can run without
-   long neural training and cannot create learned-model credit.
-2. **D2 — local-student competence:** the frozen modular student and matched
-   dense controls. This remains sealed until matched training completes.
+1. bind an exact book claim, causal mechanism, maximum inference, and failure
+   semantics;
+2. prove implementation and instrument adequacy before interpreting outcomes;
+3. run matched L0 development comparisons with independent integrity audits;
+4. qualify a survivor once on a fresh, source-disjoint D1 surface; and
+5. update book support only after claim-level review of the full evidence.
 
-D1 may not tune, rescue, restructure, or leak outcomes into D2. D2 failure may
-not erase a valid D1 result, and D1 success may not imply student competence.
+No mechanics canary, useful demonstration, green report, or failed proxy can
+promote or retire a major idea. The proof program tests one decision-relevant
+mechanism at a time and preserves the strong baseline, matched budget,
+weak-tail, cost, and rollback requirements in the operating charter.
 
-## Core Bets Under Test
+## Direction Recovery
 
-| Core bet | ASI Stack claim owner | Decisive Theseus evidence |
+The previous local-model plan had the right controlled-variable idea but joined
+the wrong implementations. The detailed review found five concrete faults:
+
+1. `scripts/theseus_assistant_runtime.py` is registered as the canonical local
+   assistant, but its generation backend is `scripts/checkpoint_chat.py`, a
+   deterministic report/status responder rather than the frozen TMax model.
+2. The TMax repository experiment bypasses that assistant runtime and invokes
+   MLX through `scripts/core_evidence_worker_v2.py`.
+3. The experiment's `full_stack` adapter compiles and records planning, VCM,
+   routing, governance, and reuse state, then appends a context object to the
+   same worker prompt. It does not execute the compiled plan or the registered
+   subsystem routes. It can test a context wrapper, not the integrated stack.
+4. L0-003-R1 required roughly 28-30 minutes per arm and more than 185,000
+   prompt tokens per arm. Repeatedly tuning that 18-turn protocol is not a
+   practical autonomous work loop.
+5. The roadmap made neural work wait on this harness even though the matched
+   neural-seed verdict is an independent top-priority experiment.
+
+The correction is therefore architectural, not cosmetic: join the frozen local
+model to the canonical runtime, prove that the registered subsystems cause live
+execution differences, then use autonomously sourced A/B pairs. The neural-seed
+campaign proceeds in parallel under an automated resource and evidence policy,
+not a user-presence gate.
+
+### Evidence surfaces remain separate
+
+1. **L0 — autonomous development:** reusable machine-selected work pairs. L0
+   may choose a reversible local default but cannot qualify a claim or student.
+2. **D1 — stack efficacy:** a later prospectively frozen, source-disjoint
+   denominator. D1 can support only scoped subsystem claims.
+3. **D2 — student competence:** the modular student and matched dense controls.
+   D2 remains sealed and independent of L0/D1.
+
+No L0 prompt, outcome, repair, or route choice enters D1 or D2. D1 does not
+authorize a student claim, and D2 does not inherit stack efficacy.
+
+## Active Workstreams
+
+### P — ASI Stack subsystem causal-proof track
+
+#### P0 — Stop the invalid critical path
+
+State: `COMPLETE_DIRECTION_DECISION`.
+
+- Do not resume L0-003-R2. Its interrupted trace contains five read actions,
+  no mutation, no candidate, no verification, and no arm comparison.
+- Retain the two-turn verify/finish controller repair as ordinary regression
+  maintenance; it is not the active scientific hypothesis.
+- Scope L0-003-R1 as one positive context-wrapper observation: the wrapped arm
+  produced a patch that passed independent acceptance while direct did not,
+  but it never verified or finished and the wrapper was not the live Theseus
+  runtime. No subsystem or default won.
+- Keep all prior negative and interrupted evidence. Do not rerun the same
+  workspace-hygiene task for credit.
+
+#### P1 — Join TMax to the canonical Theseus runtime
+
+State: `COMPLETE_LIVE_ROUTE_INTEGRITY`.
+
+Implement one local inference backend contract owned by the existing
+`theseus_assistant_runtime` surface. The first backend is frozen to:
+
+- model: `mlx-community/Tmax-9B-MLX-8bit`;
+- revision: `33812d6cf04f88856f25eb828de4f3144a194560`;
+- runtime: `runtime/venvs/mlx-0.32.0-py312/bin/python`;
+- generation policy: the exact prospectively bound configuration used by both
+  arms in a pair; and
+- serving boundary: local only, zero external inference, zero teacher calls.
+
+The canonical execution path must be real:
+
+```text
+request
+  -> intent and authority
+  -> VCM selection
+  -> executable plan
+  -> route and allowed tools
+  -> frozen local model
+  -> independent verification
+  -> candidate effect / hold / rollback
+  -> outcome and cost ledger
+```
+
+The direct baseline uses the same local backend, decoder, snapshot, effect
+sandbox, and independent evaluator, while bypassing optional Theseus context,
+planning, routing, and reuse. Safety containment is common infrastructure, not
+an advantage removed from the baseline.
+
+P1 exits only when a route-integrity test proves all of the following:
+
+- every enabled subsystem emits a receipt consumed by a downstream live step;
+- the compiled plan is executed or explicitly held, not merely rendered;
+- selected VCM content reaches the model and stale/denied content does not;
+- routing changes a callable capability, budget, tool, or hold decision;
+- verification controls release and repair rather than supplying a label; and
+- deleting the `full` label or context decoration cannot preserve a false
+  full-stack pass.
+
+Until that gate exists, use `context_wrapped_worker`, not `full_theseus`, in
+evidence language.
+
+P1 now has a source-bound live route receipt for the exact frozen TMax backend.
+Direct and integrated requests use the same model, decoder, snapshot, sandbox,
+structural verifier, and one-call budget; the integrated receipt proves actual
+VCM content and executed route state reached the model. This establishes route
+mechanics only, not usefulness or subsystem efficacy.
+
+#### P2 — Establish a practical paired canary
+
+State: `COMPLETE_TERMINAL_INSTRUMENT_UNSUITABLE`.
+
+Run one new, useful, low-risk repository request in independent disposable
+snapshots. Freeze the natural request, visible acceptance criteria, parent
+source, model, decoding, information boundary, tool set, verifier, effect
+scope, and arm order before execution. The evaluator is route-blind until both
+candidates seal.
+
+The canary may use at most six model calls per arm, 12 wall-clock minutes per
+arm, and 25 minutes for the pair including verification. These are product
+budgets, not scientific adequacy claims. If the frozen TMax backend cannot
+produce an independently evaluable candidate after one bounded loop-efficiency
+repair, record it as unsuitable for this coding instrument. Do not repeatedly
+expand the budget or tune on the same task. A different model starts a new
+instrument version and cannot be mixed into the same denominator.
+
+P2-001 froze a new maintenance request discovered during live P1 operation:
+make the route-integrity CLI independently re-audit its canonical evidence
+bundle. The first matched pair and the one prospectively frozen
+loop-efficiency repair both stayed inside cumulative product budgets, preserved
+route blinding, and used four total local-model calls. Both repaired candidates
+sealed safely but reached the exact 512-token cap, ended mid-patch, and failed
+independent patch application before hidden correctness tests. The exact
+TMax/512-token instrument is therefore terminally unsuitable for this coding
+lane. This is `INCONCLUSIVE_IMPLEMENTATION` for Theseus subsystems and
+does not falsify TMax generally, the integrated architecture, or any ASI Stack
+mechanism. P2-001 may not be replayed for fresh credit.
+
+#### P2A — Establish an adequate autonomous coding instrument
+
+State: `READY_AFTER_TRANSACTION_RECOVERY`.
+
+P2-001 ended an exact instrument version; it did not end the fixed-model
+strategy. Create one prospectively named successor instrument and change the
+candidate protocol before changing the model:
+
+- keep the exact frozen TMax weights and revision for the first successor;
+- keep a persistent local backend loaded across the matched pair;
+- give both arms the same bounded repository search, file-read, typed-edit,
+  patch-application, and visible verification capabilities;
+- represent edits as concise typed operations rather than a JSON-wrapped long
+  diff;
+- allow 1,024-1,536 generated tokens, at most two model calls per arm, and one
+  verifier-fed repair;
+- keep the source snapshot, task, decoder, tools, effect sandbox, visible
+  verifier, hidden evaluator, order policy, and total budgets identical; and
+- vary only the named Theseus mechanism. Safety containment and necessary
+  action tools are common infrastructure, not advantages removed from direct.
+
+The first task comes from the autonomous task-source contract below. It must be
+fresh relative to all consumed Theseus surfaces and must not be selected or
+tuned after either arm opens. A positive-control pass establishes only that the
+instrument can produce an applicable candidate; it does not promote a
+subsystem claim.
+
+P2A exits `INSTRUMENT_ADEQUATE` only when at least one arm produces an
+applicable candidate that reaches independent correctness evaluation inside the
+frozen call, token, latency, and effect budgets. If exact frozen TMax fails this
+successor, mark it unsuitable for the coding denominator and autonomously
+qualify one stronger locally installed model under a new instrument identity.
+Do not enlarge the same denominator repeatedly.
+
+##### Autonomous task-source contract
+
+Task acquisition is an offline-serving data-ingestion process, not external
+inference. It may read from allowlisted online sources and must cache every
+admitted artifact locally before an experiment begins.
+
+- Prefer permissively licensed active repositories in the in-scope languages.
+  Reconstruct maintenance work from a parent revision plus natural issue or
+  change request; retain the later patch and tests as evaluator-only material.
+- Prefer tasks published after the frozen model artifact or otherwise passing
+  a declared memorization-risk screen. Record repository, revision, timestamps,
+  license, acquisition digest, and contamination result.
+- Candidate-visible data is limited to the natural request, callable surface,
+  parent snapshot, and explicitly allowed runtime context. Later patches,
+  hidden tests, commit identity, source task ID, answer labels, and metadata
+  derived from the target remain sealed.
+- Use deterministic eligibility filtering and sampling from a sealed pool.
+  The model, wrapper, evaluator, and implementation author may not choose a
+  favorable task after outcomes are visible.
+- Keep development, D1 qualification, D2, public calibration, and training
+  pools disjoint. A consumed evaluation task never becomes training data or a
+  fresh claim-bearing surface.
+- Public benchmark prompts, tests, solutions, traces, and answer templates
+  remain calibration-only and are excluded from this task pool.
+- No task may mutate its upstream repository, open a pull request, contact a
+  maintainer, or produce an external effect. All execution occurs in disposable
+  local snapshots with exact rollback.
+
+This contract replaces personal-assistant data collection. The system obtains
+its own work and its own independent correctness signal; Corben is not a task,
+label, approval, or scheduling dependency.
+
+#### P3 — Autonomous paired development
+
+State: `BLOCKED_ON_P2A_INSTRUMENT_ADEQUACY`.
+
+Select the next ten distinct eligible repository-engineering tasks from a
+prospectively sealed autonomous pool. Cover at least diagnosis, bounded code
+change, and verification/maintenance work inside this one lane. Repeated tasks
+are regression checks only.
+
+For each pair:
+
+- run direct and integrated Theseus from the same source snapshot with
+  randomized order where practical;
+- keep candidates inside disposable snapshots until independent checks and the
+  preregistered machine decision rule complete;
+- record verifier-accepted, missed, corrected, completed, failed, abstained,
+  unsafe, false-blocked, and rollback outcomes;
+- measure wall time, first useful artifact time, model calls, prompt/generated
+  tokens, tool and verifier work, autonomous repair work, and total cost; and
+- preserve every failure and residual without creating a new report family.
+
+The decision order is: reject unauthorized effects or failed rollback; maximize
+useful completion; minimize total cost among quality-eligible candidates; then
+prefer the simpler route when practically tied. A local default stays shadowed
+and reversible until at least five distinct real tasks show no safety,
+rollback, or weakest-task-type regression. L0 remains development evidence.
+
+#### P4 — Test one ASI Stack mechanism at a time
+
+State: `BLOCKED_ON_NONZERO_AUTONOMOUS_P3_USEFULNESS`.
+
+Use the observed instrument and task residuals to select exactly one
+intervention. Do not run a factorial or make record production the dependent
+variable. P4 is the causal development stage for the book's major subsystem
+claims; P2A and P3 exist to make these comparisons interpretable.
+
+| Order | Book idea | Required live comparison |
 | --- | --- | --- |
-| A governed stack can outperform a naked model or simple wrapper on useful-safe work | `asi-is-a-stack-not-a-model.core` | D1 matched natural repository-work routes |
-| Least-sufficient routing and reusable compilation can improve useful work per total cost | `the-efficient-asi-hypothesis.core` | Repeated-work route and reuse comparison |
-| Capability, context, and planning do not themselves grant effect authority | `system-boundaries-and-authority.core` | Natural allowed, denied, revoked, confused-deputy, and rollback paths |
-| Typed planning and context improve outcomes rather than merely produce records | `planning-as-a-control-layer.core`, `virtual-context-abi.core` | Full, no-plan, no-VCM, stale, shuffled, and omission-aware comparisons |
-| Verified repetition can become useful procedural memory | `procedural-memory-and-cognitive-loop-closure.core` | Reuse on source-disjoint repeated work with false-trigger and retirement tests |
-| Modular specialists improve the useful-safe frontier over dense controls | `routing-heads-and-specialist-cores.core` | D2 modular versus dense-active and dense-total comparison |
-| Evidence states, residuals, and joined traces prevent claim laundering | `evidence-states-and-claim-discipline.core`, `integrated-reference-architecture.core` | Independent replay, complete denominators, negative retention, and claim-scoped dispositions |
-| Theseus is a reproducible implementation reference rather than a report generator | `project-theseus-as-report-first-implementation-reference.core` | Clean live replay and public-safe evidence packet bound to exact source |
+| 0 | Integrated reference architecture and evidence states | Prove request-to-effect and blocked/rollback traces have no orphan records or decorative mechanisms |
+| 1 | Virtual Context ABI | Correct, omitted, stale, shuffled, and tainted context where the actual model consumes the selected content |
+| 2 | Planning as a control layer | Executed typed obligations versus information-matched direct work, including replan after a real failed step |
+| 3 | Verification bandwidth | Fixed-minimal versus risk/adequacy-routed verification on false accept, false reject, repair, and total cost |
+| 4 | Least-sufficient routing | Always-direct, always-maximal, and routed capability/tool budgets with route regret |
+| 5 | Procedural memory and cognitive compilation | Fresh slow path versus a verified repeated workflow with false-trigger, drift, decompilation, retirement, and retained slow path |
+| 6 | System boundaries and rollback | Allowed, denied, revoked, confused-deputy, partial-effect, and exact-rollback paths with false-block cost |
+| 7 | Capability replacement ratchet | Shadow, canary, monitor, regression, and effect-complete rollback for a measured winner |
 
-Compact generative substrates, KERC/RDC, alternative attention, ANE training,
-RL, self-evolution, and broader ASI Stack chapters remain valuable research.
-They are not part of this proof campaign unless a terminal flagship result
-identifies them as the smallest causal next experiment.
+A failed proxy, underpowered local model, or incomplete runtime receives
+`INCONCLUSIVE_IMPLEMENTATION` or `INCONCLUSIVE_EXPERIMENT`; it cannot retire the
+book mechanism.
+
+#### P5 — Fresh D1 qualification
+
+State: `BLOCKED_ON_A_DECISION_RELEVANT_P4_SURVIVOR`.
+
+Only after L0 selects a mechanism, deterministically freeze a fresh
+source-disjoint cohort from the autonomous online task pool, with competent
+positive controls, model/runtime identity, evaluator, budgets, minimum
+worthwhile effect, uncertainty method, weak-tail rules, and terminal states.
+Consume it once. D1 never uses the ten P3 development tasks.
+
+### N — Matched neural-seed verdict
+
+The neural campaign is parallel to P, not blocked by it. N0 source/custody
+readiness can run while the training hold stays installed. N1 begins only when
+an automated launch controller proves the frozen source, custody, resource,
+rollback, and stop-policy predicates. N2 completes the modular, dense-active,
+and dense-total runs transactionally; N3 consumes the sealed D2 surface once
+through an automated one-shot authority; N4 composes D1 and D2 without
+denominator or support leakage. No neural stage waits for user presence or an
+interactive timing choice.
+
+### M — Teacher, repository, and evidence maintenance
+
+Maintenance serves P or N and does not become another research program:
+
+- keep `teacher_share_of_accepted_training_rows` durable and drive it toward
+  zero; no live teacher is part of runtime A/B testing;
+- split the current 88-file, multi-domain dirty transaction before any source
+  binding or release claim;
+- inventory the roughly 41 GiB / 249,000-file runtime tree and 1.9 GiB report
+  tree under existing retention authority before deletion;
+- consolidate or retire superseded L0 configs, scripts, and generated reports
+  only after their negative evidence and replay locators remain durable; and
+- keep one roadmap, one project-state page, one registry, and existing ledgers.
 
 ## Current Program State
 
 | Track | State | Meaning |
 | --- | --- | --- |
-| Documentation | `CUSTODY_GREEN` | Canonical state, roadmap, glossary, and runbooks agree at `28a2fd17` |
-| Checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
-| Long training | `TRAINING_HELD` | No multi-day neural run in the current travel posture |
-| D1 natural-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 mechanics replayed; E2 was 0/3 useful and stopped before heldout; E3 was 0/6 useful across 42 sealed variants |
-| D1 local-8B successor | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | TMax-9B/Worker-v3 historically cleared the 2/3 floor, but integrated Worker-v4 could not commit an edit after adequate bounded inspection and planning; E2 remains unopened pending a materially stronger successor |
-| D2 student capability | `NOT_EVALUATED` | Frozen 160-case surface has consumed 0 cases |
-| Dense controls | `NOT_TRAINED` | Both matched controls remain at 0 optimizer steps |
-| Practical acceleration | `SELECTED_ROUTE_CLOSED` | Compiled FP32 MLX remains authoritative |
-| KERC/RDC | `FROZEN_INCONCLUSIVE_EXPERIMENT` | Preserved for a later adequacy-complete campaign |
-| ANE training | `NOT_SELECTED` | Current exact route lost matched joined wall time to MLX |
-| Product usefulness | `EMPIRICAL_SUPPORT_INSUFFICIENT` | Assisted mechanics exist; real usefulness is not established |
+| Documentation | `DIRECTION_RECOVERY_SOURCE_BOUND` | P1 and P2 are isolated source transactions; the roadmap/book reconciliation is an independently validated bounded transaction |
+| Primary scientific objective | `ASI_STACK_CAUSAL_PROOF_ACTIVE` | P2A/P3 establish the instrument and residuals; P4 develops one book mechanism at a time; P5 provides fresh D1 qualification; N tests the modular neural claim on D2 |
+| Frozen local model | `GREEN_STANDALONE_INSTRUMENT` | Exact TMax revision loads through pinned MLX; this proves runtime compatibility only |
+| Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated learned-generation modes use the exact offline TMax snapshot; the status shim remains a maintenance-compatible mode |
+| Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
+| Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
+| Autonomous instrument successor | `P2A_READY_AFTER_CLAIM_BINDING` | Same frozen TMax gets one new concise typed-edit protocol; success opens P3, failure triggers automated qualification of one stronger local model |
+| L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
+| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 produced zero independently evaluable candidates; no route or subsystem won |
+| D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
+| Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
+| Long training | `TRAINING_HELD_PENDING_AUTONOMOUS_POLICY` | N0 may refresh readiness; N1/N2 require a machine-readable launch/resource/rollback policy, not a user decision |
+| D2 student capability | `NOT_EVALUATED_SEALED` | The 57M candidate and dense controls have no verdict |
 | Runtime exposure | `LOCAL_ONLY` | No LAN or public exposure qualification |
 
-## Rapid Evidence Campaign
+## Immediate Execution Order
+
+1. Keep the isolated source-bound P1 implementation and terminal P2-001
+   evidence immutable; do not mix neural, release, cleanup, or Rust work into
+   their transactions.
+2. Use the reconciled immutable 84-chapter book pin (84/84 rows, zero unmapped,
+   636 Codex-test obligations, 204 pending/partial) to bind the ordered P4
+   mechanisms to the highest-leverage exact claim identities,
+   causal implementations, adequacy requirements, matched controls, and
+   maximum inferences. Do not rewrite the book broadly or change any support
+   state from planning evidence.
+3. Implement P2A as a new prospectively frozen instrument: persistent exact
+   TMax, concise typed edits, shared action tools, 1,024-1,536 output tokens,
+   one visible-verifier repair, and independent hidden evaluation.
+4. Build and seal the first license-compatible online task pool under the
+   autonomous task-source contract. Do not replay P2-001 or any consumed
+   surface.
+5. Run P2A automatically after its source and task packets pass. If it reaches
+   independent correctness evaluation, open P3; if it fails, qualify one
+   stronger local model under a new denominator.
+6. In parallel, refresh N0 with the training hold installed and implement the
+   automated N1 launch/resource/rollback controller. Start no long run until
+   that controller proves every frozen predicate.
+7. Select no P4 subsystem ablation until P3 establishes nonzero useful work and
+   the autonomous residual ledger identifies one decision-relevant defect.
+
+## Historical Rapid Evidence Campaign
+
+E0-E5 and the consumed worker-successor attempts are immutable evidence
+history, not the active work queue. They define the information-flow,
+competence, rollback, and negative-scope requirements inherited by L0 and any
+future D1 qualification.
 
 ### E0 — Freeze Questions, Tasks, And Decision Rules
 
@@ -173,7 +497,7 @@ Interpretation gate:
   integrated product;
 - the worker or floor may not be changed after held-out outcomes open;
 - full governance wins only if it improves the joint useful-safe frontier
-  without unacceptable false blocking or hidden lifecycle cost.
+without unacceptable false blocking or hidden lifecycle cost.
 
 ### E3 — Efficiency, Planning, Memory, And Reuse
 
@@ -262,916 +586,31 @@ Produce a public-safe brief from the existing flagship evidence packet:
 The brief may be shared after review. It must remain interesting even when the
 result is negative.
 
-### D1 Successor — Local Repository Worker v2
-
-State: `TERMINAL_INVALID_EVALUATOR`; E2 remains sealed.
-
-E2 and E3 established a dependency, not another reason to rerun the same
-campaign: governance efficacy is unmeasurable while the frozen worker produces
-zero useful work. Do not rerun E2, add E3 variants, narrow the task definition,
-lower the competence floor, or count tool-heavy/no-op work merely to manufacture
-a nonzero baseline.
-
-The successor must instead:
-
-1. diagnose the consumed 0/3 development tasks as development evidence only;
-2. build a completely local, patch-producing worker that receives only the
-   natural request, authority grant, allowed context, and git-free parent
-   snapshot;
-3. label any locally invoked third-party model as local learned generation,
-   never Theseus-student credit;
-4. confine reads and writes to an allowlisted disposable snapshot with no
-   arbitrary shell, network, teacher, public-calibration, D2, or user-facing
-   effect path;
-5. independently apply the candidate diff, inventory every effect, run hidden
-   verification after candidate seal, and prove exact rollback;
-6. freeze Worker v2, evaluator, budgets, rescue ceiling, unchanged competence
-   floor, and a fresh source-disjoint qualification cohort before opening its
-   targets;
-7. open the preserved four-task E2 heldout exactly once only if that fresh
-   qualification clears the frozen floor.
-
-Failure must terminate with the causal wall assigned to retrieval, edit
-synthesis, patch application, verifier selection, bounded repair, rollback,
-evaluator integrity, infrastructure, or local-model competence. D1 is
-`blocked_pending_competent_worker` for efficacy claims until this condition
-closes; E1's replayable authority/rollback result and the E5 brief remain valid
-and shareable at their existing mechanics-only scope.
-
-Development evidence remains non-blind and cannot unlock E2. All three
-already-consumed tasks have now run through the independent evaluator:
-`0/3` useful, `3/3` exact rollback, `0/3` unsafe, and zero external inference,
-teacher, public-calibration, D2, or user-facing effects. The first task produced
-a cleanly applicable one-path patch with precision `1.0` and recall `0.1667`
-but failed candidate and hidden verification. The other two produced no patch.
-Their terminal walls are `EDIT_SYNTHESIS_OR_BOUNDED_REPAIR` and
-`EDIT_SYNTHESIS_NO_PATCH`; none is blind evidence of generalization.
-
-The diagnosis has two causal layers. First, Qwen3-8B can retrieve the right
-neighborhood and emit a real edit, but it is unreliable at exact multi-file
-edit synthesis and recovery. It copied a literal tool placeholder, emitted
-empty replacement fields, and repeated impossible verification actions. A 4B
-local model was weaker; 8B thinking mode spent 1,536 tokens and 342.8 seconds
-without one action. A code-specialized 7B candidate was not installed because
-the machine had no network route; it must not be represented as tested or
-available. Second, two historical natural requests are too terse to identify
-the hidden target semantics: “Remove arbitrary training launch limits” omits
-the user-presence/clock-window scope, and “Remove legacy canary memory floors”
-omits the pretraining-candidate/predicted-exhaustion scope. Hidden tests may not
-demand unstated semantics and then attribute the miss solely to competence.
-
-The repaired controller now uses target-blind structural retrieval to nominate
-a coupled implementation/config/test trio, gives fault-specific recovery
-instructions, refuses repeated verification before repair, stops three
-identical denied actions, and makes explicit abstention discard every
-provisional effect. On the adequately scoped consumed task it read the exact
-trio in its first three actions, reduced the run from 18 local calls and about
-940 seconds to 9 calls and about 270 seconds, consumed real failure summaries,
-and attempted one bounded repair. It remained `0/1` useful and terminated at
-`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`; this is improvement in controller mechanics,
-not competence.
-
-Before fresh qualification, add and freeze a request-adequacy audit: each task
-must identify the behavior or repository surface, state observable acceptance
-semantics, and be solvable from candidate-visible parent state without hidden
-history. This does not lower the competence floor. Assemble a small
-source-disjoint cohort from actionable natural requests, freeze its prompts and
-target identities before target inspection, and preserve the original four E2
-heldouts. Do not keep rerunning the three consumed tasks merely to tune against
-their opened targets.
-
-That precondition was closed prospectively. The fresh cohort, Worker v2 source, local-model
-config, runner, evaluator, target identities, unchanged competence floor,
-complete-denominator rule, rescue/terminal rules, and zero-external-use
-boundaries are frozen in
-`configs/core_evidence_worker_v2_qualification_freeze.json`. All three requests
-pass the prospective adequacy audit, use distinct parent/target histories, and
-share the `repository_correctness` family so the frozen weakest-family rule is
-meaningful. No target patch was opened while writing or freezing the public
-requests. Candidate generation reads only
-`configs/core_evidence_worker_v2_qualification_public.json`; authoritative
-target identities remained evaluator-only until all three candidates sealed.
-
-The irreversible run is complete. Candidate generation sealed all `3/3`
-outputs before any target opened, with zero external inference, teacher,
-public-calibration, D2, user-facing, or target-exposure events. The frozen
-evaluator recorded `0/3` useful, `0/3` unsafe, `3/3` exact rollback, two
-abstentions, two malformed/no-patch outcomes, and one cleanly applicable
-candidate patch that failed hidden verification.
-
-The post-open adequacy audit invalidated the cohort. Every detailed public
-request explicitly named primary implementation/test paths with zero overlap
-against its authoritative target patch:
-
-- report evidence store versus artifact-retention reference;
-- MoECOT language-arm training versus the KERC K5 learnability probe;
-- neural-seed token backend versus the standard causal transformer.
-
-The prompts were inferred from terse commit subjects and the wrong parent
-owners. A candidate could follow its visible request or match the hidden target,
-but not both. The terminal disposition is therefore `INVALID_EVALUATOR`, not
-`INCONCLUSIVE_WORKER_INADEQUATE`; exact evidence is in
-`reports/core_evidence_worker_v2_qualification_disposition.json`.
-
-The competence floor is not evaluable, no Worker v2 capability conclusion is
-authorized, and the original four E2 heldouts remain unopened. The frozen run
-may not be repaired, rerun, narrowed, or replaced after target open. Any future
-successor requires a new user-authorized goal and an independently authored
-request/target cohort with request-target alignment sealed by someone other
-than the worker implementation owner.
-
-The repeated acceleration criticism in the July review is stale for the
-selected route: the production pretraining step already uses `mx.compile`,
-compiled microbatch four, and width quantum 64. Batch-one settings remain on
-separate eager source-conditioned/supervision routes, not the selected plain
-pretraining route. General acceleration remains frozen unless a fresh profile
-identifies a selected-route defect; it does not preempt Worker v2.
-
-### D1 Successor 2 — Local 8B Stack Causal Proof
-
-State: `TERMINAL_FAIL_LOCAL_MODEL_WORKER_COMPETENCE`; E2 remains sealed.
-
-The active question is now causal:
-
-> With model identity, decoding, candidate-visible information, parent state,
-> and budgets held fixed, which parts of Theseus improve useful-safe natural
-> repository work over the same local 8B model without those parts?
-
-Use the installed `mlx-community/Qwen3-8B-4bit` revision
-`545dc4251c05440727734bcd94334791f6ab0192` with thinking disabled as the
-primary generator. It is third-party local learned generation, never
-Theseus-student credit. The Worker v2 `INVALID_EVALUATOR` packet remains
-immutable negative evidence about its evaluator; its three opened tasks may
-not be repaired, rerun, or reinterpreted.
-
-Run in this order:
-
-1. repair Worker v2 mechanics on already-consumed development tasks only;
-2. author natural development and qualification requests with observable
-   acceptance semantics and request-derived hidden functional tests;
-3. independently audit request/test alignment, source disjointness, authority,
-   and baseline failure before freezing any fresh partition;
-4. freeze worker, model, prompts, decoding, budgets, tasks, hidden tests,
-   evaluator, rescue ceiling, stop rules, and complete denominators;
-5. run the fresh competence qualification once under the unchanged `3` task,
-   `0.50` useful-rate, and `0.34` weakest-family floor;
-6. only after a valid pass, compare model-only, tool-worker, governed-worker,
-   full-Theseus, and conservative-hold routes;
-7. isolate governance by replaying sealed candidates through direct,
-   test-only, record-only, governed, and hold admission;
-8. run matched planning, VCM, routing, and verified-reuse interventions; and
-9. issue scoped subsystem and integrated-stack dispositions plus one
-   public-safe model-with-Theseus versus model-without-Theseus brief.
-
-The functional evaluator must not depend on an authoritative target patch.
-It applies a sealed candidate diff to the declared parent snapshot, overlays
-evaluator-owned tests derived prospectively from the visible request, runs
-those tests, inventories every effect, ignores candidate-authored success
-claims, and proves exact rollback. Hidden tests may test only semantics stated
-in the visible request. Baseline failure and request-test alignment must be
-established before candidate generation.
-
-The primary route comparison holds generation inputs and budgets constant.
-The subsystem interventions are:
-
-- full planning versus no planning;
-- correct typed VCM versus no VCM, information-matched untyped/shuffled
-  context, stale context, and omission-bearing context;
-- least-sufficient versus cheapest and maximal eligible routing;
-- verified procedural reuse versus fresh execution, with false-trigger, drift,
-  quarantine, decompilation, rollback, and retirement controls; and
-- prompt injection, leakage, path escape, symlink, out-of-snapshot, malformed,
-  no-op, candidate-claim, test-gaming, denied/revoked authority, stale
-  identity, post-seal mutation, partial-failure, and rollback adversaries.
-
-Measure complete attempted, released, useful, unsafe, false-blocked, rescued,
-malformed, abstained, denied, timed-out, infrastructure-failed, skipped, and
-rollback denominators; weakest-family utility; hidden functional results;
-latency; model calls and generated tokens; tool calls; repairs; verification;
-storage; residual burden; and total lifecycle cost. Blocking everything cannot
-win. Direct counterfactuals remain physically sandboxed and user-inert.
-
-The first repaired consumed development run improved mechanics from no patch to
-one cleanly applicable, candidate-verified, exactly rolled-back patch in eight
-local calls. Independent hidden evaluation remained `0/1`: the patch changed
-an error message rather than implementing the availability contract. Record
-this as `EDIT_SYNTHESIS_OR_REPAIR`, not useful work or qualification evidence.
-
-The prospective qualification precondition is now closed. Three new
-repository-correctness requests were authored directly against the committed
-parent state, with nine hidden assertions traceable to exact request language.
-The independent parent-state audit is `GREEN`: all `3/3` tasks fail every
-requested assertion before any candidate patch, while target-commit,
-target-patch, model-call, teacher, public-calibration, D2, and user-effect
-counters remain zero. The public tasks, hidden tests, evaluator, fixed local
-Qwen3-8B worker, budgets, unchanged competence floor, and run-once stop rule
-are bound by
-`configs/core_evidence_local_8b_qualification_freeze.json`. The candidate
-runner reads only the public manifest and freeze; evaluator material remains
-unopened until all three candidates seal.
-
-If qualification fails, stop with its causal wall and preserve E2. If it
-passes, consume the original sealed E2 once under its existing rules and keep
-that historical-target result separate from the prospective functional
-campaign. Replicate only decisive effects with a separately frozen local
-code-specialized 7–8B model, and only if that model is actually available.
-
-The irreversible qualification is complete and valid. All `3/3` candidates
-sealed before evaluator access, with zero infrastructure, external-inference,
-teacher, public-calibration, D2, unsafe, or user-facing events and `3/3` exact
-rollback. The result was `0/3` useful: two explicit abstentions and one cleanly
-applicable caller-side patch that failed all four request-derived journal
-assertions. The scoped walls are two `EDIT_SYNTHESIS_NO_PATCH` and one
-`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`. This fails the unchanged competence floor
-and authorizes no matched stack arm or E2 consumption.
-
-The result applies only to the exact Qwen3-8B revision, Worker v2, three tasks,
-budgets, evaluator, and M1 host. VCM, planning, routing, governance,
-procedural memory, other local models, and the Theseus student were not tested
-and may not inherit the failure.
-
-### D1 Successor 3 — Model And Subsystem Adequacy
-
-State: `TERMINAL_FAIL_QWEN35_WORKER_CONTROL_COMPETENCE`; E2 and subsystem
-arms remain sealed.
-
-Before another causal stack campaign, remove two avoidable confounds.
-
-First, select the strongest hardware-feasible local model rather than assuming
-the already-installed general model is adequate. The consumed three-task
-cohort may now be used for development-only selection. Run the current
-Qwen3-8B, pinned Qwen2.5-Coder-7B-Instruct, and pinned Qwen3.5-9B under the
-same Worker v2 source, prompt, visible information, tools, action/repair
-budgets, request-derived evaluator, MLX 0.32 / MLX-LM 0.31.3 runtime, and M1
-host. Rank useful tasks first, then unsafe, malformed/abstained, model calls,
-and wall time. A winner below the unchanged competence floor is
-`NO_LOCAL_MODEL_ADEQUATE`; it does not unlock another fresh cohort.
-
-Kimi K3, Qwen3-Coder 30B/80B, Devstral 24B, and larger models are not primary
-Mac candidates merely because they are stronger elsewhere. They may enter
-only if their exact local quant passes a measured resident-memory, swap,
-stability, latency, license, and runtime-compatibility preflight on this
-16-GB M1. Do not impose a generic memory floor and do not let swap-heavy
-loading masquerade as a practical local winner.
-
-Second, require mechanism adequacy before any integrated failure may count
-against a Theseus subsystem:
-
-1. **VCM:** prove source/authority binding, loss and omission accounting,
-   taint preservation, stale/deleted rejection, consumer conformance, and
-   information-matched correct/no-VCM/shuffled/stale/omission interventions.
-2. **Planning:** prove executable-plan fidelity, dependency/order enforcement,
-   plan-to-effect traceability, and an information-matched no-plan control.
-3. **Routing:** prove candidate eligibility, least-sufficient selection,
-   oracle/regret accounting, cheapest/maximal controls, and no hardcoded
-   task-label path.
-4. **Governance:** prove independent effect observation, allowed/denied/revoked
-   authority behavior, unsafe-release and false-block accounting, partial
-   failure, mutation-after-seal detection, and exact rollback.
-5. **Procedural reuse:** prove source-disjoint trigger validity, verified reuse
-   versus fresh execution, drift and false-trigger handling, quarantine,
-   decompilation, rollback, retirement, and total lifecycle cost.
-
-Each subsystem first runs known-good positive controls, seeded negative
-controls, adversarial failure injection, and intervention-fidelity checks
-without a learned model. It then runs a small learned-consumer canary. A
-mechanics-green but behavior-uninformative surface is
-`INCONCLUSIVE_IMPLEMENTATION`, not subsystem falsification. Only
-adequacy-green implementations may enter the matched integrated stack arms.
-
-The preregistered consumed-task model bakeoff is now complete. Qwen3-8B and
-Qwen2.5-Coder-7B were eligible but produced `0/3` useful, `0` unsafe, and
-`3/3` rollback each. Qwen2.5-Coder won their zero-useful tie on 26 model calls
-and 508,173 ms versus 37 calls and 1,659,496 ms, but remains below every useful
-competence floor. Qwen3.5-9B produced the only useful patch (`1/1` independently
-evaluated, `0` unsafe, exact rollback), but two other tasks exceeded the frozen
-1,800-second worker-process budget before sealing. It is therefore the
-diagnostic signal leader, not an eligible winner. The valid terminal
-disposition is `NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION`; do not consume
-a fresh cohort or unseal a subsystem arm.
-
-The Qwen3.5 traces localized two repairable worker/runtime confounds rather
-than a model-memory wall. First, MLX's ordinary streamed cache retained
-assistant-generation tokens, while Qwen3.5's hybrid recurrent cache could not
-trim to the next turn's diverging chat prefix. Every turn therefore re-prefilled
-the entire growing dialogue. Worker v2 now stores the stable
-completed-message boundary with a zero-token generation prefill and retains
-only the longest request-local cache. The exact two-turn Metal qualification
-is `GREEN`: the second turn reused the prefix, processed only 86 new context
-tokens plus the 7-token generation suffix instead of all 169 prompt tokens,
-returned parseable actions on both turns, and completed both turns in 10.493
-seconds total. Second, duplicate-read recovery no longer tells an
-inspection-complete model to browse another file; it requires an edit or
-specific abstention.
-
-Run one preregistered **Qwen3.5 repaired-worker successor canary** on the same
-consumed three-task cohort. This is development, not a rerun of blind
-qualification. Freeze the new worker hash, exact Qwen3.5 revision, completed-
-message cache mechanics, controller guidance, tasks, evaluator, budgets, and
-unchanged competence floor before running. If all three tasks seal with zero
-infrastructure failure and the model clears the floor, freeze that exact
-model/worker pair for a newly authored source-disjoint qualification. If it
-does not, preserve its hidden functional results and issue a scoped remaining-
-wall diagnosis before considering a measured 14B-class hardware-frontier
-candidate. Do not add a larger model merely because the repaired 9B path has
-not yet been tested.
-
-That successor is complete. All `3/3` tasks sealed with zero infrastructure
-failure, unsafe effect, external inference, teacher use, public/D2
-consumption, or rollback failure. Total worker wall time fell from 5,159,752 ms
-with two task timeouts to 794,143 ms with none. The exactly repeated first task
-fell from about 25.9 minutes to 4.8 minutes (`5.4x`), while late verify/finish
-turns fell from roughly 250 seconds each to 10–13 seconds. This validates the
-completed-message cache repair as a real end-to-end acceleration.
-
-Functional competence improved but remains below the preregistered floor:
-`1/3` useful, `0/3` unsafe, `3/3` exact rollback. The retention patch passed
-all hidden request-derived assertions. The policy-journal patch passed three
-of four but called `.get` on a malformed row before checking that it was an
-object. The GVR patch missed candidate/source/identity binding, placed its row
-type check after row access, failed candidate verification, and then ignored
-the required repair/finish phase. Record
-`REMAINING_LOCAL_MODEL_OR_WORKER_WALL`; do not consume a fresh cohort and do
-not attribute either miss to VCM, governance, routing, planning, or reuse.
-
-Before a final local-model choice, close three generic worker defects on these
-consumed tasks: make fault recovery obey the current edit/verify/repair/finish
-phase; ignore non-string candidate verification targets; and require an
-advisory, request-derived acceptance-criteria plan before mutation. The plan is
-candidate-authored scaffolding, never a success flag or subsystem credit.
-Compare the repaired planned Qwen3.5 worker against one measured
-Qwen2.5-Coder-14B hardware-frontier candidate. The pinned 14B 4-bit MLX model
-loaded and emitted the exact action in the trivial offline preflight, but grew
-host swap by 483 MiB from an already elevated baseline. It is not eligible
-until a production-shaped long-context preflight demonstrates practical
-resident memory, swap behavior, latency, stability, and rollback. Use a
-trimmable-cache path and qualified KV-cache precision where this reduces peak
-memory without changing functional outcomes.
-
-The final planned-worker bakeoff is complete under
-`configs/core_evidence_planned_worker_model_bakeoff.json`. The exact
-Qwen3.5-9B revision `938d8919...` produced `2/3` independently useful patches,
-`0` unsafe effects, `3/3` exact rollbacks, and no infrastructure failure in
-1,109,566 ms across 40 local model calls. It passed every preregistered
-development adequacy check: `0.6667` useful rate, `0.6667` weakest-family
-rate, zero unsafe effects, and exact rollback. The retention-path and GVR
-history patches passed all hidden request-derived assertions. The remaining
-policy-journal patch passed three of four assertions but still raised on a
-malformed non-object journal row, localizing its residual to
-`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`.
-
-The exact Qwen2.5-Coder-14B revision `29efdbab...`, using the qualified 8-bit
-KV cache and single-owner trimmable-cache path, was eligible as a completed
-diagnostic but not adequate: `0/3` useful, `3/3` malformed or abstained,
-`0` unsafe, and `3/3` exact rollback in 2,024,479 ms across 29 calls. It
-repeatedly proposed non-matching replacements, abandoned a syntax-error patch,
-failed the request-derived plan schema, wandered into unrelated files, and
-twice emitted the same 1,536-character exclamation-mark degeneration after
-roughly 350 seconds. The larger code-specialized model is therefore neither
-more capable nor faster for this constrained local worker on the measured M1.
-Keep it available only as negative hardware-frontier evidence; do not tune or
-rerun it on these consumed tasks.
-
-The valid synthesis is
-`FREEZE_WINNER_FOR_NEW_SOURCE_DISJOINT_QUALIFICATION`, recorded in
-`reports/core_evidence_planned_worker_model_bakeoff_synthesis.json`. This is
-development-only model selection, not a fresh-task competence, generalization,
-VCM, planning, routing, governance, reuse, Theseus-student, AGI, or ASI claim.
-Freeze the exact Qwen3.5 model revision, Worker v2 source, completed-message
-cache implementation, advisory request-criteria plan, controller, budgets,
-MLX runtime, and evaluator before authoring the new cohort.
-
-Next, assemble a small source-disjoint qualification cohort from fresh natural
-repository requests. Derive hidden functional assertions only from each
-request, verify every parent fails for the requested reason, exclude all
-consumed task sources and target patterns, freeze public prompts, hidden tests,
-parent identities, model/worker hashes, budgets, competence floor, and stop
-rules, then run it once. Do not tune between tasks or inspect target patches.
-If the frozen worker clears the existing floor with complete denominators,
-unlock deterministic subsystem-adequacy work. If it fails, issue the scoped
-retrieval, plan, edit-synthesis, test-selection, repair, or termination wall
-and keep all integrated VCM/governance arms sealed.
-
-The new source-disjoint cohort is now frozen but unconsumed. Its three natural
-requests target source files and defect patterns absent from every prior
-qualification: Bonjour HMAC binding across advertised peer fields and
-`sig_alg`; canonical containment of relative, absolute, and symlink-resolved
-VIEA executable paths; and a deterministic self-hash over standard evidence
-pack projections. No authoritative target patch exists. The independent
-alignment audit is `GREEN`: all `3/3` exact parent snapshots expose every
-request-derived failure marker before generation, with target-commit and
-target-patch counts both zero.
-
-`configs/core_evidence_qwen35_fresh_qualification_freeze.json` binds the public
-manifest, hidden evaluator and tests, alignment audit, exact parent commit,
-Qwen3.5 planned-worker config, Worker v2 and runner hashes, unchanged
-competence floor, complete-denominator requirement, exact rollback, and
-run-once stop rules. The qualification runner now obtains its worker-config
-path from the freeze and verifies both repository containment and content
-identity, so it cannot silently fall back to the historical Qwen3 config.
-Run the candidate process once without evaluator access; only after all three
-outputs seal may the independent evaluator open the hidden fixtures.
-
-The first attempted run of that cohort is invalid and may not be resumed or
-rerun. The freeze correctly bound and the runner correctly hash-checked
-`configs/core_evidence_qwen35_9b_worker_planned.json`, but the call into the
-development helper omitted `config_path`; the helper therefore retained its
-historical Qwen3-8B default for the subprocess. Two public requests received
-one local model call each, no candidate sealed, and the evaluator, hidden
-tests, target commits, and target patches remained unopened. The process was
-interrupted immediately after the mismatch was identified.
-
-Record `INVALID_WORKER_CONFIG_HANDOFF`, not a model or subsystem failure. The
-exact surface is consumed and forbidden from rerun. The runner now passes the
-contained, hash-verified frozen config path explicitly on every task, with a
-regression test covering all three subprocess calls. Bank this repair, then
-author a completely new source-disjoint cohort against the repaired committed
-runner; do not recycle the two exposed requests or the unexposed third member
-of their already-frozen cohort.
-
-Replacement cohort v2 is now aligned and frozen against the repaired runner.
-It uses three new source files and causal patterns: inode/device ownership when
-releasing replaced run locks; timezone-aware peer freshness with naïve and
-future timestamps rejected; and canonical underscore/hyphen admission for
-project-generated and private-generated licenses while near misses remain
-blocked. None reuse the invalid cohort's requests, target files, or hidden
-fixtures.
-
-The independent audit is `GREEN`: all `3/3` parent snapshots expose all six
-request-derived failure markers, with no target commit or target patch.
-`configs/core_evidence_qwen35_fresh_v2_qualification_freeze.json` binds the
-repaired qualification-runner hash `ee86a86c...`, the selected Qwen3.5 config
-hash `29dde8ad...`, Worker v2, development runner, public manifest, hidden
-evaluator, exact parent commit, unchanged competence floor, and run-once
-rules. The candidate runner independently validates the freeze and the focused
-worker/freeze/evaluator suite is `52/52` green. Commit this freeze before the
-one-shot candidate process.
-
-The first v2 launch stopped before generation. All three subprocesses received
-the selected Qwen3.5 config, closing the prior defect, but still inherited the
-development helper's historical Miniforge Python executable. That environment
-cannot load model type `qwen3_5`; all three attempts failed during model
-construction in 12.1 seconds. No candidate sealed, every task has zero event
-rows, learned-generation credit is zero, and the evaluator and hidden tests
-remain unopened. Record `INFRASTRUCTURE_BLOCKED_PRE_GENERATION`, not a
-run-once consumption or model failure.
-
-Bind the repository MLX 0.32 / Python 3.12 interpreter path and executable
-content hash into the freeze, require it to live under `runtime/venvs`, and
-pass that exact path to every worker subprocess alongside the frozen model
-config. Preserve backward auditability for historical freezes, add the runtime
-handoff to the all-three-task regression, commit the repair, and reissue the
-v2 freeze. Because candidate-generation calls and prompt event rows are both
-zero, this is a pre-generation infrastructure retry rather than a rerun of a
-consumed measurement surface.
-
-The repaired v2.1 freeze is ready. It independently validates the selected
-Qwen3.5 config, Worker v2 and runners, plus
-`runtime/venvs/mlx-0.32.0-py312/bin/python` at executable hash
-`9f822096...`. The qualification runner hash is `f07c207b...`; both config and
-runtime paths are passed explicitly to every worker subprocess. Commit
-`configs/core_evidence_qwen35_fresh_v2_1_qualification_freeze.json` before
-retrying candidate generation. Any subsequent source, model-config, public
-manifest, or interpreter drift must refuse startup.
-
-The v2.1 qualification is complete and valid. All `3/3` candidates sealed
-before evaluator access, with zero infrastructure failures, external
-inference, teacher calls, public/D2 consumption, target access, or user-facing
-effects. Exact rollback passed `3/3`. The result is `0/3` useful, `3/3` timed
-out, `2/3` abstained or malformed, and `1/3` unsafe. The unsafe timestamp
-candidate applied a source patch but created
-`tests/test_hive_node_registry_timestamp.py` outside the task's frozen allowed
-effect paths; independent evaluation denied it. The run-lock and license tasks
-spent their finite inspection allowance on failed or low-value navigation and
-never produced patches.
-
-This fails the unchanged competence floor. Record
-`FAIL_QWEN35_WORKER_CONTROL_COMPETENCE`, permanently consume this cohort, and
-keep the original E2 heldouts plus all VCM, planning, routing, governance, and
-procedural-reuse arms sealed. The measured primary wall is worker navigation,
-budget allocation, and authority-aware planning. It is not evidence against
-those untested subsystems or against Qwen3.5 outside this exact Worker v2
-regime.
-
-Keep the exact Qwen3.5-9B revision as the selected local model: it beat the
-measured Qwen2.5-Coder-14B frontier candidate on both useful work and wall
-time, while the fresh run now shows the controller is the dominant avoidable
-confound. On already-consumed development tasks only, qualify ranked
-repository search, exact-path test discovery, explicit allowed-effect
-visibility, phase-specific action budgets, and early termination. Require
-fewer wasted reads, zero out-of-authority mutations, and the unchanged
-competence floor before authoring another fresh source-disjoint cohort.
-
-Worker-control v3 implements the first bounded repair without changing the
-selected model. Explicit repository paths in the natural request now anchor
-the inspection order. The controller derives and displays a narrow
-request-scoped effect boundary, including the canonical focused-test creation
-path, distinguishes existing read targets from authorized creation paths, and
-can reject unrelated mutations before verification. A separate navigation
-budget counts failed reads, list calls, and searches, while reserving turns for
-plan, edit, verify, repair, and finish. The v3 development config reduces the
-generic three-path requirement to the request implementation plus a relevant
-test, caps pre-mutation reads at five and all navigation at six, and retains
-the same model, repair budget, verifier, rollback, and no-network boundaries.
-
-These are mechanics with deterministic coverage, not a learned competence
-result. The first three development launches made zero model calls: relative
-runtime lookup failed from inside the disposable snapshot; resolving the venv
-symlink then lost its MLX-LM environment; and the correctly preserved venv
-entry point was denied Metal access by the sandbox. The first two handoff
-defects are repaired. Run the consumed three-task development diagnostic only
-with host Metal access, then independently score it with the already-consumed
-evaluator. Do not create a fresh cohort until v3 demonstrates the unchanged
-competence floor, zero request-scope violations, and materially fewer wasted
-navigation turns.
-
-The timestamp candidate's evaluator-defined `unsafe` label also exposed a
-future integrity requirement: a candidate cannot be judged against a secret
-effect-path restriction. The natural request authorized focused registry
-tests, while the hidden evaluator allowed only one exact test filename. The
-candidate still failed a hidden functional assertion and therefore remains
-non-useful, but the unsafe label alone is not evidence of intentional
-authority violation. Every future public task must expose its exact
-request-derived effect boundary, and the independent evaluator must verify the
-same frozen boundary rather than introduce a narrower one after generation.
-
-Worker-control v3 development is now terminal on the consumed cohort. Several
-controller defects were repaired and regression-tested before disposition:
-request-derived plan targets and empty verification strategies are
-controller-bound; inspect/plan/edit/verify/repair/finish phases are enforced;
-failed verification permits a content-versioned reread of changed text;
-large source files cannot consume the final test-context inspection slot;
-new tests use a bounded structured action; verification receipts bind the
-current effect hash; and automatic test selection uses changed/direct tests
-rather than broad import-neighbor suites with unrelated runtime dependencies.
-These repairs remove measured navigation, stale-text, test-generation, phase,
-and verification-noise confounds. They are mechanics, not learned credit.
-
-Under the resulting mechanics, the selected exact Qwen3.5-9B model produced
-`1/3` independently useful changes, `0/3` unsafe effects, `3/3` exact
-rollbacks, zero infrastructure failures, and two turn-budget timeouts. The
-license-canonicalization task passed candidate verification and every hidden
-request-derived assertion after two bounded repairs. The peer-timestamp task
-remained functionally wrong after two repairs. The run-lock task spent both
-repairs rewriting candidate-authored tests while leaving the required
-normal-release cleanup incorrect. The scoped remaining wall is
-`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`, recorded in
-`reports/core_evidence_qwen35_worker_control_v3_terminal_disposition.json`.
-
-This misses the unchanged `2/3` competence floor. Record
-`TERMINAL_FAIL_QWEN35_WORKER_CONTROL_V3_COMPETENCE`. Do not author or consume
-another fresh qualification cohort, consume the original E2 heldouts, unseal
-integrated VCM/planning/routing/governance/reuse arms, lower the floor, extend
-budgets after observation, or rerun consumed tasks for capability credit.
-The result does not falsify those untested subsystems or the Theseus student.
-The next causal campaign requires a materially stronger local editing model or
-a separately justified worker architecture change, followed by a new
-prospectively frozen source-disjoint qualification—not more tuning against
-these consumed targets.
-
-### D1 Successor 4 — TMax Terminal-Agent Qualification
-
-State: `QUALIFIED_PASS`; the exact surface is consumed and forbidden from
-rerun for capability credit. Deterministic subsystem adequacy is authorized;
-E2 heldouts remain sealed.
-
-An online model survey identified `allenai/tmax-9b`, a Qwen3.5-9B
-terminal-agent fine-tune, as a materially different model-side successor
-rather than another Worker-v3 tweak. Ai2 reports TMax-9B above base Qwen3.5-9B
-on Terminal Bench Lite (`57.2` versus `41.9`), Terminal Bench 2.1 (`28.8`
-versus `16.1`), and Terminal Bench 2.0 (`27.2` versus `21.1`). These are
-third-party upstream results, not Theseus evidence. The selected local artifact
-is the Apache-2.0, text-only, `mlx-lm 0.31.3`-compatible
-`mlx-community/Tmax-9B-MLX-8bit` revision `33812d6c...`.
-
-Local hardware qualification is green. The exact-action preflight loaded in
-6.5 seconds and returned the required raw JSON action. At a matched 8k-token
-station, TMax and the prior Qwen3.5-9B 4-bit worker had effectively identical
-cold-prefill (`130.3` versus `131.3` seconds) and cached-turn (`3.49` versus
-`3.50` seconds) latency with no positive swap growth. TMax then completed the
-production-shaped 15k-token, two-turn qualification with parseable actions,
-prefix-cache reuse, a 266.1-second cold prefill, a 3.59-second cached turn, and
-672.8 MiB swap growth. This authorizes a bounded qualification run, not a
-competence claim. The exact synthesis is recorded in
-`reports/core_evidence_tmax_9b_model_selection.json`.
-
-The obsolete 7.7-GiB Qwen2.5-Coder-14B cache was removed after its exact
-revision and negative evidence were committed. This made room for the 8.9-GiB
-TMax payload without deleting the active Qwen3/Qwen3.5 models or scientific
-evidence.
-
-A new three-task cohort is prospectively aligned against parent commit
-`e857ab84...`. It uses source files and causal patterns absent from all prior
-development and qualification surfaces: finite audit-number conversion,
-secure relay-URL validation, and finite deterministic frontier selection.
-Every request exposes observable semantics and exact effect authority. Hidden
-tests were authored from the requests and parent state, with no target patch
-or target commit. The alignment audit is `3/3 GREEN`: every parent fails every
-declared request-derived marker; target commit and patch counts are zero.
-
-`configs/core_evidence_tmax_fresh_v1_qualification_freeze.json` binds the exact
-TMax revision, 8-bit worker config, Worker v3 source, development and
-qualification runners, MLX Python executable, public manifest, hidden
-evaluator and tests, parent identities, effect boundaries, unchanged
-competence floor, complete denominators, exact rollback, and run-once stop
-rules. Commit this freeze before generation. Then generate all three
-candidates without evaluator access, seal them, and open the evaluator only
-after candidate generation terminates. Passing may unlock deterministic
-subsystem-adequacy work; failing must issue one scoped terminal disposition
-and preserve E2.
-
-The first committed launch stopped before model construction or generation.
-The TMax config used a new descriptive policy name, while Worker v3 accepts
-only its existing `project_theseus_local_8b_stack_worker_v1` contract. All
-three subprocesses failed input validation; model calls, event rows, sealed
-candidates, evaluator access, hidden-test access, target access, and learned
-credit are all zero. Record `INFRASTRUCTURE_BLOCKED_PRE_GENERATION`, repair the
-config policy, bind its new hash into a reissued freeze, add a regression
-check, and commit both the failed packet and repaired freeze before retrying.
-Because no candidate-visible generation occurred, this is a pre-generation
-infrastructure retry rather than reuse of a consumed measurement surface.
-
-The committed repair then supported the one permitted candidate-visible run.
-All `3/3` natural requests were attempted and sealed before the evaluator
-opened. Candidate generation used 46 local model calls over 3,411,573 ms with
-zero teacher calls, external inference, public-calibration consumption, D2
-consumption, target-patch access, or user-facing effects. The independent
-evaluator recorded `2/3` useful changes, `0/3` unsafe, `3/3` exact rollback,
-one denied timeout, no malformed output, and no infrastructure failure. The
-finite audit-number and secure relay-URL changes passed every hidden
-request-derived assertion. The frontier-selection change exhausted its turn
-budget and failed hidden verification with the scoped wall
-`EDIT_SYNTHESIS_OR_BOUNDED_REPAIR`.
-
-This clears the unchanged floor: attempted `3 >= 3`, useful rate `0.6667 >=
-0.5`, weakest-family rate `0.6667 >= 0.34`, zero unsafe, and exact rollback.
-Record `QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS` in
-`reports/core_evidence_tmax_fresh_v1_qualification_disposition.json`.
-The inference is narrow: this exact local model/worker is adequate to enter
-the subsystem experiment, not generally competent, efficient, or evidence
-that VCM, planning, routing, governance, reuse, the Theseus student, AGI, or
-ASI works. Fifteen rejected worker actions—especially repeated malformed
-structured-test payloads—remain an efficiency and controller-compatibility
-weakness. Do not tune or rerun this consumed cohort.
-
-#### 2026-07-30 External Review Reconciliation
-
-The operator explicitly ratifies a third-party open-weight local worker for D1
-stack evaluation only. This follows the prior instruction to identify and use
-the strongest locally runnable model for the governed-stack experiment. TMax
-is therefore not a quiet substitution for the Theseus student: every packet
-must continue to label it `third_party_local_learned_generation`, its result
-can support only a claim about the stack around that fixed worker, and it can
-never support from-scratch, student, D2, or Theseus-trained-weight capability
-credit. D2 remains the independent from-scratch modular-versus-dense
-experiment. This ratification grants no runtime-serving authority.
-
-The review recommendation to run E2/E3 immediately is directionally right but
-currently premature. Worker-v3's `2/3` qualification is historical after
-Worker-v4 changed the source contract. Five canonical subsystem owners remain
-mechanics-green, but E2 may open only after Worker-v4 clears consumed
-development, freezes, and passes one fresh source-disjoint qualification at
-the unchanged floor. This is evidence discipline, not another preparation
-lane.
-
-The repeated `mx.compile` and batch-one criticisms are rejected as stale scope
-errors. The selected production training call graph already compiles the
-forward/backward microbatch in
-`scripts/standard_causal_transformer_survival.py`, with compiled microbatch
-four and width quantum 64. The branch at
-`scripts/moecot_language_arm_training.py` that selects batch one applies only
-to ragged rows wider than the 8,192-token standard width; the selected trunk
-uses 512-token sequences and gives KERC zero campaign-one optimizer exposure.
-Do not create duplicate acceleration work unless a fresh selected-route
-profile contradicts those source-bound facts.
-
-The review's “18 files in flight” observation is also superseded: the
-request-bound experiment transaction and the bounded planned-context repair
-were committed as `db13860a` and `0252976c` before this reconciliation. New
-files created by the currently running bounded replay must be banked with its
-terminal disposition. The recommendation to keep D2 at `0` consumed is
-accepted without change.
-
-### D1 Subsystem Adequacy Gate
-
-State: `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT`; five subsystem owners
-remain mechanics-green, Worker-v4 promotion is forbidden, and E2 heldouts
-remain sealed.
-
-Before the one-shot integrated comparison, qualify the existing canonical
-implementations so a later failure can be attributed to the subsystem rather
-than a naive stand-in. This is bounded repair and measurement of existing
-owners, not permission to create new lanes or replacement architectures.
-
-Use the exact qualified TMax model and Worker-v3 contract. Build one
-source-disjoint, request-derived mechanics packet for each owner and freeze
-its implementation identity, observable contract, ablation, adversarial
-controls, cost measurement, and stop rule before observing the result:
-
-1. **Authority/governance:** allowed, denied, revoked, confused-deputy,
-   candidate-authored-success, and exact rollback paths. Authority must change
-   effects, not merely append a receipt.
-2. **VCM:** correct, omitted, stale, shuffled, tainted, over-budget, and
-   deletion-closed packets. Measure sufficiency, retrieval correctness,
-   information isolation, latency, and token/byte cost; a context record alone
-   earns no adequacy credit.
-3. **Planning:** typed plan versus direct execution, malformed or stale plan,
-   replan trigger, and verifier-bound completion. Planning must causally
-   improve or safely halt execution; prose plans and candidate success flags
-   are inert.
-4. **Routing:** full, direct, test-only, record-only, and conservative-hold
-   routes, including ambiguity and least-sufficient selection. Bind total
-   lifecycle cost and require the chosen route to match actual available
-   authority and context.
-5. **Verified reuse:** fresh execution versus source-disjoint reusable
-   procedure, plus false trigger, drift, quarantine, decompilation, rollback,
-   and retirement. Reuse must reduce joined cost without transferring hidden
-   target information.
-
-For each subsystem, first run deterministic contract and adversarial tests
-against the canonical path. Then run a small consumed-development causal
-smoke with the qualified local worker. Repair only generic defects exposed by
-those development smokes. Freeze all five implementations and ablation
-semantics together before opening any integrated E2 heldout. If any subsystem
-cannot produce a faithful causal intervention, mark it
-`INCONCLUSIVE_IMPLEMENTATION` and exclude its efficacy claim rather than
-substituting a toy proxy. If all owners are adequate, unseal the original four
-E2 heldouts once and run the matched full/direct/test-only/record-only/hold
-comparison with full denominators and joined cost.
-
-The first source-bound inventory found four registered live owners and one
-real gap: procedural reuse had replay, lifecycle, canary, adoption, and runtime
-code but no canonical registered implementation. Its focused mechanics were
-green, while default-route adoption initially failed because the global
-registry's measured resource receipt had expired and the adoption gate
-incorrectly required a procedural metadata route ID to equal the separate
-effect-authority route ID.
-
-Refresh the measured resource receipt; do not weaken its freshness rule. Repair
-the adoption audit to bind both identities independently: the guarded
-procedural route must be selected and match its caller context, while
-`assistant.route_authority_effect` alone owns the bounded effect. A
-current-source assistant replay now selects the procedural route, executes the
-separately authorized effect, independently observes it, and restores the
-exact prior identity. The adoption gate is `GREEN`, all three routes are
-guarded, all eight invalid effect controls reject, external/public/fallback
-counters are zero, and the replacement transaction is
-`replayable-reference-backed`.
-
-Register this existing route as `impl.procedural_memory_route.v1` under the
-planning execution spine with source-bound adoption evidence. The project
-registry is now `GREEN` with zero abstraction/SCF/routing blockers and 17/17
-route-evidence outputs unblocked. The reproducible inventory in
-`reports/core_evidence_subsystem_adequacy_inventory.json` records `5/5`
-mechanics-green owners: governance (`15` tests), VCM (`25` tests plus two
-subtests), planning (`51`), routing (`17`), and verified reuse (`6`).
-
-This is not subsystem efficacy. It closes owner identity, contract, negative
-control, and current mechanics confounds. Next, use only consumed-development
-requests to test whether each intervention causally changes the qualified
-TMax worker's useful-safe result and joined lifecycle cost. Freeze the five
-implementations, ablation transformations, evaluator, and stop rules only
-after those smokes expose no generic defects. E2 remains unopened until then.
-
-The first request-bound integration is now implemented in
-`scripts/core_evidence_repository_stack_adapter.py` with its frozen candidate
-matrix in `configs/core_evidence_repository_stack_adapter.json`. It closes two
-material flaws in the earlier experiment design. First, authority is enforced
-by the controller before the mutating worker runs; displaying a grant to the
-model is not treated as enforcement, and read-only, unsupported, stale,
-omitted, or conservative-hold packets do not dispatch. Second, VCM typed,
-untyped, and shuffled arms preserve an independently hashed semantic fact set
-while changing representation, so a later difference is not confounded by
-extra information. The same visible natural request now compiles through the
-canonical plan compiler, receives a fail-closed VCM consumer packet,
-least-sufficient route receipt, guarded procedural metadata receipt, and
-independent rollback obligation before the selected worker sees it. Direct and
-planning-free controls are prompt-level interventions rather than post-hoc
-release labels.
-
-Nine focused adapter controls are green, including recursive hidden-field
-rejection and zero external/teacher/public/D2/E2 counters. This is still
-mechanics rather than causal evidence. Next, bind the adapter to the consumed
-development runner, execute the frozen prompt-level variants on the already
-consumed tasks, measure model/tool/token/verification/joined wall cost, and
-repair only generic integration defects. Do not open E2 or transfer the
-historical TMax/Worker-v3 qualification to a modified worker identity.
-
-The first consumed-development full/direct smoke is explicitly
-`INVALID_EXPERIMENT_SHARED_INPUT_ALIASING`. Both arms sealed the exact same
-worker-input hash because the first adapter invocation appended its structured
-context to a caller-owned list in place; the direct arm then inherited it and
-replayed the same nine-action abstention trace. This is not a tie and supports
-no subsystem claim. Preserve the invalid report and its disposition. The
-generic repair copies model-visible context and the task object per variant,
-uses absolute event paths, and makes equal worker-input identities across
-distinct dispatched variants a hard campaign fault. Replay is authorized only
-as consumed-development engineering diagnosis.
-
-The corrected replay used distinct inputs, but the legacy vague task had no
-request-derived effect paths and therefore could never produce a controller-
-authorized edit. Preserve it as `INCONCLUSIVE_EXPERIMENT`; full governance
-should now hold such tasks before inference, while the direct baseline may
-still expose its wasted cost. A new target-free development case based on a
-real historical procedural/effect-authority bug names both editable paths,
-passes a pre-generation alignment audit, and carries three request-derived
-hidden assertions without using a target commit or patch.
-
-On that adequate surface, full-stack planning successfully bound four
-criteria and both effect paths. Edit synthesis then hit the actual worker/model
-wall: TMax attempted one whole-helper `replace`, exhausted the 1,536-token
-action ceiling after 6,392 incomplete characters and almost five minutes, and
-regressed into denied reads. The run was stopped before wasting the remaining
-turns or launching the direct arm. Worker-v4 adds a unique-anchor,
-4,000-character `insert_before` action and explicitly separates implementation
-and test edits.
-
-That repair changes the worker source. The historical
-`QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS` remains valid only for
-its frozen identity and does not transfer to Worker-v4. The subsystem gate
-must report `RED_WORKER_REQUALIFICATION_REQUIRED` until Worker-v4 clears
-consumed development, is frozen with the integrated adapter, and passes one
-new source-disjoint qualification. Never rerun or tune against the consumed
-TMax-v3 qualification cohort. E2 remains sealed.
-
-The first Worker-v4 replay found another generic controller defect before any
-edit was attempted. TMax completed four request-relevant source reads and two
-test reads, but the controller's successful read result serialized the large
-file content before its phase state and then truncated the result. The model
-therefore could not reliably see that the legal action set had changed to
-`plan` or `abstain`; its next read was correctly rejected, but that rejection
-cannot diagnose model competence. Preserve the trace as
-`INCONCLUSIVE_IMPLEMENTATION_CONTROLLER_PHASE_VISIBILITY`.
-
-Worker-v4 now places a compact controller-owned, target-blind phase directive
-ahead of every truncatable tool payload. It always exposes
-`required_next_phase` and `allowed_action_kinds`, and a focused regression
-proves those fields survive a large read result. Re-run only the single
-consumed-development full-stack arm to determine whether the repaired worker
-can plan, edit, verify, and finish. If it cannot, issue the next scoped wall;
-if it can, freeze Worker-v4 and its adapter before authoring and consuming a
-new source-disjoint qualification cohort. This repair still transfers no
-Worker-v3 qualification credit.
-
-That replay confirmed the phase repair: TMax recovered to an independent test
-read and emitted a valid five-criterion/two-path plan. It then requested two
-additional spans from the planned implementation path. The controller rejected
-both because `inspection_complete` represented the minimum source/test floor
-but was also being used as a maximum, despite unused capacity under the
-five-read ceiling. An earlier read beginning after the file end had also
-returned empty content and incorrectly earned inspection credit. Preserve this
-run as `INCONCLUSIVE_IMPLEMENTATION_POST_PLAN_INSPECTION_STARVATION`; it is not
-a local-model or edit-synthesis failure.
-
-Worker-v4 now rejects out-of-range reads before they affect inspection
-accounting and permits post-plan `read` actions only for existing paths in the
-controller-bound plan, only until the existing read ceiling. List/search and
-unplanned-path navigation remain forbidden, and effect authority is unchanged.
-The next replay is still the same single consumed-development full-stack arm.
-Only after it reaches a real edit, verification, or honestly attributable
-model wall may the worker be frozen for fresh qualification.
-
-The bounded-inspection replay then recovered from an out-of-range read,
-consumed four valid source spans plus one analogous existing test, and produced
-another valid five-criterion/two-path plan. It twice requested more source
-context instead of editing and was stopped. The first disposition incorrectly
-treated the request-named
-`tests/test_procedural_memory_route_adoption_gate.py` as an existing readable
-path by checking the current worktree instead of frozen parent
-`7132f153...`. At that parent the file does not exist; it is an authorized
-creation path. The controller's analogous-test fallback was therefore correct.
-Preserve the mistaken disposition as
-`INVALID_DIAGNOSIS_PARENT_TEST_PATH_ABSENT`.
-
-Record the superseding scoped result as
-`TERMINAL_FAIL_TMAX9B_WORKER_V4_EDIT_COMMITMENT`. For this exact TMax revision,
-Worker-v4 source, consumed task, context, and budget, the worker could inspect,
-plan, and recover from controller faults but could not commit a legal edit or
-explicitly abstain after the inspection ceiling. It produced no patch and
-never reached verification. This is not evidence against governance, VCM,
-planning, routing, procedural memory, or the Theseus student.
-
-A generic hardening remains: when a request-named test already exists in its
-parent snapshot, it—not an unrelated test—is required before mutation. That
-hardening did not change this surface. A mistakenly launched replay was stopped
-after reproducing the unchanged inspection prefix and is
-`INVALID_EXPERIMENT_NO_RELEVANT_SURFACE_CHANGE`.
-
-Worker-v4 may not be tuned or replayed again on this task, frozen, or promoted
-to fresh qualification. E2 remains sealed. The next allowed D1 branch is to
-prospectively preflight one materially stronger locally runnable model/worker
-identity, then require it to clear consumed development before a new
-source-disjoint qualification. Current primary-source review identifies
-[`gpt-oss-20b`](https://huggingface.co/openai/gpt-oss-20b) as the strongest
-plausible next hardware-bound candidate: OpenAI documents agentic tool use,
-structured outputs, 3.6B active parameters, and operation within 16 GB using
-its native MXFP4 weights; a pinned
-[MLX conversion](https://huggingface.co/mlx-community/gpt-oss-20b-MXFP4-Q8)
-exists. [Devstral Small 2](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512)
-is a stronger coding-specific alternative but its own model card specifies a
-32-GB Mac, so it is not a credible candidate on this host. Neither model is
-claimed installed, runnable, or superior until exact disk, load,
-action-protocol, latency, memory, swap, and rollback preflights pass.
+### Consumed local-worker successor dispositions
+
+The detailed worker history is retained in the registered configs, reports,
+event traces, and `docs/PROJECT_STATE.md`. Its forward constraints are:
+
+- the original worker campaign is
+  `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE`;
+- Qwen3/Qwen3.5 successor attempts remain scoped negative or invalid evidence;
+- exact TMax-9B/Worker-v3 historically passed 2/3 prospective repository tasks
+  with zero unsafe effects and exact rollback, but that competence does not
+  transfer to changed worker code;
+- exact TMax-9B/Worker-v4 is
+  `TERMINAL_FAIL_TMAX9B_WORKER_V4_EDIT_COMMITMENT` on its consumed development
+  task after adequate inspection and planning;
+- that task may not be tuned, replayed for credit, or relabeled as an
+  infrastructure failure;
+- the original E2 heldouts remain sealed; and
+- L0 may use the runnable local model on new real development work only after
+  P1 route integrity and the P2 canary pass, without reopening those
+  denominators or claiming qualification.
+
+A stronger model may still be compared when it is locally installed and
+preflighted, but model shopping no longer blocks autonomous work or subsystem
+development. The active estimand is the delta between matched direct and
+Theseus-wrapped routes for the same fixed model.
 
 ## Neural Verdict Campaign
 
@@ -1192,10 +631,11 @@ State: `may run now; leave the hold installed`.
 
 ### N1 — Bounded Fresh-Process Qualification
 
-State: `wait for operator availability for neural work`.
+State: `BLOCKED_ON_AUTOMATED_LAUNCH_POLICY_AND_N0_GREEN`.
 
 Run one exact transactional resume segment with:
 
+- a machine-readable resource, checkpoint, rollback, and terminal-stop budget;
 - external resource watchdog;
 - two measured checkpoint transactions of disk headroom;
 - no arbitrary memory floor or time-of-day rule;
@@ -1205,7 +645,7 @@ Run one exact transactional resume segment with:
 
 ### N2 — Complete The Matched Training
 
-State: `wait for a future multi-day compute window`.
+State: `BLOCKED_ON_N1_AND_AUTOMATED_RESOURCE_ENVELOPE`.
 
 Order:
 
@@ -1220,7 +660,16 @@ experiment.
 
 ### N3 — Consume D2 Once
 
-State: `blocked on N2`.
+State: `blocked on N2, clean source binding, independent custody, and automated
+one-shot evaluation authority`.
+
+The independent readiness audit rematerializes the current 160 cases, verifies
+the content-addressed consumed v8 packet and registry history, and finds zero
+exact or whitespace/case-normalized model-visible prompt overlap. This supports
+only `VALID_FRESH_PRIVATE_SURFACE` at that stated scope. It does not establish
+semantic-family independence, evaluate the 57M candidate, authorize D2, or
+authorize training. Preserve the current and historical records, keep both
+holds installed, and do not create another benchmark family.
 
 Consume the frozen 160-case private functional surface exactly once. Report:
 
@@ -1256,7 +705,7 @@ No conclusion inherits support from another axis.
 
 ## Work That Is Explicitly Sidelined
 
-The following work is frozen because it does not shorten E0-E5 or N0-N4:
+The following work is frozen because it does not shorten P1-P5 or N0-N4:
 
 - new architectures, attention variants, optimizers, tokenizers, objectives,
   curricula, speculative decoding modes, or same-scale rescue patches;
@@ -1275,7 +724,8 @@ The following work is frozen because it does not shorten E0-E5 or N0-N4:
 - cross-platform parity, CUDA work, continuous batching, and system-energy
   studies not required by the selected Mac experiment;
 - book chapter growth, broad prose rewrites, theorem-count expansion, reader
-  derivatives, publication packaging, and full live-manifest reconciliation;
+  derivatives, publication packaging, and reconciliation of future live-book
+  drift beyond the current immutable 84-chapter pin;
 - cleanup that does not remove a blocker, reduce evidence ambiguity, recover
   material disk, or eliminate an active duplicate owner.
 
@@ -1300,26 +750,35 @@ Curiosity, utilization, theoretical elegance, an unread paper, a green
 mechanics canary, or a desire to avoid a negative result is not a re-entry
 condition.
 
-## Unattended Execution Contract
+## Autonomous Execution Contract
 
-While Corben is away, work inside this envelope may proceed without another
-interactive choice:
+Work inside this envelope proceeds without task supply, labeling, review,
+routine approval, scheduling, or continued presence from Corben:
 
 - read-only audits and source reconciliation;
-- local, no-network, no-teacher experiments under E0-E4;
+- read-only acquisition from allowlisted online task/data sources with local
+  caching, provenance, license, retention, and contamination receipts;
+- P2A-P5 local, no-teacher experiments after their machine gates pass;
+- N0 source/custody readiness and implementation of the automated N1 launch
+  controller with the training hold installed;
+- bounded N1-N2 execution after the automated controller proves exact source,
+  custody, disk, watchdog, checkpoint, rollback, and stop predicates;
+- one-shot D1/D2 consumption only through the sealed run registry after every
+  predecessor and independence predicate passes;
 - disposable-worktree or temporary-directory effects with exact rollback;
 - tests, validators, independent replays, and public-safe evidence assembly;
 - source changes that repair a discovered flagship defect and preserve the
   frozen experiment;
 - commits that contain one coherent, reviewed, validated transaction.
 
-The unattended lane must not:
+The autonomous lane must not:
 
-- remove the neural training hold;
-- start multi-day training;
-- consume D2 or public calibration;
+- remove a hold except through its exact machine-readable controller;
+- exceed the configured compute, storage, call, token, or time envelope;
+- rerun a consumed D1, D2, or public-calibration surface;
 - change architecture, optimizer, data, objective, schedule, or evaluator;
-- invoke external inference or transmit private data;
+- invoke external inference, transmit private data, or use online content at
+  runtime serving;
 - delete checkpoints, corpora, user files, or meaningful negative evidence;
 - expose a service beyond loopback;
 - publish, push, or mutate an external system without separate authority;
@@ -1330,6 +789,12 @@ Jobs stop on their declared terminal condition or a measured causal resource
 wall. They do not use clock-of-day restrictions, arbitrary available-memory
 floors, or percentage-improvement hurdles.
 
+Missing preauthorization is a terminal machine-policy wall. External
+publication, destructive deletion, account spending outside a predeclared
+budget, or mutation of a third-party system stays out of scope; the program
+records the wall and continues with the next eligible local action instead of
+asking Corben to unblock ordinary research execution.
+
 ## Twenty-Phase Disposition
 
 The detailed matrix retains every obligation, but only the following phase
@@ -1337,13 +802,13 @@ work is active.
 
 | Phase | Disposition during proof campaign |
 | --- | --- |
-| 0 Repository self-model | Maintain only what E1 replay or evidence custody requires |
-| 1 VIEA spine | E1-E4 joined traces |
+| 0 Repository self-model | Split the dirty transaction; maintain only what P1/N0 or evidence custody requires |
+| 1 VIEA spine | P1 route integrity and later L0/D1 joined traces |
 | 2 Stable capability fields | Maintain authority and replacement identity |
-| 3 VCM | E3 natural causal comparison |
+| 3 VCM | P1 live integration, then L0/D1 natural causal comparison |
 | 4 Candidate integrity | Mandatory for every experiment |
-| 5 Daily-use assistant | E2 natural work and honest outcomes |
-| 6 Deterministic tools | E2/E3 attribution; no learned credit |
+| 5 Autonomous local agent | P1-P3 canonical runtime and machine-selected paired work |
+| 6 Deterministic tools | P1 integration and later L0/D1 attribution; no learned credit |
 | 7 Teacher/data governance | Freeze corpus and preserve accounting |
 | 8 Resource/acceleration | N0/N1 selected-route maintenance only |
 | 9 Hive | Sidelined |
@@ -1351,32 +816,44 @@ work is active.
 | 11 Discovery substrates | Sidelined |
 | 12 Public calibration | Locked |
 | 13 Semantic IR/KERC | Sidelined except existing Semantic-IR control |
-| 14 Claims/proof records | E4 claim disposition only |
-| 15 Procedural memory | E3 natural reuse comparison |
+| 14 Claims/proof records | D1 claim disposition only |
+| 15 Procedural memory | P1 live integration, then L0/D1 natural reuse comparison |
 | 16 MoECOT/Octopus | N2-N4 verdict |
 | 17 Simulation/fidelity | Sidelined |
-| 18 Governance/security | E2 natural authority/rollback evidence; local-only |
+| 18 Governance/security | P1 live effect boundary, then L0/D1 authority/rollback evidence; local-only |
 | 19 Book synchronization | Selected flagship claim crosswalk only |
 
 ## Definition Of Done
 
 The reoriented program is complete when:
 
-1. D1 has a terminal natural governed-stack result;
-2. repeated-work routing, planning, VCM, and reuse have scoped causal
+1. the selected highest-leverage ASI Stack ideas have exact claim identities,
+   faithful causal implementations, matched controls, and maximum-inference
+   boundaries;
+2. the fixed local model is served through the canonical runtime and
+   every claimed subsystem is causally live rather than decorative;
+3. machine-selected eligible work has matched direct and integrated candidates
+   with honest verifier-accepted/missed/failed accounting and practical
+   latency;
+4. each selected subsystem idea has a terminal L0 development disposition and
+   any claim-bearing idea advances only through fresh D1 qualification;
+5. D1 has a terminal natural governed-stack result;
+6. repeated-work routing, planning, VCM, verification, and reuse have scoped causal
    dispositions;
-3. a clean live Theseus replay and public-safe evidence packet exist;
-4. the exact modular candidate and both dense controls complete matched
+7. a clean live Theseus replay and public-safe evidence packet exist;
+8. the exact modular candidate and both dense controls complete matched
    training;
-5. D2 is consumed once and produces a modular-versus-dense verdict;
-6. D1 and D2 are composed without denominator or support leakage;
-7. each affected ASI Stack claim receives a reviewed transition or explicit
+9. a fresh, private, source-disjoint D2 surface passes an independent
+   no-reuse audit, is consumed once, and produces a modular-versus-dense
+   verdict;
+10. D1 and D2 are composed without denominator or support leakage;
+11. each affected ASI Stack claim receives a reviewed transition or explicit
    no-promotion decision;
-8. a concise public-safe evidence brief communicates the strongest result and
+12. a concise public-safe evidence brief communicates the strongest result and
    its limits;
-9. the selected local system is used on genuine work with model-only and
-   assisted attribution;
-10. runtime external inference and public-benchmark training remain zero.
+13. every promoted local default remains reversible with regression and
+    rollback evidence; and
+14. runtime external inference and public-benchmark training remain zero.
 
 ## Canonical Verification Commands
 
@@ -1386,14 +863,19 @@ python3 scripts/theseus_project_registry.py --gate
 python3 scripts/roadmap_implementation_gate.py --gate
 ```
 
-After the proof-campaign source transaction is committed, N0 may run:
+For the held step-11416 campaign, refresh the current readiness chain with:
 
 ```bash
-python3 scripts/pretraining_architecture_freeze.py --execute-replays
+python3 scripts/pre_long_run_acceleration_residual_audit.py
 python3 scripts/pre_long_run_independent_readiness_audit.py
 python3 scripts/pre_long_run_replacement_freeze.py
 python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready
 ```
+
+`reports/pretraining_architecture_freeze_package.json` is the sealed historical
+step-3480 architecture transaction. Do not regenerate it against the evolved
+step-11416 plan; current authority flows through the replacement-freeze chain
+above.
 
 These commands produce evidence. They do not remove the training hold, consume
 an evaluation surface, or promote a claim.

@@ -1,7 +1,10 @@
 # Project Theseus Operating Charter
 
-North star: build a private, locally trained model Corben uses daily, with
-zero external inference at serving time and a teacher bill that trends to zero.
+North star: use Theseus to rigorously test and earn evidence for the largest,
+highest-leverage ideas in *The ASI Stack*. The proving system must be private
+and locally served, use adequate matched experiments, and drive external
+teacher dependence toward zero. Autonomous machine-verifiable work is an
+experimental substrate, not the primary product goal.
 
 ## Hard Rules
 
@@ -93,18 +96,23 @@ falsification. Never translate "this proxy failed" into "this idea failed."
 
 ## Current Priorities
 
-1. Neural seed track: build independently trained English, Python, JS/TS,
+1. ASI Stack proof track: select the highest-leverage book mechanisms, bind
+   each to an exact falsifiable claim, exercise the real causal implementation,
+   compare it with strong matched controls, and advance support only through
+   source-disjoint independent evidence.
+2. Autonomous work track: maintain one bounded local lane that supplies
+   machine-verifiable tasks from governed, license-compatible online sources.
+   This lane exists to make subsystem experiments valid; task selection,
+   labeling, acceptance, and scheduling may not depend on Corben.
+3. Neural seed track: build independently trained English, Python, JS/TS,
    HTML/CSS, and Rust arms behind the governed Octopus/MoECOT route contract.
    Keep the mixed dense transformer as a matched falsification control. Compare
    arm, route, composition, and answer behavior separately before claiming the
    modular substrate mattered.
-2. Teacher distillation track: make
+4. Teacher and repo health track: make
    `teacher_share_of_accepted_training_rows` a durable ledger metric and drive
-   that share down as verified self-generated data takes over.
-3. Dogfood track: make one daily-use lane genuinely useful to Corben and log
-   whether it was used, missed, or ignored.
-4. Repo health track: consolidate scripts/docs, retire superseded material, and
-   keep a plain-English glossary for project terms.
+   that share down as verified self-generated data takes over; consolidate
+   scripts/docs, retire superseded material, and keep a plain-English glossary.
 
 ## Breadth Freeze
 
@@ -115,8 +123,8 @@ above. Maintenance and regression fixes are allowed.
 Do not generate more private ecology, shadow, or residual-frontier suites just
 to produce another private 1.0. Current governance already reports
 `no_private_frontier_action_remaining`; new training pressure must come from
-real traces, governed teacher distillation, or the matched neural seed
-experiment.
+governed autonomous traces, governed teacher distillation, or the matched
+neural seed experiment.
 
 ## Discovery Track
 
@@ -129,8 +137,17 @@ so a win or loss is attributable.
 
 Every change should trace to one current priority. Prefer deleting,
 consolidating, and making evidence easier to audit over adding another report.
-A report is evidence, not progress. Progress means the student improves, the
-harness becomes more honest, or Corben uses the system more.
+A report is evidence, not progress. Progress means a major ASI Stack claim gets
+stronger causal evidence, an inadequate approximation is repaired, the student
+improves under a fair matched comparison, or the harness becomes more honest.
+
+Forward execution must not wait for Corben to provide tasks, labels,
+acceptance decisions, routine approvals, or timing choices. Encode bounded
+authority, resource ceilings, stop conditions, and promotion rules in
+machine-readable policy. If an action is outside that policy—such as external
+publication, destructive evidence deletion, or unbudgeted spending—fail closed
+and record the wall instead of turning ordinary research execution into a user
+gate.
 
 When blocked, write the wall plainly and stop. Do not manufacture a nearby
 green artifact to avoid the blocker.

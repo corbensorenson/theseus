@@ -1,7 +1,8 @@
 # Project Theseus: Current State
 
-Last consolidated: 2026-07-30 UTC. Documentation baseline `e04427a0`; this page
-is part of the following evidence-first roadmap transaction.
+Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
+`cfa101d9`; this page is part of the bounded 84-chapter reconciliation
+transaction.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -9,17 +10,19 @@ training or serving action by itself.
 
 ## One-Sentence Verdict
 
-Theseus is a well-governed local AI research system with an exact resumable
-57.3M-parameter training lineage and replayable local authority/rollback
-mechanics, but it is not yet a demonstrated useful learned assistant. Earlier
-Qwen3/Qwen3.5 workers failed or invalidated their fresh qualification surfaces.
-The exact frozen TMax-9B/Worker-v3 successor has now cleared the prospective
-repository-correctness floor: 2/3 useful, 0 unsafe, and 3/3 exact rollback with
-zero external inference or teacher calls. That narrow result authorizes
-canonical VCM, planning, routing, governance, and verified-reuse adequacy work;
-it does not prove those subsystems, general coding competence, or the Theseus
-student. Training is held, D2 is untouched, and the original E2 heldouts remain
-sealed until the subsystem implementations and their ablations are faithful.
+The primary purpose of Theseus is to produce rigorous causal evidence for the
+largest ASI Stack ideas. Its governance machinery, exact resumable
+57.3M-parameter lineage, and frozen TMax-9B runtime are experimental
+infrastructure, not the goal by themselves. P1 now proves that the exact local
+model traverses the canonical direct and integrated routes, but P2-001 and its
+only repair produced no applicable candidate under the 512-token protocol.
+Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. The next
+step is claim/mechanism binding followed by P2A: one concise typed-edit
+successor instrument using an autonomously acquired, license-compatible,
+machine-verifiable task. In parallel, the neural campaign remains held on clean
+source binding and migration from manual holds to bounded machine-readable
+launch and one-shot evaluation authority. No forward phase depends on Corben
+supplying tasks, labels, approvals, or timing.
 
 ## How Truth Is Resolved
 
@@ -45,12 +48,13 @@ or registry result is not model capability or training authority.
 | --- | --- |
 | `CUSTODY_GREEN` | Exact state and lineage replay; no capability implication |
 | `TRAINING_HELD` | No new long training segment may launch |
-| `TRAINING_READY` | Every current launch gate passes; still requires an explicit operator decision |
+| `TRAINING_READY` | Every current machine-readable launch, resource, custody, rollback, and stop predicate passes |
 | `NOT_EVALUATED` | The frozen capability surface has not been consumed |
+| `SOURCE_BINDING_PENDING` | Mechanical and evidence gates pass, but a final package has not been generated from a clean post-maintenance source commit |
 | `INCONCLUSIVE_EXPERIMENT` | The tested result cannot support the broader scientific claim |
 | `LOCAL_ONLY` | Suitable only for loopback/local use; no LAN or public exposure claim |
 | `ASSISTED_ONLY` | Tools, retrieval, rules, or scaffolding contributed; no learned-model credit |
-| `EMPIRICAL_SUPPORT_INSUFFICIENT` | Synthetic or sparse observations do not establish daily usefulness |
+| `EMPIRICAL_SUPPORT_INSUFFICIENT` | Synthetic or sparse observations do not establish subsystem efficacy on source-disjoint tasks |
 | `FROZEN` | Preserved and intentionally inactive until a named re-entry condition is met |
 
 The glossary in `docs/GLOSSARY.md` defines project-specific terms.
@@ -59,24 +63,76 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 
 | Dimension | Current state | Evidence boundary |
 | --- | --- | --- |
-| Repository | `LOCAL_ONLY_NOT_REMOTE_VERIFIED` | Documentation baseline `28a2fd17`; inspect Git for the current roadmap transaction and divergence from `origin/main` |
+| Primary scientific objective | `ASI_STACK_CAUSAL_PROOF_ACTIVE` | P2A/P3 establish an adequate autonomous instrument; P4/P5 test and qualify one major subsystem claim at a time; N tests modular specialization against dense controls |
+| Repository | `PUBLIC_REMOTE_UNSAFE_HISTORY_PUSH_FROZEN` | The public remote and its history contain material excluded by the current boundary; the current local full-tree audit has 529 forbidden tracked paths |
 | Project registry | `GREEN` | Current registry gate has zero abstraction, stable-field, or routing blockers; all 17 route-evidence outputs are unblocked |
-| Human roadmap gate | `YELLOW` | Zero hard gaps; three pre-training blocker records across Phase 0 and Phase 8, plus one book-pin warning |
+| Roadmap gate | `YELLOW` | Zero roadmap hard gaps; the exact committed 84-chapter book pin has zero drift, while the nested pre-training gate retains one unrelated source-binding blocker |
 | D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
-| D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks; the operator explicitly ratifies this third-party local worker for D1 stack evaluation only, never student/D2 credit, but its result does not transfer after Worker-v4 repairs |
-| D1 local-8B causal campaign | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | After generic controller repairs, TMax inspected four source spans and an analogous test, accepted a five-criterion/two-path plan, then twice regressed to forbidden reads instead of editing or abstaining. No patch or verification occurred; E2 stays sealed and a materially stronger local successor is required |
+| D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks and was historically admitted for D1 stack evaluation only, never student/D2 credit; its result does not transfer after Worker-v4 repairs |
+| D1 local-8B causal campaign | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | After generic controller repairs, TMax inspected four source spans and an analogous test, accepted a five-criterion/two-path plan, then twice regressed to forbidden reads instead of editing or abstaining. No patch or verification occurred. E2 stays sealed; a later D1 qualification must prospectively freeze a competent local identity after L0 selection, but model shopping is not a prerequisite for L0 work |
+| Frozen TMax runtime | `P2_TERMINAL_CODING_INSTRUMENT_UNSUITABLE` | Exact model and revision remain runtime-compatible, but P2-001 and its only repair produced no applicable candidate under the frozen 512-token protocol |
+| Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated modes invoke the exact offline TMax snapshot; the deterministic status path remains for maintenance compatibility |
+| Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
+| L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
-| Training | `TRAINING_HELD` | `runtime/control/neural_seed_yield_after_segment` is present |
-| Learned capability | `NOT_EVALUATED` | Frozen 160-case private functional surface has consumed 0 cases |
+| Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
+| Training | `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING` | `runtime/control/neural_seed_yield_after_segment` is present; removal must move to the exact automated launch controller |
+| Learned capability | `NOT_EVALUATED_SEALED` | The 57M candidate has no D2 result; the current surface is independently fresh at exact and normalized model-visible prompt scope, but automated one-shot evaluation authority is not implemented |
 | Matched controls | `NOT_TRAINED` | Both dense controls remain at 0 optimizer steps |
-| Product usefulness | `EMPIRICAL_SUPPORT_INSUFFICIENT` | Existing support is mostly synthetic; the first explicit travel-mode task was honestly recorded as `missed` |
+| Instrument usefulness | `NOT_ESTABLISHED` | P2-001 traversed both canonical routes but produced zero independently evaluable candidates; no route or subsystem won |
 | Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
 | Teacher accounting | `GREEN_ACCOUNTING` | 15 teacher-accepted rows among 115,429 accepted rows, about 0.013% |
-| Storage | `MAINTENANCE_NEEDED` | About 40.8 GB was reclaimed earlier, but the current data volume has only roughly 16 GiB free |
+| Storage | `RETENTION_POLICY_PENDING` | Current trees are roughly 2.0 GiB / 7,379 report files and 41 GiB / 249,010 runtime files. A machine-readable retention controller and custody must identify safe targets before deletion; checkpoints, corpora, and negative evidence are not implicitly eligible |
 | Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
-| ASI Stack synchronization | `PIN_WARNING` | The live book manifest differs from the reviewed Theseus pin |
+| ASI Stack synchronization | `RECONCILED_84_OF_84` | Immutable book commit `17c6ece…` is bound in exact order with zero unmapped chapters and no automatic support movement |
 
-## The Active Neural Experiment
+## The Active Local-Model Program
+
+The local-model controlled-variable strategy remains correct. P1 now puts the
+exact TMax model behind `theseus_assistant_runtime` with a direct mode sharing
+the model, decoder, snapshot, effect sandbox, and structural verifier. Its live
+route-integrity gate is GREEN.
+
+The integrated route must causally execute intent/authority, VCM selection,
+planning, capability/tool routing, local generation, verification, effect or
+hold, rollback, and outcome accounting. A plan that is only rendered, a route
+that changes only a label, or a context object appended to a prompt does not
+qualify as the full stack.
+
+P2-001 then used a new useful maintenance request with one call per arm and one
+prospectively frozen matched output-format repair. All four calls remained
+inside the cumulative six-call, 12-minute-per-arm, and 25-minute-pair limits.
+Both repaired candidates sealed safely but reached exactly 512 tokens, ended
+mid-patch, and failed independent patch application. The exact TMax/512-token
+instrument is terminally unsuitable for this coding denominator. Theseus
+subsystem efficacy remains `INCONCLUSIVE_IMPLEMENTATION`; P3, P4, and all
+subsystem-specific claim experiments remain blocked until P2A proves instrument
+adequacy.
+
+P2A will use a deterministic task selected from a sealed, license-compatible
+online repository pool. Candidate-visible inputs are the natural request,
+parent snapshot, callable surface, and allowed context; later patches, hidden
+tests, commit identity, source-task metadata, and answer-derived labels remain
+sealed. This replaces personal-assistant data collection and creates no runtime
+external-inference authority.
+
+Historical L0 evidence remains preserved:
+
+- L0-001 is infrastructure-blocked and exposed missing partial-candidate
+  sealing;
+- L0-002 is a valid scoped 0-useful pair;
+- L0-003 is a valid scoped 0-useful pair that exposed structured-test protocol
+  friction;
+- L0-003-R1 is a positive context-wrapper observation with no terminal
+  candidate verification and no adoption;
+- L0-003-R2 is an interrupted five-read trace with no comparison and
+  no scientific disposition beyond `INTERRUPTED_DIRECTION_CANCELLED`; and
+- P2-001 is a terminal exact-instrument result with zero useful candidates after
+  its one allowed matched repair, not a subsystem or general-model falsification.
+
+No L0 row qualifies the worker, moves an ASI Stack claim, or enters D1/D2.
+
+## The Held Neural Experiment
 
 The practical experiment is deliberately narrow:
 
@@ -139,25 +195,34 @@ capability.
 
 ## Why Training Is Held
 
-The finite acceleration and independent readiness audits are GREEN, and the
-content-addressed step-11,416 replacement package was GREEN before the latest
-maintenance transaction. However:
+The finite acceleration audit and current independent readiness audit are
+GREEN, but the content-addressed step-11,416 replacement package remains RED.
+The independent audit now rematerializes the current 160 cases, reproduces
+contract `d48875c5...`, verifies the historical packet digest and consumed
+contract `d724363e...`, and observes zero exact or whitespace/case-normalized
+model-visible prompt overlap. This corrects an earlier configuration-only
+assertion that had incorrectly described the surfaces as exact reuse.
+Therefore:
 
-1. the operator hold is intentionally installed;
-2. the architecture-freeze package is source-bound and now reports stale
-   identities after legitimate evaluator, security, registry, and
-   documentation changes;
-3. Phase 0 remains partial because superseded families and reproduction debt
-   are not fully consolidated;
-4. Phase 8 is globally partial even though the selected M1/MLX campaign route
+1. the legacy manual hold is installed and must remain until its exact
+   machine-readable launch controller exists;
+2. independent `evaluation_nonconsumption` and
+   `evaluation_surface_freshness` pass without authorizing D2 execution;
+3. the replacement package fails only `source_binding`, because final
+   generation is forbidden from a dirty source tree;
+4. the pre-training matrix remains not ready because its Phase 0 evidence
+   requires a GREEN package bound to a clean post-maintenance commit;
+5. Phase 8 is globally partial even though the selected M1/MLX campaign route
    is closed; its remaining cross-platform and production-serving work should
    not be confused with a campaign blocker.
 
-Therefore the honest state is `TRAINING_HELD`, not `TRAINING_READY`. The current
-travel posture also excludes multi-day training. The source-bound freeze and
-independent readiness package may be regenerated with the hold installed, but
-training waits for a later compute window. Regenerating a GREEN report is not
-itself an instruction to train.
+Therefore the honest state is `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING`,
+`NOT_EVALUATED_SEALED`, and `SOURCE_BINDING_PENDING`, not `TRAINING_READY`.
+The final source-bound package must be generated exactly once after the
+maintenance transaction is committed. That package still cannot remove the
+hold, execute D2, or authorize training by itself; the automated controller
+must separately prove source, custody, resources, checkpointing, rollback, and
+terminal-stop predicates.
 
 ## Flagship Evidence Result
 
@@ -165,11 +230,14 @@ The roadmap now separates two independent questions:
 
 - **D1 governed-stack efficacy:** natural repository work through the full
   local stack and matched direct, test-only, record-only, and conservative-hold
-  routes. This can run now without long training and receives no learned-model
-  credit.
+  routes. A fresh D1 remains sealed until P2A establishes instrument adequacy,
+  P3 exposes a residual, and one P4 mechanism survives L0 development. It
+  receives no learned-model credit.
 - **D2 local-student competence:** the modular student, dense-active control,
-  and dense-total control followed by the sealed 160-case evaluation. This
-  remains held and unconsumed.
+  and dense-total control followed by a valid private 160-case evaluation. The
+  57M candidate remains unevaluated, but the currently registered surface is
+  independently fresh at exact and normalized model-visible prompt scope.
+  Execution remains sealed pending the automated one-shot controller.
 
 D1 used a disjoint natural repeated-work cohort to test maximal, cheapest, and
 least-sufficient routing plus planning, VCM, stale/shuffled/omission context,
@@ -191,7 +259,7 @@ separate claim-specific review.
 
 ## Evaluation State
 
-The private functional utility contract is frozen before evaluation:
+The current private functional utility metadata says:
 
 - 160 cases;
 - 32 cases for each of five arms;
@@ -202,20 +270,26 @@ The private functional utility contract is frozen before evaluation:
 - prompt-injection, rubric-copy, self-score, empty, and malformed-output
   rejection;
 - a separately bound prospective human-audit receipt;
-- 0 consumed cases;
+- 0 registry matches for the new wrapper digest alone;
 - capability claim `NOT_EVALUATED`.
 
-The surface should be consumed only after the selected candidate and both
-matched controls complete their preregistered training and custody checks.
+That metadata is insufficient. The unchanged case compiler and unchanged
+case-generation inputs are equivalent to the v8 case contract
+`d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792`.
+The append-only registry has nine reservation rows for that equivalent surface,
+covering all three candidates through final functional qualification. The
+current readiness reports therefore fail closed. Do not materialize or consume
+the 57M surface, and do not create a replacement suite as an unreviewed cleanup
+side effect.
 
-## Product And Dogfood State
+## Autonomous Measurement-Lane State
 
 The assisted local CLI, VCM, deterministic tools, VIEA records, and local
 runtime are real mechanisms. They do not demonstrate learned capability.
 
-The first explicit travel-mode dogfood request asked the assistant to identify
-the training hold and one safe next action. The response missed both
-requirements. It was recorded as:
+One historical user-requested trace asked the runtime to identify the training
+hold and one safe next action. The response missed both requirements. It
+remains recorded as:
 
 - outcome `missed`;
 - error family `request_fidelity_miss`;
@@ -224,10 +298,11 @@ requirements. It was recorded as:
 - training rows written `0`;
 - external inference calls `0`.
 
-This is useful evidence: the product loop is operational, while actual
-request-following utility remains unproven. The next dogfood work should use
-real low-risk tasks and record accepted, missed, ignored, corrected, completed,
-failed, and abstained outcomes without manufacturing success.
+This is retained historical evidence only. It is not a request for further user
+tasks and is not a forward promotion gate. P2A and P3 instead use
+deterministically selected, machine-verifiable work from sealed online-source
+pools and record completed, failed, abstained, unsafe, false-blocked, rollback,
+cost, and residual outcomes without manufacturing success.
 
 ## Security And Exposure
 
@@ -292,52 +367,97 @@ Mac MLX qualification remains a guarded manual workflow on the qualified local
 runner. Because local `main` is ahead of `origin/main`, hosted CI has not yet
 validated the latest transaction.
 
+## Repository Health Cleanup State
+
+The 2026-07-30/31 maintenance transaction is deliberately non-destructive.
+Source, registry, CI, evaluator-integrity, and release-boundary repairs may
+proceed while the training hold remains installed. Archive moves, deletions,
+public-history changes, and D2 execution have separate authority.
+
+| Cleanup area | Current state | Exact boundary |
+| --- | --- | --- |
+| Source and tests | `VERIFIED_LOCAL` | Python defects, Rust hygiene, public CI dependencies, path handling, and focused regression coverage are repaired; the full Python, exact public-CI, Rust fmt/check/clippy/test, license, release-boundary, and reproducibility tiers pass locally |
+| Registry ownership | `GREEN` | All 19 source duplicate families have canonical owners, promotion roles, and successor policies; unclassified source duplicates are zero |
+| Workspace hygiene | `YELLOW_DIRTY_ONLY` | The audit has one candidate: review and commit the intentional dirty transaction; classified duplicate history is no longer misreported as an unresolved authority |
+| Evaluator integrity | `GREEN_FRESHNESS_SEALED` | Current contract `d48875c5...` and consumed v8 contract `d724363e...` independently recompute with zero exact/normalized model-visible prompt overlap; evaluation and training authority remain false |
+| Checkpoint retention | `NO_SAFE_CANDIDATES` | All current checkpoint payloads are reference-protected; physical duplicate reclaim candidates are zero |
+| T0A retention | `GREEN_NO_CANDIDATES` | Regenerable cache, superseded-checkpoint, and unreferenced-closed-run dry runs all found zero candidates |
+| Report retention | `AUTOMATED_POLICY_PENDING` | The current-reference-aware packet selects 383 unreferenced JSON/JSONL reports, all at least 24.189 hours old, totaling 998,959,866 bytes; execution requires machine-readable custody, recovery, retention, and rollback predicates |
+| Public source export | `CANDIDATE_NOT_PUBLISHABLE_WHILE_DIRTY` | The allowlisted export excludes reports, runtime, checkpoints, private evaluator materials, and hidden fixtures; publication waits for a clean reviewed source ref |
+
+No retention action has been executed in this transaction. The report candidates
+may be archived only after an automated retention controller verifies the exact
+candidate manifest, independent recovery custody, replay pointers, and rollback
+policy. Applying that packet to the current inventory would leave 697,480,473 bytes / 5,997 hot files
+and 4,072 archive pointers, all within policy. It would also reduce the only
+over-cap hot family, `report_snapshots/theseus_project_registry`, from
+842,972,029 bytes / 76 files to 172,694,083 bytes / 15 files. The 9.70 GB checkpoint tree is
+above its 6 GiB warning target but below its 12 GiB hard cap; the warning is
+not authority to move protected model state.
+
+The selected public-history strategy is `NEW_CLEAN_PUBLIC_ROOT`, not a
+force-push rewrite. Preserve the complete current history privately and create
+and audit a clean source-only candidate. External publication and mutation stay
+outside the autonomous research envelope unless a separate machine-readable
+publication policy is established; they do not block local proof work.
+
 ## Current Gates
 
 | Gate | State | Interpretation |
 | --- | --- | --- |
 | Project registry | `GREEN` | Canonical routes have current minimal evidence |
-| Roadmap implementation | `YELLOW` | Zero hard gaps; partial phases and book-pin warning remain |
-| Pre-training architecture | `NOT_READY` | Three blocker records across Phase 0 consolidation/currentness and Phase 8 selected-route currentness |
-| Replacement freeze | Historical `GREEN` | Exact step-11,416 package before later source changes |
-| Independent pre-long-run audit | Historical `GREEN` | Readiness evidence only; explicitly did not authorize training |
-| Functional utility freeze | `NOT_EVALUATED` | 0/160 cases consumed |
+| Roadmap implementation | `YELLOW` | Zero hard gaps; the exact 84-chapter book pin is reconciled, while unrelated partial phases and the pre-training source-binding blocker remain |
+| Pre-training architecture | `NOT_READY` | Phase 0 awaits a clean source-bound replacement package; the selected Phase 8 route remains mechanically qualified |
+| Replacement freeze | Current `RED` | Fails only `source_binding` on the dirty maintenance tree; hold remains |
+| Independent pre-long-run audit | Current `GREEN` | Recomputes the current contract, historical packet identity and consumption, and zero exact/normalized prompt overlap |
+| Functional utility freeze | `NOT_EVALUATED_SEALED` | The 57M candidate is unevaluated; current exact surface nonconsumption and scoped freshness pass, while automated one-shot execution authority is not implemented |
 | Runtime exposure | `LOCAL_ONLY` | No LAN/public authorization |
 
 ## Immediate Work
 
 In order:
 
-1. Keep E2, D2, public calibration, external inference, and teacher calls
-   sealed.
-2. Do not tune or rerun TMax/Worker-v4 on the consumed procedural-effect task.
+1. Keep the isolated source-bound P1 implementation and terminal P2-001
+   evidence immutable; do not mix subsystem, neural, release, cleanup, or Rust
+   work into their transactions.
+2. Use the reconciled immutable 84-chapter pin (84/84 rows, zero unmapped, 636
+   Codex-test obligations, 204 pending/partial) to bind the ordered P4
+   mechanisms to the highest-leverage exact claim identities, adequacy
+   requirements, matched controls, decision rules, and maximum-inference
+   boundaries. The reconciliation changes no book support state.
+3. Implement P2A with persistent exact TMax, shared typed actions, 1,024-1,536
+   output tokens, at most two calls per arm, one visible-verifier repair, and an
+   independent hidden evaluator.
+4. Build a sealed license-compatible online task pool and run P2A
+   automatically. Open P3 on adequacy; otherwise qualify one stronger local
+   model under a new denominator. Do not replay P2-001.
+5. Refresh neural N0 source/custody readiness in parallel and implement the
+   automated launch/resource/checkpoint/rollback controller. N1/N2 wait on its
+   machine predicates, not a user decision.
+6. Keep E2, D2, and public calibration sealed. Do not tune or rerun
+   TMax/Worker-v4 on the consumed procedural-effect task.
    Preserve its terminal post-plan edit-commitment disposition and the
    superseded source-state diagnosis.
-3. Preflight one materially stronger locally runnable successor without
-   claiming installation or competence. The first candidate is
-   `gpt-oss-20b` MXFP4/MLX because its official contract targets 16-GB
-   operation and agentic structured tool use; Devstral Small 2 requires a
-   32-GB Mac and is resource-ineligible here.
-4. Require the successor to clear consumed development, then freeze its model,
-   worker, adapter, evaluator, budgets, rollback, and terminal rules.
-5. Author a fresh source-disjoint qualification cohort from visible natural
-   acceptance semantics before inspecting any target implementation.
-6. Independently audit baseline failure, request-test alignment, authority,
-   contamination, and source disjointness; then consume the qualification
-   once.
-7. Only a valid competence pass unlocks the original E2 heldouts and the
-   matched model-only, direct, governed, full-stack, hold, planning, VCM,
-   routing, governance-replay, and procedural-reuse comparisons.
-8. Produce scoped subsystem dispositions and a public-safe local-model with
-   Theseus versus without Theseus brief.
-9. Refresh exact step-11,416 readiness with the training hold installed only
-   after the causal campaign reaches a terminal result.
+7. Model-shopping is optional and nonblocking. Preflight a stronger local
+   model only when it is installed or a measured worker wall makes that
+   comparison the smallest decision-relevant experiment.
+8. Continue cleanup only when it removes a proof/neural blocker or a material
+   storage wall. Inventory the 41 GiB runtime and 1.9 GiB reports trees under
+   existing retention authority before deleting anything.
+9. After a live subsystem earns a reversible local default on development
+   evidence, freeze a fresh source-disjoint D1 qualification before making a
+   claim-bearing comparison.
+10. Continue the already-scoped custody work autonomously: commit coherent
+    source transactions, establish independent encrypted custody, and leave
+    retention or public-root mutation out of scope until exact machine policies
+    exist.
 
 ## Explicitly Not Immediate
 
 - new architecture families;
-- more KERC, RDC, ANE, OneCell, SymLiquid, CGS, Coil, RankFold, or NeuralFold
-  work;
+- new standalone KERC, RDC, ANE, OneCell, SymLiquid, CGS, Coil, RankFold, or
+  NeuralFold implementation campaigns; their existing contracts may inform an
+  active L0 ablation without becoming a new lane;
 - generic acceleration searches;
 - new optimizers, tokenizers, objectives, curricula, or decoding modes;
 - more private benchmark families;
@@ -357,11 +477,12 @@ In order:
 
 Progress means at least one of:
 
+- a highest-leverage ASI Stack claim receives stronger causal evidence under a
+  faithful implementation and adequate matched experiment;
 - the learned student improves on source-disjoint functional behavior;
 - a core stack or book claim receives a terminal scoped natural result;
 - the comparison becomes more scientifically honest or reproducible;
 - the runtime becomes safer or materially faster by measurement;
-- Corben genuinely uses the system and the outcome is recorded;
 - duplicated machinery is removed without losing evidence.
 
 A new report, mechanism, dashboard, or document is not progress by itself.
