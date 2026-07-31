@@ -1,0 +1,46 @@
+{
+  "policy": "project_theseus_p2_loop_efficiency_repair_v1",
+  "experiment_id": "P2-001-R1",
+  "created_utc": "2026-07-31T18:25:29Z",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_REPAIR_GENERATION",
+  "base_manifest": "configs/theseus_assistant_p2_canary.json",
+  "base_manifest_sha256": "278f4e8e7380fadc5c2fb8a5fc4c54e44b1e5fe77749bf694d50f5229d755fa4",
+  "prior_run": "reports/theseus_assistant_p2_canary.json",
+  "prior_run_sha256": "986416e0871fdf61fcb3f289e75c41c801e3dff0af4b6d5406eb457f332b885b",
+  "prior_evaluation": "reports/theseus_assistant_p2_evaluation_r0.json",
+  "prior_evaluation_sha256": "282355ca55b367bd05c63af305bd7449d0323cdaaafe3a2a20369d826f79f53c",
+  "authorization": "single_loop_efficiency_repair_from_P2_LOOP_EFFICIENCY_REPAIR_AUTHORIZED",
+  "observed_wall": {
+    "direct_candidate_json_invalid": true,
+    "integrated_candidate_json_invalid": true,
+    "both_generated_tokens": 512,
+    "integrated_skip_dogfood_hard_gate": true
+  },
+  "frozen_changes": {
+    "candidate_output_encoding": "raw_git_unified_diff",
+    "skip_dogfood": false,
+    "prompt_suffix": "P2 loop-efficiency repair amendment: the prior response hit the frozen 512-token cap while JSON-escaping a long patch. The task and acceptance criteria are unchanged. Return only a valid git unified diff beginning with diff --git or --- a/. Do not return JSON, Markdown fences, prose, comments, or docstrings. Keep the implementation minimal enough to finish within the unchanged 512-token cap.",
+    "same_task": true,
+    "same_parent": true,
+    "same_visible_source": true,
+    "same_arm_order": true,
+    "same_model_repo_revision_snapshot": true,
+    "same_decoder": true,
+    "same_maximum_generation_tokens": 512,
+    "same_effect_sandbox": true,
+    "same_independent_evaluator": true,
+    "cumulative_product_budgets": true
+  },
+  "forbidden_changes": [
+    "task_semantics",
+    "acceptance_criteria",
+    "parent_source",
+    "hidden_tests",
+    "model_identity",
+    "decoder",
+    "generation_token_cap",
+    "arm_order",
+    "effect_scope",
+    "evaluator"
+  ]
+}

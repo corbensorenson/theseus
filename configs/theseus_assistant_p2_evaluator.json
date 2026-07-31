@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_p2_route_blind_evaluator_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "experiment_id": "P2-001",
+  "created_utc": "2026-07-31T18:10:09Z",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_CANDIDATE_GENERATION",
+  "task_manifest": "configs/theseus_assistant_p2_canary.json",
+  "task": {
+    "opaque_task_id": "p2-001-route-integrity-bundle-audit",
+    "natural_request_sha256": "f4e72719b15b4868e78b4ede4d2dc2002e16edf12979e2d4c82880ae60326f17",
+    "parent_source_commit": "7134acfc15e3a94c40af89bf82a2686bc3650e0d",
+    "parent_overlay_patch": "runtime/p2_real_work_canary/p1_parent_overlay.patch",
+    "parent_overlay_patch_sha256": "53551426eda48396e3901651f5426ed036f1342ed31807b34d805676c1f8f25b",
+    "allowed_effect_paths": [
+      "scripts/theseus_assistant_route_integrity.py"
+    ],
+    "hidden_test_files": [
+      {
+        "source": "tests/fixtures/theseus_assistant_p2_hidden/route_integrity_bundle_contract.py",
+        "destination": "tests/functional_hidden/test_route_integrity_bundle_contract.py"
+      }
+    ],
+    "verification_command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/functional_hidden/test_route_integrity_bundle_contract.py"
+    ],
+    "baseline_failure_markers": [
+      "request_contract:bundle_recomputed_not_trusted",
+      "request_contract:single_route_preserved",
+      "request_contract:cli_uses_payload_audit"
+    ],
+    "verification_timeout_seconds": 120
+  },
+  "decision_rule": {
+    "p2_pass": "at least one sealed candidate applies only within allowed paths, passes all request-derived hidden tests, rolls back exactly, and both arms remain within the frozen product budget",
+    "instrument_unsuitable": "no independently evaluable candidate after the one separately authorized matched loop-efficiency repair",
+    "invalid": "source, model, route, blinding, evaluator, budget, or receipt identity mismatch",
+    "later_stage": "P3 opens only after P2 pass; P4 subsystem selection waits for a real P3 residual"
+  },
+  "boundaries": {
+    "route_labels_passed_to_scoring": false,
+    "authoritative_target_patch_used": false,
+    "candidate_authored_success_flags_trusted": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "automatic_source_of_truth_effects": 0
+  }
+}

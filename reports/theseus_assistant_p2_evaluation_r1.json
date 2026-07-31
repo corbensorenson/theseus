@@ -1,0 +1,168 @@
+{
+  "ablation_boundary": {
+    "mechanics_negative_controls": "covered_by_P1_route_integrity_tests",
+    "p2_intervention": "direct_fixed_model_versus_integrated_theseus",
+    "reason": "the roadmap forbids choosing a P4 mechanism before real-work residuals exist",
+    "subsystem_specific_utility_ablations": "blocked_until_nonzero_real_work_and_P3_residual_selection"
+  },
+  "alignment_audit": {
+    "baseline_failed_as_expected": true,
+    "baseline_verification": {
+      "passed": false,
+      "returncode": 1,
+      "stderr_tail": "",
+      "stdout_tail": "FFF                                                                      [100%]\n=================================== FAILURES ===================================\n_________________ test_bundle_is_recomputed_instead_of_trusted _________________\n\n    def test_bundle_is_recomputed_instead_of_trusted() -> None:\n        audit = getattr(integrity, \"audit_report_payload\", None)\n>       assert callable(audit), \"request_contract:bundle_recomputed_not_trusted\"\nE       AssertionError: request_contract:bundle_recomputed_not_trusted\nE       assert False\nE        +  where False = callable(None)\n\ntests/functional_hidden/test_route_integrity_bundle_contract.py:58: AssertionError\n___________________ test_single_route_behavior_is_preserved ____________________\n\n    def test_single_route_behavior_is_preserved() -> None:\n        audit = getattr(integrity, \"audit_report_payload\", None)\n>       assert callable(audit), \"request_contract:single_route_preserved\"\nE       AssertionError: request_contract:single_route_preserved\nE       assert False\nE        +  where False = callable(None)\n\ntests/functional_hidden/test_route_integrity_bundle_contract.py:73: AssertionError\n___________________ test_cli_report_path_uses_payload_audit ____________________\n\ntmp_path = PosixPath('/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/pytest-of-corbensorenson/pytest-24/test_cli_report_path_uses_payl0')\n\n    def test_cli_report_path_uses_payload_audit(tmp_path: Path) -> None:\n        report_path = tmp_path / \"bundle.json\"\n        report_path.write_text(json.dumps(bundle()), encoding=\"utf-8\")\n        result = subprocess.run(\n            [sys.executable, \"scripts/theseus_assistant_route_integrity.py\", \"--report\", str(report_path)],\n            cwd=ROOT,\n            text=True,\n            capture_output=True,\n        )\n>       assert result.returncode == 0, \"request_contract:cli_uses_payload_audit\"\nE       AssertionError: request_contract:cli_uses_payload_audit\nE       assert 2 == 0\nE        +  where 2 = CompletedProcess(args=['/Users/corbensorenson/miniforge3/bin/python3', 'scripts/theseus_assistant_route_integrity.py',...ity_receipt_audit_v1\",\\n  \"ready\": false,\\n  \"receipt_digest_valid\": false,\\n  \"receipt_ready\": false\\n}\\n', stderr='').returncode\n\ntests/functional_hidden/test_route_integrity_bundle_contract.py:88: AssertionError\n=========================== short test summary info ============================\nFAILED tests/functional_hidden/test_route_integrity_bundle_contract.py::test_bundle_is_recomputed_instead_of_trusted\nFAILED tests/functional_hidden/test_route_integrity_bundle_contract.py::test_single_route_behavior_is_preserved\nFAILED tests/functional_hidden/test_route_integrity_bundle_contract.py::test_cli_report_path_uses_payload_audit\n3 failed in 1.19s\n",
+      "wall_ms": 2322.528
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-07-31T18:34:12.716769Z",
+    "evaluator_sha256": "f34706cad1874fced703bbd3450680f3faaff6aaf67014b0e0b6d8b975cf2d43",
+    "expected_failure_markers": [
+      "request_contract:bundle_recomputed_not_trusted",
+      "request_contract:cli_uses_payload_audit",
+      "request_contract:single_route_preserved"
+    ],
+    "faults": [],
+    "observed_failure_markers": [
+      "request_contract:bundle_recomputed_not_trusted",
+      "request_contract:cli_uses_payload_audit",
+      "request_contract:single_route_preserved"
+    ],
+    "policy": "project_theseus_p2_evaluator_alignment_audit_v1",
+    "request_sha256": "f4e72719b15b4868e78b4ede4d2dc2002e16edf12979e2d4c82880ae60326f17",
+    "route_labels_opened": 0,
+    "runtime_ms": 7056.853,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "task_manifest_sha256": "278f4e8e7380fadc5c2fb8a5fc4c54e44b1e5fe77749bf694d50f5229d755fa4",
+    "trigger_state": "GREEN"
+  },
+  "arm_outcomes": {
+    "direct_local_model": {
+      "allowed_effects": 0,
+      "hidden_tests_passed": 0,
+      "patch_applied": 0,
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0
+    },
+    "integrated_local_model": {
+      "allowed_effects": 0,
+      "hidden_tests_passed": 0,
+      "patch_applied": 0,
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0
+    }
+  },
+  "candidate_report_sha256": "2f3888b74f0f57f7055a9b78d2dfd405583bf8b14a6254eac34d54312d5cf33a",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-07-31T18:34:31.436478Z",
+  "denominators": {
+    "arms": 2,
+    "failed_or_abstained_candidates": 2,
+    "sealed_candidates": 2,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2_LOOP_EFFICIENCY_REPAIR_AUTHORIZED",
+  "evaluation_blinding": {
+    "candidate_authored_success_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "1b3cc73280ed68eacfcbf619d8d7670b1b3a443ca1fe6a1e2fd9b2cb42b46f0d",
+      "c72a88ef5f0437785363ee8d010ffc7f4e1f9810aabe5c57328144c18f03cd35"
+    ],
+    "scoring_order_key": "candidate_output_sha256"
+  },
+  "evaluator_sha256": "f34706cad1874fced703bbd3450680f3faaff6aaf67014b0e0b6d8b975cf2d43",
+  "faults": [],
+  "maximum_inference": "This evaluates only the frozen P2-001 request, parent-plus-overlay snapshot, hidden request-derived tests, exact TMax instrument, canonical routes, and product budgets.",
+  "next_stage": "run_one_matched_format_and_loop_efficiency_repair",
+  "policy": "project_theseus_p2_route_blind_evaluation_v1",
+  "results": [
+    {
+      "allowed_effects": 0,
+      "arm_id": "integrated_local_model",
+      "candidate_output_sha256": "1b3cc73280ed68eacfcbf619d8d7670b1b3a443ca1fe6a1e2fd9b2cb42b46f0d",
+      "candidate_test_gaming_detected": false,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [],
+      "patch_applied": 0,
+      "patch_paths": [
+        "scripts/theseus_assistant_route_integrity.py"
+      ],
+      "resource_metrics": {
+        "arm_wall_ms": 242158.377,
+        "generated_tokens": 512,
+        "generation_wall_ms": 218400.542,
+        "mlx_peak_memory_gib": 11.023,
+        "model_calls": 1,
+        "prompt_tokens": null,
+        "tool_calls": 0,
+        "verification_count": 1
+      },
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {}
+    },
+    {
+      "allowed_effects": 0,
+      "arm_id": "direct_local_model",
+      "candidate_output_sha256": "c72a88ef5f0437785363ee8d010ffc7f4e1f9810aabe5c57328144c18f03cd35",
+      "candidate_test_gaming_detected": false,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [],
+      "patch_applied": 0,
+      "patch_paths": [
+        "scripts/theseus_assistant_route_integrity.py"
+      ],
+      "resource_metrics": {
+        "arm_wall_ms": 160602.4,
+        "generated_tokens": 512,
+        "generation_wall_ms": 150961.284,
+        "mlx_peak_memory_gib": 10.796,
+        "model_calls": 1,
+        "prompt_tokens": null,
+        "tool_calls": 0,
+        "verification_count": 1
+      },
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {}
+    }
+  ],
+  "runtime_ms": 25775.794,
+  "scope": "one reusable L0 product canary; no subsystem causal, D1, D2, model, or general utility claim",
+  "task_manifest_sha256": "278f4e8e7380fadc5c2fb8a5fc4c54e44b1e5fe77749bf694d50f5229d755fa4",
+  "trigger_state": "GREEN",
+  "weak_tail": {
+    "task_type_count": 1,
+    "uncertainty_state": "single_task_product_canary_not_powered_for_causal_inference",
+    "weakest_task_type": "repository_maintenance",
+    "weakest_task_type_useful_rate": 0.0
+  }
+}

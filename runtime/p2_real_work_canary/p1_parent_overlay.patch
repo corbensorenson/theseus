@@ -1,0 +1,2577 @@
+diff --git a/configs/project_manifest_registry.json b/configs/project_manifest_registry.json
+index 45e9fb39..8af6e120 100644
+--- a/configs/project_manifest_registry.json
++++ b/configs/project_manifest_registry.json
+@@ -1286,20 +1286,20 @@
+       "mode": "all",
+       "requirements": [
+         {
+-          "id": "assistant_product_gate",
+-          "path": "reports/theseus_assistant_product_lane_gate.json",
++          "id": "assistant_live_local_model_route_integrity",
++          "path": "reports/theseus_assistant_p1_live_route_integrity_r2.json",
+           "freshness_mode": "source_bound",
+           "source_paths": [
+-            "scripts/reflexive_dispatch.py",
+-            "scripts/theseus_assistant_e2e.py",
++            "configs/theseus_assistant_runtime.json",
++            "configs/core_evidence_tmax_9b_worker_control_v3.json",
+             "scripts/theseus_assistant_runtime.py",
+-            "scripts/theseus_assistant_product_lane_gate.py",
+-            "configs/reflexive_router_contract.json",
+-            "configs/reflexive_router_profile.json"
++            "scripts/theseus_assistant_route_integrity.py",
++            "scripts/theseus_local_inference_backend.py",
++            "reports/core_evidence_tmax_9b_runtime_preflight.json"
+           ],
+           "acceptance": {
+-            "field": "trigger_state",
+-            "allowed": ["GREEN", "YELLOW"]
++            "field": "ready",
++            "allowed": [true]
+           }
+         }
+       ]
+@@ -6685,16 +6685,21 @@
+       "surface_id": "theseus_assistant_runtime",
+       "status": "live",
+       "implementation_type": "local_assistant_runtime",
+-      "backend": "python_local_runtime_events",
++      "backend": "frozen_tmax_mlx_local_runtime_with_status_compatibility",
+       "canonical_entrypoint": "scripts/theseus_assistant_runtime.py",
+       "swappable_under_contract": true,
+-      "replacement_policy": "A successor must preserve zero external runtime inference and dogfood outcome event semantics.",
+-      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
++      "replacement_policy": "A successor must preserve the exact-model direct/integrated comparison contract, fail-closed route integrity, zero external runtime inference, and dogfood outcome event semantics.",
++      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_theseus_assistant_route_integrity.py tests/test_theseus_assistant_runtime_local_modes.py tests/test_theseus_local_inference_backend.py && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+       "role": "runtime_serving",
+       "trust_tier": "local_runtime_only",
+       "dependencies": [
+         "configs/project_manifest_registry.json",
++        "configs/theseus_assistant_runtime.json",
+         "scripts/theseus_assistant_runtime.py",
++        "scripts/theseus_assistant_route_integrity.py",
++        "scripts/theseus_local_inference_backend.py",
++        "configs/core_evidence_tmax_9b_worker_control_v3.json",
++        "reports/core_evidence_tmax_9b_runtime_preflight.json",
+         "scripts/reflexive_dispatch.py",
+         "scripts/viea_spine_records.py",
+         "configs/reflexive_router_contract.json",
+@@ -6735,7 +6740,8 @@
+         "reports/assistant_code_private_replay_probe.md",
+         "reports/theseus_assistant_state_report.json",
+         "reports/theseus_assistant_state_report.md",
+-        "reports/theseus_assistant_product_lane_gate.json"
++        "reports/theseus_assistant_product_lane_gate.json",
++        "reports/theseus_assistant_p1_live_route_integrity_r2.json"
+       ],
+       "attd_hooks": {
+         "component": "project_registry",
+@@ -9402,6 +9408,8 @@
+       "status": "live",
+       "patterns": [
+         "scripts/theseus_assistant_runtime.py",
++        "scripts/theseus_assistant_route_integrity.py",
++        "scripts/theseus_local_inference_backend.py",
+         "scripts/reflexive_dispatch.py",
+         "scripts/viea_spine_records.py",
+         "scripts/theseus_assistant_e2e.py",
+@@ -9445,6 +9453,9 @@
+         "tests/test_core_evidence_functional_evaluator.py",
+         "tests/test_core_evidence_local_8b_qualification.py",
+         "tests/test_core_evidence_local_8b_disposition.py",
++        "tests/test_theseus_assistant_route_integrity.py",
++        "tests/test_theseus_assistant_runtime_local_modes.py",
++        "tests/test_theseus_local_inference_backend.py",
+         "tests/fixtures/core_evidence_local_8b_hidden/*.py"
+       ],
+       "canonical": "scripts/theseus_assistant_runtime.py",
+@@ -9478,6 +9489,7 @@
+         "reports/theseus_assistant_state_report.json",
+         "reports/theseus_assistant_state_report.md",
+         "reports/theseus_assistant_product_lane_gate.json",
++        "reports/theseus_assistant_p1_live_route_integrity_r2.json",
+         "reports/core_evidence_e0_preregistration.json",
+         "reports/core_evidence_e1_replay.json",
+         "reports/core_evidence_e2_governed_comparison.json",
+@@ -9499,7 +9511,7 @@
+         "docs/assets/core-evidence-useful-safe-frontier.svg"
+       ],
+       "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_core_evidence_campaign.py tests/test_core_evidence_worker_v2.py tests/test_core_evidence_worker_v2_evaluator.py tests/test_core_evidence_worker_v2_qualification.py tests/test_core_evidence_functional_evaluator.py && python3 scripts/core_evidence_campaign.py --gate && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+-      "cleanup_policy": "canonical user-facing assistant loop; must compose checkpoint session memory, VCM context, dogfood feedback, deterministic tools, planning, and practical code routing rather than creating parallel chat lanes",
++      "cleanup_policy": "canonical user-facing assistant loop; the frozen local model, route-integrity gate, VCM, dogfood feedback, deterministic tools, planning, and practical code routing must remain behind this one runtime rather than becoming parallel chat lanes",
+       "abstraction_id": "assistant_runtime_contract",
+       "major_surface": true,
+       "routing_roles": [
+diff --git a/configs/theseus_assistant_runtime.json b/configs/theseus_assistant_runtime.json
+index 379f9ed5..378c0adf 100644
+--- a/configs/theseus_assistant_runtime.json
++++ b/configs/theseus_assistant_runtime.json
+@@ -1,8 +1,37 @@
+ {
+-  "policy": "project_theseus_assistant_runtime_v0",
+-  "purpose": "Canonical local assistant path for multi-turn Theseus interaction, VCM context, deterministic tool evidence, dogfood feedback, and practical code-task routing.",
++  "policy": "project_theseus_assistant_runtime_v1",
++  "purpose": "Canonical local assistant path with a frozen offline TMax backend, matched direct and integrated execution modes, VCM context, deterministic tool evidence, route-integrity release control, dogfood feedback, and practical code-task routing.",
+   "default_session_id": "local_assistant",
+   "checkpoint_id": "live",
++  "default_execution_mode": "status_checkpoint",
++  "local_inference": {
++    "backend_entrypoint": "scripts/theseus_local_inference_backend.py",
++    "python_executable": "runtime/venvs/mlx-0.32.0-py312/bin/python",
++    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v3.json",
++    "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
++    "required_runtime_preflight_state": "GREEN",
++    "required_repo_id": "mlx-community/Tmax-9B-MLX-8bit",
++    "required_revision": "33812d6cf04f88856f25eb828de4f3144a194560",
++    "required_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
++    "product_maximum_tokens": 512,
++    "maximum_context_pages": 8,
++    "maximum_context_characters": 12000,
++    "timeout_seconds": 720,
++    "maximum_model_calls_per_request": 1,
++    "supported_execution_modes": [
++      "direct_local_model",
++      "integrated_local_model"
++    ],
++    "matched_pair_contract": {
++      "same_model_repo_revision_snapshot": true,
++      "same_mlx_runtime": true,
++      "same_decoder_and_product_token_budget": true,
++      "same_structural_release_verifier": "theseus_local_response_integrity_verifier_v1",
++      "same_effect_sandbox": "theseus_assistant_no_automatic_effects_v1",
++      "automatic_source_effects": 0,
++      "external_inference_calls": 0
++    }
++  },
+   "assistant_trace_schema": "configs/assistant_trace_schema.json",
+   "reflexive_router_contract": "configs/reflexive_router_contract.json",
+   "reflexive_router_profile": "local_private_assistant",
+@@ -176,7 +205,9 @@
+     "chat": {
+       "assistant_lane": "chat_checkpoint",
+       "vcm_task_family": "operator_chat",
+-      "runtime": "scripts/checkpoint_chat.py"
++      "runtime": "scripts/theseus_assistant_runtime.py",
++      "status_backend": "scripts/checkpoint_chat.py",
++      "local_inference_backend": "scripts/theseus_local_inference_backend.py"
+     },
+     "code": {
+       "assistant_lane": "code_assistant",
+diff --git a/scripts/theseus_assistant_route_integrity.py b/scripts/theseus_assistant_route_integrity.py
+new file mode 100644
+index 00000000..9bc275b2
+--- /dev/null
++++ b/scripts/theseus_assistant_route_integrity.py
+@@ -0,0 +1,705 @@
++#!/usr/bin/env python3
++"""Fail-closed route integrity for the canonical local assistant.
++
++This module owns the comparison boundary between the fixed-model direct arm
++and the integrated Theseus arm.  It never treats arm labels or backend-emitted
++``passed`` flags as evidence.  Instead it recomputes prompt, model, route,
++context, verifier, authority, and effect bindings from the observed payloads.
++"""
++
++from __future__ import annotations
++
++import argparse
++import copy
++import hashlib
++import json
++from pathlib import Path
++from typing import Any
++
++
++ROOT = Path(__file__).resolve().parents[1]
++DIRECT_MODE = "direct_local_model"
++INTEGRATED_MODE = "integrated_local_model"
++LOCAL_MODEL_MODES = {DIRECT_MODE, INTEGRATED_MODE}
++ROUTE_POLICY = "project_theseus_live_route_integrity_v1"
++BACKEND_RUNTIME = "mlx_lm_local_metal"
++STRUCTURAL_VERIFIER = "theseus_local_response_integrity_verifier_v1"
++EFFECT_SANDBOX = "theseus_assistant_no_automatic_effects_v1"
++DENIED_CONTEXT_TAINTS = {
++    "public_benchmark_payload",
++    "public_calibration_payload",
++    "raw_private_user_text",
++    "runtime_external_inference",
++    "revoked",
++    "deleted",
++}
++MODEL_FIELDS = (
++    "repo_id",
++    "revision",
++    "snapshot_manifest_sha256",
++    "runtime",
++    "worker_config_sha256",
++    "decoder_sha256",
++)
++
++
++def load_model_contract(
++    worker_config_path: str | Path,
++    runtime_preflight_path: str | Path,
++    *,
++    maximum_tokens: int,
++    required_repo_id: str = "",
++    required_revision: str = "",
++    required_snapshot_manifest_sha256: str = "",
++) -> dict[str, Any]:
++    worker_path = resolve(worker_config_path)
++    preflight_path = resolve(runtime_preflight_path)
++    worker = read_json(worker_path)
++    preflight = read_json(preflight_path)
++    card = as_dict(worker.get("model"))
++    preflight_identity = as_dict(preflight.get("model_identity"))
++    faults: list[str] = []
++    for field in ("repo_id", "revision", "temperature", "maximum_action_tokens"):
++        if card.get(field) in {None, ""}:
++            faults.append(f"model_card_missing_{field}")
++    if preflight.get("trigger_state") != "GREEN":
++        faults.append("runtime_preflight_not_green")
++    for field in ("repo_id", "revision"):
++        if str(preflight_identity.get(field) or "") != str(card.get(field) or ""):
++            faults.append(f"runtime_preflight_{field}_mismatch")
++    snapshot_manifest = str(preflight_identity.get("snapshot_manifest_sha256") or "")
++    if len(snapshot_manifest) != 64:
++        faults.append("runtime_preflight_snapshot_manifest_missing")
++    required_values = {
++        "repo_id": required_repo_id,
++        "revision": required_revision,
++        "snapshot_manifest_sha256": required_snapshot_manifest_sha256,
++    }
++    observed_values = {
++        "repo_id": str(card.get("repo_id") or ""),
++        "revision": str(card.get("revision") or ""),
++        "snapshot_manifest_sha256": snapshot_manifest,
++    }
++    for field, required in required_values.items():
++        if required and observed_values[field] != required:
++            faults.append(f"frozen_model_{field}_mismatch")
++    configured_maximum = int(card.get("maximum_action_tokens") or 0)
++    effective_maximum = int(maximum_tokens or configured_maximum)
++    if effective_maximum <= 0 or effective_maximum > configured_maximum:
++        faults.append("product_maximum_tokens_out_of_worker_bounds")
++    decoder = {
++        "temperature": float(card.get("temperature") or 0.0),
++        "repetition_penalty": float(card.get("repetition_penalty") or 1.0),
++        "repetition_context_size": int(card.get("repetition_context_size") or 0),
++        "chat_template_kwargs": as_dict(card.get("chat_template_kwargs")),
++        "maximum_tokens": effective_maximum,
++        "worker_maximum_action_tokens": configured_maximum,
++        "kv_bits": card.get("kv_bits"),
++        "kv_group_size": card.get("kv_group_size"),
++        "quantized_kv_start": card.get("quantized_kv_start"),
++    }
++    identity = {
++        "repo_id": str(card.get("repo_id") or ""),
++        "revision": str(card.get("revision") or ""),
++        "snapshot_manifest_sha256": snapshot_manifest,
++        "runtime": BACKEND_RUNTIME,
++        "worker_config_sha256": file_sha256(worker_path),
++        "decoder": decoder,
++        "decoder_sha256": stable_hash(decoder),
++    }
++    identity["identity_sha256"] = stable_hash(identity)
++    return {
++        "ready": not faults,
++        "identity": identity,
++        "model_card": card,
++        "worker_config": rel(worker_path),
++        "runtime_preflight": rel(preflight_path),
++        "faults": sorted(set(faults)),
++    }
++
++
++def build_generation_request(
++    *,
++    execution_mode: str,
++    prompt: str,
++    model_identity: dict[str, Any],
++    selected_context: dict[str, Any] | None = None,
++    compiled_context: dict[str, Any] | None = None,
++    reflexive_dispatch: dict[str, Any] | None = None,
++    reflexive_verification: dict[str, Any] | None = None,
++    structured_execution: dict[str, Any] | None = None,
++    tool_evidence: dict[str, Any] | None = None,
++    plan_context: dict[str, Any] | None = None,
++    procedural_route: dict[str, Any] | None = None,
++    effect_canary: dict[str, Any] | None = None,
++    maximum_context_pages: int = 8,
++    maximum_context_characters: int = 12_000,
++) -> dict[str, Any]:
++    """Build the transient model prompt and a raw-text-free durable binding."""
++    faults: list[str] = []
++    if execution_mode not in LOCAL_MODEL_MODES:
++        faults.append("unsupported_local_execution_mode")
++    if not prompt.strip():
++        faults.append("empty_user_prompt")
++    if not model_identity.get("identity_sha256"):
++        faults.append("model_identity_missing")
++
++    context_rows: list[dict[str, Any]] = []
++    route_packet: dict[str, Any]
++    if execution_mode == DIRECT_MODE:
++        route_packet = {
++            "route_kind": "direct_fixed_model",
++            "planning": "none",
++            "vcm": "none",
++            "tool_calls": 0,
++            "automatic_effects": 0,
++        }
++        model_prompt = prompt
++    else:
++        context_rows, context_faults = materialize_selected_context(
++            selected_context or {},
++            compiled_context or {},
++            maximum_pages=maximum_context_pages,
++            maximum_characters=maximum_context_characters,
++        )
++        faults.extend(context_faults)
++        dispatch = reflexive_dispatch or {}
++        verification = reflexive_verification or {}
++        execution = structured_execution or {}
++        tools = tool_evidence or {}
++        plan = plan_context or {}
++        procedural = procedural_route or {}
++        effect = effect_canary or {}
++        selected_capabilities = selected_capability_ids(dispatch)
++        plan_nodes = compact_plan_nodes(dispatch)
++        route_packet = {
++            "route_kind": "integrated_theseus",
++            "trace_id": dispatch.get("trace_id"),
++            "decision_digest": dispatch.get("decision_digest"),
++            "terminal_outcome": get_path(dispatch, ["selection", "terminal_outcome"], ""),
++            "verification_state": verification.get("state"),
++            "selected_capabilities": selected_capabilities,
++            "realized_limits": get_path(dispatch, ["effort", "realized_limits"], {}),
++            "plan_nodes": plan_nodes,
++            "structured_execution": {
++                "active": execution.get("active") is True,
++                "terminal_outcome": execution.get("terminal_outcome"),
++                "execution_digest": execution.get("execution_digest"),
++                "resolved_count": int(execution.get("resolved_count") or 0),
++                "failed_count": int(execution.get("failed_count") or 0),
++                "effect_authority_granted": execution.get("effect_authority_granted") is True,
++            },
++            "tool": {
++                "required": tools.get("required") is True,
++                "active": tools.get("active") is True,
++                "trigger_state": tools.get("trigger_state"),
++                "result_count": int(get_path(tools, ["summary", "result_count"], 0) or 0),
++                "evidence_ref": tools.get("trace") or tools.get("report") or "",
++            },
++            "planner": {
++                "required": plan.get("required") is True,
++                "active": plan.get("active") is True,
++                "state": plan.get("planner_state"),
++                "compiled_goal_count": int(plan.get("compiled_goal_count") or 0),
++            },
++            "procedural_route": {
++                "active": procedural.get("active") is True,
++                "required": procedural.get("required") is True,
++                "ready": procedural.get("ready") is True,
++                "route_id": get_path(procedural, ["selected_route", "id"], ""),
++                "selection_matched": get_path(procedural, ["selection", "matched"], False) is True,
++            },
++            "effect": {
++                "enabled": effect.get("enabled") is True,
++                "ready": effect.get("ready") is True,
++                "dispatch_bound": effect.get("dispatch_bound") is True,
++                "rollback_complete": get_path(effect, ["rollback", "complete"], False) is True,
++                "rollback_residual_count": int(get_path(effect, ["rollback", "residual_count"], 0) or 0),
++            },
++            "automatic_effects": 0,
++        }
++        if verification.get("state") != "VERIFIED":
++            faults.append("reflexive_dispatch_not_verified")
++        if route_packet["terminal_outcome"] != "prepared":
++            faults.append("reflexive_dispatch_not_prepared")
++        if not selected_capabilities or not plan_nodes:
++            faults.append("callable_route_or_plan_missing")
++        if len(selected_capabilities) > 1 and not (
++            route_packet["structured_execution"]["active"] is True
++            and route_packet["structured_execution"]["terminal_outcome"] == "resolved"
++            and route_packet["structured_execution"]["failed_count"] == 0
++            and bool(route_packet["structured_execution"]["execution_digest"])
++        ):
++            faults.append("composite_plan_not_executed_or_held")
++        if "assistant.deterministic_tool" in selected_capabilities and not (
++            route_packet["tool"]["active"] is True
++            and route_packet["tool"]["trigger_state"] in {"GREEN", "YELLOW"}
++            and route_packet["tool"]["result_count"] > 0
++            and bool(route_packet["tool"]["evidence_ref"])
++        ):
++            faults.append("selected_tool_capability_not_executed")
++        if "assistant.plan_dag" in selected_capabilities and not (
++            route_packet["planner"]["active"] is True
++            and route_packet["planner"]["state"] in {"GREEN", "YELLOW"}
++            and route_packet["planner"]["compiled_goal_count"] > 0
++        ):
++            faults.append("selected_planning_capability_not_executed")
++        if "assistant.route_authority_effect" in selected_capabilities and not (
++            route_packet["effect"]["enabled"] is True
++            and route_packet["effect"]["ready"] is True
++            and route_packet["effect"]["dispatch_bound"] is True
++            and route_packet["effect"]["rollback_complete"] is True
++            and route_packet["effect"]["rollback_residual_count"] == 0
++        ):
++            faults.append("selected_effect_capability_not_observed_and_rolled_back")
++        model_prompt = render_integrated_prompt(prompt, context_rows, route_packet)
++
++    context_binding = [
++        {
++            "address": row["address"],
++            "certificate_id": row.get("certificate_id"),
++            "content_sha256": row["content_sha256"],
++            "characters": len(row["materialized_text"]),
++            "execution_class": row.get("execution_class"),
++            "taints": row.get("taints", []),
++        }
++        for row in context_rows
++    ]
++    binding = {
++        "policy": ROUTE_POLICY,
++        "execution_mode": execution_mode,
++        "user_prompt_sha256": sha256_text(prompt),
++        "model_prompt_sha256": sha256_text(model_prompt),
++        "model_identity_sha256": model_identity.get("identity_sha256"),
++        "context_pages": context_binding,
++        "context_content_sha256": stable_hash(context_binding),
++        "route_packet": route_packet,
++        "route_packet_sha256": stable_hash(route_packet),
++        "structural_verifier_id": STRUCTURAL_VERIFIER,
++        "effect_sandbox_id": EFFECT_SANDBOX,
++        "automatic_effects": 0,
++        "maximum_model_calls": 1,
++        "raw_prompt_stored": False,
++        "raw_context_text_stored": False,
++    }
++    binding["request_binding_sha256"] = binding_digest(binding)
++    return {
++        "ready": not faults,
++        "faults": sorted(set(faults)),
++        "model_prompt": model_prompt,
++        "binding": binding,
++    }
++
++
++def materialize_selected_context(
++    selected_context: dict[str, Any],
++    compiled_context: dict[str, Any],
++    *,
++    maximum_pages: int,
++    maximum_characters: int,
++) -> tuple[list[dict[str, Any]], list[str]]:
++    selected = [row for row in as_list(selected_context.get("selected_pages")) if isinstance(row, dict)]
++    visible = {
++        str(row.get("address") or ""): row
++        for row in as_list(compiled_context.get("model_visible_pages"))
++        if isinstance(row, dict) and row.get("address")
++    }
++    faults: list[str] = []
++    if selected_context.get("ready") is not True or not selected:
++        faults.append("selected_vcm_context_not_ready")
++    rows: list[dict[str, Any]] = []
++    used = 0
++    for selection in selected[: max(0, maximum_pages)]:
++        address = str(selection.get("address") or "")
++        materialized = visible.get(address)
++        if not materialized:
++            faults.append(f"selected_vcm_page_not_materialized:{address or 'missing'}")
++            continue
++        taints = sorted({str(value) for value in as_list(materialized.get("taints")) if value})
++        if set(taints).intersection(DENIED_CONTEXT_TAINTS):
++            faults.append(f"selected_vcm_page_taint_denied:{address}")
++            continue
++        text = str(materialized.get("materialized_text") or "").strip()
++        if not text:
++            faults.append(f"selected_vcm_page_text_missing:{address}")
++            continue
++        remaining = maximum_characters - used
++        if remaining <= 0:
++            break
++        text = text[:remaining]
++        used += len(text)
++        rows.append(
++            {
++                "address": address,
++                "certificate_id": materialized.get("certificate_id"),
++                "title": materialized.get("title"),
++                "execution_class": materialized.get("execution_class"),
++                "taints": taints,
++                "materialized_text": text,
++                "content_sha256": sha256_text(text),
++            }
++        )
++    if not rows:
++        faults.append("selected_vcm_content_not_consumable")
++    return rows, sorted(set(faults))
++
++
++def render_integrated_prompt(
++    prompt: str,
++    context_rows: list[dict[str, Any]],
++    route_packet: dict[str, Any],
++) -> str:
++    context = [
++        {
++            "address": row["address"],
++            "certificate_id": row.get("certificate_id"),
++            "execution_class": row.get("execution_class"),
++            "content_sha256": row["content_sha256"],
++            "content": row["materialized_text"],
++        }
++        for row in context_rows
++    ]
++    return (
++        f"{prompt}\n\n"
++        "[theseus_verified_vcm_context]\n"
++        f"{json.dumps(context, sort_keys=True, ensure_ascii=False)}\n\n"
++        "[theseus_executed_route]\n"
++        f"{json.dumps(route_packet, sort_keys=True, ensure_ascii=False)}"
++    )
++
++
++def build_route_integrity_receipt(
++    *,
++    execution_mode: str,
++    request_binding: dict[str, Any],
++    expected_model_identity: dict[str, Any],
++    backend_payload: dict[str, Any],
++) -> dict[str, Any]:
++    """Independently verify one live backend result and decide release."""
++    observed_identity = as_dict(get_path(backend_payload, ["backend", "identity"], {}))
++    backend_request = as_dict(backend_payload.get("request"))
++    response = as_dict(backend_payload.get("response"))
++    route_packet = as_dict(request_binding.get("route_packet"))
++    checks: dict[str, bool] = {
++        "supported_execution_mode": execution_mode in LOCAL_MODEL_MODES,
++        "request_binding_digest_valid": request_binding.get("request_binding_sha256") == binding_digest(request_binding),
++        "execution_mode_bound": request_binding.get("execution_mode") == execution_mode
++        and backend_request.get("execution_mode") == execution_mode,
++        "local_model_backend_owned_by_canonical_assistant_runtime": backend_payload.get("policy")
++        == "project_theseus_local_inference_backend_v1",
++        "backend_completed": backend_payload.get("trigger_state") == "GREEN",
++        "backend_prompt_bound": backend_request.get("prompt_sha256") == request_binding.get("model_prompt_sha256"),
++        "backend_route_bound": backend_request.get("route_context_digest") == request_binding.get("route_packet_sha256"),
++        "backend_model_identity_bound": model_identities_equal(expected_model_identity, observed_identity),
++        "response_present": bool(str(response.get("answer") or "").strip()),
++        "external_inference_zero": int(backend_payload.get("external_inference_calls") or 0) == 0,
++        "teacher_calls_zero": int(backend_payload.get("teacher_calls") or 0) == 0,
++        "public_calibration_consumption_zero": int(backend_payload.get("public_calibration_cases_consumed") or 0) == 0,
++        "D2_consumption_zero": int(backend_payload.get("D2_cases_consumed") or 0) == 0,
++        "public_training_rows_zero": int(backend_payload.get("public_training_rows_written") or 0) == 0,
++        "fallback_returns_zero": int(backend_payload.get("fallback_return_count") or 0) == 0,
++        "backend_user_facing_effects_zero": int(backend_payload.get("user_facing_effects") or 0) == 0,
++        "single_model_call_budget": int(get_path(backend_payload, ["metrics", "local_model_inference_calls"], 0) or 0) == 1,
++        "verification_controls_release_or_repair": False,
++        "authority_controls_effect_scope": False,
++        "effect_observation_and_exact_rollback_bound": False,
++        "compiled_plan_executed_or_held": False,
++        "selected_vcm_content_consumed_by_model": False,
++        "route_changes_callable_capability_budget_tool_or_hold": False,
++        "decorative_labels_cannot_satisfy_integrated_route": False,
++    }
++    structural_verification = {
++        "verifier_id": STRUCTURAL_VERIFIER,
++        "independent_from_backend": True,
++        "checks": {
++            key: checks[key]
++            for key in (
++                "backend_completed",
++                "backend_prompt_bound",
++                "backend_route_bound",
++                "backend_model_identity_bound",
++                "response_present",
++                "external_inference_zero",
++                "teacher_calls_zero",
++                "public_calibration_consumption_zero",
++                "D2_consumption_zero",
++                "public_training_rows_zero",
++                "fallback_returns_zero",
++                "backend_user_facing_effects_zero",
++                "single_model_call_budget",
++            )
++        },
++        "task_correctness_evaluated": False,
++    }
++    structural_verification["passed"] = all(structural_verification["checks"].values())
++    structural_verification["verification_sha256"] = stable_hash(structural_verification)
++    checks["verification_controls_release_or_repair"] = structural_verification["passed"] is True
++
++    effect = as_dict(route_packet.get("effect"))
++    no_automatic_effects = int(request_binding.get("automatic_effects") or 0) == 0
++    if execution_mode == DIRECT_MODE:
++        checks["compiled_plan_executed_or_held"] = route_packet.get("planning") == "none"
++        checks["selected_vcm_content_consumed_by_model"] = not as_list(request_binding.get("context_pages"))
++        checks["route_changes_callable_capability_budget_tool_or_hold"] = route_packet.get("route_kind") == "direct_fixed_model"
++        checks["authority_controls_effect_scope"] = no_automatic_effects
++        checks["effect_observation_and_exact_rollback_bound"] = no_automatic_effects
++        checks["decorative_labels_cannot_satisfy_integrated_route"] = route_packet.get("route_kind") == "direct_fixed_model"
++    elif execution_mode == INTEGRATED_MODE:
++        capabilities = [str(value) for value in as_list(route_packet.get("selected_capabilities")) if value]
++        plan_nodes = [row for row in as_list(route_packet.get("plan_nodes")) if isinstance(row, dict)]
++        execution = as_dict(route_packet.get("structured_execution"))
++        composite_ok = (
++            len(capabilities) <= 1
++            or (
++                execution.get("active") is True
++                and execution.get("terminal_outcome") == "resolved"
++                and int(execution.get("failed_count") or 0) == 0
++                and bool(execution.get("execution_digest"))
++            )
++        )
++        tool = as_dict(route_packet.get("tool"))
++        planner = as_dict(route_packet.get("planner"))
++        tool_ok = tool.get("required") is not True or (
++            tool.get("active") is True
++            and tool.get("trigger_state") in {"GREEN", "YELLOW"}
++            and int(tool.get("result_count") or 0) > 0
++            and bool(tool.get("evidence_ref"))
++        )
++        planner_ok = planner.get("required") is not True or (
++            planner.get("active") is True
++            and planner.get("state") in {"GREEN", "YELLOW"}
++            and int(planner.get("compiled_goal_count") or 0) > 0
++        )
++        effect_ok = no_automatic_effects and (
++            effect.get("enabled") is not True
++            or (
++                effect.get("ready") is True
++                and effect.get("dispatch_bound") is True
++                and effect.get("rollback_complete") is True
++                and int(effect.get("rollback_residual_count") or 0) == 0
++            )
++        )
++        context_pages = [row for row in as_list(request_binding.get("context_pages")) if isinstance(row, dict)]
++        checks["compiled_plan_executed_or_held"] = bool(plan_nodes) and composite_ok and structural_verification["passed"]
++        checks["selected_vcm_content_consumed_by_model"] = bool(context_pages) and all(
++            len(str(row.get("content_sha256") or "")) == 64 and int(row.get("characters") or 0) > 0
++            for row in context_pages
++        )
++        checks["route_changes_callable_capability_budget_tool_or_hold"] = (
++            route_packet.get("verification_state") == "VERIFIED"
++            and route_packet.get("terminal_outcome") == "prepared"
++            and bool(capabilities)
++            and bool(as_dict(route_packet.get("realized_limits")))
++            and tool_ok
++            and planner_ok
++        )
++        checks["authority_controls_effect_scope"] = effect_ok and execution.get("effect_authority_granted") is not True
++        checks["effect_observation_and_exact_rollback_bound"] = effect_ok
++        checks["decorative_labels_cannot_satisfy_integrated_route"] = (
++            route_packet.get("route_kind") == "integrated_theseus"
++            and checks["request_binding_digest_valid"]
++            and checks["backend_route_bound"]
++            and checks["selected_vcm_content_consumed_by_model"]
++            and checks["compiled_plan_executed_or_held"]
++        )
++
++    release_allowed = all(checks.values())
++    receipt = {
++        "policy": ROUTE_POLICY,
++        "execution_mode": execution_mode,
++        "ready": release_allowed,
++        "release_allowed": release_allowed,
++        "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE" if release_allowed else "HOLD_ROUTE_INTEGRITY_FAILED",
++        "checks": checks,
++        "failed_checks": sorted(key for key, passed in checks.items() if not passed),
++        "request_binding": copy.deepcopy(request_binding),
++        "expected_model_identity": compact_identity(expected_model_identity),
++        "observed_model_identity": compact_identity(observed_identity),
++        "structural_verification": structural_verification,
++        "pair_contract": {
++            "model_identity_sha256": expected_model_identity.get("identity_sha256"),
++            "structural_verifier_id": request_binding.get("structural_verifier_id"),
++            "effect_sandbox_id": request_binding.get("effect_sandbox_id"),
++            "maximum_model_calls": request_binding.get("maximum_model_calls"),
++            "automatic_effects": request_binding.get("automatic_effects"),
++        },
++        "non_claims": [
++            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
++            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value.",
++        ],
++    }
++    receipt["receipt_sha256"] = receipt_digest(receipt)
++    return receipt
++
++
++def compare_matched_pair(direct: dict[str, Any], integrated: dict[str, Any]) -> dict[str, Any]:
++    direct_binding = as_dict(direct.get("request_binding"))
++    integrated_binding = as_dict(integrated.get("request_binding"))
++    checks = {
++        "direct_mode_present": direct.get("execution_mode") == DIRECT_MODE,
++        "integrated_mode_present": integrated.get("execution_mode") == INTEGRATED_MODE,
++        "direct_route_integrity_ready": direct.get("ready") is True,
++        "integrated_route_integrity_ready": integrated.get("ready") is True,
++        "same_user_request": bool(direct_binding.get("user_prompt_sha256"))
++        and direct_binding.get("user_prompt_sha256") == integrated_binding.get("user_prompt_sha256"),
++        "model_decoder_snapshot_sandbox_evaluator_equal": direct.get("pair_contract") == integrated.get("pair_contract"),
++        "direct_receipt_digest_valid": direct.get("receipt_sha256") == receipt_digest(direct),
++        "integrated_receipt_digest_valid": integrated.get("receipt_sha256") == receipt_digest(integrated),
++    }
++    return {
++        "policy": "project_theseus_local_model_matched_pair_integrity_v1",
++        "ready": all(checks.values()),
++        "checks": checks,
++        "failed_checks": sorted(key for key, passed in checks.items() if not passed),
++        "direct_receipt_sha256": direct.get("receipt_sha256"),
++        "integrated_receipt_sha256": integrated.get("receipt_sha256"),
++    }
++
++
++def selected_capability_ids(dispatch: dict[str, Any]) -> list[str]:
++    selected = {str(value) for value in as_list(get_path(dispatch, ["selection", "selected_proposal_ids"], []))}
++    result: set[str] = set()
++    for proposal in as_list(dispatch.get("proposals")):
++        if not isinstance(proposal, dict) or str(proposal.get("proposal_id") or "") not in selected:
++            continue
++        for key in ("capability_ids", "capabilities"):
++            result.update(str(value) for value in as_list(proposal.get(key)) if value)
++        capability = proposal.get("capability_id")
++        if capability:
++            result.add(str(capability))
++    return sorted(result)
++
++
++def compact_plan_nodes(dispatch: dict[str, Any]) -> list[dict[str, Any]]:
++    return [
++        {
++            "node_id": row.get("node_id"),
++            "capability_id": row.get("capability_id"),
++            "depends_on": sorted(
++                str(value)
++                for value in as_list(row.get("depends_on") or row.get("dependencies"))
++                if value
++            ),
++            "deadline_ms": row.get("deadline_ms"),
++        }
++        for row in as_list(dispatch.get("plan_nodes"))
++        if isinstance(row, dict)
++    ]
++
++
++def model_identities_equal(expected: dict[str, Any], observed: dict[str, Any]) -> bool:
++    return all(expected.get(field) == observed.get(field) for field in MODEL_FIELDS) and (
++        expected.get("identity_sha256") == observed.get("identity_sha256")
++    )
++
++
++def compact_identity(identity: dict[str, Any]) -> dict[str, Any]:
++    return {field: identity.get(field) for field in (*MODEL_FIELDS, "identity_sha256")}
++
++
++def binding_digest(binding: dict[str, Any]) -> str:
++    return stable_hash({key: value for key, value in binding.items() if key != "request_binding_sha256"})
++
++
++def receipt_digest(receipt: dict[str, Any]) -> str:
++    return stable_hash({key: value for key, value in receipt.items() if key != "receipt_sha256"})
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description="Audit one local route or a matched direct/integrated pair.")
++    parser.add_argument("--report", default="")
++    parser.add_argument("--direct-report", default="")
++    parser.add_argument("--integrated-report", default="")
++    parser.add_argument("--out", default="")
++    args = parser.parse_args()
++    if args.report:
++        report = read_json(resolve(args.report))
++        receipt = as_dict(report.get("route_integrity"))
++        digest_valid = receipt.get("receipt_sha256") == receipt_digest(receipt)
++        result = {
++            "policy": "project_theseus_route_integrity_receipt_audit_v1",
++            "ready": receipt.get("ready") is True and digest_valid,
++            "receipt_ready": receipt.get("ready") is True,
++            "receipt_digest_valid": digest_valid,
++            "failed_checks": receipt.get("failed_checks", []),
++        }
++    elif args.direct_report and args.integrated_report:
++        direct = as_dict(read_json(resolve(args.direct_report)).get("route_integrity"))
++        integrated = as_dict(read_json(resolve(args.integrated_report)).get("route_integrity"))
++        result = compare_matched_pair(direct, integrated)
++    else:
++        raise SystemExit("provide --report or both --direct-report and --integrated-report")
++    if args.out:
++        write_json(resolve(args.out), result)
++    print(json.dumps(result, indent=2, sort_keys=True))
++    return 0 if result.get("ready") else 2
++
++
++def get_path(value: Any, path: list[str], default: Any = None) -> Any:
++    current = value
++    for key in path:
++        if not isinstance(current, dict) or key not in current:
++            return default
++        current = current[key]
++    return current
++
++
++def as_dict(value: Any) -> dict[str, Any]:
++    return value if isinstance(value, dict) else {}
++
++
++def as_list(value: Any) -> list[Any]:
++    return value if isinstance(value, list) else []
++
++
++def resolve(path: str | Path) -> Path:
++    candidate = Path(path)
++    return candidate if candidate.is_absolute() else ROOT / candidate
++
++
++def rel(path: str | Path) -> str:
++    candidate = resolve(path)
++    try:
++        return str(candidate.relative_to(ROOT)).replace("\\", "/")
++    except ValueError:
++        return str(candidate)
++
++
++def read_json(path: str | Path) -> dict[str, Any]:
++    candidate = resolve(path)
++    if not candidate.is_file():
++        return {}
++    try:
++        value = json.loads(candidate.read_text(encoding="utf-8"))
++    except (OSError, json.JSONDecodeError):
++        return {}
++    return value if isinstance(value, dict) else {}
++
++
++def write_json(path: str | Path, payload: Any) -> None:
++    candidate = resolve(path)
++    candidate.parent.mkdir(parents=True, exist_ok=True)
++    candidate.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
++
++
++def file_sha256(path: str | Path) -> str:
++    candidate = resolve(path)
++    if not candidate.is_file():
++        return ""
++    digest = hashlib.sha256()
++    with candidate.open("rb") as handle:
++        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def sha256_text(value: str) -> str:
++    return hashlib.sha256(value.encode("utf-8")).hexdigest()
++
++
++def stable_hash(value: Any) -> str:
++    return sha256_text(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False))
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/scripts/theseus_assistant_runtime.py b/scripts/theseus_assistant_runtime.py
+index b38d7fa9..cc769723 100644
+--- a/scripts/theseus_assistant_runtime.py
++++ b/scripts/theseus_assistant_runtime.py
+@@ -24,6 +24,7 @@ from typing import Any
+ import viea_spine_records
+ import vcm_consumer_abi
+ import reflexive_dispatch
++import theseus_assistant_route_integrity as route_integrity
+ 
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+@@ -74,6 +75,12 @@ def main() -> int:
+     parser.add_argument("--checkpoint-id", default="")
+     parser.add_argument("--session-id", default="")
+     parser.add_argument("--prompt", required=True)
++    parser.add_argument(
++        "--execution-mode",
++        default="",
++        choices=["", "status_checkpoint", "direct_local_model", "integrated_local_model"],
++        help="Use the legacy status responder or the fixed-model direct/integrated local inference path.",
++    )
+     parser.add_argument("--surface", default="local_assistant")
+     parser.add_argument("--intent", default="auto", choices=["auto", "chat", "code", "tool", "planning"])
+     parser.add_argument("--principal", default="local-user")
+@@ -121,6 +128,23 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+     prompt = str(args.prompt or "")
+     session_id = safe_slug(args.session_id or config.get("default_session_id") or "local_assistant")
+     checkpoint_id = str(args.checkpoint_id or config.get("checkpoint_id") or "live")
++    execution_mode = str(
++        getattr(args, "execution_mode", "")
++        or config.get("default_execution_mode")
++        or "status_checkpoint"
++    )
++    if execution_mode == route_integrity.DIRECT_MODE:
++        return build_direct_local_model_report(
++            args=args,
++            config=config,
++            trace_schema=trace_schema,
++            allowed_feedback=allowed_feedback,
++            created_utc=created_utc,
++            prompt=prompt,
++            session_id=session_id,
++            checkpoint_id=checkpoint_id,
++            started=started,
++        )
+     requested_intent = classify_intent(prompt, args.intent)
+     context_refresh = [] if args.skip_context_refresh else refresh_context(config)
+     materialized_view_receipt = assistant_materialized_view_receipt()
+@@ -252,45 +276,123 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+     checkpoint_prompt = prompt
+     if structured_execution.get("active") is True:
+         checkpoint_prompt = structured_execution_prompt(prompt, structured_execution, tool_evidence, plan_context)
+-    chat_result = (
+-        run_checkpoint_chat(
+-            prompt=checkpoint_prompt,
+-            session_id=session_id,
+-            checkpoint_id=checkpoint_id,
+-            out=checkpoint_out,
++    local_model_contract: dict[str, Any] = {}
++    generation_request: dict[str, Any] = {}
++    route_integrity_receipt: dict[str, Any] = {
++        "policy": route_integrity.ROUTE_POLICY,
++        "execution_mode": execution_mode,
++        "ready": True,
++        "release_allowed": True,
++        "disposition": "NOT_APPLICABLE_STATUS_CHECKPOINT",
++    }
++    if execution_mode == route_integrity.INTEGRATED_MODE:
++        local_config = dict(config.get("local_inference") or {})
++        local_model_contract = route_integrity.load_model_contract(
++            str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"),
++            str(local_config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"),
++            maximum_tokens=int(local_config.get("product_maximum_tokens") or 0),
++            required_repo_id=str(local_config.get("required_repo_id") or ""),
++            required_revision=str(local_config.get("required_revision") or ""),
++            required_snapshot_manifest_sha256=str(local_config.get("required_snapshot_manifest_sha256") or ""),
+         )
+-        if execution_prepared
+-        else {
+-            "returncode": None,
+-            "skipped": True,
+-            "skip_reason": (
+-                f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
+-                if not dispatch_prepared
+-                else f"structured_execution_{structured_execution.get('terminal_outcome')}"
+-            ),
+-            "stderr_tail": "",
+-        }
+-    )
+-    checkpoint_payload = read_json(checkpoint_out, {}) if execution_prepared else {}
++        generation_request = route_integrity.build_generation_request(
++            execution_mode=execution_mode,
++            prompt=prompt,
++            model_identity=dict(local_model_contract.get("identity") or {}),
++            selected_context=selected_context,
++            compiled_context=read_json(REPORTS / "virtual_context_compiled_context.json", {}),
++            reflexive_dispatch=reflexive_trace,
++            reflexive_verification=reflexive_verification,
++            structured_execution=structured_execution,
++            tool_evidence=tool_evidence,
++            plan_context=plan_context,
++            procedural_route=procedural_default_route,
++            effect_canary=effect_canary,
++            maximum_context_pages=int(local_config.get("maximum_context_pages") or 8),
++            maximum_context_characters=int(local_config.get("maximum_context_characters") or 12000),
++        )
++        local_ready = (
++            execution_prepared
++            and local_model_contract.get("ready") is True
++            and generation_request.get("ready") is True
++        )
++        chat_result = (
++            run_local_inference(
++                prompt=str(generation_request.get("model_prompt") or ""),
++                session_id=session_id,
++                execution_mode=execution_mode,
++                route_context_digest=str(get_path(generation_request, ["binding", "route_packet_sha256"], "")),
++                config=local_config,
++                out=checkpoint_out,
++            )
++            if local_ready
++            else {
++                "id": "local_inference",
++                "returncode": None,
++                "skipped": True,
++                "skip_reason": (
++                    f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
++                    if not execution_prepared
++                    else "local_model_contract_or_generation_request_not_ready"
++                ),
++                "stderr_tail": "",
++            }
++        )
++    else:
++        chat_result = (
++            run_checkpoint_chat(
++                prompt=checkpoint_prompt,
++                session_id=session_id,
++                checkpoint_id=checkpoint_id,
++                out=checkpoint_out,
++            )
++            if execution_prepared
++            else {
++                "id": "checkpoint_chat",
++                "returncode": None,
++                "skipped": True,
++                "skip_reason": (
++                    f"reflexive_dispatch_{reflexive_terminal_outcome(reflexive_trace)}"
++                    if not dispatch_prepared
++                    else f"structured_execution_{structured_execution.get('terminal_outcome')}"
++                ),
++                "stderr_tail": "",
++            }
++        )
++    checkpoint_payload = read_json(checkpoint_out, {}) if chat_result.get("returncode") == 0 else {}
+     response = checkpoint_payload.get("response") if isinstance(checkpoint_payload.get("response"), dict) else {}
+     checkpoint_session = checkpoint_payload.get("session") if isinstance(checkpoint_payload.get("session"), dict) else {}
++    if execution_mode == route_integrity.INTEGRATED_MODE:
++        route_integrity_receipt = route_integrity.build_route_integrity_receipt(
++            execution_mode=execution_mode,
++            request_binding=dict(generation_request.get("binding") or {}),
++            expected_model_identity=dict(local_model_contract.get("identity") or {}),
++            backend_payload=checkpoint_payload,
++        )
+     teacher_policy = teacher_policy_packet()
+     benchmark_status = benchmark_status_packet(prompt)
+-    assistant_text = compose_assistant_text(
+-        intent=intent,
+-        base_text=str(response.get("answer") or ""),
+-        code_route=code_route,
+-        code_private_probe=code_private_probe,
+-        tool_context=tool_context,
+-        tool_evidence=tool_evidence,
+-        plan_context=plan_context,
+-        procedural_default_route=procedural_default_route,
+-        teacher_policy=teacher_policy,
+-        benchmark_status=benchmark_status,
+-        vcm_governor=vcm_governor,
+-        selected_context=selected_context,
+-        checkpoint_session=checkpoint_session,
+-    ) if dispatch_prepared else reflexive_terminal_text(reflexive_trace)
++    if execution_mode == route_integrity.INTEGRATED_MODE:
++        assistant_text = (
++            str(response.get("answer") or "").strip()
++            if route_integrity_receipt.get("release_allowed") is True
++            else "Local response held: the live Theseus route-integrity gate did not authorize release."
++        )
++    else:
++        assistant_text = compose_assistant_text(
++            intent=intent,
++            base_text=str(response.get("answer") or ""),
++            code_route=code_route,
++            code_private_probe=code_private_probe,
++            tool_context=tool_context,
++            tool_evidence=tool_evidence,
++            plan_context=plan_context,
++            procedural_default_route=procedural_default_route,
++            teacher_policy=teacher_policy,
++            benchmark_status=benchmark_status,
++            vcm_governor=vcm_governor,
++            selected_context=selected_context,
++            checkpoint_session=checkpoint_session,
++        ) if dispatch_prepared else reflexive_terminal_text(reflexive_trace)
+     feedback = normalize_feedback(args.feedback, allowed_feedback)
+     dogfood = {}
+     if dispatch_prepared and not args.skip_dogfood and feedback:
+@@ -309,6 +411,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+         prompt_summary=redacted_intent_summary(prompt, intent),
+         args=args,
+         config=config,
++        execution_mode=execution_mode,
+         intent=intent,
+         reflexive_dispatch_trace=reflexive_trace,
+         route=route,
+@@ -340,6 +443,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+         row for row in vcm_consumer_packet.get("records", []) if isinstance(row, dict)
+     )
+     gates = build_gates(
++        execution_mode=execution_mode,
+         chat_result=chat_result,
+         response=response,
+         assistant_text=assistant_text,
+@@ -378,12 +482,34 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+             "hard",
+         )
+     )
++    if execution_mode == route_integrity.INTEGRATED_MODE:
++        gates.append(
++            gate(
++                "live_route_integrity_release_authorized",
++                route_integrity_receipt.get("ready") is True
++                and route_integrity_receipt.get("release_allowed") is True,
++                {
++                    "disposition": route_integrity_receipt.get("disposition"),
++                    "failed_checks": route_integrity_receipt.get("failed_checks"),
++                    "receipt_sha256": route_integrity_receipt.get("receipt_sha256"),
++                },
++                "hard",
++            )
++        )
+     hard_failures = [gate for gate in gates if gate["severity"] == "hard" and not gate["passed"]]
+     warning_failures = [gate for gate in gates if gate["severity"] == "warning" and not gate["passed"]]
+     trigger_state = "GREEN" if not hard_failures else "RED"
+     if trigger_state == "GREEN" and warning_failures:
+         trigger_state = "YELLOW"
+     summary = {
++        "execution_mode": execution_mode,
++        "local_model_identity_sha256": get_path(local_model_contract, ["identity", "identity_sha256"], ""),
++        "local_model_contract_ready": local_model_contract.get("ready") if local_model_contract else None,
++        "generation_request_ready": generation_request.get("ready") if generation_request else None,
++        "route_integrity_ready": route_integrity_receipt.get("ready"),
++        "route_integrity_release_allowed": route_integrity_receipt.get("release_allowed"),
++        "route_integrity_disposition": route_integrity_receipt.get("disposition"),
++        "route_integrity_failed_checks": route_integrity_receipt.get("failed_checks", []),
+         "requested_intent": requested_intent,
+         "intent": intent,
+         "session_id": session_id,
+@@ -498,7 +624,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+         "effect_canary_rollback_complete": get_path(effect_canary, ["rollback", "complete"], False),
+     }
+     return {
+-        "policy": "project_theseus_assistant_runtime_v0",
++        "policy": "project_theseus_assistant_runtime_v1",
+         "created_utc": created_utc,
+         "trigger_state": trigger_state,
+         "summary": summary,
+@@ -526,6 +652,15 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
+             "stderr_tail": chat_result.get("stderr_tail"),
+             "session": checkpoint_session,
+         },
++        "generation_backend": {
++            "id": chat_result.get("id"),
++            "returncode": chat_result.get("returncode"),
++            "out": rel(checkpoint_out),
++            "execution_mode": execution_mode,
++        },
++        "local_model_contract": local_model_contract,
++        "generation_request_binding": dict(generation_request.get("binding") or {}),
++        "route_integrity": route_integrity_receipt,
+         "vcm_context_packet": compact_vcm_context(selected_context),
+         "vcm_context_governor": vcm_governor,
+         "vcm_consumer_abi": vcm_consumer_packet,
+@@ -780,6 +915,259 @@ def run_checkpoint_chat(*, prompt: str, session_id: str, checkpoint_id: str, out
+     return run_command("checkpoint_chat", command, 180)
+ 
+ 
++def run_local_inference(
++    *,
++    prompt: str,
++    session_id: str,
++    execution_mode: str,
++    route_context_digest: str,
++    config: dict[str, Any],
++    out: Path,
++) -> dict[str, Any]:
++    """Invoke the offline model without placing raw prompt text in argv."""
++    command = [
++        str(resolve(str(config.get("python_executable") or "runtime/venvs/mlx-0.32.0-py312/bin/python"))),
++        str(resolve(str(config.get("backend_entrypoint") or "scripts/theseus_local_inference_backend.py"))),
++        "--config",
++        rel(resolve(str(config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"))),
++        "--runtime-preflight",
++        rel(resolve(str(config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"))),
++        "--session-id",
++        session_id,
++        "--execution-mode",
++        execution_mode,
++        "--route-context-digest",
++        route_context_digest,
++        "--maximum-tokens",
++        str(int(config.get("product_maximum_tokens") or 0)),
++        "--required-repo-id",
++        str(config.get("required_repo_id") or ""),
++        "--required-revision",
++        str(config.get("required_revision") or ""),
++        "--required-snapshot-manifest-sha256",
++        str(config.get("required_snapshot_manifest_sha256") or ""),
++        "--out",
++        rel(out),
++    ]
++    started = time.perf_counter()
++    try:
++        result = subprocess.run(
++            command,
++            cwd=ROOT,
++            text=True,
++            input=prompt,
++            capture_output=True,
++            timeout=max(1, int(config.get("timeout_seconds") or 720)),
++        )
++        return {
++            "id": "local_inference",
++            "command": command,
++            "prompt_transport": "stdin_not_argv",
++            "returncode": result.returncode,
++            "runtime_ms": int((time.perf_counter() - started) * 1000),
++            "stdout_tail": result.stdout[-1200:],
++            "stderr_tail": result.stderr[-1200:],
++        }
++    except subprocess.TimeoutExpired as exc:
++        return {
++            "id": "local_inference",
++            "command": command,
++            "prompt_transport": "stdin_not_argv",
++            "returncode": 124,
++            "runtime_ms": int((time.perf_counter() - started) * 1000),
++            "stdout_tail": (exc.stdout or "")[-1200:] if isinstance(exc.stdout, str) else "",
++            "stderr_tail": (exc.stderr or "")[-1200:] if isinstance(exc.stderr, str) else "",
++            "timed_out": True,
++        }
++    except OSError as exc:
++        return {
++            "id": "local_inference",
++            "command": command,
++            "prompt_transport": "stdin_not_argv",
++            "returncode": 127,
++            "runtime_ms": int((time.perf_counter() - started) * 1000),
++            "stdout_tail": "",
++            "stderr_tail": f"{type(exc).__name__}: {exc}",
++        }
++
++
++def build_direct_local_model_report(
++    *,
++    args: argparse.Namespace,
++    config: dict[str, Any],
++    trace_schema: dict[str, Any],
++    allowed_feedback: set[str],
++    created_utc: str,
++    prompt: str,
++    session_id: str,
++    checkpoint_id: str,
++    started: float,
++) -> dict[str, Any]:
++    """Run the matched fixed-model baseline without VCM, planning, or routing."""
++    local_config = dict(config.get("local_inference") or {})
++    model_contract = route_integrity.load_model_contract(
++        str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"),
++        str(local_config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"),
++        maximum_tokens=int(local_config.get("product_maximum_tokens") or 0),
++        required_repo_id=str(local_config.get("required_repo_id") or ""),
++        required_revision=str(local_config.get("required_revision") or ""),
++        required_snapshot_manifest_sha256=str(local_config.get("required_snapshot_manifest_sha256") or ""),
++    )
++    request = route_integrity.build_generation_request(
++        execution_mode=route_integrity.DIRECT_MODE,
++        prompt=prompt,
++        model_identity=dict(model_contract.get("identity") or {}),
++    )
++    backend_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
++    ready_to_infer = (
++        model_contract.get("ready") is True
++        and request.get("ready") is True
++        and not bool(getattr(args, "effect_canary", False))
++    )
++    backend_run = (
++        run_local_inference(
++            prompt=str(request.get("model_prompt") or ""),
++            session_id=session_id,
++            execution_mode=route_integrity.DIRECT_MODE,
++            route_context_digest=str(get_path(request, ["binding", "route_packet_sha256"], "")),
++            config=local_config,
++            out=backend_out,
++        )
++        if ready_to_infer
++        else {
++            "id": "local_inference",
++            "returncode": None,
++            "skipped": True,
++            "skip_reason": (
++                "direct_mode_effect_request_denied"
++                if bool(getattr(args, "effect_canary", False))
++                else "local_model_contract_or_generation_request_not_ready"
++            ),
++            "stderr_tail": "",
++        }
++    )
++    backend_payload = read_json(backend_out, {}) if backend_run.get("returncode") == 0 else {}
++    integrity = route_integrity.build_route_integrity_receipt(
++        execution_mode=route_integrity.DIRECT_MODE,
++        request_binding=dict(request.get("binding") or {}),
++        expected_model_identity=dict(model_contract.get("identity") or {}),
++        backend_payload=backend_payload,
++    )
++    backend_response = dict(backend_payload.get("response") or {})
++    release_allowed = integrity.get("release_allowed") is True
++    response = backend_response if release_allowed else {
++        "mode": "held_route_integrity_failure",
++        "answer": "",
++        "teacher_recommended": False,
++        "evidence": {"route_integrity_receipt_sha256": integrity.get("receipt_sha256")},
++    }
++    assistant_text = (
++        str(backend_response.get("answer") or "").strip()
++        if release_allowed
++        else "Local response held: the direct fixed-model route-integrity gate did not authorize release."
++    )
++    feedback = normalize_feedback(str(getattr(args, "feedback", "") or ""), allowed_feedback)
++    dogfood: dict[str, Any] = {}
++    if release_allowed and not bool(getattr(args, "skip_dogfood", False)) and feedback:
++        dogfood = run_dogfood_feedback(
++            feedback=feedback,
++            surface=str(getattr(args, "surface", "local_assistant") or "local_assistant"),
++            lane="direct_fixed_model_runtime",
++            intent_summary=redacted_intent_summary(prompt, classify_intent(prompt, str(getattr(args, "intent", "auto") or "auto"))),
++            artifact_refs=[rel(resolve(args.out)), rel(backend_out)],
++            error_family=str(getattr(args, "error_family", "") or ""),
++            duration_ms=int((time.perf_counter() - started) * 1000),
++        )
++    gates = [
++        gate("local_model_contract_ready", model_contract.get("ready") is True, model_contract.get("faults"), "hard"),
++        gate("direct_generation_request_ready", request.get("ready") is True, request.get("faults"), "hard"),
++        gate("direct_mode_has_no_effect_authority", not bool(getattr(args, "effect_canary", False)), {"effect_canary": bool(getattr(args, "effect_canary", False))}, "hard"),
++        gate("local_inference_completed", backend_run.get("returncode") == 0, backend_run, "hard"),
++        gate("live_route_integrity_release_authorized", release_allowed, {"failed_checks": integrity.get("failed_checks")}, "hard"),
++        gate("raw_text_training_disabled", config.get("raw_text_training_allowed") is False, config.get("raw_text_training_allowed"), "hard"),
++        gate("runtime_external_inference_disabled", config.get("external_inference_at_runtime_allowed") is False, config.get("external_inference_at_runtime_allowed"), "hard"),
++        gate("public_benchmark_training_disabled", config.get("public_benchmark_training_allowed") is False, config.get("public_benchmark_training_allowed"), "hard"),
++        gate("fallback_returns_disabled", config.get("fallback_returns_allowed") is False, config.get("fallback_returns_allowed"), "hard"),
++    ]
++    hard_failures = [row for row in gates if row["severity"] == "hard" and not row["passed"]]
++    trigger_state = "RED" if hard_failures else "GREEN"
++    intent = classify_intent(prompt, str(getattr(args, "intent", "auto") or "auto"))
++    session = dict(backend_payload.get("session") or {})
++    summary = {
++        "execution_mode": route_integrity.DIRECT_MODE,
++        "requested_intent": intent,
++        "intent": intent,
++        "session_id": session_id,
++        "checkpoint_id": checkpoint_id,
++        "assistant_lane": "direct_fixed_model_runtime",
++        "local_model_identity_sha256": get_path(model_contract, ["identity", "identity_sha256"], ""),
++        "local_model_contract_ready": model_contract.get("ready"),
++        "generation_request_ready": request.get("ready"),
++        "route_integrity_ready": integrity.get("ready"),
++        "route_integrity_release_allowed": release_allowed,
++        "route_integrity_disposition": integrity.get("disposition"),
++        "route_integrity_failed_checks": integrity.get("failed_checks", []),
++        "checkpoint_chat_returncode": backend_run.get("returncode"),
++        "checkpoint_history_turns_loaded": session.get("history_turns_loaded", 0),
++        "checkpoint_session_path": session.get("session_path", ""),
++        "assistant_text_chars": len(assistant_text),
++        "feedback": feedback,
++        "dogfood_event_written": get_path(dogfood, ["event", "event_written"], False),
++        "dogfood_training_rows_written": get_path(dogfood, ["training_bridge", "training_rows_written"], 0),
++        "assistant_trace_schema": trace_schema.get("path"),
++        "assistant_trace_schema_sha256": trace_schema.get("sha256"),
++        "assistant_trace_schema_ready": assistant_trace_schema_ready(trace_schema),
++        "runtime_ms": int((time.perf_counter() - started) * 1000),
++        "public_training_rows_written": 0,
++        "runtime_external_inference_calls": 0,
++        "fallback_return_count": 0,
++    }
++    return {
++        "policy": "project_theseus_assistant_runtime_v1",
++        "created_utc": created_utc,
++        "trigger_state": trigger_state,
++        "summary": summary,
++        "inputs": {
++            "config": rel(resolve(args.config)),
++            "prompt_sha256": sha256_text(prompt),
++            "surface": str(getattr(args, "surface", "local_assistant") or "local_assistant"),
++            "principal": str(getattr(args, "principal", "local-user") or "local-user"),
++            "origin": str(getattr(args, "origin", "local_user_control") or "local_user_control"),
++        },
++        "outputs": {
++            "report": rel(resolve(args.out)),
++            "markdown": rel(resolve(args.markdown_out)),
++            "conversation_events": rel(conversation_events_path(args.events_out)),
++            "assistant_viea_trace": rel(resolve(args.viea_trace_out)),
++        },
++        "response": response,
++        "assistant_text": assistant_text,
++        "generation_backend": {
++            "id": backend_run.get("id"),
++            "returncode": backend_run.get("returncode"),
++            "out": rel(backend_out),
++            "execution_mode": route_integrity.DIRECT_MODE,
++        },
++        "checkpoint_chat": {
++            "returncode": backend_run.get("returncode"),
++            "out": rel(backend_out),
++            "stderr_tail": backend_run.get("stderr_tail"),
++            "session": session,
++        },
++        "local_model_contract": model_contract,
++        "generation_request_binding": dict(request.get("binding") or {}),
++        "route_integrity": integrity,
++        "dogfood": dogfood,
++        "assistant_trace_schema": trace_schema,
++        "assistant_viea_trace": [],
++        "context_refresh": [],
++        "gates": gates,
++        "external_inference_calls": 0,
++        "public_training_rows_written": 0,
++        "fallback_return_count": 0,
++    }
++
++
+ def run_dogfood_feedback(
+     *,
+     feedback: str,
+@@ -1501,6 +1889,7 @@ def build_assistant_viea_trace(
+     prompt_summary: str,
+     args: argparse.Namespace,
+     config: dict[str, Any],
++    execution_mode: str,
+     intent: str,
+     reflexive_dispatch_trace: dict[str, Any],
+     route: dict[str, Any],
+@@ -1559,6 +1948,8 @@ def build_assistant_viea_trace(
+     context_hash = stable_hash(vcm_packet)
+     route_id = stable_id("assistant_route", intent, route.get("assistant_lane"), route.get("vcm_task_family"))
+     node_id = stable_id("assistant_node", run_id, intent, route_id)
++    generation_node = "local_inference" if execution_mode in route_integrity.LOCAL_MODEL_MODES else "checkpoint_chat"
++    generation_kind = "frozen_tmax_local_inference" if generation_node == "local_inference" else "local_checkpoint_chat"
+     trace_base = {
+         "policy": "project_theseus_assistant_viea_trace_v1",
+         "created_utc": created_utc,
+@@ -1768,8 +2159,17 @@ def build_assistant_viea_trace(
+         {
+             "command_contract_id": command_id,
+             "dag_id": stable_id("assistant_plan_dag", run_id, node_id),
+-            "nodes": assistant_plan_nodes(intent, node_id, code_private_probe, tool_evidence, plan_context, procedural_default_route),
+-            "edges": [["context_read", "checkpoint_chat"], ["checkpoint_chat", "answer_compose"], ["answer_compose", "trace_emit"]],
++            "nodes": assistant_plan_nodes(
++                intent,
++                node_id,
++                code_private_probe,
++                tool_evidence,
++                plan_context,
++                procedural_default_route,
++                generation_node=generation_node,
++                generation_kind=generation_kind,
++            ),
++            "edges": [["context_read", generation_node], [generation_node, "answer_compose"], ["answer_compose", "trace_emit"]],
+             "route_id": route_id,
+             "procedural_default_route_id": get_path(procedural_default_route, ["selected_route", "id"], ""),
+             "procedural_default_route_ready": procedural_default_route.get("ready"),
+@@ -1786,9 +2186,17 @@ def build_assistant_viea_trace(
+         "runtime_adapter_invocation",
+         {
+             "typed_job_id": job_id,
+-            "adapter": "checkpoint_chat_and_registered_assistant_subtools",
++            "adapter": (
++                "frozen_tmax_local_inference_and_registered_assistant_subtools"
++                if generation_node == "local_inference"
++                else "checkpoint_chat_and_registered_assistant_subtools"
++            ),
+             "commands": [
+-                "python3 scripts/checkpoint_chat.py --prompt <redacted_prompt_sha256> --out " + rel(checkpoint_out),
++                (
++                    "scripts/theseus_local_inference_backend.py --prompt-stdin --out " + rel(checkpoint_out)
++                    if generation_node == "local_inference"
++                    else "python3 scripts/checkpoint_chat.py --prompt <redacted_prompt_sha256> --out " + rel(checkpoint_out)
++                ),
+                 "registered_context_refresh_commands" if not args.skip_context_refresh else "context_refresh_skipped",
+             ],
+             "sandbox": "local_process",
+@@ -1916,7 +2324,15 @@ def build_assistant_viea_trace(
+         {
+             "typed_job_id": job_id,
+             "budget_class": "local_interactive_assistant",
+-            "timeout_policy_seconds": {"checkpoint_chat": 180, "context_refresh": 120, "tool_evidence": 180},
++            "timeout_policy_seconds": {
++                generation_node: (
++                    int(get_path(config, ["local_inference", "timeout_seconds"], 720) or 720)
++                    if generation_node == "local_inference"
++                    else 180
++                ),
++                "context_refresh": 120,
++                "tool_evidence": 180,
++            },
+             "verification_tax_included": bool(code_private_probe.get("active") or tool_evidence.get("active")),
+             "viea_materialized_view_record_count": materialized_view_receipt.get("record_count"),
+             "route_validator_resource_route_record_count": route_validator_receipt.get("resource_route_record_count"),
+@@ -1929,13 +2345,18 @@ def build_assistant_viea_trace(
+         "generation_mode",
+         {
+             "typed_job_id": job_id,
+-            "mode": "local_checkpoint_chat_plus_registered_evidence",
++            "mode": (
++                "frozen_tmax_local_inference_plus_executed_registered_route"
++                if generation_node == "local_inference"
++                else "local_checkpoint_chat_plus_registered_evidence"
++            ),
+             "model_only_claim": False,
+             "tool_assisted_claim": bool(tool_evidence.get("active")),
+             "private_verifier_receipt_ready": private_verifier_receipt.get("ready"),
+             "procedural_default_route_active": procedural_default_route.get("active"),
+             "procedural_default_route_ready": procedural_default_route.get("ready"),
+-            "learned_generation_claim": False,
++            "learned_generation_claim": generation_node == "local_inference",
++            "theseus_student_credit": False,
+             "deterministic_tool_credit_separate": True,
+             "fallback_return_count": 0,
+         },
+@@ -2047,11 +2468,14 @@ def assistant_plan_nodes(
+     tool_evidence: dict[str, Any],
+     plan_context: dict[str, Any],
+     procedural_default_route: dict[str, Any],
++    *,
++    generation_node: str = "checkpoint_chat",
++    generation_kind: str = "local_checkpoint_chat",
+ ) -> list[dict[str, Any]]:
+     nodes = [
+         {"node_id": f"{node_id}:context_read", "kind": "context_read", "verifier": "context_adequacy_gate"},
+         {"node_id": f"{node_id}:private_verifier_receipt", "kind": "private_verifier_spine_receipt", "verifier": "private_verifier_spine_v1"},
+-        {"node_id": f"{node_id}:checkpoint_chat", "kind": "local_checkpoint_chat", "verifier": "assistant_answer_present"},
++        {"node_id": f"{node_id}:{generation_node}", "kind": generation_kind, "verifier": "assistant_answer_present"},
+         {"node_id": f"{node_id}:answer_compose", "kind": "answer_composition", "verifier": "no_external_runtime_inference"},
+         {"node_id": f"{node_id}:trace_emit", "kind": "viea_trace_emit", "verifier": "assistant_viea_trace_complete"},
+     ]
+@@ -2655,6 +3079,7 @@ def teacher_policy_packet() -> dict[str, Any]:
+ 
+ def build_gates(
+     *,
++    execution_mode: str,
+     chat_result: dict[str, Any],
+     response: dict[str, Any],
+     assistant_text: str,
+@@ -2726,7 +3151,15 @@ def build_gates(
+         gate("checkpoint_chat_completed", dispatch_safely_stopped or chat_result.get("returncode") == 0, chat_result, "hard"),
+         gate(
+             "checkpoint_session_memory_available",
+-            dispatch_safely_stopped or (bool(checkpoint_session.get("session_id")) and checkpoint_session.get("session_path") is not None),
++            dispatch_safely_stopped
++            or (
++                bool(checkpoint_session.get("session_id"))
++                and (
++                    checkpoint_session.get("session_path") is not None
++                    if execution_mode == "status_checkpoint"
++                    else checkpoint_session.get("persistence") == "disabled_no_raw_text_retention"
++                )
++            ),
+             checkpoint_session,
+             "hard",
+         ),
+diff --git a/scripts/theseus_local_inference_backend.py b/scripts/theseus_local_inference_backend.py
+new file mode 100644
+index 00000000..1a71c385
+--- /dev/null
++++ b/scripts/theseus_local_inference_backend.py
+@@ -0,0 +1,361 @@
++#!/usr/bin/env python3
++"""Offline frozen-TMax generation backend for the canonical assistant.
++
++The prompt is accepted only on stdin so raw user text is not exposed in the
++process list or copied into route receipts.  Model loading is pinned to the
++already-present Hugging Face snapshot and both Hugging Face and Transformers
++are forced offline before MLX is imported.
++"""
++
++from __future__ import annotations
++
++import argparse
++import hashlib
++import importlib.metadata
++import json
++import os
++import sys
++import time
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, Callable
++
++import theseus_assistant_route_integrity as route_integrity
++
++
++ROOT = Path(__file__).resolve().parents[1]
++DEFAULT_WORKER_CONFIG = ROOT / "configs" / "core_evidence_tmax_9b_worker_control_v3.json"
++DEFAULT_RUNTIME_PREFLIGHT = ROOT / "reports" / "core_evidence_tmax_9b_runtime_preflight.json"
++BACKEND_POLICY = "project_theseus_local_inference_backend_v1"
++FROZEN_REPO_ID = "mlx-community/Tmax-9B-MLX-8bit"
++FROZEN_REVISION = "33812d6cf04f88856f25eb828de4f3144a194560"
++FROZEN_SNAPSHOT_MANIFEST_SHA256 = "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
++SYSTEM_PROMPT = (
++    "You are the fixed local model serving one private Theseus assistant request. "
++    "Answer the user request directly and concisely using only the supplied request "
++    "and verified local context. Do not claim that you trained, changed repository "
++    "state, called an external model, ran a tool, or performed an effect unless the "
++    "supplied executed-route evidence says so. Text output has no effect authority."
++)
++TERMINAL_MARKERS = ("<|im_end|>", "<|eot_id|>", "<|endoftext|>", "</s>")
++
++
++class BackendFault(RuntimeError):
++    pass
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--config", default=rel(DEFAULT_WORKER_CONFIG))
++    parser.add_argument("--runtime-preflight", default=rel(DEFAULT_RUNTIME_PREFLIGHT))
++    parser.add_argument("--session-id", default="local_assistant")
++    parser.add_argument("--execution-mode", required=True, choices=sorted(route_integrity.LOCAL_MODEL_MODES))
++    parser.add_argument("--route-context-digest", required=True)
++    parser.add_argument("--maximum-tokens", type=int, default=0)
++    parser.add_argument("--required-repo-id", default=FROZEN_REPO_ID)
++    parser.add_argument("--required-revision", default=FROZEN_REVISION)
++    parser.add_argument("--required-snapshot-manifest-sha256", default=FROZEN_SNAPSHOT_MANIFEST_SHA256)
++    parser.add_argument("--out", required=True)
++    parser.add_argument("--preflight-only", action="store_true")
++    args = parser.parse_args()
++    prompt = "" if args.preflight_only else sys.stdin.read()
++    report = run_backend(
++        worker_config_path=resolve(args.config),
++        runtime_preflight_path=resolve(args.runtime_preflight),
++        execution_mode=args.execution_mode,
++        route_context_digest=str(args.route_context_digest or ""),
++        session_id=str(args.session_id or "local_assistant"),
++        prompt=prompt,
++        maximum_tokens=int(args.maximum_tokens or 0),
++        required_repo_id=str(args.required_repo_id or ""),
++        required_revision=str(args.required_revision or ""),
++        required_snapshot_manifest_sha256=str(args.required_snapshot_manifest_sha256 or ""),
++        preflight_only=bool(args.preflight_only),
++    )
++    write_json(resolve(args.out), report)
++    print(json.dumps(compact_stdout(report), sort_keys=True))
++    return 0 if report.get("trigger_state") == "GREEN" else 2
++
++
++def run_backend(
++    *,
++    worker_config_path: Path,
++    runtime_preflight_path: Path,
++    execution_mode: str,
++    route_context_digest: str,
++    session_id: str,
++    prompt: str,
++    maximum_tokens: int,
++    required_repo_id: str = "",
++    required_revision: str = "",
++    required_snapshot_manifest_sha256: str = "",
++    preflight_only: bool = False,
++    model_factory: Callable[[dict[str, Any], Path, int], Any] | None = None,
++) -> dict[str, Any]:
++    started = time.perf_counter()
++    os.environ["HF_HUB_OFFLINE"] = "1"
++    os.environ["TRANSFORMERS_OFFLINE"] = "1"
++    contract = route_integrity.load_model_contract(
++        worker_config_path,
++        runtime_preflight_path,
++        maximum_tokens=maximum_tokens,
++        required_repo_id=required_repo_id,
++        required_revision=required_revision,
++        required_snapshot_manifest_sha256=required_snapshot_manifest_sha256,
++    )
++    identity = dict(contract.get("identity") or {})
++    card = dict(contract.get("model_card") or {})
++    snapshot = local_snapshot(card)
++    faults = list(contract.get("faults") or [])
++    if not complete_model_snapshot(snapshot):
++        faults.append("complete_local_model_snapshot_missing")
++    observed_manifest = snapshot_manifest(snapshot) if complete_model_snapshot(snapshot) else ""
++    if observed_manifest != identity.get("snapshot_manifest_sha256"):
++        faults.append("local_snapshot_manifest_mismatch")
++    runtime_versions = package_versions()
++    if not runtime_versions.get("mlx_lm") or not runtime_versions.get("mlx"):
++        faults.append("qualified_mlx_runtime_missing")
++    if execution_mode not in route_integrity.LOCAL_MODEL_MODES:
++        faults.append("unsupported_execution_mode")
++    if len(route_context_digest) != 64:
++        faults.append("route_context_digest_invalid")
++    effective_maximum = int(get_path(identity, ["decoder", "maximum_tokens"], 0) or 0)
++    if not preflight_only and not prompt.strip():
++        faults.append("empty_model_prompt")
++
++    answer = ""
++    generation_metrics: dict[str, Any] = {}
++    inference_calls = 0
++    if not faults and not preflight_only:
++        try:
++            factory = model_factory or LocalMlxChatModel
++            model = factory(card, snapshot, effective_maximum)
++            raw_answer = str(model.generate([
++                {"role": "system", "content": SYSTEM_PROMPT},
++                {"role": "user", "content": prompt},
++            ]) or "")
++            answer = sanitize_generated_text(raw_answer)
++            generation_metrics = dict(getattr(model, "last_generation_metrics", {}) or {})
++            generation_metrics["terminal_marker_stripped"] = raw_answer.strip() != answer
++            inference_calls = 1
++            if not answer:
++                faults.append("empty_local_model_response")
++        except Exception as exc:  # fail closed at the process boundary
++            faults.append(f"local_model_generation_failed:{type(exc).__name__}")
++
++    trigger_state = "GREEN" if not faults else "RED"
++    response = {
++        "mode": "frozen_tmax_local_inference",
++        "answer": answer if trigger_state == "GREEN" and not preflight_only else "",
++        "teacher_recommended": False,
++        "evidence": {
++            "backend_policy": BACKEND_POLICY,
++            "model_identity_sha256": identity.get("identity_sha256"),
++            "route_context_digest": route_context_digest,
++        },
++    }
++    return {
++        "policy": BACKEND_POLICY,
++        "created_utc": now(),
++        "trigger_state": trigger_state,
++        "preflight_only": preflight_only,
++        "faults": sorted(set(faults)),
++        "backend": {
++            "identity": identity,
++            "local_snapshot": str(snapshot),
++            "local_snapshot_manifest_sha256": observed_manifest,
++            "runtime_versions": runtime_versions,
++            "network": "forbidden_offline_environment",
++        },
++        "request": {
++            "execution_mode": execution_mode,
++            "prompt_sha256": route_integrity.sha256_text(prompt),
++            "route_context_digest": route_context_digest,
++            "raw_prompt_stored": False,
++        },
++        "response": response,
++        "session": {
++            "session_id": session_id,
++            "history_turns_loaded": 0,
++            "session_path": "",
++            "persistence": "disabled_no_raw_text_retention",
++        },
++        "metrics": {
++            **generation_metrics,
++            "local_model_inference_calls": inference_calls,
++            "runtime_ms": int((time.perf_counter() - started) * 1000),
++        },
++        "external_inference_calls": 0,
++        "teacher_calls": 0,
++        "public_calibration_cases_consumed": 0,
++        "D2_cases_consumed": 0,
++        "public_training_rows_written": 0,
++        "fallback_return_count": 0,
++        "user_facing_effects": 0,
++    }
++
++
++class LocalMlxChatModel:
++    def __init__(self, card: dict[str, Any], snapshot: Path, maximum_tokens: int) -> None:
++        from mlx_lm import load
++        from mlx_lm.sample_utils import make_logits_processors, make_sampler
++        import mlx.core as mx
++
++        loaded_at = time.perf_counter()
++        self.card = card
++        self.maximum_tokens = maximum_tokens
++        self.model, self.tokenizer = load(str(snapshot), lazy=False)
++        mx.eval(self.model.parameters())
++        self.sampler = make_sampler(temp=float(card.get("temperature") or 0.0))
++        self.logits_processors = make_logits_processors(
++            repetition_penalty=float(card.get("repetition_penalty") or 1.0),
++            repetition_context_size=int(card.get("repetition_context_size") or 0),
++        )
++        self.generation_cache_kwargs = {
++            key: card[key]
++            for key in ("kv_bits", "kv_group_size", "quantized_kv_start")
++            if card.get(key) is not None
++        }
++        self.load_wall_ms = (time.perf_counter() - loaded_at) * 1000.0
++        self.last_generation_metrics: dict[str, Any] = {}
++
++    def generate(self, messages: list[dict[str, str]]) -> str:
++        from mlx_lm import stream_generate
++
++        prompt = self.tokenizer.apply_chat_template(
++            messages,
++            tokenize=False,
++            add_generation_prompt=True,
++            **dict(self.card.get("chat_template_kwargs") or {}),
++        )
++        started = time.perf_counter()
++        stream = stream_generate(
++            self.model,
++            self.tokenizer,
++            prompt=prompt,
++            max_tokens=self.maximum_tokens,
++            sampler=self.sampler,
++            logits_processors=self.logits_processors,
++            **self.generation_cache_kwargs,
++        )
++        chunks: list[str] = []
++        generated_tokens = 0
++        peak_memory_gib = 0.0
++        prompt_tps = None
++        generation_tps = None
++        try:
++            for response in stream:
++                generated_tokens += 1
++                chunks.append(str(response.text or ""))
++                peak_memory_gib = max(peak_memory_gib, float(getattr(response, "peak_memory", 0.0) or 0.0))
++                prompt_tps = getattr(response, "prompt_tps", prompt_tps)
++                generation_tps = getattr(response, "generation_tps", generation_tps)
++        finally:
++            stream.close()
++        self.last_generation_metrics = {
++            "generated_tokens": generated_tokens,
++            "load_wall_ms": round(self.load_wall_ms, 3),
++            "generation_wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
++            "mlx_peak_memory_gib": round(peak_memory_gib, 3),
++            "prompt_tokens_per_second": None if prompt_tps is None else round(float(prompt_tps), 3),
++            "generation_tokens_per_second": None if generation_tps is None else round(float(generation_tps), 3),
++        }
++        return "".join(chunks)
++
++
++def local_snapshot(card: dict[str, Any]) -> Path:
++    repo = str(card.get("repo_id") or "").replace("/", "--")
++    return (
++        Path.home()
++        / ".cache"
++        / "huggingface"
++        / "hub"
++        / f"models--{repo}"
++        / "snapshots"
++        / str(card.get("revision") or "")
++    )
++
++
++def complete_model_snapshot(path: Path) -> bool:
++    required = {"config.json", "tokenizer.json", "tokenizer_config.json"}
++    if not path.is_dir() or not all((path / item).is_file() for item in required):
++        return False
++    if (path / "model.safetensors").is_file():
++        return True
++    return (path / "model.safetensors.index.json").is_file() and bool(list(path.glob("model-*-of-*.safetensors")))
++
++
++def snapshot_manifest(path: Path) -> str:
++    rows = []
++    for item in sorted(path.iterdir()):
++        if item.is_file():
++            resolved = item.resolve()
++            rows.append({"path": item.name, "bytes": resolved.stat().st_size, "blob_identity": resolved.name})
++    return hashlib.sha256(json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
++
++
++def package_versions() -> dict[str, str]:
++    versions: dict[str, str] = {}
++    for key, distribution in (("mlx_lm", "mlx-lm"), ("mlx", "mlx")):
++        try:
++            versions[key] = importlib.metadata.version(distribution)
++        except importlib.metadata.PackageNotFoundError:
++            versions[key] = ""
++    versions["python"] = sys.version.split()[0]
++    return versions
++
++
++def sanitize_generated_text(value: str) -> str:
++    text = str(value or "")
++    positions = [position for marker in TERMINAL_MARKERS if (position := text.find(marker)) >= 0]
++    if positions:
++        text = text[: min(positions)]
++    return text.strip()
++
++
++def compact_stdout(report: dict[str, Any]) -> dict[str, Any]:
++    return {
++        "policy": report.get("policy"),
++        "trigger_state": report.get("trigger_state"),
++        "faults": report.get("faults"),
++        "model_identity_sha256": get_path(report, ["backend", "identity", "identity_sha256"], ""),
++        "response_sha256": route_integrity.sha256_text(str(get_path(report, ["response", "answer"], ""))),
++        "metrics": report.get("metrics"),
++    }
++
++
++def get_path(value: Any, path: list[str], default: Any = None) -> Any:
++    current = value
++    for key in path:
++        if not isinstance(current, dict) or key not in current:
++            return default
++        current = current[key]
++    return current
++
++
++def resolve(path: str | Path) -> Path:
++    candidate = Path(path)
++    return candidate if candidate.is_absolute() else ROOT / candidate
++
++
++def rel(path: str | Path) -> str:
++    candidate = resolve(path)
++    try:
++        return str(candidate.relative_to(ROOT)).replace("\\", "/")
++    except ValueError:
++        return str(candidate)
++
++
++def write_json(path: Path, payload: Any) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    temporary = path.with_suffix(path.suffix + ".tmp")
++    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
++    os.replace(temporary, path)
++
++
++def now() -> str:
++    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/tests/test_theseus_assistant_route_integrity.py b/tests/test_theseus_assistant_route_integrity.py
+new file mode 100644
+index 00000000..fce955ee
+--- /dev/null
++++ b/tests/test_theseus_assistant_route_integrity.py
+@@ -0,0 +1,366 @@
++from __future__ import annotations
++
++import copy
++import sys
++from pathlib import Path
++
++
++ROOT = Path(__file__).resolve().parents[1]
++SCRIPTS = ROOT / "scripts"
++if str(SCRIPTS) not in sys.path:
++    sys.path.insert(0, str(SCRIPTS))
++
++import theseus_assistant_route_integrity as integrity  # noqa: E402
++
++
++def model_identity() -> dict:
++    identity = {
++        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
++        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
++        "snapshot_manifest_sha256": "a" * 64,
++        "runtime": "mlx_lm_local_metal",
++        "worker_config_sha256": "b" * 64,
++        "decoder": {"temperature": 0.0, "maximum_tokens": 512},
++        "decoder_sha256": "c" * 64,
++    }
++    identity["identity_sha256"] = integrity.stable_hash(identity)
++    return identity
++
++
++def dispatch() -> dict:
++    return {
++        "trace_id": "trace:1",
++        "decision_digest": "d" * 64,
++        "selection": {
++            "selected_proposal_ids": ["proposal:1"],
++            "terminal_outcome": "prepared",
++        },
++        "proposals": [
++            {
++                "proposal_id": "proposal:1",
++                "capability_id": "assistant.chat_checkpoint",
++                "capability_ids": ["assistant.chat_checkpoint"],
++            }
++        ],
++        "plan_nodes": [
++            {
++                "node_id": "node:1",
++                "capability_id": "assistant.chat_checkpoint",
++                "dependencies": [],
++                "deadline_ms": 30_000,
++            }
++        ],
++        "effort": {"realized_limits": {"deadline_ms": 30_000, "maximum_parallelism": 1}},
++    }
++
++
++def contexts() -> tuple[dict, dict]:
++    address = "vcm://theseus/project-state@v1"
++    selected = {
++        "ready": True,
++        "selected_pages": [{"address": address, "model_visible": True}],
++    }
++    compiled = {
++        "model_visible_pages": [
++            {
++                "address": address,
++                "certificate_id": "cert:1",
++                "execution_class": "authorized_task_state",
++                "taints": [],
++                "title": "Project state",
++                "materialized_text": "P1 joins the frozen local model to the canonical runtime.",
++            }
++        ]
++    }
++    return selected, compiled
++
++
++def backend_payload(request: dict, identity: dict, mode: str) -> dict:
++    return {
++        "policy": "project_theseus_local_inference_backend_v1",
++        "trigger_state": "GREEN",
++        "backend": {"identity": copy.deepcopy(identity)},
++        "request": {
++            "execution_mode": mode,
++            "prompt_sha256": request["binding"]["model_prompt_sha256"],
++            "route_context_digest": request["binding"]["route_packet_sha256"],
++        },
++        "response": {"answer": "A local answer."},
++        "metrics": {"local_model_inference_calls": 1, "generated_tokens": 4},
++        "external_inference_calls": 0,
++    }
++
++
++def integrated_request() -> dict:
++    selected, compiled = contexts()
++    return integrity.build_generation_request(
++        execution_mode=integrity.INTEGRATED_MODE,
++        prompt="What is next?",
++        model_identity=model_identity(),
++        selected_context=selected,
++        compiled_context=compiled,
++        reflexive_dispatch=dispatch(),
++        reflexive_verification={"state": "VERIFIED"},
++        structured_execution={"active": False, "terminal_outcome": "not_required"},
++        tool_evidence={"required": False, "active": False},
++        plan_context={"required": False, "active": False},
++        procedural_route={"active": False, "required": False},
++        effect_canary={"enabled": False, "ready": True},
++    )
++
++
++def test_integrated_request_consumes_content_and_keeps_durable_binding_raw_text_free() -> None:
++    request = integrated_request()
++
++    assert request["ready"] is True
++    assert "P1 joins the frozen local model" in request["model_prompt"]
++    assert "What is next?" in request["model_prompt"]
++    assert "P1 joins the frozen local model" not in str(request["binding"])
++    assert "What is next?" not in str(request["binding"])
++    assert request["binding"]["context_pages"][0]["characters"] > 0
++    assert len(request["binding"]["context_pages"][0]["content_sha256"]) == 64
++
++
++def test_direct_and_integrated_receipts_share_the_exact_model_decoder_and_sandbox() -> None:
++    identity = model_identity()
++    direct_request = integrity.build_generation_request(
++        execution_mode=integrity.DIRECT_MODE,
++        prompt="What is next?",
++        model_identity=identity,
++    )
++    integrated = integrated_request()
++    direct_receipt = integrity.build_route_integrity_receipt(
++        execution_mode=integrity.DIRECT_MODE,
++        request_binding=direct_request["binding"],
++        expected_model_identity=identity,
++        backend_payload=backend_payload(direct_request, identity, integrity.DIRECT_MODE),
++    )
++    integrated_receipt = integrity.build_route_integrity_receipt(
++        execution_mode=integrity.INTEGRATED_MODE,
++        request_binding=integrated["binding"],
++        expected_model_identity=identity,
++        backend_payload=backend_payload(integrated, identity, integrity.INTEGRATED_MODE),
++    )
++
++    assert direct_receipt["ready"] is True
++    assert integrated_receipt["ready"] is True
++    pair = integrity.compare_matched_pair(direct_receipt, integrated_receipt)
++    assert pair["ready"] is True
++    assert pair["checks"]["model_decoder_snapshot_sandbox_evaluator_equal"] is True
++
++
++def test_decorative_mode_label_cannot_turn_a_direct_binding_into_integrated_evidence() -> None:
++    identity = model_identity()
++    direct = integrity.build_generation_request(
++        execution_mode=integrity.DIRECT_MODE,
++        prompt="What is next?",
++        model_identity=identity,
++    )
++    tampered = copy.deepcopy(direct["binding"])
++    tampered["execution_mode"] = integrity.INTEGRATED_MODE
++    payload = backend_payload(direct, identity, integrity.INTEGRATED_MODE)
++
++    receipt = integrity.build_route_integrity_receipt(
++        execution_mode=integrity.INTEGRATED_MODE,
++        request_binding=tampered,
++        expected_model_identity=identity,
++        backend_payload=payload,
++    )
++
++    assert receipt["ready"] is False
++    assert "request_binding_digest_valid" in receipt["failed_checks"]
++    assert "selected_vcm_content_consumed_by_model" in receipt["failed_checks"]
++    assert "decorative_labels_cannot_satisfy_integrated_route" in receipt["failed_checks"]
++
++
++def test_missing_materialized_vcm_content_fails_before_model_inference() -> None:
++    selected, _ = contexts()
++    request = integrity.build_generation_request(
++        execution_mode=integrity.INTEGRATED_MODE,
++        prompt="What is next?",
++        model_identity=model_identity(),
++        selected_context=selected,
++        compiled_context={"model_visible_pages": []},
++        reflexive_dispatch=dispatch(),
++        reflexive_verification={"state": "VERIFIED"},
++    )
++
++    assert request["ready"] is False
++    assert "selected_vcm_content_not_consumable" in request["faults"]
++    assert any(fault.startswith("selected_vcm_page_not_materialized") for fault in request["faults"])
++
++
++def test_backend_prompt_or_model_mismatch_holds_the_response() -> None:
++    identity = model_identity()
++    request = integrated_request()
++    payload = backend_payload(request, identity, integrity.INTEGRATED_MODE)
++    payload["request"]["prompt_sha256"] = "0" * 64
++    payload["backend"]["identity"]["revision"] = "wrong"
++
++    receipt = integrity.build_route_integrity_receipt(
++        execution_mode=integrity.INTEGRATED_MODE,
++        request_binding=request["binding"],
++        expected_model_identity=identity,
++        backend_payload=payload,
++    )
++
++    assert receipt["release_allowed"] is False
++    assert "backend_prompt_bound" in receipt["failed_checks"]
++    assert "backend_model_identity_bound" in receipt["failed_checks"]
++    assert "verification_controls_release_or_repair" in receipt["failed_checks"]
++
++
++def test_effect_route_requires_observation_dispatch_binding_and_exact_rollback() -> None:
++    selected, compiled = contexts()
++    trace = dispatch()
++    trace["proposals"][0]["capability_id"] = "assistant.route_authority_effect"
++    trace["proposals"][0]["capability_ids"] = ["assistant.route_authority_effect"]
++    trace["plan_nodes"][0]["capability_id"] = "assistant.route_authority_effect"
++    request = integrity.build_generation_request(
++        execution_mode=integrity.INTEGRATED_MODE,
++        prompt="Exercise the bounded effect canary.",
++        model_identity=model_identity(),
++        selected_context=selected,
++        compiled_context=compiled,
++        reflexive_dispatch=trace,
++        reflexive_verification={"state": "VERIFIED"},
++        structured_execution={"active": False, "terminal_outcome": "not_required"},
++        effect_canary={
++            "enabled": True,
++            "ready": True,
++            "dispatch_bound": True,
++            "rollback": {"complete": True, "residual_count": 0},
++        },
++    )
++    receipt = integrity.build_route_integrity_receipt(
++        execution_mode=integrity.INTEGRATED_MODE,
++        request_binding=request["binding"],
++        expected_model_identity=model_identity(),
++        backend_payload=backend_payload(request, model_identity(), integrity.INTEGRATED_MODE),
++    )
++
++    assert receipt["ready"] is True
++    assert receipt["checks"]["effect_observation_and_exact_rollback_bound"] is True
++
++    broken = copy.deepcopy(request["binding"])
++    broken["route_packet"]["effect"]["rollback_complete"] = False
++    broken["route_packet_sha256"] = integrity.stable_hash(broken["route_packet"])
++    broken["request_binding_sha256"] = integrity.binding_digest(broken)
++    failed = integrity.build_route_integrity_receipt(
++        execution_mode=integrity.INTEGRATED_MODE,
++        request_binding=broken,
++        expected_model_identity=model_identity(),
++        backend_payload=backend_payload({"binding": broken}, model_identity(), integrity.INTEGRATED_MODE),
++    )
++    assert failed["ready"] is False
++    assert "effect_observation_and_exact_rollback_bound" in failed["failed_checks"]
++
++
++def test_selected_tool_and_planning_routes_must_execute_before_inference() -> None:
++    selected, compiled = contexts()
++    for capability, expected_fault, evidence in (
++        (
++            "assistant.deterministic_tool",
++            "selected_tool_capability_not_executed",
++            {
++                "tool_evidence": {
++                    "required": True,
++                    "active": True,
++                    "trigger_state": "GREEN",
++                    "summary": {"result_count": 1},
++                    "trace": "reports/tool-trace.jsonl",
++                }
++            },
++        ),
++        (
++            "assistant.plan_dag",
++            "selected_planning_capability_not_executed",
++            {
++                "plan_context": {
++                    "required": True,
++                    "active": True,
++                    "planner_state": "GREEN",
++                    "compiled_goal_count": 1,
++                }
++            },
++        ),
++    ):
++        trace = dispatch()
++        trace["proposals"][0]["capability_id"] = capability
++        trace["proposals"][0]["capability_ids"] = [capability]
++        trace["plan_nodes"][0]["capability_id"] = capability
++        missing = integrity.build_generation_request(
++            execution_mode=integrity.INTEGRATED_MODE,
++            prompt="Use the selected capability.",
++            model_identity=model_identity(),
++            selected_context=selected,
++            compiled_context=compiled,
++            reflexive_dispatch=trace,
++            reflexive_verification={"state": "VERIFIED"},
++        )
++        assert missing["ready"] is False
++        assert expected_fault in missing["faults"]
++
++        prepared = integrity.build_generation_request(
++            execution_mode=integrity.INTEGRATED_MODE,
++            prompt="Use the selected capability.",
++            model_identity=model_identity(),
++            selected_context=selected,
++            compiled_context=compiled,
++            reflexive_dispatch=trace,
++            reflexive_verification={"state": "VERIFIED"},
++            **evidence,
++        )
++        assert prepared["ready"] is True
++
++
++def test_composite_route_requires_resolved_structured_execution() -> None:
++    selected, compiled = contexts()
++    trace = dispatch()
++    trace["proposals"][0]["capability_id"] = ""
++    trace["proposals"][0]["capability_ids"] = ["assistant.deterministic_tool", "assistant.plan_dag"]
++    trace["plan_nodes"] = [
++        {"node_id": "node:tool", "capability_id": "assistant.deterministic_tool", "dependencies": []},
++        {"node_id": "node:plan", "capability_id": "assistant.plan_dag", "dependencies": ["node:tool"]},
++    ]
++    common = {
++        "execution_mode": integrity.INTEGRATED_MODE,
++        "prompt": "Execute the composite route.",
++        "model_identity": model_identity(),
++        "selected_context": selected,
++        "compiled_context": compiled,
++        "reflexive_dispatch": trace,
++        "reflexive_verification": {"state": "VERIFIED"},
++        "tool_evidence": {
++            "required": True,
++            "active": True,
++            "trigger_state": "GREEN",
++            "summary": {"result_count": 1},
++            "trace": "reports/tool-trace.jsonl",
++        },
++        "plan_context": {
++            "required": True,
++            "active": True,
++            "planner_state": "GREEN",
++            "compiled_goal_count": 1,
++        },
++    }
++    held = integrity.build_generation_request(
++        **common,
++        structured_execution={"active": True, "terminal_outcome": "verification_failed", "failed_count": 1},
++    )
++    assert held["ready"] is False
++    assert "composite_plan_not_executed_or_held" in held["faults"]
++
++    resolved = integrity.build_generation_request(
++        **common,
++        structured_execution={
++            "active": True,
++            "terminal_outcome": "resolved",
++            "execution_digest": "e" * 64,
++            "resolved_count": 2,
++            "failed_count": 0,
++            "effect_authority_granted": False,
++        },
++    )
++    assert resolved["ready"] is True
+diff --git a/tests/test_theseus_assistant_runtime_local_modes.py b/tests/test_theseus_assistant_runtime_local_modes.py
+new file mode 100644
+index 00000000..8c4f4416
+--- /dev/null
++++ b/tests/test_theseus_assistant_runtime_local_modes.py
+@@ -0,0 +1,112 @@
++from __future__ import annotations
++
++import argparse
++import json
++import sys
++import time
++from pathlib import Path
++
++
++ROOT = Path(__file__).resolve().parents[1]
++SCRIPTS = ROOT / "scripts"
++if str(SCRIPTS) not in sys.path:
++    sys.path.insert(0, str(SCRIPTS))
++
++import theseus_assistant_route_integrity as integrity  # noqa: E402
++import theseus_assistant_runtime as runtime  # noqa: E402
++
++
++def args(tmp_path: Path, mode: str) -> argparse.Namespace:
++    return argparse.Namespace(
++        config="configs/theseus_assistant_runtime.json",
++        checkpoint_id="",
++        session_id=f"p1_test_{mode}",
++        prompt="State the next P1 action.",
++        execution_mode=mode,
++        surface="local_assistant",
++        intent="chat",
++        principal="local-user",
++        origin="local_user_control",
++        unauthenticated=False,
++        requested_route="",
++        fallback_policy="no_fallback",
++        effort="balanced",
++        feedback="",
++        error_family="",
++        out=str(tmp_path / f"{mode}.json"),
++        markdown_out=str(tmp_path / f"{mode}.md"),
++        events_out=str(tmp_path / "events.jsonl"),
++        viea_trace_out=str(tmp_path / "trace.jsonl"),
++        skip_context_refresh=True,
++        skip_dogfood=True,
++        effect_canary=False,
++        effect_target="runtime/assistant_effects/default_route_authority.json",
++        print_answer=False,
++    )
++
++
++def test_canonical_runtime_runs_matched_direct_and_integrated_paths_without_real_model_load(
++    tmp_path: Path, monkeypatch
++) -> None:
++    config = json.loads((ROOT / "configs" / "theseus_assistant_runtime.json").read_text(encoding="utf-8"))
++    local = config["local_inference"]
++    identity = integrity.load_model_contract(
++        local["worker_config"],
++        local["runtime_preflight"],
++        maximum_tokens=local["product_maximum_tokens"],
++    )["identity"]
++    observed_prompts: dict[str, str] = {}
++
++    def fake_local_inference(**kwargs: object) -> dict:
++        mode = str(kwargs["execution_mode"])
++        prompt = str(kwargs["prompt"])
++        observed_prompts[mode] = prompt
++        payload = {
++            "policy": "project_theseus_local_inference_backend_v1",
++            "trigger_state": "GREEN",
++            "backend": {"identity": identity},
++            "request": {
++                "execution_mode": mode,
++                "prompt_sha256": runtime.sha256_text(prompt),
++                "route_context_digest": kwargs["route_context_digest"],
++            },
++            "response": {
++                "mode": "frozen_tmax_local_inference",
++                "answer": "P1 fake local answer.",
++                "teacher_recommended": False,
++            },
++            "session": {
++                "session_id": kwargs["session_id"],
++                "history_turns_loaded": 0,
++                "session_path": "",
++                "persistence": "disabled_no_raw_text_retention",
++            },
++            "metrics": {"local_model_inference_calls": 1, "generated_tokens": 5},
++            "external_inference_calls": 0,
++        }
++        runtime.write_json(Path(kwargs["out"]), payload)
++        return {
++            "id": "local_inference",
++            "returncode": 0,
++            "stderr_tail": "",
++            "runtime_ms": 1,
++            "command": ["fake-local-inference"],
++            "prompt_transport": "stdin_not_argv",
++        }
++
++    monkeypatch.setattr(runtime, "run_local_inference", fake_local_inference)
++    direct = runtime.build_report(args(tmp_path, integrity.DIRECT_MODE), time.perf_counter())
++    integrated = runtime.build_report(args(tmp_path, integrity.INTEGRATED_MODE), time.perf_counter())
++
++    assert direct["trigger_state"] == "GREEN"
++    assert integrated["trigger_state"] == "GREEN"
++    assert direct["generation_backend"]["id"] == "local_inference"
++    assert integrated["generation_backend"]["id"] == "local_inference"
++    assert direct["route_integrity"]["ready"] is True
++    assert integrated["route_integrity"]["ready"] is True
++    assert observed_prompts[integrity.DIRECT_MODE] == "State the next P1 action."
++    assert "[theseus_verified_vcm_context]" in observed_prompts[integrity.INTEGRATED_MODE]
++    assert "[theseus_executed_route]" in observed_prompts[integrity.INTEGRATED_MODE]
++    assert integrity.compare_matched_pair(
++        direct["route_integrity"], integrated["route_integrity"]
++    )["ready"] is True
+diff --git a/tests/test_theseus_local_inference_backend.py b/tests/test_theseus_local_inference_backend.py
+new file mode 100644
+index 00000000..1f626e2b
+--- /dev/null
++++ b/tests/test_theseus_local_inference_backend.py
+@@ -0,0 +1,164 @@
++from __future__ import annotations
++
++import json
++import sys
++from pathlib import Path
++
++
++ROOT = Path(__file__).resolve().parents[1]
++SCRIPTS = ROOT / "scripts"
++if str(SCRIPTS) not in sys.path:
++    sys.path.insert(0, str(SCRIPTS))
++
++import theseus_local_inference_backend as backend  # noqa: E402
++
++
++def write_snapshot(path: Path) -> None:
++    path.mkdir(parents=True)
++    for name in ("config.json", "tokenizer.json", "tokenizer_config.json"):
++        (path / name).write_text("{}\n", encoding="utf-8")
++    (path / "model.safetensors.index.json").write_text("{}\n", encoding="utf-8")
++    (path / "model-00001-of-00001.safetensors").write_bytes(b"weights")
++
++
++def write_contract_files(tmp_path: Path, snapshot: Path) -> tuple[Path, Path]:
++    worker = tmp_path / "worker.json"
++    worker.write_text(
++        json.dumps(
++            {
++                "policy": "test",
++                "model": {
++                    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
++                    "revision": "revision-1",
++                    "chat_template_kwargs": {"enable_thinking": False},
++                    "temperature": 0.0,
++                    "maximum_action_tokens": 64,
++                    "repetition_penalty": 1.05,
++                    "repetition_context_size": 128,
++                },
++            }
++        ),
++        encoding="utf-8",
++    )
++    preflight = tmp_path / "preflight.json"
++    preflight.write_text(
++        json.dumps(
++            {
++                "trigger_state": "GREEN",
++                "model_identity": {
++                    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
++                    "revision": "revision-1",
++                    "snapshot_manifest_sha256": backend.snapshot_manifest(snapshot),
++                },
++            }
++        ),
++        encoding="utf-8",
++    )
++    return worker, preflight
++
++
++class FakeModel:
++    messages: list[dict[str, str]] = []
++
++    def __init__(self, card: dict, snapshot: Path, maximum_tokens: int) -> None:
++        assert card["repo_id"] == "mlx-community/Tmax-9B-MLX-8bit"
++        assert snapshot.is_dir()
++        assert maximum_tokens == 32
++        self.last_generation_metrics = {"generated_tokens": 5}
++
++    def generate(self, messages: list[dict[str, str]]) -> str:
++        FakeModel.messages = messages
++        return "offline local answer<|im_end|>ignored"
++
++
++def test_backend_uses_pinned_snapshot_stdin_prompt_and_no_external_inference(
++    tmp_path: Path, monkeypatch
++) -> None:
++    snapshot = tmp_path / "snapshot"
++    write_snapshot(snapshot)
++    worker, preflight = write_contract_files(tmp_path, snapshot)
++    monkeypatch.setattr(backend, "local_snapshot", lambda _card: snapshot)
++    monkeypatch.setattr(backend, "package_versions", lambda: {"mlx_lm": "0.31.3", "mlx": "0.32.0", "python": "3.12"})
++
++    report = backend.run_backend(
++        worker_config_path=worker,
++        runtime_preflight_path=preflight,
++        execution_mode="direct_local_model",
++        route_context_digest="d" * 64,
++        session_id="test",
++        prompt="private prompt",
++        maximum_tokens=32,
++        model_factory=FakeModel,
++    )
++
++    assert report["trigger_state"] == "GREEN"
++    assert report["response"]["answer"] == "offline local answer"
++    assert report["request"]["prompt_sha256"] == backend.route_integrity.sha256_text("private prompt")
++    assert "private prompt" not in json.dumps(report, sort_keys=True)
++    assert FakeModel.messages[-1] == {"role": "user", "content": "private prompt"}
++    assert report["metrics"]["local_model_inference_calls"] == 1
++    assert report["metrics"]["terminal_marker_stripped"] is True
++    assert report["external_inference_calls"] == 0
++    assert report["teacher_calls"] == 0
++
++
++def test_generation_terminal_markers_are_removed_at_the_backend_boundary() -> None:
++    assert backend.sanitize_generated_text("answer<|im_end|>") == "answer"
++    assert backend.sanitize_generated_text("answer<|eot_id|>ignored") == "answer"
++    assert backend.sanitize_generated_text(" plain answer ") == "plain answer"
++
++
++def test_snapshot_manifest_mismatch_fails_before_model_load(tmp_path: Path, monkeypatch) -> None:
++    snapshot = tmp_path / "snapshot"
++    write_snapshot(snapshot)
++    worker, preflight = write_contract_files(tmp_path, snapshot)
++    payload = json.loads(preflight.read_text(encoding="utf-8"))
++    payload["model_identity"]["snapshot_manifest_sha256"] = "0" * 64
++    preflight.write_text(json.dumps(payload), encoding="utf-8")
++    monkeypatch.setattr(backend, "local_snapshot", lambda _card: snapshot)
++    monkeypatch.setattr(backend, "package_versions", lambda: {"mlx_lm": "0.31.3", "mlx": "0.32.0", "python": "3.12"})
++
++    report = backend.run_backend(
++        worker_config_path=worker,
++        runtime_preflight_path=preflight,
++        execution_mode="direct_local_model",
++        route_context_digest="d" * 64,
++        session_id="test",
++        prompt="private prompt",
++        maximum_tokens=32,
++        model_factory=lambda *_args: (_ for _ in ()).throw(AssertionError("must not load")),
++    )
++
++    assert report["trigger_state"] == "RED"
++    assert "local_snapshot_manifest_mismatch" in report["faults"]
++    assert report["metrics"]["local_model_inference_calls"] == 0
++    assert report["response"]["answer"] == ""
++
++
++def test_product_token_budget_cannot_exceed_frozen_worker_budget(tmp_path: Path) -> None:
++    snapshot = tmp_path / "snapshot"
++    write_snapshot(snapshot)
++    worker, preflight = write_contract_files(tmp_path, snapshot)
++
++    contract = backend.route_integrity.load_model_contract(worker, preflight, maximum_tokens=65)
++
++    assert contract["ready"] is False
++    assert "product_maximum_tokens_out_of_worker_bounds" in contract["faults"]
++
++
++def test_canonical_frozen_identity_cannot_drift_with_a_self_consistent_preflight(tmp_path: Path) -> None:
++    snapshot = tmp_path / "snapshot"
++    write_snapshot(snapshot)
++    worker, preflight = write_contract_files(tmp_path, snapshot)
++
++    contract = backend.route_integrity.load_model_contract(
++        worker,
++        preflight,
++        maximum_tokens=32,
++        required_repo_id="mlx-community/Tmax-9B-MLX-8bit",
++        required_revision="the-canonical-revision",
++        required_snapshot_manifest_sha256=backend.snapshot_manifest(snapshot),
++    )
++
++    assert contract["ready"] is False
++    assert "frozen_model_revision_mismatch" in contract["faults"]

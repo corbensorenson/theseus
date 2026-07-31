@@ -1,0 +1,85 @@
+{
+  "policy": "project_theseus_p2_real_work_canary_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "experiment_id": "P2-001",
+  "created_utc": "2026-07-31T18:10:09Z",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_CANDIDATE_GENERATION",
+  "request_origin": "operator_goal_complete_the_bounded_p2_real_work_canary",
+  "evidence_scope": "reusable_L0_product_canary_not_D1_or_D2",
+  "arm_order": [
+    "direct_local_model",
+    "integrated_local_model"
+  ],
+  "parent_source": {
+    "commit": "7134acfc15e3a94c40af89bf82a2686bc3650e0d",
+    "overlay_patch": "runtime/p2_real_work_canary/p1_parent_overlay.patch",
+    "overlay_patch_sha256": "53551426eda48396e3901651f5426ed036f1342ed31807b34d805676c1f8f25b",
+    "meaning": "exact staged P1 transaction over the clean parent commit"
+  },
+  "frozen_instrument": {
+    "runtime": "scripts/theseus_assistant_runtime.py",
+    "runtime_config": "configs/theseus_assistant_runtime.json",
+    "model_repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "model_revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "model_identity_sha256": "580ab3bd8df4c2af0790ed015342fe7dbaa4ecad7e2fdc69b9fc4ef170f88a85",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "decoder_sha256": "18873cedbbab30264bfd48a1c7449feca6a9d53325e2a9e8eb9dbc219057bfa8",
+    "maximum_generation_tokens": 512,
+    "maximum_model_calls_per_arm": 1,
+    "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+    "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+  },
+  "product_budgets": {
+    "maximum_model_calls_per_arm": 6,
+    "maximum_arm_wall_ms": 720000,
+    "maximum_pair_wall_ms": 1500000,
+    "maximum_candidate_patch_bytes": 65536,
+    "loop_efficiency_repairs_allowed_after_this_run": 1
+  },
+  "task": {
+    "opaque_task_id": "p2-001-route-integrity-bundle-audit",
+    "task_pair_id": "P2-001-pair-001",
+    "family": "repository_maintenance",
+    "natural_request": "In scripts/theseus_assistant_route_integrity.py, make --report independently re-audit both existing single-route runtime reports and the canonical P1 evidence bundle. Add a pure audit_report_payload(report) function. For a bundle containing receipts.direct_local_model and receipts.integrated_local_model, recompute the pair with compare_matched_pair; require the bundle's stored matched_pair to equal that recomputation; require top-level ready to be true; and require external_inference_calls, teacher_calls, public_calibration_cases_consumed, D2_cases_consumed, public_training_rows_written, fallback_return_count, and user_facing_effects all to be exactly zero. Return policy project_theseus_route_integrity_bundle_audit_v1, ready, failed_checks, and recomputed_matched_pair. Do not trust stored ready, stored matched_pair, or candidate-emitted flags on their own. Preserve the existing single-route receipt audit behavior and make the CLI --report path call the pure function. Return only one JSON object with keys patch_unified_diff, proposed_paths, verification_commands, and abstained; do not wrap it in Markdown. The patch may modify only scripts/theseus_assistant_route_integrity.py.",
+    "visible_source": [
+      {
+        "path": "scripts/theseus_assistant_route_integrity.py",
+        "start_line": 535,
+        "end_line": 641
+      }
+    ],
+    "allowed_effect_paths": [
+      "scripts/theseus_assistant_route_integrity.py"
+    ],
+    "authority_grant": "candidate_effects_only_in_disposable_snapshot",
+    "partition": "development",
+    "denominator": "L0_P2_CANARY",
+    "effect_class": "bounded_repository_change"
+  },
+  "candidate_output_schema": {
+    "required_fields": [
+      "patch_unified_diff",
+      "proposed_paths",
+      "verification_commands",
+      "abstained"
+    ],
+    "maximum_patch_bytes": 65536,
+    "maximum_proposed_paths": 1
+  },
+  "ablation_boundary": {
+    "p2_intervention": "direct_fixed_model_versus_integrated_theseus",
+    "subsystem_specific_utility_ablations": "blocked_until_nonzero_real_work_and_P3_residual_selection",
+    "mechanics_negative_controls": "covered_by_P1_route_integrity_tests",
+    "reason": "the roadmap forbids choosing a P4 mechanism before real-work residuals exist"
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "automatic_source_of_truth_effects": 0,
+    "development_rows_eligible_for_D1": false,
+    "development_rows_eligible_for_D2": false,
+    "ASI_stack_support_state_effect": "none"
+  }
+}
