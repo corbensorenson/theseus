@@ -1,0 +1,152 @@
+{
+  "policy": "project_theseus_p4r_intervention_locality_canary_config_v1",
+  "state": "FROZEN_BEFORE_LEARNED_INTERVENTION_CALLS",
+  "purpose": "Test whether the exact frozen local model responds to authentic validation feedback by repairing only the dependency-closed implicated Semantic-IR unit while preserving an unrelated unit byte-for-byte.",
+  "semantic_unit_predecessor": "reports/theseus_p4r_semantic_unit_granularity_canary.json",
+  "semantic_unit_predecessor_sha256": "462ae5a847b4e9d860eb82560f03669919a45f3bf7fe570c68c015e405d7547d",
+  "semantic_unit_predecessor_commit": "7bf6f1f4",
+  "parser": "scripts/theseus_semantic_ir_v2r1.py",
+  "parser_sha256": "77fc569dd097a48b0901ca170825b75427e97b5d02b1e0a5a11cb83757dfbce9",
+  "parser_commit": "985502ac",
+  "runner": "scripts/theseus_p4r_intervention_locality_canary.py",
+  "runner_sha256": "56b734cae68a1ba72f671e64bc213521151403f0e63ed194ee0a70146ec9a893",
+  "runner_commit": "87fa6927",
+  "base_local_instrument": "configs/theseus_p4r_local_instrument.json",
+  "base_local_instrument_sha256": "66629d03fe402d968d21f0ec734dfe7266634767011a210d7deae5ff8a8445e5",
+  "generation_policy": {
+    "normal_completion": ["parser_complete", "model_eos"],
+    "project_selected_quality_token_cap": null,
+    "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
+    "boundary_hit_invalidates_observation": true,
+    "host_emergency_stop_invalidates_observation": true
+  },
+  "intervention_contract": {
+    "intervention": "After a learned, parseable, exactly verified two-unit provisional artifact, replace only the selected unit replacement block with a declared sentinel failure while preserving the artifact envelope and all identity fields.",
+    "feedback": "Apply the intervened artifact to the original source, run the independent exact validator, map its observed marker to an obligation, and close that obligation over its preregistered dependency ancestors.",
+    "repair": "Give the model the original request, intervened artifact, authentic validator packet, implicated closure, and an instruction to copy the unrelated unit byte-for-byte.",
+    "independent_audit": "Reparse and lower both artifacts; recompute exact final source, targeted-unit change, unrelated-unit byte stability, dependency-local repair faults, route identity, termination, and physical-boundary status without trusting model claims.",
+    "rotation": "Case 1 intervenes on U1 and measures U2 preservation; case 2 intervenes on U2 and measures U1 preservation."
+  },
+  "information_flow": {
+    "model_visible_first_call": [
+      "natural request",
+      "four natural-language obligations",
+      "two dependency edges",
+      "original source text",
+      "two selected Assign node identities",
+      "exact labeled Semantic-IR grammar"
+    ],
+    "model_visible_repair_call": [
+      "all first-call information",
+      "controlled single-unit fault-injected provisional artifact",
+      "actual validator marker and return code",
+      "dependency-closed implicated obligation ids",
+      "unrelated unit byte-stability instruction"
+    ],
+    "model_hidden": [
+      "expected_source field",
+      "independent equality outcomes",
+      "static corruption ladder results",
+      "aggregate pass state"
+    ],
+    "candidate_integrity_recomputed": true,
+    "fault_injection_answer_bearing": false,
+    "fault_injection_value": "declared impossible sentinel string, independent of the hidden expected replacement"
+  },
+  "static_intervention_ladder": {
+    "learned_model_calls": 0,
+    "mutations": [
+      "source identity",
+      "global obligation identity and coverage",
+      "target node hash identity",
+      "declared semantic loss",
+      "unit dependency closure"
+    ],
+    "pass": "The valid two-unit fixture lowers to two actions and every bound corruption is rejected for its preregistered reason."
+  },
+  "cases": [
+    {
+      "case_id": "repair_primary_preserve_secondary",
+      "natural_request": "Set PRIMARY to the exact string new and set SECONDARY to the exact string steady. Preserve both variable names and make no other source change.",
+      "source": "PRIMARY = \"old\"\nSECONDARY = \"hold\"\n",
+      "expected_source": "PRIMARY = \"new\"\nSECONDARY = \"steady\"\n",
+      "injected_unit_id": "U1",
+      "injected_replacement": "PRIMARY = \"__THESEUS_CONTROLLED_VALIDATION_FAULT__\"",
+      "feedback_marker": "FAIL_O1_PRIMARY_VALUE",
+      "feedback_obligation_ids": ["O1"],
+      "expected_implicated_obligation_ids": ["O1", "O2"],
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "set PRIMARY to the exact string new"},
+        {"id": "O2", "kind": "preserve", "text": "preserve the PRIMARY variable name and assignment shape"},
+        {"id": "O3", "kind": "require", "text": "set SECONDARY to the exact string steady"},
+        {"id": "O4", "kind": "preserve", "text": "preserve the SECONDARY variable name and assignment shape"}
+      ],
+      "obligation_dependencies": [
+        {"before": "O2", "after": "O1"},
+        {"before": "O4", "after": "O3"}
+      ],
+      "units": [
+        {
+          "unit_id": "U1",
+          "obligation_ids": ["O1", "O2"],
+          "target_line": 1,
+          "expected_replacement": "PRIMARY = \"new\""
+        },
+        {
+          "unit_id": "U2",
+          "obligation_ids": ["O3", "O4"],
+          "target_line": 2,
+          "expected_replacement": "SECONDARY = \"steady\""
+        }
+      ]
+    },
+    {
+      "case_id": "repair_secondary_preserve_primary",
+      "natural_request": "Set PRIMARY to the exact string new and set SECONDARY to the exact string steady. Preserve both variable names and make no other source change.",
+      "source": "PRIMARY = \"old\"\nSECONDARY = \"hold\"\n",
+      "expected_source": "PRIMARY = \"new\"\nSECONDARY = \"steady\"\n",
+      "injected_unit_id": "U2",
+      "injected_replacement": "SECONDARY = \"__THESEUS_CONTROLLED_VALIDATION_FAULT__\"",
+      "feedback_marker": "FAIL_O3_SECONDARY_VALUE",
+      "feedback_obligation_ids": ["O3"],
+      "expected_implicated_obligation_ids": ["O3", "O4"],
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "set PRIMARY to the exact string new"},
+        {"id": "O2", "kind": "preserve", "text": "preserve the PRIMARY variable name and assignment shape"},
+        {"id": "O3", "kind": "require", "text": "set SECONDARY to the exact string steady"},
+        {"id": "O4", "kind": "preserve", "text": "preserve the SECONDARY variable name and assignment shape"}
+      ],
+      "obligation_dependencies": [
+        {"before": "O2", "after": "O1"},
+        {"before": "O4", "after": "O3"}
+      ],
+      "units": [
+        {
+          "unit_id": "U1",
+          "obligation_ids": ["O1", "O2"],
+          "target_line": 1,
+          "expected_replacement": "PRIMARY = \"new\""
+        },
+        {
+          "unit_id": "U2",
+          "obligation_ids": ["O3", "O4"],
+          "target_line": 2,
+          "expected_replacement": "SECONDARY = \"steady\""
+        }
+      ]
+    }
+  ],
+  "decision_rule": {
+    "pass": "The static ladder rejects all five corruptions; both learned provisional artifacts parse, lower, and exactly verify; both controlled interventions produce their preregistered authentic validator marker and exact dependency closure; both learned repairs parse, lower, and exactly verify; each targeted unit changes; each unrelated unit is byte-stable; the independent locality audit is clean; one persistent model load serves exactly four calls; every call ends by parser completion or model EOS; and no physical-context boundary is hit.",
+    "failure": "INCONCLUSIVE_IMPLEMENTATION; preserve every receipt and repair the exact mechanics owner without acquiring a fresh P4 decision surface.",
+    "pass_authority": "Closes only the non-claim Semantic-IR mechanics prerequisite and permits freezing a fresh source-disjoint P4 decision denominator. It cannot support cognitive compilation, qualify D1, alter book support, train on these rows, or widen serving authority."
+  },
+  "boundaries": {
+    "task_source": "hand_authored_non_claim_mechanics",
+    "public_benchmark": false,
+    "training_eligible": false,
+    "D1_or_D2_eligible": false,
+    "book_support_state_effect": "none",
+    "user_gate": "none"
+  }
+}

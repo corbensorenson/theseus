@@ -67,3 +67,12 @@ def test_static_intervention_ladder_rejects_all_bound_corruptions() -> None:
 def test_no_project_selected_quality_token_cap_constant() -> None:
     assert canary.MODEL_CONTEXT_TOKENS == 262144
     assert "non-claim" in canary.__doc__.lower()
+
+
+def test_frozen_intervention_locality_config_audits_green() -> None:
+    report = canary.audit_config(
+        ROOT / "configs" / "theseus_p4r_intervention_locality_canary.json"
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["faults"] == []
