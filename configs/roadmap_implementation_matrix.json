@@ -1852,7 +1852,7 @@
         "path": "configs/neural_seed_t1_lineage_anchor.json",
         "availability_policy": "configs/neural_seed_training_availability.json",
         "training_config": "configs/moecot_language_arm_training.json",
-        "required_current_plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
+        "required_current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
         "allow_historical_source_artifact_drift": true
       }
     },
@@ -3719,7 +3719,8 @@
     "step_11416_plan_identity_migration": {
       "state": "GREEN_EXACT_IDENTITY_ONLY",
       "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
-      "current_plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
+      "current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
+      "migration_id": "shared_trunk_step11416_uncapped_d2_contract_rebind_v1",
       "checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
       "optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
       "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
@@ -6989,7 +6990,7 @@
             "path": "configs/neural_seed_t1_lineage_anchor.json",
             "availability_policy": "configs/neural_seed_training_availability.json",
             "training_config": "configs/moecot_language_arm_training.json",
-            "required_current_plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
+            "required_current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
             "allow_historical_source_artifact_drift": true
           }
         },

@@ -100,6 +100,18 @@
         "reports/pre_long_run_independent_readiness_audit.json"
       ],
       "decision": "The held receipt plan 4f18bd17... is explicitly migrated to the deterministically recomputed current plan 8f1af969... by shared_trunk_step11416_committed_plan_digest_rebind_v1 only for the exact step-11416 checkpoint/AdamW/RNG/position identity. The earlier 5d5b77e5... target remains historical intent and is not the digest produced by the committed closure. The implementation closure gained isolated default-off candidates and candidate/resource governance, while the active compiled-FP32/AdamW/separate-QKV/SwiGLU/sequential-residual production route, data, cursor, objective, schedule, functional surface, and transactional safety hold remain unchanged."
+    },
+    {
+      "id": "step_11416_uncapped_d2_contract_plan_rebind",
+      "state": "QUALIFIED_EXACT_RESUME_COMPATIBLE",
+      "evidence": [
+        "configs/moecot_language_arm_training.json",
+        "configs/neural_seed_57m_functional_utility_freeze.json",
+        "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+        "scripts/neural_seed_functional_generate.py",
+        "scripts/neural_seed_local_english_raters.py"
+      ],
+      "decision": "The held receipt plan 4f18bd17... is additionally migrated to the deterministically recomputed current plan 46de0ea6... by shared_trunk_step11416_uncapped_d2_contract_rebind_v1 only for the exact unchanged step-11416 checkpoint/AdamW/RNG/position identity. The digest change binds the source-controlled uncapped D2 generation, local-rater, and autonomous one-shot evaluation contract. It changes no topology, active training math, checkpoint or optimizer byte, RNG byte, data row/order/cursor, objective mass, or schedule; it grants no D2, training, serving, capability, or support authority, and the hold remains active."
     }
   ],
   "new_source": {

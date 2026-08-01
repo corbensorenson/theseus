@@ -27,7 +27,7 @@
     },
     "evaluation_nonconsumption": {
       "freeze_path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "freeze_sha256": "c3875bb3b8d286038c109659e073acdb30f573fa1907ffa6d63cbdf5c29522cd",
+      "freeze_sha256": "56f5cd08c4e08556e31a7ab3ee31f067ff7d6dc94a5d810910bba2383828ddec",
       "matching_consumption_rows": [],
       "passed": true,
       "registry_path": "reports/private_functional_consumption_registry.jsonl",
@@ -51,7 +51,7 @@
         "current": {
           "case_count": 160,
           "config": "configs/neural_seed_functional_utility.json",
-          "config_sha256": "a8d14f0311d3f343eb4a2f785623ec34b886d59aab5d690c5210495b04705442",
+          "config_sha256": "dfb1cc13ce7be0f5e31183666c2871e39add1fe8fe689290cafa52100e1a7fd2",
           "consumption_registry_lines": [],
           "contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
           "model_visible_sha256": "03a6121c9b253c9621e295294ec80f8f78122dfe14882c2acd18ae4fceef1a9e"
@@ -953,7 +953,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 51745062912,
+      "disk_free_bytes": 50314072064,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -966,19 +966,19 @@
     },
     "functional_freeze": {
       "path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "sha256": "c3875bb3b8d286038c109659e073acdb30f573fa1907ffa6d63cbdf5c29522cd"
+      "sha256": "56f5cd08c4e08556e31a7ab3ee31f067ff7d6dc94a5d810910bba2383828ddec"
     },
     "pre_long_run_review": {
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "7abca750c0e85f4413548c8c0bc51689e4136dfa954d9e1392c67e8f9a959553"
+      "sha256": "b7f683d777f388e04752f1bf64e84e9815730e9a6fe118f5cd00c7469141bdba"
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "334428e567a7c10173f793b5e10cdd55eb5861af8146554caf47b32c2d0b7eee"
+      "sha256": "4906be726ffc0193b3f6dab360ce5bcb62f5d478b7e1199015d80cbcba8a3e7d"
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "4264c02887c90484a1f7c1f88352414f92e45d2cfe32502136d0f886d9e35f9f"
+      "sha256": "e14088b59977a76963a821f8f093b9fddffb08b46655a47fde7f3a175d261440"
     }
   },
   "capability_claim": "NONE_INDEPENDENT_READINESS_AUDIT_ONLY",

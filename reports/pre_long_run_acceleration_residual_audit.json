@@ -6,11 +6,11 @@
     },
     "pre_long_run_review": {
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "7abca750c0e85f4413548c8c0bc51689e4136dfa954d9e1392c67e8f9a959553"
+      "sha256": "b7f683d777f388e04752f1bf64e84e9815730e9a6fe118f5cd00c7469141bdba"
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "334428e567a7c10173f793b5e10cdd55eb5861af8146554caf47b32c2d0b7eee"
+      "sha256": "4906be726ffc0193b3f6dab360ce5bcb62f5d478b7e1199015d80cbcba8a3e7d"
     },
     "yield_control": {
       "path": "runtime/control/neural_seed_yield_after_segment",
@@ -321,7 +321,7 @@
     },
     "memory_disk": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 51747606528,
+      "disk_free_bytes": 50315919360,
       "disposition": "predicted_exhaustion_and_derived_two_transaction_disk_custody",
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
