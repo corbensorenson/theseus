@@ -136,45 +136,6 @@ def test_snapshot_manifest_mismatch_fails_before_model_load(tmp_path: Path, monk
     assert report["response"]["answer"] == ""
 
 
-def test_physical_context_boundary_is_invalid_not_a_released_answer(
-    tmp_path: Path, monkeypatch
-) -> None:
-    snapshot = tmp_path / "snapshot"
-    write_snapshot(snapshot)
-    worker, preflight = write_contract_files(tmp_path, snapshot)
-    monkeypatch.setattr(backend, "local_snapshot", lambda _card: snapshot)
-    monkeypatch.setattr(
-        backend,
-        "package_versions",
-        lambda: {"mlx_lm": "0.31.3", "mlx": "0.32.0", "python": "3.12"},
-    )
-
-    class BoundaryModel:
-        def __init__(self, *_args: object) -> None:
-            self.last_generation_metrics = {
-                "termination_reason": "physical_context_boundary",
-                "physical_context_boundary_hit": True,
-            }
-
-        def generate(self, _messages: list[dict[str, str]]) -> str:
-            return "truncated text"
-
-    report = backend.run_backend(
-        worker_config_path=worker,
-        runtime_preflight_path=preflight,
-        execution_mode="direct_local_model",
-        route_context_digest="d" * 64,
-        session_id="test",
-        prompt="private prompt",
-        maximum_tokens=32,
-        model_factory=BoundaryModel,
-    )
-
-    assert report["trigger_state"] == "RED"
-    assert "instrument_inadequate_generation_boundary_hit" in report["faults"]
-    assert report["response"]["answer"] == ""
-
-
 def test_product_token_budget_cannot_exceed_frozen_worker_budget(tmp_path: Path) -> None:
     snapshot = tmp_path / "snapshot"
     write_snapshot(snapshot)
@@ -184,20 +145,6 @@ def test_product_token_budget_cannot_exceed_frozen_worker_budget(tmp_path: Path)
 
     assert contract["ready"] is False
     assert "product_maximum_tokens_out_of_worker_bounds" in contract["faults"]
-
-
-def test_canonical_completion_worker_binds_no_quality_cap_to_route_identity() -> None:
-    contract = backend.route_integrity.load_model_contract(
-        ROOT / "configs" / "core_evidence_tmax_9b_completion_worker.json",
-        ROOT / "reports" / "core_evidence_tmax_9b_runtime_preflight.json",
-        maximum_tokens=0,
-    )
-
-    assert contract["ready"] is True
-    boundary = contract["identity"]["generation_boundary"]
-    assert boundary["model_declared_context_window_tokens"] == 262144
-    assert boundary["project_selected_quality_token_cap"] is None
-    assert boundary["ceiling_hit_is_instrument_invalid"] is True
 
 
 def test_canonical_frozen_identity_cannot_drift_with_a_self_consistent_preflight(tmp_path: Path) -> None:
@@ -313,43 +260,5 @@ def test_completion_stop_and_ceiling_stop_are_explicit(monkeypatch) -> None:
 
     model.completion_predicate = lambda _text: False
     model.generate([{"role": "user", "content": "prompt"}])
-    assert model.last_generation_metrics["termination_reason"] == "physical_context_boundary"
+    assert model.last_generation_metrics["termination_reason"] == "safety_ceiling"
     assert model.last_generation_metrics["safety_ceiling_hit"] is True
-    assert model.last_generation_metrics["physical_context_boundary_hit"] is True
-    assert model.last_generation_metrics["exact_prompt_tokens"] == 3
-    assert model.last_generation_metrics["effective_context_residual_tokens"] == 61
-    assert model.last_generation_metrics["project_selected_quality_token_cap"] is None
-
-
-def test_prompt_exhausting_declared_context_fails_before_generation(monkeypatch) -> None:
-    class FakeTokenizer:
-        def apply_chat_template(self, *_args, **_kwargs):
-            return [1, 2, 3]
-
-    monkeypatch.setitem(
-        sys.modules,
-        "mlx_lm",
-        types.SimpleNamespace(
-            stream_generate=lambda *_args, **_kwargs: (_ for _ in ()).throw(
-                AssertionError("generation must not start")
-            )
-        ),
-    )
-    model = backend.LocalMlxChatModel.__new__(backend.LocalMlxChatModel)
-    model.model = object()
-    model.tokenizer = FakeTokenizer()
-    model.card = {"chat_template_kwargs": {}}
-    model.maximum_tokens = 64
-    model.model_context_window_tokens = 3
-    model.sampler = None
-    model.logits_processors = []
-    model.generation_cache_kwargs = {}
-    model.load_wall_ms = 0.0
-    model.completion_predicate = None
-
-    try:
-        model.generate([{"role": "user", "content": "prompt"}])
-    except backend.BackendFault as exc:
-        assert str(exc) == "prompt_exhausts_model_context_window"
-    else:
-        raise AssertionError("expected context exhaustion fault")

@@ -1,0 +1,454 @@
+{
+  "created_utc": "2026-08-01T17:09:36.322026Z",
+  "custody": {
+    "candidate_actions_applied": 0,
+    "candidate_correctness_evaluated": false,
+    "consumed_runtime_receipts_modified": 0,
+    "identifier_order_changed": false,
+    "identifier_values_invented": 0,
+    "mechanics_only": true,
+    "p4s_disposition_modified": false,
+    "p4s_scores_recomputed": false,
+    "replacement_source_changed": false,
+    "task_evaluator_invocations": 0
+  },
+  "faults": [],
+  "maximum_inference": "The prospective v2r2 parser can canonicalize the observed delimiter-only list spellings while preserving emitted identifier order and replacement bytes. Two retained calls still have an unrelated overlong NODE field; list normalization does not repair or hide that residual. This is mechanics evidence only. It does not rescore P4S, establish candidate correctness, show a treatment effect, qualify D1, support the book claim, or replace a fresh source-disjoint P4 denominator.",
+  "policy": "project_theseus_p4s_list_normalization_mechanics_v1",
+  "prospective_parser": "scripts/theseus_semantic_ir_v2r2.py",
+  "prospective_parser_sha256": "092a44f17965c09f4603c40956826d5738fe9b7792c7c92736641cad242790b0",
+  "retained_attempt2_treatment_call_count": 20,
+  "retained_p4s_terminal_disposition": "reports/theseus_p4s_terminal_disposition.json",
+  "retained_p4s_terminal_disposition_sha256": "2efb3120ddb7396bc45d9c8dd22c66cdaa62b8293fb2b66135a03e89f068c7b8",
+  "rows": [
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "775d3cc33b7c7ee0bcef6c0c74f3db3a0be4ae8cd5debfcc6030aa73d661511e",
+      "replacement_payload_sha256": [
+        "d60a5836402e6cfbdc4ed809ebca5546f3dfda9e6c000ff2ef59b922b2f1c35f"
+      ],
+      "retained_answer_sha256": "9b3938afd9aebf590dcba121923acb8262a51b22f7785cacd1ab57fdae51b9ca",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-01_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "dd9bf7972d46c98fe60fca8332966a02aae3cdcf810f815a3a9d50ce7b8385a1",
+      "state": "GREEN",
+      "surface_classes": [
+        "unquoted_bracket_list",
+        "unquoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "775d3cc33b7c7ee0bcef6c0c74f3db3a0be4ae8cd5debfcc6030aa73d661511e",
+      "replacement_payload_sha256": [
+        "d60a5836402e6cfbdc4ed809ebca5546f3dfda9e6c000ff2ef59b922b2f1c35f"
+      ],
+      "retained_answer_sha256": "9b3938afd9aebf590dcba121923acb8262a51b22f7785cacd1ab57fdae51b9ca",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-01_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "6de561f3cd37be553a2778568fb3d79fc2f9dfdea1052ea02284449f07aac4b7",
+      "state": "GREEN",
+      "surface_classes": [
+        "unquoted_bracket_list",
+        "unquoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "8a83b8f97e702b453cf019a2f53c74c2c642bd180218df9de6659f17b958c398",
+      "replacement_payload_sha256": [
+        "bbe7c921774d047a4b4a9b45ce430c93b1b36b674b2472bcddf4fb1304ea4e28"
+      ],
+      "retained_answer_sha256": "1c68fe504f2ecae8ebf8ed08df10557091cefcac8c1d7941ad0cd314ffcda799",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-02_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "845843e8bffd9119916012bd693b2a95693562003dc26dc09f038543ab69792d",
+      "state": "GREEN",
+      "surface_classes": [
+        "unquoted_bracket_list",
+        "unquoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "0bf62ebfcf872febe35e2e63f19ce82f1ea07628fe19607669576885f6c4c615",
+      "replacement_payload_sha256": [
+        "bbe7c921774d047a4b4a9b45ce430c93b1b36b674b2472bcddf4fb1304ea4e28"
+      ],
+      "retained_answer_sha256": "0f5ceb2f39316224b856aad4ed7d46975d8d867feb4b45dcc213a7c9aa284f4b",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-02_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "ef9b0ac202efdeaf812d0ae1016f2908133eb817e6933d36fd1c46e0870363cf",
+      "state": "GREEN",
+      "surface_classes": [
+        "unquoted_bracket_list",
+        "unquoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "909cb7092f6e80e20c7c845778ad60f5ea32c1dac5075d96f396d54e0906c205",
+      "replacement_payload_sha256": [
+        "9f9c4ba8b427fbb13f0623030afacdebcc4f28eb128cd41ce585c15a92c286b2"
+      ],
+      "retained_answer_sha256": "80329b889dfcfdefbdb5f77b6eab07d43fc9751af2863272408391cbe5baa5ae",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-03_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "3e292c4b19f9a8cb3d4574764fcd38e4c66c80c286a86b635293fa16e5ea02c6",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "909cb7092f6e80e20c7c845778ad60f5ea32c1dac5075d96f396d54e0906c205",
+      "replacement_payload_sha256": [
+        "9f9c4ba8b427fbb13f0623030afacdebcc4f28eb128cd41ce585c15a92c286b2"
+      ],
+      "retained_answer_sha256": "80329b889dfcfdefbdb5f77b6eab07d43fc9751af2863272408391cbe5baa5ae",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-03_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "24af6bc070197407fb6cd168aee1d2ae1f328099de3e0ffe622d2684c949b7bb",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "3f820fb18d028555343492daad685505d3a5548df89b1936eaeaec36766961f8",
+      "replacement_payload_sha256": [
+        "5556a56ece82e045a6eca3275091bc0d73f9c3521f8b9494f2bfe274710c169c"
+      ],
+      "retained_answer_sha256": "fb9ef98a570c1b774589779dda5261c6156d826386fcfa38d1c29092a5282a83",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-04_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "578876cdc945956d8c77269921860e644000f7b5d7832a6c2de3aebc62a380fd",
+      "state": "GREEN",
+      "surface_classes": [
+        "quoted_bracket_list",
+        "quoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "6d0090ef14c2992ee1a93ebdff2c97cd20659fa03f3666a44ffee72c178ecc8c",
+      "replacement_payload_sha256": [
+        "5556a56ece82e045a6eca3275091bc0d73f9c3521f8b9494f2bfe274710c169c"
+      ],
+      "retained_answer_sha256": "da0ea577cddaebb3faa7594161af4e5e46928d7e2ec9262451e77b337698b44e",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-04_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "6fff92d64c05430574d2fb33cadd111d4c15fb4316d97c7f600eb7cf8e84a9b3",
+      "state": "GREEN",
+      "surface_classes": [
+        "quoted_bracket_list",
+        "quoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "814ba6972eacc286524bf6d527cd1216686155261fe12c12dc48b132dde77d38",
+      "replacement_payload_sha256": [
+        "b64282acfecd37d68e2d9736b72c4b10a3eaed8bea00a34b5e6fcf811c8dabba"
+      ],
+      "retained_answer_sha256": "3194864497dca3eba48ef07b2d094090a8170794de70e150a2af44ebb9783b6f",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-05_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "559b9ee7a772923133f7b9d6357209f0875df454e9d3535724e4cb225a007426",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "16dc1ab7071fb901a06d1d238fa2e89c59976f6504dbcf21f2078dcf706a6bd0",
+      "replacement_payload_sha256": [
+        "b64282acfecd37d68e2d9736b72c4b10a3eaed8bea00a34b5e6fcf811c8dabba"
+      ],
+      "retained_answer_sha256": "6d8ef1f717eded917436057b07421a5e4de0e9618d496bfbaab5ec49baaa9065",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-05_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "402bcfb59029181c2a804cd3be3bbcfd83c794e495bc5fb90dd6c5e7d83dea22",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "8c55a2773b85807722343cbd0193b1b43739183e2a0700a337ba739492f13d98",
+      "replacement_payload_sha256": [
+        "4d7c2b744ba57afc670e5da5ce90a0f4d141be43960def69eace8feb9c5fc265"
+      ],
+      "retained_answer_sha256": "d9724eb3af7de7328c87fa35c1227fcf73bf287a8b71955060ac9f942d0674c9",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-06_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "116033ebed70f595a30a293372ede532db1596830d1616215cc6d4e5e2e7e801",
+      "state": "GREEN",
+      "surface_classes": [
+        "quoted_bracket_list",
+        "quoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 3,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 3,
+      "normalized_transport_sha256": "4949ce053b22a746d8de3a856e4ac0e7d274dbd7b70260c8d11f5ad38d59a8f7",
+      "replacement_payload_sha256": [
+        "4d7c2b744ba57afc670e5da5ce90a0f4d141be43960def69eace8feb9c5fc265",
+        "242e22fc5467436411abcdb7cf7226abec2bfb4c699fe3be4a3902427a1acdb4"
+      ],
+      "retained_answer_sha256": "e90a525dfc20ac34262baacaa9173d98eab1656c8452567f59c7d84ee1ea9fd0",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-06_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "c8d44ec3f6bf2133eeff9009fae8945a13479344f84fdd5909f1e8d5a767dfea",
+      "state": "GREEN",
+      "surface_classes": [
+        "quoted_bracket_list",
+        "quoted_bracket_list",
+        "quoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "a94b04e8c2ffe4e5172524b6571780e57addea45e7bfbd30889cfad95cd4528a",
+      "replacement_payload_sha256": [
+        "c7e485c41da41d39d4e06a2c2e2c43dbb0cce7ecc7788de721217e7f5b0a797f"
+      ],
+      "retained_answer_sha256": "f4623131ee6fa94f23071be4dcb9f779600ce1abb253a650eaca2f7453fb8c6f",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-07_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "43b45eaeaea664e21af39e40f292a152a37fc29ebecb270e1d6d856123198d43",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "a94b04e8c2ffe4e5172524b6571780e57addea45e7bfbd30889cfad95cd4528a",
+      "replacement_payload_sha256": [
+        "c7e485c41da41d39d4e06a2c2e2c43dbb0cce7ecc7788de721217e7f5b0a797f"
+      ],
+      "retained_answer_sha256": "f4623131ee6fa94f23071be4dcb9f779600ce1abb253a650eaca2f7453fb8c6f",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-07_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "f59852890e8a0e2cff5c4f7697b6f8527393401e82716aa003c6e98fe5e825f9",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "7e1f0b15ffc984b2b7ac249cc40a7693f493c14c5a492ecc6bad4c9f9f4bdcbf",
+      "replacement_payload_sha256": [
+        "4bc44426147fcfe29ebf5c9dd875044824aa788842048d154ffe049e85993286"
+      ],
+      "retained_answer_sha256": "efd7d65cb7ab6b0d5ae7e3c41661e7ee79d314bcdf264482bd0c1e5e91ee7e39",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-08_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "ef752062f74299b7de427d72b6182751627e9ba67934472ac904b575929e1638",
+      "state": "GREEN",
+      "surface_classes": [
+        "unquoted_bracket_list",
+        "unquoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "8d7c637bdada085db11f772ebdf577ac358910604436766499659c626274a23a",
+      "replacement_payload_sha256": [
+        "d7b90decac382b3622d31424811341cdb5c5fba6f987e65da4d2dda0dbd9f1e5"
+      ],
+      "retained_answer_sha256": "51e39e2a85fbc037b021b5c4a3308f140b75f60da7202a8e5f8d71a284c968a2",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-08_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "a1637da255bbb3b0134707ee4f1b6870adc1199b8c70e4d84b3c289759a567bb",
+      "state": "GREEN",
+      "surface_classes": [
+        "unquoted_bracket_list",
+        "unquoted_bracket_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "aed35fad9e7d5853272222c5bd9ba02d600c662c7b04834665831d5f0743c459",
+      "replacement_payload_sha256": [
+        "74be58c12dd2f9f2ef1338c598e50618265929615d8cf0fcfdd79c86ce66b006"
+      ],
+      "retained_answer_sha256": "9382beae972c2e78d3151bfc25ab58d79efffff595fcbeef5efcf39030d40d7d",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-09_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "6f6ec243f0efc944d62378d08a0af84cd9c2925bcddf242984c026d38f0ffa3f",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "aed35fad9e7d5853272222c5bd9ba02d600c662c7b04834665831d5f0743c459",
+      "replacement_payload_sha256": [
+        "74be58c12dd2f9f2ef1338c598e50618265929615d8cf0fcfdd79c86ce66b006"
+      ],
+      "retained_answer_sha256": "9382beae972c2e78d3151bfc25ab58d79efffff595fcbeef5efcf39030d40d7d",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-09_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "0194a3b74dc9f0b224ce15a94921c18740fdaa8963f814cd4bb1bd0fb4f05bae",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": true,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "f561982b35d230fc22e9e9786a3d130be4d2adde3b74fd72bcd11a74c52cbfff",
+      "replacement_payload_sha256": [
+        "805d589ed171e22ea35e9572c28cbaa9d2aa3aa509fffc8f9ec1c79c9e056d63"
+      ],
+      "retained_answer_sha256": "098ced735cc211bee9fe7470817fcf590101f5ad081f708380cf3aa125a8968a",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-10_typed_semantic_ir_treatment_attempt2_direct_local_model_1.json",
+      "runtime_receipt_sha256": "7409cbe66defa45827300a17d4b75c346cb5b817667652187fb22253307e9b46",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": false,
+      "v2_syntax_complete_before_normalization": false
+    },
+    {
+      "faults": [],
+      "list_field_count": 2,
+      "list_fields_canonical_after_normalization": true,
+      "non_list_surface_preserved": true,
+      "normalized_field_count": 2,
+      "normalized_transport_sha256": "f561982b35d230fc22e9e9786a3d130be4d2adde3b74fd72bcd11a74c52cbfff",
+      "replacement_payload_sha256": [
+        "805d589ed171e22ea35e9572c28cbaa9d2aa3aa509fffc8f9ec1c79c9e056d63"
+      ],
+      "retained_answer_sha256": "098ced735cc211bee9fe7470817fcf590101f5ad081f708380cf3aa125a8968a",
+      "runtime_receipt": "runtime/p2a/p2a_p4_p4s-cognitive-compilation-10_typed_semantic_ir_treatment_attempt2_direct_local_model_2.json",
+      "runtime_receipt_sha256": "1363f07e1ef6526196691f46e58bd789c1664ef4e5d0e0191be8d18e508f0875",
+      "state": "GREEN",
+      "surface_classes": [
+        "whitespace_list",
+        "whitespace_list"
+      ],
+      "v2_syntax_complete_after_normalization": false,
+      "v2_syntax_complete_before_normalization": false
+    }
+  ],
+  "surface_class_counts": {
+    "quoted_bracket_list": 9,
+    "unquoted_bracket_list": 12,
+    "whitespace_list": 20
+  },
+  "trigger_state": "GREEN",
+  "unrelated_non_list_syntax_residual_count": 2
+}

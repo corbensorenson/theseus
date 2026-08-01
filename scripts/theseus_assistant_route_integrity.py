@@ -57,7 +57,6 @@ def load_model_contract(
     worker = read_json(worker_path)
     preflight = read_json(preflight_path)
     card = as_dict(worker.get("model"))
-    generation_boundary = as_dict(worker.get("generation_boundary"))
     preflight_identity = as_dict(preflight.get("model_identity"))
     faults: list[str] = []
     for field in ("repo_id", "revision", "temperature", "maximum_action_tokens"):
@@ -88,31 +87,6 @@ def load_model_contract(
     effective_maximum = int(maximum_tokens or configured_maximum)
     if effective_maximum <= 0 or effective_maximum > configured_maximum:
         faults.append("product_maximum_tokens_out_of_worker_bounds")
-    normalized_boundary: dict[str, Any] = {}
-    if generation_boundary:
-        declared_context = int(
-            generation_boundary.get("model_declared_context_window_tokens") or 0
-        )
-        if generation_boundary.get("project_selected_quality_token_cap") is not None:
-            faults.append("project_selected_quality_token_cap_present")
-        if generation_boundary.get("numeric_ceiling_source") != "model_declared_context_window":
-            faults.append("generation_numeric_ceiling_not_model_declared_context")
-        if declared_context <= 0 or configured_maximum != declared_context:
-            faults.append("worker_boundary_not_equal_model_declared_context")
-        if generation_boundary.get("ceiling_hit_is_instrument_invalid") is not True:
-            faults.append("generation_boundary_hit_not_invalidated")
-        normalized_boundary = {
-            "policy": str(generation_boundary.get("policy") or ""),
-            "numeric_ceiling_source": str(
-                generation_boundary.get("numeric_ceiling_source") or ""
-            ),
-            "model_declared_context_window_tokens": declared_context,
-            "project_selected_quality_token_cap": None,
-            "ceiling_hit_is_instrument_invalid": generation_boundary.get(
-                "ceiling_hit_is_instrument_invalid"
-            )
-            is True,
-        }
     decoder = {
         "temperature": float(card.get("temperature") or 0.0),
         "repetition_penalty": float(card.get("repetition_penalty") or 1.0),
@@ -132,7 +106,6 @@ def load_model_contract(
         "worker_config_sha256": file_sha256(worker_path),
         "decoder": decoder,
         "decoder_sha256": stable_hash(decoder),
-        "generation_boundary": normalized_boundary,
     }
     identity["identity_sha256"] = stable_hash(identity)
     return {

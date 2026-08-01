@@ -283,9 +283,14 @@ ordinary list spelling that the exact parser rejected: bracketed comma lists,
 quoted Python-style lists, or whitespace-separated identifiers. The terminal
 status is `INCONCLUSIVE_IMPLEMENTATION`, not evidence against cognitive
 compilation. P4S tasks and outputs are consumed and cannot be rescored, trained
-on, or reused in D1/D2. The next owner is a non-claim parser-normalization and
-round-trip mechanics repair, followed—only if adequate—by a new source-disjoint
-P4 denominator. D1 and book support remain closed.
+on, or reused in D1/D2. The delimiter-only parser owner is now repaired
+prospectively as `v2r2`: adversarial tests and a mechanics-only scan of all 20
+retained treatment calls preserve identifier order and replacement bytes while
+normalizing 41 bracketed, quoted, or whitespace list fields. No evaluator or
+score was invoked. Two Werkzeug calls retain a separate overlong `NODE` field,
+which `v2r2` intentionally does not repair. The next scientific owner is a new
+source-disjoint P4 denominator bound to `v2r2`; D1 and book support remain
+closed.
 
 The no-arbitrary-generation-cap contract now covers P4R/P4S, the frozen D2
 candidate and local-rater paths, the canonical TMax assistant backend and

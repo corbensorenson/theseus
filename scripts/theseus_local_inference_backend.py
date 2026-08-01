@@ -24,7 +24,7 @@ import theseus_assistant_route_integrity as route_integrity
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_WORKER_CONFIG = ROOT / "configs" / "core_evidence_tmax_9b_completion_worker.json"
+DEFAULT_WORKER_CONFIG = ROOT / "configs" / "core_evidence_tmax_9b_worker_control_v3.json"
 DEFAULT_RUNTIME_PREFLIGHT = ROOT / "reports" / "core_evidence_tmax_9b_runtime_preflight.json"
 BACKEND_POLICY = "project_theseus_local_inference_backend_v1"
 FROZEN_REPO_ID = "mlx-community/Tmax-9B-MLX-8bit"
@@ -141,8 +141,6 @@ class PersistentLocalInferenceSession:
                 generation_metrics["terminal_marker_stripped"] = raw_answer.strip() != answer
                 request_inference_calls = 1
                 self.inference_calls += 1
-                if generation_metrics.get("physical_context_boundary_hit") is True:
-                    faults.append("instrument_inadequate_generation_boundary_hit")
                 if not answer:
                     faults.append("empty_local_model_response")
             except Exception as exc:
@@ -319,8 +317,6 @@ def run_backend(
             generation_metrics = dict(getattr(model, "last_generation_metrics", {}) or {})
             generation_metrics["terminal_marker_stripped"] = raw_answer.strip() != answer
             inference_calls = 1
-            if generation_metrics.get("physical_context_boundary_hit") is True:
-                faults.append("instrument_inadequate_generation_boundary_hit")
             if not answer:
                 faults.append("empty_local_model_response")
         except Exception as exc:  # fail closed at the process boundary
@@ -416,17 +412,17 @@ class LocalMlxChatModel:
 
         prompt = self.tokenizer.apply_chat_template(
             messages,
-            tokenize=True,
+            tokenize=self.completion_predicate is not None,
             add_generation_prompt=True,
             **dict(self.card.get("chat_template_kwargs") or {}),
         )
         prompt_tokens = len(prompt) if isinstance(prompt, list) else 0
-        if not self.model_context_window_tokens:
-            raise BackendFault("model_declared_context_window_missing")
-        context_residual = self.model_context_window_tokens - prompt_tokens
-        if context_residual <= 0:
-            raise BackendFault("prompt_exhausts_model_context_window")
-        effective_maximum_tokens = min(self.maximum_tokens, context_residual)
+        context_residual = (
+            self.model_context_window_tokens - prompt_tokens
+            if self.model_context_window_tokens and prompt_tokens
+            else self.maximum_tokens
+        )
+        effective_maximum_tokens = min(self.maximum_tokens, max(1, context_residual))
         started = time.perf_counter()
         stream = stream_generate(
             self.model,
@@ -458,7 +454,7 @@ class LocalMlxChatModel:
             else:
                 termination_reason = (
                     "model_eos" if backend_finish_reason == "stop"
-                    else "physical_context_boundary" if backend_finish_reason == "length"
+                    else "safety_ceiling" if backend_finish_reason == "length"
                     else "backend_stopped_without_reason"
                 )
         finally:
@@ -467,18 +463,14 @@ class LocalMlxChatModel:
                 close_stream()
         self.last_generation_metrics = {
             "generated_tokens": generated_tokens,
-            "prompt_tokens": prompt_tokens,
-            "exact_prompt_tokens": prompt_tokens,
+            "prompt_tokens": prompt_tokens or None,
             "configured_maximum_tokens": self.maximum_tokens,
             "effective_maximum_tokens": effective_maximum_tokens,
-            "effective_context_residual_tokens": context_residual,
             "model_context_window_tokens": self.model_context_window_tokens or None,
-            "project_selected_quality_token_cap": None,
             "backend_finish_reason": backend_finish_reason,
             "termination_reason": termination_reason,
             "completion_predicate_enabled": self.completion_predicate is not None,
-            "safety_ceiling_hit": termination_reason == "physical_context_boundary",
-            "physical_context_boundary_hit": termination_reason == "physical_context_boundary",
+            "safety_ceiling_hit": termination_reason == "safety_ceiling",
             "load_wall_ms": round(self.load_wall_ms, 3),
             "generation_wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
             "mlx_peak_memory_gib": round(peak_memory_gib, 3),

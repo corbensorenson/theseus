@@ -14,7 +14,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-import theseus_assistant_route_integrity as integrity  # noqa: E402
+import theseus_assistant_route_integrity_v2 as integrity  # noqa: E402
 import theseus_assistant_runtime as runtime  # noqa: E402
 
 

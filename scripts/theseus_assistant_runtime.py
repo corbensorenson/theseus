@@ -26,7 +26,7 @@ from typing import Any, Callable, Iterator
 import viea_spine_records
 import vcm_consumer_abi
 import reflexive_dispatch
-import theseus_assistant_route_integrity as route_integrity
+import theseus_assistant_route_integrity_v2 as route_integrity
 
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -1,0 +1,55 @@
+{
+  "policy": "project_theseus_semantic_ir_v2r2_mechanics_binding_v1",
+  "state": "PROSPECTIVE_LIST_NORMALIZATION_MECHANICS_GREEN",
+  "purpose": "Bind the delimiter-only obligation-list normalization repair prospectively without mutating or rescoring consumed P4S evidence.",
+  "parser": "scripts/theseus_semantic_ir_v2r2.py",
+  "parser_sha256": "092a44f17965c09f4603c40956826d5738fe9b7792c7c92736641cad242790b0",
+  "mechanics_report": "reports/theseus_p4s_list_normalization_mechanics.json",
+  "mechanics_report_sha256": "edf6862e9a2d5c17130be5120d4dd93918c4be38c5f3ca2e22e858ed5c3befc3",
+  "retained_p4s_terminal_disposition": "reports/theseus_p4s_terminal_disposition.json",
+  "retained_p4s_terminal_disposition_sha256": "2efb3120ddb7396bc45d9c8dd22c66cdaa62b8293fb2b66135a03e89f068c7b8",
+  "accepted_surface_classes": [
+    "canonical_comma_list",
+    "comma_list_with_whitespace",
+    "whitespace_list",
+    "unquoted_bracket_list",
+    "single_quoted_bracket_list",
+    "double_quoted_bracket_list"
+  ],
+  "hard_invariants": {
+    "identifier_values_invented": 0,
+    "identifier_order_changed": false,
+    "duplicates_removed": false,
+    "unknown_identifiers_admitted_by_lowerer": false,
+    "replacement_source_touched": false,
+    "path_node_operation_source_digest_touched": false,
+    "ambiguous_or_executable_surface_rejected": true,
+    "task_evaluator_invocations_in_retained_diagnostic": 0,
+    "candidate_actions_applied_in_retained_diagnostic": 0,
+    "p4s_scores_recomputed": false,
+    "p4s_disposition_modified": false
+  },
+  "tests": {
+    "parser_adversarial_test": "tests/test_theseus_semantic_ir_v2r2.py",
+    "parser_adversarial_test_sha256": "dcdbac48b49d77333028aa8a4872c5a933d5d6da5b0943e818802773d02f401d",
+    "retained_mechanics_test": "tests/test_theseus_p4s_list_normalization_mechanics.py",
+    "retained_mechanics_test_sha256": "158369c75c580cc95e45bce66d39b277617099c5da359b4ce82583c384b882f0",
+    "verification_command": "python3 -m pytest -q tests/test_theseus_semantic_ir_v2r2.py tests/test_theseus_p4s_list_normalization_mechanics.py tests/test_theseus_p4s_cognitive_compilation.py"
+  },
+  "retained_diagnostic": {
+    "attempt2_treatment_calls": 20,
+    "normalized_list_fields": 41,
+    "unrelated_non_list_syntax_residuals": 2,
+    "unrelated_residual": "Two Werkzeug calls emitted an overlong NODE field. v2r2 does not normalize or conceal it."
+  },
+  "next_eligible_action": "Bind v2r2 into an entirely fresh source-disjoint P4 instrument and task pool before making any treatment-effect inference.",
+  "forbidden_actions": [
+    "rescore_consumed_P4S_outputs",
+    "rerun_consumed_P4S_tasks_for_fresh_credit",
+    "train_on_consumed_P4S_tasks_or_outputs",
+    "promote_D1_from_mechanics_only",
+    "promote_book_support_from_mechanics_only",
+    "claim_cognitive_compilation_effect_from_parser_repair"
+  ],
+  "maximum_inference": "v2r2 is mechanics-qualified only for deterministic delimiter normalization under its exact tests and retained text diagnostic. It does not establish candidate correctness, a subsystem effect, model competence, D1 qualification, D2 evidence, serving utility, or ASI Stack book support."
+}
