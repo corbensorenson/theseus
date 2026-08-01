@@ -60,6 +60,9 @@ def test_config_replaces_user_gate_with_one_machine_predicate_segment() -> None:
     assert value["one_shot_command"]["max_segments"] == 1
     assert value["one_shot_command"]["expected_maximum_optimizer_steps"] == 64
     assert value["authority"]["D2_evaluation_authorized"] is False
+    patterns = value["exclusive_accelerator_process_patterns"]
+    assert "theseus_p4v2r2_campaign.py" in patterns
+    assert "theseus_p4v2r2_autonomous_launch.py --execute" in patterns
 
 
 def test_machine_preflight_authorizes_without_user_when_every_predicate_passes(

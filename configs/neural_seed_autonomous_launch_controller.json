@@ -17,6 +17,8 @@
     "reports/pre_long_run_replacement_freeze.json"
   ],
   "exclusive_accelerator_process_patterns": [
+    "theseus_p4v2r2_campaign.py",
+    "theseus_p4v2r2_autonomous_launch.py --execute",
     "theseus_p4s_campaign.py",
     "neural_seed_training_campaign.py --execute",
     "moecot_language_arm_training.py --execute",
