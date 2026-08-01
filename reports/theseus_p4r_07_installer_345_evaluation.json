@@ -1,0 +1,134 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 1154.669,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-2zokaqr2/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-2zokaqr2/source/theseus_p4_hidden_test.py\", line 307, in check_installer\n    assert function(\"demo-1.0.database/payload.py\", source, \"purelib\") == (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/installer/_core.py\", line 52, in _determine_scheme\n    left, right = posixpath.split(left)\n                  ^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 105, in split\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-2zokaqr2/source/theseus_p4_hidden_test.py\", line 302, in alarm\n    raise TimeoutError(\"common-prefix sibling caused nontermination\")\nTimeoutError: common-prefix sibling caused nontermination\nP4_FAIL_installer: TimeoutError: common-prefix sibling caused nontermination\n",
+      "stdout_tail": ""
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "",
+      "hidden_stdout_tail": "P4_PASS_installer\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T06:32:30.726425Z",
+    "evaluator_sha256": "73ce6dfd8a915f223247636808b47f5b35913be2d8c5564c28a3b74c5fe64f2f",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 1682.305,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 87.486,
+      "stderr_tail": "",
+      "stdout_tail": "P4_PASS_installer\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "0426457e6f045bf2f32667d709cc355f2bd2c72df4ef82c2891d8af598a2de6a",
+      "task_sha256": "82b25df5e2d74f172b3f9352a8281db48c9e56f559a538fde2c10b87fb16a9c3",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "82b25df5e2d74f172b3f9352a8281db48c9e56f559a538fde2c10b87fb16a9c3",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "4ed92ea89c2187d1ba31997b6382802c289c0c43727b76475c4572a7cf0e340c",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T06:32:31.026439Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 1,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 0,
+    "sealed_learned_candidates": 0,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 1
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "084e42c9a68c289032b46a7593655e83b1f6b5d84d7d7f089e001d9a0be2d088"
+    ]
+  },
+  "evaluator_sha256": "73ce6dfd8a915f223247636808b47f5b35913be2d8c5564c28a3b74c5fe64f2f",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "084e42c9a68c289032b46a7593655e83b1f6b5d84d7d7f089e001d9a0be2d088",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "src/installer/_core.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "91f0780e86c21c973d5df3c6fa4e16e938481ab7e57ced0d63891e83822cd06e",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 81.048,
+        "stderr_tail": "",
+        "stdout_tail": "P4_PASS_installer\n"
+      }
+    }
+  ],
+  "runtime_ms": 1983.063,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

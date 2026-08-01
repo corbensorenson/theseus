@@ -1,0 +1,161 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 179.044,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-c2xbfy2v/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-c2xbfy2v/source/theseus_p4_hidden_test.py\", line 191, in check_structlog\n    assert restored._write == file.write\n           ^^^^^^^^^^^^^^^\nAttributeError: 'WriteLogger' object has no attribute '_write'\nP4_FAIL_structlog: AttributeError: 'WriteLogger' object has no attribute '_write'\n",
+      "stdout_tail": ""
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "P4_STRUCTLOG_PICKLE_OK\n",
+      "hidden_stdout_tail": "P4_STRUCTLOG_PICKLE_OK\nP4_PASS_structlog\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T05:33:52.016035Z",
+    "evaluator_sha256": "fe1c465328190c3ad79fcba20e8dca6368fc3b0c47322144d7b3e82b2d7c2619",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 1103.995,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 167.329,
+      "stderr_tail": "P4_STRUCTLOG_PICKLE_OK\n",
+      "stdout_tail": "P4_STRUCTLOG_PICKLE_OK\nP4_PASS_structlog\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "29e2c45ee3fa42c373f08693df1fc9ad4915a8048ad3903123ce35865b32d3b9",
+      "task_sha256": "4919aa3e538df1916c70a18a67ea92a8893e2b798ec1bef0f4836b882d6e6ecc",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "4919aa3e538df1916c70a18a67ea92a8893e2b798ec1bef0f4836b882d6e6ecc",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "1afda260249ec1e1d67193b6be7537a3ae1acf1d4f7a15db2e6811c0894009ad",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T05:33:53.015942Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 2,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 1,
+    "sealed_learned_candidates": 1,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 2
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "45b31d5d835a3c5a7f3ec9f5444be8ffee7d1d5ad2d2400197c31cdb76f03054",
+      "680d72f02f88cc0d92410dc195696c2ff3281ca76ae4999227e970f70311c9da"
+    ]
+  },
+  "evaluator_sha256": "fe1c465328190c3ad79fcba20e8dca6368fc3b0c47322144d7b3e82b2d7c2619",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "natural_language_plan_control",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "45b31d5d835a3c5a7f3ec9f5444be8ffee7d1d5ad2d2400197c31cdb76f03054",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 1,
+      "observed_effect_paths": [
+        "src/structlog/_output.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "b2948979ac4d15cbd499d74ad8d9560dc623fc300d9b9d4c633868a5d411885c",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 170.425,
+        "stderr_tail": "P4_STRUCTLOG_PICKLE_OK\n",
+        "stdout_tail": "P4_STRUCTLOG_PICKLE_OK\nP4_PASS_structlog\n"
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "680d72f02f88cc0d92410dc195696c2ff3281ca76ae4999227e970f70311c9da",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "src/structlog/_output.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "b2948979ac4d15cbd499d74ad8d9560dc623fc300d9b9d4c633868a5d411885c",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 166.393,
+        "stderr_tail": "P4_STRUCTLOG_PICKLE_OK\n",
+        "stdout_tail": "P4_STRUCTLOG_PICKLE_OK\nP4_PASS_structlog\n"
+      }
+    }
+  ],
+  "runtime_ms": 2103.382,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

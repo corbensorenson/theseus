@@ -1,0 +1,411 @@
+{
+  "assistant_text": "THESEUS_EDIT_V1\nsrc/tox/config/set_env.py 135:12-141:84\n<<<\n            if in_quotes and char == quote_char:\n                in_quotes = False\n            elif not in_quotes and char == \";\":\n                return value[:i].strip().replace(\"\\\\;\", \";\"), value[i + 1 :].strip()\n            i += 1\n>>>\nEND",
+  "assistant_trace_schema": {
+    "allowed_outcomes": [
+      "accepted",
+      "missed",
+      "ignored",
+      "corrected",
+      "completed",
+      "failed",
+      "abstained"
+    ],
+    "boundaries": {
+      "assisted_behavior_learned_model_credit_allowed": false,
+      "dogfood_metadata_is_private_training_pressure_only": true,
+      "external_inference_at_runtime_allowed": false,
+      "fallback_returns_allowed": false,
+      "public_benchmark_training_allowed": false,
+      "raw_prompt_persistence": "hash_only",
+      "raw_text_training_allowed": false,
+      "tool_outputs_are_evidence_not_model_only_skill": true
+    },
+    "dogfood_training_row_schema": {
+      "inputs": [
+        "assistant_lane",
+        "outcome",
+        "intent_summary_redacted",
+        "artifact_refs",
+        "error_family",
+        "duration_bucket"
+      ],
+      "public_benchmark_rows": false,
+      "raw_user_text": false,
+      "targets": [
+        "outcome_label",
+        "repair_priority",
+        "lane_feedback"
+      ],
+      "teacher_rows": false
+    },
+    "empty_outcome_allowed": true,
+    "exists": true,
+    "failure_behavior": {
+      "missing_required_event_field": "fail_closed_hard_gate",
+      "missing_schema": "fail_closed_hard_gate",
+      "raw_text_or_public_training_attempt": "hard_block",
+      "unknown_outcome": "normalize_to_missed_and_mark_schema_violation"
+    },
+    "outcome_semantics": {
+      "abstained": "The assisted lane deliberately declined because authority, evidence, or safe execution was insufficient.",
+      "accepted": "The user accepted the result or route as useful.",
+      "completed": "The task reached a usable completed state without implying model promotion.",
+      "corrected": "The user or verifier supplied a correction signal.",
+      "failed": "The assisted lane reached a terminal failure and must not receive success or capability credit.",
+      "ignored": "The output was not used and should not be treated as successful.",
+      "missed": "The assistant failed to address the user's actual need."
+    },
+    "path": "configs/assistant_trace_schema.json",
+    "policy": "project_theseus_assistant_trace_schema_v1",
+    "purpose": "Shared product assistant trace and dogfood outcome contract for every local Theseus assistant route.",
+    "required_event_fields": [
+      "session_id",
+      "intent",
+      "assistant_lane",
+      "prompt_sha256",
+      "assistant_text_sha256",
+      "feedback",
+      "dogfood_event_written",
+      "vcm_context_ready",
+      "vcm_context_governor_ready",
+      "viea_materialized_view_ready",
+      "private_verifier_spine_ready",
+      "public_training_rows_written",
+      "external_inference_calls"
+    ],
+    "required_viea_bindings": [
+      "policy_optimization_record",
+      "context_transaction",
+      "context_adequacy",
+      "artifact_graph_record",
+      "claim_record",
+      "evidence_transition_record"
+    ],
+    "schema_version": "1.0.0",
+    "sha256": "c99285f737b7806c51944b5517ec93854bb5c31da342190146422ef589dca14d"
+  },
+  "assistant_viea_trace": [],
+  "checkpoint_chat": {
+    "out": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1.json",
+    "returncode": 0,
+    "session": {
+      "history_turns_loaded": 0,
+      "persistence": "disabled_no_raw_text_retention",
+      "session_id": "p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1",
+      "session_path": ""
+    },
+    "stderr_tail": ""
+  },
+  "context_refresh": [],
+  "created_utc": "2026-08-01T05:56:05.552248+00:00",
+  "dogfood": {},
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "gates": [
+    {
+      "evidence": [],
+      "name": "local_model_contract_ready",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": [],
+      "name": "direct_generation_request_ready",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "effect_canary": false
+      },
+      "name": "direct_mode_has_no_effect_authority",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "command": [
+          "persistent_in_process_frozen_backend"
+        ],
+        "id": "local_inference",
+        "model_load_count": 1,
+        "persistent_backend": true,
+        "persistent_session_id": "p4r-p4r-cognitive-compilation-05",
+        "prompt_transport": "in_process_ephemeral_not_argv",
+        "returncode": 0,
+        "runtime_ms": 161526,
+        "stderr_tail": "",
+        "stdout_tail": ""
+      },
+      "name": "local_inference_completed",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "failed_checks": []
+      },
+      "name": "live_route_integrity_release_authorized",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "raw_text_training_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "runtime_external_inference_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "public_benchmark_training_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "fallback_returns_disabled",
+      "passed": true,
+      "severity": "hard"
+    }
+  ],
+  "generation_backend": {
+    "execution_mode": "direct_local_model",
+    "id": "local_inference",
+    "out": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1.json",
+    "returncode": 0
+  },
+  "generation_request_binding": {
+    "automatic_effects": 0,
+    "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "context_pages": [],
+    "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+    "execution_mode": "direct_local_model",
+    "maximum_model_calls": 1,
+    "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+    "model_prompt_sha256": "aa626534503972453708aad2b63a472bdd12a5887870e5aaeb14d57b3769e674",
+    "policy": "project_theseus_live_route_integrity_v1",
+    "raw_context_text_stored": false,
+    "raw_prompt_stored": false,
+    "request_binding_sha256": "b8b8f8c196d6143bc01edb677df79954ea16b53bab250c6515324b93c5a4420f",
+    "route_packet": {
+      "automatic_effects": 0,
+      "planning": "none",
+      "route_kind": "direct_fixed_model",
+      "tool_calls": 0,
+      "vcm": "none"
+    },
+    "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+    "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+    "user_prompt_sha256": "aa626534503972453708aad2b63a472bdd12a5887870e5aaeb14d57b3769e674"
+  },
+  "inputs": {
+    "config": "configs/theseus_assistant_runtime_p4r_qwen35.json",
+    "origin": "local_user_control",
+    "principal": "local-user",
+    "prompt_sha256": "aa626534503972453708aad2b63a472bdd12a5887870e5aaeb14d57b3769e674",
+    "surface": "local_assistant"
+  },
+  "local_model_contract": {
+    "faults": [],
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "model_card": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "maximum_action_tokens": 262144,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "temperature": 0.0
+    },
+    "ready": true,
+    "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
+    "worker_config": "configs/core_evidence_qwen35_9b_completion_worker.json"
+  },
+  "outputs": {
+    "assistant_viea_trace": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1_viea.jsonl",
+    "conversation_events": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1_events.jsonl",
+    "markdown": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1.md",
+    "report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1.json"
+  },
+  "policy": "project_theseus_assistant_runtime_v1",
+  "public_training_rows_written": 0,
+  "response": {
+    "answer": "THESEUS_EDIT_V1\nsrc/tox/config/set_env.py 135:12-141:84\n<<<\n            if in_quotes and char == quote_char:\n                in_quotes = False\n            elif not in_quotes and char == \";\":\n                return value[:i].strip().replace(\"\\\\;\", \";\"), value[i + 1 :].strip()\n            i += 1\n>>>\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "route_integrity": {
+    "checks": {
+      "D2_consumption_zero": true,
+      "authority_controls_effect_scope": true,
+      "backend_completed": true,
+      "backend_model_identity_bound": true,
+      "backend_prompt_bound": true,
+      "backend_route_bound": true,
+      "backend_user_facing_effects_zero": true,
+      "compiled_plan_executed_or_held": true,
+      "decorative_labels_cannot_satisfy_integrated_route": true,
+      "effect_observation_and_exact_rollback_bound": true,
+      "execution_mode_bound": true,
+      "external_inference_zero": true,
+      "fallback_returns_zero": true,
+      "local_model_backend_owned_by_canonical_assistant_runtime": true,
+      "public_calibration_consumption_zero": true,
+      "public_training_rows_zero": true,
+      "request_binding_digest_valid": true,
+      "response_present": true,
+      "route_changes_callable_capability_budget_tool_or_hold": true,
+      "selected_vcm_content_consumed_by_model": true,
+      "single_model_call_budget": true,
+      "supported_execution_mode": true,
+      "teacher_calls_zero": true,
+      "verification_controls_release_or_repair": true
+    },
+    "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+    "execution_mode": "direct_local_model",
+    "expected_model_identity": {
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "failed_checks": [],
+    "non_claims": [
+      "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+      "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+    ],
+    "observed_model_identity": {
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "pair_contract": {
+      "automatic_effects": 0,
+      "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+      "maximum_model_calls": 1,
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+    },
+    "policy": "project_theseus_live_route_integrity_v1",
+    "ready": true,
+    "receipt_sha256": "2a6f23dd977622c13717137b88c61f7e3c9fd9e8b132c8eafb7225fc4691d804",
+    "release_allowed": true,
+    "request_binding": {
+      "automatic_effects": 0,
+      "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "context_pages": [],
+      "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+      "execution_mode": "direct_local_model",
+      "maximum_model_calls": 1,
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "model_prompt_sha256": "aa626534503972453708aad2b63a472bdd12a5887870e5aaeb14d57b3769e674",
+      "policy": "project_theseus_live_route_integrity_v1",
+      "raw_context_text_stored": false,
+      "raw_prompt_stored": false,
+      "request_binding_sha256": "b8b8f8c196d6143bc01edb677df79954ea16b53bab250c6515324b93c5a4420f",
+      "route_packet": {
+        "automatic_effects": 0,
+        "planning": "none",
+        "route_kind": "direct_fixed_model",
+        "tool_calls": 0,
+        "vcm": "none"
+      },
+      "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+      "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+      "user_prompt_sha256": "aa626534503972453708aad2b63a472bdd12a5887870e5aaeb14d57b3769e674"
+    },
+    "structural_verification": {
+      "checks": {
+        "D2_consumption_zero": true,
+        "backend_completed": true,
+        "backend_model_identity_bound": true,
+        "backend_prompt_bound": true,
+        "backend_route_bound": true,
+        "backend_user_facing_effects_zero": true,
+        "external_inference_zero": true,
+        "fallback_returns_zero": true,
+        "public_calibration_consumption_zero": true,
+        "public_training_rows_zero": true,
+        "response_present": true,
+        "single_model_call_budget": true,
+        "teacher_calls_zero": true
+      },
+      "independent_from_backend": true,
+      "passed": true,
+      "task_correctness_evaluated": false,
+      "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+      "verifier_id": "theseus_local_response_integrity_verifier_v1"
+    }
+  },
+  "summary": {
+    "assistant_lane": "direct_fixed_model_runtime",
+    "assistant_text_chars": 302,
+    "assistant_trace_schema": "configs/assistant_trace_schema.json",
+    "assistant_trace_schema_ready": true,
+    "assistant_trace_schema_sha256": "c99285f737b7806c51944b5517ec93854bb5c31da342190146422ef589dca14d",
+    "checkpoint_chat_returncode": 0,
+    "checkpoint_history_turns_loaded": 0,
+    "checkpoint_id": "live",
+    "checkpoint_session_path": "",
+    "dogfood_event_written": false,
+    "dogfood_training_rows_written": 0,
+    "execution_mode": "direct_local_model",
+    "fallback_return_count": 0,
+    "feedback": "completed",
+    "generation_request_ready": true,
+    "intent": "code",
+    "local_model_contract_ready": true,
+    "local_model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+    "public_training_rows_written": 0,
+    "requested_intent": "code",
+    "route_integrity_disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+    "route_integrity_failed_checks": [],
+    "route_integrity_ready": true,
+    "route_integrity_release_allowed": true,
+    "runtime_external_inference_calls": 0,
+    "runtime_ms": 161530,
+    "session_id": "p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1"
+  },
+  "trigger_state": "GREEN"
+}

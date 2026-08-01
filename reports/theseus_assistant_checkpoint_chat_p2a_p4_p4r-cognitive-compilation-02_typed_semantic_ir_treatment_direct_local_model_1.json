@@ -1,0 +1,91 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Qwen3.5-9B-MLX-4bit/snapshots/938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "local_snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4r-cognitive-compilation-02",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-01T05:16:42.615578Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": "stop",
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_maximum_tokens": 255274,
+    "generated_tokens": 1105,
+    "generation_tokens_per_second": 9.847,
+    "generation_wall_ms": 235256.533,
+    "load_wall_ms": 4210.012,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 7.385,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 3,
+    "prompt_tokens": 6870,
+    "prompt_tokens_per_second": 55.974,
+    "runtime_ms": 235279,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "model_eos"
+  },
+  "policy": "project_theseus_local_inference_backend_v1",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "cb80bb88a3afc47b4bc813c9bfb4af5192a1d7c666c55a0b7bb03a1c9f8b77ce",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "SOURCE ffe9fedc7653134aecc727681c5abc35da9b2fa73bc3823fb43da449f6911d3d\nOBLIGATIONS O1,O2,O3\nUNIT N-066AC957E066A499 O1|INSERT_AFTER N-066AC957E066A499 0a3bd10d78eb093cf7f20c5fa6616e273621ddf5c0d841de1f3e77be6e4994db\n<<<\n        raise TypeError(f\"Cannot restore Tag from {state!r}\")\n\n\ndef parse_tag(\n    tag: str, *, validate_order: bool = False, limit: int | None = None\n) -> frozenset[Tag]:\n    \"\"\"\n    Parses the provided tag (e.g. `py3-none-any`) into a frozenset of\n    :class:`Tag` instances.\n\n    Returning a set is required due to the possibility that the tag is a\n    `compressed tag set`_, e.g. ``\"py2.py3-none-any\"`` which supports both\n    Python 2 and Python 3.\n\n    If **validate_order** is true, compressed tag set components are checked\n    to be in sorted order as required by PEP 425.\n\n    If **limit** is not ``None``, the compressed tag set can generate at most\n    that many tags.\n\n    :param str tag: The tag to parse, e.g. ``\"py3-none-any\"``.\n    :param bool validate_order: Check whether compressed tag set components\n        are in sorted order.\n    :param int | None limit: The maximum number of tags to parse.\n    :raises UnsortedTagsError: If **validate_order** is true and any compressed tag\n        set component is not in sorted order.\n    :raises InvalidTag: If the interpreter, ABI, or platform field (or any member\n        of a compressed tag set) is empty, or the tag does not have exactly three\n        components.\n    :raises TooManyTagsError: If **limit** is not ``None`` and the compressed tag\n        set would generate more than **limit** tags.\n    :raises ValueError: If **limit** is negative.\n\n    .. versionadded:: 26.1\n       The *validate_order* parameter.\n\n    .. versionadded:: 26.3\n       Raises :class:`InvalidTag` on empty tag components, or a tag that does\n       not have exactly three components.\n       Added the *limit* parameter. Raises :class:`TooManyTagsError` if the compressed\n       tag set would generate more than *limit* tags.\n    \"\"\"\n\n    if limit is not None and limit < 0:\n        raise ValueError(\"limit must be non-negative\")\n\n    component_parts = [component.split(\".\") for component in tag.split(\"-\")]\n    for parts in component_parts:\n        if \"\" in parts:\n            component = \".\".join(parts)\n            raise InvalidTag(f\"Tag {tag!r} has an empty component: {component!r}\")\n        if validate_order and parts != sorted(parts):\n            component = \".\".join(parts)\n            raise UnsortedTagsError(\n                f\"Tag component {component!r} is not in sorted order per PEP 425\"\n            )\n\n    tag_count = 1\n    for parts in component_parts:\n        tag_count *= len(parts)\n\n    if limit is not None and tag_count > limit:\n        raise TooManyTagsError(\n            f\"Compressed tag set would generate {tag_count} tags, exceeding \"\n            f\"limit {limit}\"\n        )\n\n    try:\n        interpreters, abis, platforms = component_parts\n    except ValueError as exc:\n        raise InvalidTag(f\"Tag {tag!r} must have exactly three components\") from exc\n    \n    # Validate each interpreter component against the standard/custom registry\n    import re\n    _interpreter_pattern = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')\n    \n    for interpreter in interpreters:\n        if not _interpreter_pattern.match(interpreter):\n            raise InvalidTag(f\"Tag {tag!r} has an invalid interpreter: {interpreter!r}\")\n\n    return frozenset(\n        Tag(interpreter, abi, platform_)\n        for interpreter in interpreters\n        for abi in abis\n        for platform_ in platforms\n    )\n\n\ndef _get_config_var(name: str, warn: bool = False) -> int | str | None:\n    value: int | str | None = sysconfig.get_config_var(name)\n    if value is None and warn:\n        logger.debug(\n            \"Config variable '%s' is unset, Python ABI tag may be incorrect\", name\n        )\n    return value\n>>>\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_1",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

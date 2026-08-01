@@ -1,0 +1,161 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 116.451,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-tc4bcnd_/source/theseus_p4_hidden_test.py\", line 207, in invoke\n    await function([\"unused\"], stdin=subprocess.PIPE)\n  File \"src/trio/_subprocess.py\", line 677, in _run_process\n    raise ValueError(\nValueError: stdout=subprocess.PIPE is only valid with nursery.start, since that's the only way to access the pipe; use nursery.start or pass the data you want to write directly\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-tc4bcnd_/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-tc4bcnd_/source/theseus_p4_hidden_test.py\", line 215, in check_trio\n    asyncio.run(invoke())\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py\", line 194, in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py\", line 687, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-tc4bcnd_/source/theseus_p4_hidden_test.py\", line 210, in invoke\n    assert message.startswith(\"stdin=subprocess.PIPE\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_trio: AssertionError: \n",
+      "stdout_tail": ""
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "",
+      "hidden_stdout_tail": "P4_PASS_trio\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T05:42:33.673999Z",
+    "evaluator_sha256": "3987168e447db9c0e5cb187f8a2c7d5eab196be65722db35355a9d8670d56380",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 1066.023,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 98.7,
+      "stderr_tail": "",
+      "stdout_tail": "P4_PASS_trio\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "1c3b76f657001b2afe16c3f4bb805270d3e608d97b46e703adc9ea622908f46a",
+      "task_sha256": "535a0bcbab3ade1e53abdca119c01b637400f413b37a4b568f03e191b5bd9452",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "535a0bcbab3ade1e53abdca119c01b637400f413b37a4b568f03e191b5bd9452",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "9dffe8f111924795cc1166b46a466b10d2a7edefab70f16423b4a08d58e32429",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T05:42:34.712298Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 2,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 1,
+    "sealed_learned_candidates": 1,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 2
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "459324d061a0709b941ff9cd8b6bbcd2a044378c107f3bd9e9c5f188a4ecccf4",
+      "7cf9515bf518c4257adf7bc4ee1d4316a459c02c9185f4a3c402fccdd7d2a333"
+    ]
+  },
+  "evaluator_sha256": "3987168e447db9c0e5cb187f8a2c7d5eab196be65722db35355a9d8670d56380",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_target_generation",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "459324d061a0709b941ff9cd8b6bbcd2a044378c107f3bd9e9c5f188a4ecccf4",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 1,
+      "observed_effect_paths": [
+        "src/trio/_subprocess.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "f2eadbba0da9c8beace4fed8609d68d6d24627d2316b74fe5ad767c628952bf5",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 92.023,
+        "stderr_tail": "",
+        "stdout_tail": "P4_PASS_trio\n"
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "7cf9515bf518c4257adf7bc4ee1d4316a459c02c9185f4a3c402fccdd7d2a333",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "src/trio/_subprocess.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "f2eadbba0da9c8beace4fed8609d68d6d24627d2316b74fe5ad767c628952bf5",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 95.581,
+        "stderr_tail": "",
+        "stdout_tail": "P4_PASS_trio\n"
+      }
+    }
+  ],
+  "runtime_ms": 2104.903,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

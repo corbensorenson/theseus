@@ -1,0 +1,411 @@
+{
+  "assistant_text": "SOURCE ffe9fedc7653134aecc727681c5abc35da9b2fa73bc3823fb43da449f6911d3d\nOBLIGATIONS O1,O2,O3\nUNIT N-066AC957E066A499 O1|INSERT_AFTER N-066AC957E066A499 0a3bd10d78eb093cf7f20c5fa6616e273621ddf5c0d841de1f3e77be6e4994db\n<<<\n        raise TypeError(f\"Cannot restore Tag from {state!r}\")\n\n\ndef parse_tag(\n    tag: str, *, validate_order: bool = False, limit: int | None = None\n) -> frozenset[Tag]:\n    \"\"\"\n    Parses the provided tag (e.g. `py3-none-any`) into a frozenset of\n    :class:`Tag` instances.\n\n    Returning a set is required due to the possibility that the tag is a\n    `compressed tag set`_, e.g. ``\"py2.py3-none-any\"`` which supports both\n    Python 2 and Python 3.\n\n    If **validate_order** is true, compressed tag set components are checked\n    to be in sorted order as required by PEP 425.\n\n    If **limit** is not ``None``, the compressed tag set can generate at most\n    that many tags.\n\n    :param str tag: The tag to parse, e.g. ``\"py3-none-any\"``.\n    :param bool validate_order: Check whether compressed tag set components\n        are in sorted order.\n    :param int | None limit: The maximum number of tags to parse.\n    :raises UnsortedTagsError: If **validate_order** is true and any compressed tag\n        set component is not in sorted order.\n    :raises InvalidTag: If the interpreter, ABI, or platform field (or any member\n        of a compressed tag set) is empty, or the tag does not have exactly three\n        components.\n    :raises TooManyTagsError: If **limit** is not ``None`` and the compressed tag\n        set would generate more than **limit** tags.\n    :raises ValueError: If **limit** is negative.\n\n    .. versionadded:: 26.1\n       The *validate_order* parameter.\n\n    .. versionadded:: 26.3\n       Raises :class:`InvalidTag` on empty tag components, or a tag that does\n       not have exactly three components.\n       Added the *limit* parameter. Raises :class:`TooManyTagsError` if the compressed\n       tag set would generate more than *limit* tags.\n    \"\"\"\n\n    if limit is not None and limit < 0:\n        raise ValueError(\"limit must be non-negative\")\n\n    component_parts = [component.split(\".\") for component in tag.split(\"-\")]\n    for parts in component_parts:\n        if \"\" in parts:\n            component = \".\".join(parts)\n            raise InvalidTag(f\"Tag {tag!r} has an empty component: {component!r}\")\n        if validate_order and parts != sorted(parts):\n            component = \".\".join(parts)\n            raise UnsortedTagsError(\n                f\"Tag component {component!r} is not in sorted order per PEP 425\"\n            )\n\n    tag_count = 1\n    for parts in component_parts:\n        tag_count *= len(parts)\n\n    if limit is not None and tag_count > limit:\n        raise TooManyTagsError(\n            f\"Compressed tag set would generate {tag_count} tags, exceeding \"\n            f\"limit {limit}\"\n        )\n\n    try:\n        interpreters, abis, platforms = component_parts\n    except ValueError as exc:\n        raise InvalidTag(f\"Tag {tag!r} must have exactly three components\") from exc\n    \n    # Validate each interpreter component against the standard/custom registry\n    import re\n    _interpreter_pattern = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')\n    \n    for interpreter in interpreters:\n        if not _interpreter_pattern.match(interpreter):\n            raise InvalidTag(f\"Tag {tag!r} has an invalid interpreter: {interpreter!r}\")\n\n    return frozenset(\n        Tag(interpreter, abi, platform_)\n        for interpreter in interpreters\n        for abi in abis\n        for platform_ in platforms\n    )\n\n\ndef _get_config_var(name: str, warn: bool = False) -> int | str | None:\n    value: int | str | None = sysconfig.get_config_var(name)\n    if value is None and warn:\n        logger.debug(\n            \"Config variable '%s' is unset, Python ABI tag may be incorrect\", name\n        )\n    return value\n>>>\nLOSS NONE\nEND",
+  "assistant_trace_schema": {
+    "allowed_outcomes": [
+      "accepted",
+      "missed",
+      "ignored",
+      "corrected",
+      "completed",
+      "failed",
+      "abstained"
+    ],
+    "boundaries": {
+      "assisted_behavior_learned_model_credit_allowed": false,
+      "dogfood_metadata_is_private_training_pressure_only": true,
+      "external_inference_at_runtime_allowed": false,
+      "fallback_returns_allowed": false,
+      "public_benchmark_training_allowed": false,
+      "raw_prompt_persistence": "hash_only",
+      "raw_text_training_allowed": false,
+      "tool_outputs_are_evidence_not_model_only_skill": true
+    },
+    "dogfood_training_row_schema": {
+      "inputs": [
+        "assistant_lane",
+        "outcome",
+        "intent_summary_redacted",
+        "artifact_refs",
+        "error_family",
+        "duration_bucket"
+      ],
+      "public_benchmark_rows": false,
+      "raw_user_text": false,
+      "targets": [
+        "outcome_label",
+        "repair_priority",
+        "lane_feedback"
+      ],
+      "teacher_rows": false
+    },
+    "empty_outcome_allowed": true,
+    "exists": true,
+    "failure_behavior": {
+      "missing_required_event_field": "fail_closed_hard_gate",
+      "missing_schema": "fail_closed_hard_gate",
+      "raw_text_or_public_training_attempt": "hard_block",
+      "unknown_outcome": "normalize_to_missed_and_mark_schema_violation"
+    },
+    "outcome_semantics": {
+      "abstained": "The assisted lane deliberately declined because authority, evidence, or safe execution was insufficient.",
+      "accepted": "The user accepted the result or route as useful.",
+      "completed": "The task reached a usable completed state without implying model promotion.",
+      "corrected": "The user or verifier supplied a correction signal.",
+      "failed": "The assisted lane reached a terminal failure and must not receive success or capability credit.",
+      "ignored": "The output was not used and should not be treated as successful.",
+      "missed": "The assistant failed to address the user's actual need."
+    },
+    "path": "configs/assistant_trace_schema.json",
+    "policy": "project_theseus_assistant_trace_schema_v1",
+    "purpose": "Shared product assistant trace and dogfood outcome contract for every local Theseus assistant route.",
+    "required_event_fields": [
+      "session_id",
+      "intent",
+      "assistant_lane",
+      "prompt_sha256",
+      "assistant_text_sha256",
+      "feedback",
+      "dogfood_event_written",
+      "vcm_context_ready",
+      "vcm_context_governor_ready",
+      "viea_materialized_view_ready",
+      "private_verifier_spine_ready",
+      "public_training_rows_written",
+      "external_inference_calls"
+    ],
+    "required_viea_bindings": [
+      "policy_optimization_record",
+      "context_transaction",
+      "context_adequacy",
+      "artifact_graph_record",
+      "claim_record",
+      "evidence_transition_record"
+    ],
+    "schema_version": "1.0.0",
+    "sha256": "c99285f737b7806c51944b5517ec93854bb5c31da342190146422ef589dca14d"
+  },
+  "assistant_viea_trace": [],
+  "checkpoint_chat": {
+    "out": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json",
+    "returncode": 0,
+    "session": {
+      "history_turns_loaded": 0,
+      "persistence": "disabled_no_raw_text_retention",
+      "session_id": "p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2",
+      "session_path": ""
+    },
+    "stderr_tail": ""
+  },
+  "context_refresh": [],
+  "created_utc": "2026-08-01T05:16:42.721552+00:00",
+  "dogfood": {},
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "gates": [
+    {
+      "evidence": [],
+      "name": "local_model_contract_ready",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": [],
+      "name": "direct_generation_request_ready",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "effect_canary": false
+      },
+      "name": "direct_mode_has_no_effect_authority",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "command": [
+          "persistent_in_process_frozen_backend"
+        ],
+        "id": "local_inference",
+        "model_load_count": 1,
+        "persistent_backend": true,
+        "persistent_session_id": "p4r-p4r-cognitive-compilation-02",
+        "prompt_transport": "in_process_ephemeral_not_argv",
+        "returncode": 0,
+        "runtime_ms": 223950,
+        "stderr_tail": "",
+        "stdout_tail": ""
+      },
+      "name": "local_inference_completed",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "failed_checks": []
+      },
+      "name": "live_route_integrity_release_authorized",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "raw_text_training_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "runtime_external_inference_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "public_benchmark_training_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "fallback_returns_disabled",
+      "passed": true,
+      "severity": "hard"
+    }
+  ],
+  "generation_backend": {
+    "execution_mode": "direct_local_model",
+    "id": "local_inference",
+    "out": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json",
+    "returncode": 0
+  },
+  "generation_request_binding": {
+    "automatic_effects": 0,
+    "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "context_pages": [],
+    "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+    "execution_mode": "direct_local_model",
+    "maximum_model_calls": 1,
+    "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+    "model_prompt_sha256": "90c7e5a58a4008e37f24e05eff193487978a572e0ba4d6ac8bc8b8cc05fc94f9",
+    "policy": "project_theseus_live_route_integrity_v1",
+    "raw_context_text_stored": false,
+    "raw_prompt_stored": false,
+    "request_binding_sha256": "835e0b635d6ea71b5390d59f558ad9a60888e4fe871b7413de04bceb94972bed",
+    "route_packet": {
+      "automatic_effects": 0,
+      "planning": "none",
+      "route_kind": "direct_fixed_model",
+      "tool_calls": 0,
+      "vcm": "none"
+    },
+    "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+    "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+    "user_prompt_sha256": "90c7e5a58a4008e37f24e05eff193487978a572e0ba4d6ac8bc8b8cc05fc94f9"
+  },
+  "inputs": {
+    "config": "configs/theseus_assistant_runtime_p4r_qwen35.json",
+    "origin": "local_user_control",
+    "principal": "local-user",
+    "prompt_sha256": "90c7e5a58a4008e37f24e05eff193487978a572e0ba4d6ac8bc8b8cc05fc94f9",
+    "surface": "local_assistant"
+  },
+  "local_model_contract": {
+    "faults": [],
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "model_card": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "maximum_action_tokens": 262144,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "temperature": 0.0
+    },
+    "ready": true,
+    "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
+    "worker_config": "configs/core_evidence_qwen35_9b_completion_worker.json"
+  },
+  "outputs": {
+    "assistant_viea_trace": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2_viea.jsonl",
+    "conversation_events": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2_events.jsonl",
+    "markdown": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.md",
+    "report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json"
+  },
+  "policy": "project_theseus_assistant_runtime_v1",
+  "public_training_rows_written": 0,
+  "response": {
+    "answer": "SOURCE ffe9fedc7653134aecc727681c5abc35da9b2fa73bc3823fb43da449f6911d3d\nOBLIGATIONS O1,O2,O3\nUNIT N-066AC957E066A499 O1|INSERT_AFTER N-066AC957E066A499 0a3bd10d78eb093cf7f20c5fa6616e273621ddf5c0d841de1f3e77be6e4994db\n<<<\n        raise TypeError(f\"Cannot restore Tag from {state!r}\")\n\n\ndef parse_tag(\n    tag: str, *, validate_order: bool = False, limit: int | None = None\n) -> frozenset[Tag]:\n    \"\"\"\n    Parses the provided tag (e.g. `py3-none-any`) into a frozenset of\n    :class:`Tag` instances.\n\n    Returning a set is required due to the possibility that the tag is a\n    `compressed tag set`_, e.g. ``\"py2.py3-none-any\"`` which supports both\n    Python 2 and Python 3.\n\n    If **validate_order** is true, compressed tag set components are checked\n    to be in sorted order as required by PEP 425.\n\n    If **limit** is not ``None``, the compressed tag set can generate at most\n    that many tags.\n\n    :param str tag: The tag to parse, e.g. ``\"py3-none-any\"``.\n    :param bool validate_order: Check whether compressed tag set components\n        are in sorted order.\n    :param int | None limit: The maximum number of tags to parse.\n    :raises UnsortedTagsError: If **validate_order** is true and any compressed tag\n        set component is not in sorted order.\n    :raises InvalidTag: If the interpreter, ABI, or platform field (or any member\n        of a compressed tag set) is empty, or the tag does not have exactly three\n        components.\n    :raises TooManyTagsError: If **limit** is not ``None`` and the compressed tag\n        set would generate more than **limit** tags.\n    :raises ValueError: If **limit** is negative.\n\n    .. versionadded:: 26.1\n       The *validate_order* parameter.\n\n    .. versionadded:: 26.3\n       Raises :class:`InvalidTag` on empty tag components, or a tag that does\n       not have exactly three components.\n       Added the *limit* parameter. Raises :class:`TooManyTagsError` if the compressed\n       tag set would generate more than *limit* tags.\n    \"\"\"\n\n    if limit is not None and limit < 0:\n        raise ValueError(\"limit must be non-negative\")\n\n    component_parts = [component.split(\".\") for component in tag.split(\"-\")]\n    for parts in component_parts:\n        if \"\" in parts:\n            component = \".\".join(parts)\n            raise InvalidTag(f\"Tag {tag!r} has an empty component: {component!r}\")\n        if validate_order and parts != sorted(parts):\n            component = \".\".join(parts)\n            raise UnsortedTagsError(\n                f\"Tag component {component!r} is not in sorted order per PEP 425\"\n            )\n\n    tag_count = 1\n    for parts in component_parts:\n        tag_count *= len(parts)\n\n    if limit is not None and tag_count > limit:\n        raise TooManyTagsError(\n            f\"Compressed tag set would generate {tag_count} tags, exceeding \"\n            f\"limit {limit}\"\n        )\n\n    try:\n        interpreters, abis, platforms = component_parts\n    except ValueError as exc:\n        raise InvalidTag(f\"Tag {tag!r} must have exactly three components\") from exc\n    \n    # Validate each interpreter component against the standard/custom registry\n    import re\n    _interpreter_pattern = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')\n    \n    for interpreter in interpreters:\n        if not _interpreter_pattern.match(interpreter):\n            raise InvalidTag(f\"Tag {tag!r} has an invalid interpreter: {interpreter!r}\")\n\n    return frozenset(\n        Tag(interpreter, abi, platform_)\n        for interpreter in interpreters\n        for abi in abis\n        for platform_ in platforms\n    )\n\n\ndef _get_config_var(name: str, warn: bool = False) -> int | str | None:\n    value: int | str | None = sysconfig.get_config_var(name)\n    if value is None and warn:\n        logger.debug(\n            \"Config variable '%s' is unset, Python ABI tag may be incorrect\", name\n        )\n    return value\n>>>\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "route_integrity": {
+    "checks": {
+      "D2_consumption_zero": true,
+      "authority_controls_effect_scope": true,
+      "backend_completed": true,
+      "backend_model_identity_bound": true,
+      "backend_prompt_bound": true,
+      "backend_route_bound": true,
+      "backend_user_facing_effects_zero": true,
+      "compiled_plan_executed_or_held": true,
+      "decorative_labels_cannot_satisfy_integrated_route": true,
+      "effect_observation_and_exact_rollback_bound": true,
+      "execution_mode_bound": true,
+      "external_inference_zero": true,
+      "fallback_returns_zero": true,
+      "local_model_backend_owned_by_canonical_assistant_runtime": true,
+      "public_calibration_consumption_zero": true,
+      "public_training_rows_zero": true,
+      "request_binding_digest_valid": true,
+      "response_present": true,
+      "route_changes_callable_capability_budget_tool_or_hold": true,
+      "selected_vcm_content_consumed_by_model": true,
+      "single_model_call_budget": true,
+      "supported_execution_mode": true,
+      "teacher_calls_zero": true,
+      "verification_controls_release_or_repair": true
+    },
+    "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+    "execution_mode": "direct_local_model",
+    "expected_model_identity": {
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "failed_checks": [],
+    "non_claims": [
+      "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+      "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+    ],
+    "observed_model_identity": {
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "pair_contract": {
+      "automatic_effects": 0,
+      "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+      "maximum_model_calls": 1,
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+    },
+    "policy": "project_theseus_live_route_integrity_v1",
+    "ready": true,
+    "receipt_sha256": "3bf4281b7d81e9557836722a8fe31404dd75c48bd950ab9cc2c67599f51e4cd5",
+    "release_allowed": true,
+    "request_binding": {
+      "automatic_effects": 0,
+      "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "context_pages": [],
+      "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+      "execution_mode": "direct_local_model",
+      "maximum_model_calls": 1,
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "model_prompt_sha256": "90c7e5a58a4008e37f24e05eff193487978a572e0ba4d6ac8bc8b8cc05fc94f9",
+      "policy": "project_theseus_live_route_integrity_v1",
+      "raw_context_text_stored": false,
+      "raw_prompt_stored": false,
+      "request_binding_sha256": "835e0b635d6ea71b5390d59f558ad9a60888e4fe871b7413de04bceb94972bed",
+      "route_packet": {
+        "automatic_effects": 0,
+        "planning": "none",
+        "route_kind": "direct_fixed_model",
+        "tool_calls": 0,
+        "vcm": "none"
+      },
+      "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+      "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+      "user_prompt_sha256": "90c7e5a58a4008e37f24e05eff193487978a572e0ba4d6ac8bc8b8cc05fc94f9"
+    },
+    "structural_verification": {
+      "checks": {
+        "D2_consumption_zero": true,
+        "backend_completed": true,
+        "backend_model_identity_bound": true,
+        "backend_prompt_bound": true,
+        "backend_route_bound": true,
+        "backend_user_facing_effects_zero": true,
+        "external_inference_zero": true,
+        "fallback_returns_zero": true,
+        "public_calibration_consumption_zero": true,
+        "public_training_rows_zero": true,
+        "response_present": true,
+        "single_model_call_budget": true,
+        "teacher_calls_zero": true
+      },
+      "independent_from_backend": true,
+      "passed": true,
+      "task_correctness_evaluated": false,
+      "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+      "verifier_id": "theseus_local_response_integrity_verifier_v1"
+    }
+  },
+  "summary": {
+    "assistant_lane": "direct_fixed_model_runtime",
+    "assistant_text_chars": 3882,
+    "assistant_trace_schema": "configs/assistant_trace_schema.json",
+    "assistant_trace_schema_ready": true,
+    "assistant_trace_schema_sha256": "c99285f737b7806c51944b5517ec93854bb5c31da342190146422ef589dca14d",
+    "checkpoint_chat_returncode": 0,
+    "checkpoint_history_turns_loaded": 0,
+    "checkpoint_id": "live",
+    "checkpoint_session_path": "",
+    "dogfood_event_written": false,
+    "dogfood_training_rows_written": 0,
+    "execution_mode": "direct_local_model",
+    "fallback_return_count": 0,
+    "feedback": "completed",
+    "generation_request_ready": true,
+    "intent": "code",
+    "local_model_contract_ready": true,
+    "local_model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+    "public_training_rows_written": 0,
+    "requested_intent": "code",
+    "route_integrity_disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+    "route_integrity_failed_checks": [],
+    "route_integrity_ready": true,
+    "route_integrity_release_allowed": true,
+    "runtime_external_inference_calls": 0,
+    "runtime_ms": 223954,
+    "session_id": "p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2"
+  },
+  "trigger_state": "GREEN"
+}

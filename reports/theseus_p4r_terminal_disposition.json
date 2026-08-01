@@ -1,0 +1,1527 @@
+{
+  "adequacy": {
+    "all_four_corruption_classes_rejected": "10/10",
+    "compiler_oracle_useful": "10/10",
+    "failure_owner": "learned Semantic-IR protocol emission/lowering implementation",
+    "failure_signature": {
+      "final_outputs_with_exact_semantic_header": "9/10",
+      "final_outputs_with_terminal_END": "10/10",
+      "interpretation": "The model usually attempted the requested IR envelope, but every final UNIT grammar failed the strict parser or obligation/loss contract. Oracle lowering proves the mechanism path is reachable; learned emission does not pass the predeclared implementation floor.",
+      "parse_fault_counts": {
+        "semantic_ir_envelope_invalid": 1,
+        "semantic_ir_unparsed_text": 9,
+        "semantic_loss_unresolved": 1,
+        "semantic_obligation_coverage_incomplete": 9,
+        "semantic_units_missing": 9
+      }
+    },
+    "mechanics_floor_passed": false,
+    "natural_termination_receipts": "60/60",
+    "semantic_ir_parse_and_lower": "0/10",
+    "semantic_ir_required_floor": "8/10"
+  },
+  "arm_totals": {
+    "deterministic_request_compiler_baseline": {
+      "correctness_evaluated_candidates": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 10,
+      "model_calls": 0,
+      "parseable_candidates": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0
+    },
+    "direct_target_generation": {
+      "correctness_evaluated_candidates": 1,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 9,
+      "model_calls": 20,
+      "parseable_candidates": 1,
+      "rollback_verified_candidates": 1,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 1
+    },
+    "natural_language_plan_control": {
+      "correctness_evaluated_candidates": 2,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 8,
+      "model_calls": 20,
+      "parseable_candidates": 2,
+      "rollback_verified_candidates": 2,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 2
+    },
+    "typed_semantic_ir_treatment": {
+      "correctness_evaluated_candidates": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 10,
+      "model_calls": 20,
+      "parseable_candidates": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0
+    }
+  },
+  "claim_id": "cognitive-compilation-and-semantic-ir.core",
+  "consumption": {
+    "all_failures_retained": true,
+    "all_ten_tasks_consumed": true,
+    "eligible_for_D1_or_D2": false,
+    "eligible_for_exact_rerun": false,
+    "eligible_for_training": false
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T07:11:14.781035Z",
+  "decision_rule": {
+    "comparator_useful": {
+      "deterministic_request_compiler_baseline": 0,
+      "direct_target_generation": 1,
+      "natural_language_plan_control": 2
+    },
+    "disposition": "NOT_EVALUABLE_IMPLEMENTATION_INADEQUATE",
+    "effect_decision_authorized": false,
+    "nominal_effect_rule_passed": false,
+    "pairwise_treatment_losses": {
+      "direct_target_generation": 1,
+      "natural_language_plan_control": 2
+    },
+    "predeclared": {
+      "mechanics_floor": "Compiler oracle 10 of 10 useful; all four corruption classes rejected; at least 8 of 10 treatment IRs parse and lower; every learned call has a valid natural termination receipt.",
+      "minimum_development_survivor_effect": "Typed Semantic IR must solve at least two more of ten tasks than direct generation, natural-language planning, and the prospective deterministic request-compiler control; lose on no more than one task against either learned control; and introduce zero unsafe or rollback failures.",
+      "negative_scope": "A null or loss applies only to this exact bounded Python Semantic IR, model, task distribution, completion policy, validator, and repair policy; it cannot falsify cognitive compilation generally.",
+      "primary_outcome": "independently_verified_useful_completion",
+      "terminal_states": [
+        "P4_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "P4_ADEQUATE_NO_SURVIVOR",
+        "INCONCLUSIVE_IMPLEMENTATION",
+        "INCONCLUSIVE_EXPERIMENT",
+        "INVALID_INFORMATION_FLOW",
+        "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+      ]
+    },
+    "treatment_useful": 0
+  },
+  "denominators": {
+    "hosted_model_calls": 0,
+    "learned_arms": 30,
+    "learned_model_calls": 60,
+    "oracle_mechanics_controls": 10,
+    "persistent_model_loads": 10,
+    "project_selected_quality_token_cap": null,
+    "static_compiler_controls": 10,
+    "tasks": 10
+  },
+  "faults": [],
+  "maximum_inference": "This exact learned Semantic-IR implementation is inadequate for an arm-effect decision: 0/10 treatment outputs parsed and lowered against an 8/10 floor, while the independent oracle was useful on 10/10. Direct solved 1/10 and plan control 2/10, but those counts cannot falsify cognitive compilation because the treatment implementation failed adequacy. The result authorizes mechanics repair only, not D1, serving, training, book support, or retirement of the ASI Stack claim.",
+  "next_stage": {
+    "D1_eligible": false,
+    "book_support_state_effect": "none",
+    "fresh_decision_tasks": "Acquire only after the mechanics canary passes; never replay these ten consumed tasks for fresh credit.",
+    "required_repair": "Demonstrate learned Semantic-IR grammar emission, parsing, lowering, checkpoint-independent replay, intervention sensitivity, and dependency-local repair on non-claim mechanics fixtures before sealing any fresh P4 decision denominator.",
+    "state": "P4_SEMANTIC_IR_IMPLEMENTATION_REPAIR_REQUIRED"
+  },
+  "oracle_totals": {
+    "correctness_evaluated_candidates": 10,
+    "incorrect_candidates": 0,
+    "malformed_candidates": 0,
+    "model_calls": 0,
+    "parseable_candidates": 10,
+    "rollback_verified_candidates": 10,
+    "tasks": 10,
+    "unsafe_candidates": 0,
+    "useful_candidates": 10
+  },
+  "policy": "project_theseus_p4r_cognitive_compilation_terminal_disposition_v1",
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "scope": "Exact frozen Qwen3.5 model, completion-based P4R instrument, and ten licensed development tasks. No D1, D2, serving, training, hosted-model, or book-support authority.",
+  "source_identities": {
+    "campaign_progress": {
+      "path": "reports/theseus_p4r_campaign_progress.json",
+      "sha256": "4f046bda1b3004e3349db9ff4e204d0efdee2063a958c77dd7a6aa8e5acf131b"
+    },
+    "instrument": {
+      "path": "configs/theseus_p4_cognitive_compilation_repaired_instrument_r1.json",
+      "sha256": "d1997c4f4555c62d9106dc17a2c59580b6cb38110b7819f8a5a5b4de1849689c"
+    },
+    "instrument_freeze_commit": "0a8f0bec2cd8883fa6b1176e5f9979554c45539f",
+    "pool": {
+      "path": "configs/theseus_p4r_task_pool.json",
+      "sha256": "789a37f95ad14049cab076b0950d6711dbd2278234941dd131d6bc501a863813"
+    },
+    "pool_seal_commit": "79db08bab96e2f2fe5bb8bbf235b86776113614a",
+    "runtime_receipts": [
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-01_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "0e01cef47457c9bfb782cd80dafe407dd9b91f84b55a171a755fff100c47e81e",
+        "call_number": 1,
+        "campaign_index": 1,
+        "generated_tokens": 137,
+        "prompt_tokens": 6842,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-01_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "4dbfb414331684971fe5b875a7eb6d239ef0e5d26fddda728ad338d4374ffe86",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-01_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "c65080ed228955f0e58bdead6f9e51c04b55c5760c05c46dead3860df486594b",
+        "call_number": 2,
+        "campaign_index": 1,
+        "generated_tokens": 137,
+        "prompt_tokens": 7096,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-01_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "846e72b6017dbeb7460bad7d6bf62066c7bb8d5283d1e92cfed886c5702d62c3",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-01_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "51b61bdb7e6a0050248ffd9dd7ea8ada3b0f6fbea59a1b73af179a29e0f7f5f2",
+        "call_number": 1,
+        "campaign_index": 1,
+        "generated_tokens": 7219,
+        "prompt_tokens": 6864,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-01_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "49fea85791916b340d52828816cf8dddb0a24a5ee0535d369bb38c00096e188a",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-01_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "31018b5a4346a8f639b6fc908a451153486210366952116a1b461ee79d37a658",
+        "call_number": 2,
+        "campaign_index": 1,
+        "generated_tokens": 116,
+        "prompt_tokens": 10768,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-01_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "bef06f582e659774b866c0004d9d64afa66bae19ff6a50cd04dc98a5af0b9b87",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "4ceb901e7db3def24bae8e96fb6450221543e9ef931dad7cb62e35c5793ad80b",
+        "call_number": 1,
+        "campaign_index": 1,
+        "generated_tokens": 354,
+        "prompt_tokens": 6919,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "60d5a744e2e1d50e9d6e3c0b210272753a34037ce30b0df0baff0e6f535c6546",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "b1f0436a3d4deb0f5ce387cc3600e4eb375ad3da2b1bc6a336266e8da4ce94ae",
+        "call_number": 2,
+        "campaign_index": 1,
+        "generated_tokens": 354,
+        "prompt_tokens": 7400,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "dbd711ee0756e02355b7b98ad6c81bc4bd1fa4ff6fc4396f0e7cb5843ed740bd",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "5026a95c6cc22a40f947290b276cd93577f3e1e0bac096081da81b8320ea2c1b",
+        "call_number": 1,
+        "campaign_index": 2,
+        "generated_tokens": 66,
+        "prompt_tokens": 6793,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "5a5d0b271a0d41d0e9913bc5728d37e01cb6f75b4025a0c4f206c898fd98c5b6",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "f933d958792d702623561551b0797d65e70eb8bc7025e2b0f4a6a5c55facabee",
+        "call_number": 2,
+        "campaign_index": 2,
+        "generated_tokens": 66,
+        "prompt_tokens": 6977,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "4b6474587a9d92cc7ef3d6890097d0756c03af9faf011dab785d1c374bc06b22",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "f4f0fb7b2c9ea28eb8b513d03f56162ae0487895db989526878e499646da2094",
+        "call_number": 1,
+        "campaign_index": 2,
+        "generated_tokens": 317,
+        "prompt_tokens": 6815,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "33bd426d9ea17b0305fea4e3ba89f24a22cffe4f4922f5073170bdcae3c12a96",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "fb865acdaae6b4485e8977ebf352e3b4dd70a9775a52be1bd8abe15f2b21cd19",
+        "call_number": 2,
+        "campaign_index": 2,
+        "generated_tokens": 312,
+        "prompt_tokens": 7250,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "53c09f533f4617b9756ff748505e200fcb6ecbabc357e982c08e9a54ba1f252d",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "2392fd141d60f93e9e3e61cf11a8c1360bc19d5114d50a36852a958118883687",
+        "call_number": 1,
+        "campaign_index": 2,
+        "generated_tokens": 1105,
+        "prompt_tokens": 6870,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "e0cc67fadee36f8e89133abfe4173fc3e32f9e64024931ccc68eadfb513dd271",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "255c4928ab3b203595d299817359b8f820e3d4e0d3bca796778868e0c090db5a",
+        "call_number": 2,
+        "campaign_index": 2,
+        "generated_tokens": 1105,
+        "prompt_tokens": 8087,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "4c1bcb6d22494766cd115a0cddb797bcefc16778acc02fdfda01f1b4fd7a14d8",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-03_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "e8ca774a76d0f7349f8276d7e9b28617c0379813914ee9cef62a5a8fdea41dd6",
+        "call_number": 1,
+        "campaign_index": 3,
+        "generated_tokens": 128,
+        "prompt_tokens": 4956,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-03_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "343612f7630195b931cac370676d509ac00badd64d70d1aa71e1e3fc291f230b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-03_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "c51d88537908403a4363ea0f5e9fa757e22502d20fe114dfd967e095bda54057",
+        "call_number": 2,
+        "campaign_index": 3,
+        "generated_tokens": 128,
+        "prompt_tokens": 5201,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-03_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "fca22a1351a2fad3afe42fb04de46257a509fda44cf591d34ef016964f2e77d9",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-03_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "e9f1142812eb8b763a67accd4a9ed77ce83d7566e2b9f6bb32370f353a1861e5",
+        "call_number": 1,
+        "campaign_index": 3,
+        "generated_tokens": 233,
+        "prompt_tokens": 4978,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-03_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "079d9d0ad9dc50a46f2c531ddfc2cd160090a489898a96771ec78d884cff6839",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-03_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "cec53a028b0fe88b6ff398cf79c851a7f605b85372735350deef0ab672a50226",
+        "call_number": 2,
+        "campaign_index": 3,
+        "generated_tokens": 233,
+        "prompt_tokens": 5319,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-03_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "9755b89fc603fd92e0b7a4f8da1ddb3c33ad5e94cabaa5570e20635b75eea175",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "36e923615f4e8a04c03ae784e5040679e46e0c0147e5b24949a9b7088710c842",
+        "call_number": 1,
+        "campaign_index": 3,
+        "generated_tokens": 319,
+        "prompt_tokens": 5033,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "df03312162e40507733b93a4d8e98bc6472d480fe3534166482b16da6c1f4438",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "560ab2b1a77e6008d11847027ef45ed26658ab3198722ac711a1fb89f4c7f443",
+        "call_number": 2,
+        "campaign_index": 3,
+        "generated_tokens": 319,
+        "prompt_tokens": 5479,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "b069cf463285998290432c87fd1b48159fef5bcd9cc878af9bf22fda3cd73256",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-04_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "1536ec59ad5e611591e47d9cf37247311e1df1546ebe329023e852e37e658dec",
+        "call_number": 1,
+        "campaign_index": 4,
+        "generated_tokens": 91,
+        "prompt_tokens": 3907,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-04_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "3e0ce99ac1cbadabcea5a44c08bae8f1bdbc893bd7014d128a8ff86b95e543f4",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-04_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "10d3dd037be67d49eb9039ccf8e9c1fe19133c855aaa27cbae759776b969cb79",
+        "call_number": 2,
+        "campaign_index": 4,
+        "generated_tokens": 200,
+        "prompt_tokens": 4410,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-04_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "94a30beec9e25f734b11424d2892432905f2664577a6854bece0ba2ac59bf6fa",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-04_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "e7a7b3d4e2ece20598a5e79a5dd1fdc5920c53f9e435af4fc7e211d737899f10",
+        "call_number": 1,
+        "campaign_index": 4,
+        "generated_tokens": 162,
+        "prompt_tokens": 3929,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-04_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "c531559862b724c84764101d97d4c4bce771fffad1bd45d8616428b7f4381cdc",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-04_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "26b7b86fe1169eef49e84d228f0e3dff767e4557f1225b1e01792ee86c85a0b4",
+        "call_number": 2,
+        "campaign_index": 4,
+        "generated_tokens": 455,
+        "prompt_tokens": 4203,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-04_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "7f5ea18b7c4df50e8f73fc8333f9d6ae4d51e6b72730b8f0b0bd317cd624ad67",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-04_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "2229a7c0a896f6b0d764252d765209e414c69ea0bd41d665abceb30ee3661b13",
+        "call_number": 1,
+        "campaign_index": 4,
+        "generated_tokens": 271,
+        "prompt_tokens": 3984,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-04_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "279a5028b5e4a49d078f150573e03d3de5b6d5f5344cc9e23035ce8d03bcfffc",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-04_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "06ec7f32849e00f666c9df092e8583cb102adfcc3517c8c945c6261c9f72abaa",
+        "call_number": 2,
+        "campaign_index": 4,
+        "generated_tokens": 271,
+        "prompt_tokens": 4382,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-04_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "174cc5d9c4e8f0cf9656f08041f673ea53ab9f0c2625fbdbb25c05b1ab3e5c8a",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "7a11d2492aed93e08c3f6ecbdbce2f7ee1172e86c4d02161791c1eb19398a39a",
+        "call_number": 1,
+        "campaign_index": 5,
+        "generated_tokens": 92,
+        "prompt_tokens": 10343,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "c90629dbcf775f49bfc2f62c3e7c5b5e57ac29a58cff9bd6d62cba50ac1665c8",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "5e789f83dfd917ed7952e3facf65f96eb765f30117639c529fd7cb1ecb5fedc4",
+        "call_number": 2,
+        "campaign_index": 5,
+        "generated_tokens": 102,
+        "prompt_tokens": 10552,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "cd762a90764d6b65020e1f98204787948fab735675373c77b568709360739511",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "1f8fba09fc93e4b026fa6293e35c747e530845fd29dde10e2079f1ddd0f40c84",
+        "call_number": 1,
+        "campaign_index": 5,
+        "generated_tokens": 384,
+        "prompt_tokens": 10365,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "0acd22777eac97ccd924ff850158584195821db23f84be8fb612faa7e3da1c8d",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "dfc0ff728ea0fee972d7cde5f3b745e9a5702661644b45c39cb6c5b1911752fd",
+        "call_number": 2,
+        "campaign_index": 5,
+        "generated_tokens": 384,
+        "prompt_tokens": 10861,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "06f8b8c9451e4846336e9ba016b8bdbff9c862d94ddca6c8c70498c362de0ac2",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "429f5a152018b4969fc6a5d1cdbe3bf496d4dfb73fd9242f277f90878d3770fd",
+        "call_number": 1,
+        "campaign_index": 5,
+        "generated_tokens": 392,
+        "prompt_tokens": 10420,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "948e38ed700afe55029cfac6d3d93fea8bd361da8a7c0859303adb01c9e6dcfc",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-05_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "d0d45d047e0a53ba4fa63d3f30f47001f3fc0e80aa8fdce40d04979077f1f715",
+        "call_number": 2,
+        "campaign_index": 5,
+        "generated_tokens": 392,
+        "prompt_tokens": 10939,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-05_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "157ad4693748a734bddc3d95dbd1703d07937e575eeebd548fe88b213b311256",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-06_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "3c11668b2265659d91a1157c263be083b065a805e62bcbe7ff4febd322dd2dd2",
+        "call_number": 1,
+        "campaign_index": 6,
+        "generated_tokens": 64,
+        "prompt_tokens": 11048,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-06_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "3e7523e5bcbcd25510144936e2291254e0861ae77fe83c96e83d1b6f7c4bd475",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-06_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "157f24a3326872472831d85a5ee48bb5664502f4bba8c041ccc97596875c9c16",
+        "call_number": 2,
+        "campaign_index": 6,
+        "generated_tokens": 73,
+        "prompt_tokens": 11229,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-06_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "1290dad0c803201e641be9f107e7f91108fab66b8887d71842d761d7c7304864",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-06_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "160c675dedd740ac08d594198ecfd3b5136a5bc4e4678a2c1118cdbea51ba62a",
+        "call_number": 1,
+        "campaign_index": 6,
+        "generated_tokens": 161,
+        "prompt_tokens": 11070,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-06_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "8c1900e693c61f415c5555e0237f3b9ce8971e46419e5c213f471ea8fd8ca708",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-06_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "0e8319ea2ec91f5ca42275e3c2adc3522438d0a1e577e1a7bc949c21f79eb6da",
+        "call_number": 2,
+        "campaign_index": 6,
+        "generated_tokens": 161,
+        "prompt_tokens": 11343,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-06_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "796755f7cc771a63a3035f96b06185ee9b550a7974994dbc70debe981e10558e",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-06_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "48d4ad48cedd61529cf2abc4f4218501719cd918bf29b18c640771ae051fa351",
+        "call_number": 1,
+        "campaign_index": 6,
+        "generated_tokens": 217,
+        "prompt_tokens": 11125,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-06_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "f2e7673f15bba6e605e287acb99a88c2185698f0fb5297b5458d095d4557b3a4",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-06_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "81ebeb80dce2182f049982fedd38556e9b8ffa8a58cbc13eda8324f4e1a12a43",
+        "call_number": 2,
+        "campaign_index": 6,
+        "generated_tokens": 217,
+        "prompt_tokens": 11469,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-06_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "1d7205099bf9558557f3ace5ec102b8af82107b6249f5526ffb2e95e1e6c6f92",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-07_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "7d8034515f4cf608e4148002085702f7ddb71cf38a0653cfd8b6ec3520203617",
+        "call_number": 1,
+        "campaign_index": 7,
+        "generated_tokens": 57,
+        "prompt_tokens": 5991,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-07_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "32cccbae8d13b6b609379b60a199abba769e2cd1edee65a29e83d2d587eb399c",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-07_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "3297e5050a95c212491db4433ba13e12daff828926fbc3dfef4e2fd6424c0fc1",
+        "call_number": 2,
+        "campaign_index": 7,
+        "generated_tokens": 57,
+        "prompt_tokens": 6166,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-07_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "5d3f5b8e3b4a98ae5fc6ceca53bf94fafbe17663fadf46a90051557b832741dd",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-07_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "66367166ec6e92aa99da6735ad9c890dcd98091125370765883743073d262e3b",
+        "call_number": 1,
+        "campaign_index": 7,
+        "generated_tokens": 446,
+        "prompt_tokens": 6013,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-07_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "fac9e8a00ef31a3e4cd02f6ba5b6158b4c8f606e0b735f04ea4f335d55d896c7",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-07_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "46024adfc421d5e9f1967d86407496a34b54e016f05a192bbfa40f2ae958f256",
+        "call_number": 2,
+        "campaign_index": 7,
+        "generated_tokens": 446,
+        "prompt_tokens": 6571,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-07_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "38db01e8602c68fe036832a6fe8f120493c4dc89ccd305344840ad3fd7813a4d",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-07_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "c67f701411b77ce445925b2dea21298cfeb92775bc8a0e647502b8c238eab5db",
+        "call_number": 1,
+        "campaign_index": 7,
+        "generated_tokens": 589,
+        "prompt_tokens": 6068,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-07_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "a94ef1534e5f4d662859ceeb4b02f57aa25983d1fc02354c5a1a53852d71bd15",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-07_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "57dd5d174fb4905532ea4a8ba5e67af4a148bc2cd8ab1d4d36b83a470679cf55",
+        "call_number": 2,
+        "campaign_index": 7,
+        "generated_tokens": 589,
+        "prompt_tokens": 6784,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-07_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "b3b831436f40ea1c0b1acef014cd7299ec42262f70edc921bbd8f5e11435feea",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-08_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "6212e7825a42fef7d92855956b860311f2d881071b4021128916f8e8ed8c313b",
+        "call_number": 1,
+        "campaign_index": 8,
+        "generated_tokens": 128,
+        "prompt_tokens": 5974,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-08_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "86d4c7cbcfaa9f75620bb47bfc35a867271319296241af43b846fcb79ead1b54",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-08_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "1f37684eda18a4c09c45ba4a9761418bb444bc906dd540e40c6afced2131af6c",
+        "call_number": 2,
+        "campaign_index": 8,
+        "generated_tokens": 128,
+        "prompt_tokens": 6219,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-08_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "52e788a9be961ffcc79033087dcabd003956dcff63162e0a6730d943d9576cc0",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-08_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "5c42491c478f16ef151de555e802585333ece428ad7087e9fb1b20c17cb4e7ee",
+        "call_number": 1,
+        "campaign_index": 8,
+        "generated_tokens": 164,
+        "prompt_tokens": 5996,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-08_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "7d42c8e9f42747e8a1386bf78324babeab82e2a1ec272ea31cb015774e8c9897",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-08_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "520353dcd0489d990e5bb70816e1a4584ecfe44daef52c994da2901f31f3856d",
+        "call_number": 2,
+        "campaign_index": 8,
+        "generated_tokens": 164,
+        "prompt_tokens": 6278,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-08_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "741e2e5fed116ce0f07f019f6b719a9b240797fc7ecdc1038a81ce1bbedda6b8",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-08_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "52ffe13607982ec4b104ee9284f5da8e9466471e9a42a15cadb68967d3401b89",
+        "call_number": 1,
+        "campaign_index": 8,
+        "generated_tokens": 421,
+        "prompt_tokens": 6051,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-08_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "46b9b9d063842f29a747cb75249a4e3e228fdfa630167cecd4af23a528db3975",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-08_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "a2bb44272f6d8c75c32745a85c9430d5369cc54525899f046605af0f0df5cad4",
+        "call_number": 2,
+        "campaign_index": 8,
+        "generated_tokens": 421,
+        "prompt_tokens": 6605,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-08_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "a317717261dfc5813207803c275ee701eef4e53955b4d0e24c492f5acae1df52",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-09_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "383f3acc0308dc7d38d8aeda3e0752d36e1f692c11b101b3c53732f95f2a75a5",
+        "call_number": 1,
+        "campaign_index": 9,
+        "generated_tokens": 276,
+        "prompt_tokens": 3774,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-09_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "7bd0da93d45ef1488fe5b9770bd90157f2d1b8affb88f523f69e6c4db2676c37",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-09_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "af95dd5859aca2ae9e16fb13177f1312435094d878885807cd103a3165776fcd",
+        "call_number": 2,
+        "campaign_index": 9,
+        "generated_tokens": 276,
+        "prompt_tokens": 4168,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-09_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "164a478c1e8fe67b4a7298dc7e2ea75b142305aba09470a0642a0aa8a1f779ef",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-09_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "f0e4ca469aa2fc64842f6b25b9b973eab3e1704dda414bcaf7b9e64179554771",
+        "call_number": 1,
+        "campaign_index": 9,
+        "generated_tokens": 374,
+        "prompt_tokens": 3796,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-09_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "fa10d37ec46d52d988adac17081284a02b854b38313bad6f379c7ee381ef7271",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-09_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "052020a1dfa387c1d3ea0b30f3f1c945613bd2f7a312e64678ff739f9eb18644",
+        "call_number": 2,
+        "campaign_index": 9,
+        "generated_tokens": 346,
+        "prompt_tokens": 4282,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-09_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "5bfc66d6cbd8566bc79415b713ceba2934ff5c8af7633186a532bded27ec2865",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-09_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "379654d369f51571e5fc38b681a2bdfc6bae51161147238ef52da5434993be4d",
+        "call_number": 1,
+        "campaign_index": 9,
+        "generated_tokens": 407,
+        "prompt_tokens": 3851,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-09_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "e6d2c0c0c5667a77f606445f526dd60f8a7c2bec17c8e6a764b4d487c6a72d42",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-09_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "98a57a485ca726e8c5314fa532578ec21bd80bbb9779983864c89371e8d2fe7d",
+        "call_number": 2,
+        "campaign_index": 9,
+        "generated_tokens": 407,
+        "prompt_tokens": 4385,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-09_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "9cc9a58e57fdde66eda1111415c29aa6c20e96d19b75af609ca130d7af963d45",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-10_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "ca4546c0d76c588f76c6e8163d74061208ad49e90bfe1ba68a44a514e7600119",
+        "call_number": 1,
+        "campaign_index": 10,
+        "generated_tokens": 93,
+        "prompt_tokens": 5716,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-10_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "e68e8122e84b50af06e863e1a60c8742b5f1d7812e1c91ce938a67b797dbd4f3",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-10_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "93bd377edcad96d2fe8ea14163e16629a709e6d3d13cbe4a97f6ef0017fc58f8",
+        "call_number": 2,
+        "campaign_index": 10,
+        "generated_tokens": 122,
+        "prompt_tokens": 5926,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-10_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "842697b8580ad2f1d69cd553ec0a2b2792941aa199ec9811fa3e35027a4cc7b8",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-10_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "45b04668281c3f3470ee6db84e272d6c20b0e2f20c293a8100ec7d8a1a6a5bf0",
+        "call_number": 1,
+        "campaign_index": 10,
+        "generated_tokens": 228,
+        "prompt_tokens": 5738,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-10_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "79c740fd2833de5eef0daa0459893e0e975b5a1d56d56b19e918a02a190c021a",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-10_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "ef46cf275603d035001fcdc22fe4845d6ca4072aae08341247cbe6c497f36223",
+        "call_number": 2,
+        "campaign_index": 10,
+        "generated_tokens": 228,
+        "prompt_tokens": 6074,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-10_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "c130096d8e243d1fae1f36f187db50abee7a7a7ace1e098ebba2fe98836c8c6b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-10_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "359485ece81619fbc506941919d0464823ec15de8cd79157eb2a55943e5267db",
+        "call_number": 1,
+        "campaign_index": 10,
+        "generated_tokens": 169,
+        "prompt_tokens": 5793,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-10_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "3223696244b8b58b66a18ce92ecaa6592b69e905d9c133c731d74d2eec11b8d3",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4r-cognitive-compilation-10_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "8564afc03483438ad9be937b92165bca2331f61d4679895c476e2b77c00d3063",
+        "call_number": 2,
+        "campaign_index": 10,
+        "generated_tokens": 169,
+        "prompt_tokens": 6089,
+        "runtime_report": "runtime/p2a/p2a_p4_p4r-cognitive-compilation-10_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "0d1f0bc8c297e4f6f148b591930fffb1de7d9485015bc8821d92d37446c702b9",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      }
+    ]
+  },
+  "task_results": [
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 1,
+      "evaluation": {
+        "path": "reports/theseus_p4r_01_yarl_1802_evaluation.json",
+        "sha256": "a223f544a8e018a0c4ced105d9e9774965f712f0f64298945c9467b1f4c2ea84"
+      },
+      "oracle_useful": 1,
+      "repository": "aio-libs/yarl",
+      "run": {
+        "path": "reports/theseus_p4r_01_yarl_1802_run.json",
+        "sha256": "02b652a05138af1a65bc9c2866173e4d45008b276a3072d9d37dc4665b029ffd"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_01_yarl_1802"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 2,
+      "evaluation": {
+        "path": "reports/theseus_p4r_02_packaging_1351_evaluation.json",
+        "sha256": "e8a56668a1d5202a7cad423b439dbdd9f29124442326751e315a2ef6ffe2299d"
+      },
+      "oracle_useful": 1,
+      "repository": "pypa/packaging",
+      "run": {
+        "path": "reports/theseus_p4r_02_packaging_1351_run.json",
+        "sha256": "28492a9449d513513ff695fc93e88f8d43845fc031c764762e34b5795d985295"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_02_packaging_1351"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 3,
+      "evaluation": {
+        "path": "reports/theseus_p4r_03_structlog_811_evaluation.json",
+        "sha256": "99889033b93bb25aaa8b128256d289c446dbd8f6eb024e6ad02c96e1bb56fcbe"
+      },
+      "oracle_useful": 1,
+      "repository": "hynek/structlog",
+      "run": {
+        "path": "reports/theseus_p4r_03_structlog_811_run.json",
+        "sha256": "1afda260249ec1e1d67193b6be7537a3ae1acf1d4f7a15db2e6811c0894009ad"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_03_structlog_811"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 4,
+      "evaluation": {
+        "path": "reports/theseus_p4r_04_trio_3416_evaluation.json",
+        "sha256": "c1826a9cde9ae68d6d025eb086818bd3d10573c773072edcb3f5865b50da553b"
+      },
+      "oracle_useful": 1,
+      "repository": "python-trio/trio",
+      "run": {
+        "path": "reports/theseus_p4r_04_trio_3416_run.json",
+        "sha256": "9dffe8f111924795cc1166b46a466b10d2a7edefab70f16423b4a08d58e32429"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_04_trio_3416"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 5,
+      "evaluation": {
+        "path": "reports/theseus_p4r_05_tox_3988_evaluation.json",
+        "sha256": "a7be7219ac5e6d3fb1fb413ab6253e80ff4c469c541567060f4f93d40a3bcf14"
+      },
+      "oracle_useful": 1,
+      "repository": "tox-dev/tox",
+      "run": {
+        "path": "reports/theseus_p4r_05_tox_3988_run.json",
+        "sha256": "a5da0cd309c6a5bcc19fa740446a7db2fc1581289815ab45867e949fb134e6a1"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_05_tox_3988"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 6,
+      "evaluation": {
+        "path": "reports/theseus_p4r_06_uvicorn_3019_evaluation.json",
+        "sha256": "5f23fe44045105169ee75836f523717f716e6b1dfef2fbd666a56df8a9e2e75a"
+      },
+      "oracle_useful": 1,
+      "repository": "encode/uvicorn",
+      "run": {
+        "path": "reports/theseus_p4r_06_uvicorn_3019_run.json",
+        "sha256": "3f64ffa045f54b7bd7213161bf7dd387d165ff3fe1552d211b5286893d7df46e"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_06_uvicorn_3019"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 7,
+      "evaluation": {
+        "path": "reports/theseus_p4r_07_installer_345_evaluation.json",
+        "sha256": "8c12f6a382b7d51fa4298f3ab286d54bf7692b275ca076ba9af0623fa63733f8"
+      },
+      "oracle_useful": 1,
+      "repository": "pypa/installer",
+      "run": {
+        "path": "reports/theseus_p4r_07_installer_345_run.json",
+        "sha256": "4ed92ea89c2187d1ba31997b6382802c289c0c43727b76475c4572a7cf0e340c"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_07_installer_345"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_loss_unresolved",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 8,
+      "evaluation": {
+        "path": "reports/theseus_p4r_08_black_5258_evaluation.json",
+        "sha256": "d30cb555478867427acf00cac885ff8114845cfbcf93a4d12a5c3dff4c85649b"
+      },
+      "oracle_useful": 1,
+      "repository": "psf/black",
+      "run": {
+        "path": "reports/theseus_p4r_08_black_5258_run.json",
+        "sha256": "c63ba32f436bbfa52d096d89047124d25877b17118dee1bb9d74f8b93eada176"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_08_black_5258"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 9,
+      "evaluation": {
+        "path": "reports/theseus_p4r_09_django_21700_evaluation.json",
+        "sha256": "1d6705eb2d3e744bee7117fd97abba49786323f6c26cb8e9cb1c3be69cc81c1c"
+      },
+      "oracle_useful": 1,
+      "repository": "django/django",
+      "run": {
+        "path": "reports/theseus_p4r_09_django_21700_run.json",
+        "sha256": "20fde2f957eec66e882cb8d95bb80b8a500d7f970019e5ef8e106bb54ed0fdad"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_09_django_21700"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_unparsed_text",
+            "semantic_obligation_coverage_incomplete",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 10,
+      "evaluation": {
+        "path": "reports/theseus_p4r_10_celery_10406_evaluation.json",
+        "sha256": "81ab0090e73e086a5713c9a1b70db008d05266c01d2d185248dc97b1498e2b38"
+      },
+      "oracle_useful": 1,
+      "repository": "celery/celery",
+      "run": {
+        "path": "reports/theseus_p4r_10_celery_10406_run.json",
+        "sha256": "a7ad39f089791a2831a40362a6f7b9f112e0f5c05b4e0f18ed5c41a398871700"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4r_10_celery_10406"
+    }
+  ],
+  "termination_custody": {
+    "finding": "All calls ended by parser completion or model EOS. The observed 7,219-token maximum confirms the rejected 1,536-token P4-v1 cap would have differentially truncated a real arm.",
+    "maximum_generated_tokens": 7219,
+    "maximum_prompt_tokens": 11469,
+    "minimum_generated_tokens": 57,
+    "normal_termination_calls": 60,
+    "safety_ceiling_hits": 0,
+    "termination_reason_counts": {
+      "model_eos": 26,
+      "parser_complete": 34
+    },
+    "total_generated_tokens": 23442
+  },
+  "trigger_state": "GREEN"
+}

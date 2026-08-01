@@ -3809,7 +3809,7 @@
       "rule": "Preserve P4-v1 as an inconclusive mechanics-and-budget pilot. Never replay consumed tasks 1-3, aggregate an arm effect, or infer model, mechanism, serving, D1/D2, training, or book support from it."
     },
     "p4r_cognitive_compilation_instrument": {
-      "state": "completion_campaign_frozen_and_green_run_pending",
+      "state": "terminal_inconclusive_implementation_semantic_ir_grammar_repair_required",
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
       "instrument": "configs/theseus_p4_cognitive_compilation_repaired_instrument_r1.json",
       "candidate_runner": "scripts/theseus_p4_cognitive_compilation_repaired.py",
@@ -3830,15 +3830,32 @@
       "campaign_driver_sha256": "e8f79e94e8004724b819900e021112b58fbe82272c79d2a9c4ad6817f54bf62c",
       "campaign_progress": "reports/theseus_p4r_campaign_progress.json",
       "campaign_pre_run_state": "GREEN_0_COMPLETE_10_PENDING_0_MODEL_CALLS_0_CONTEXT_BOUNDARY_HITS",
+      "terminal_disposition": "reports/theseus_p4r_terminal_disposition.json",
+      "terminal_disposition_sha256": "9e4295294cb29e1a2ab579e6086fe4992886de52d3d73f470d098f4c47684334",
       "source_registry": "configs/theseus_p4r_task_sources.json",
       "reused_unopened_tasks": 7,
       "new_source_disjoint_tasks": 3,
       "parent_fail_target_pass_oracle_pass_corruption_green": 10,
-      "candidate_generation_opened": false,
-      "local_model_calls": 0,
+      "candidate_generation_opened": true,
+      "local_model_calls": 60,
+      "complete_tasks": 10,
+      "parser_complete_calls": 34,
+      "model_eos_calls": 26,
+      "physical_context_boundary_hits": 0,
+      "maximum_observed_generated_tokens": 7219,
+      "useful_by_arm": {
+        "direct_target_generation": 1,
+        "natural_language_plan_control": 2,
+        "typed_semantic_ir_treatment": 0,
+        "deterministic_request_compiler_baseline": 0,
+        "deterministic_compiler_oracle_ceiling": 10
+      },
+      "semantic_ir_parse_and_lower": "0_of_10_below_predeclared_8_of_10_floor",
+      "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+      "D1_eligible": false,
       "hosted_model_calls": 0,
       "support_state_effect": "none",
-      "rule": "Run the sealed ten-task pool exactly once without replacement; every learned call must retain explicit termination telemetry, and any context-boundary or host-emergency stop invalidates rather than loses the observation."
+      "rule": "The exact ten tasks are consumed and may not be replayed. Repair learned Semantic-IR grammar emission, parsing, lowering, intervention sensitivity, and dependency-local repair on non-claim mechanics fixtures before acquiring any fresh decision denominator. The 0/10 treatment mechanics result cannot falsify cognitive compilation, move book support, or qualify D1."
     },
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
     "shared_flagship_rule": "Book-derived work reaches primary execution only through faithful implementation, instrument adequacy, autonomous machine-verifiable behavior, joined-trace, matched-causal, source-disjoint qualification, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",
@@ -4491,7 +4508,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-07-31",
-    "recommendation": "Preserve terminal P3 and interrupted P4-v1 without replay or causal inference. Complete the frozen P4R repair for cognitive-compilation-and-semantic-ir.core with parser/EOS completion, explicit termination telemetry, no project-selected quality token cap, seven unopened predecessor tasks, and three fresh source-disjoint licensed tasks. Keep Luna-xhigh transport-bound and separately denominated if it becomes callable. In parallel, refresh step-11,416 neural source/custody readiness and replace interactive launch authority with a bounded machine-readable controller. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
+    "recommendation": "Preserve terminal P3, interrupted P4-v1, and terminal P4R without replay or overclaim. P4R completed 60 natural-completion calls with zero context-boundary hits, but the learned Semantic-IR treatment parsed and lowered 0/10 against an 8/10 mechanics floor while the oracle remained useful 10/10; classify INCONCLUSIVE_IMPLEMENTATION and repair grammar emission/lowering on non-claim mechanics fixtures before any fresh P4 denominator. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4500,7 +4517,8 @@
       "preserve_the_sealed_ten_task_P3_pool_and_all_parent_fail_target_pass_evaluators",
       "preserve_the_P3_1_of_10_vs_1_of_10_useful_result_and_zero_unsafe_denominator",
       "preserve_P4_v1_as_interrupted_inconclusive_and_never_replay_consumed_tasks_1_3",
-      "seal_and_run_only_the_completion_based_P4R_instrument_on_seven_unopened_plus_three_fresh_tasks",
+      "preserve_terminal_P4R_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits",
+      "repair_learned_Semantic_IR_grammar_and_lowering_on_non_claim_mechanics_fixtures_before_any_fresh_P4_denominator",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "refresh_step_11416_source_and_custody_readiness_with_training_hold_installed",
       "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training",
@@ -4743,7 +4761,16 @@
         "intervention_controls": ["drop obligation", "flip non-goal", "corrupt stable identity", "hide ambiguity", "over-broad repair"],
         "decision_rule": "Survive P4 only if Semantic IR improves target correctness or requirement preservation and repair locality beyond both natural-language and compiler-only controls under matched total cost.",
         "maximum_inference_positive": "The exact Semantic IR and lowering path improved the tested translation/repair regime.",
-        "maximum_inference_negative": "A result cannot falsify cognitive compilation if the representation is a hand-authored proxy, the model never uses it, target validation is weak, or the deterministic compiler supplies the answer."
+        "maximum_inference_negative": "A result cannot falsify cognitive compilation if the representation is a hand-authored proxy, the model never uses it, target validation is weak, or the deterministic compiler supplies the answer.",
+        "latest_development_evidence": {
+          "artifact": "reports/theseus_p4r_terminal_disposition.json",
+          "artifact_sha256": "9e4295294cb29e1a2ab579e6086fe4992886de52d3d73f470d098f4c47684334",
+          "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+          "observed": "Ten consumed tasks, 60 naturally terminated learned calls, zero physical-context hits, direct useful 1/10, plan useful 2/10, Semantic-IR useful 0/10, and oracle useful 10/10.",
+          "adequacy_failure": "Learned Semantic-IR parsed and lowered 0/10 against the predeclared 8/10 floor; final outputs usually attempted the envelope but did not satisfy the strict UNIT grammar/obligation contract.",
+          "support_state_effect": "none",
+          "maximum_inference": "This exact emission/lowering implementation requires mechanics repair. It does not falsify cognitive compilation and cannot qualify D1, serving, training, or book support."
+        }
       },
       {
         "claim_id": "verification-bandwidth-and-context-adequacy.core",

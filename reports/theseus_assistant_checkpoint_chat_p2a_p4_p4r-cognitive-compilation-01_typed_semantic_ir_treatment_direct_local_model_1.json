@@ -1,0 +1,91 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Qwen3.5-9B-MLX-4bit/snapshots/938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "local_snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4r-cognitive-compilation-01",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-01T05:05:56.119274Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": null,
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_maximum_tokens": 255225,
+    "generated_tokens": 354,
+    "generation_tokens_per_second": 10.338,
+    "generation_wall_ms": 134524.568,
+    "load_wall_ms": 4206.594,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 7.385,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 5,
+    "prompt_tokens": 6919,
+    "prompt_tokens_per_second": 69.199,
+    "runtime_ms": 134546,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "parser_complete"
+  },
+  "policy": "project_theseus_local_inference_backend_v1",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "a5f5b1d0386a5d47d3f55922b6ddf01f7e2b1dd63a2f9e380a82808d6e4fd3e1",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V1\nSOURCE ba8a949bd1a9d28b7a36c9cc8dcdf819bb91b1bf4a6453f6b7160f112b9e0414\nOBLIGATIONS O1,O2,O3\nUNIT U-1 O1 N-D0ADC7B55F6A3547 95025e005062f94ff4ac0c88618b552d9a371a22b8550849af8a225ac39e04d9 INSERT_BEFORE N-8DB3DF1C3F415FDC 07e423d5f51b6b8bc0dad68355e88b4859a652dfbb2fe718528fa83710f9c2dd\n<<<\ndef _encode_relative_scheme_colon(path: str) -> str:\n    \"\"\"Re-encode a scheme-shaped leading ``:`` in a relative path to ``%3A``.\"\"\"\n    colon_pos = path.find(\":\")\n    if colon_pos <= 0:\n        return path\n    for c in path[:colon_pos]:\n        if c not in _SCHEME_CHARS:\n            return path\n    return path[:colon_pos] + \"%3A\" + path[colon_pos + 1 :]\n>>>\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4r-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_1",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}
