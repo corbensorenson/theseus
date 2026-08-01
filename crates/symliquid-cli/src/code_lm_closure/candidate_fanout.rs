@@ -173,6 +173,7 @@ fn low_latency_beam_precompute_default_enabled(task_count: usize) -> bool {
         .unwrap_or(task_count >= 8)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn candidate_filter_diagnostics(
     tasks: &[CodeTask],
     expression_bank: &[ExpressionBankItem],
@@ -674,6 +675,7 @@ pub(super) fn no_admissible_missing_capability_family(
     "candidate_coverage".to_string()
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn no_admissible_candidate_row(
     task: &CodeTask,
     checkpoint_id: &str,
@@ -1480,19 +1482,8 @@ pub(super) fn seeded_body_ngram_completion_bodies(
             score: 1.0,
             finished: false,
         }];
-        let beam_width = if task.split == "public_calibration" {
-            limit.clamp(2, 4)
-        } else {
-            limit.clamp(2, 4)
-        };
-        let max_steps = learned_token_max_steps(
-            task,
-            if task.split == "public_calibration" {
-                40
-            } else {
-                40
-            },
-        );
+        let beam_width = limit.clamp(2, 4);
+        let max_steps = learned_token_max_steps(task, 40);
         for _step in 0..max_steps {
             let mut next = Vec::new();
             for beam in &beams {
@@ -1511,11 +1502,7 @@ pub(super) fn seeded_body_ngram_completion_bodies(
                 .into_iter()
                 .collect::<Vec<_>>();
                 options.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-                let option_cap = if task.split == "public_calibration" {
-                    6
-                } else {
-                    6
-                };
+                let option_cap = 6;
                 for (token, score) in options.into_iter().take(option_cap) {
                     if !task_body_token_allowed(task, &beam.tokens, &token) {
                         continue;

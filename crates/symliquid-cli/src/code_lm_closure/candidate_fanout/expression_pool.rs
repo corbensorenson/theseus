@@ -1,5 +1,6 @@
 use super::*;
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn candidate_expressions(
     task: &CodeTask,
     expression_bank: &[ExpressionBankItem],
@@ -292,9 +293,9 @@ fn public_metadata_single_accepted_lazy_exit_enabled(task: &CodeTask) -> bool {
 }
 
 fn low_latency_acceptance_target(task: &CodeTask, limit: usize) -> usize {
-    if public_metadata_single_accepted_lazy_exit_enabled(task) {
-        1
-    } else if private_residual_single_accepted_lazy_exit_enabled(task) {
+    if public_metadata_single_accepted_lazy_exit_enabled(task)
+        || private_residual_single_accepted_lazy_exit_enabled(task)
+    {
         1
     } else {
         limit.max(1)
@@ -556,6 +557,7 @@ fn append_low_latency_local_adapter_edge_skeletons_with_timing(
     expression_timing_ms.insert(format!("{timing_key}_ms"), started.elapsed().as_millis());
 }
 
+#[allow(clippy::too_many_arguments)]
 fn append_low_latency_learned_category_ngram_contract_candidates_with_timing(
     task: &CodeTask,
     rows: &mut Vec<CandidateExpression>,
@@ -592,6 +594,7 @@ fn append_low_latency_learned_category_ngram_contract_candidates_with_timing(
     expression_timing_ms.insert(format!("{timing_key}_ms"), started.elapsed().as_millis());
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn candidate_expressions_with_timing(
     task: &CodeTask,
     expression_bank: &[ExpressionBankItem],
@@ -948,7 +951,7 @@ pub(super) fn candidate_expressions_with_timing(
         append_low_latency_local_adapter_edge_skeletons_with_timing(
             task,
             &mut rows,
-            local_adapter_budget.max(2).min(4),
+            local_adapter_budget.clamp(2, 4),
             sts_streams,
             &mut expression_timing_ms,
             "low_latency_local_adapter_edge_skeleton_rescue",
@@ -963,8 +966,7 @@ pub(super) fn candidate_expressions_with_timing(
         expression_timing_ms.insert("low_latency_expensive_rescue_skipped".to_string(), 1);
         return (finalized, expression_timing_ms);
     }
-    if template_free && sts_streams.is_some() && !low_latency_fanout {
-        let streams = sts_streams.expect("checked above");
+    if let Some(streams) = sts_streams.filter(|_| template_free && !low_latency_fanout) {
         let parallel_ngram_budget = limit.clamp(4, 10);
         let parallel_started = Instant::now();
         let (

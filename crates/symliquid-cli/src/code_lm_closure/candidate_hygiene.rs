@@ -199,7 +199,7 @@ fn balanced_bracket_stack_discipline_ok(body: &str) -> bool {
 
 fn scalar_loop_over_data(body: &str) -> bool {
     body.lines().any(|line| {
-        let compact = line.trim().split_whitespace().collect::<Vec<_>>().join(" ");
+        let compact = line.split_whitespace().collect::<Vec<_>>().join(" ");
         compact.starts_with("for ") && compact.ends_with(" in data:")
     })
 }

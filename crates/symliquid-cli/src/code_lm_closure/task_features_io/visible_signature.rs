@@ -44,11 +44,7 @@ pub(in crate::code_lm_closure) fn safe_visible_import_line(line: &str) -> Option
         return Some(format!("import {}", parts.join(", ")));
     }
     if line.starts_with("from ") {
-        let Some((module_part, names_part)) =
-            line.trim_start_matches("from ").split_once(" import ")
-        else {
-            return None;
-        };
+        let (module_part, names_part) = line.trim_start_matches("from ").split_once(" import ")?;
         let module = module_part.trim();
         let base = module.split('.').next().unwrap_or("");
         if !safe_visible_import_module(base) || names_part.contains('*') {

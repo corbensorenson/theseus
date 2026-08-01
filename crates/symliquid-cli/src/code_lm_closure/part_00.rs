@@ -130,7 +130,7 @@ fn private_sts_off_nonregression_candidate_limit(configured_limit: usize) -> usi
     std::env::var("THESEUS_CODE_LM_PRIVATE_STS_OFF_NONREGRESSION_CANDIDATE_LIMIT")
         .ok()
         .and_then(|value| value.trim().parse::<usize>().ok())
-        .unwrap_or(configured_limit.min(2).max(1))
+        .unwrap_or(configured_limit.clamp(1, 2))
         .clamp(1, configured_limit)
 }
 
@@ -502,8 +502,7 @@ pub fn train_code_lm_closure(
     )?;
     let (state_sequence_decoder, state_sequence_before, state_sequence_after) =
         state_sequence_handle.join().map_err(|_| {
-            std::io::Error::new(
-                std::io::ErrorKind::Other,
+            std::io::Error::other(
                 "state-sequence decoder worker panicked",
             )
         })?;
@@ -511,12 +510,11 @@ pub fn train_code_lm_closure(
         symliquid_state_handle
             .join()
             .map_err(|_| {
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                std::io::Error::other(
                     "SymLiquid-state decoder worker panicked",
                 )
             })?
-            .map_err(|error| std::io::Error::new(std::io::ErrorKind::Other, error))?;
+            .map_err(std::io::Error::other)?;
     let aux_decoder_parallel_wall_ms = aux_parallel_started.elapsed().as_millis();
     record_phase_timing(
         &mut phase_timing_ms,
@@ -1773,10 +1771,10 @@ fn extract_body_from_transformer_hybrid_code(code: &str, entry_point: &str) -> O
             if top_level_line && trimmed.starts_with("def ") && !body_lines.is_empty() {
                 break;
             }
-            if line.starts_with("    ") {
-                body_lines.push(line[4..].to_string());
-            } else if line.starts_with('\t') {
-                body_lines.push(line[1..].to_string());
+            if let Some(stripped) = line.strip_prefix("    ") {
+                body_lines.push(stripped.to_string());
+            } else if let Some(stripped) = line.strip_prefix('\t') {
+                body_lines.push(stripped.to_string());
             } else if trimmed.is_empty() {
                 body_lines.push(String::new());
             } else {

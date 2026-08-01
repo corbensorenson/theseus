@@ -7,6 +7,7 @@ pub(super) struct CandidateTaskRows {
     pub rejection_counts: BTreeMap<String, usize>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn candidate_rows_for_task(
     task: &CodeTask,
     expression_bank: &[ExpressionBankItem],
@@ -1516,5 +1517,5 @@ fn private_residual_low_latency_primary_emission_limit(
         .ok()
         .and_then(|value| value.trim().parse::<usize>().ok())
         .map(|value| value.clamp(1, requested))
-        .unwrap_or_else(|| requested.min(1).max(1))
+        .unwrap_or(1)
 }

@@ -332,21 +332,8 @@ pub(super) fn body_ngram_bodies(
         score: 0.0,
         finished: false,
     }];
-    let beam_width = if execution_shaped_category(&task.category) {
-        limit.clamp(2, 4)
-    } else if task.split == "public_calibration" {
-        limit.clamp(2, 4)
-    } else {
-        limit.clamp(2, 4)
-    };
-    let max_steps = learned_body_ngram_max_steps(
-        task,
-        if task.split == "public_calibration" {
-            40
-        } else {
-            40
-        },
-    );
+    let beam_width = limit.clamp(2, 4);
+    let max_steps = learned_body_ngram_max_steps(task, 40);
     for position in 0..max_steps {
         let mut next = Vec::new();
         for beam in &beams {
@@ -359,8 +346,6 @@ pub(super) fn body_ngram_bodies(
             } else {
                 let option_limit = if execution_shaped_category(&task.category) {
                     5
-                } else if task.split == "public_calibration" {
-                    6
                 } else {
                     6
                 };
@@ -461,21 +446,8 @@ fn dominant_body_ngram_bodies(
         score: 0.0,
         finished: false,
     }];
-    let beam_width = if execution_shaped_category(&task.category) {
-        limit.clamp(2, 4)
-    } else if task.split == "public_calibration" {
-        limit.clamp(2, 4)
-    } else {
-        limit.clamp(2, 4)
-    };
-    let max_steps = learned_token_max_steps(
-        task,
-        if task.split == "public_calibration" {
-            40
-        } else {
-            40
-        },
-    );
+    let beam_width = limit.clamp(2, 4);
+    let max_steps = learned_token_max_steps(task, 40);
     for position in 0..max_steps {
         let mut next = Vec::new();
         for beam in &beams {
@@ -500,8 +472,6 @@ fn dominant_body_ngram_bodies(
             };
             let option_cap = if execution_shaped_category(&task.category) {
                 6
-            } else if task.split == "public_calibration" {
-                5
             } else {
                 5
             };
@@ -598,12 +568,9 @@ fn greedy_dominant_body_ngram_body(task: &CodeTask, model: &BodyNgramModel) -> O
         prev1 = token;
     }
     let body = join_body_tokens(&tokens);
-    for candidate in state_sequence_body_variants(task, &body) {
-        if body_ngram_candidate_body_ok(task, &candidate) {
-            return Some(candidate);
-        }
-    }
-    None
+    state_sequence_body_variants(task, &body)
+        .into_iter()
+        .find(|candidate| body_ngram_candidate_body_ok(task, candidate))
 }
 
 fn body_ngram_candidate_body_ok(task: &CodeTask, body: &str) -> bool {

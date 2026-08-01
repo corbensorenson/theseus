@@ -1450,10 +1450,10 @@ pub(super) fn invalid_generated_expression_syntax(expr: &str) -> bool {
                 return true;
             }
         }
-        if arithmetic_expression_operator(token) {
-            if next.is_none() || next.is_some_and(|item| expression_boundary_token(item)) {
-                return true;
-            }
+        if arithmetic_expression_operator(token)
+            && (next.is_none() || next.is_some_and(|item| expression_boundary_token(item)))
+        {
+            return true;
         }
     }
     saw_ternary_if_without_comprehension && !saw_else_after_ternary_if

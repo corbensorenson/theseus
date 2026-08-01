@@ -2499,8 +2499,8 @@ fn mean_target_mse(
     }
     let mut total = 0.0;
     let mut count = 0usize;
-    for row in 0..features.rows.min(targets.len()) {
-        if let Some(target) = label_vectors.get(targets[row]) {
+    for (row, &target_idx) in targets.iter().enumerate().take(features.rows) {
+        if let Some(target) = label_vectors.get(target_idx) {
             let row_values = features.row(row);
             total += row_values
                 .iter()
@@ -2527,8 +2527,8 @@ fn mean_target_alignment(
     }
     let mut total = 0.0;
     let mut count = 0usize;
-    for row in 0..features.rows.min(targets.len()) {
-        if let Some(target) = label_vectors.get(targets[row]) {
+    for (row, &target_idx) in targets.iter().enumerate().take(features.rows) {
+        if let Some(target) = label_vectors.get(target_idx) {
             total += features
                 .row(row)
                 .iter()

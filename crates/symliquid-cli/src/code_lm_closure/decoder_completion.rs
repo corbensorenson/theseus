@@ -12,12 +12,14 @@ const DECODER_COMPLETION_CACHE_MAX_ENTRIES: usize = 4096;
 const DECODER_STATIC_FEATURE_CACHE_MAX_ENTRIES: usize = 4096;
 #[allow(dead_code)]
 const STATE_SEQUENCE_CUDA_READOUT_CACHE_MAX_ENTRIES: usize = 16;
+type ScoredToken = (String, f32);
+type ScoredTokenRows = Vec<Vec<ScoredToken>>;
+type SharedScoredTokens = Arc<Vec<ScoredToken>>;
 
 static SYMLIQUID_STATE_BODY_CACHE: OnceLock<Mutex<HashMap<String, Vec<String>>>> = OnceLock::new();
 static STATE_SEQUENCE_BODY_CACHE: OnceLock<Mutex<HashMap<String, Vec<String>>>> = OnceLock::new();
-static STATE_SEQUENCE_STATIC_FEATURE_CACHE: OnceLock<
-    Mutex<HashMap<String, Arc<Vec<(String, f32)>>>>,
-> = OnceLock::new();
+static STATE_SEQUENCE_STATIC_FEATURE_CACHE: OnceLock<Mutex<HashMap<String, SharedScoredTokens>>> =
+    OnceLock::new();
 static SYMLIQUID_STATIC_STATE_CACHE: OnceLock<Mutex<HashMap<String, Arc<Vec<f32>>>>> =
     OnceLock::new();
 #[cfg(feature = "cuda")]
@@ -455,8 +457,6 @@ fn symliquid_state_bodies_uncached(
         limit.clamp(1, 2)
     } else if execution_shaped_category(&task.category) {
         limit.clamp(2, 4)
-    } else if task.split == "public_calibration" {
-        limit.clamp(2, 5)
     } else {
         limit.clamp(2, 5)
     };
@@ -895,6 +895,7 @@ fn batched_symliquid_state_bodies_cuda(
     Some(out)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn extend_symliquid_state_beam(
     next: &mut Vec<BeamState>,
     task: &CodeTask,
@@ -956,6 +957,7 @@ fn extend_decoder_beam_options(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn symliquid_state_token_options(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -1021,6 +1023,7 @@ fn symliquid_state_token_options(
 }
 
 #[allow(dead_code)]
+#[allow(clippy::too_many_arguments)]
 fn symliquid_state_token_options_from_ranked_ids(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -1085,6 +1088,7 @@ fn symliquid_state_token_options_from_ranked_ids(
         .collect()
 }
 
+#[allow(clippy::too_many_arguments)]
 fn symliquid_state_cuda_token_options_batch(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -1095,7 +1099,7 @@ fn symliquid_state_cuda_token_options_batch(
     positions: &[usize],
     token_bonus_cache: &SymLiquidTokenBonusCache,
     branch_width: usize,
-) -> Option<Vec<Vec<(String, f32)>>> {
+) -> Option<ScoredTokenRows> {
     #[cfg(feature = "cuda")]
     {
         if !cuda_symliquid_state_decode_enabled() {
@@ -1384,6 +1388,7 @@ fn state_sequence_cuda_readout_cache_key(
 }
 
 #[allow(dead_code)]
+#[allow(clippy::too_many_arguments)]
 fn state_sequence_token_options_from_ranked_ids(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -1450,6 +1455,7 @@ fn state_sequence_token_options_from_ranked_ids(
         .collect()
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn state_sequence_cuda_token_options_batch(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -1460,7 +1466,7 @@ pub(super) fn state_sequence_cuda_token_options_batch(
     prompt_tokens: &[String],
     positions: &[usize],
     branch_width: usize,
-) -> Option<Vec<Vec<(String, f32)>>> {
+) -> Option<ScoredTokenRows> {
     #[cfg(feature = "cuda")]
     {
         if !cuda_state_sequence_decode_enabled() {
@@ -2206,8 +2212,6 @@ fn state_sequence_bodies_uncached(
         limit.clamp(1, 2)
     } else if execution_shaped_category(&task.category) {
         limit.clamp(2, 4)
-    } else if task.split == "public_calibration" {
-        limit.clamp(2, 5)
     } else {
         limit.clamp(2, 5)
     };

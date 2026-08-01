@@ -1,5 +1,7 @@
 use super::*;
 
+type TokenLogProbRows = Vec<Vec<(String, f32)>>;
+
 pub(super) fn greedy_body(
     task: &CodeTask,
     readout: &LinearReadout,
@@ -131,8 +133,6 @@ pub(super) fn beam_bodies(
     }
     let beam_width = if execution_shaped_category(&task.category) {
         limit.clamp(2, 4)
-    } else if task.split == "public_calibration" {
-        limit.clamp(2, 5)
     } else {
         limit.clamp(2, 5)
     };
@@ -143,14 +143,7 @@ pub(super) fn beam_bodies(
     } else {
         10usize
     };
-    let max_steps = learned_token_max_steps(
-        task,
-        if task.split == "public_calibration" {
-            48
-        } else {
-            48
-        },
-    );
+    let max_steps = learned_token_max_steps(task, 48);
     for position in 0..max_steps {
         let mut next = Vec::new();
         let mut active_beams = Vec::new();
@@ -333,8 +326,6 @@ pub(super) fn batched_beam_bodies(
         }
         let beam_width = if execution_shaped_category(&task.category) {
             limit.clamp(2, 4)
-        } else if task.split == "public_calibration" {
-            limit.clamp(2, 5)
         } else {
             limit.clamp(2, 5)
         };
@@ -497,7 +488,7 @@ fn top_token_log_probs_batch(
     readout: &LinearReadout,
     vocab: &Vocab,
     limit: usize,
-) -> Result<Vec<Vec<(String, f32)>>, Box<dyn std::error::Error>> {
+) -> Result<TokenLogProbRows, Box<dyn std::error::Error>> {
     #[cfg(feature = "cuda")]
     {
         if cuda_decode_logits_enabled() {
@@ -625,4 +616,3 @@ pub(super) fn contract_decode_seed_prefixes(task: &CodeTask) -> Vec<Vec<String>>
     }
     rows.into_iter().take(8).collect()
 }
-

@@ -30,13 +30,12 @@ pub(super) fn execution_shape_contract_ok(
         && (useful_task_scoped_system_body(task, body)
             || trusted_process_restart_body
             || category_specific_shape_body);
-    if !trusted_execution_shape_body {
-        if !useful_generated_body_for_task(task, body)
+    if !trusted_execution_shape_body
+        && (!useful_generated_body_for_task(task, body)
             || !syntax_constrained_body(body)
-            || !body_semantically_admissible(task, body)
-        {
-            return false;
-        }
+            || !body_semantically_admissible(task, body))
+    {
+        return false;
     }
     if hints.contains("file_path")
         && !body_has_any(&lowered, &["os.path", "open(", "isfile", "isdir", "exists"])
@@ -2266,10 +2265,10 @@ pub(super) fn deterministic_full_body_guardrail(
         reasons.push("python_body_syntax_shape_failed".to_string());
     }
     let category = task.category.as_str();
-    if target_concept_full_body_required(category) {
-        if body.lines().filter(|line| !line.trim().is_empty()).count() < 3 {
-            reasons.push("target_concept_body_too_shallow".to_string());
-        }
+    if target_concept_full_body_required(category)
+        && body.lines().filter(|line| !line.trim().is_empty()).count() < 3
+    {
+        reasons.push("target_concept_body_too_shallow".to_string());
     }
     if recurrence_category(category) {
         if !(lowered.contains("for ") || lowered.contains("while ")) {
@@ -2294,16 +2293,14 @@ pub(super) fn deterministic_full_body_guardrail(
         if !(lowered.contains("aeiou") || lowered.contains("vowel")) {
             reasons.push("vowel_rule_missing_vowel_set".to_string());
         }
-        if category == "count_vowels"
+        if (category == "count_vowels"
             || category.contains("final_y")
-            || category.contains("suffix_y")
-        {
-            if !(lowered.contains("'y'")
+            || category.contains("suffix_y"))
+            && !(lowered.contains("'y'")
                 || lowered.contains("\"y\"")
                 || lowered.contains("endswith"))
-            {
-                reasons.push("vowel_rule_missing_y_exception".to_string());
-            }
+        {
+            reasons.push("vowel_rule_missing_y_exception".to_string());
         }
     }
     if digit_rotation_category(category) {

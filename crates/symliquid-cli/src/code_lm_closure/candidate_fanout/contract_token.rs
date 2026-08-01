@@ -36,6 +36,7 @@ fn record_contract_prefilter_stats(
     );
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn contract_guided_token_decoder_bodies(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -67,6 +68,7 @@ pub(super) fn contract_guided_token_decoder_bodies(
     .0
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn contract_guided_token_decoder_bodies_with_timing(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -686,6 +688,7 @@ pub(super) fn contract_guided_token_decoder_bodies_with_timing(
     (out, timing_ms)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn sts_conditioned_contract_token_bridge_bodies(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -812,74 +815,72 @@ pub(super) fn sts_conditioned_contract_token_bridge_bodies(
             ]
         })
     } else {
-        let mut family_pools = Vec::new();
-        family_pools.push(contract_guided_token_decoder_bodies(
-            task,
-            body_ngram,
-            state_sequence_decoder,
-            symliquid_state_decoder,
-            readout,
-            vocab,
-            seed ^ 0xC0A7_57A7,
-            recursive_limit,
-            Some(sts_streams),
-            precomputed_beams,
-            None,
-            None,
-        ));
-        family_pools.push(contract_guided_token_decoder_bodies(
-            task,
-            body_ngram,
-            state_sequence_decoder,
-            symliquid_state_decoder,
-            readout,
-            vocab,
-            seed ^ 0xC0A7_0FF5,
-            recursive_limit,
-            None,
-            None,
-            None,
-            None,
-        ));
-        family_pools.push(body_ngram_bodies(
-            task,
-            body_ngram,
-            seed ^ 0xB0D1_57A7,
-            body_ngram_limit,
-            Some(sts_streams),
-        ));
-        family_pools.push(state_sequence_bodies(
-            task,
-            state_sequence_decoder,
-            body_ngram,
-            vocab,
-            seed ^ 0x5E51_57A7,
-            state_limit,
-            Some(sts_streams),
-        ));
-        family_pools.push(symliquid_state_bodies(
-            task,
-            symliquid_state_decoder,
-            body_ngram,
-            vocab,
-            seed ^ 0x51A7_C0DE,
-            symliquid_limit,
-            Some(sts_streams),
-        ));
-        family_pools.push(beam_bodies(
-            task,
-            readout,
-            vocab,
-            seed ^ 0xBEA0_57A7,
-            beam_limit,
-            Some(sts_streams),
-        ));
-        family_pools.push(
+        vec![
+            contract_guided_token_decoder_bodies(
+                task,
+                body_ngram,
+                state_sequence_decoder,
+                symliquid_state_decoder,
+                readout,
+                vocab,
+                seed ^ 0xC0A7_57A7,
+                recursive_limit,
+                Some(sts_streams),
+                precomputed_beams,
+                None,
+                None,
+            ),
+            contract_guided_token_decoder_bodies(
+                task,
+                body_ngram,
+                state_sequence_decoder,
+                symliquid_state_decoder,
+                readout,
+                vocab,
+                seed ^ 0xC0A7_0FF5,
+                recursive_limit,
+                None,
+                None,
+                None,
+                None,
+            ),
+            body_ngram_bodies(
+                task,
+                body_ngram,
+                seed ^ 0xB0D1_57A7,
+                body_ngram_limit,
+                Some(sts_streams),
+            ),
+            state_sequence_bodies(
+                task,
+                state_sequence_decoder,
+                body_ngram,
+                vocab,
+                seed ^ 0x5E51_57A7,
+                state_limit,
+                Some(sts_streams),
+            ),
+            symliquid_state_bodies(
+                task,
+                symliquid_state_decoder,
+                body_ngram,
+                vocab,
+                seed ^ 0x51A7_C0DE,
+                symliquid_limit,
+                Some(sts_streams),
+            ),
+            beam_bodies(
+                task,
+                readout,
+                vocab,
+                seed ^ 0xBEA0_57A7,
+                beam_limit,
+                Some(sts_streams),
+            ),
             greedy_body(task, readout, vocab, Some(sts_streams))
                 .into_iter()
                 .collect::<Vec<_>>(),
-        );
-        family_pools
+        ]
     };
     for family in family_pools {
         for body in family {

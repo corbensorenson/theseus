@@ -482,7 +482,6 @@ fn optional_dependency_modules_in_import_line(line: &str) -> Vec<&'static str> {
     if let Some(rest) = trimmed.strip_prefix("import ") {
         for raw in rest.split(',') {
             let base = raw
-                .trim()
                 .split_whitespace()
                 .next()
                 .unwrap_or("")

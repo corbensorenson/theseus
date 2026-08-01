@@ -666,6 +666,7 @@ fn rank_candidate_rows(
         .collect()
 }
 
+#[allow(clippy::too_many_arguments)]
 fn candidate_selection_score(
     required: &BTreeSet<String>,
     actual: &BTreeSet<String>,

@@ -772,7 +772,7 @@ fn batch_count(item_count: usize, batch_size: usize) -> usize {
     if item_count == 0 {
         0
     } else {
-        (item_count + batch_size.max(1) - 1) / batch_size.max(1)
+        item_count.div_ceil(batch_size.max(1))
     }
 }
 
@@ -1007,7 +1007,7 @@ fn add_feature(out: &mut [f32], key: &str, weight: f32) {
         return;
     }
     let idx = stable_hash_u64(key) as usize % out.len();
-    let sign = if stable_hash_u64(&format!("sign:{key}")) & 1 == 0 {
+    let sign = if stable_hash_u64(format!("sign:{key}")) & 1 == 0 {
         1.0
     } else {
         -1.0
@@ -1091,7 +1091,7 @@ fn stable_hash_hex(text: &str) -> String {
     format!(
         "{:016x}{:016x}",
         stable_hash_u64(text),
-        stable_hash_u64(&format!("salt:{text}"))
+        stable_hash_u64(format!("salt:{text}"))
     )
 }
 

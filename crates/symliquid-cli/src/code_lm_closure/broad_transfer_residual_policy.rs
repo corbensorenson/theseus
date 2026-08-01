@@ -147,7 +147,7 @@ pub(super) fn private_to_public_receiver_inventory_bridge_candidate(
 
 pub(super) fn broad_transfer_residual_policy(task: &CodeTask) -> BroadTransferResidualPolicy {
     let mut policy = BroadTransferResidualPolicy::default();
-    let mut haystack = vec![
+    let mut haystack = [
         task.card_id.as_str(),
         task.source_id.as_str(),
         task.category.as_str(),
@@ -1150,28 +1150,26 @@ fn sts_receiver_bridge_family_score(
     if text.contains("interface") && family_lower.contains("interface") {
         score += 10;
     }
-    if text.contains("return_shape") || text.contains("return shape") {
-        if family_lower.contains("return_shape") || return_shape_contract_ok(task, &body_lower) {
-            score += 8;
-        }
+    if (text.contains("return_shape") || text.contains("return shape"))
+        && (family_lower.contains("return_shape") || return_shape_contract_ok(task, &body_lower))
+    {
+        score += 8;
     }
     if text.contains("type")
         && (family_lower.contains("type") || body_lower.contains("isinstance("))
     {
         score += 7;
     }
-    if text.contains("branch")
+    if (text.contains("branch")
         || text.contains("loop")
         || text.contains("local")
-        || text.contains("locals")
-    {
-        if family_lower.contains("locals_branch_loop")
+        || text.contains("locals"))
+        && (family_lower.contains("locals_branch_loop")
             || body_lower.contains("for ")
             || body_lower.contains("while ")
-            || body_lower.contains("if ")
-        {
-            score += 6;
-        }
+            || body_lower.contains("if "))
+    {
+        score += 6;
     }
     if text.contains("string") && family_lower.contains("string") {
         score += 6;
@@ -1326,17 +1324,16 @@ pub(super) fn broad_transfer_residual_candidate_score(
             score -= 0.45;
         }
     }
-    if policy.local_adapter {
-        if body.contains("with ")
+    if policy.local_adapter
+        && (body.contains("with ")
             || body.contains("open(")
             || body.contains("json.")
             || body.contains("csv.")
             || body.contains("os.")
             || body.contains("path")
-            || body.contains("try:")
-        {
-            score += 0.7;
-        }
+            || body.contains("try:"))
+    {
+        score += 0.7;
     }
     if policy.runtime_dependency {
         let fallback_bonus = optional_dependency_fallback_bonus(&candidate.body);
@@ -1481,8 +1478,8 @@ pub(super) fn broad_public_floor_recovery_prefilter_score(
             score -= 0.35;
         }
     }
-    if policy.type_handling || policy.return_shape_contract {
-        if body_has_any(
+    if (policy.type_handling || policy.return_shape_contract)
+        && body_has_any(
             &lowered,
             &[
                 "isinstance(",
@@ -1493,9 +1490,9 @@ pub(super) fn broad_public_floor_recovery_prefilter_score(
                 "int(",
                 "float(",
             ],
-        ) {
-            score += 0.9;
-        }
+        )
+    {
+        score += 0.9;
     }
     if policy.algorithm_choice {
         if body_has_any(
@@ -1510,27 +1507,26 @@ pub(super) fn broad_public_floor_recovery_prefilter_score(
             score -= 0.65;
         }
     }
-    if policy.local_adapter {
-        if execution_shape_library_contract_ok(task, body, &hints)
-            && body_has_any(
-                &lowered,
-                &[
-                    "open(",
-                    "with ",
-                    "json.",
-                    "csv.",
-                    "os.",
-                    "pathlib",
-                    "zipfile",
-                    "tarfile",
-                    "subprocess",
-                    "platform",
-                    "psutil",
-                ],
-            )
-        {
-            score += 1.0;
-        }
+    if policy.local_adapter
+        && execution_shape_library_contract_ok(task, body, &hints)
+        && body_has_any(
+            &lowered,
+            &[
+                "open(",
+                "with ",
+                "json.",
+                "csv.",
+                "os.",
+                "pathlib",
+                "zipfile",
+                "tarfile",
+                "subprocess",
+                "platform",
+                "psutil",
+            ],
+        )
+    {
+        score += 1.0;
     }
     if mode.contains("execution_shape_") && execution_shape_library_contract_ok(task, body, &hints)
     {
@@ -1614,7 +1610,7 @@ fn private_residual_visible_semantic_contract_score(task: &CodeTask, lowered_bod
         task.card_id, task.source_id, task.category, task.entry_point, task.prompt
     )
     .to_ascii_lowercase();
-    let compact_text = text.replace('_', "").replace(' ', "").replace('-', "");
+    let compact_text = text.replace(['_', ' ', '-'], "");
     let mut score = 0.0f32;
 
     let palindrome = text.contains("palindrome") || text.contains("slice_comparison_missing");
@@ -2293,7 +2289,7 @@ fn visible_identifier_semantic_contract_score(task: &CodeTask, lowered_body: &st
         task.card_id, task.source_id, task.category, task.entry_point, task.prompt
     )
     .to_ascii_lowercase();
-    let compact_text = text.replace('_', "").replace(' ', "").replace('-', "");
+    let compact_text = text.replace(['_', ' ', '-'], "");
     let mut score = 0.0f32;
 
     let all_prefixes = compact_text.contains("allprefixes")
@@ -2555,7 +2551,7 @@ fn livecodebench_visible_semantic_contract_score(task: &CodeTask, lowered_body: 
         task.card_id, task.source_id, task.category, task.entry_point, task.prompt
     )
     .to_ascii_lowercase();
-    let compact_text = text.replace('_', "").replace(' ', "").replace('-', "");
+    let compact_text = text.replace(['_', ' ', '-'], "");
     let mut score = 0.0f32;
 
     let can_traverse_all_pairs = compact_text.contains("cantraverseallpairs")

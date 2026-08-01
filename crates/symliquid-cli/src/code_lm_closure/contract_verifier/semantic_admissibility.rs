@@ -179,10 +179,10 @@ pub(super) fn body_semantically_admissible(task: &CodeTask, body: &str) -> bool 
     {
         return false;
     }
-    if task.category == "tuple_nested_elementwise_max" {
-        if !(lowered.contains("zip(") && lowered.contains("max(") && lowered.contains("tuple")) {
-            return false;
-        }
+    if task.category == "tuple_nested_elementwise_max"
+        && !(lowered.contains("zip(") && lowered.contains("max(") && lowered.contains("tuple"))
+    {
+        return false;
     }
     if task.category == "palindrome" {
         if let Some(return_expr) = first_top_level_return_expr(body) {

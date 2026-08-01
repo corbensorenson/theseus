@@ -40,6 +40,13 @@ struct MetalReadoutSgdConfig {
     lr: f32,
 }
 
+struct MetalReadoutSgdBuffers<'a> {
+    features: &'a metal::Buffer,
+    targets: &'a metal::Buffer,
+    weights: &'a metal::Buffer,
+    bias: &'a metal::Buffer,
+}
+
 #[repr(C)]
 #[derive(Clone, Copy)]
 struct MetalReadoutBagSgdConfig {
@@ -137,10 +144,12 @@ pub fn train_readout_sgd_metal(
                 &device,
                 &queue,
                 &pipeline,
-                &features_buf,
-                &targets_buf,
-                &weights_buf,
-                &bias_buf,
+                MetalReadoutSgdBuffers {
+                    features: &features_buf,
+                    targets: &targets_buf,
+                    weights: &weights_buf,
+                    bias: &bias_buf,
+                },
                 MetalReadoutSgdConfig {
                     sample_start: sample_start as i32,
                     sample_count: sample_count as i32,
@@ -501,7 +510,7 @@ pub fn linear_readout_logits_metal(features: &Tensor, readout: &LinearReadout) -
     {
         encoder.set_buffer(idx as u64, Some(buffer), 0);
     }
-    let threads = pipeline.max_total_threads_per_threadgroup().min(256).max(1);
+    let threads = pipeline.max_total_threads_per_threadgroup().clamp(1, 256);
     encoder.dispatch_thread_groups(
         MTLSize {
             width: logits_len as u64,
@@ -681,7 +690,7 @@ fn encode_rollout_step(
     {
         encoder.set_buffer(idx as u64, Some(buffer), 0);
     }
-    let threads = pipeline.max_total_threads_per_threadgroup().min(256).max(1);
+    let threads = pipeline.max_total_threads_per_threadgroup().clamp(1, 256);
     encoder.dispatch_thread_groups(
         MTLSize {
             width: config.batch as u64,
@@ -704,23 +713,26 @@ fn encode_readout_sgd_chunk(
     device: &Device,
     queue: &CommandQueue,
     pipeline: &ComputePipelineState,
-    features: &metal::Buffer,
-    targets: &metal::Buffer,
-    weights: &metal::Buffer,
-    bias: &metal::Buffer,
+    buffers: MetalReadoutSgdBuffers<'_>,
     cfg: MetalReadoutSgdConfig,
 ) -> Result<()> {
     let cfg_buf = shared_bytes(device, &cfg);
     let command_buffer = queue.new_command_buffer();
     let encoder = command_buffer.new_compute_command_encoder();
     encoder.set_compute_pipeline_state(pipeline);
-    for (idx, buffer) in [features, targets, weights, bias, &cfg_buf]
-        .iter()
-        .enumerate()
+    for (idx, buffer) in [
+        buffers.features,
+        buffers.targets,
+        buffers.weights,
+        buffers.bias,
+        &cfg_buf,
+    ]
+    .iter()
+    .enumerate()
     {
         encoder.set_buffer(idx as u64, Some(buffer), 0);
     }
-    let threads = pipeline.max_total_threads_per_threadgroup().min(256).max(1);
+    let threads = pipeline.max_total_threads_per_threadgroup().clamp(1, 256);
     encoder.dispatch_thread_groups(
         MTLSize {
             width: 1,
@@ -760,7 +772,7 @@ fn encode_readout_bag_sgd_chunk(
     {
         encoder.set_buffer(idx as u64, Some(buffer), 0);
     }
-    let threads = pipeline.max_total_threads_per_threadgroup().min(256).max(1);
+    let threads = pipeline.max_total_threads_per_threadgroup().clamp(1, 256);
     encoder.dispatch_thread_groups(
         MTLSize {
             width: 1,
@@ -803,7 +815,7 @@ fn encode_state_linear_update(
     {
         encoder.set_buffer(idx as u64, Some(buffer), 0);
     }
-    let threads = pipeline.max_total_threads_per_threadgroup().min(256).max(1);
+    let threads = pipeline.max_total_threads_per_threadgroup().clamp(1, 256);
     encoder.dispatch_threads(
         MTLSize {
             width: total_weights as u64,
@@ -843,7 +855,7 @@ fn encode_state_hv_projection_update(
     {
         encoder.set_buffer(idx as u64, Some(buffer), 0);
     }
-    let threads = pipeline.max_total_threads_per_threadgroup().min(256).max(1);
+    let threads = pipeline.max_total_threads_per_threadgroup().clamp(1, 256);
     encoder.dispatch_threads(
         MTLSize {
             width: total_weights as u64,
@@ -915,7 +927,7 @@ fn validate_rollout(
         ));
     }
     observations.ensure_cols(config.obs_dim, "rollout observations")?;
-    if observations.rows % config.batch != 0 {
+    if !observations.rows.is_multiple_of(config.batch) {
         return Err(SymError::Shape(format!(
             "rollout observations rows {} must be divisible by batch {}",
             observations.rows, config.batch

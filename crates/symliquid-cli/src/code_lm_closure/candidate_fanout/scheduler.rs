@@ -10,6 +10,7 @@ fn parallel_shared_decoder_precompute_enabled() -> bool {
         .unwrap_or(true)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn candidate_rows(
     tasks: &[CodeTask],
     expression_bank: &[ExpressionBankItem],
@@ -381,7 +382,7 @@ pub(super) fn candidate_rows(
                 task_results[task_index] = Some(task_result);
                 completed_tasks = completed_tasks.saturating_add(1);
                 if let Some(ctx) = heartbeat.as_ref() {
-                    if completed_tasks == tasks.len() || completed_tasks % update_every == 0 {
+                    if completed_tasks == tasks.len() || completed_tasks.is_multiple_of(update_every) {
                         write_candidate_generation_heartbeat(
                             ctx,
                             completed_tasks,
@@ -480,7 +481,7 @@ pub(super) fn candidate_rows(
             task_results[task_index] = Some(task_result);
             completed_tasks = completed_tasks.saturating_add(1);
             if let Some(ctx) = heartbeat.as_ref() {
-                if completed_tasks == tasks.len() || completed_tasks % update_every == 0 {
+                if completed_tasks == tasks.len() || completed_tasks.is_multiple_of(update_every) {
                     write_candidate_generation_heartbeat(
                         ctx,
                         completed_tasks,
@@ -532,6 +533,7 @@ pub(super) fn candidate_rows(
     rows
 }
 
+#[allow(clippy::too_many_arguments)]
 fn failed_candidate_task_rows(
     task: &CodeTask,
     checkpoint_id: &str,

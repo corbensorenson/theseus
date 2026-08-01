@@ -114,6 +114,7 @@ pub(super) fn write_jsonl_binary_sidecar(
     Ok(sidecar_path)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn write_progress_report(
     config: &CodeLmClosureConfig,
     started: &Instant,
@@ -189,6 +190,7 @@ pub(super) fn candidate_heartbeat_update_every_tasks() -> usize {
         .unwrap_or(1)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn write_candidate_generation_heartbeat(
     ctx: &CandidateHeartbeat<'_>,
     completed_tasks: usize,

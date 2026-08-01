@@ -310,7 +310,7 @@ fn category_specific_receiver_inventory_bodies(
         secondary,
         has_secondary,
     ));
-    let compact_text = text.replace('_', "").replace(' ', "").replace('-', "");
+    let compact_text = text.replace(['_', ' ', '-'], "");
     if shape == "list"
         && (compact_text.contains("allprefixes")
             || text.contains("all prefixes")

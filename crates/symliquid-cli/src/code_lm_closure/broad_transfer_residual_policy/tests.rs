@@ -1411,7 +1411,7 @@ fn residual_repair_sprint_private_no_admissible_cases_have_receiver_bodies() {
         let mut task = private_task(tags.clone(), shape);
         let visible_arg_count_hint = if category.contains("min_three") {
             3
-        } else if required.iter().any(|item| *item == "two_arg_interface") {
+        } else if required.contains(&"two_arg_interface") {
             2
         } else {
             1

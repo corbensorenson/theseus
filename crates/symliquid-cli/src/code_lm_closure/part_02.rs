@@ -440,7 +440,7 @@ fn method_call_may_continue_with_chain(line: &[String]) -> bool {
         && line.iter().any(|token| token == ".")
         && line.iter().any(|token| token == "setdefault")
         && !line.iter().any(|token| token == "append")
-        && !line.first().is_some_and(|token| token == "return")
+        && line.first().is_none_or(|token| token != "return")
 }
 
 fn block_header_call_comparison_options(line: &[String]) -> Option<Vec<(String, f32)>> {

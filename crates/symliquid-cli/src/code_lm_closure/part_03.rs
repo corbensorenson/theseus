@@ -20,13 +20,15 @@ fn complete_state_sequence_body(task: &CodeTask, body: &str) -> Option<String> {
         "return nondecreasing or nonincreasing"
     } else if task.category == "largest_prime_factor" && lowered.contains("best") {
         "return best"
-    } else if task.category == "arithmetic_series_sum" && lowered.contains("total") {
+    } else if (task.category == "arithmetic_series_sum"
+        || vowel_rule_category(&task.category))
+        && lowered.contains("total")
+    {
         "return total"
-    } else if vowel_rule_category(&task.category) && lowered.contains("total") {
-        "return total"
-    } else if task.category == "tribonacci_sequence" && lowered.contains("values") {
-        "return values[data]"
-    } else if recurrence_category(&task.category) && lowered.contains("values") {
+    } else if (task.category == "tribonacci_sequence"
+        || recurrence_category(&task.category))
+        && lowered.contains("values")
+    {
         "return values[data]"
     } else if recurrence_category(&task.category) && lowered.contains("b =") {
         "return b"
@@ -42,9 +44,9 @@ fn complete_state_sequence_body(task: &CodeTask, body: &str) -> Option<String> {
         "return a"
     } else if task.category == "is_prime" && compact.contains("returnfalse") {
         "return True"
-    } else if task.category == "factors" && lowered.contains("out") {
-        "return out"
-    } else if task.category == "prime_factors" && lowered.contains("out") {
+    } else if matches!(task.category.as_str(), "factors" | "prime_factors")
+        && lowered.contains("out")
+    {
         "return out"
     } else if task.category == "string_sequence" && lowered.contains("parts") {
         "return ' '.join(parts)"
@@ -71,11 +73,9 @@ fn complete_state_sequence_body(task: &CodeTask, body: &str) -> Option<String> {
         "return ''.join(reversed(digits))"
     } else if matches!(
         task.category.as_str(),
-        "parse_ints" | "numeric_string_parser"
+        "parse_ints" | "numeric_string_parser" | "filter_integers"
     ) && lowered.contains("out")
     {
-        "return out"
-    } else if task.category == "filter_integers" && lowered.contains("out") {
         "return out"
     } else if task.category == "safe_head" && compact.contains("returnnone") {
         "return data[0]"
@@ -496,6 +496,7 @@ fn prefix_is_token_allowed(tokens: &[String]) -> bool {
     true
 }
 
+#[allow(clippy::too_many_arguments)]
 fn state_sequence_token_options_from_scores(
     task: &CodeTask,
     body_ngram: &BodyNgramModel,
@@ -2105,7 +2106,7 @@ fn learned_token_max_steps(task: &CodeTask, base: usize) -> usize {
         base.max(contract_learned_body_step_floor(task) / 2)
             .min(192)
     } else if execution_shaped_category(&task.category) {
-        base.max(40).min(64)
+        base.clamp(40, 64)
     } else {
         base
     }
@@ -2115,7 +2116,7 @@ fn learned_body_ngram_max_steps(task: &CodeTask, base: usize) -> usize {
     if contract_requires_extended_learned_body(task) {
         base.max(contract_learned_body_step_floor(task)).min(320)
     } else if execution_shaped_category(&task.category) {
-        base.max(96).min(160)
+        base.clamp(96, 160)
     } else {
         base
     }
