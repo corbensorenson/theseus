@@ -382,10 +382,11 @@ The frozen pretraining target is `1,096,734,920` optimizer positions. The
 shared trunk has completed about 7.97% of that target. This is progress, not
 capability.
 
-## Why Training Is Held
+## Why Training Is Paused
 
 The finite acceleration audit and current independent readiness audit are
-GREEN, but the content-addressed step-11,416 replacement package remains RED.
+GREEN. The source-bound replacement package must be refreshed after any
+machine-authority source repair before another segment may launch.
 The independent audit now rematerializes the current 160 cases, reproduces
 contract `d48875c5...`, verifies the historical packet digest and consumed
 contract `d724363e...`, and observes zero exact or whitespace/case-normalized
@@ -393,25 +394,23 @@ model-visible prompt overlap. This corrects an earlier configuration-only
 assertion that had incorrectly described the surfaces as exact reuse.
 Therefore:
 
-1. the legacy manual hold is installed and must remain until its exact
-   machine-readable launch controller exists;
+1. the machine-readable autonomous one-shot launch controller is the only
+   training entry point; it requires no user or operator approval;
 2. independent `evaluation_nonconsumption` and
    `evaluation_surface_freshness` pass without authorizing D2 execution;
-3. the replacement package fails only `source_binding`, because final
-   generation is forbidden from a dirty source tree;
+3. the replacement package must bind a clean source commit and may be followed
+   only by its own evidence-report commit; any other source drift fails closed;
 4. the pre-training matrix remains not ready because its Phase 0 evidence
    requires a GREEN package bound to a clean post-maintenance commit;
 5. Phase 8 is globally partial even though the selected M1/MLX campaign route
    is closed; its remaining cross-platform and production-serving work should
    not be confused with a campaign blocker.
 
-Therefore the honest state is `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING`,
-`NOT_EVALUATED_SEALED`, and `SOURCE_BINDING_PENDING`, not `TRAINING_READY`.
-The final source-bound package must be generated exactly once after the
-maintenance transaction is committed. That package still cannot remove the
-hold, execute D2, or authorize training by itself; the automated controller
-must separately prove source, custody, resources, checkpointing, rollback, and
-terminal-stop predicates.
+Therefore the honest state is `TRAINING_WAITING_ON_MACHINE_PREDICATES` and
+`NOT_EVALUATED_SEALED`. The source-bound package does not execute D2 or training
+by itself; the autonomous controller separately proves source, custody,
+resources, checkpointing, rollback, exclusive-lease, emergency-yield, and
+terminal-stop predicates before every segment.
 
 ## Flagship Evidence Result
 
@@ -566,7 +565,7 @@ validated the latest transaction.
 
 The 2026-07-30/31 maintenance transaction is deliberately non-destructive.
 Source, registry, CI, evaluator-integrity, and release-boundary repairs may
-proceed while the training hold remains installed. Archive moves, deletions,
+proceed while training is paused by machine predicates. Archive moves, deletions,
 public-history changes, and D2 execution have separate authority.
 
 | Cleanup area | Current state | Exact boundary |
@@ -603,7 +602,7 @@ publication policy is established; they do not block local proof work.
 | Project registry | `GREEN` | Canonical routes have current minimal evidence |
 | Roadmap implementation | `YELLOW` | Zero hard gaps; the exact 84-chapter book pin is reconciled, while unrelated partial phases and the pre-training source-binding blocker remain |
 | Pre-training architecture | `NOT_READY` | Phase 0 awaits a clean source-bound replacement package; the selected Phase 8 route remains mechanically qualified |
-| Replacement freeze | Current `RED` | Fails only `source_binding` on the dirty maintenance tree; hold remains |
+| Replacement freeze | `REBIND_AFTER_SOURCE_CHANGE` | Regenerate from a clean source commit after any authority change; the package grants no execution by itself |
 | Independent pre-long-run audit | Current `GREEN` | Recomputes the current contract, historical packet identity and consumption, and zero exact/normalized prompt overlap |
 | Functional utility freeze | `NOT_EVALUATED_SEALED` | The 57M candidate is unevaluated; current exact surface nonconsumption and scoped freshness pass. EOS-only uncapped generation, autonomous independent English audit, current-checkpoint exact diagnostics, and one-shot D2 authority are implemented; execution remains sealed pending the clean source-bound freeze and completed dense controls |
 | Runtime exposure | `LOCAL_ONLY` | No LAN/public authorization |

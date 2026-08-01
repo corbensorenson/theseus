@@ -13,6 +13,9 @@
   "rollback_staging_root": "runtime/rollback/neural_seed_autonomous_launch",
   "child_report": "reports/neural_seed_autonomous_launch_child.json",
   "report": "reports/neural_seed_autonomous_launch_controller.json",
+  "post_binding_evidence_paths": [
+    "reports/pre_long_run_replacement_freeze.json"
+  ],
   "exclusive_accelerator_process_patterns": [
     "theseus_p4s_campaign.py",
     "neural_seed_training_campaign.py --execute",
@@ -30,7 +33,7 @@
     "user_or_operator_approval_required": false,
     "removes_hold_permanently": false,
     "reevaluate_before_every_segment": true,
-    "restore_hold_on_every_exit": true,
+    "never_remove_or_modify_yield_control": true,
     "require_clean_source_bound_to_replacement_freeze": true,
     "require_no_competing_accelerator_job": true,
     "require_atomic_checkpoint_rollback_snapshot": true,

@@ -949,7 +949,7 @@ This is the only long-training program that remains on the roadmap.
 
 ### N0 — Source-Bound Readiness Refresh
 
-State: `may run now; leave the hold installed`.
+State: `source rebind required after machine-authority repair`.
 
 1. Recompute the architecture freeze and independent readiness package from
    committed source.
@@ -964,13 +964,14 @@ State: `may run now; leave the hold installed`.
    rater model's declared context residual after exact prompt tokenization,
    retain explicit termination telemetry, and invalidate rather than score any
    physical-boundary or host-emergency stop.
-6. Reach `TRAINING_READY_BUT_HELD` only after the repaired rater and its
-   prospective semantic identity are independently rebound from committed
-   source.
+6. Reach `TRAINING_READY_ON_MACHINE_PREDICATES` only after the repaired rater,
+   autonomous one-shot launcher, and their prospective semantic identities are
+   independently rebound from committed source. The optional yield file is an
+   emergency stop, not launch authority.
 
 ### N1 — Bounded Fresh-Process Qualification
 
-State: `BLOCKED_ON_AUTOMATED_LAUNCH_POLICY_AND_N0_GREEN`.
+State: `BLOCKED_ON_N0_SOURCE_REBIND`; the autonomous launch policy exists.
 
 Run one exact transactional resume segment with:
 

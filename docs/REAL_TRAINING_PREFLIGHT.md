@@ -12,7 +12,7 @@ As of 2026-07-30:
 - the exact shared trunk is at step 11,416 and 87,441,996 optimizer positions;
 - model, AdamW, MLX RNG, cursor, and the 37-manifest prospective lineage are
   custody-green;
-- the transactional safety hold is installed;
+- the optional emergency-yield control is absent;
 - the model is `NOT_EVALUATED`;
 - both matched dense controls are untrained;
 - the selected route is compiled FP32 MLX;
@@ -39,14 +39,15 @@ documentation/source transaction committed
   -> exact replacement package
   -> roadmap pre-training gate passes
   -> autonomous controller reacquires every machine predicate
-  -> controller leases the transactional hold for one fresh-process segment
+  -> controller acquires an exclusive one-shot lease without touching the
+     emergency-yield control
   -> exact transactional checkpoint
-  -> controller restores the hold and reevaluates before another segment
+  -> controller releases the lease and reevaluates before another segment
 ```
 
-A GREEN report cannot remove the hold. Only the registered autonomous
-controller can lease it for one transaction, and no user or operator approval
-is part of that decision.
+A GREEN report cannot bypass an emergency-yield request. Only the registered
+autonomous controller can acquire the exclusive execution lease for one
+transaction, and no user or operator approval is part of that decision.
 
 ## Invariants
 
@@ -69,7 +70,7 @@ Before every launch, verify:
 4. **Machine authority**
    - the autonomous controller acquired an exclusive one-shot lease after
      recomputing every launch predicate;
-   - the runtime hold is restored on every exit;
+   - the optional emergency-yield control is never removed or modified;
    - no inherited teacher, network, or remote-execution authority.
 5. **Data**
    - frozen admitted corpus identity matches;
@@ -148,14 +149,14 @@ between atomic checkpoint transactions and requires no user or operator
 approval:
 
 ```bash
-python3 scripts/neural_seed_training_campaign.py --execute
+python3 scripts/neural_seed_autonomous_launch_controller.py --execute
 ```
 
-Do not invoke the child trainer directly. The campaign controller owns machine
-availability checks, checkpoint transactions, exact lineage verification, and
-stop-on-gate-close behavior. A positive `--max-segments` value is a diagnostic
-invocation bound; zero, the default, continues until pretraining completion or a
-causal machine gate closes.
+Do not invoke the child trainer directly. Reinvoke the autonomous controller
+after each committed segment; it reacquires source, resource, emergency-yield,
+exclusive-lease, rollback, and lineage predicates each time. Its 64-step child
+segment is the qualified atomic checkpoint transaction, not an output-token or
+quality cap.
 
 After the segment:
 

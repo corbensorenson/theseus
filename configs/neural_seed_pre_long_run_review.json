@@ -264,7 +264,7 @@
     "The selected full-campaign architecture and execution recipe are rebound in one replacement freeze.",
     "If no topology candidate wins, resume the exact step-11416 lineage without changing model, AdamW, RNG, cursor, data order, objective mass, or evaluation.",
     "If a topology candidate wins, archive step 11416 as a non-capability control and restart only through a new content-addressed lineage; never reinterpret incompatible optimizer state.",
-    "Only the autonomous launch controller may lease the yield control, for exactly one transaction, after every machine predicate passes; it restores the hold on every exit and requires no user or operator approval."
+    "Only the autonomous launch controller may acquire the exclusive execution lease, for exactly one transaction, after every machine predicate passes; it never removes or modifies the optional emergency-yield control and requires no user or operator approval."
   ],
   "resource_policy": {
     "clock_of_day_windows_allowed": false,

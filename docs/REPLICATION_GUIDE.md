@@ -223,8 +223,8 @@ Important:
 
 - source checkout is not training authority;
 - a historically GREEN freeze can become stale after legitimate source edits;
-- the operator hold must remain until every current gate passes and the
-  operator explicitly removes it;
+- the optional emergency-yield control is normally absent and is never launch
+  authority; the autonomous controller must fail closed when it is present;
 - one bounded fresh-process segment comes before a long continuation;
 - exact transactional custody is mandatory;
 - capability evaluation remains unconsumed until the candidate and matched

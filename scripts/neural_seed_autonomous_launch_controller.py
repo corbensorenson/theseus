@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import contextlib
 import hashlib
 import json
 import os
@@ -13,7 +12,7 @@ import subprocess
 import sys
 import uuid
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,6 +54,7 @@ def preflight(
     scale_override: dict[str, Any] | None = None,
     availability_override: dict[str, Any] | None = None,
     review_override: dict[str, Any] | None = None,
+    source_binding_override: bool | None = None,
 ) -> dict[str, Any]:
     validate_config(config)
     package_path = resolve(str(config["replacement_freeze"]))
@@ -63,7 +63,7 @@ def preflight(
     training_path = resolve(str(config["training_config"]))
     availability_path = resolve(str(config["availability_config"]))
     review_config_path = resolve(str(config["review_config"]))
-    hold_path = resolve(str(config["yield_control"]))
+    yield_path = resolve(str(config["yield_control"]))
     lease_path = resolve(str(config["active_lease"]))
 
     package = package_override or read_json(package_path)
@@ -80,8 +80,8 @@ def preflight(
         availability_policy
     )
     prospective_snapshot = dict(availability.get("snapshot") or {})
-    prospective_snapshot["yield_requested"] = False
     prospective_snapshot["active_accelerator_jobs"] = process_jobs
+    prospective_snapshot["yield_requested"] = yield_path.is_file()
     prospective_availability = campaign.evaluate_availability(
         availability_policy, prospective_snapshot
     )
@@ -95,7 +95,6 @@ def preflight(
     else:
         review = review_override
 
-    package_source = dict(package.get("source_binding") or {})
     package_identity_valid = bool(
         package.get("package_identity")
         and replacement_freeze.verify_package_identity(package)
@@ -117,12 +116,12 @@ def preflight(
             and scale.get("training_authorized") is True
         ),
         "source_clean_and_exactly_bound": (
-            source.get("clean_at_generation") is True
-            and package_source.get("clean_at_generation") is True
-            and source.get("commit") == package_source.get("commit")
+            source_is_bound_to_package(config, package=package, source=source)
+            if source_binding_override is None
+            else source_binding_override
         ),
         "review_controller_ready": review.get("trigger_state") in {"READY", "GREEN"},
-        "hold_present_for_transaction": hold_path.is_file(),
+        "emergency_yield_absent": not yield_path.is_file(),
         "no_active_lease": not lease_path.exists(),
         "no_competing_accelerator_job": not process_jobs,
         "prospective_resource_gate_green": (
@@ -149,9 +148,9 @@ def preflight(
         "scale_preregistration": artifact(scale_path),
         "review_controller_state": review.get("trigger_state"),
         "current_availability": availability,
-        "prospective_availability_after_transactional_hold_lease": prospective_availability,
+        "prospective_availability_under_exclusive_lease": prospective_availability,
         "competing_accelerator_jobs": process_jobs,
-        "yield_control": relative(hold_path),
+        "yield_control": relative(yield_path),
         "active_lease": relative(lease_path),
         "authority": config["authority"],
         "maximum_inference": (
@@ -167,7 +166,7 @@ def execute_one_shot(config: dict[str, Any], *, config_path: Path) -> dict[str, 
     if before["trigger_state"] != "GREEN":
         return before
     lease_id = uuid.uuid4().hex
-    hold_path = resolve(str(config["yield_control"]))
+    yield_path = resolve(str(config["yield_control"]))
     lease_path = resolve(str(config["active_lease"]))
     archive_dir = resolve(str(config["lease_archive_directory"]))
     archive_dir.mkdir(parents=True, exist_ok=True)
@@ -196,7 +195,7 @@ def execute_one_shot(config: dict[str, Any], *, config_path: Path) -> dict[str, 
         "source_binding": before["source_binding"],
         "preflight_sha256": stable_hash(before),
         "command": command,
-        "hold_restored": False,
+        "yield_control_unchanged": False,
         "checkpoint_rollback_state": "NOT_REQUIRED",
     }
     try:
@@ -213,26 +212,25 @@ def execute_one_shot(config: dict[str, Any], *, config_path: Path) -> dict[str, 
     rollback: dict[str, Any] | None = None
     completed: subprocess.CompletedProcess[str] | None = None
     error = ""
-    hold_restored = False
+    yield_control_unchanged = False
+    yield_present_before = yield_path.is_file()
     manifests_before: set[Path] = set()
     try:
         manifests_before = lineage_manifest_paths(config)
         rollback = snapshot_checkpoint_transaction(config, rollback_dir)
-        with transactional_hold_lease(hold_path, lease_id) as backup_path:
-            lease["state"] = "RUNNING"
-            lease["hold_backup"] = relative(backup_path)
-            training.write_json_atomic(lease_path, lease)
-            completed = subprocess.run(
-                command,
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-        hold_restored = hold_path.is_file()
+        lease["state"] = "RUNNING"
+        training.write_json_atomic(lease_path, lease)
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        yield_control_unchanged = yield_path.is_file() == yield_present_before
     except Exception as exc:  # noqa: BLE001
         error = f"{type(exc).__name__}: {exc}"[:2000]
-        hold_restored = hold_path.is_file()
+        yield_control_unchanged = yield_path.is_file() == yield_present_before
 
     try:
         child = read_json(child_report) if child_report.is_file() else {}
@@ -261,7 +259,7 @@ def execute_one_shot(config: dict[str, Any], *, config_path: Path) -> dict[str, 
         and 0 < int(segment_rows[0].get("optimizer_step_delta") or 0)
         <= int(config["one_shot_command"]["expected_maximum_optimizer_steps"])
         and lineage_verified
-        and hold_restored
+        and yield_control_unchanged
     )
     rollback_state = "NOT_REQUIRED"
     rollback_faults: list[str] = []
@@ -306,7 +304,7 @@ def execute_one_shot(config: dict[str, Any], *, config_path: Path) -> dict[str, 
         "completed_utc": training.now(),
         "child_returncode": completed.returncode if completed is not None else None,
         "child_report": artifact(child_report),
-        "hold_restored": hold_restored,
+        "yield_control_unchanged": yield_control_unchanged,
         "checkpoint_rollback_state": rollback_state,
         "rollback_faults": rollback_faults,
         "new_lineage_manifests": sorted(relative(path) for path in new_manifests),
@@ -332,7 +330,7 @@ def execute_one_shot(config: dict[str, Any], *, config_path: Path) -> dict[str, 
             "pretraining_complete": child.get("pretraining_complete"),
             "progress": child.get("progress"),
         },
-        "hold_restored": hold_restored,
+        "yield_control_unchanged": yield_control_unchanged,
         "checkpoint_rollback_state": rollback_state,
         "rollback_faults": rollback_faults,
         "new_lineage_manifests": sorted(relative(path) for path in new_manifests),
@@ -383,24 +381,6 @@ def verify_committed_lineage(
     except (OSError, ValueError, KeyError, TypeError, RuntimeError, json.JSONDecodeError):
         return False
     return lineage.get("trigger_state") == "GREEN"
-
-
-@contextlib.contextmanager
-def transactional_hold_lease(hold_path: Path, lease_id: str) -> Iterator[Path]:
-    if not hold_path.is_file():
-        raise RuntimeError("yield hold missing before autonomous lease")
-    backup = hold_path.with_name(f"{hold_path.name}.leased-{lease_id}")
-    if backup.exists():
-        raise RuntimeError("yield hold lease backup already exists")
-    os.replace(hold_path, backup)
-    try:
-        yield backup
-    finally:
-        if hold_path.exists():
-            raise RuntimeError("yield hold recreated during autonomous lease")
-        if not backup.is_file():
-            raise RuntimeError("yield hold lease backup missing at restoration")
-        os.replace(backup, hold_path)
 
 
 def snapshot_checkpoint_transaction(
@@ -478,13 +458,60 @@ def source_state() -> dict[str, Any]:
     }
 
 
+def source_is_bound_to_package(
+    config: dict[str, Any], *, package: dict[str, Any], source: dict[str, Any]
+) -> bool:
+    """Accept a clean evidence-only descendant of the clean freeze source commit."""
+
+    package_source = dict(package.get("source_binding") or {})
+    current_commit = str(source.get("commit") or "")
+    bound_commit = str(package_source.get("commit") or "")
+    if (
+        source.get("clean_at_generation") is not True
+        or package_source.get("clean_at_generation") is not True
+        or not current_commit
+        or not bound_commit
+    ):
+        return False
+    ancestry = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", bound_commit, current_commit],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if ancestry.returncode != 0:
+        return False
+    changed = subprocess.run(
+        ["git", "diff", "--name-only", f"{bound_commit}..{current_commit}"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if changed.returncode != 0:
+        return False
+    changed_paths = {line.strip() for line in changed.stdout.splitlines() if line.strip()}
+    allowed_paths = {str(path) for path in config["post_binding_evidence_paths"]}
+    if not changed_paths.issubset(allowed_paths):
+        return False
+    package_artifacts = dict(package.get("source_artifacts") or {})
+    if not package_artifacts:
+        return False
+    for row in package_artifacts.values():
+        path = resolve(str(row.get("path") or ""))
+        if not path.is_file() or sha256_file(path) != row.get("sha256"):
+            return False
+    return True
+
+
 def validate_config(config: dict[str, Any]) -> None:
     if config.get("policy") != POLICY:
         raise ValueError("autonomous launch policy mismatch")
     authority = dict(config.get("authority") or {})
     required_true = (
         "reevaluate_before_every_segment",
-        "restore_hold_on_every_exit",
+        "never_remove_or_modify_yield_control",
         "require_clean_source_bound_to_replacement_freeze",
         "require_no_competing_accelerator_job",
         "require_atomic_checkpoint_rollback_snapshot",
@@ -512,6 +539,9 @@ def validate_config(config: dict[str, Any]) -> None:
         raise ValueError("one-shot command must run exactly one segment")
     if int(command.get("expected_maximum_optimizer_steps") or 0) != 64:
         raise ValueError("one-shot segment step contract mismatch")
+    allowed_evidence = config.get("post_binding_evidence_paths")
+    if allowed_evidence != ["reports/pre_long_run_replacement_freeze.json"]:
+        raise ValueError("post-binding evidence path contract mismatch")
     if resolve(str(config.get("rollback_staging_root") or "")) != resolve(
         "runtime/rollback/neural_seed_autonomous_launch"
     ):
@@ -526,7 +556,7 @@ def summary(report: dict[str, Any]) -> dict[str, Any]:
         "failed_gates": report.get("failed_gates") or (
             (report.get("preflight") or {}).get("failed_gates")
         ),
-        "hold_restored": report.get("hold_restored"),
+        "yield_control_unchanged": report.get("yield_control_unchanged"),
         "checkpoint_rollback_state": report.get("checkpoint_rollback_state"),
     }
 

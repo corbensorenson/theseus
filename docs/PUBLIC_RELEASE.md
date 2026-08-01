@@ -28,8 +28,9 @@ finds the sealed 160-case surface fresh at exact and whitespace/case-normalized
 model-visible prompt scope and verifies its historical consumption identity;
 that limited finding does not establish semantic-family independence or
 authorize evaluation. The surface, generators, hidden verifiers, seeds,
-consumption records, and candidate outputs remain private. The training and D2
-holds remain mandatory until their separate machine-readable gates pass.
+consumption records, and candidate outputs remain private. Training and D2
+remain unavailable until their separate machine-readable exclusive-lease gates
+pass.
 
 Before publishing anything, audit the complete tracked repository:
 

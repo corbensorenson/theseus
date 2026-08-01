@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -45,7 +46,7 @@ def green_availability() -> dict:
             "disk_required_bytes": 1_000,
             "checkpoint_transaction_requirement_available": True,
             "active_accelerator_jobs": [],
-            "yield_requested": True,
+            "yield_requested": False,
         },
     }
 
@@ -55,6 +56,7 @@ def test_config_replaces_user_gate_with_one_machine_predicate_segment() -> None:
     controller.validate_config(value)
     assert value["authority"]["user_or_operator_approval_required"] is False
     assert value["authority"]["removes_hold_permanently"] is False
+    assert value["authority"]["never_remove_or_modify_yield_control"] is True
     assert value["one_shot_command"]["max_segments"] == 1
     assert value["one_shot_command"]["expected_maximum_optimizer_steps"] == 64
     assert value["authority"]["D2_evaluation_authorized"] is False
@@ -86,6 +88,7 @@ def test_machine_preflight_authorizes_without_user_when_every_predicate_passes(
         },
         availability_override=green_availability(),
         review_override={"trigger_state": "READY"},
+        source_binding_override=True,
     )
     assert report["trigger_state"] == "GREEN"
     assert report["launch_authorized"] is True
@@ -116,6 +119,7 @@ def test_competing_accelerator_or_dirty_source_pauses_automatically(monkeypatch)
         },
         availability_override=green_availability(),
         review_override={"trigger_state": "READY"},
+        source_binding_override=False,
     )
     assert report["trigger_state"] == "PAUSED"
     assert report["launch_authorized"] is False
@@ -123,19 +127,49 @@ def test_competing_accelerator_or_dirty_source_pauses_automatically(monkeypatch)
     assert "no_competing_accelerator_job" in report["failed_gates"]
 
 
-def test_transactional_hold_lease_restores_hold_after_failure(tmp_path: Path) -> None:
-    hold = tmp_path / "hold"
-    hold.write_text("yield\n", encoding="utf-8")
-    try:
-        with controller.transactional_hold_lease(hold, "lease"):
-            assert not hold.exists()
-            raise RuntimeError("simulated child failure")
-    except RuntimeError as exc:
-        assert str(exc) == "simulated child failure"
-    else:
-        raise AssertionError("simulated failure did not escape")
-    assert hold.read_text(encoding="utf-8") == "yield\n"
-    assert not (tmp_path / "hold.leased-lease").exists()
+def test_emergency_yield_is_a_stop_request_not_a_launch_prerequisite(
+    monkeypatch, tmp_path: Path
+) -> None:
+    value = config()
+    yield_control = tmp_path / "yield"
+    value["yield_control"] = str(yield_control)
+    monkeypatch.setattr(controller.replacement_freeze, "verify_package_identity", lambda _: True)
+    common = {
+        "config_path": CONFIG_PATH,
+        "source_state_override": {
+            "commit": "a" * 40,
+            "branch": "main",
+            "clean_at_generation": True,
+            "dirty_path_count": 0,
+            "dirty_paths": [],
+        },
+        "process_jobs_override": [],
+        "package_override": green_package(),
+        "independent_override": {"trigger_state": "GREEN", "failed_audits": []},
+        "scale_override": {
+            "trigger_state": "GREEN",
+            "contract_state": "GREEN",
+            "proposal_state": "AUTHORIZED_FOR_FROZEN_TRAINING_PLAN",
+            "training_authorized": True,
+            "boundaries": {"D2_cases_consumed": 0},
+        },
+        "review_override": {"trigger_state": "READY"},
+        "source_binding_override": True,
+    }
+    absent = controller.preflight(
+        value, availability_override=green_availability(), **common
+    )
+    assert absent["gates"]["emergency_yield_absent"] is True
+    assert absent["trigger_state"] == "GREEN"
+
+    yield_control.write_text("yield\n", encoding="utf-8")
+    requested_availability = green_availability()
+    requested_availability["snapshot"]["yield_requested"] = True
+    requested = controller.preflight(
+        value, availability_override=requested_availability, **common
+    )
+    assert requested["gates"]["emergency_yield_absent"] is False
+    assert requested["trigger_state"] == "PAUSED"
 
 
 def test_checkpoint_transaction_restore_is_exact(tmp_path: Path) -> None:
@@ -165,7 +199,52 @@ def test_exclusive_lease_cannot_overwrite_live_controller(tmp_path: Path) -> Non
     assert json.loads(lease.read_text(encoding="utf-8")) == {"lease_id": "first"}
 
 
-def test_snapshot_failure_archives_lease_without_stranding_hold(
+def test_evidence_only_descendant_is_bound_but_source_drift_is_not(monkeypatch) -> None:
+    value = config()
+    bound_path = ROOT / "configs/neural_seed_training_availability.json"
+    package = {
+        "source_binding": {
+            "commit": "a" * 40,
+            "clean_at_generation": True,
+        },
+        "source_artifacts": {
+            "configs/neural_seed_training_availability.json": {
+                "path": "configs/neural_seed_training_availability.json",
+                "sha256": controller.sha256_file(bound_path),
+            }
+        },
+    }
+    source = {
+        "commit": "b" * 40,
+        "clean_at_generation": True,
+    }
+
+    def evidence_only(command, **_kwargs):
+        if command[1:3] == ["merge-base", "--is-ancestor"]:
+            return subprocess.CompletedProcess(command, 0, "", "")
+        return subprocess.CompletedProcess(
+            command, 0, "reports/pre_long_run_replacement_freeze.json\n", ""
+        )
+
+    monkeypatch.setattr(controller.subprocess, "run", evidence_only)
+    assert controller.source_is_bound_to_package(
+        value, package=package, source=source
+    ) is True
+
+    def source_drift(command, **_kwargs):
+        if command[1:3] == ["merge-base", "--is-ancestor"]:
+            return subprocess.CompletedProcess(command, 0, "", "")
+        return subprocess.CompletedProcess(
+            command, 0, "scripts/moecot_language_arm_training.py\n", ""
+        )
+
+    monkeypatch.setattr(controller.subprocess, "run", source_drift)
+    assert controller.source_is_bound_to_package(
+        value, package=package, source=source
+    ) is False
+
+
+def test_snapshot_failure_archives_lease_without_modifying_yield_control(
     tmp_path: Path, monkeypatch,
 ) -> None:
     value = config()
