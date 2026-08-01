@@ -270,7 +270,7 @@ def render_prompt(
         "This is a typed transport mechanics task. Return only one complete labeled Semantic IR artifact.\n"
         f"Request: {case.get('natural_request')}\n\n"
         + ir_v2.grammar()
-        + "\n\nCopy SOURCE, PATH, NODE, and NODE_SHA exactly. Use exactly one UNIT and reference all obligations in order. LOSS must be NONE.\n"
+        + "\n\nCopy SOURCE, PATH, NODE, and NODE_SHA exactly. Use exactly one UNIT and reference all obligations in order. LOSS must be NONE. Replacement source is the selected AST node text without surrounding leading indentation; the lowerer preserves the node's original prefix and suffix.\n"
         f"\nSOURCE {symbols['source_digest']}\n"
         f"TARGET PATH {target['path']}\nTARGET NODE {target['id']}\n"
         f"TARGET NODE_SHA {target['sha256']}\n"

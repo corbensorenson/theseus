@@ -43,6 +43,7 @@ def test_canary_selects_one_stable_target_and_renders_labeled_fields(
     assert f"TARGET NODE_SHA {target['sha256']}" in prompt
     assert "ALL_OBLIGATIONS <comma-separated exact obligation ids>" in prompt
     assert "Use exactly one UNIT" in prompt
+    assert "without surrounding leading indentation" in prompt
 
 
 def test_canary_task_contains_no_expected_answer_field() -> None:
