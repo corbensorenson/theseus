@@ -543,8 +543,11 @@ and Installer surfaces under new opaque P4R identities and adds prospectively
 selected Black, Django, and Celery tasks from distinct licensed repositories.
 All ten parents fail, all ten exact targets pass, every evaluator-only oracle
 passes visible and hidden checks, and all four corruption classes are rejected.
-Candidate, hosted, and deterministic-compiler calls remain zero. The next work
-is the one-shot resumable P4R campaign; no task may be replayed or replaced.
+Candidate, hosted, and deterministic-compiler calls remain zero. The one-shot
+P4R driver is frozen at `scripts/theseus_p4r_campaign.py`; its pre-run audit is
+GREEN at 0/10 complete and rejects any unsealed partial task, non-natural
+termination, context-boundary hit, mismatched receipt, or evaluator drift. The
+next work is the exact run; no task may be replayed or replaced.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -612,7 +615,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `P4R_COMPLETION_TASK_POOL_SEALED_RUN_PENDING` | P4-v1 remains an inconclusive pilot after 14 retained calls across three consumed tasks. Before P4R generation, a zero-valued inherited runner transport binding was found and repaired by binding it to the pinned model context window, not an answer-length cap. P4R is GREEN with parser/EOS completion, explicit termination telemetry, and the unchanged sealed ten-task pool: seven never-opened predecessor surfaces plus fresh Black, Django, and Celery tasks; all parent/target/oracle/corruption gates pass and candidate/control calls remain zero |
+| P4 causal development | `P4R_COMPLETION_CAMPAIGN_FROZEN_RUN_PENDING` | P4-v1 remains an inconclusive pilot after 14 retained calls across three consumed tasks. Before P4R generation, a zero-valued inherited runner transport binding was found and repaired by binding it to the pinned model context window, not an answer-length cap. P4R is GREEN with parser/EOS completion, explicit termination telemetry, the unchanged sealed ten-task pool, and a fail-closed one-shot campaign driver; all parent/target/oracle/corruption gates pass and the pre-run audit records 0/10 complete, zero candidate/control calls, and zero context-boundary hits |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
