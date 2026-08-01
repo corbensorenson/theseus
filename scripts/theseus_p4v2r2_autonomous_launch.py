@@ -98,6 +98,7 @@ def preflight(
     campaign_override: dict[str, Any] | None = None,
     lease_exists_override: bool | None = None,
     runtime_override: dict[str, Any] | None = None,
+    metal_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     config_faults = validate_config(config)
     bindings = audit_bindings(config)
@@ -105,6 +106,7 @@ def preflight(
     memory = memory_override or memory_status(config)
     disk = disk_override or disk_status(config)
     runtime = runtime_override or runtime_status(config)
+    metal = metal_override or metal_status(config)
     jobs = jobs_override
     if jobs is None:
         jobs = resource_owner.active_accelerator_jobs(
@@ -127,6 +129,7 @@ def preflight(
         "measured_runtime_memory_available": memory.get("passed") is True,
         "derived_disk_envelope_available": disk.get("passed") is True,
         "qualified_runtime_executable_bound": runtime.get("passed") is True,
+        "metal_accelerator_usable": metal.get("passed") is True,
         "no_competing_accelerator_job": not jobs,
         "exclusive_lease_available": not lease_exists,
     }
@@ -150,6 +153,7 @@ def preflight(
         "memory": memory,
         "disk": disk,
         "runtime": runtime,
+        "metal": metal,
         "competing_accelerator_jobs": jobs,
         "active_lease": p2a.rel(lease_path),
         "authority": p2a.mapping(config.get("authority")),
@@ -291,6 +295,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         "require_measured_runtime_memory_available",
         "require_derived_disk_envelope_available",
         "require_no_competing_accelerator_job",
+        "require_metal_accelerator_usable",
     )
     required_false = (
         "user_or_operator_approval_required",
@@ -416,6 +421,41 @@ def runtime_status(config: dict[str, Any]) -> dict[str, Any]:
         "observed": observed,
         "python": p2a.rel(python),
         "python_sha256": p2a.sha256_file(python),
+    }
+
+
+def metal_status(config: dict[str, Any]) -> dict[str, Any]:
+    python = p2a.resolve(str(config.get("python") or ""))
+    faults: list[str] = []
+    output = ""
+    try:
+        completed = subprocess.run(
+            [
+                str(python),
+                "-c",
+                (
+                    "import json,mlx.core as mx;"
+                    "y=mx.array([1,2],dtype=mx.float32)+1;"
+                    "mx.synchronize();print(json.dumps(y.tolist()))"
+                ),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=10,
+        )
+        output = completed.stdout.strip()
+        if completed.returncode != 0 or json.loads(output) != [2.0, 3.0]:
+            faults.append("metal_accelerator_canary_failed")
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+        faults.append("metal_accelerator_canary_failed")
+    return {
+        "passed": not faults,
+        "faults": sorted(set(faults)),
+        "canary": "mlx_float32_vector_add_and_synchronize",
+        "observed": output,
+        "capability_claim": "NONE_DEVICE_USABILITY_ONLY",
     }
 
 

@@ -341,7 +341,7 @@ def mac_power_state() -> tuple[bool | None, bool | None, dict[str, str]]:
 def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
     try:
         result = subprocess.run(
-            ["ps", "-axo", "pid=,ppid=,command="],
+            ["ps", "-axo", "pid=,ppid=,stat=,command="],
             cwd=ROOT,
             text=True,
             capture_output=True,
@@ -358,14 +358,14 @@ def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
     if result.returncode != 0:
         return [{"telemetry_fault": "process_inventory_unavailable"}]
     own_pid = os.getpid()
-    inventory: list[tuple[int, int, str]] = []
+    inventory: list[tuple[int, int, str, str]] = []
     for line in result.stdout.splitlines():
-        parts = line.strip().split(maxsplit=2)
-        if len(parts) != 3:
+        parts = line.strip().split(maxsplit=3)
+        if len(parts) != 4:
             continue
-        pid, ppid, command = int(parts[0]), int(parts[1]), parts[2]
-        inventory.append((pid, ppid, command))
-    parents = {pid: ppid for pid, ppid, _command in inventory}
+        pid, ppid, status, command = int(parts[0]), int(parts[1]), parts[2], parts[3]
+        inventory.append((pid, ppid, status, command))
+    parents = {pid: ppid for pid, ppid, _status, _command in inventory}
     own_process_tree = {own_pid}
     cursor = own_pid
     while cursor in parents and parents[cursor] > 0:
@@ -374,8 +374,15 @@ def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
             break
         own_process_tree.add(cursor)
     rows = []
-    for pid, ppid, command in inventory:
+    for pid, ppid, status, command in inventory:
         if pid in own_process_tree:
+            continue
+        # Darwin marks a process with E after it has entered irreversible exit
+        # teardown. Zombies/dead processes likewise cannot dispatch new work.
+        # They are retained by the OS/parent for cleanup but are not live
+        # accelerator competitors; positive device usability is checked by the
+        # launcher's independent Metal canary before execution.
+        if "E" in status or status.startswith(("Z", "X")):
             continue
         matched = [pattern for pattern in patterns if pattern in command]
         if matched:
@@ -383,6 +390,7 @@ def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
                 {
                     "pid": pid,
                     "ppid": ppid,
+                    "status": status,
                     "matched_patterns": matched,
                     "command": command[:500],
                 }

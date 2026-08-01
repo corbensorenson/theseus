@@ -59,6 +59,7 @@
     "require_measured_runtime_memory_available": true,
     "require_derived_disk_envelope_available": true,
     "require_no_competing_accelerator_job": true,
+    "require_metal_accelerator_usable": true,
     "project_selected_quality_token_cap_allowed": false,
     "physical_boundary_is_negative_evidence": false,
     "external_inference_authorized": false,

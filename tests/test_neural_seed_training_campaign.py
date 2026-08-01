@@ -187,9 +187,10 @@ def test_process_inventory_excludes_the_current_launcher_ancestry(
     class Result:
         returncode = 0
         stdout = (
-            "10 1 zsh python3 scripts/selected_route_sustained_qualification.py --execute\n"
-            "20 10 python3 scripts/selected_route_sustained_qualification.py --execute\n"
-            "30 1 python3 scripts/optimizer_update_efficiency_qualification.py --execute\n"
+            "10 1 Ss zsh python3 scripts/selected_route_sustained_qualification.py --execute\n"
+            "20 10 S python3 scripts/selected_route_sustained_qualification.py --execute\n"
+            "30 1 R python3 scripts/optimizer_update_efficiency_qualification.py --execute\n"
+            "40 1 UEs python3 -c import mlx_lm\n"
         )
         stderr = ""
 
@@ -202,3 +203,22 @@ def test_process_inventory_excludes_the_current_launcher_ancestry(
         ]
     )
     assert [row["pid"] for row in jobs] == [30]
+    assert jobs[0]["status"] == "R"
+
+
+def test_process_inventory_excludes_exiting_and_dead_processes(monkeypatch) -> None:
+    class Result:
+        returncode = 0
+        stdout = (
+            "40 1 UEs python3 -c import mlx_lm\n"
+            "41 1 Z python3 -c import mlx_lm\n"
+            "42 1 X python3 -c import mlx_lm\n"
+            "43 1 S python3 -c import mlx_lm\n"
+        )
+        stderr = ""
+
+    monkeypatch.setattr(subprocess, "run", lambda *_args, **_kwargs: Result())
+    monkeypatch.setattr(campaign.os, "getpid", lambda: 99)
+    jobs = campaign.active_accelerator_jobs(["mlx_lm"])
+
+    assert [row["pid"] for row in jobs] == [43]
