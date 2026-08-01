@@ -937,7 +937,15 @@ State: `may run now; leave the hold installed`.
 3. Separate selected-Mac-route readiness from nonblocking cross-platform work.
 4. Preserve the frozen corpus, architecture, objective, schedule, and
    evaluation identity.
-5. Reach `TRAINING_READY_BUT_HELD`.
+5. Replace the legacy blind-English rater's fixed 160-token decode ceiling
+   before it can participate in D2. The repaired rater must stop on a complete
+   score object or model EOS, derive its sole numeric boundary from each pinned
+   rater model's declared context residual after exact prompt tokenization,
+   retain explicit termination telemetry, and invalidate rather than score any
+   physical-boundary or host-emergency stop.
+6. Reach `TRAINING_READY_BUT_HELD` only after the repaired rater and its
+   prospective semantic identity are independently rebound from committed
+   source.
 
 ### N1 — Bounded Fresh-Process Qualification
 
@@ -971,7 +979,8 @@ experiment.
 ### N3 — Consume D2 Once
 
 State: `blocked on N2, clean source binding, independent custody, and automated
-one-shot evaluation authority`.
+one-shot evaluation authority, including the completion-based local-rater
+replacement from N0`.
 
 The independent readiness audit rematerializes the current 160 cases, verifies
 the content-addressed consumed v8 packet and registry history, and finds zero
@@ -1086,7 +1095,8 @@ routine approval, scheduling, or continued presence from Corben:
 The autonomous lane must not:
 
 - remove a hold except through its exact machine-readable controller;
-- exceed the configured compute, storage, call, token, or time envelope;
+- exceed the configured compute, storage, call, or causal resource envelope, or
+  a pinned model's physical context addressability;
 - rerun a consumed D1, D2, or public-calibration surface;
 - change architecture, optimizer, data, objective, schedule, or evaluator;
 - invoke external inference, transmit private data, or use online content at
@@ -1100,6 +1110,13 @@ The autonomous lane must not:
 Jobs stop on their declared terminal condition or a measured causal resource
 wall. They do not use clock-of-day restrictions, arbitrary available-memory
 floors, or percentage-improvement hurdles.
+
+No generation, repair, rater, judge, or adjudicator may use a project-selected
+generated-token count as a quality boundary. Normal completion is a complete
+declared artifact or model EOS. A pinned model's exact context residual is a
+physical safety boundary only; reaching it invalidates the observation and can
+never be scored as model, mechanism, candidate, or evaluator failure. Token use,
+latency, and cost remain measured outcomes rather than output scissors.
 
 Missing preauthorization is a terminal machine-policy wall. External
 publication, destructive deletion, account spending outside a predeclared
