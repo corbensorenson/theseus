@@ -1,0 +1,390 @@
+{
+  "candidate_or_control_calls": 0,
+  "faults": [],
+  "maximum_inference": "Source transport and deterministic archive normalization only; no task adequacy, candidate, subsystem, D1, D2, serving, training, or book claim.",
+  "model_calls": 0,
+  "network_use": "licensed_source_archive_acquisition_only",
+  "policy": "project_theseus_p4s_source_fetch_v1",
+  "public_benchmark_cases": 0,
+  "source_registry": "configs/theseus_p4s_task_sources.json",
+  "source_registry_sha256": "4237d99b6c051d2e692c2678539183d28194b10a0a704c323b38b481eaef508f",
+  "source_selection_commit": "560df8f437d470e8eea9fbd927ee7854f1b93e74",
+  "tasks": [
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_parent.tar.gz",
+          "normalized_sha256": "5ef43f92d65dd008c23c054a1c4c2417460efa43f10dd7a33d73d5b44c9eb4d1",
+          "omitted_members": [
+            {
+              "kind": "symbolic_link",
+              "linkname": "doc/source/index.rst",
+              "path": "tenacity-c650fb45204635f07910948d5fc59a8c551ffdda/README.rst"
+            }
+          ],
+          "revision": "c650fb45204635f07910948d5fc59a8c551ffdda",
+          "sanitization_report": "reports/theseus_p4s_01_tenacity_660_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "edc5c432ea1e43a91b1320314863345865db835752316c2aa0ce41c5e47300eb",
+          "source_archive_root": "tenacity-c650fb45204635f07910948d5fc59a8c551ffdda",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_parent_upstream.tar.gz",
+          "upstream_sha256": "23de05e93057d3b781ffb9aa4014dc84be66956ddf33f38d402f8bbcf59b6fa3",
+          "url": "https://codeload.github.com/jd/tenacity/tar.gz/c650fb45204635f07910948d5fc59a8c551ffdda"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_target.tar.gz",
+          "normalized_sha256": "60b53b5c21708d21ff34354f985859a5371d9c04ba4d9d494c5664f95c6a4853",
+          "omitted_members": [
+            {
+              "kind": "symbolic_link",
+              "linkname": "doc/source/index.rst",
+              "path": "tenacity-b1936f1cc172b17e3fcd45ed84416f7e4c191fc0/README.rst"
+            }
+          ],
+          "revision": "b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+          "sanitization_report": "reports/theseus_p4s_01_tenacity_660_target_archive_sanitization.json",
+          "sanitization_report_sha256": "a28246b4b3b3459530ccb9669bf03b29dfbe97a9944e37cede0e510a6ddd8973",
+          "source_archive_root": "tenacity-b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_target_upstream.tar.gz",
+          "upstream_sha256": "e2864112c2a16dece7a5652fd8541c730ef65b7d1396bf29832f9a63dc56615a",
+          "url": "https://codeload.github.com/jd/tenacity/tar.gz/b1936f1cc172b17e3fcd45ed84416f7e4c191fc0"
+        }
+      ],
+      "campaign_index": 1,
+      "repository": "jd/tenacity",
+      "stem": "p4s_01_tenacity_660"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_parent.tar.gz",
+          "normalized_sha256": "a434a4f231abc81222868432b198c3994022e2d167ae515aa7b0a50c59040ab4",
+          "omitted_members": [],
+          "revision": "f2337f7aa675718ba5f0af33e0cb53006304ab0a",
+          "sanitization_report": "reports/theseus_p4s_02_apscheduler_1100_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "431ec8fe0cd6a820e4c735043c398dbc769fe636cfc7f778fbabaa22fb9b49c0",
+          "source_archive_root": "apscheduler-f2337f7aa675718ba5f0af33e0cb53006304ab0a",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_parent_upstream.tar.gz",
+          "upstream_sha256": "51ee1b860ed033dedac73bae8b6ece66cfc9aad358e6d868190b0c01a3c793ad",
+          "url": "https://codeload.github.com/agronholm/apscheduler/tar.gz/f2337f7aa675718ba5f0af33e0cb53006304ab0a"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_target.tar.gz",
+          "normalized_sha256": "82b5e355bfb043a137a68da957bd5a068da56d237dff1d998628bdf2e575b2e5",
+          "omitted_members": [],
+          "revision": "0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+          "sanitization_report": "reports/theseus_p4s_02_apscheduler_1100_target_archive_sanitization.json",
+          "sanitization_report_sha256": "87ddf2e1f874d0c2d1e027fbafd6cfae37adc64ce81f68a5344a517505af5b1d",
+          "source_archive_root": "apscheduler-0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_target_upstream.tar.gz",
+          "upstream_sha256": "5901ae6e2f9ebf29c64019f46f72bc3a12b8eaf426e9c56c236a6afd62276c16",
+          "url": "https://codeload.github.com/agronholm/apscheduler/tar.gz/0ddc30a45b439f1cd869af6ed6f47b92d07e34c3"
+        }
+      ],
+      "campaign_index": 2,
+      "repository": "agronholm/apscheduler",
+      "stem": "p4s_02_apscheduler_1100"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_03_poetry_10959_parent.tar.gz",
+          "normalized_sha256": "9d4ede4589947a4e6747dfe4430a208a510b9da192924b2d1c8aef6ed86383a9",
+          "omitted_members": [],
+          "revision": "5ccad24e03e3f7539246bf7350f6b6599331bdcb",
+          "sanitization_report": "reports/theseus_p4s_03_poetry_10959_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "081c272019a0c0c436ef86aaf324e6601f4ae596aff99c009866697af47dc03a",
+          "source_archive_root": "poetry-5ccad24e03e3f7539246bf7350f6b6599331bdcb",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_03_poetry_10959_parent_upstream.tar.gz",
+          "upstream_sha256": "2de7ec47379628e97e3c392577e3eb261a96148f8b9a33d262126ff66f69d6c3",
+          "url": "https://codeload.github.com/python-poetry/poetry/tar.gz/5ccad24e03e3f7539246bf7350f6b6599331bdcb"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_03_poetry_10959_target.tar.gz",
+          "normalized_sha256": "843d30f87c1531605c48caff6904e1d159ff8e6502414636d24b07c2bf8a204f",
+          "omitted_members": [],
+          "revision": "53e406c45e1ac2358a2f46e090a05dda56aaec75",
+          "sanitization_report": "reports/theseus_p4s_03_poetry_10959_target_archive_sanitization.json",
+          "sanitization_report_sha256": "ee9ffb51d0a6dd3cea42415bda97d6597ab96c5138a1e96f202c50e3ce89262d",
+          "source_archive_root": "poetry-53e406c45e1ac2358a2f46e090a05dda56aaec75",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_03_poetry_10959_target_upstream.tar.gz",
+          "upstream_sha256": "4ccc8a602b0aaf92913e6550b9a77df9c3b6bb03d527726aadf37c5e148f0dfd",
+          "url": "https://codeload.github.com/python-poetry/poetry/tar.gz/53e406c45e1ac2358a2f46e090a05dda56aaec75"
+        }
+      ],
+      "campaign_index": 3,
+      "repository": "python-poetry/poetry",
+      "stem": "p4s_03_poetry_10959"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_04_pip_14199_parent.tar.gz",
+          "normalized_sha256": "5a35a063e4d2aca01ab1099690eb8ca9e86f3f7a2427d3c0d025974edb0f476c",
+          "omitted_members": [],
+          "revision": "a48eefdfc6ba1c02e67331d891cdca052daca740",
+          "sanitization_report": "reports/theseus_p4s_04_pip_14199_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "d48fa97c0d255d3912ef43dfa884392c543ed260908ddb103e3d6108300b0ac4",
+          "source_archive_root": "pip-a48eefdfc6ba1c02e67331d891cdca052daca740",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_04_pip_14199_parent_upstream.tar.gz",
+          "upstream_sha256": "087e5b664f861fd78d7b8dbd1f3e7bb0307ae493cf0e5739547a4d8116522a7b",
+          "url": "https://codeload.github.com/pypa/pip/tar.gz/a48eefdfc6ba1c02e67331d891cdca052daca740"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_04_pip_14199_target.tar.gz",
+          "normalized_sha256": "16f769e756d3c4d25b516a214d9c9e0a01f18e98bdec90a7c7f31fd7a2baed86",
+          "omitted_members": [],
+          "revision": "08c8768c5ab511780778649e5d88ac333b5dce7e",
+          "sanitization_report": "reports/theseus_p4s_04_pip_14199_target_archive_sanitization.json",
+          "sanitization_report_sha256": "91e9a983598a1b86204787750221f1ef4d84885f90a0f35cc65f0cfb280f366b",
+          "source_archive_root": "pip-08c8768c5ab511780778649e5d88ac333b5dce7e",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_04_pip_14199_target_upstream.tar.gz",
+          "upstream_sha256": "2e958f99a1acd5172c8be63a3562a8e764fc345d35ec516ff75a7967a2b07dac",
+          "url": "https://codeload.github.com/pypa/pip/tar.gz/08c8768c5ab511780778649e5d88ac333b5dce7e"
+        }
+      ],
+      "campaign_index": 4,
+      "repository": "pypa/pip",
+      "stem": "p4s_04_pip_14199"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_05_aiohttp_13125_parent.tar.gz",
+          "normalized_sha256": "4ef6f167555cedb18880bd3bc64fbf83d023810997a2d87d85c4a89f637550ca",
+          "omitted_members": [
+            {
+              "kind": "symbolic_link",
+              "linkname": "12953.bugfix.rst",
+              "path": "aiohttp-9ead8fbb44f37403441a52e04bccced70e978ddb/CHANGES/12954.bugfix.rst"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "reader_py.py",
+              "path": "aiohttp-9ead8fbb44f37403441a52e04bccced70e978ddb/aiohttp/_websocket/reader_c.py"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../pyproject.toml",
+              "path": "aiohttp-9ead8fbb44f37403441a52e04bccced70e978ddb/requirements/pyproject.toml"
+            }
+          ],
+          "revision": "9ead8fbb44f37403441a52e04bccced70e978ddb",
+          "sanitization_report": "reports/theseus_p4s_05_aiohttp_13125_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "96a7cf9caf0cb2978f4b0a899df3c2eece7ab0668f12cc5cd1514eaa31269e99",
+          "source_archive_root": "aiohttp-9ead8fbb44f37403441a52e04bccced70e978ddb",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_05_aiohttp_13125_parent_upstream.tar.gz",
+          "upstream_sha256": "1b43e7fc686a8a2b69618fcdb40dcccec46268953644e673d2321caebf573f2b",
+          "url": "https://codeload.github.com/aio-libs/aiohttp/tar.gz/9ead8fbb44f37403441a52e04bccced70e978ddb"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_05_aiohttp_13125_target.tar.gz",
+          "normalized_sha256": "f8816b79203eeb6379db8dfded5335925fddc7b1f75ce02dbdf3fd29b71a84b8",
+          "omitted_members": [
+            {
+              "kind": "symbolic_link",
+              "linkname": "12953.bugfix.rst",
+              "path": "aiohttp-80f8883f96b4b12f58e4f2829f8d1011d1bab922/CHANGES/12954.bugfix.rst"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "reader_py.py",
+              "path": "aiohttp-80f8883f96b4b12f58e4f2829f8d1011d1bab922/aiohttp/_websocket/reader_c.py"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../pyproject.toml",
+              "path": "aiohttp-80f8883f96b4b12f58e4f2829f8d1011d1bab922/requirements/pyproject.toml"
+            }
+          ],
+          "revision": "80f8883f96b4b12f58e4f2829f8d1011d1bab922",
+          "sanitization_report": "reports/theseus_p4s_05_aiohttp_13125_target_archive_sanitization.json",
+          "sanitization_report_sha256": "ca50f4300ba311ac2aa9bc42e12ad65e8438615ab7563064049cf5e8e2b8d4e7",
+          "source_archive_root": "aiohttp-80f8883f96b4b12f58e4f2829f8d1011d1bab922",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_05_aiohttp_13125_target_upstream.tar.gz",
+          "upstream_sha256": "8c43d1ccbf7d0122d92196fa07fe9178343a7c70a7d2b0fd9fc6ff889b59b42c",
+          "url": "https://codeload.github.com/aio-libs/aiohttp/tar.gz/80f8883f96b4b12f58e4f2829f8d1011d1bab922"
+        }
+      ],
+      "campaign_index": 5,
+      "repository": "aio-libs/aiohttp",
+      "stem": "p4s_05_aiohttp_13125"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_06_httpx_3699_parent.tar.gz",
+          "normalized_sha256": "5aa6187b0731e1d121b01dd44adddd092ddda758241975fd49ba5427a5414072",
+          "omitted_members": [],
+          "revision": "ca097c96f97d8d2a5da09b8ca736c7e78a2467f6",
+          "sanitization_report": "reports/theseus_p4s_06_httpx_3699_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "bae2d4ca3a151a69fccd3ee1b9903460e2fdba66b82dccac232053e702111255",
+          "source_archive_root": "httpx-ca097c96f97d8d2a5da09b8ca736c7e78a2467f6",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_06_httpx_3699_parent_upstream.tar.gz",
+          "upstream_sha256": "0e29e6d9286c77316910ecb0a7ba7260b13695e2a31aea7c85276e4077867415",
+          "url": "https://codeload.github.com/encode/httpx/tar.gz/ca097c96f97d8d2a5da09b8ca736c7e78a2467f6"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_06_httpx_3699_target.tar.gz",
+          "normalized_sha256": "99f630881bc2a851a3095dc6ad33d4f3adbc7abe18446bbe48630db5f1f9ce36",
+          "omitted_members": [],
+          "revision": "4b9f63e507c4ea75fa59f6bbdfb103e2f014a6f9",
+          "sanitization_report": "reports/theseus_p4s_06_httpx_3699_target_archive_sanitization.json",
+          "sanitization_report_sha256": "723563f787481aba087366c499585181cdbf73d2097eb23e7fa2bfd5a649ac93",
+          "source_archive_root": "httpx-4b9f63e507c4ea75fa59f6bbdfb103e2f014a6f9",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_06_httpx_3699_target_upstream.tar.gz",
+          "upstream_sha256": "bb12731085f5ce3bc607b4e92a6070d7949d6272ef19ae9cf8cc26d259883907",
+          "url": "https://codeload.github.com/encode/httpx/tar.gz/4b9f63e507c4ea75fa59f6bbdfb103e2f014a6f9"
+        }
+      ],
+      "campaign_index": 6,
+      "repository": "encode/httpx",
+      "stem": "p4s_06_httpx_3699"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_parent.tar.gz",
+          "normalized_sha256": "655c4c5089012ca25cf251d78014c86238729705570c15772126162237be49af",
+          "omitted_members": [],
+          "revision": "5974b03c7df89d3ee4e23779900d5349d550753c",
+          "sanitization_report": "reports/theseus_p4s_07_httpcore_1000_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "16b6cac77c7234b1857d616ad2d1f5d2c48e50f8d2695b2915a842ffe88f5624",
+          "source_archive_root": "httpcore-5974b03c7df89d3ee4e23779900d5349d550753c",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_parent_upstream.tar.gz",
+          "upstream_sha256": "abd2710879f8e5022e9bf9a48e8e1ba4db6939721f40cf4fd5a293ea1f8d0399",
+          "url": "https://codeload.github.com/encode/httpcore/tar.gz/5974b03c7df89d3ee4e23779900d5349d550753c"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_target.tar.gz",
+          "normalized_sha256": "83b7acbcd86b3013dbc519a4b57d8f12d5ab588e7342f9a008b37fef23157457",
+          "omitted_members": [],
+          "revision": "7fb20526175e2300185ce2b472a97acca95b2525",
+          "sanitization_report": "reports/theseus_p4s_07_httpcore_1000_target_archive_sanitization.json",
+          "sanitization_report_sha256": "901629e44940d550f5bb5960d2684d370f2e30d7253b87757c99b8d29da1f161",
+          "source_archive_root": "httpcore-7fb20526175e2300185ce2b472a97acca95b2525",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_target_upstream.tar.gz",
+          "upstream_sha256": "f92cfa9bc6a59da6bb89b59e6f36f5232af8dd15222dbafab2cd53d2192008a0",
+          "url": "https://codeload.github.com/encode/httpcore/tar.gz/7fb20526175e2300185ce2b472a97acca95b2525"
+        }
+      ],
+      "campaign_index": 7,
+      "repository": "encode/httpcore",
+      "stem": "p4s_07_httpcore_1000"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_parent.tar.gz",
+          "normalized_sha256": "3c971d155468e74fe15b30327e89f43254e089c9ec5d81ec97ed64cadb297db7",
+          "omitted_members": [],
+          "revision": "47c4f9819c3e92d296efe43c2f460e6742a1a75f",
+          "sanitization_report": "reports/theseus_p4s_08_isort_2599_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "b8f09bf54da2259b96ad59e6c09d708d15e1a785294e4104a130ee4537a2dc81",
+          "source_archive_root": "isort-47c4f9819c3e92d296efe43c2f460e6742a1a75f",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_parent_upstream.tar.gz",
+          "upstream_sha256": "1aa5343d9ae94e1651dd949dec8bbb97d09956e2542536a44a29cd490cf6fc15",
+          "url": "https://codeload.github.com/PyCQA/isort/tar.gz/47c4f9819c3e92d296efe43c2f460e6742a1a75f"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_target.tar.gz",
+          "normalized_sha256": "d9d98517dfaf87182b59608d72753b84fa86d9c0970393a7ceda011bdef0ebf5",
+          "omitted_members": [],
+          "revision": "f766bf605f315b65570791b0db0f19ffd5994a0b",
+          "sanitization_report": "reports/theseus_p4s_08_isort_2599_target_archive_sanitization.json",
+          "sanitization_report_sha256": "7f4d9c605cba47e36ab79b50518aa6178dce6e191d20cc9235620f1187fb03ae",
+          "source_archive_root": "isort-f766bf605f315b65570791b0db0f19ffd5994a0b",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_target_upstream.tar.gz",
+          "upstream_sha256": "fdbae392f902992ef73052d59db3fb66b59852754c1dfafc661ac74d108b3208",
+          "url": "https://codeload.github.com/PyCQA/isort/tar.gz/f766bf605f315b65570791b0db0f19ffd5994a0b"
+        }
+      ],
+      "campaign_index": 8,
+      "repository": "PyCQA/isort",
+      "stem": "p4s_08_isort_2599"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_parent.tar.gz",
+          "normalized_sha256": "edeba631d3dffd7461201ee39bc7e0e0f4646beffdd5240403c8ba65d4730219",
+          "omitted_members": [],
+          "revision": "13bb86a55e36e501cf0b3e4c35db516ed9409fd7",
+          "sanitization_report": "reports/theseus_p4s_09_cachetools_408_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "59e17c5f2ebb2de2fdb9a6a0568f7faa8054617e1f03905e262d61c4caf41311",
+          "source_archive_root": "cachetools-13bb86a55e36e501cf0b3e4c35db516ed9409fd7",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_parent_upstream.tar.gz",
+          "upstream_sha256": "7b715cb3b5ddcb08acba92291ba1159cf73f09788567bf9748d4426a12d6c282",
+          "url": "https://codeload.github.com/tkem/cachetools/tar.gz/13bb86a55e36e501cf0b3e4c35db516ed9409fd7"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_target.tar.gz",
+          "normalized_sha256": "5f8a1c9ef764dac1a2bf53defa0b41fecc370f55dd0d967f9e071eae02319f2a",
+          "omitted_members": [],
+          "revision": "b0ea1a4a0b38e1d3c60e802d171d776795c7a81b",
+          "sanitization_report": "reports/theseus_p4s_09_cachetools_408_target_archive_sanitization.json",
+          "sanitization_report_sha256": "3f1cecb6ec5ea4a081525e7afcdba9726ef79a4668b6b76e03177a633735fd8a",
+          "source_archive_root": "cachetools-b0ea1a4a0b38e1d3c60e802d171d776795c7a81b",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_target_upstream.tar.gz",
+          "upstream_sha256": "0242b90f726f7eb09782c3293e8d1978bca5227b9fa234aa99419d95ef1ce824",
+          "url": "https://codeload.github.com/tkem/cachetools/tar.gz/b0ea1a4a0b38e1d3c60e802d171d776795c7a81b"
+        }
+      ],
+      "campaign_index": 9,
+      "repository": "tkem/cachetools",
+      "stem": "p4s_09_cachetools_408"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_parent.tar.gz",
+          "normalized_sha256": "08562c473ba5258369ee9d15e1baafeeb649ceefb00a0d7545468cafb72c8054",
+          "omitted_members": [],
+          "revision": "1b00618e787f40dfb21eba29caf8f8be7c8e1d93",
+          "sanitization_report": "reports/theseus_p4s_10_werkzeug_3215_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "d844211880b38de014abd60ede02fc5097766bdca6c55f225654f76efd7e32ea",
+          "source_archive_root": "werkzeug-1b00618e787f40dfb21eba29caf8f8be7c8e1d93",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_parent_upstream.tar.gz",
+          "upstream_sha256": "fc606d40de7df6a6f908ff40ee360fc62c1dbce1bc5690d6654076930a5964df",
+          "url": "https://codeload.github.com/pallets/werkzeug/tar.gz/1b00618e787f40dfb21eba29caf8f8be7c8e1d93"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_target.tar.gz",
+          "normalized_sha256": "7a0ca6d471244ca5134e08bbca5e7b99d62dd9d3f9adef4b3807396498db09f9",
+          "omitted_members": [],
+          "revision": "884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+          "sanitization_report": "reports/theseus_p4s_10_werkzeug_3215_target_archive_sanitization.json",
+          "sanitization_report_sha256": "c2e64154f1165ac21414745e924a5ec1c5fa27440fbc2c33bd177cff8db93e7b",
+          "source_archive_root": "werkzeug-884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+          "upstream": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_target_upstream.tar.gz",
+          "upstream_sha256": "031b6249f7600ac31b5615b0b04c5866320350480d8274aea2ded9560b865542",
+          "url": "https://codeload.github.com/pallets/werkzeug/tar.gz/884437aef93e543ebaff3b9cdbe857ee47e7e00c"
+        }
+      ],
+      "campaign_index": 10,
+      "repository": "pallets/werkzeug",
+      "stem": "p4s_10_werkzeug_3215"
+    }
+  ],
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

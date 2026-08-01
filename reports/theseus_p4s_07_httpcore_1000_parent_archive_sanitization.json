@@ -1,0 +1,28 @@
+{
+  "admitted_regular_file_or_directory_count": 106,
+  "faults": [],
+  "input": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_parent_upstream.tar.gz",
+    "sha256": "abd2710879f8e5022e9bf9a48e8e1ba4db6939721f40cf4fd5a293ea1f8d0399"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_parent.tar.gz",
+    "sha256": "655c4c5089012ca25cf251d78014c86238729705570c15772126162237be49af"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "httpcore-5974b03c7df89d3ee4e23779900d5349d550753c",
+  "trigger_state": "GREEN"
+}

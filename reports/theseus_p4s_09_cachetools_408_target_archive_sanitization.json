@@ -1,0 +1,28 @@
+{
+  "admitted_regular_file_or_directory_count": 51,
+  "faults": [],
+  "input": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_target_upstream.tar.gz",
+    "sha256": "0242b90f726f7eb09782c3293e8d1978bca5227b9fa234aa99419d95ef1ce824"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_target.tar.gz",
+    "sha256": "5f8a1c9ef764dac1a2bf53defa0b41fecc370f55dd0d967f9e071eae02319f2a"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "cachetools-b0ea1a4a0b38e1d3c60e802d171d776795c7a81b",
+  "trigger_state": "GREEN"
+}
