@@ -302,19 +302,19 @@
         },
         "functional_generation_wrapper": {
           "path": "scripts/neural_seed_functional_generate.py",
-          "sha256": "76bf5714f999e4e68c96f27b7179a0368a4bb5ee273cd46d29f89d5a78ad08d6"
+          "sha256": "9a87fd998f7affd4a32582806c44968bbfd46c1891f2558e5d33208dac36635b"
         },
         "functional_utility_implementation": {
           "path": "scripts/neural_seed_functional_utility.py",
-          "sha256": "475ecc0d044e7c477c38e6f680c9ff0f6c54c5361a9f48daf0cc5df26aa2c037"
+          "sha256": "27f3889d787b4aa04df6d2aab199b4acf1eebc5defe90f717f32fa6c1bf033a3"
         },
         "functional_utility_tests": {
           "path": "tests/test_neural_seed_functional_utility.py",
-          "sha256": "83531a17c4fd159885049934df2c8d4f23d3ecb9085e71221ea28521bfd44cca"
+          "sha256": "384d5c49e7b28b82f8c7a95a87188bd569bb586395a684175d5a4cec9ea0537c"
         },
       "moecot_training_config": {
         "path": "configs/moecot_language_arm_training.json",
-        "sha256": "3e124d4087af0002ebee23d368ddbce4067100d525154917d57541803368f56f"
+        "sha256": "334428e567a7c10173f793b5e10cdd55eb5861af8146554caf47b32c2d0b7eee"
       },
       "moecot_training_implementation": {
         "path": "scripts/moecot_language_arm_training.py",
@@ -846,6 +846,42 @@
       "successor_policy": "new neural configs must extend the canonical comparator or declare a successor in this registry"
     },
     {
+      "root": "configs",
+      "family": "core_evidence_qwen35_fresh",
+      "classification": "immutable_target_blind_qualification_packet_versions",
+      "canonical_surface": "theseus_assistant_runtime",
+      "canonical_path": "scripts/core_evidence_qwen35_fresh_v2_disposition.py",
+      "promotion_role": "historical_qualification_evidence_only",
+      "successor_policy": "frozen public, evaluator, and seal manifests remain immutable evidence; later local-model comparisons must use the registered bakeoff and disposition path rather than mutate or fork a consumed cohort"
+    },
+    {
+      "root": "configs",
+      "family": "core_evidence_worker",
+      "classification": "one_worker_v2_lifecycle_split_by_information_boundary",
+      "canonical_surface": "theseus_assistant_runtime",
+      "canonical_path": "scripts/core_evidence_worker_v2.py",
+      "promotion_role": "candidate_generation_support_with_independent_evaluation",
+      "successor_policy": "development, public, evaluator-only, and freeze manifests are distinct governed roles for one worker; a successor must preserve target blindness, independent recomputation, and explicit replacement registration"
+    },
+    {
+      "root": "configs",
+      "family": "core_evidence_tmax_fresh",
+      "classification": "retained_consumed_qualification_packet",
+      "canonical_surface": "theseus_assistant_runtime",
+      "canonical_path": "configs/core_evidence_tmax_fresh_v1_qualification_freeze.json",
+      "promotion_role": "historical_qualification_evidence_only",
+      "successor_policy": "the consumed public, evaluator, and freeze manifests stay together as immutable evidence and may not be reused as fresh training or promotion pressure"
+    },
+    {
+      "root": "configs",
+      "family": "pre_long",
+      "classification": "ordered_pre_long_run_readiness_chain",
+      "canonical_surface": "neural_seed_and_decoder",
+      "canonical_path": "configs/pre_long_run_replacement_freeze.json",
+      "promotion_role": "checkpoint_custody_and_readiness_support_only",
+      "successor_policy": "residual audit, independent readiness audit, and final replacement freeze are sequential controls; changes must flow through the chain and must not bypass checkpoint custody or the active hold"
+    },
+    {
       "root": "scripts",
       "family": "neural",
       "classification": "matched_architecture_diagnostics_and_decoder_support",
@@ -871,6 +907,24 @@
       "canonical_path": "scripts/code_lm_train_once_fanout.py",
       "promotion_role": "support_only",
       "successor_policy": "new code_lm helpers must be imported by the canonical generator/fanout path or registered separately"
+    },
+    {
+      "root": "scripts",
+      "family": "core_evidence_worker",
+      "classification": "worker_runtime_with_separated_development_qualification_and_evaluator_owners",
+      "canonical_surface": "theseus_assistant_runtime",
+      "canonical_path": "scripts/core_evidence_worker_v2.py",
+      "promotion_role": "candidate_generation_support_with_independent_evaluation",
+      "successor_policy": "the v1 worker is retained campaign evidence while v2 is the current worker contract; development, qualification, and evaluator scripts must keep their information boundaries and cannot independently claim promotion"
+    },
+    {
+      "root": "scripts",
+      "family": "pre_long",
+      "classification": "ordered_pre_long_run_audit_and_freeze_owners",
+      "canonical_surface": "neural_seed_and_decoder",
+      "canonical_path": "scripts/pre_long_run_replacement_freeze.py",
+      "promotion_role": "checkpoint_custody_and_readiness_support_only",
+      "successor_policy": "the residual audit and independent readiness audit feed the replacement-freeze owner; none may route a model or relax the active hold independently"
     },
     {
       "root": "scripts",

@@ -6,9 +6,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 from pathlib import Path
 from typing import Any
+
+from neural_seed_functional_cases import materialize_cases
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +50,161 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def stable_hash(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def normalize_prompt(value: str) -> str:
+    return re.sub(r"\s+", " ", value.strip().lower())
+
+
+def registry_contract_lines(path: Path, contract_sha256: str) -> list[int]:
+    matches: list[int] = []
+    if not path.is_file():
+        return matches
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        identity = row.get("identity") or {}
+        if identity.get("case_contract_sha256") == contract_sha256:
+            matches.append(line_number)
+    return matches
+
+
+def recompute_surface_integrity(
+    integrity: dict[str, Any],
+    freeze: dict[str, Any],
+    registry_path: Path,
+) -> dict[str, Any]:
+    faults: list[str] = []
+    functional_config_path = resolve(integrity["current_contract_config"])
+    functional_config = read_json(functional_config_path)
+    cases = materialize_cases(functional_config)
+    contract_rows = [
+        {key: value for key, value in case.items() if key != "model_visible"}
+        for case in cases
+    ]
+    visible_rows = [case["model_visible"] for case in cases]
+    current_contract_sha256 = stable_hash(contract_rows)
+    current_visible_sha256 = stable_hash(visible_rows)
+    current_prompts = {
+        str(row.get("prompt") or ""): str(row.get("case_id") or "")
+        for row in visible_rows
+    }
+    current_normalized = {
+        normalize_prompt(prompt): case_id for prompt, case_id in current_prompts.items()
+    }
+    if current_contract_sha256 != freeze.get("case_contract_sha256"):
+        faults.append("current_contract_recomputation_mismatch")
+    if len(cases) != freeze.get("case_count"):
+        faults.append("current_case_count_mismatch")
+    if integrity.get("current_case_contract_sha256") != current_contract_sha256:
+        faults.append("declared_current_contract_mismatch")
+
+    historical_packets: list[dict[str, Any]] = []
+    exact_overlaps: list[dict[str, str]] = []
+    normalized_overlaps: list[dict[str, str]] = []
+    historical_contracts: list[str] = []
+    for row in integrity.get("historical_candidate_packets") or []:
+        packet_path = resolve(str(row.get("path") or ""))
+        if not packet_path.is_file():
+            faults.append(f"historical_packet_missing:{relative(packet_path)}")
+            continue
+        observed_sha256 = sha256_file(packet_path)
+        expected_sha256 = str(row.get("sha256") or "")
+        if observed_sha256 != expected_sha256:
+            faults.append(f"historical_packet_hash_mismatch:{relative(packet_path)}")
+            continue
+        packet = read_json(packet_path)
+        contract_sha256 = str(packet.get("contract_sha256") or "")
+        historical_contracts.append(contract_sha256)
+        consumed_lines = registry_contract_lines(registry_path, contract_sha256)
+        if not consumed_lines:
+            faults.append(f"historical_contract_not_consumed:{relative(packet_path)}")
+        prior_rows = packet.get("rows") or []
+        prior_visible_sha256 = stable_hash(prior_rows)
+        for prior in prior_rows:
+            prior_prompt = str(prior.get("prompt") or "")
+            prior_case_id = str(prior.get("case_id") or "")
+            current_case_id = current_prompts.get(prior_prompt)
+            if current_case_id is not None:
+                exact_overlaps.append(
+                    {
+                        "current_case_id": current_case_id,
+                        "historical_case_id": prior_case_id,
+                    }
+                )
+            normalized = normalize_prompt(prior_prompt)
+            current_case_id = current_normalized.get(normalized)
+            if current_case_id is not None:
+                normalized_overlaps.append(
+                    {
+                        "current_case_id": current_case_id,
+                        "historical_case_id": prior_case_id,
+                    }
+                )
+        historical_packets.append(
+            {
+                "path": relative(packet_path),
+                "sha256": observed_sha256,
+                "contract_sha256": contract_sha256,
+                "row_count": len(prior_rows),
+                "model_visible_sha256": prior_visible_sha256,
+                "consumption_registry_lines": consumed_lines,
+            }
+        )
+
+    current_consumption_lines = registry_contract_lines(
+        registry_path, current_contract_sha256
+    )
+    if current_consumption_lines:
+        faults.append("current_contract_already_consumed")
+    if current_contract_sha256 in historical_contracts:
+        faults.append("current_contract_equals_historical_contract")
+    if exact_overlaps:
+        faults.append("exact_historical_prompt_overlap")
+    if normalized_overlaps:
+        faults.append("normalized_historical_prompt_overlap")
+    if not historical_packets:
+        faults.append("historical_packet_evidence_missing")
+
+    return {
+        "passed": not faults,
+        "state": (
+            "VALID_FRESH_PRIVATE_SURFACE"
+            if not faults
+            else "INVALID_OR_UNPROVEN_PRIVATE_SURFACE"
+        ),
+        "freshness_scope": (
+            "Exact and whitespace/case-normalized model-visible prompts against "
+            "content-addressed, consumed historical candidate packets. Reuse of "
+            "task families is not treated as reuse of an exact measurement surface."
+        ),
+        "faults": faults,
+        "current": {
+            "config": relative(functional_config_path),
+            "config_sha256": sha256_file(functional_config_path),
+            "case_count": len(cases),
+            "contract_sha256": current_contract_sha256,
+            "model_visible_sha256": current_visible_sha256,
+            "consumption_registry_lines": current_consumption_lines,
+        },
+        "historical_packets": historical_packets,
+        "exact_prompt_overlaps": exact_overlaps,
+        "normalized_prompt_overlaps": normalized_overlaps,
+    }
+
+
 def production_recipe(trainer: dict[str, Any]) -> dict[str, Any]:
     execution = trainer["training"]["execution_policy"]
     pretraining = execution["pretraining"]
@@ -63,14 +221,9 @@ def production_recipe(trainer: dict[str, Any]) -> dict[str, Any]:
         "self_attention_projection": topology.get(
             "self_attention_projection", "separate"
         ),
-        "feed_forward_activation": topology.get(
-            "feed_forward_activation", "swiglu"
-        ),
-        "residual_policy": topology.get(
-            "residual_policy", "sequential_unscaled"
-        ),
-        "per_head_muon": trainer["training"]["optimizer_id"]
-        == "per_head_muon_mlx",
+        "feed_forward_activation": topology.get("feed_forward_activation", "swiglu"),
+        "residual_policy": topology.get("residual_policy", "sequential_unscaled"),
+        "per_head_muon": trainer["training"]["optimizer_id"] == "per_head_muon_mlx",
     }
 
 
@@ -98,9 +251,7 @@ def recompute_lineage(
             if not artifact_path.is_file():
                 faults.append(f"artifact_missing:{relative(artifact_path)}")
             elif sha256_file(artifact_path) != artifact["sha256"]:
-                faults.append(
-                    f"artifact_hash_mismatch:{relative(artifact_path)}"
-                )
+                faults.append(f"artifact_hash_mismatch:{relative(artifact_path)}")
         rows.append(
             {
                 "path": relative(path),
@@ -140,6 +291,7 @@ def matching_consumption_rows(
     registry_path: Path,
     freeze: dict[str, Any],
     freeze_sha256: str,
+    equivalent_case_contract_sha256s: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     needles = {
         freeze_sha256,
@@ -147,6 +299,7 @@ def matching_consumption_rows(
         str(freeze["candidate_packet_sha256"]),
         str(freeze["case_contract_sha256"]),
     }
+    needles.update(str(value) for value in equivalent_case_contract_sha256s or [])
     matches: list[dict[str, Any]] = []
     if not registry_path.is_file():
         return matches
@@ -183,6 +336,7 @@ def execute(
     freeze_path = resolve(config["functional_freeze"])
     freeze = read_json(freeze_path)
     registry_path = resolve(config["functional_consumption_registry"])
+    surface_integrity = config["functional_surface_integrity"]
     candidate_reports = {
         name: (resolve(path), read_json(resolve(path)))
         for name, path in config["candidate_reports"].items()
@@ -221,9 +375,7 @@ def execute(
         "optimizer": receipt["optimizer_state_sha256"],
         "mlx_rng": receipt["mlx_rng_state_sha256"],
     }
-    versioned_hashes = {
-        name: sha256_file(path) for name, path in versioned.items()
-    }
+    versioned_hashes = {name: sha256_file(path) for name, path in versioned.items()}
     aliases = {
         "model": checkpoint_root / "weights.safetensors",
         "optimizer": checkpoint_root / "optimizer.safetensors",
@@ -267,8 +419,16 @@ def execute(
     disk_free_bytes = shutil.disk_usage(checkpoint_root).free
 
     freeze_sha256 = sha256_file(freeze_path)
+    surface_recomputation = recompute_surface_integrity(
+        surface_integrity,
+        freeze,
+        registry_path,
+    )
     consumption_matches = matching_consumption_rows(
-        registry_path, freeze, freeze_sha256
+        registry_path,
+        freeze,
+        freeze_sha256,
+        list(surface_integrity["equivalent_consumed_case_contract_sha256s"]),
     )
     per_head = candidate_reports["per_head_muon"][1]
     attnres = candidate_reports["attention_residuals"][1]
@@ -310,8 +470,7 @@ def execute(
                 fresh.get("trigger_state") == "GREEN"
                 and fresh.get("canonical_lineage_unchanged") is True
                 and fresh.get("exact_resume_validation") is True
-                and fresh.get("independent_segmented_replay_numeric_parity")
-                is True
+                and fresh.get("independent_segmented_replay_numeric_parity") is True
                 and fresh.get("host_resource_guard_passed") is True
                 and sustained.get("trigger_state") == "GREEN"
                 and sustained.get("canonical_lineage_unchanged") is True
@@ -336,28 +495,21 @@ def execute(
                 )
                 == 0.0
                 and float(
-                    trainer["host_resource_safety"][
-                        "minimum_available_during_run_mib"
-                    ]
+                    trainer["host_resource_safety"]["minimum_available_during_run_mib"]
                 )
                 == 0.0
                 and trainer["host_resource_safety"]["swapout_growth_action"]
                 == "report_only"
-                and float(
-                    trainer["host_resource_safety"]["maximum_wall_seconds"]
-                )
+                and float(trainer["host_resource_safety"]["maximum_wall_seconds"])
                 == 0.0
                 and global_safety["memory_guard_mode"] == "predicted_exhaustion"
-                and float(global_safety["minimum_available_before_launch_mib"])
-                == 0.0
-                and float(global_safety["minimum_available_during_run_mib"])
-                == 0.0
+                and float(global_safety["minimum_available_before_launch_mib"]) == 0.0
+                and float(global_safety["minimum_available_during_run_mib"]) == 0.0
                 and global_safety["swapout_growth_action"] == "report_only"
                 and inline_reserves_zero
                 and disk_free_bytes >= 2 * transaction_bytes
                 and sustained["thermal_stability"]["terminal"] is True
-                and sustained["thermal_stability"]["thermal_warning_observed"]
-                is False
+                and sustained["thermal_stability"]["thermal_warning_observed"] is False
                 and sustained.get("elapsed_time_requirement") is None
                 and sustained.get("arbitrary_percentage_tolerance") is None
             ),
@@ -368,8 +520,7 @@ def execute(
         },
         "evaluation_nonconsumption": {
             "passed": (
-                freeze.get("candidate_id")
-                == "moecot_mlx_57m_active_preregistered_v1"
+                freeze.get("candidate_id") == "moecot_mlx_57m_active_preregistered_v1"
                 and freeze.get("immutable") is True
                 and freeze.get("source_disjoint") is True
                 and freeze.get("consumed_case_count") == 0
@@ -387,6 +538,31 @@ def execute(
             "registry_sha256": sha256_file(registry_path),
             "matching_consumption_rows": consumption_matches,
         },
+        "evaluation_surface_freshness": {
+            "passed": (
+                surface_recomputation["passed"] is True
+                and surface_integrity.get("state") == "VALID_FRESH_PRIVATE_SURFACE"
+                and surface_integrity.get("fresh_surface") is True
+                and surface_integrity.get("evaluation_authorized") is False
+                and surface_integrity.get("current_case_contract_sha256")
+                == freeze.get("case_contract_sha256")
+                and not surface_integrity.get(
+                    "equivalent_consumed_case_contract_sha256s"
+                )
+                and not consumption_matches
+            ),
+            "state": surface_integrity.get("state"),
+            "fresh_surface": surface_integrity.get("fresh_surface"),
+            "evaluation_authorized": surface_integrity.get("evaluation_authorized"),
+            "current_case_contract_sha256": freeze.get("case_contract_sha256"),
+            "equivalent_consumed_case_contract_sha256s": surface_integrity.get(
+                "equivalent_consumed_case_contract_sha256s"
+            ),
+            "equivalence_basis": surface_integrity.get("equivalence_basis"),
+            "disposition": surface_integrity.get("disposition"),
+            "matching_consumption_rows": consumption_matches,
+            "independent_recomputation": surface_recomputation,
+        },
         "negative_evidence_scope": {
             "passed": (
                 all(
@@ -402,8 +578,7 @@ def execute(
                 == "adamw_mlx"
                 and attnres["campaign_disposition"]["selected_architecture"]
                 == "control"
-                and situ["campaign_disposition"]["selected_architecture"]
-                == "control"
+                and situ["campaign_disposition"]["selected_architecture"] == "control"
                 and qkv["selection"]["candidate_selected"] is False
                 and qkv["selection"]["production_route_changed"] is False
                 and qkv["production_authority"]["live_checkpoint_mutated"] is False
@@ -424,8 +599,7 @@ def execute(
                 and residual.get("capability_claim")
                 == "NONE_ACCELERATION_READINESS_AND_CUSTODY_ONLY"
                 and any(
-                    "does not prove" in row.lower()
-                    and "fastest" in row.lower()
+                    "does not prove" in row.lower() and "fastest" in row.lower()
                     for row in residual.get("non_claims", [])
                 )
                 and selected_recipe == expected["selected_recipe"]
@@ -445,21 +619,16 @@ def execute(
             "passed": (
                 resolve(config["yield_control"]).is_file()
                 and review.get("state") == "HOLD_FOR_FINITE_REVIEW"
-                and review["execution_hold"]["new_long_segment_authorized"]
-                is False
+                and review["execution_hold"]["new_long_segment_authorized"] is False
                 and review["execution_hold"][
                     "new_architecture_may_touch_live_checkpoint"
                 ]
                 is False
-                and review["execution_hold"][
-                    "in_flight_transaction_interrupted"
-                ]
+                and review["execution_hold"]["in_flight_transaction_interrupted"]
                 is False
             ),
             "yield_control_path": config["yield_control"],
-            "yield_control_sha256": sha256_file(
-                resolve(config["yield_control"])
-            ),
+            "yield_control_sha256": sha256_file(resolve(config["yield_control"])),
             "long_training_started_or_resumed": False,
         },
     }

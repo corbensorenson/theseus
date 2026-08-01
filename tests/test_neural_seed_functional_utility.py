@@ -12,7 +12,8 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from neural_seed_functional_utility import (
+from neural_seed_functional_utility import (  # noqa: E402
+    DEFAULT_FREEZE,
     audit_candidate_provenance,
     audit_local_english_judgments,
     build_blind_english_packet,
@@ -24,11 +25,19 @@ from neural_seed_functional_utility import (
     validate_precomputed_code_evaluation,
     validate_freeze,
 )
-from neural_seed_functional_cases import stable_hash
+import neural_seed_functional_generate  # noqa: E402
+from neural_seed_functional_cases import stable_hash  # noqa: E402
 
 
 CONFIG_PATH = ROOT / "configs/neural_seed_functional_utility.json"
 CONFIG = json.loads(CONFIG_PATH.read_text())
+
+
+def test_default_freeze_matches_active_57m_evaluation_contract() -> None:
+    expected = ROOT / "configs/neural_seed_57m_functional_utility_freeze.json"
+
+    assert DEFAULT_FREEZE == expected
+    assert neural_seed_functional_generate.DEFAULT_FREEZE == expected
 
 
 def test_training_config_identity_excludes_only_checkpoint_migration_ledger(

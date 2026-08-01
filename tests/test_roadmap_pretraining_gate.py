@@ -18,9 +18,27 @@ import roadmap_implementation_gate as gate  # noqa: E402
 def matrix(required_status: str = "qualified") -> dict:
     return {
         "phases": [
-            {"phase": 0, "title": "Registry", "status": required_status, "missing_items": [], "required_gates": ["gate"], "current_evidence": ["evidence"], "integration_smoke": ["smoke"]},
-            {"phase": 10, "title": "Training", "status": "partial", "missing_items": ["learn behavior"]},
-            {"phase": 9, "title": "Peers", "status": "frozen", "missing_items": ["external peer not reachable"]},
+            {
+                "phase": 0,
+                "title": "Registry",
+                "status": required_status,
+                "missing_items": [],
+                "required_gates": ["gate"],
+                "current_evidence": ["evidence"],
+                "integration_smoke": ["smoke"],
+            },
+            {
+                "phase": 10,
+                "title": "Training",
+                "status": "partial",
+                "missing_items": ["learn behavior"],
+            },
+            {
+                "phase": 9,
+                "title": "Peers",
+                "status": "frozen",
+                "missing_items": ["external peer not reachable"],
+            },
         ],
         "pre_training_architecture_contract": {
             "required_phase_ids": [0],
@@ -45,9 +63,9 @@ def matrix(required_status: str = "qualified") -> dict:
 class PreTrainingArchitectureGateTests(unittest.TestCase):
     def test_active_t1_currentness_replaces_no_historical_t0a_claims(self) -> None:
         payload = json.loads(
-            (
-                ROOT / "configs/roadmap_implementation_matrix.json"
-            ).read_text(encoding="utf-8")
+            (ROOT / "configs/roadmap_implementation_matrix.json").read_text(
+                encoding="utf-8"
+            )
         )
         contract = payload["pre_training_architecture_contract"][
             "freeze_package_evidence"
@@ -56,21 +74,32 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         currentness = report["post_activation_currentness"]
 
         self.assertTrue(report["ready"])
-        self.assertGreater(
-            report["historical_source_artifact_drift_count"], 0
-        )
+        self.assertGreater(report["historical_source_artifact_drift_count"], 0)
         self.assertTrue(
-            report[
-                "historical_source_artifact_drift_accepted_after_activation"
-            ]
+            report["historical_source_artifact_drift_accepted_after_activation"]
         )
         self.assertTrue(currentness["ready"])
         self.assertFalse(currentness["pre_anchor_full_chain_available"])
         self.assertEqual(currentness["capability_claim"], "NOT_EVALUATED")
         self.assertEqual(
             currentness["migration_id"],
-            "shared_trunk_step9112_archived_receipt_digest_custody_fix_v1",
+            "shared_trunk_step11416_committed_plan_digest_rebind_v1",
         )
+
+    def test_current_phase0_readiness_is_bound_to_dirty_source_package(self) -> None:
+        payload = json.loads(
+            (ROOT / "configs/roadmap_implementation_matrix.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        phase0 = next(row for row in payload["phases"] if row["phase"] == 0)
+        readiness = phase0["pre_training_readiness"]
+        evidence = gate.audit_pre_training_backlog_evidence(readiness["evidence"])
+
+        self.assertEqual(readiness["state"], "BLOCKED_SOURCE_BINDING")
+        self.assertFalse(evidence["ready"])
+        self.assertEqual(evidence["trigger_state"], "RED")
+        self.assertIn("trigger_state_mismatch", evidence["faults"])
 
     def test_deferred_kerc_campaign_exclusion_is_machine_checked(self) -> None:
         import tempfile
@@ -116,9 +145,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             config_path.write_text(json.dumps(config), encoding="utf-8")
             exposed = gate.audit_kerc_first_campaign_exclusion(binding)
             self.assertFalse(exposed["ready"])
-            self.assertIn(
-                "kerc_candidate_exposed:kernel_english", exposed["faults"]
-            )
+            self.assertIn("kerc_candidate_exposed:kernel_english", exposed["faults"])
 
     def test_training_phase_does_not_circularly_block_architecture(self) -> None:
         report = gate.audit_pre_training_architecture_readiness(
@@ -141,7 +168,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         )
 
         self.assertFalse(report["ready"])
-        self.assertEqual(report["blockers"][0]["kind"], "unfinished_architecture_prerequisite_phases")
+        self.assertEqual(
+            report["blockers"][0]["kind"], "unfinished_architecture_prerequisite_phases"
+        )
 
     def test_implemented_or_wired_zero_gap_phase_is_pretraining_ready(self) -> None:
         for status in ("implemented", "wired"):
@@ -154,9 +183,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
 
             self.assertTrue(report["ready"], status)
             self.assertTrue(
-                report["required_architecture_phases"][0][
-                    "ordinary_zero_gap_ready"
-                ],
+                report["required_architecture_phases"][0]["ordinary_zero_gap_ready"],
                 status,
             )
 
@@ -226,9 +253,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             )
             self.assertTrue(ready["ready"])
             self.assertTrue(
-                ready["required_architecture_phases"][0][
-                    "scoped_readiness_ready"
-                ]
+                ready["required_architecture_phases"][0]["scoped_readiness_ready"]
             )
 
             payload["phases"][0]["pre_training_readiness"][
@@ -263,7 +288,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         }
         active = gate.audit_kerc_mandatory_replacement_qualification(binding)
         self.assertFalse(active["ready"])
-        self.assertEqual(active["remaining_ladder"], list(gate.REQUIRED_KERC_REPLACEMENT_LADDER))
+        self.assertEqual(
+            active["remaining_ladder"], list(gate.REQUIRED_KERC_REPLACEMENT_LADDER)
+        )
         strengthened_paths = {
             step: {
                 predicate["path"]
@@ -302,7 +329,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
 
         reordered = copy.deepcopy(binding)
         reordered_contract = reordered["mandatory_replacement_qualification"]
-        reordered_contract["completed_ladder"] = [gate.REQUIRED_KERC_REPLACEMENT_LADDER[2]]
+        reordered_contract["completed_ladder"] = [
+            gate.REQUIRED_KERC_REPLACEMENT_LADDER[2]
+        ]
         reordered_contract["evidence_by_ladder"] = {
             gate.REQUIRED_KERC_REPLACEMENT_LADDER[2]: {}
         }
@@ -311,7 +340,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
 
         weakened = copy.deepcopy(binding)
         weakened_contract = weakened["mandatory_replacement_qualification"]
-        weakened_contract["acceptance_by_ladder"][gate.REQUIRED_KERC_REPLACEMENT_LADDER[0]].pop()
+        weakened_contract["acceptance_by_ladder"][
+            gate.REQUIRED_KERC_REPLACEMENT_LADDER[0]
+        ].pop()
         weakened_audit = gate.audit_kerc_mandatory_replacement_qualification(weakened)
         self.assertIn(
             "acceptance_contract_missing_or_drifted:"
@@ -372,7 +403,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         contract = binding["mandatory_replacement_qualification"]
         contract["state"] = "QUALIFIED_NOT_SELECTED"
         contract["completed_ladder"] = list(gate.REQUIRED_KERC_REPLACEMENT_LADDER)
-        terminal_without_receipts = gate.audit_kerc_mandatory_replacement_qualification(binding)
+        terminal_without_receipts = gate.audit_kerc_mandatory_replacement_qualification(
+            binding
+        )
         self.assertFalse(terminal_without_receipts["ready"])
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -433,7 +466,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
 
     def test_phase_partition_must_cover_every_phase_once(self) -> None:
         payload = matrix()
-        payload["pre_training_architecture_contract"]["training_or_behavior_qualification_phase_ids"] = []
+        payload["pre_training_architecture_contract"][
+            "training_or_behavior_qualification_phase_ids"
+        ] = []
         report = gate.audit_pre_training_architecture_readiness(
             matrix=payload,
             phase_reports=[],
@@ -442,15 +477,23 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         )
 
         self.assertFalse(report["ready"])
-        partition = next(row for row in report["blockers"] if row["kind"].endswith("partition_invalid"))
+        partition = next(
+            row
+            for row in report["blockers"]
+            if row["kind"].endswith("partition_invalid")
+        )
         self.assertEqual(partition["missing_phase_ids"], [10])
 
-    def test_required_cross_phase_backlog_blocks_until_pretraining_boundary_is_wired(self) -> None:
+    def test_required_cross_phase_backlog_blocks_until_pretraining_boundary_is_wired(
+        self,
+    ) -> None:
         payload = matrix()
         payload["pre_training_architecture_contract"].update(
             {
                 "required_backlog_ids": ["planned.kernel_v1"],
-                "ready_backlog_statuses": ["pretraining_wired_behavior_qualification_pending"],
+                "ready_backlog_statuses": [
+                    "pretraining_wired_behavior_qualification_pending"
+                ],
             }
         )
         payload["planned_codex_test_backlog"] = [
@@ -469,10 +512,16 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         )
 
         self.assertFalse(report["ready"])
-        blocker = next(row for row in report["blockers"] if row["kind"] == "unfinished_pre_training_backlog_contracts")
+        blocker = next(
+            row
+            for row in report["blockers"]
+            if row["kind"] == "unfinished_pre_training_backlog_contracts"
+        )
         self.assertEqual(blocker["contracts"][0]["backlog_id"], "planned.kernel_v1")
 
-        payload["planned_codex_test_backlog"][0]["status"] = "pretraining_wired_behavior_qualification_pending"
+        payload["planned_codex_test_backlog"][0]["status"] = (
+            "pretraining_wired_behavior_qualification_pending"
+        )
         report = gate.audit_pre_training_architecture_readiness(
             matrix=payload,
             phase_reports=[],
@@ -483,7 +532,9 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         self.assertTrue(report["ready"])
         self.assertTrue(report["required_backlog_contracts"][0]["ready"])
 
-        payload["planned_codex_test_backlog"][0]["pre_training_acceptance_boundary"] = ""
+        payload["planned_codex_test_backlog"][0]["pre_training_acceptance_boundary"] = (
+            ""
+        )
         report = gate.audit_pre_training_architecture_readiness(
             matrix=payload,
             phase_reports=[],
@@ -492,7 +543,11 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         )
 
         self.assertFalse(report["ready"])
-        self.assertFalse(report["required_backlog_contracts"][0]["pre_training_acceptance_boundary_present"])
+        self.assertFalse(
+            report["required_backlog_contracts"][0][
+                "pre_training_acceptance_boundary_present"
+            ]
+        )
 
     def test_required_cross_phase_backlog_must_exist(self) -> None:
         payload = matrix()
@@ -511,7 +566,11 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         )
 
         self.assertFalse(report["ready"])
-        blocker = next(row for row in report["blockers"] if row["kind"] == "missing_required_pre_training_backlog_contracts")
+        blocker = next(
+            row
+            for row in report["blockers"]
+            if row["kind"] == "missing_required_pre_training_backlog_contracts"
+        )
         self.assertEqual(blocker["backlog_ids"], ["planned.missing_v1"])
 
     def test_declared_backlog_evidence_must_be_green_and_source_bound(self) -> None:
@@ -531,45 +590,62 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             import hashlib
 
             report_path = root / "receipt.json"
-            report_path.write_text(json.dumps({
-                "policy": "fixture_disposition_v1",
-                "trigger_state": "GREEN",
-                "disposition": "retired",
-                "source_artifacts": {
-                    "source": {
-                        "path": str(source),
-                        "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            report_path.write_text(
+                json.dumps(
+                    {
+                        "policy": "fixture_disposition_v1",
+                        "trigger_state": "GREEN",
+                        "disposition": "retired",
+                        "source_artifacts": {
+                            "source": {
+                                "path": str(source),
+                                "sha256": hashlib.sha256(
+                                    source.read_bytes()
+                                ).hexdigest(),
+                            }
+                        },
                     }
-                },
-            }), encoding="utf-8")
-            payload["planned_codex_test_backlog"] = [{
-                "backlog_id": "planned.kernel_v1",
-                "status": "retired_by_pretraining_verdict",
-                "pre_training_acceptance_boundary": "Retired by a source-bound verdict.",
-                "negative_disposition_contract": {
-                    "kind": "campaign_scope_only",
-                    "scientific_falsification_claimed": False,
-                    "exact_scope": "first campaign only",
-                    "reentry_condition": "run a separate matched campaign",
-                },
-                "pre_training_evidence": {
-                    "path": str(report_path),
-                    "policy": "fixture_disposition_v1",
-                    "required_trigger_state": "GREEN",
-                    "required_disposition": "retired",
-                },
-            }]
+                ),
+                encoding="utf-8",
+            )
+            payload["planned_codex_test_backlog"] = [
+                {
+                    "backlog_id": "planned.kernel_v1",
+                    "status": "retired_by_pretraining_verdict",
+                    "pre_training_acceptance_boundary": "Retired by a source-bound verdict.",
+                    "negative_disposition_contract": {
+                        "kind": "campaign_scope_only",
+                        "scientific_falsification_claimed": False,
+                        "exact_scope": "first campaign only",
+                        "reentry_condition": "run a separate matched campaign",
+                    },
+                    "pre_training_evidence": {
+                        "path": str(report_path),
+                        "policy": "fixture_disposition_v1",
+                        "required_trigger_state": "GREEN",
+                        "required_disposition": "retired",
+                    },
+                }
+            ]
             ready = gate.audit_pre_training_architecture_readiness(
-                matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+                matrix=payload,
+                phase_reports=[],
+                book_contract_report={},
+                current_hard_gap_count=0,
             )
             self.assertTrue(ready["ready"])
             source.write_text("tampered", encoding="utf-8")
             stale = gate.audit_pre_training_architecture_readiness(
-                matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+                matrix=payload,
+                phase_reports=[],
+                book_contract_report={},
+                current_hard_gap_count=0,
             )
             self.assertFalse(stale["ready"])
             contract = stale["required_backlog_contracts"][0]
-            self.assertIn("source_artifacts_stale:source", contract["evidence"]["faults"])
+            self.assertIn(
+                "source_artifacts_stale:source", contract["evidence"]["faults"]
+            )
 
     def test_proxy_failure_cannot_retire_a_mechanism(self) -> None:
         payload = matrix()
@@ -587,7 +663,10 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         payload["planned_codex_test_backlog"] = [row]
 
         missing = gate.audit_pre_training_architecture_readiness(
-            matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
         )
         self.assertFalse(missing["ready"])
         self.assertFalse(
@@ -601,13 +680,19 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             "reentry_condition": "run a faithful separately preregistered campaign",
         }
         scoped = gate.audit_pre_training_architecture_readiness(
-            matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
         )
         self.assertTrue(scoped["ready"])
 
         row["negative_disposition_contract"]["scientific_falsification_claimed"] = True
         overclaimed = gate.audit_pre_training_architecture_readiness(
-            matrix=payload, phase_reports=[], book_contract_report={}, current_hard_gap_count=0
+            matrix=payload,
+            phase_reports=[],
+            book_contract_report={},
+            current_hard_gap_count=0,
         )
         self.assertFalse(overclaimed["ready"])
 
@@ -652,14 +737,21 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         self.assertTrue(report["ready"])
         self.assertTrue(report["strict_architecture_first_enforcement"])
 
-        for mutation in ("bad_priority", "missing_order", "duplicate_order", "bad_authority"):
+        for mutation in (
+            "bad_priority",
+            "missing_order",
+            "duplicate_order",
+            "bad_authority",
+        ):
             broken = copy.deepcopy(payload)
             contract = broken["pre_training_architecture_contract"]
             if mutation == "bad_priority":
                 contract["execution_priority"] = "train_first"
             elif mutation == "missing_order":
                 contract["dependency_order"].remove("planned.router_v1")
-                broken["planned_codex_test_backlog"][0]["status"] = "pre_training_architecture_required"
+                broken["planned_codex_test_backlog"][0]["status"] = (
+                    "pre_training_architecture_required"
+                )
             elif mutation == "duplicate_order":
                 contract["dependency_order"].insert(1, "planned.router_v1")
             else:
@@ -672,7 +764,10 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             )
             self.assertFalse(report["ready"], mutation)
             self.assertTrue(
-                any(row["kind"] == "architecture_first_enforcement_contract_invalid" for row in report["blockers"]),
+                any(
+                    row["kind"] == "architecture_first_enforcement_contract_invalid"
+                    for row in report["blockers"]
+                ),
                 mutation,
             )
 

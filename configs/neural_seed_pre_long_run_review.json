@@ -99,7 +99,7 @@
         "reports/pre_long_run_acceleration_residual_audit.json",
         "reports/pre_long_run_independent_readiness_audit.json"
       ],
-      "decision": "The held receipt plan 4f18bd17... is explicitly migrated to current plan 5d5b77e5... only for the exact step-11416 checkpoint/AdamW/RNG/position identity. The implementation closure gained isolated default-off candidates and candidate/resource governance, while the active compiled-FP32/AdamW/separate-QKV/SwiGLU/sequential-residual production route, data, cursor, objective, schedule, and functional surface remain unchanged."
+      "decision": "The held receipt plan 4f18bd17... is explicitly migrated to the deterministically recomputed current plan 8f1af969... by shared_trunk_step11416_committed_plan_digest_rebind_v1 only for the exact step-11416 checkpoint/AdamW/RNG/position identity. The earlier 5d5b77e5... target remains historical intent and is not the digest produced by the committed closure. The implementation closure gained isolated default-off candidates and candidate/resource governance, while the active compiled-FP32/AdamW/separate-QKV/SwiGLU/sequential-residual production route, data, cursor, objective, schedule, functional surface, and transactional safety hold remain unchanged."
     }
   ],
   "new_source": {
@@ -252,7 +252,7 @@
     "The selected full-campaign architecture and execution recipe are rebound in one replacement freeze.",
     "If no topology candidate wins, resume the exact step-11416 lineage without changing model, AdamW, RNG, cursor, data order, objective mass, or evaluation.",
     "If a topology candidate wins, archive step 11416 as a non-capability control and restart only through a new content-addressed lineage; never reinterpret incompatible optimizer state.",
-    "The operator removes the yield control only after reviewing the replacement freeze."
+    "Only the autonomous launch controller may lease the yield control, for exactly one transaction, after every machine predicate passes; it restores the hold on every exit and requires no user or operator approval."
   ],
   "resource_policy": {
     "clock_of_day_windows_allowed": false,

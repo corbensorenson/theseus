@@ -25,10 +25,11 @@ literal backslash-n text while its parser required actual newlines; Qwen3.5
 reproduced the displayed transport. P2C changed only that transport and has now
 completed its single licensed Click run: the harness is adequate, but the task
 was not solved. In parallel,
-the neural campaign remains held on clean
-source binding and migration from manual holds to bounded machine-readable
-launch and one-shot evaluation authority. No forward phase depends on Corben
-supplying tasks, labels, approvals, or timing.
+the neural campaign remains held on clean source binding and exclusive
+accelerator custody. Its one-segment launch authority is now machine-readable
+and autonomous; a separate one-shot D2 evaluation controller is still required.
+No forward phase depends on Corben supplying tasks, labels, approvals, or
+timing.
 
 ## How Truth Is Resolved
 
@@ -88,7 +89,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
-| Training | `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING` | `runtime/control/neural_seed_yield_after_segment` is present; removal must move to the exact automated launch controller |
+| Training | `TRAINING_HELD_SOURCE_BINDING_AND_ACCELERATOR_CUSTODY` | The autonomous launch controller may lease `runtime/control/neural_seed_yield_after_segment` for exactly one transactional segment only after clean source binding and every machine predicate pass; it requires no user approval and restores the hold on every exit |
 | Learned capability | `NOT_EVALUATED_SEALED` | The 57M candidate has no D2 result; the current surface is independently fresh at exact and normalized model-visible prompt scope, but automated one-shot evaluation authority is not implemented |
 | Matched controls | `NOT_TRAINED` | Both dense controls remain at 0 optimizer steps |
 | Instrument usefulness | `NOT_ESTABLISHED` | P2-001 and P2A both traversed matched canonical routes but produced zero independently evaluable candidates under their exact protocols; no route or subsystem won |

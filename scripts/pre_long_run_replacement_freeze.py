@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -71,6 +72,37 @@ def verify_package_identity(value: dict[str, Any]) -> bool:
     return isinstance(identity, str) and identity == content_identity(value)
 
 
+def git_source_state() -> dict[str, Any]:
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+        branch = subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+        porcelain = subprocess.check_output(
+            ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).splitlines()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ReplacementFreezeFault("git_source_state_unavailable") from exc
+    return {
+        "commit": commit,
+        "branch": branch,
+        "clean_at_generation": not porcelain,
+        "dirty_path_count": len(porcelain),
+        "dirty_paths": porcelain,
+    }
+
+
 def artifact_row(path: Path) -> dict[str, Any]:
     return {
         "path": relative(path),
@@ -95,14 +127,9 @@ def selected_recipe(trainer: dict[str, Any]) -> dict[str, Any]:
         "self_attention_projection": topology.get(
             "self_attention_projection", "separate"
         ),
-        "feed_forward_activation": topology.get(
-            "feed_forward_activation", "swiglu"
-        ),
-        "residual_policy": topology.get(
-            "residual_policy", "sequential_unscaled"
-        ),
-        "per_head_muon": trainer["training"]["optimizer_id"]
-        == "per_head_muon_mlx",
+        "feed_forward_activation": topology.get("feed_forward_activation", "swiglu"),
+        "residual_policy": topology.get("residual_policy", "sequential_unscaled"),
+        "per_head_muon": trainer["training"]["optimizer_id"] == "per_head_muon_mlx",
     }
 
 
@@ -110,6 +137,7 @@ def frozen_consumption_matches(
     path: Path,
     freeze: dict[str, Any],
     freeze_sha256: str,
+    equivalent_case_contract_sha256s: list[str] | None = None,
 ) -> list[int]:
     needles = {
         freeze_sha256,
@@ -117,6 +145,7 @@ def frozen_consumption_matches(
         str(freeze["candidate_packet_sha256"]),
         str(freeze["case_contract_sha256"]),
     }
+    needles.update(str(value) for value in equivalent_case_contract_sha256s or [])
     matches: list[int] = []
     for line_number, line in enumerate(
         path.read_text(encoding="utf-8").splitlines(), start=1
@@ -154,9 +183,7 @@ def lineage_manifest(
             artifact_path = resolve(entry["path"])
             artifacts[name] = artifact_row(artifact_path)
             if artifacts[name]["sha256"] != entry["sha256"]:
-                faults.append(
-                    f"artifact_hash_mismatch:{name}:{relative(path)}"
-                )
+                faults.append(f"artifact_hash_mismatch:{name}:{relative(path)}")
         rows.append(
             {
                 "manifest": artifact_row(path),
@@ -204,16 +231,23 @@ def execute(
     config_path: Path = DEFAULT_CONFIG,
     *,
     publish_report: bool = True,
+    source_state_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     config = read_json(config_path)
     if config.get("policy") != POLICY:
         raise ReplacementFreezeFault("config_policy_invalid")
     expected = config["expected"]
+    source_state = (
+        dict(source_state_override)
+        if source_state_override is not None
+        else git_source_state()
+    )
+    source_artifact_paths = {
+        str(path): resolve(str(path)) for path in config["source_artifact_paths"]
+    }
 
     trainer_path = resolve(config["production_trainer_config"])
-    trainer = training.bind_scale_preregistration(
-        training.read_json(trainer_path)
-    )
+    trainer = training.bind_scale_preregistration(training.read_json(trainer_path))
     plan = training.build_plan(trainer, config_path=trainer_path)
     target = plan["targets"][training.SHARED_TRUNK_ID]
     checkpoint_root = resolve(config["checkpoint_root"])
@@ -233,18 +267,13 @@ def execute(
         "mlx_rng": training.resolve(receipt["mlx_rng_state"]),
         "receipt": receipt_path,
     }
-    versioned = {
-        name: artifact_row(path) for name, path in versioned_paths.items()
-    }
+    versioned = {name: artifact_row(path) for name, path in versioned_paths.items()}
     receipt_hash_match = {
         "model": versioned["model"]["sha256"] == receipt["checkpoint_sha256"],
         "optimizer": (
-            versioned["optimizer"]["sha256"]
-            == receipt["optimizer_state_sha256"]
+            versioned["optimizer"]["sha256"] == receipt["optimizer_state_sha256"]
         ),
-        "mlx_rng": (
-            versioned["mlx_rng"]["sha256"] == receipt["mlx_rng_state_sha256"]
-        ),
+        "mlx_rng": (versioned["mlx_rng"]["sha256"] == receipt["mlx_rng_state_sha256"]),
     }
     alias_paths = {
         "model": checkpoint_root / "weights.safetensors",
@@ -280,9 +309,13 @@ def execute(
     freeze_path = resolve(config["functional_freeze"])
     functional_freeze = read_json(freeze_path)
     registry_path = resolve(config["functional_consumption_registry"])
+    surface_integrity = config["functional_surface_integrity"]
     functional_freeze_sha256 = sha256_file(freeze_path)
     consumption_matches = frozen_consumption_matches(
-        registry_path, functional_freeze, functional_freeze_sha256
+        registry_path,
+        functional_freeze,
+        functional_freeze_sha256,
+        list(surface_integrity["equivalent_consumed_case_contract_sha256s"]),
     )
     yield_path = resolve(config["yield_control"])
     superseded_path = resolve(config["supersedes"])
@@ -330,8 +363,7 @@ def execute(
             "passed": (
                 plan.get("trigger_state") == "GREEN"
                 and plan.get("hard_gaps") == []
-                and receipt.get("plan_sha256")
-                == expected["receipt_plan_sha256"]
+                and receipt.get("plan_sha256") == expected["receipt_plan_sha256"]
                 and plan.get("plan_sha256") == expected["current_plan_sha256"]
                 and migration is not None
                 and migration.get("migration_id") == expected["migration_id"]
@@ -354,9 +386,7 @@ def execute(
             "receipt_hash_match": receipt_hash_match,
             "alias_match": alias_match,
         },
-        "prospective_lineage": {
-            "passed": lineage["passed"] is True
-        },
+        "prospective_lineage": {"passed": lineage["passed"] is True},
         "functional_surface": {
             "passed": (
                 functional_freeze.get("candidate_id") == config["campaign_id"]
@@ -374,6 +404,49 @@ def execute(
             ),
             "matching_consumption_registry_lines": consumption_matches,
         },
+        "functional_surface_freshness": {
+            "passed": (
+                (
+                    independent.get("audits", {})
+                    .get("evaluation_surface_freshness", {})
+                    .get("passed")
+                    is True
+                )
+                and (
+                    independent.get("audits", {})
+                    .get("evaluation_surface_freshness", {})
+                    .get("independent_recomputation", {})
+                    .get("passed")
+                    is True
+                )
+                and surface_integrity.get("state") == "VALID_FRESH_PRIVATE_SURFACE"
+                and surface_integrity.get("fresh_surface") is True
+                and surface_integrity.get("evaluation_authorized") is False
+                and surface_integrity.get("current_case_contract_sha256")
+                == functional_freeze.get("case_contract_sha256")
+                and not surface_integrity.get(
+                    "equivalent_consumed_case_contract_sha256s"
+                )
+                and not consumption_matches
+            ),
+            "state": surface_integrity.get("state"),
+            "fresh_surface": surface_integrity.get("fresh_surface"),
+            "evaluation_authorized": surface_integrity.get("evaluation_authorized"),
+            "current_case_contract_sha256": functional_freeze.get(
+                "case_contract_sha256"
+            ),
+            "equivalent_consumed_case_contract_sha256s": surface_integrity.get(
+                "equivalent_consumed_case_contract_sha256s"
+            ),
+            "equivalence_basis": surface_integrity.get("equivalence_basis"),
+            "disposition": surface_integrity.get("disposition"),
+            "matching_consumption_registry_lines": consumption_matches,
+            "independent_recomputation": (
+                independent.get("audits", {})
+                .get("evaluation_surface_freshness", {})
+                .get("independent_recomputation")
+            ),
+        },
         "architecture_selection": {
             "passed": (
                 bakeoff.get("trigger_state") == "GREEN"
@@ -388,23 +461,16 @@ def execute(
                 per_head.get("trigger_state") == "GREEN"
                 and per_head["campaign_disposition"]["selected_optimizer"]
                 == "adamw_mlx"
-                and per_head["campaign_disposition"][
-                    "scientific_falsification_claimed"
-                ]
+                and per_head["campaign_disposition"]["scientific_falsification_claimed"]
                 is False
                 and attnres.get("trigger_state") == "GREEN"
                 and attnres["campaign_disposition"]["selected_architecture"]
                 == "control"
-                and attnres["campaign_disposition"][
-                    "scientific_falsification_claimed"
-                ]
+                and attnres["campaign_disposition"]["scientific_falsification_claimed"]
                 is False
                 and situ.get("trigger_state") == "GREEN"
-                and situ["campaign_disposition"]["selected_architecture"]
-                == "control"
-                and situ["campaign_disposition"][
-                    "scientific_falsification_claimed"
-                ]
+                and situ["campaign_disposition"]["selected_architecture"] == "control"
+                and situ["campaign_disposition"]["scientific_falsification_claimed"]
                 is False
                 and qkv["selection"]["candidate_selected"] is False
                 and qkv["selection"]["production_route_changed"] is False
@@ -422,40 +488,45 @@ def execute(
                 )
                 == 0.0
                 and float(
-                    trainer["host_resource_safety"][
-                        "minimum_available_during_run_mib"
-                    ]
+                    trainer["host_resource_safety"]["minimum_available_during_run_mib"]
                 )
                 == 0.0
                 and trainer["host_resource_safety"]["swapout_growth_action"]
                 == "report_only"
-                and float(
-                    trainer["host_resource_safety"]["maximum_wall_seconds"]
-                )
+                and float(trainer["host_resource_safety"]["maximum_wall_seconds"])
                 == 0.0
                 and global_safety["memory_guard_mode"] == "predicted_exhaustion"
-                and float(global_safety["minimum_available_before_launch_mib"])
-                == 0.0
-                and float(global_safety["minimum_available_during_run_mib"])
-                == 0.0
+                and float(global_safety["minimum_available_before_launch_mib"]) == 0.0
+                and float(global_safety["minimum_available_during_run_mib"]) == 0.0
                 and global_safety["swapout_growth_action"] == "report_only"
                 and inline_reserves_zero
             ),
             "fixed_available_memory_floor_mib": 0,
             "production_wall_deadline_seconds": 0,
         },
-        "operator_hold": {
+        "source_binding": {
+            "passed": (
+                bool(source_state.get("commit"))
+                and source_state.get("clean_at_generation") is True
+                and int(source_state.get("dirty_path_count", -1)) == 0
+                and source_state.get("dirty_paths") == []
+            ),
+            "source_state": source_state,
+            "final_generation_rule": (
+                "The source-bound replacement package may be finalized exactly "
+                "once only from a clean post-maintenance commit."
+            ),
+        },
+        "transactional_hold": {
             "passed": (
                 yield_path.is_file()
                 and review.get("state") == "HOLD_FOR_FINITE_REVIEW"
-                and review["execution_hold"]["new_long_segment_authorized"]
-                is False
+                and review["execution_hold"]["new_long_segment_authorized"] is False
                 and review["execution_hold"][
                     "new_architecture_may_touch_live_checkpoint"
                 ]
                 is False
-                and config["boundaries"]["long_training_started_or_resumed"]
-                is False
+                and config["boundaries"]["long_training_started_or_resumed"] is False
                 and config["boundaries"]["hold_removed_by_freeze"] is False
             ),
             "hold_present": yield_path.is_file(),
@@ -481,7 +552,7 @@ def execute(
     }
     report = {
         "policy": POLICY,
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "campaign_id": config["campaign_id"],
         "trigger_state": trigger_state,
         "support_state": (
@@ -500,12 +571,12 @@ def execute(
         ),
         "resume_authority": {
             "authorized_state": (
-                "EXACT_STEP_11416_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD"
+                "EXACT_STEP_11416_UNCHANGED_THROUGH_MACHINE_PREDICATE_LEASE"
                 if trigger_state == "GREEN"
                 else "NONE"
             ),
-            "operator_hold_present": yield_path.is_file(),
-            "operator_hold_removed_by_package": False,
+            "transactional_hold_present": yield_path.is_file(),
+            "transactional_hold_removed_by_package": False,
             "long_training_authorized_now": False,
             "long_training_started_or_resumed": False,
             "incompatible_state_policy": (
@@ -535,6 +606,7 @@ def execute(
             "source_disjoint": functional_freeze["source_disjoint"],
             "registry": artifact_row(registry_path),
             "matching_registry_lines": consumption_matches,
+            "integrity": surface_integrity,
         },
         "candidate_dispositions": {
             "per_head_muon": "NOT_SELECTED_FIRST_CAMPAIGN",
@@ -542,6 +614,10 @@ def execute(
             "situ_glu": "NOT_SELECTED_FIRST_CAMPAIGN",
             "fused_qkv": qkv["selection"]["disposition"],
             "scientific_falsification_claimed": False,
+        },
+        "source_binding": source_state,
+        "source_artifacts": {
+            name: artifact_row(path) for name, path in source_artifact_paths.items()
         },
         "authority_manifest": {
             name: artifact_row(path) for name, path in authority_paths.items()
@@ -556,7 +632,9 @@ def execute(
                 "The historical package binds step 3480. This replacement "
                 "binds the exact held step-11416 state, prospective lineage, "
                 "completed finite candidates, current acceleration selection, "
-                "independent audits, and unconsumed functional surface."
+                "independent audits, functional-surface integrity, and the "
+                "source commit. Final publication is valid only when the "
+                "source-binding gate records a clean post-maintenance tree."
             ),
             "historical_package_remains_valid_for_its_exact_past_transaction": True,
             "historical_package_does_not_authorize_current_resume": True,
@@ -567,7 +645,7 @@ def execute(
             "This package does not prove physical performance optimality.",
             "This package does not evaluate model capability or utility.",
             "Scoped candidate dispositions are not broad scientific falsifications.",
-            "This package does not remove the operator hold or start long training.",
+            "This package does not lease the transactional hold or start long training.",
         ],
     }
     report["package_identity"] = content_identity(report)

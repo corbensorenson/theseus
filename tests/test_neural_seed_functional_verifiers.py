@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from pathlib import Path
@@ -10,8 +11,8 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from neural_seed_functional_cases import materialize_cases
-from neural_seed_functional_verifiers import (
+from neural_seed_functional_cases import materialize_cases  # noqa: E402
+from neural_seed_functional_verifiers import (  # noqa: E402
     english_candidate_binding,
     score_english_judgments,
     verify_candidate,
@@ -20,10 +21,24 @@ from neural_seed_functional_verifiers import (
 
 CONFIG = json.loads((ROOT / "configs/neural_seed_functional_utility.json").read_text())
 CASES = materialize_cases(CONFIG)
+RUST_MECHANICS_TEST_CONFIG = copy.deepcopy(CONFIG)
+# The immutable D2 contract keeps its original 12-second candidate budget. On
+# loaded macOS hosts, cold cargo test linking can take ~16 seconds even when the
+# fixture itself completes in milliseconds. This mechanics-only regression
+# budget is deliberately test-local and does not alter the frozen evaluator.
+RUST_MECHANICS_TEST_CONFIG["sandbox"]["timeout_seconds"] = max(
+    30, int(CONFIG["sandbox"]["timeout_seconds"])
+)
 
 
 def case(arm: str, family: str, variant: int = 0) -> dict:
-    return next(row for row in CASES if row["arm_id"] == arm and row["task_family"] == family and row["variant"] == variant)
+    return next(
+        row
+        for row in CASES
+        if row["arm_id"] == arm
+        and row["task_family"] == family
+        and row["variant"] == variant
+    )
 
 
 def test_python_known_good_bad_and_side_effect_candidates() -> None:
@@ -31,7 +46,9 @@ def test_python_known_good_bad_and_side_effect_candidates() -> None:
     name = row["verifier"]["function_name"]
     good = f"def {name}(values):\n    return list(dict.fromkeys(values))\n"
     bad = f"def {name}(values):\n    return sorted(set(values))\n"
-    side_effect = f"import socket\ndef {name}(values):\n    return list(dict.fromkeys(values))\n"
+    side_effect = (
+        f"import socket\ndef {name}(values):\n    return list(dict.fromkeys(values))\n"
+    )
 
     assert verify_candidate(row, good, CONFIG)["passed"] is True
     assert verify_candidate(row, bad, CONFIG)["passed"] is False
@@ -88,11 +105,11 @@ def test_rust_known_good_and_bad_candidates() -> None:
     good = f"use std::collections::HashSet;\npub fn {name}(values: &[i32]) -> Vec<i32> {{ let mut s=HashSet::new(); values.iter().copied().filter(|v| s.insert(*v)).collect() }}\n"
     bad = f"pub fn {name}(values: &[i32]) -> Vec<i32> {{ let mut x=values.to_vec(); x.sort(); x.dedup(); x }}\n"
 
-    assert verify_candidate(row, good, CONFIG)["passed"] is True
-    assert verify_candidate(row, bad, CONFIG)["passed"] is False
+    assert verify_candidate(row, good, RUST_MECHANICS_TEST_CONFIG)["passed"] is True
+    assert verify_candidate(row, bad, RUST_MECHANICS_TEST_CONFIG)["passed"] is False
 
     include_probe = f'pub fn {name}(_values: &[i32]) -> Vec<i32> {{ let _ = include_str!("../tests/functional.rs"); vec![] }}\n'
-    rejected = verify_candidate(row, include_probe, CONFIG)
+    rejected = verify_candidate(row, include_probe, RUST_MECHANICS_TEST_CONFIG)
     assert rejected["passed"] is False
     assert rejected["fault"] == "prohibited_side_effect"
 
@@ -101,13 +118,17 @@ def test_html_requires_dom_contract_and_real_render() -> None:
     row = case("html_css", "status_alert")
     status_text = row["verifier"]["required_text"][0]
     good = f'<!doctype html><html><head><title>Status</title><style>section{{border:1px solid red}}button:focus-visible{{outline:2px solid blue}}</style></head><body><section role="alert"><h1>{status_text}</h1><button type="button">Retry</button></section></body></html>'
-    external = good.replace("</body>", '<script src="https://example.com/x.js"></script></body>')
+    external = good.replace(
+        "</body>", '<script src="https://example.com/x.js"></script></body>'
+    )
 
     passed = verify_candidate(row, good, CONFIG)
     assert passed["passed"] is True
     assert len(passed["renders"]) == 2
     assert all(render["screenshot_bytes"] >= 512 for render in passed["renders"])
-    assert all(render["browser_assertions"]["visible_alert"] for render in passed["renders"])
+    assert all(
+        render["browser_assertions"]["visible_alert"] for render in passed["renders"]
+    )
     rejected = verify_candidate(row, external, CONFIG)
     assert rejected["passed"] is False
     assert "javascript_forbidden" in rejected["failures"]
@@ -117,9 +138,11 @@ def test_html_responsive_behavior_is_computed_at_both_viewports() -> None:
     row = case("html_css", "responsive_cards")
     title_text = row["verifier"]["required_text"][0]
     body = f'<main><h1>{title_text}</h1><section class="cards" aria-label="Projects"><article><h2>A</h2></article><article><h2>B</h2></article><article><h2>C</h2></article></section></main>'
-    good_css = '.cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:1fr}}'
-    bad_css = '.cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:repeat(3,1fr)}}'
-    page = lambda css: f'<!doctype html><html><head><title>Projects</title><style>{css}</style></head><body>{body}</body></html>'
+    good_css = ".cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:1fr}}"
+    bad_css = ".cards{display:grid;grid-template-columns:repeat(3,1fr)}@media (max-width:48rem){.cards{grid-template-columns:repeat(3,1fr)}}"
+
+    def page(css: str) -> str:
+        return f"<!doctype html><html><head><title>Projects</title><style>{css}</style></head><body>{body}</body></html>"
 
     passed = verify_candidate(row, page(good_css), CONFIG)
     assert passed["passed"] is True
@@ -144,6 +167,7 @@ def test_english_requires_blind_independent_raters_and_adjudication() -> None:
     english_cases = [row for row in CASES if row["arm_id"] == "english"]
     outputs = {row["case_id"]: "A concise grounded answer." for row in english_cases}
     dimensions = CONFIG["english_scoring"]["dimensions"]
+
     def judgment(row: dict, rater_id: str, score: int, **extra: object) -> dict:
         binding = english_candidate_binding(row["case_id"], outputs[row["case_id"]])
         return {
@@ -154,21 +178,20 @@ def test_english_requires_blind_independent_raters_and_adjudication() -> None:
             "scores": {dimension: score for dimension in dimensions},
             **extra,
         }
-    one_rater = [
-        judgment(row, "r1", 3)
-        for row in english_cases
-    ]
+
+    one_rater = [judgment(row, "r1", 3) for row in english_cases]
     result = score_english_judgments(CASES, outputs, one_rater, CONFIG)
     assert result["valid"] is False
     assert any(fault.startswith("insufficient_raters") for fault in result["faults"])
 
     exposed = one_rater + [
-        judgment(row, "r2", 3, model_id="revealed")
-        for row in english_cases
+        judgment(row, "r2", 3, model_id="revealed") for row in english_cases
     ]
     result = score_english_judgments(CASES, outputs, exposed, CONFIG)
     assert result["valid"] is False
-    assert any(fault.startswith("identity_or_reference_exposed") for fault in result["faults"])
+    assert any(
+        fault.startswith("identity_or_reference_exposed") for fault in result["faults"]
+    )
 
     valid = one_rater + [judgment(row, "r2", 3) for row in english_cases]
     result = score_english_judgments(CASES, outputs, valid, CONFIG)
@@ -178,4 +201,6 @@ def test_english_requires_blind_independent_raters_and_adjudication() -> None:
     changed[english_cases[0]["case_id"]] = "A different model output."
     replayed = score_english_judgments(CASES, changed, valid, CONFIG)
     assert replayed["valid"] is False
-    assert any(fault.startswith("candidate_binding_mismatch") for fault in replayed["faults"])
+    assert any(
+        fault.startswith("candidate_binding_mismatch") for fault in replayed["faults"]
+    )

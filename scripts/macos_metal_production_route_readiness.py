@@ -559,4 +559,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-    surface_approved = surface["surface"] in approved_surfaces

@@ -24,7 +24,7 @@ from neural_seed_functional_consumption import (
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
-DEFAULT_FREEZE = ROOT / "configs/neural_seed_functional_utility_freeze.json"
+DEFAULT_FREEZE = ROOT / "configs/neural_seed_57m_functional_utility_freeze.json"
 DEFAULT_PACKET = ROOT / "reports/private_functional_utility_candidate_packet.json"
 TARGETS = ("moecot_system", "dense_active_parameter", "dense_total_parameter")
 

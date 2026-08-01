@@ -27,11 +27,65 @@
     },
     "evaluation_nonconsumption": {
       "freeze_path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "freeze_sha256": "0cbf3fb16baa40ed12cb50eace5fe63d3ef417ec9ae93d103562d1961c0e758a",
+      "freeze_sha256": "c3875bb3b8d286038c109659e073acdb30f573fa1907ffa6d63cbdf5c29522cd",
       "matching_consumption_rows": [],
       "passed": true,
       "registry_path": "reports/private_functional_consumption_registry.jsonl",
       "registry_sha256": "2af66e41c2b8ee4270971b69b0c9481429187b405737ca1fc5d5a501f939d382"
+    },
+    "evaluation_surface_freshness": {
+      "current_case_contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+      "disposition": "The exact and normalized model-visible prompt rows are fresh against the consumed v8 packet. D2 remains sealed until a separate machine-predicate one-shot evaluation controller passes; no user or operator approval is required.",
+      "equivalence_basis": {
+        "current_contract_recomputed": true,
+        "exact_prompt_overlap_count": 0,
+        "historical_contract_consumed": true,
+        "historical_packet_content_addressed": true,
+        "normalized_prompt_overlap_count": 0,
+        "task_family_reuse_is_not_exact_surface_reuse": true
+      },
+      "equivalent_consumed_case_contract_sha256s": [],
+      "evaluation_authorized": false,
+      "fresh_surface": true,
+      "independent_recomputation": {
+        "current": {
+          "case_count": 160,
+          "config": "configs/neural_seed_functional_utility.json",
+          "config_sha256": "a8d14f0311d3f343eb4a2f785623ec34b886d59aab5d690c5210495b04705442",
+          "consumption_registry_lines": [],
+          "contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+          "model_visible_sha256": "03a6121c9b253c9621e295294ec80f8f78122dfe14882c2acd18ae4fceef1a9e"
+        },
+        "exact_prompt_overlaps": [],
+        "faults": [],
+        "freshness_scope": "Exact and whitespace/case-normalized model-visible prompts against content-addressed, consumed historical candidate packets. Reuse of task families is not treated as reuse of an exact measurement surface.",
+        "historical_packets": [
+          {
+            "consumption_registry_lines": [
+              1,
+              3,
+              5,
+              7,
+              9,
+              11,
+              15,
+              17,
+              19
+            ],
+            "contract_sha256": "d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792",
+            "model_visible_sha256": "a6d5e82a86f24d259d315a9db0e7970536eec76bde48f45a3090d49fdc5dfc40",
+            "path": "configs/evaluation_history/neural_seed_v8_candidate_packet.json",
+            "row_count": 160,
+            "sha256": "83ac6d3ad447cc04bba708a87881792622683775e2e3f13d93319c4362f5670c"
+          }
+        ],
+        "normalized_prompt_overlaps": [],
+        "passed": true,
+        "state": "VALID_FRESH_PRIVATE_SURFACE"
+      },
+      "matching_consumption_rows": [],
+      "passed": true,
+      "state": "VALID_FRESH_PRIVATE_SURFACE"
     },
     "evidence_integrity": {
       "faults": [],
@@ -899,7 +953,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 8040824832,
+      "disk_free_bytes": 51745062912,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -912,24 +966,24 @@
     },
     "functional_freeze": {
       "path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "sha256": "0cbf3fb16baa40ed12cb50eace5fe63d3ef417ec9ae93d103562d1961c0e758a"
+      "sha256": "c3875bb3b8d286038c109659e073acdb30f573fa1907ffa6d63cbdf5c29522cd"
     },
     "pre_long_run_review": {
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "c7bd59a5c2323ee8421bcbff1356a1f1b9fd5ca0ca75785e140b28861d41cc2f"
+      "sha256": "7abca750c0e85f4413548c8c0bc51689e4136dfa954d9e1392c67e8f9a959553"
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "3e124d4087af0002ebee23d368ddbce4067100d525154917d57541803368f56f"
+      "sha256": "334428e567a7c10173f793b5e10cdd55eb5861af8146554caf47b32c2d0b7eee"
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "f30382b08cd211a4376d308ac2794d5953a11ef27c5f0318d5dd914d78c2ddb6"
+      "sha256": "4264c02887c90484a1f7c1f88352414f92e45d2cfe32502136d0f886d9e35f9f"
     }
   },
   "capability_claim": "NONE_INDEPENDENT_READINESS_AUDIT_ONLY",
   "config": "configs/pre_long_run_independent_readiness_audit.json",
-  "config_sha256": "7b714e70a471fdada7859848a5d757567a1c68575d1267c7d340c45cf4b72ff0",
+  "config_sha256": "2d1a99faeb84c4f2113c004e0535602d562086821e2893ed3ac279399c6d89a2",
   "decision": "INDEPENDENT_AUDITS_GREEN_READY_FOR_CONTENT_ADDRESSED_REPLACEMENT_FREEZE",
   "failed_audits": [],
   "long_training_authorized": false,
@@ -946,6 +1000,7 @@
     "replay_integrity",
     "resource_integrity",
     "evaluation_nonconsumption",
+    "evaluation_surface_freshness",
     "negative_evidence_scope",
     "claim_boundary",
     "execution_hold"

@@ -10,10 +10,10 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import glob
 import hashlib
 import json
 import re
-import sqlite3
 import subprocess
 import sys
 import time
@@ -371,9 +371,14 @@ def report_output_status(policy: dict[str, Any]) -> list[dict[str, Any]]:
             )
             max_age = float(output_policy.get("max_age_hours") or default_max_age)
             not_applicable = platform_report_not_applicable(path_text)
-            path = resolve(path_text)
-            exists = path.exists()
-            created = report_created_utc(path) if exists and path.is_file() else None
+            matches = report_output_matches(path_text)
+            exists = bool(matches)
+            created_values = [
+                created
+                for match in matches
+                if match.is_file() and (created := report_created_utc(match)) is not None
+            ]
+            created = max(created_values, default=None)
             age = age_hours_since(created) if created else None
             route_rows = route_rows_by_path.get(path_text, [])
             route_blockers = [
@@ -403,6 +408,8 @@ def report_output_status(policy: dict[str, Any]) -> list[dict[str, Any]]:
                     "route_requirement_statuses": route_rows,
                     "route_blockers": sorted(set(route_blockers)),
                     "exists": exists,
+                    "match_count": len(matches),
+                    "matched_paths": [rel(path) for path in matches],
                     "not_applicable": not_applicable,
                     "created_utc": created.isoformat().replace("+00:00", "Z") if created else "",
                     "age_hours": round(float(age), 3) if age is not None else None,
@@ -417,6 +424,20 @@ def report_output_status(policy: dict[str, Any]) -> list[dict[str, Any]]:
                 }
             )
     return sorted(rows, key=lambda item: (item["status"], item["path"]))
+
+
+def report_output_matches(path_text: str) -> list[Path]:
+    normalized = normalize_path(path_text)
+    if not glob.has_magic(normalized):
+        path = resolve(normalized)
+        return [path] if path.exists() else []
+    pattern = str(resolve(normalized))
+    matches = {
+        path.resolve()
+        for raw in glob.glob(pattern, recursive=True)
+        if (path := Path(raw)).exists()
+    }
+    return sorted(matches, key=rel)
 
 
 def route_evidence_contracts(policy: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -3163,7 +3184,7 @@ def resolve(path: str | Path) -> Path:
 
 def rel(path: Path) -> str:
     try:
-        return str(path.relative_to(ROOT)).replace("\\", "/")
+        return str(path.resolve().relative_to(ROOT.resolve())).replace("\\", "/")
     except ValueError:
         return str(path).replace("\\", "/")
 

@@ -8,6 +8,29 @@
   "pre_long_run_review": "configs/neural_seed_pre_long_run_review.json",
   "functional_freeze": "configs/neural_seed_57m_functional_utility_freeze.json",
   "functional_consumption_registry": "reports/private_functional_consumption_registry.jsonl",
+  "functional_surface_integrity": {
+    "state": "VALID_FRESH_PRIVATE_SURFACE",
+    "fresh_surface": true,
+    "evaluation_authorized": false,
+    "current_case_contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+    "current_contract_config": "configs/neural_seed_functional_utility.json",
+    "historical_candidate_packets": [
+      {
+        "path": "configs/evaluation_history/neural_seed_v8_candidate_packet.json",
+        "sha256": "83ac6d3ad447cc04bba708a87881792622683775e2e3f13d93319c4362f5670c"
+      }
+    ],
+    "equivalent_consumed_case_contract_sha256s": [],
+    "equivalence_basis": {
+      "current_contract_recomputed": true,
+      "historical_packet_content_addressed": true,
+      "historical_contract_consumed": true,
+      "exact_prompt_overlap_count": 0,
+      "normalized_prompt_overlap_count": 0,
+      "task_family_reuse_is_not_exact_surface_reuse": true
+    },
+    "disposition": "The exact and normalized model-visible prompt rows are fresh against the consumed v8 packet. D2 remains sealed until a separate machine-predicate one-shot evaluation controller passes; no user or operator approval is required."
+  },
   "yield_control": "runtime/control/neural_seed_yield_after_segment",
   "lineage_root": "reports/neural_seed_training_campaign_lineage",
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
@@ -48,6 +71,7 @@
     "replay_integrity",
     "resource_integrity",
     "evaluation_nonconsumption",
+    "evaluation_surface_freshness",
     "negative_evidence_scope",
     "claim_boundary",
     "execution_hold"

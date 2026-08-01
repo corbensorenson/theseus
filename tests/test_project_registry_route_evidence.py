@@ -72,6 +72,77 @@ class RouteEvidenceContractTests(unittest.TestCase):
         self.assertEqual(history["status"], "available")
         self.assertFalse(history["stale"])
 
+    def test_supporting_report_glob_resolves_concrete_matches(self) -> None:
+        self.write_json(
+            "reports/bakeoff_alpha.json",
+            {"created_utc": "2026-01-01T00:00:00Z"},
+        )
+        self.write_json(
+            "reports/bakeoff_beta.json",
+            {"created_utc": "2026-01-02T00:00:00Z"},
+        )
+        policy = {
+            "implementations": [],
+            "route_evidence_contracts": [],
+            "surfaces": [
+                {
+                    "id": "surface.glob",
+                    "report_outputs": ["reports/bakeoff_*.json"],
+                }
+            ],
+        }
+
+        row = registry.report_output_status(policy)[0]
+
+        self.assertTrue(row["exists"])
+        self.assertEqual(row["status"], "available")
+        self.assertEqual(row["match_count"], 2)
+        self.assertEqual(
+            row["matched_paths"],
+            ["reports/bakeoff_alpha.json", "reports/bakeoff_beta.json"],
+        )
+        self.assertEqual(row["created_utc"], "2026-01-02T00:00:00Z")
+
+    def test_supporting_report_glob_without_matches_is_missing(self) -> None:
+        policy = {
+            "implementations": [],
+            "route_evidence_contracts": [],
+            "surfaces": [
+                {
+                    "id": "surface.glob",
+                    "report_outputs": ["reports/bakeoff_*.json"],
+                }
+            ],
+        }
+
+        row = registry.report_output_status(policy)[0]
+
+        self.assertFalse(row["exists"])
+        self.assertEqual(row["status"], "missing_supporting")
+        self.assertEqual(row["match_count"], 0)
+        self.assertEqual(row["matched_paths"], [])
+
+    def test_registered_duplicate_families_have_canonical_owners(self) -> None:
+        policy = json.loads(
+            (ROOT / "configs/project_manifest_registry.json").read_text(encoding="utf-8")
+        )
+
+        rows = registry.duplicate_family_report(registry.build_inventory(policy), policy)
+        unclassified = [
+            (row["root"], row["family"])
+            for row in rows
+            if not row["classified"]
+        ]
+
+        self.assertEqual(unclassified, [])
+        for row in rows:
+            classification = row["classification"]
+            self.assertTrue(classification["classification"])
+            self.assertTrue(classification["canonical_surface"])
+            self.assertTrue(classification["canonical_path"])
+            self.assertTrue(classification["promotion_role"])
+            self.assertTrue(classification["successor_policy"])
+
     def test_retained_non_routeable_implementation_does_not_authorize_report(self) -> None:
         self.write_json(
             "reports/gate.json",

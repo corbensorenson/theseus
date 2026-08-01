@@ -14,7 +14,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-import pretraining_architecture_freeze as freeze
+import pretraining_architecture_freeze as freeze  # noqa: E402
 
 
 def test_replacement_freeze_accepts_bound_first_campaign_dispositions() -> None:
@@ -23,6 +23,12 @@ def test_replacement_freeze_accepts_bound_first_campaign_dispositions() -> None:
     dispositions = freeze.architecture_dispositions(config)
 
     assert dispositions["required_count"] == dispositions["ready_count"]
+    reflexive_router = dispositions["rows"][
+        "planned.reflexive_router_integration_v1"
+    ]
+    assert reflexive_router["status"] == (
+        "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate"
+    )
     kerc = dispositions["rows"][
         "planned.kernel_english_hierarchical_residual_compiler_v1"
     ]

@@ -7,18 +7,21 @@ It does not authorize training. Current state is in
 
 ## Current Posture
 
-As of 2026-07-29:
+As of 2026-07-30:
 
 - the exact shared trunk is at step 11,416 and 87,441,996 optimizer positions;
 - model, AdamW, MLX RNG, cursor, and the 37-manifest prospective lineage are
   custody-green;
-- the operator hold is installed;
+- the transactional safety hold is installed;
 - the model is `NOT_EVALUATED`;
 - both matched dense controls are untrained;
 - the selected route is compiled FP32 MLX;
 - KERC/RDC and ANE are not campaign-one training paths;
-- the current pre-training architecture gate is not ready after legitimate
-  source changes.
+- the current independent readiness audit is GREEN after recomputing exact and
+  normalized prompt freshness against the consumed v8 packet;
+- the replacement freeze is RED only on its mandatory clean-source binding;
+- no 57M D2 result exists, and the current surface remains sealed pending a
+  separate machine-predicate one-shot evaluation controller.
 
 Therefore no long run should launch from the current source state.
 
@@ -29,17 +32,19 @@ The only valid sequence is:
 ```text
 documentation/source transaction committed
   -> source-bound architecture freeze replay
+  -> independently prove the D2 surface is fresh and private
   -> independent readiness audit
   -> exact replacement package
   -> roadmap pre-training gate passes
-  -> operator reviews evidence
-  -> operator explicitly removes hold
-  -> one bounded fresh-process segment
+  -> autonomous controller reacquires every machine predicate
+  -> controller leases the transactional hold for one fresh-process segment
   -> exact transactional checkpoint
-  -> review before another segment
+  -> controller restores the hold and reevaluates before another segment
 ```
 
-A GREEN report cannot remove the hold.
+A GREEN report cannot remove the hold. Only the registered autonomous
+controller can lease it for one transaction, and no user or operator approval
+is part of that decision.
 
 ## Invariants
 
@@ -59,8 +64,10 @@ Before every launch, verify:
    - current replacement package passes;
    - roadmap gate passes with `--require-pre-training-ready`;
    - candidate-specific lease is valid.
-4. **Operator authority**
-   - the runtime hold was explicitly removed for this campaign action;
+4. **Machine authority**
+   - the autonomous controller acquired an exclusive one-shot lease after
+     recomputing every launch predicate;
+   - the runtime hold is restored on every exit;
    - no inherited teacher, network, or remote-execution authority.
 5. **Data**
    - frozen admitted corpus identity matches;
@@ -70,7 +77,9 @@ Before every launch, verify:
    - teacher share and optimizer-sampling caps pass.
 6. **Evaluator**
    - functional freeze identity matches;
-   - consumed case count is still zero before final campaign evaluation;
+   - semantic case identity, not only the wrapper/freeze digest, has no match in
+     any prior consumption record;
+   - no unchanged deterministic generator/input pair is relabeled fresh;
    - forbidden-field runtime enforcement and independent integrity checks pass.
 7. **Resources**
    - disk reserve is derived from two complete measured checkpoint
@@ -96,11 +105,16 @@ Before every launch, verify:
 Run only after the documentation/source transaction is committed:
 
 ```bash
-python3 scripts/pretraining_architecture_freeze.py --execute-replays
+python3 scripts/pre_long_run_acceleration_residual_audit.py
 python3 scripts/pre_long_run_independent_readiness_audit.py
 python3 scripts/pre_long_run_replacement_freeze.py
 python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready
 ```
+
+The original `reports/pretraining_architecture_freeze_package.json` binds the
+historical step-3480 transaction and must not be regenerated against the
+evolved step-11416 plan. The three pre-long-run commands above are the current
+content-addressed readiness chain.
 
 Then verify the repository and hold state:
 
@@ -109,21 +123,27 @@ git status --short
 test -f runtime/control/neural_seed_yield_after_segment
 ```
 
-At this point the hold should still exist. A passing readiness package means
-`TRAINING_READY_BUT_HELD`.
+The independent audit is currently GREEN after recomputing the 160 current
+model-visible prompts against the content-addressed consumed v8 packet with
+zero exact or whitespace/case-normalized overlap. The replacement package
+still fails closed on `source_binding` because the maintenance tree is dirty.
+At this point the hold must still exist. A final package generated from a clean
+post-maintenance commit can mean `TRAINING_READY_BUT_HELD`; the autonomous
+controller, not Corben, decides whether the next one-shot lease is permitted.
 
-## Bounded Qualification
+## Transactional Qualification
 
-When the operator can dedicate the laptop and explicitly authorizes the next
-step, run one bounded campaign invocation rather than an unobserved open-ended
-process:
+When every machine predicate passes and no competing accelerator job is active,
+run the registered controller. It leases exactly one transaction, restores the
+hold on every exit, and requires no user or operator approval:
 
 ```bash
-python3 scripts/neural_seed_training_campaign.py --execute --max-segments 1
+python3 scripts/neural_seed_autonomous_launch_controller.py --execute
 ```
 
-This command is valid only after the registered hold-removal procedure and all
-current gates pass. Do not copy it into automation that bypasses those checks.
+Do not invoke the child training command directly. The controller owns the
+source binding, exclusive lease, checkpoint snapshot, rollback, lineage check,
+and hold restoration.
 
 After the segment:
 
@@ -131,19 +151,20 @@ After the segment:
 - rehash model, optimizer, RNG, cursor, and receipt;
 - verify the appended lineage manifest;
 - inspect host/swap/thermal/write evidence;
-- confirm the functional surface remains unconsumed;
+- confirm both exact contract and semantic case identities remain unconsumed;
 - restore or retain the hold before unrelated work.
 
 ## Full Campaign Order
 
-After the bounded qualification:
+After the transactional qualification:
 
 1. complete the modular shared-trunk candidate;
 2. train the dense-active-parameter control;
 3. train the dense-total-parameter control;
 4. verify matched raw data, compute, tuning, inference, verifier, and total
    system cost;
-5. consume the frozen 160-case private functional evaluation once;
+5. after an explicit evaluator-integrity repair, consume one independently
+   proven fresh private functional evaluation once;
 6. record model-only and assisted outcomes separately;
 7. make the architecture decision from paired utility and cost.
 

@@ -290,7 +290,7 @@
   },
   "required_artifacts": [
     "AGENTS.md",
-    "ROADMAP.md",
+    "roadmap.md",
     "docs/PROJECT_STATE.md",
     "configs/pretraining_architecture_freeze.json",
     "configs/pretraining_architecture_candidates.json",
@@ -454,6 +454,7 @@
   ],
   "required_ready_backlog_statuses": [
     "pretraining_wired_behavior_qualification_pending",
+    "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate",
     "implemented",
     "qualified",
     "falsified_pretraining",

@@ -10,15 +10,15 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-import pre_long_run_independent_readiness_audit as audit
-import moecot_language_arm_training as training
+import pre_long_run_independent_readiness_audit as audit  # noqa: E402
+import moecot_language_arm_training as training  # noqa: E402
 
 
 def test_independent_audit_config_covers_all_required_boundaries() -> None:
     config = json.loads(
-        (
-            ROOT / "configs/pre_long_run_independent_readiness_audit.json"
-        ).read_text(encoding="utf-8")
+        (ROOT / "configs/pre_long_run_independent_readiness_audit.json").read_text(
+            encoding="utf-8"
+        )
     )
     assert set(config["required_audits"]) == {
         "evidence_integrity",
@@ -26,6 +26,7 @@ def test_independent_audit_config_covers_all_required_boundaries() -> None:
         "replay_integrity",
         "resource_integrity",
         "evaluation_nonconsumption",
+        "evaluation_surface_freshness",
         "negative_evidence_scope",
         "claim_boundary",
         "execution_hold",
@@ -34,7 +35,9 @@ def test_independent_audit_config_covers_all_required_boundaries() -> None:
     assert config["expected"]["prospective_anchor_step"] == 9048
 
 
-def test_current_independent_audit_is_green_without_authorizing_training() -> None:
+def test_current_independent_audit_recomputes_fresh_surface_without_authorizing_it() -> (
+    None
+):
     report = audit.execute(
         ROOT / "configs/pre_long_run_independent_readiness_audit.json",
         publish_report=False,
@@ -42,7 +45,8 @@ def test_current_independent_audit_is_green_without_authorizing_training() -> No
     assert report["trigger_state"] == "GREEN"
     assert report["failed_audits"] == []
     assert report["missing_audits"] == []
-    assert all(row["passed"] for row in report["audits"].values())
+    assert report["audits"]["evaluation_nonconsumption"]["passed"] is True
+    assert report["audits"]["evaluation_surface_freshness"]["passed"] is True
     assert report["audits"]["lineage_custody"]["lineage"]["manifest_count"] == 37
     assert (
         report["audits"]["lineage_custody"]["lineage"][
@@ -51,20 +55,32 @@ def test_current_independent_audit_is_green_without_authorizing_training() -> No
         is False
     )
     assert (
-        report["audits"]["evaluation_nonconsumption"][
-            "matching_consumption_rows"
-        ]
-        == []
+        report["audits"]["evaluation_nonconsumption"]["matching_consumption_rows"] == []
     )
-    assert report["audits"]["resource_integrity"]["fixed_available_memory_floor_mib"] == 0
+    freshness = report["audits"]["evaluation_surface_freshness"]
+    assert freshness["state"] == "VALID_FRESH_PRIVATE_SURFACE"
+    recomputed = freshness["independent_recomputation"]
+    assert recomputed["passed"] is True
+    assert recomputed["current"]["contract_sha256"] == (
+        "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676"
+    )
+    assert recomputed["current"]["consumption_registry_lines"] == []
+    assert recomputed["exact_prompt_overlaps"] == []
+    assert recomputed["normalized_prompt_overlaps"] == []
+    assert recomputed["historical_packets"][0]["contract_sha256"] == (
+        "d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792"
+    )
+    assert recomputed["historical_packets"][0]["consumption_registry_lines"] != []
+    assert freshness["evaluation_authorized"] is False
+    assert (
+        report["audits"]["resource_integrity"]["fixed_available_memory_floor_mib"] == 0
+    )
     assert report["long_training_authorized"] is False
 
 
 def test_exact_step_11416_plan_migration_is_accepted_without_state_reset() -> None:
     config_path = ROOT / "configs/moecot_language_arm_training.json"
-    config = training.bind_scale_preregistration(
-        training.read_json(config_path)
-    )
+    config = training.bind_scale_preregistration(training.read_json(config_path))
     plan = training.build_plan(config, config_path=config_path)
     receipt = training.read_json(
         ROOT
@@ -72,15 +88,13 @@ def test_exact_step_11416_plan_migration_is_accepted_without_state_reset() -> No
         / "shared_trunk/training_receipt.json"
     )
     target = plan["targets"][training.SHARED_TRUNK_ID]
-    migration = training.accepted_plan_identity_migration(
-        receipt, plan, target
-    )
+    migration = training.accepted_plan_identity_migration(receipt, plan, target)
     assert plan["plan_sha256"] == (
-        "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d"
+        "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e"
     )
     assert migration is not None
     assert migration["migration_id"] == (
-        "shared_trunk_step11416_finite_candidate_and_guard_closure_v1"
+        "shared_trunk_step11416_committed_plan_digest_rebind_v1"
     )
     assert migration["legacy_optimizer_steps"] == 11416
     assert migration["legacy_optimizer_positions"] == 87441996
@@ -100,6 +114,31 @@ def test_consumption_matcher_detects_current_identity(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     matches = audit.matching_consumption_rows(registry, freeze, "freeze")
+    assert len(matches) == 1
+    assert matches[0]["line"] == 1
+
+
+def test_consumption_matcher_detects_equivalent_consumed_contract(
+    tmp_path: Path,
+) -> None:
+    freeze = {
+        "candidate_id": "new-candidate",
+        "candidate_packet_sha256": "new-packet",
+        "case_contract_sha256": "new-cases",
+    }
+    registry = tmp_path / "registry.jsonl"
+    registry.write_text(
+        json.dumps({"identity": {"case_contract_sha256": "old-cases"}}) + "\n",
+        encoding="utf-8",
+    )
+
+    matches = audit.matching_consumption_rows(
+        registry,
+        freeze,
+        "new-freeze",
+        ["old-cases"],
+    )
+
     assert len(matches) == 1
     assert matches[0]["line"] == 1
 
@@ -128,9 +167,7 @@ def test_lineage_recomputation_rejects_artifact_tampering(
             }
         },
     }
-    (segment / "manifest.json").write_text(
-        json.dumps(manifest), encoding="utf-8"
-    )
+    (segment / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     result = audit.recompute_lineage(
         lineage,
         expected_count=1,
