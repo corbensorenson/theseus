@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "f4a364c146a85e035defc2b924137a32b8ea10b0eac7e5282e6e8da245f619e6",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 54.938,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-ibg29a5s/source/typing_extensions_677_parent/p2a_hidden_test.py\", line 24, in <module>\n    assert Total.__optional_keys__ == frozenset()\nAssertionError\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T00:08:54.151926Z",
+  "evaluator_sha256": "18ae96d3ed27e4a6bf6ddbd9d0ae9d337b2e797d7943b99df7c93d76a8f32059",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 155.293,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "f4a364c146a85e035defc2b924137a32b8ea10b0eac7e5282e6e8da245f619e6",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 50.065,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "32034403707630f9d1432e5074510dff8667f9a96ea4429c714daeb115731a12",
+    "task_sha256": "7a1ec46a08576559dfd91553a301405dbf0223fd023ed8c3b682b4c61ce236a4",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "7a1ec46a08576559dfd91553a301405dbf0223fd023ed8c3b682b4c61ce236a4",
+  "trigger_state": "GREEN"
+}

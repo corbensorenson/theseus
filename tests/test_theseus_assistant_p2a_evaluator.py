@@ -23,6 +23,12 @@ def write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     archive = tmp_path / "source.tar"
     with tarfile.open(archive, "w") as handle:
         handle.add(source / "example.py", arcname="example.py")
+    target_source = tmp_path / "target_source"
+    target_source.mkdir()
+    (target_source / "example.py").write_text("def value():\n    return 2\n", encoding="utf-8")
+    target_archive = tmp_path / "target.tar"
+    with tarfile.open(target_archive, "w") as handle:
+        handle.add(target_source / "example.py", arcname="example.py")
     task = {
         "policy": "project_theseus_p2a_licensed_task_v1",
         "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
@@ -56,6 +62,9 @@ def write_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "hidden_test_files": [
             {"source": str(hidden), "sha256": p2a.sha256_file(hidden), "destination": "hidden_test.py"}
         ],
+        "target_archive": str(target_archive),
+        "target_archive_sha256": p2a.sha256_file(target_archive),
+        "target_must_pass": True,
         "hidden_verifier": {"command": ["python3", "hidden_test.py"], "timeout_seconds": 10},
     }
     evaluator_path = tmp_path / "evaluator.json"
@@ -70,6 +79,7 @@ def test_evaluator_audit_recomputes_failing_baseline(tmp_path: Path) -> None:
 
     assert report["trigger_state"] == "GREEN"
     assert report["baseline_verification"]["passed"] is False
+    assert report["target_verification"]["passed"] is True
     assert report["route_labels_opened"] == 0
 
 

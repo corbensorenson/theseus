@@ -217,7 +217,7 @@ mechanism. P2-001 may not be replayed for fresh credit.
 
 #### P2A — Establish an adequate autonomous coding instrument
 
-State: `IMPLEMENTED_AUDIT_GREEN_AWAITING_LICENSED_TASK`.
+State: `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN`.
 
 P2-001 ended an exact instrument version; it did not end the fixed-model
 strategy. P2A is now implemented as a prospectively named successor instrument
@@ -255,8 +255,10 @@ line-addressed `REPLACE` operations, bounded task-defined read/search context,
 one visible-verifier feedback turn, and a separate route-blind evaluator that
 recomputes candidate seals, effects, hidden correctness, and rollback. Its
 mechanics suite and frozen-instrument audit are GREEN. This does not establish
-empirical adequacy: the next step is to seal a licensed online task and reach
-the independent evaluator.
+empirical adequacy. The first task is now sealed from PSF-licensed
+`python/typing_extensions` PR 677: the exact parent fails evaluator-only
+upstream assertions and the exact upstream target passes. Candidate generation
+has not opened; the next step is the source-bound P2A run and blind evaluation.
 
 ##### Autonomous task-source contract
 
@@ -412,7 +414,7 @@ Maintenance serves P or N and does not become another research program:
 | Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated learned-generation modes use the exact offline TMax snapshot; the status shim remains a maintenance-compatible mode |
 | Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
-| Autonomous instrument successor | `P2A_IMPLEMENTED_AWAITING_LICENSED_TASK` | Persistent exact TMax, concise atomic typed edits, one repair, and route-blind hidden evaluation are audit-GREEN; empirical adequacy still requires one sealed online task |
+| Autonomous instrument successor | `P2A_INSTRUMENT_AND_TASK_SEALED_READY_TO_RUN` | Persistent exact TMax and the PSF-licensed typing-qualifier task are audit-GREEN and frozen before candidate generation; empirical adequacy awaits the run |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 produced zero independently evaluable candidates; P3 will compare the best qualified local model and a separately governed Luna-xhigh reference, each direct and integrated |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
@@ -433,10 +435,9 @@ Maintenance serves P or N and does not become another research program:
    contract; the binding changes no book support state.
 3. Preserve the audit-GREEN P2A instrument as a source-bound transaction; do
    not tune it after task acquisition begins.
-4. Build and seal the first license-compatible online task pool under the
-   autonomous task-source contract. Do not replay P2-001 or any consumed
-   surface.
-5. Run P2A automatically after its source and task packets pass. If it reaches
+4. Preserve the sealed PSF-licensed `typing_extensions` parent, target,
+   evaluator, and pool bindings; do not tune them after candidate generation.
+5. Run P2A automatically now that its source and task packets pass. If it reaches
    independent correctness evaluation, open P3; if it fails, qualify one
    stronger local model under a new denominator.
 6. Before P3, select the best adequate installed local model on the sealed

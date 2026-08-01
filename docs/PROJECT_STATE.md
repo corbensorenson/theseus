@@ -18,8 +18,8 @@ infrastructure, not the goal by themselves. P1 now proves that the exact local
 model traverses the canonical direct and integrated routes, but P2-001 and its
 only repair produced no applicable candidate under the 512-token protocol.
 Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. The next
-step is to bind one autonomously acquired, license-compatible,
-machine-verifiable task to the implemented P2A instrument. In parallel, the neural campaign remains held on clean
+step is to run the source-bound P2A instrument on the now-sealed,
+PSF-licensed `typing_extensions` task. In parallel, the neural campaign remains held on clean
 source binding and migration from manual holds to bounded machine-readable
 launch and one-shot evaluation authority. No forward phase depends on Corben
 supplying tasks, labels, approvals, or timing.
@@ -74,7 +74,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated modes invoke the exact offline TMax snapshot; the deterministic status path remains for maintenance compatibility |
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
-| P2A successor instrument | `IMPLEMENTED_AUDIT_GREEN_AWAITING_TASK` | One persistent exact-TMax load, a bound 1,536-token decoder, at most two calls per arm, atomic typed edits, visible-verifier repair, route-blind hidden evaluation, and rollback recomputation pass the mechanics suite; empirical adequacy is not yet established |
+| P2A successor instrument | `INSTRUMENT_AND_TASK_SEALED_READY_TO_RUN` | One persistent exact-TMax load, the 1,536-token decoder, atomic typed edits, repair, blind evaluation, and the PSF-licensed typing-qualifier parent/target task all pass pre-generation audits; empirical adequacy awaits execution |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -431,8 +431,8 @@ In order:
    binding changes no book support state.
 3. Keep the audit-GREEN P2A implementation frozen while its source transaction
    is bound; do not tune it after the online task pool is opened.
-4. Build a sealed license-compatible online task pool and run P2A
-   automatically. Open P3 on adequacy; otherwise qualify one stronger local
+4. Run the already sealed license-compatible P2A task automatically. Open P3
+   on adequacy; otherwise qualify one stronger local
    model under a new denominator. Do not replay P2-001.
 5. For P3, freeze the best adequate installed local model and a separately
    governed Luna-xhigh reference adapter. Run each model direct and integrated

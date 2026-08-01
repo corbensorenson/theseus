@@ -65,10 +65,16 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
             faults.append(f"hidden_test_{index}_digest_mismatch")
         if p2a.unsafe_relative_path(destination):
             faults.append(f"hidden_test_{index}_destination_unsafe")
+    target_archive = p2a.resolve(str(value.get("target_archive") or ""))
+    if value.get("target_must_pass") is True and (
+        p2a.sha256_file(target_archive) != str(value.get("target_archive_sha256") or "")
+    ):
+        faults.append("target_archive_digest_mismatch")
     command = p2a.strings(p2a.mapping(value.get("hidden_verifier")).get("command"))
     if not command or command[0] not in {"python3", "pytest"}:
         faults.append("hidden_verifier_command_invalid")
     baseline: dict[str, Any] = {}
+    target: dict[str, Any] = {}
     if not faults:
         task = p2a.read_json(task_path)
         try:
@@ -77,6 +83,12 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
                 p2a.extract_source_archive(p2a.resolve(str(task.get("source_archive") or "")), root)
                 overlay_hidden_tests(value, root)
                 baseline = run_hidden_verifier(value, root)
+            if value.get("target_must_pass") is True:
+                with tempfile.TemporaryDirectory(prefix="theseus-p2a-evaluator-target-") as tmp:
+                    root = Path(tmp) / "source"
+                    p2a.extract_source_archive(target_archive, root)
+                    overlay_hidden_tests(value, root)
+                    target = run_hidden_verifier(value, root)
         except (OSError, EvaluationFault, p2a.InstrumentFault) as exc:
             faults.append(f"baseline_audit_fault:{type(exc).__name__}")
     if value.get("baseline_must_fail") is not True or baseline.get("passed") is not False:
@@ -85,6 +97,8 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
     observed_text = str(baseline.get("stdout_tail") or "") + str(baseline.get("stderr_tail") or "")
     if any(marker not in observed_text for marker in markers):
         faults.append("baseline_failure_markers_missing")
+    if value.get("target_must_pass") is not True or target.get("passed") is not True:
+        faults.append("target_does_not_pass_as_required")
     return {
         "policy": "project_theseus_p2a_evaluator_audit_v1",
         "created_utc": now(),
@@ -94,7 +108,9 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
         "task_manifest_sha256": p2a.sha256_file(task_path),
         "task_audit": task_audit,
         "baseline_verification": baseline,
+        "target_verification": target,
         "route_labels_opened": 0,
+        "target_artifacts_opened_by_evaluator_only": 1 if target else 0,
         "counters": p2a.zero_counters(),
         "runtime_ms": round((time.perf_counter() - started) * 1000, 3),
     }

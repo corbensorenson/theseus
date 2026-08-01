@@ -1,0 +1,63 @@
+{
+  "policy": "project_theseus_p2a_licensed_task_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "opaque_task_id": "p2a-typing-qualifier-inheritance-001",
+  "partition": "development_instrument_adequacy",
+  "family": "bounded_python_correctness_repair",
+  "natural_request": "Fix TypedDict key qualifier inheritance when a subclass or a later base redeclares the same key. The final __required_keys__ and __optional_keys__ sets must reflect the winning declaration: a total redeclaration must replace an inherited optional status, Required must replace NotRequired, NotRequired must replace Required, and the last base must win in multiple inheritance. Preserve the existing compatibility branches and read-only/mutable-key behavior. Modify only src/typing_extensions.py.",
+  "source_archive": "tests/fixtures/theseus_assistant_p2a_online/typing_extensions_677_parent.tar.gz",
+  "source_archive_sha256": "32034403707630f9d1432e5074510dff8667f9a96ea4429c714daeb115731a12",
+  "source_provenance": {
+    "repository": "python/typing_extensions",
+    "url": "https://github.com/python/typing_extensions",
+    "revision": "9215c953610ca4e4ce7ae840a0a804505da70a05",
+    "retrieved_utc": "2026-08-01T00:05:00Z",
+    "license_spdx": "PSF-2.0",
+    "license_path": "LICENSE",
+    "upstream_request_url": "https://github.com/python/typing_extensions/pull/677",
+    "upstream_request_title": "Fix TypedDict qualifier inheritance with same name",
+    "upstream_merged_utc": "2026-05-01T03:16:20Z"
+  },
+  "contamination_screen": {
+    "public_benchmark": false,
+    "previous_theseus_surface": false,
+    "task_selected_before_candidate_generation": true,
+    "later_patch_or_tests_candidate_visible": false,
+    "development_task_eligible_for_training": false,
+    "development_task_eligible_for_D1_or_D2": false
+  },
+  "allowed_effect_paths": [
+    "typing_extensions_677_parent/src/typing_extensions.py"
+  ],
+  "candidate_visible_context": {
+    "searches": [
+      {
+        "literal": "__required_keys__",
+        "paths": [
+          "typing_extensions_677_parent/src/typing_extensions.py"
+        ]
+      }
+    ],
+    "reads": [
+      {
+        "path": "typing_extensions_677_parent/src/typing_extensions.py",
+        "start_line": 1165,
+        "end_line": 1238
+      }
+    ],
+    "maximum_total_characters": 12000
+  },
+  "visible_verifier": {
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "typing_extensions_677_parent/src/typing_extensions.py"
+    ],
+    "timeout_seconds": 30,
+    "answer_specific": false
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "maximum_inference": "This task can establish P2A instrument adequacy only; it cannot support a Theseus subsystem, model, D1, D2, or general coding claim."
+}

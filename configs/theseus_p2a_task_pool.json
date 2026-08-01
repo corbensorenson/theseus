@@ -1,0 +1,39 @@
+{
+  "policy": "project_theseus_p2a_autonomous_task_pool_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "selection_policy": {
+    "source": "public GitHub pull-request metadata and immutable revisions",
+    "allowlisted_languages": [
+      "Python",
+      "JavaScript",
+      "TypeScript",
+      "HTML",
+      "CSS",
+      "Rust"
+    ],
+    "license_required": true,
+    "baseline_failure_and_target_pass_required": true,
+    "machine_verifier_required": true,
+    "public_benchmarks_excluded": true,
+    "consumed_theseus_tasks_excluded": true,
+    "model_or_wrapper_outcome_based_selection_forbidden": true,
+    "sampling_order": "ascending opaque_task_id after deterministic eligibility audit"
+  },
+  "p2a_instrument_adequacy_task": "configs/theseus_p2a_task_typing_extensions_677.json",
+  "p2a_instrument_adequacy_task_sha256": "7a1ec46a08576559dfd91553a301405dbf0223fd023ed8c3b682b4c61ce236a4",
+  "p2a_evaluator": "configs/theseus_p2a_evaluator_typing_extensions_677.json",
+  "p2a_evaluator_sha256": "18ae96d3ed27e4a6bf6ddbd9d0ae9d337b2e797d7943b99df7c93d76a8f32059",
+  "p2a_evaluator_audit": "reports/theseus_p2a_typing_extensions_677_evaluator_audit.json",
+  "p2a_evaluator_audit_sha256": "840cfab885f74c22f971dd2e8ee0090e6c617229714fd844ffe1d298ad5f9a83",
+  "task_count": 1,
+  "candidate_generation_opened": false,
+  "pool_expansion_rule": "P3 receives ten newly sealed source-disjoint tasks after P2A adequacy; this P2A task is never reused for P3, D1, D2, calibration, or training.",
+  "counters": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  }
+}

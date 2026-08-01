@@ -1,0 +1,38 @@
+{
+  "policy": "project_theseus_p2a_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "task_manifest": "configs/theseus_p2a_task_typing_extensions_677.json",
+  "task_manifest_sha256": "7a1ec46a08576559dfd91553a301405dbf0223fd023ed8c3b682b4c61ce236a4",
+  "target_provenance": {
+    "upstream_pull_request": "https://github.com/python/typing_extensions/pull/677",
+    "head_revision": "bbf9dffab5669447c6d8261c4e6b988281197b55",
+    "merge_revision": "364c9e07912433c99df701ae8279ad3b32096234",
+    "target_patch_candidate_visible": false,
+    "target_revision_candidate_visible": false
+  },
+  "target_archive": "tests/fixtures/theseus_assistant_p2a_online/typing_extensions_677_target.tar.gz",
+  "target_archive_sha256": "ab9dc7b42de5cd487646e5f795f5bc177f5cd27be23d2979c2ce7057f9327bfc",
+  "target_must_pass": true,
+  "baseline_must_fail": true,
+  "baseline_failure_markers": [
+    "AssertionError"
+  ],
+  "hidden_test_files": [
+    {
+      "source": "tests/fixtures/theseus_assistant_p2a_online/typing_extensions_677_hidden_test.py",
+      "sha256": "e19af1318db9e52114dd90819094c709dbd84a28a106f6135ea83488eba4852a",
+      "destination": "typing_extensions_677_parent/p2a_hidden_test.py",
+      "provenance": "Assertions adapted from the evaluator-only tests added by upstream PR 677."
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "typing_extensions_677_parent/p2a_hidden_test.py"
+    ],
+    "timeout_seconds": 30
+  },
+  "route_labels_visible_during_scoring": false,
+  "candidate_authored_integrity_flags_trusted": false,
+  "maximum_inference": "Independent correctness on one licensed development task; no subsystem, model, D1, D2, or general coding claim."
+}
