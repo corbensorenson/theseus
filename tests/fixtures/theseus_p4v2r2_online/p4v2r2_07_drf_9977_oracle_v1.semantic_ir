@@ -1,0 +1,13 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 07446354c6679b244f221576bd2c83ef5467534b5a6da5b18dc0faa3a62458fb
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE rest_framework/schemas/openapi.py N-B5B20EEE96177C83 6adb8eddacb075a835706c5188014a49aeb3eb63b19231b52d8edb0ec032a675
+<<<
+def _map_min_max(self, field, content):
+        if field.max_value is not None:
+            content['maximum'] = field.max_value
+        if field.min_value is not None:
+            content['minimum'] = field.min_value
+>>>
+LOSS NONE
+END

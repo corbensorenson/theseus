@@ -1,0 +1,48 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE ead27d44bbf793fee300f2e885fc18abcc90ff07e85f3e6a20667c0177f8333d
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2,O3
+OP REPLACE
+PATH pylsp/plugins/definition.py
+NODE N-7B397BD278F7708F
+NODE_SHA 1639fbcc1a246eae04951fe794e2ccdd688cfea5c1ea884418335fca45bffffa
+<<<
+def pylsp_definitions(
+    config: Config, document: Document, position: dict[str, int]
+) -> list[dict[str, Any]]:
+    settings = config.plugin_settings("jedi_definition")
+    code_position = _utils.position_to_jedi_linecolumn(document, position)
+    script = document.jedi_script(use_document_path=True)
+    auto_import_modules = jedi.settings.auto_import_modules
+
+    try:
+        jedi.settings.auto_import_modules = []
+        definitions = script.goto(
+            follow_imports=settings.get("follow_imports", True),
+            follow_builtin_imports=settings.get("follow_builtin_imports", True),
+            **code_position,
+        )
+        definitions = [_resolve_definition(d, script, settings) for d in definitions]
+    finally:
+        jedi.settings.auto_import_modules = auto_import_modules
+
+    follow_builtin_defns = settings.get("follow_builtin_definitions", True)
+    return [
+        {
+            "uri": uris.uri_with(document.uri, path=str(d.module_path)),
+            "range": {
+                "start": {"line": d.line - 1, "character": d.column},
+                "end": {"line": d.line - 1, "character": d.column + len(d.name)},
+            },
+        }
+        for d in definitions
+        if d.is_definition()
+        and d.line is not None
+        and d.column is not None
+        and (follow_builtin_defns or _not_internal_definition(d))
+    ]
+>>>
+END_UNIT
+LOSS NONE
+END

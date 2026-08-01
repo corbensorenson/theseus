@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 60.026,
+    "stderr_tail": "P4V2R2_FAIL_python_lsp_server\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j30j42m6/source/theseus_p4v2r2_hidden_test.py\", line 409, in <module>\n    CASES[selected]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j30j42m6/source/theseus_p4v2r2_hidden_test.py\", line 286, in python_lsp_server\n    assert definitions(config, document, {\"line\": 0, \"character\": 0}) == []\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"pylsp/plugins/definition.py\", line 69, in pylsp_definitions\n    \"start\": {\"line\": d.line - 1, \"character\": d.column},\n                      ~~~~~~~^~~\nTypeError: unsupported operand type(s) for -: 'NoneType' and 'int'\n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T18:12:24.988338Z",
+  "evaluator_sha256": "d36faec40e60fd2c6d3e7f4e977d654100cc9af5d926460808aa9f3456404af3",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 505.012,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 59.733,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "f92439d8b9c0d66438427b0c99085e5e0a6b3af9b76c1150fe25fb130c467f06",
+    "task_sha256": "f78fc7d3c6794ed70705e08e62eb8ba76933b46812be8e2d7130cb2d2986be5a",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "f78fc7d3c6794ed70705e08e62eb8ba76933b46812be8e2d7130cb2d2986be5a",
+  "trigger_state": "GREEN"
+}

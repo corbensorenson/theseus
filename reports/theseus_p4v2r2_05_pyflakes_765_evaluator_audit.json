@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 84.524,
+    "stderr_tail": "s-p4-archive-audit-h4edyv4j/source/theseus_p4v2r2_hidden_test.py\", line 207, in pyflakes\n    messages = module.Checker(ast.parse(code), filename=\"p4v2r2.py\").messages\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 774, in __init__\n    self._run_deferred()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 801, in _run_deferred\n    handler()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1954, in runFunction\n    self.handleChildren(node, omit=['decorator_list', 'returns'])\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1216, in handleChildren\n    self.handleNode(node, tree)\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1255, in handleNode\n    handler(node)\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1216, in handleChildren\n    self.handleNode(node, tree)\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1255, in handleNode\n    handler(node)\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1853, in NAME\n    self.handleNodeStore(node)\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-h4edyv4j/source/pyflakes/checker.py\", line 1141, in handleNodeStore\n    if used and used[0] is self.scope and name not in self.scope.globals:\n                ~~~~^^^\nTypeError: 'bool' object is not subscriptable\n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T18:12:19.641519Z",
+  "evaluator_sha256": "b96c75b56e8f4a878a078363497d8247fda120dd4c5efc75658128b57796454f",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 506.501,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 80.32,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "7791ef42c65452d5a3cd0eab619e095b1278b1328d0386d28e44c64cb2c96ea3",
+    "task_sha256": "cc945ff3890add83051872622923cafd70fdc8d951e2a99152f13886862de0e0",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "cc945ff3890add83051872622923cafd70fdc8d951e2a99152f13886862de0e0",
+  "trigger_state": "GREEN"
+}

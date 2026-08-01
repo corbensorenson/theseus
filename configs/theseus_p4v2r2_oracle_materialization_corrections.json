@@ -1,0 +1,91 @@
+{
+  "policy": "project_theseus_p4v2r2_oracle_materialization_correction_v1",
+  "state": "EVALUATOR_MECHANICS_REPAIR_BEFORE_CANDIDATE_GENERATION",
+  "source_registry": "configs/theseus_p4v2r2_task_sources.json",
+  "source_registry_sha256": "7264e2a040092de68e98a8a91b97ec38ca9a04a442f80a3c0551e767b0c68915",
+  "discovery": "Post-acquisition oracle materialization and evaluator audit found bounded metadata/mechanics defects: Textual's insertion anchor was absent, U1 was not dependency-closed, its multi-action line edits require bottom-up application, and its inserted classmethod requires its decorator; Scrapy's copy alias between the new methods was omitted; Pyflakes' generic marker fell outside the evaluator's retained traceback tail. Static source, dependency, and retained evaluator inspection identified the exact non-membership-bearing repairs below.",
+  "corrections": [
+    {
+      "stem": "p4v2r2_03_textual_6592",
+      "unit_id": "U2",
+      "field": "parent_selector",
+      "original": {
+        "node_type": "FunctionDef",
+        "qualified_name": "XTermParser.disable_debug_log"
+      },
+      "replacement": {
+        "node_type": "FunctionDef",
+        "qualified_name": "XTermParser.parse"
+      },
+      "operation_unchanged": "INSERT_AFTER"
+    },
+    {
+      "stem": "p4v2r2_03_textual_6592",
+      "unit_id": "U1",
+      "field": "obligation_ids",
+      "original": ["O1"],
+      "replacement": ["O1", "O2"],
+      "dependency_closed": true
+    },
+    {
+      "stem": "p4v2r2_03_textual_6592",
+      "unit_id": "*",
+      "field": "unit_order",
+      "original": ["U1", "U2", "U3", "U4"],
+      "replacement": ["U4", "U3", "U2", "U1"],
+      "reason": "Apply original line ranges bottom-up so the U2 insertion does not shift the later U3 and U4 replacement ranges."
+    },
+    {
+      "stem": "p4v2r2_03_textual_6592",
+      "unit_id": "U2",
+      "field": "include_target_decorators",
+      "original": false,
+      "replacement": true,
+      "reason": "The inserted _parse_colon_codepoints FunctionDef is newly introduced and must carry its @classmethod decorator."
+    },
+    {
+      "stem": "p4v2r2_04_scrapy_7783",
+      "unit_id": "U1",
+      "field": "target_selectors",
+      "original": [
+        {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__copy__"},
+        {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__ior__"}
+      ],
+      "replacement": [
+        {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__copy__"},
+        {"node_type": "Assign", "qualified_name": "CaseInsensitiveDict", "exact": "copy = __copy__"},
+        {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__ior__"}
+      ],
+      "reason": "Preserve the exact public .copy alias introduced between the two target methods."
+    },
+    {
+      "stem": "p4v2r2_05_pyflakes_765",
+      "unit_id": "*",
+      "field": "baseline_failure_markers",
+      "original": ["P4V2R2_FAIL_pyflakes"],
+      "replacement": ["TypeError: 'bool' object is not subscriptable"],
+      "reason": "The independent parent failure traceback exceeds the retained tail and truncates the generic prefix marker; bind the exact terminal parent failure instead."
+    }
+  ],
+  "invariants": {
+    "task_membership_changed": false,
+    "natural_request_changed": false,
+    "obligation_text_changed": false,
+    "obligation_dependency_changed": false,
+    "target_selector_changed": false,
+    "target_source_changed": false,
+    "evaluator_outcome_used_for_selection": false
+  },
+  "boundaries": {
+    "candidate_generation_opened": false,
+    "local_model_calls": 0,
+    "hosted_model_calls": 0,
+    "teacher_calls": 0,
+    "deterministic_request_compiler_calls": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "training_rows_written": 0,
+    "user_gate": "none"
+  },
+  "maximum_inference": "These corrections repair evaluator-oracle anchoring, dependency closure, line-safe action order, decorator/alias completeness, and retained parent-failure identification after source acquisition and before any candidate/control call. They do not alter task membership, requests, obligation text/dependencies, target code, pass/fail requirements, mechanism evidence, D1, D2, serving, training, or ASI Stack support."
+}

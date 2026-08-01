@@ -1,0 +1,23 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE ed17dca071c655360814912880e060d8a302b83418c575b451e5a74e6debc15d
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2,O3
+OP INSERT_AFTER
+PATH scrapy/utils/datatypes.py
+NODE N-8ED2EE7599447FC3
+NODE_SHA ce5c230b79c66e3bb3f2039e177f4f9a68bc54ed19c579ef2a40cd13f74f0485
+<<<
+    def __copy__(self) -> Self:
+        new = self.__class__()
+        new.data = self.data.copy()
+        new._keys = self._keys.copy()
+        return new
+    copy = __copy__
+    def __ior__(self, other: Any) -> Self:  # type: ignore[override,misc]
+        self.update(other)
+        return self
+>>>
+END_UNIT
+LOSS NONE
+END

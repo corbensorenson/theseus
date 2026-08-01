@@ -1,0 +1,80 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 8d67a6942c2691638fcdb263f3fb49397ae05e9892b6300b1759cf43c5103e7f
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE pycodestyle.py N-D92063DE5841C2E3 098c80a07b13bb85a5017b0b7488bf6ae9ff59760225cc2c6817b526e95ce325
+<<<
+def whitespace_around_named_parameter_equals(logical_line, tokens):
+    r"""Don't use spaces around the '=' sign in function arguments.
+
+    Don't use spaces around the '=' sign when used to indicate a
+    keyword argument or a default parameter value, except when
+    using a type annotation.
+
+    Okay: def complex(real, imag=0.0):
+    Okay: return magic(r=real, i=imag)
+    Okay: boolean(a == b)
+    Okay: boolean(a != b)
+    Okay: boolean(a <= b)
+    Okay: boolean(a >= b)
+    Okay: def foo(arg: int = 42):
+    Okay: async def foo(arg: int = 42):
+
+    E251: def complex(real, imag = 0.0):
+    E251: return magic(r = real, i = imag)
+    E252: def complex(real, image: float=0.0):
+    """
+    paren_stack = []
+    no_space = False
+    require_space = False
+    prev_end = None
+    annotated_func_arg = False
+    in_def = bool(STARTSWITH_DEF_REGEX.match(logical_line))
+    in_generic = bool(STARTSWITH_GENERIC_REGEX.match(logical_line))
+
+    message = "E251 unexpected spaces around keyword / parameter equals"
+    missing_message = "E252 missing whitespace around parameter equals"
+
+    for token_type, text, start, end, line in tokens:
+        if token_type == tokenize.NL:
+            continue
+        if no_space:
+            no_space = False
+            if start != prev_end:
+                yield (prev_end, message)
+        if require_space:
+            require_space = False
+            if start == prev_end:
+                yield (prev_end, missing_message)
+        if token_type == tokenize.OP:
+            if text in '([':
+                paren_stack.append(text)
+            elif text in ')]' and paren_stack:
+                paren_stack.pop()
+            # def f(arg: tp = default): ...
+            elif text == ':' and in_def and paren_stack == ['(']:
+                annotated_func_arg = True
+            elif len(paren_stack) == 1 and text == ',':
+                annotated_func_arg = False
+            elif paren_stack and text == '=':
+                if (
+                        # PEP 696 defaults always use spaced-style `=`
+                        # type A[T = default] = ...
+                        # def f[T = default](): ...
+                        # class C[T = default](): ...
+                        (in_generic and paren_stack == ['[']) or
+                        (annotated_func_arg and paren_stack == ['('])
+                ):
+                    require_space = True
+                    if start == prev_end:
+                        yield (prev_end, missing_message)
+                else:
+                    no_space = True
+                    if start != prev_end:
+                        yield (prev_end, message)
+            if not paren_stack:
+                annotated_func_arg = False
+
+        prev_end = end
+>>>
+LOSS NONE
+END

@@ -1,0 +1,84 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE cd3cbc2d285aa3f67fb194b7592f9483b1a189607a38167296609bec93c6cca5
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2,O3
+OP REPLACE
+PATH src/jinja2/environment.py
+NODE N-72BCBDA035324DFA
+NODE_SHA 4c7301fc52e2f46c8c9ebfa3889ce137cc3a52e2d7a67c3aa55dfa57569184fa
+<<<
+def overlay(
+        self,
+        block_start_string: str = missing,
+        block_end_string: str = missing,
+        variable_start_string: str = missing,
+        variable_end_string: str = missing,
+        comment_start_string: str = missing,
+        comment_end_string: str = missing,
+        line_statement_prefix: t.Optional[str] = missing,
+        line_comment_prefix: t.Optional[str] = missing,
+        trim_blocks: bool = missing,
+        lstrip_blocks: bool = missing,
+        newline_sequence: "te.Literal['\\n', '\\r\\n', '\\r']" = missing,
+        keep_trailing_newline: bool = missing,
+        extensions: t.Sequence[t.Union[str, t.Type["Extension"]]] = missing,
+        optimized: bool = missing,
+        undefined: t.Type[Undefined] = missing,
+        finalize: t.Optional[t.Callable[..., t.Any]] = missing,
+        autoescape: t.Union[bool, t.Callable[[t.Optional[str]], bool]] = missing,
+        loader: t.Optional["BaseLoader"] = missing,
+        cache_size: int = missing,
+        auto_reload: bool = missing,
+        bytecode_cache: t.Optional["BytecodeCache"] = missing,
+        enable_async: bool = missing,
+    ) -> "Environment":
+        """Create a new overlay environment that shares all the data with the
+        current environment except for cache and the overridden attributes.
+        Extensions cannot be removed for an overlayed environment.  An overlayed
+        environment automatically gets all the extensions of the environment it
+        is linked to plus optional extra extensions.
+
+        Creating overlays should happen after the initial environment was set
+        up completely.  Not all attributes are truly linked, some are just
+        copied over so modifications on the original environment may not shine
+        through.
+
+        .. versionchanged:: 3.1.5
+            ``enable_async`` is applied correctly.
+
+        .. versionchanged:: 3.1.2
+            Added the ``newline_sequence``, ``keep_trailing_newline``,
+            and ``enable_async`` parameters to match ``__init__``.
+        """
+        args = dict(locals())
+        del args["self"], args["cache_size"], args["extensions"], args["enable_async"]
+
+        rv = object.__new__(self.__class__)
+        rv.__dict__.update(self.__dict__)
+        rv.overlayed = True
+        rv.linked_to = self
+
+        for key, value in args.items():
+            if value is not missing:
+                setattr(rv, key, value)
+
+        if cache_size is not missing:
+            rv.cache = create_cache(cache_size)
+        else:
+            rv.cache = copy_cache(self.cache)
+
+        rv.extensions = {}
+        for key, value in self.extensions.items():
+            rv.extensions[key] = value.bind(rv)
+        if extensions is not missing:
+            rv.extensions.update(load_extensions(rv, extensions))
+
+        if enable_async is not missing:
+            rv.is_async = enable_async
+
+        return _environment_config_check(rv)
+>>>
+END_UNIT
+LOSS NONE
+END

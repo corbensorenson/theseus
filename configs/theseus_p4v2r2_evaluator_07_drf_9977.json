@@ -1,0 +1,51 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2_FAIL_django_rest_framework"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2_hidden_test.py",
+      "sha256": "dd1029e9a723100698f02c4e9c05db289f9af83adaea3eca7b1840850d6b8045",
+      "source": "tests/fixtures/theseus_p4v2r2_online/theseus_p4v2r2_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2_hidden_test.py', 'django_rest_framework'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4-v2r2 task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "a2be71f48f78ecd787775d5b50962e95764254a55f5f403e5675d1aff0d77f4b",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_target.tar.gz",
+  "target_archive_root": "django-rest-framework-323af3f5794487aad96c4864445234ce700ca67d",
+  "target_archive_sha256": "802e6145b9108ae00ae7fed65a10d83113bdd5b48f8c7dd084b904a470a7d4e4",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2_07_drf_9977_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "0c2aace8728916a81a6131ba1f2e90df364d8603709f22d7638778657921f69d",
+    "merge_revision": "cf582fb58e9e5ffcc8ed78a2cb9aaa8f4865666a",
+    "revision": "323af3f5794487aad96c4864445234ce700ca67d",
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_target_upstream.tar.gz",
+    "upstream_archive_sha256": "a39abd97d169aec583a3d757898a118a890fbd42f47c0e6a44084ba7d366aa2c"
+  },
+  "task_manifest": "configs/theseus_p4v2r2_task_07_drf_9977.json",
+  "task_manifest_sha256": "e1771c4528a83b03fd3a8bfcf4d161d40e6bdab28973e3536a2e50c7a8700b56",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "119b8562ab858a39209a32ccf7d9e667d0e8ae1c95233218eca7a12866a1f73f"
+}

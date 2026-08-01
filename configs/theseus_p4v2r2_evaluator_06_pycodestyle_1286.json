@@ -1,0 +1,51 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2_FAIL_pycodestyle"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2_hidden_test.py",
+      "sha256": "dd1029e9a723100698f02c4e9c05db289f9af83adaea3eca7b1840850d6b8045",
+      "source": "tests/fixtures/theseus_p4v2r2_online/theseus_p4v2r2_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2_hidden_test.py', 'pycodestyle'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4-v2r2 task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "a8ccc78342cb851fdac3270ee15a6382a817e7dfcf1d0288b7be7dc6e2e02430",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_target.tar.gz",
+  "target_archive_root": "pycodestyle-13c626a9e70401eaf6c787cac522828f61460585",
+  "target_archive_sha256": "3c5fddd462f519a13e3fa3dd1c03d989a3315cbda13d9a67641425940f8e8df7",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2_06_pycodestyle_1286_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "dda80a60a42cca2727a425f79e3107028352fe2eb718ba5c365b65dea5ca4509",
+    "merge_revision": "8621e318655267c2a6cfa15bfd3f7cc02a60881f",
+    "revision": "13c626a9e70401eaf6c787cac522828f61460585",
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_target_upstream.tar.gz",
+    "upstream_archive_sha256": "595c961deefb455c4ab52f943ad94a4b9b302352fb1cad85733a50d1fb0532a3"
+  },
+  "task_manifest": "configs/theseus_p4v2r2_task_06_pycodestyle_1286.json",
+  "task_manifest_sha256": "57d85b78f41c0f778489f213ea5f47ab67c36f2fdaadf914fb336ad2b83b7f37",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "de51141d3aeb5892abc63f92c45a2fa4745bffe5d2df97bc38def87dcfbffce0"
+}

@@ -1,0 +1,26 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 949efc94ae8e1084b060ca8aefd36bd528a768415803224df5298100a77f69f5
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/PIL/ImagePalette.py N-FD1BC1E439C31DC9 db51fb4ea2fdd7fd85c0177a35250f8812df50497c25d248767e2b927eda5579
+<<<
+def colors(self) -> dict[tuple[int, ...], int]:
+        if self._colors is None:
+            palette = self.palette
+            if self.rawmode and self.rawmode != self.mode:
+                from . import Image
+
+                im = Image.core.new("P", (0, 0))
+                im.putpalette(self.mode, self.rawmode, bytes(palette))
+                palette = im.getpalette(self.mode)
+
+            mode_len = len(self.mode)
+            self._colors = {}
+            for i in range(0, len(palette), mode_len):
+                color = tuple(palette[i : i + mode_len])
+                if color in self._colors:
+                    continue
+                self._colors[color] = i // mode_len
+        return self._colors
+>>>
+LOSS NONE
+END

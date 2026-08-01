@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 196.611,
+    "stderr_tail": "P4V2R2_FAIL_textual\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-o1crixyq/source/theseus_p4v2r2_hidden_test.py\", line 409, in <module>\n    CASES[selected]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-o1crixyq/source/theseus_p4v2r2_hidden_test.py\", line 168, in textual\n    assert events is not None\n           ^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T18:12:12.104802Z",
+  "evaluator_sha256": "426661cd69e2ebbae1e48a63113330d8a9241185fc3bea30a69f1f3220151ac6",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 6997.069,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 182.72,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "0b125d3a42ebc58ca517d1c6a52dfb4d83b272a604d3ea9ea9a2e1be3c2b42b2",
+    "task_sha256": "6fe08c9cb37d6bf2eb5b383b53241103c57a3e4e9b99ce5ef6682ab14c6adb84",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "6fe08c9cb37d6bf2eb5b383b53241103c57a3e4e9b99ce5ef6682ab14c6adb84",
+  "trigger_state": "GREEN"
+}

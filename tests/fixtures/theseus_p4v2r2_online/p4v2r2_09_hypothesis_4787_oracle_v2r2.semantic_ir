@@ -1,0 +1,57 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE 79046321d9737061d6eac2898b358ac489ad8cfc5ff65e7f5bff4f5ef93e0216
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2,O3
+OP REPLACE
+PATH hypothesis/src/hypothesis/database.py
+NODE N-9359A2B9A271F88B
+NODE_SHA 02fbb6db475d139b6a296697413a08ca5865ac9ff05dcddbc86931a15be1eeb5
+<<<
+def _prepare_for_io(self) -> None:
+        assert self._artifact is not None, "Artifact not loaded."
+
+        if self._initialized:  # pragma: no cover
+            return
+
+        # Test that the artifact is valid
+        try:
+            with ZipFile(self._artifact) as f:
+                if f.testzip():  # pragma: no cover
+                    raise BadZipFile
+
+            # Turns out that testzip() doesn't work quite well
+            # doing the cache initialization here instead
+            # will give us more coverage of the artifact.
+
+            # Cache the files inside each keypath
+            self._access_cache = {}
+            with ZipFile(self._artifact) as zf:
+                namelist = zf.namelist()
+                # Iterate over files in the artifact
+                for filename in namelist:
+                    fileinfo = zf.getinfo(filename)
+                    if fileinfo.is_dir():
+                        self._access_cache.setdefault(PurePath(filename), set())
+                    else:
+                        # Get the keypath from the filename
+                        keypath = PurePath(filename).parent
+                        # Add the file to the keypath
+                        self._access_cache.setdefault(keypath, set()).add(
+                            PurePath(filename)
+                        )
+        except BadZipFile:
+            warnings.warn(
+                "The downloaded artifact from GitHub is invalid. "
+                "This could be because the artifact was corrupted, "
+                "or because the artifact was not created by Hypothesis. ",
+                HypothesisWarning,
+                stacklevel=3,
+            )
+            self._disabled = True
+
+        self._initialized = True
+>>>
+END_UNIT
+LOSS NONE
+END

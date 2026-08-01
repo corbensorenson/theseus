@@ -1,0 +1,149 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE dd58681970b00be159183e5716d1a89a5242ca54aac4d0170eaa6dc465d87420
+OBLIGATIONS O1,O2,O3
+UNIT U4 O1,O2,O3 REPLACE src/textual/_xterm_parser.py N-24FC35DF97BE8EB3 57f82b9ddf54b10e9680721b08b677628b533180e5ded5a0e5867d56f1dd1172
+<<<
+def _sequence_to_key_events(
+        self, sequence: str, alt: bool = False
+    ) -> Iterable[events.Key]:
+        """Map a sequence of code points on to a sequence of keys.
+
+        Args:
+            sequence: Sequence of code points.
+
+        Returns:
+            Iterable of key events.
+        """
+
+        if (
+            not constants.DISABLE_KITTY_KEY
+            and (keys := self._parse_extended_key(sequence)) is not None
+        ):
+            for key in keys:
+                yield key.copy()
+            return
+
+        keys = ANSI_SEQUENCES_KEYS.get(sequence)
+        # If we're being asked to ignore the key...
+        if keys is IGNORE_SEQUENCE:
+            # ...build a special ignore key event, which has the ignore
+            # name as the key (that is, the key this sequence is bound
+            # to is the ignore key) and the sequence that was ignored as
+            # the character.
+            yield events.Key(Keys.Ignore, sequence)
+            return
+        if isinstance(keys, tuple):
+            # If the sequence mapped to a tuple, then it's values from the
+            # `Keys` enum. Raise key events from what we find in the tuple.
+            for key in keys:
+                yield events.Key(key.value, sequence if len(sequence) == 1 else None)
+            return
+        # If keys is a string, the intention is that it's a mapping to a
+        # character, which should really be treated as the sequence for the
+        # purposes of the next step...
+        if isinstance(keys, str):
+            sequence = keys
+        # If the sequence is a single character, attempt to process it as a
+        # key.
+
+        if len(sequence) == 1:
+            try:
+                if not sequence.isalnum():
+                    name = _character_to_key(sequence)
+                else:
+                    name = sequence
+
+                name = KEY_NAME_REPLACEMENTS.get(name, name)
+                if len(name) == 1 and alt:
+                    if name.isupper():
+                        name = f"shift+{name.lower()}"
+                    name = f"alt+{name}"
+                yield events.Key(name, sequence)
+            except Exception:
+                yield events.Key(sequence, sequence)
+>>>
+UNIT U3 O1,O2 REPLACE src/textual/_xterm_parser.py N-5AAD8005B9D35341 520f660eb07e65fd22e6a78382eaca62ee4c2a793e9693b92748b08653892c3e
+<<<
+def _parse_extended_key(self, sequence: str) -> list[events.Key] | None:
+        """Parse a Kitty sequence.
+
+        Args:
+            sequence: Input sequence
+
+        Returns:
+            Key event, or `None` of none could be parsed.
+        """
+
+        if (match := _re_extended_key.fullmatch(sequence)) is None:
+            return None
+
+        key_events: list[events.Key] = []
+
+        codes, end = match.groups(default="")
+        codepoint_str, modifiers_str, text_str, *_ = codes.split(";") + ["", "", ""]
+        codepoint = int(codepoint_str or "1")
+        modifiers = int(modifiers_str or "0")
+
+        for text in self._parse_colon_codepoints(text_str):
+            if not (key := FUNCTIONAL_KEYS.get(f"{codepoint}{end}", "")):
+                key = _character_to_key(text if text else chr(codepoint))
+
+            key_tokens: list[str] = []
+            # The modifier is redundant on a modifier key
+            if (
+                modifiers
+                and key not in MODIFIER_FUNCTIONAL_KEYS
+                and text_str is not None
+            ):
+                modifier_bits = int(modifiers) - 1
+                # Not convinced of the utility in reporting caps_lock and num_lock
+                MODIFIERS = ("alt", "ctrl", "super", "hyper", "meta")
+                # Ignore caps_lock and num_lock modifiers
+                if modifier_bits & 1 and (text is None or text.isspace()):
+                    key_tokens.append("shift")
+                for bit, modifier in enumerate(MODIFIERS, 1):
+                    if modifier == "alt" and text is not None:
+                        continue
+                    if modifier_bits & (1 << bit):
+                        key_tokens.append(modifier)
+
+            key_tokens.sort()
+            if key is not None:
+                key_tokens.append(key)
+            key_events.append(
+                events.Key(
+                    "+".join(key_tokens),
+                    text
+                    or (None if modifiers else SPECIAL_KEY_TO_CHARACTER.get(key, None)),
+                )
+            )
+        return key_events
+>>>
+UNIT U2 O1,O2 INSERT_AFTER src/textual/_xterm_parser.py N-87496D754F37519B f9837587f1778f18676923741eba98478ed902e83fa1c7197b0d5dedf1a88b98
+<<<
+    classmethod
+    def _parse_colon_codepoints(cls, text_str: str) -> list[str | None]:
+        """Convert codepoints split on colons in to a list of characters.
+
+        Args:
+            text_str: String with groups of digits, separated by one or more colons.
+
+        Returns:
+            A list of characters.
+        """
+        if not text_str:
+            return [None]
+        characters: list[str | None] = [
+            chr(int(part)) if part.isdecimal() else chr(1)
+            for part in text_str.split(":")
+        ]
+        return characters
+>>>
+UNIT U1 O1,O2 REPLACE src/textual/_xterm_parser.py N-1C1100BD775499B6 51fc954a852e61315ba98b82e5ab0c9abab967e4fe40be1d1c1588d63339b27e
+<<<
+_re_extended_key: Final[re.Pattern[str]] = re.compile(
+    r"\x1b\[((?:[\d:]*;?){2,3})([u~ABCDEFHPQRS])"
+)
+>>>
+LOSS NONE
+END
