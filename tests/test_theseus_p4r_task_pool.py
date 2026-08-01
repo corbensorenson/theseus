@@ -32,6 +32,9 @@ def test_p4r_pool_is_sealed_without_candidate_calls_or_quality_token_cap() -> No
     assert pool["counters"]["local_model_calls"] == 0
     assert pool["counters"]["hosted_model_calls"] == 0
     assert pool["counters"]["deterministic_request_compiler_calls"] == 0
+    assert pool["instrument_freeze_commit"] == "0a8f0bec2cd8883fa6b1176e5f9979554c45539f"
+    assert pool["post_selection_mechanics_repair"]["candidate_or_control_calls_before_repair"] == 0
+    assert pool["post_selection_mechanics_repair"]["task_membership_changed"] is False
     assert all(row["baseline_parent_failed"] for row in pool["tasks"])
     assert all(row["upstream_target_passed"] for row in pool["tasks"])
     assert all(row["compiler_oracle_passed"] for row in pool["tasks"])

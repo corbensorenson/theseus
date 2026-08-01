@@ -20,16 +20,19 @@ import theseus_p4_task_pool as p4_pool  # noqa: E402
 
 
 SOURCE_REGISTRY = ROOT / "configs" / "theseus_p4r_task_sources.json"
-INSTRUMENT = ROOT / "configs" / "theseus_p4_cognitive_compilation_repaired_instrument.json"
-INSTRUMENT_AUDIT = ROOT / "reports" / "theseus_p4_cognitive_compilation_repaired_instrument_audit.json"
+INSTRUMENT = ROOT / "configs" / "theseus_p4_cognitive_compilation_repaired_instrument_r1.json"
+INSTRUMENT_AUDIT = ROOT / "reports" / "theseus_p4_cognitive_compilation_repaired_instrument_r1_audit.json"
 PREDECESSOR_POOL = ROOT / "configs" / "theseus_p4_task_pool.json"
 FIXTURES = ROOT / "tests" / "fixtures" / "theseus_p4r_online"
 HIDDEN_TEST = FIXTURES / "theseus_p4r_hidden_test.py"
 VISIBLE_TEST = FIXTURES / "theseus_p4r_visible_test.py"
-INSTRUMENT_COMMIT = "744d29e8"
+INSTRUMENT_COMMIT = "0a8f0bec2cd8883fa6b1176e5f9979554c45539f"
 SOURCE_SELECTION_COMMIT = "694ddbeb"
-EXPECTED_INSTRUMENT_SHA256 = "64afd82f5dd44b773b9b3f5fb739fee6b8e9ac6a757aea338aaecb620c0b1794"
-EXPECTED_INSTRUMENT_AUDIT_SHA256 = "faffc010d292abd07e5e5e1e0097f506fed44abbf09a20fd617a6234c0a83e92"
+EXPECTED_INSTRUMENT_SHA256 = "d1997c4f4555c62d9106dc17a2c59580b6cb38110b7819f8a5a5b4de1849689c"
+EXPECTED_INSTRUMENT_AUDIT_SHA256 = "dd5b7b9b24d6c92dde2b49abe8c5f09f4c6f8a92bde99b27522294f6f7ee07b1"
+SELECTION_INSTRUMENT_COMMIT = "744d29e8"
+SELECTION_INSTRUMENT_SHA256 = "64afd82f5dd44b773b9b3f5fb739fee6b8e9ac6a757aea338aaecb620c0b1794"
+SELECTION_INSTRUMENT_AUDIT_SHA256 = "faffc010d292abd07e5e5e1e0097f506fed44abbf09a20fd617a6234c0a83e92"
 
 
 def main() -> int:
@@ -124,6 +127,13 @@ def materialize_pool(*, run_audits: bool) -> dict[str, Any]:
         "instrument_sha256": p2a.sha256_file(INSTRUMENT),
         "instrument_audit": p2a.rel(INSTRUMENT_AUDIT),
         "instrument_audit_sha256": p2a.sha256_file(INSTRUMENT_AUDIT),
+        "post_selection_mechanics_repair": {
+            "repair_commit": INSTRUMENT_COMMIT,
+            "candidate_or_control_calls_before_repair": 0,
+            "task_membership_changed": False,
+            "evaluator_or_decision_rule_changed": False,
+            "repair": "Bind the inherited runner transport field to the pinned model context window; preserve parser-complete/model-EOS normal completion.",
+        },
         "task_count": len(entries),
         "green_evaluator_audits": green,
         "distinct_repositories": len({row.get("repository") for row in entries}),
@@ -266,12 +276,16 @@ def audit_registry(registry: dict[str, Any]) -> list[str]:
             faults.append(f"selection_conditioning_counter_nonzero:{key}")
     if boundaries.get("user_task_or_label_dependency") is not False:
         faults.append("user_dependency_not_excluded")
-    if registry.get("instrument_freeze_commit") != INSTRUMENT_COMMIT:
-        faults.append("instrument_commit_mismatch")
-    if registry.get("instrument_sha256") != EXPECTED_INSTRUMENT_SHA256 or p2a.sha256_file(INSTRUMENT) != EXPECTED_INSTRUMENT_SHA256:
-        faults.append("instrument_digest_mismatch")
-    if registry.get("instrument_audit_sha256") != EXPECTED_INSTRUMENT_AUDIT_SHA256 or p2a.sha256_file(INSTRUMENT_AUDIT) != EXPECTED_INSTRUMENT_AUDIT_SHA256:
-        faults.append("instrument_audit_digest_mismatch")
+    if registry.get("instrument_freeze_commit") != SELECTION_INSTRUMENT_COMMIT:
+        faults.append("selection_instrument_commit_mismatch")
+    if registry.get("instrument_sha256") != SELECTION_INSTRUMENT_SHA256:
+        faults.append("selection_instrument_digest_mismatch")
+    if registry.get("instrument_audit_sha256") != SELECTION_INSTRUMENT_AUDIT_SHA256:
+        faults.append("selection_instrument_audit_digest_mismatch")
+    if p2a.sha256_file(INSTRUMENT) != EXPECTED_INSTRUMENT_SHA256:
+        faults.append("active_instrument_digest_mismatch")
+    if p2a.sha256_file(INSTRUMENT_AUDIT) != EXPECTED_INSTRUMENT_AUDIT_SHA256:
+        faults.append("active_instrument_audit_digest_mismatch")
     return faults
 
 

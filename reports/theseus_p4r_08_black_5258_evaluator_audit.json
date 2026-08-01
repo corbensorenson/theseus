@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 56.537,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j0y305bv/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j0y305bv/source/theseus_p4_hidden_test.py\", line 79, in black\n    assert invoke(lambda _handle: (_ for _ in ()).throw(PermissionError(\"denied\"))).file_data == {}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j0y305bv/source/theseus_p4_hidden_test.py\", line 77, in invoke\n    return Cache.read(\"mode\")\n           ^^^^^^^^^^^^^^^^^^\n  File \"src/black/cache.py\", line 80, in read\n    data: dict[str, tuple[float, int, str]] = pickle.load(fobj)\n                                              ^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j0y305bv/source/theseus_p4_hidden_test.py\", line 79, in <lambda>\n    assert invoke(lambda _handle: (_ for _ in ()).throw(PermissionError(\"denied\"))).file_data == {}\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-j0y305bv/source/theseus_p4_hidden_test.py\", line 79, in <genexpr>\n    assert invoke(lambda _handle: (_ for _ in ()).throw(PermissionError(\"denied\"))).file_data == {}\nPermissionError: denied\nP4R_FAIL_black: PermissionError: denied\n",
+    "runtime_ms": 57.561,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-w_5twatl/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-w_5twatl/source/theseus_p4_hidden_test.py\", line 79, in black\n    assert invoke(lambda _handle: (_ for _ in ()).throw(PermissionError(\"denied\"))).file_data == {}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-w_5twatl/source/theseus_p4_hidden_test.py\", line 77, in invoke\n    return Cache.read(\"mode\")\n           ^^^^^^^^^^^^^^^^^^\n  File \"src/black/cache.py\", line 80, in read\n    data: dict[str, tuple[float, int, str]] = pickle.load(fobj)\n                                              ^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-w_5twatl/source/theseus_p4_hidden_test.py\", line 79, in <lambda>\n    assert invoke(lambda _handle: (_ for _ in ()).throw(PermissionError(\"denied\"))).file_data == {}\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-w_5twatl/source/theseus_p4_hidden_test.py\", line 79, in <genexpr>\n    assert invoke(lambda _handle: (_ for _ in ()).throw(PermissionError(\"denied\"))).file_data == {}\nPermissionError: denied\nP4R_FAIL_black: PermissionError: denied\n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:53.395176Z",
+  "created_utc": "2026-08-01T04:35:51.012261Z",
   "evaluator_sha256": "2919b36349f576175092f38b747f38975aaf9c7f819996908d6f61b231ed5d89",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 1414.525,
+  "runtime_ms": 1562.414,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 59.558,
+    "runtime_ms": 60.527,
     "stderr_tail": "",
     "stdout_tail": "P4R_PASS_black\n"
   },

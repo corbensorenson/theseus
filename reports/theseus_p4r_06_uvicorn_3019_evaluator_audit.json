@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 80.158,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-dr9dp0a1/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-dr9dp0a1/source/theseus_p4_hidden_test.py\", line 276, in check_uvicorn\n    assert holder.scope[\"subprotocols\"] == [\"proto1\", \"proto2\", \"proto3\"]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_uvicorn: AssertionError: \n",
+    "runtime_ms": 85.476,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-fzlat_31/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-fzlat_31/source/theseus_p4_hidden_test.py\", line 276, in check_uvicorn\n    assert holder.scope[\"subprotocols\"] == [\"proto1\", \"proto2\", \"proto3\"]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_uvicorn: AssertionError: \n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:50.286143Z",
+  "created_utc": "2026-08-01T04:35:47.791116Z",
   "evaluator_sha256": "526a2cf9f2360eb4328eaf4b9d7a3f54a684a2218d4432771f074d25b6f17586",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 706.716,
+  "runtime_ms": 736.611,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 85.013,
+    "runtime_ms": 82.475,
     "stderr_tail": "",
     "stdout_tail": "P4_PASS_uvicorn\n"
   },

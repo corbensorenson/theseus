@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 72.314,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ww214h2o/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ww214h2o/source/theseus_p4_hidden_test.py\", line 127, in celery\n    assert backend.get_key_for_task(identifier) == backend.get_key_for_task(str(identifier))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"celery/backends/base.py\", line 1025, in get_key_for_task\n    return self._get_key_for(self.task_keyprefix, task_id, key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"celery/backends/base.py\", line 1043, in _get_key_for\n    prefix, key_t(id), key_t(key),\n            ^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ww214h2o/source/theseus_p4_hidden_test.py\", line 106, in key_t\n    raise TypeError(type(value).__name__)\nTypeError: UUID\nP4R_FAIL_celery: TypeError: UUID\n",
+    "runtime_ms": 92.945,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-rq7h2dhp/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-rq7h2dhp/source/theseus_p4_hidden_test.py\", line 127, in celery\n    assert backend.get_key_for_task(identifier) == backend.get_key_for_task(str(identifier))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"celery/backends/base.py\", line 1025, in get_key_for_task\n    return self._get_key_for(self.task_keyprefix, task_id, key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"celery/backends/base.py\", line 1043, in _get_key_for\n    prefix, key_t(id), key_t(key),\n            ^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-rq7h2dhp/source/theseus_p4_hidden_test.py\", line 106, in key_t\n    raise TypeError(type(value).__name__)\nTypeError: UUID\nP4R_FAIL_celery: TypeError: UUID\n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:27:18.413936Z",
+  "created_utc": "2026-08-01T04:36:17.757026Z",
   "evaluator_sha256": "ade7505a6c2c65c8abedd25a816bae0603634a017bfa442c819949aa5ecd04d2",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 2321.136,
+  "runtime_ms": 2556.789,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 73.725,
+    "runtime_ms": 85.168,
     "stderr_tail": "",
     "stdout_tail": "P4R_PASS_celery\n"
   },

@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 1089.745,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-92yhbl_r/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-92yhbl_r/source/theseus_p4_hidden_test.py\", line 307, in check_installer\n    assert function(\"demo-1.0.database/payload.py\", source, \"purelib\") == (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/installer/_core.py\", line 52, in _determine_scheme\n    left, right = posixpath.split(left)\n                  ^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 105, in split\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-92yhbl_r/source/theseus_p4_hidden_test.py\", line 302, in alarm\n    raise TimeoutError(\"common-prefix sibling caused nontermination\")\nTimeoutError: common-prefix sibling caused nontermination\nP4_FAIL_installer: TimeoutError: common-prefix sibling caused nontermination\n",
+    "runtime_ms": 1091.681,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-3g3kvop5/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-3g3kvop5/source/theseus_p4_hidden_test.py\", line 307, in check_installer\n    assert function(\"demo-1.0.database/payload.py\", source, \"purelib\") == (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/installer/_core.py\", line 52, in _determine_scheme\n    left, right = posixpath.split(left)\n                  ^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 100, in split\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-3g3kvop5/source/theseus_p4_hidden_test.py\", line 302, in alarm\n    raise TimeoutError(\"common-prefix sibling caused nontermination\")\nTimeoutError: common-prefix sibling caused nontermination\nP4_FAIL_installer: TimeoutError: common-prefix sibling caused nontermination\n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:51.849863Z",
+  "created_utc": "2026-08-01T04:35:49.384482Z",
   "evaluator_sha256": "73ce6dfd8a915f223247636808b47f5b35913be2d8c5564c28a3b74c5fe64f2f",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 1499.859,
+  "runtime_ms": 1528.293,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 76.489,
+    "runtime_ms": 79.269,
     "stderr_tail": "",
     "stdout_tail": "P4_PASS_installer\n"
   },

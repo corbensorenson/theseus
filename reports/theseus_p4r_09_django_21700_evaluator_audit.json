@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 59.482,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-zswmva2g/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-zswmva2g/source/theseus_p4_hidden_test.py\", line 94, in django\n    assert replace(r\"^(\\w+)/b/(\\w+)$\") == r\"^<var>/b/<var>$\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4R_FAIL_django: AssertionError: \n",
+    "runtime_ms": 62.448,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-2hry7uqa/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-2hry7uqa/source/theseus_p4_hidden_test.py\", line 94, in django\n    assert replace(r\"^(\\w+)/b/(\\w+)$\") == r\"^<var>/b/<var>$\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4R_FAIL_django: AssertionError: \n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:27:16.029012Z",
+  "created_utc": "2026-08-01T04:36:15.129924Z",
   "evaluator_sha256": "a1cae25a68e61ea5ad4698faf5400b14aff20436a355dca5261b93770d16a2a3",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 22569.159,
+  "runtime_ms": 24053.3,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 59.336,
+    "runtime_ms": 60.98,
     "stderr_tail": "",
     "stdout_tail": "P4R_PASS_django\n"
   },

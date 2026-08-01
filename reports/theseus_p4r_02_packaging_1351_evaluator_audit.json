@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 88.537,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ul4ba1r4/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ul4ba1r4/source/theseus_p4_hidden_test.py\", line 180, in check_packaging\n    raise AssertionError(f\"invalid interpreter accepted: {value}\")\nAssertionError: invalid interpreter accepted: 2-none-any\nP4_FAIL_packaging: AssertionError: invalid interpreter accepted: 2-none-any\n",
+    "runtime_ms": 86.085,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-aboxgbbx/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-aboxgbbx/source/theseus_p4_hidden_test.py\", line 180, in check_packaging\n    raise AssertionError(f\"invalid interpreter accepted: {value}\")\nAssertionError: invalid interpreter accepted: 2-none-any\nP4_FAIL_packaging: AssertionError: invalid interpreter accepted: 2-none-any\n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:46.196052Z",
+  "created_utc": "2026-08-01T04:35:43.623741Z",
   "evaluator_sha256": "1fea68d3c5e7ea74b7520c781555b632b0fe653f5865ec56a3e53a35ad0a6aac",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 713.968,
+  "runtime_ms": 758.007,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 82.698,
+    "runtime_ms": 87.752,
     "stderr_tail": "",
     "stdout_tail": "P4_PASS_packaging\n"
   },

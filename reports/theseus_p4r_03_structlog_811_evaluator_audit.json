@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 145.965,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-s5rajrgk/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-s5rajrgk/source/theseus_p4_hidden_test.py\", line 191, in check_structlog\n    assert restored._write == file.write\n           ^^^^^^^^^^^^^^^\nAttributeError: 'WriteLogger' object has no attribute '_write'\nP4_FAIL_structlog: AttributeError: 'WriteLogger' object has no attribute '_write'\n",
+    "runtime_ms": 169.609,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-z3bp0zxe/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-z3bp0zxe/source/theseus_p4_hidden_test.py\", line 191, in check_structlog\n    assert restored._write == file.write\n           ^^^^^^^^^^^^^^^\nAttributeError: 'WriteLogger' object has no attribute '_write'\nP4_FAIL_structlog: AttributeError: 'WriteLogger' object has no attribute '_write'\n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:47.184347Z",
+  "created_utc": "2026-08-01T04:35:44.660780Z",
   "evaluator_sha256": "fe1c465328190c3ad79fcba20e8dca6368fc3b0c47322144d7b3e82b2d7c2619",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 923.794,
+  "runtime_ms": 971.356,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 143.895,
+    "runtime_ms": 146.396,
     "stderr_tail": "P4_STRUCTLOG_PICKLE_OK\n",
     "stdout_tail": "P4_STRUCTLOG_PICKLE_OK\nP4_PASS_structlog\n"
   },

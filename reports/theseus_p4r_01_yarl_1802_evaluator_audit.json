@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 90.635,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-bxral5d4/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-bxral5d4/source/theseus_p4_hidden_test.py\", line 166, in check_yarl\n    assert reparsed.scheme == \"\"\n           ^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_yarl: AssertionError: \n",
+    "runtime_ms": 131.491,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-rctxx2i6/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-rctxx2i6/source/theseus_p4_hidden_test.py\", line 166, in check_yarl\n    assert reparsed.scheme == \"\"\n           ^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_yarl: AssertionError: \n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:45.417391Z",
+  "created_utc": "2026-08-01T04:35:42.798823Z",
   "evaluator_sha256": "dc10ba384e8c0606215998e1a8fb64ea900606cfd496bd91a93aa5254181256f",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 711.011,
+  "runtime_ms": 790.344,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 89.632,
+    "runtime_ms": 90.22,
     "stderr_tail": "",
     "stdout_tail": "P4_PASS_yarl\n"
   },

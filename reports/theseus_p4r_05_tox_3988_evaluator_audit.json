@@ -2,8 +2,8 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 81.628,
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-lcr5rr8p/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-lcr5rr8p/source/theseus_p4_hidden_test.py\", line 220, in check_tox\n    assert function(\"can't; sys_platform == 'darwin'\") == (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_tox: AssertionError: \n",
+    "runtime_ms": 80.577,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-oy7n_gu9/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-oy7n_gu9/source/theseus_p4_hidden_test.py\", line 220, in check_tox\n    assert function(\"can't; sys_platform == 'darwin'\") == (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_tox: AssertionError: \n",
     "stdout_tail": ""
   },
   "compiler_oracle_verification": {
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-01T04:26:49.515824Z",
+  "created_utc": "2026-08-01T04:35:46.986568Z",
   "evaluator_sha256": "81f412aa1b80ca355477c6e987f612d79aa88912327eab99799e037d3c02b0ea",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 1269.041,
+  "runtime_ms": 1211.154,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 88.303,
+    "runtime_ms": 80.053,
     "stderr_tail": "",
     "stdout_tail": "P4_PASS_tox\n"
   },
