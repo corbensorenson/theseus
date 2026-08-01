@@ -1,6 +1,7 @@
 {
   "policy": "project_theseus_p4s_cognitive_compilation_instrument_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01-P4S-COGNITIVE-COMPILATION",
+  "runtime_attempt_namespace": "attempt2",
   "state": "PROSPECTIVELY_BOUND_BEFORE_FRESH_P4S_TASK_ACQUISITION",
   "purpose": "Run a fresh source-disjoint decision-grade development test of the mechanics-qualified labeled Semantic-IR treatment against direct generation, non-executing natural-language planning, and a prospective no-model compiler control, with completion-based generation and no project-selected answer-length cap.",
   "p4r_terminal_disposition": "reports/theseus_p4r_terminal_disposition.json",
@@ -30,8 +31,8 @@
   },
   "harness": {
     "candidate_runner": "scripts/theseus_p4s_cognitive_compilation.py",
-    "candidate_runner_sha256": "d25a8454dd3a8f47282879fed9aa4252580f35ba268ae1a083fd669d3b8c5272",
-    "candidate_runner_commit": "dae4adf2fd9c6ada18928f7a46ea0db79ab9b232",
+    "candidate_runner_sha256": "402ec0f482b9dcb13c5044141a47687a3cbc5e1dfbdfffe47cd52cd3f3a37020",
+    "candidate_runner_commit": "db86ea89bd1b4d62e096ce5c2cb41a93052aeb6b",
     "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
     "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
     "local_backend": "scripts/theseus_local_inference_backend.py",
@@ -73,6 +74,36 @@
     "local_or_hosted_model_calls_before_repair": 0,
     "teacher_calls_before_repair": 0,
     "maximum_inference": "Pre-candidate integration repair only; no model, mechanism, D1, D2, serving, training, or book evidence."
+  },
+  "invalid_attempt1_transport_repair": {
+    "state": "PROSPECTIVELY_REBOUND_AFTER_INVALID_ZERO_RESPONSE_ATTEMPT",
+    "invalid_attempt_commit": "553c841f27b62dccf1ff869045967a71a1d6a4c8",
+    "invalid_attempt_report": "reports/theseus_p4s_campaign_attempt1_failure.json",
+    "invalid_attempt_report_sha256": "ad3ff3898a4210c0b358740e01bdf5b52c143a89b01d2ddeb3da917d048d76c8",
+    "repair_commit": "1b7fe80477bcdc83eb9ca1488d63637854ff5aa5",
+    "prior_candidate_runner_sha256": "d25a8454dd3a8f47282879fed9aa4252580f35ba268ae1a083fd669d3b8c5272",
+    "repaired_candidate_runner_sha256": "c4aad7c0084827391f1a338d2fc58c9d3056adbee9b54513fb9a079f0a20cd24",
+    "repair": "Capture the original line-edit completion predicate in an immutable module binding before temporarily replacing the shared predicate symbol; the P4S wrapper now calls that immutable base predicate plus the labeled Semantic-IR predicate instead of recursively calling itself.",
+    "failed_runtime_attempt_receipts_retained": 6,
+    "retained_model_inference_calls_before_repair": 0,
+    "retained_model_responses_before_repair": 0,
+    "parseable_or_sealed_candidates_before_repair": 0,
+    "blind_evaluations_before_repair": 0,
+    "task_membership_changed": false,
+    "candidate_visible_source_or_request_changed": false,
+    "evaluator_or_decision_rule_changed": false,
+    "model_weights_or_completion_semantics_changed": false,
+    "retry_namespace_must_change": true,
+    "maximum_inference": "Transport repair after an invalid zero-response attempt only; no model, mechanism, D1, D2, serving, training, or book evidence."
+  },
+  "invalid_attempt1_runtime_namespace_repair": {
+    "state": "PROSPECTIVELY_BOUND_BEFORE_REPAIRED_ATTEMPT2",
+    "repair_commit": "db86ea89bd1b4d62e096ce5c2cb41a93052aeb6b",
+    "prior_candidate_runner_sha256": "c4aad7c0084827391f1a338d2fc58c9d3056adbee9b54513fb9a079f0a20cd24",
+    "repaired_candidate_runner_sha256": "402ec0f482b9dcb13c5044141a47687a3cbc5e1dfbdfffe47cd52cd3f3a37020",
+    "runtime_attempt_namespace": "attempt2",
+    "repair": "Append the attempt2 suffix only to ephemeral runtime session identifiers so repaired receipts cannot overwrite attempt1 evidence. Task manifests, prompts, source bytes, candidate seals, evaluator bindings, model identity, completion semantics, and decision rules remain unchanged.",
+    "maximum_inference": "Evidence-custody namespace repair only; no model, mechanism, D1, D2, serving, training, or book evidence."
   },
   "matched_arm_contract": {
     "arms": [
