@@ -1,0 +1,61 @@
+{
+  "policy": "project_theseus_d1_metadata_only_source_selection_v1",
+  "state": "BOUND_BEFORE_P4_SURVIVOR_AND_D1_METADATA_ACQUISITION",
+  "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
+  "candidate_metadata_ledger": "runtime/d1_acquisition/theseus_d1_online_metadata_frame.json",
+  "frozen_source_registry": "configs/theseus_d1_task_sources.json",
+  "report": "reports/theseus_d1_source_selection.json",
+  "discovery_frame": {
+    "provider": "GitHub_public_repository_and_merged_pull_request_metadata",
+    "query_partitioning": "complete_nonoverlapping_UTC_intervals_per_allowed_programming_language",
+    "interval_policy": "Starting at the P4S disposition creation time, expand the retrospective metadata frame in complete 30-day partitions until the metadata-only eligible distinct-repository count reaches the design-derived cohort size; there is no candidate-outcome stopping rule or maximum interval count.",
+    "require_every_partition_complete": true,
+    "require_raw_response_digests": true,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "candidate_or_control_calls": 0,
+    "parent_target_oracle_or_evaluator_executions": 0,
+    "archive_fetches": 0
+  },
+  "metadata_eligibility": {
+    "required_fields": [
+      "repository",
+      "repository_url",
+      "license_spdx",
+      "primary_language",
+      "pull_request",
+      "pull_request_url",
+      "pull_request_title",
+      "merged_utc",
+      "parent_revision",
+      "target_revision",
+      "merge_revision",
+      "changed_paths",
+      "metadata_retrieved_utc"
+    ],
+    "require_changed_in_scope_source_path": true,
+    "require_changed_test_path": true,
+    "require_distinct_repository_per_task": true,
+    "public_benchmark_sources_forbidden": true,
+    "training_or_distillation_sources_forbidden": true,
+    "candidate_control_or_evaluator_outcomes_forbidden": true,
+    "manual_task_choice_or_label_forbidden": true
+  },
+  "selection": {
+    "cohort_size_source": "instrument.power_design.design_derived_cohort_size",
+    "order": "ascending_sha256_campaign_id_repository_parent_revision_target_revision",
+    "membership_fixed_before_archive_fetch": true,
+    "replacement_after_membership_freeze": false,
+    "materialization_failure_disposition": "INCONCLUSIVE_EXPERIMENT_NOT_REPLACED",
+    "user_or_operator_approval_required": false
+  },
+  "authority": {
+    "source_metadata_acquisition_opens_only_after_green_P4S_survivor": true,
+    "registry_write_requires_complete_metadata_frame": true,
+    "candidate_calls_after_registry_write": false,
+    "archive_fetch_after_registry_write_only": true,
+    "surface_consumption_count": 0,
+    "serving_training_teacher_D2_or_book_promotion_authority": false
+  },
+  "maximum_inference": "A GREEN frozen registry proves only metadata-level eligibility, deterministic membership, source disjointness, and a before-fetch selection boundary. It does not prove archive materialization, parent failure, target pass, evaluator adequacy, candidate utility, mechanism efficacy, D1 qualification, serving, training, D2, or ASI Stack support."
+}

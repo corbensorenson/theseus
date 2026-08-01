@@ -72,8 +72,9 @@
       "training_and_distillation_rows",
       "all_consumed_private_surfaces"
     ],
-    "membership_selection": "After all eligibility, license, reconstructability, verifier, source-disjointness, and contamination filters pass, order identities by SHA-256(campaign_id || repository || parent_revision || target_revision) and take the first design-derived cohort_size distinct repositories.",
+    "membership_selection": "Using only prospectively allowed public metadata, apply language, license, immutable-revision, changed-source-and-test-path, source-disjointness, and contamination filters; then order identities by SHA-256(campaign_id || repository || parent_revision || target_revision) and take the first design-derived cohort_size distinct repositories. Archive contents, parent/target execution, oracle construction, evaluator outcomes, and candidate/control behavior are forbidden selection inputs.",
     "membership_fixed_before_archive_fetch": true,
+    "post_membership_materialization_or_evaluator_failure": "retain_the_task_and_classify_the_D1_experiment_inconclusive_if_the_44_of_44_adequacy_floor_fails",
     "replacement_after_any_candidate_or_control_call": false,
     "consume_exact_identity_once": true
   },
