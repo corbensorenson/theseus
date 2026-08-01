@@ -1,0 +1,51 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2R1_FAIL_PYDANTIC_AI_OPENROUTER"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2_hidden_test.py",
+      "sha256": "453cc81eb65547799634108105b4a37a7a415ac2c35d80f6524539eb0d2f5603",
+      "source": "tests/fixtures/theseus_p4v2r2r1_online/theseus_p4v2r2r1_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2_hidden_test.py', 'pydantic_ai_openrouter'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4-v2r2 task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "3b1c118519aa7c6eaaf7eab07c49c14cc2611851c75147a47f6b6caafe77d034",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_target.tar.gz",
+  "target_archive_root": "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249",
+  "target_archive_sha256": "8b12bffade1b2e3fbed815eafd05a9667d6b1e49e5a77bf4e1b24be885ea0edc",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r1_10_pydantic_ai_6901_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "a740092b28b1898883d95f4a9f9d1c471140b3d7b38a42e1eac7512b17919397",
+    "merge_revision": "9248f267c0a51ba53aa012ac9c6eb34549381a2e",
+    "revision": "d91f12c0589f156b124216569c16ff4a91a55249",
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_target_upstream.tar.gz",
+    "upstream_archive_sha256": "a7627a5694af6a700b4294db128541d966a92b68d543cfc16f9e9290a53b42db"
+  },
+  "task_manifest": "configs/theseus_p4v2r2_task_p4v2r2r1_10_pydantic_ai_6901.json",
+  "task_manifest_sha256": "7171e9fc7ccfbb54cca5c3e4e53fd0e0a803a5ac1da60677ad2d232770cc5720",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "e65de2c4462a82acc7e0be44adbe6113c6ee333ea1b3ec7a120980ada286c4ff"
+}

@@ -85,8 +85,8 @@
     }
   ],
   "output": {
-    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r1_online/tmpwssc1pmr.full-sanitized.tar.gz",
-    "sha256": "c1fc4599fb953102657867999a42753a54c5fcd081ddc7884ee39a6095dbd809"
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_parent.tar.gz",
+    "sha256": "1e873237251355d3b9820a160bb9b13c6221dac1d0f96c8d91a06d42fd70c595"
   },
   "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
   "projected_output": {

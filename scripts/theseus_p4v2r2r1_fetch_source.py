@@ -163,6 +163,10 @@ def acquire(*, fetch: bool) -> dict[str, Any]:
             "sha256": sha256_file(normalized),
         }
         sanitization["projection"] = projection
+        sanitization["output"] = {
+            "path": str(normalized.resolve()),
+            "sha256": sha256_file(normalized),
+        }
         sanitization_path.parent.mkdir(parents=True, exist_ok=True)
         sanitization_path.write_text(
             json.dumps(sanitization, indent=2, sort_keys=True) + "\n",

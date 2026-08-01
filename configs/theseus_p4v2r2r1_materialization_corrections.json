@@ -1,0 +1,59 @@
+{
+  "policy": "project_theseus_p4v2r2r1_materialization_corrections_v1",
+  "state": "MECHANICS_REPAIR_BEFORE_SUCCESSOR_CANDIDATE_GENERATION",
+  "source_registry": "configs/theseus_p4v2r2r1_task_sources.json",
+  "source_registry_sha256": "92cd51cfe0fba5ad794527573aa6cd3d570394d7d01fabbb6a55ef2bb0e25f56",
+  "corrections": [
+    {
+      "stem": "p4v2r2r1_10_pydantic_ai_6901",
+      "field": "oracle_units",
+      "reason": "The semantic-scope table intentionally excludes module imports and enclosing classes. Consolidate the import, new response shape, helper, and preserved map function into one top-level function-anchored closed unit, followed by the two integration-method units.",
+      "replacement": [
+        {
+          "id": "U5",
+          "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py",
+          "obligation_ids": ["O1", "O2", "O3", "O4"],
+          "operation": "REPLACE",
+          "parent_selector": {"node_type": "AsyncFunctionDef", "qualified_name": "OpenRouterStreamedResponse._validate_response"},
+          "target_selectors": [{"node_type": "AsyncFunctionDef", "qualified_name": "OpenRouterStreamedResponse._validate_response"}]
+        },
+        {
+          "id": "U4",
+          "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py",
+          "obligation_ids": ["O1", "O2", "O3"],
+          "operation": "REPLACE",
+          "parent_selector": {"node_type": "FunctionDef", "qualified_name": "OpenRouterModel._validate_completion"},
+          "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "OpenRouterModel._validate_completion"}]
+        },
+        {
+          "id": "U1",
+          "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py",
+          "obligation_ids": ["O1", "O2", "O3"],
+          "operation": "REPLACE",
+          "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_map_openrouter_provider_details"},
+          "target_selectors": [
+            {"node_type": "ImportFrom", "contains": "ModelAPIError, ModelHTTPError, UserError"},
+            {"node_type": "ClassDef", "qualified_name": "_OpenRouterNoCompletionResponse"},
+            {"node_type": "FunctionDef", "qualified_name": "_raise_for_no_completion"},
+            {"node_type": "FunctionDef", "qualified_name": "_map_openrouter_provider_details"}
+          ]
+        }
+      ]
+    },
+    {
+      "stem": "p4v2r2r1_10_pydantic_ai_6901",
+      "field": "candidate_visible_context.maximum_total_characters",
+      "reason": "Replace the inherited 12000-character placeholder with the exact rendered context length. This is source-derived input custody, not an output-quality token cap."
+    }
+  ],
+  "boundaries": {
+    "successor_candidate_or_control_calls": 0,
+    "candidate_outputs_observed": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "project_selected_quality_token_cap": null
+  },
+  "maximum_inference": "These corrections repair only task transport mechanics before candidate generation. They do not alter cohort membership, natural obligations, hidden expected behavior, or any model or mechanism conclusion."
+}
