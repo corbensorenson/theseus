@@ -43,3 +43,16 @@ def test_execution_entrypoints_do_not_read_policy_authority_defaults() -> None:
         assert "policy.get(\"allow_teacher_by_default\"" not in source
         assert "policy.get(\"allow_network_fetch_by_default\"" not in source
         assert "request_local_authority(" in source
+
+
+def test_runtime_uses_shared_frontier_family_classifier() -> None:
+    assert (
+        runtime.row_frontier_family(
+            {
+                "benchmark_name": "coding_local_repair",
+                "benchmark_type": "local",
+                "best_report": "reports/coding_local_repair.json",
+            }
+        )
+        == "coding_local_sandbox"
+    )

@@ -9,13 +9,17 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
-import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from autonomy_cycle_support import active_frontier, failed_gates, goal_for_decision
+from autonomy_cycle_support import (
+    active_frontier,
+    failed_gates,
+    goal_for_decision,
+    row_frontier_family,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = ROOT / "reports" / "sparkstream_status.json"

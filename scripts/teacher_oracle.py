@@ -1064,7 +1064,7 @@ def resolve_codex_command(policy: dict[str, Any]) -> str:
 
 
 def mirror_windowsapps_codex(command: str, policy: dict[str, Any]) -> str:
-    """Mirror packaged Codex Desktop CLI binaries out of WindowsApps.
+    r"""Mirror packaged Codex Desktop CLI binaries out of WindowsApps.
 
     Windows exposes packaged app binaries on PATH, but child processes can hit
     WinError 5 when launching them directly from C:\Program Files\WindowsApps.

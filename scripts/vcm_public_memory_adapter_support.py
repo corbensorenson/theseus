@@ -13,12 +13,24 @@ import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 from theseus_archive_resolver import is_archive_pointer, read_jsonl_follow_pointer, resolve_archived_path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class PublicMemoryItem(Protocol):
+    item_id: str
+    benchmark: str
+    task: str
+    prompt: str
+    context: str
+    question: str
+    answers: list[str]
+    oracle_evidence: list[dict[str, str]]
+    metadata: dict[str, Any]
 
 
 def score_prediction(answers: list[str], prediction: str) -> bool:
