@@ -374,6 +374,8 @@ def build_route_integrity_receipt(
     request_binding: dict[str, Any],
     expected_model_identity: dict[str, Any],
     backend_payload: dict[str, Any],
+    expected_backend_policy: str = "project_theseus_local_inference_backend_v1",
+    receipt_policy: str = ROUTE_POLICY,
 ) -> dict[str, Any]:
     """Independently verify one live backend result and decide release."""
     observed_identity = as_dict(get_path(backend_payload, ["backend", "identity"], {}))
@@ -386,7 +388,7 @@ def build_route_integrity_receipt(
         "execution_mode_bound": request_binding.get("execution_mode") == execution_mode
         and backend_request.get("execution_mode") == execution_mode,
         "local_model_backend_owned_by_canonical_assistant_runtime": backend_payload.get("policy")
-        == "project_theseus_local_inference_backend_v1",
+        == expected_backend_policy,
         "backend_completed": backend_payload.get("trigger_state") == "GREEN",
         "backend_prompt_bound": backend_request.get("prompt_sha256") == request_binding.get("model_prompt_sha256"),
         "backend_route_bound": backend_request.get("route_context_digest") == request_binding.get("route_packet_sha256"),
@@ -505,7 +507,7 @@ def build_route_integrity_receipt(
 
     release_allowed = all(checks.values())
     receipt = {
-        "policy": ROUTE_POLICY,
+        "policy": receipt_policy,
         "execution_mode": execution_mode,
         "ready": release_allowed,
         "release_allowed": release_allowed,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -20,6 +21,15 @@ CONFIG_PATH = ROOT / "configs/theseus_p4v2r2_autonomous_launch.json"
 
 def config() -> dict:
     return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+
+
+def mechanically_rebound_config() -> dict:
+    """Exercise launcher predicates without reopening the consumed campaign."""
+    value = config()
+    value["disposition_sha256"] = hashlib.sha256(
+        (ROOT / str(value["disposition"])).read_bytes()
+    ).hexdigest()
+    return value
 
 
 def green_campaign() -> dict:
@@ -59,15 +69,15 @@ def test_qualified_runtime_identity_probe_passes_without_loading_metal() -> None
     assert report["observed"]["mlx_lm"] == "0.31.3"
 
 
-def test_exact_sealed_bindings_pass_before_candidate_generation() -> None:
+def test_consumed_launcher_stays_closed_after_terminal_disposition_change() -> None:
     report = launcher.audit_bindings(config())
-    assert report["passed"] is True
-    assert report["faults"] == []
+    assert report["passed"] is False
+    assert report["faults"] == ["binding_invalid:disposition"]
 
 
 def test_machine_predicates_authorize_without_a_user_gate() -> None:
     report = launcher.preflight(
-        config(),
+        mechanically_rebound_config(),
         config_path=CONFIG_PATH,
         power_override={"external_connected": True, "discharging": False},
         memory_override={"passed": True},
@@ -85,7 +95,7 @@ def test_machine_predicates_authorize_without_a_user_gate() -> None:
 
 def test_battery_or_competing_accelerator_pauses_without_consumption() -> None:
     report = launcher.preflight(
-        config(),
+        mechanically_rebound_config(),
         config_path=CONFIG_PATH,
         power_override={"external_connected": False, "discharging": True},
         memory_override={"passed": True},

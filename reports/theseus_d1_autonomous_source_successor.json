@@ -1,0 +1,81 @@
+{
+  "activation_state": "CLOSED_P4V2R2_NON_SURVIVOR",
+  "active_lease": "runtime/control/theseus_d1_source_successor_lease.json",
+  "archive_fetches": 0,
+  "authority": {
+    "D2_authorized": false,
+    "archive_fetch_authorized": false,
+    "book_support_promotion_authorized": false,
+    "candidate_or_control_calls_authorized": false,
+    "external_inference_authorized": false,
+    "freeze_first_design_complete_cohort_exactly_once": true,
+    "kind": "machine_predicate_exclusive_exactly_once_source_lease",
+    "network_metadata_only_after_exact_p4_survivor": true,
+    "parent_target_oracle_or_evaluator_execution_authorized": false,
+    "project_selected_quality_token_cap_allowed": false,
+    "repeat_acquisition_without_new_complete_utc_interval": false,
+    "serving_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "user_or_operator_approval_required": false,
+    "wait_deadline_seconds": null
+  },
+  "binding_audit": {
+    "faults": [],
+    "owners": [
+      {
+        "expected_sha256": "483791a783fb04c66478f859edc2cb9e106e066199c4cbb3d56c022d857f5645",
+        "observed_sha256": "483791a783fb04c66478f859edc2cb9e106e066199c4cbb3d56c022d857f5645",
+        "owner": "instrument",
+        "passed": true,
+        "path": "configs/theseus_d1_fresh_qualification_instrument.json"
+      },
+      {
+        "expected_sha256": "10fefb0dcf3985e0108f414d1ebd3817493a7281f54e1935e6ca12db7fee1d9b",
+        "observed_sha256": "10fefb0dcf3985e0108f414d1ebd3817493a7281f54e1935e6ca12db7fee1d9b",
+        "owner": "source_selection_config",
+        "passed": true,
+        "path": "configs/theseus_d1_source_selection.json"
+      },
+      {
+        "expected_sha256": "64b025a6bcb561abb205507c06dc0ad5c9ee082b470e4d1e2a5d26acd6764c5e",
+        "observed_sha256": "64b025a6bcb561abb205507c06dc0ad5c9ee082b470e4d1e2a5d26acd6764c5e",
+        "owner": "metadata_acquisition",
+        "passed": true,
+        "path": "scripts/theseus_d1_online_metadata_acquisition.py"
+      },
+      {
+        "expected_sha256": "14a346138b8412b0c386a086a9b2d9bf872998ca91d56a2d02311626d4ad2746",
+        "observed_sha256": "14a346138b8412b0c386a086a9b2d9bf872998ca91d56a2d02311626d4ad2746",
+        "owner": "source_selection",
+        "passed": true,
+        "path": "scripts/theseus_d1_source_selection.py"
+      }
+    ],
+    "passed": true
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_d1_autonomous_source_successor.json",
+    "sha256": "b210ddb70b32eee35244b25d8b2be67dbf743ce26ed04dbbc111f91a09242ff9"
+  },
+  "created_utc": "2026-08-01T20:19:04.815968Z",
+  "execution_authorized": false,
+  "external_inference_calls": 0,
+  "faults": [],
+  "lease_available": true,
+  "maximum_inference": "A terminal GREEN source-successor report proves only that P4-v2r2 did not survive or that the first design-complete, metadata-selected, post-snapshot, source-disjoint D1 cohort was frozen before archive fetch. It does not prove archive materialization, evaluator adequacy, candidate utility, D1 qualification, serving, training, D2, or ASI Stack support.",
+  "network_calls": 0,
+  "next_action": "none",
+  "p4_terminal_disposition": {
+    "path": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
+    "present": true,
+    "sha256": "ab916b8c64fe130f00bbbd51e27bf93c37df334cfc6b2b5830eb117e74efa4f8"
+  },
+  "parent_target_oracle_or_evaluator_executions": 0,
+  "policy": "project_theseus_d1_autonomous_source_successor_v1",
+  "teacher_calls": 0,
+  "terminal": true,
+  "training_rows_written": 0,
+  "trigger_state": "GREEN"
+}

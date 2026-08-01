@@ -11,6 +11,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import theseus_assistant_route_integrity as integrity  # noqa: E402
+import theseus_assistant_route_integrity_v2 as integrity_v2  # noqa: E402
 
 
 def model_identity() -> dict:
@@ -147,6 +148,35 @@ def test_direct_and_integrated_receipts_share_the_exact_model_decoder_and_sandbo
     pair = integrity.compare_matched_pair(direct_receipt, integrated_receipt)
     assert pair["ready"] is True
     assert pair["checks"]["model_decoder_snapshot_sandbox_evaluator_equal"] is True
+
+
+def test_v2_route_accepts_exact_v2_backend_and_rejects_historical_v1_policy() -> None:
+    identity = model_identity()
+    request = integrity_v2.build_generation_request(
+        execution_mode=integrity_v2.DIRECT_MODE,
+        prompt="What is next?",
+        model_identity=identity,
+    )
+    historical = backend_payload(request, identity, integrity_v2.DIRECT_MODE)
+    rejected = integrity_v2.build_route_integrity_receipt(
+        execution_mode=integrity_v2.DIRECT_MODE,
+        request_binding=request["binding"],
+        expected_model_identity=identity,
+        backend_payload=historical,
+    )
+    successor = copy.deepcopy(historical)
+    successor["policy"] = integrity_v2.BACKEND_POLICY
+    accepted = integrity_v2.build_route_integrity_receipt(
+        execution_mode=integrity_v2.DIRECT_MODE,
+        request_binding=request["binding"],
+        expected_model_identity=identity,
+        backend_payload=successor,
+    )
+
+    assert rejected["ready"] is False
+    assert "local_model_backend_owned_by_canonical_assistant_runtime" in rejected["failed_checks"]
+    assert accepted["ready"] is True
+    assert accepted["policy"] == integrity_v2.ROUTE_POLICY
 
 
 def test_decorative_mode_label_cannot_turn_a_direct_binding_into_integrated_evidence() -> None:

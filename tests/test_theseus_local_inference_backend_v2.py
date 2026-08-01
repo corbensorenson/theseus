@@ -94,6 +94,10 @@ def test_canonical_runtime_source_binds_successor_backend_route_and_worker() -> 
     for path_field, digest_field in (
         ("backend_entrypoint", "backend_entrypoint_sha256"),
         ("route_integrity_entrypoint", "route_integrity_entrypoint_sha256"),
+        (
+            "base_route_integrity_entrypoint",
+            "base_route_integrity_entrypoint_sha256",
+        ),
         ("worker_config", "worker_config_sha256"),
     ):
         assert file_sha256(ROOT / config[path_field]) == config[digest_field]

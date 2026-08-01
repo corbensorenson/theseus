@@ -179,7 +179,7 @@ def test_canonical_runtime_runs_matched_direct_and_integrated_paths_without_real
         prompt = str(kwargs["prompt"])
         observed_prompts[mode] = prompt
         payload = {
-            "policy": "project_theseus_local_inference_backend_v1",
+            "policy": "project_theseus_local_inference_backend_v2",
             "trigger_state": "GREEN",
             "backend": {"identity": identity},
             "request": {
@@ -244,7 +244,7 @@ def test_runtime_experimental_token_override_is_explicit_and_context_scoped(
             maximum_tokens=local["product_maximum_tokens"],
         )["identity"]
         payload = {
-            "policy": "project_theseus_local_inference_backend_v1",
+            "policy": "project_theseus_local_inference_backend_v2",
             "trigger_state": "GREEN",
             "backend": {"identity": identity},
             "request": {

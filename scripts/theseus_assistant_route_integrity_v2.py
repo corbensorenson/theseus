@@ -11,6 +11,26 @@ from theseus_assistant_route_integrity import *  # noqa: F401,F403
 
 
 ROUTE_POLICY = "project_theseus_live_route_integrity_v2"
+BACKEND_POLICY = "project_theseus_local_inference_backend_v2"
+
+
+def build_route_integrity_receipt(
+    *,
+    execution_mode: str,
+    request_binding: dict[str, Any],
+    expected_model_identity: dict[str, Any],
+    backend_payload: dict[str, Any],
+) -> dict[str, Any]:
+    """Verify the exact successor backend rather than the historical v1 policy."""
+
+    return v1.build_route_integrity_receipt(
+        execution_mode=execution_mode,
+        request_binding=request_binding,
+        expected_model_identity=expected_model_identity,
+        backend_payload=backend_payload,
+        expected_backend_policy=BACKEND_POLICY,
+        receipt_policy=ROUTE_POLICY,
+    )
 
 
 def load_model_contract(

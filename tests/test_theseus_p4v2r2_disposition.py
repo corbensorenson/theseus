@@ -12,23 +12,25 @@ if str(SCRIPTS) not in sys.path:
 import theseus_p4v2r2_disposition as disposition  # noqa: E402
 
 
-def test_p4v2r2_pre_campaign_disposition_fails_closed_without_consumption() -> None:
+def test_p4v2r2_attempt2_is_terminalized_as_implementation_failure() -> None:
     report = disposition.build_report()
 
-    assert report["trigger_state"] == "RED"
-    assert "campaign_not_complete" in report["faults"]
-    assert report["scientific_status"] == "P4V2R2_REVIEW_REQUIRED"
+    assert report["trigger_state"] == "GREEN"
+    assert report["faults"] == []
+    assert report["scientific_status"] == "INCONCLUSIVE_IMPLEMENTATION"
     assert report["denominators"]["tasks"] == 0
-    assert report["denominators"]["learned_model_calls"] == 0
+    assert report["denominators"]["learned_model_calls"] == 2
+    assert report["denominators"]["consumed_tasks"] == 1
+    assert report["denominators"]["candidate_unseen_tasks"] == 9
     assert report["denominators"]["project_selected_quality_token_cap"] is None
     assert report["consumption"]["eligible_for_D1"] is False
     assert report["next_stage"]["D1_eligible"] is False
 
 
-def test_incomplete_denominator_is_not_mislabeled_as_observed_leakage() -> None:
+def test_implementation_failure_is_not_mislabeled_as_observed_leakage() -> None:
     report = disposition.build_report()
 
-    assert report["adequacy"]["information_flow_green"] is False
+    assert report["adequacy"]["information_flow_green"] is True
     assert not any(
         fault.startswith(
             (
@@ -38,9 +40,9 @@ def test_incomplete_denominator_is_not_mislabeled_as_observed_leakage() -> None:
                 "independent_evaluation_replay_mismatch:",
             )
         )
-        for fault in report["faults"]
+        for fault in report["implementation_failures"]
     )
-    assert report["scientific_status"] == "P4V2R2_REVIEW_REQUIRED"
+    assert report["scientific_status"] == "INCONCLUSIVE_IMPLEMENTATION"
 
 
 def test_p4v2r2_source_pool_audit_recomputes_license_and_disjointness() -> None:

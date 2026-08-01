@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -12,11 +14,15 @@ if str(SCRIPTS) not in sys.path:
 import theseus_p4v2r2_campaign as campaign  # noqa: E402
 
 
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def test_p4v2r2_campaign_is_exact_bound_and_completion_based() -> None:
     report = campaign.audit_campaign()
 
-    assert report["trigger_state"] == "GREEN"
-    assert report["faults"] == []
+    assert report["trigger_state"] == "RED"
+    assert "partial_unsealed_runtime_receipts:p4v2r2_01_flask_5917" in report["faults"]
     assert report["complete_tasks"] + report["pending_tasks"] == 10
     assert report["model_calls_retained"] == report["complete_tasks"] * 6
     assert (
@@ -71,3 +77,23 @@ def test_p4v2r2_pool_binds_zero_calls_and_all_mechanics_floors() -> None:
     assert pool["generation_budget"]["project_selected_quality_token_cap"] is None
     assert pool["counters"]["local_model_calls"] == 0
     assert pool["counters"]["hosted_model_calls"] == 0
+
+
+def test_attempt2_interruption_is_retained_as_scoped_implementation_failure() -> None:
+    report = json.loads(
+        (ROOT / "reports" / "theseus_p4v2r2_attempt2_interruption.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert report["scientific_status"] == "INCONCLUSIVE_IMPLEMENTATION"
+    assert report["denominators"]["model_calls_observed"] == 2
+    assert report["denominators"]["candidate_outputs_released"] == 0
+    assert report["denominators"]["consumed_tasks"] == 1
+    assert report["denominators"]["candidate_unseen_tasks"] == 9
+    assert report["denominators"]["project_selected_quality_token_cap"] is None
+    assert report["disposition"]["same_denominator_resume_authorized"] is False
+    assert report["disposition"]["consumed_task_replay_authorized"] is False
+    for receipt in report["runtime_receipts"]:
+        assert sha256_file(ROOT / receipt["path"]) == receipt["sha256"]
+    assert not (ROOT / "runtime" / "control" / "theseus_p4v2r2_campaign_lease.json").exists()

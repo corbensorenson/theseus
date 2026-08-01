@@ -1,0 +1,80 @@
+{
+  "adequacy": {
+    "experiment_floor": false,
+    "information_flow_green": true,
+    "mechanics_floor": false,
+    "reason": "route_policy_binding_and_backend_telemetry_custody_failed"
+  },
+  "consumption": {
+    "candidate_unseen_task_stems": [
+      "p4v2r2_02_jinja_2061",
+      "p4v2r2_03_textual_6592",
+      "p4v2r2_04_scrapy_7783",
+      "p4v2r2_05_pyflakes_765",
+      "p4v2r2_06_pycodestyle_1286",
+      "p4v2r2_07_drf_9977",
+      "p4v2r2_08_pylsp_715",
+      "p4v2r2_09_hypothesis_4787",
+      "p4v2r2_10_pillow_9821"
+    ],
+    "consumed_task_replay_authorized": false,
+    "consumed_task_stems": [
+      "p4v2r2_01_flask_5917"
+    ],
+    "eligible_for_D1": false,
+    "same_denominator_resume_authorized": false
+  },
+  "created_utc": "2026-08-01T20:14:03Z",
+  "denominators": {
+    "candidate_outputs_released": 0,
+    "candidate_unseen_tasks": 9,
+    "consumed_tasks": 1,
+    "external_inference_calls": 0,
+    "hosted_model_calls": 0,
+    "learned_model_calls": 2,
+    "project_selected_quality_token_cap": null,
+    "tasks": 0,
+    "teacher_calls": 0
+  },
+  "faults": [],
+  "implementation_failures": [
+    "route_integrity_v2_backend_checked_against_v1_policy",
+    "first_call_backend_telemetry_overwritten_by_shared_checkpoint_path",
+    "matched_six_call_task_set_incomplete"
+  ],
+  "maximum_inference": "Attempt 2 establishes only an implementation and telemetry-custody failure in the exact v2 route-policy binding after two direct calls on one task. It cannot support any conclusion about TMax competence, Semantic IR, cognitive compilation, integrated Theseus subsystems, or the ASI Stack claim.",
+  "next_stage": {
+    "D1_eligible": false,
+    "book_support_state_effect": "none",
+    "state": "D1_CLOSED_RETAIN_SCOPED_P4V2R2_EVIDENCE"
+  },
+  "policy": "project_theseus_p4v2r2_cognitive_compilation_terminal_disposition_v1",
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "scope": "Exact frozen TMax model and Semantic-IR v2r2 attempt 2, stopped after two route-held calls on one consumed task. No model, mechanism, D1, D2, serving, training, hosted-model, or automatic book-support conclusion is authorized.",
+  "source_identities": {
+    "interruption": {
+      "path": "reports/theseus_p4v2r2_attempt2_interruption.json",
+      "sha256": "f17102b741b27d01a127a5f4a72e8bf47c18ea3c366d17b0e1f6ffc8414afded"
+    },
+    "last_backend_receipt": {
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2-cognitive-compilation-01_direct_target_generation_p4v2r2_attempt1_direct_local_mod.json",
+      "sha256": "715ae4d867d7d2c9ed60d8b2843ce68428a2e9e5d9ce716236cb8b9a37ce35a2"
+    },
+    "runtime_receipts": [
+      {
+        "path": "runtime/p2a/p2a_p4_p4v2r2-cognitive-compilation-01_direct_target_generation_p4v2r2_attempt1_direct_local_model_1.json",
+        "sha256": "8787b3a9d38bec61c4c059428d7b9a2b8c2054c1a9394700e7e103f4ef48e81e"
+      },
+      {
+        "path": "runtime/p2a/p2a_p4_p4v2r2-cognitive-compilation-01_direct_target_generation_p4v2r2_attempt1_direct_local_model_2.json",
+        "sha256": "48e7bcd1db0526f6506bf5afc18302cc5835905adff1dfc9ff5441702123e6b4"
+      }
+    ]
+  },
+  "termination_custody": {
+    "first_call_backend_telemetry_preserved": false,
+    "physical_context_boundary_hits": 0,
+    "safety_ceiling_hits": 0
+  },
+  "trigger_state": "GREEN"
+}

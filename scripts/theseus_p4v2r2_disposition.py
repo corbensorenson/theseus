@@ -27,6 +27,7 @@ OUT = ROOT / "reports" / "theseus_p4v2r2_attempt2_terminal_disposition.json"
 ORACLE_CORRECTIONS = (
     ROOT / "configs" / "theseus_p4v2r2_oracle_materialization_corrections.json"
 )
+INTERRUPTION = ROOT / "reports" / "theseus_p4v2r2_attempt2_interruption.json"
 STATUS_MAP = {
     "P4S_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE": (
         "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"
@@ -64,6 +65,9 @@ def main() -> int:
 
 
 def build_report() -> dict[str, Any]:
+    if INTERRUPTION.is_file():
+        return build_interruption_disposition()
+
     # Reuse the already-audited statistical and route-blind aggregation kernel while
     # rebinding every source owner to this prospectively sealed successor campaign.
     rebound = {
@@ -165,6 +169,126 @@ def build_report() -> dict[str, Any]:
         "book support."
     )
     return report
+
+
+def build_interruption_disposition() -> dict[str, Any]:
+    """Validate and terminalize the consumed two-call implementation failure."""
+    incident = p2a.read_json(INTERRUPTION)
+    custody_faults: list[str] = []
+    if incident.get("policy") != "project_theseus_p4v2r2_attempt2_interruption_v1":
+        custody_faults.append("interruption_policy_invalid")
+    if incident.get("scientific_status") != "INCONCLUSIVE_IMPLEMENTATION":
+        custody_faults.append("interruption_status_invalid")
+
+    receipts = p2a.dicts(incident.get("runtime_receipts"))
+    if len(receipts) != 2:
+        custody_faults.append("runtime_receipt_count_invalid")
+    receipt_identities: list[dict[str, str]] = []
+    for index, receipt in enumerate(receipts, start=1):
+        path = p2a.resolve(str(receipt.get("path") or ""))
+        expected = str(receipt.get("sha256") or "")
+        if not path.is_file() or p2a.sha256_file(path) != expected:
+            custody_faults.append(f"runtime_receipt_binding_invalid:{index}")
+        else:
+            receipt_identities.append(base.source_identity(path))
+        if receipt.get("route_integrity_release_allowed") is not False:
+            custody_faults.append(f"runtime_receipt_was_released:{index}")
+
+    backend = p2a.mapping(incident.get("last_backend_receipt"))
+    backend_path = p2a.resolve(str(backend.get("path") or ""))
+    if (
+        not backend_path.is_file()
+        or p2a.sha256_file(backend_path) != str(backend.get("sha256") or "")
+    ):
+        custody_faults.append("last_backend_receipt_binding_invalid")
+
+    denominators = p2a.mapping(incident.get("denominators"))
+    expected_denominators = {
+        "sealed_tasks": 10,
+        "model_calls_observed": 2,
+        "candidate_outputs_released": 0,
+        "complete_matched_tasks": 0,
+        "consumed_tasks": 1,
+        "candidate_unseen_tasks": 9,
+        "physical_context_boundary_hits": 0,
+        "project_selected_quality_token_cap": None,
+    }
+    for key, expected in expected_denominators.items():
+        if denominators.get(key) != expected:
+            custody_faults.append(f"interruption_denominator_invalid:{key}")
+    if len(p2a.strings(incident.get("consumed_task_stems"))) != 1:
+        custody_faults.append("consumed_task_identity_invalid")
+    if len(p2a.strings(incident.get("candidate_unseen_task_stems"))) != 9:
+        custody_faults.append("candidate_unseen_task_count_invalid")
+
+    valid = not custody_faults
+    status = "INCONCLUSIVE_IMPLEMENTATION" if valid else "P4V2R2_REVIEW_REQUIRED"
+    return {
+        "policy": POLICY,
+        "created_utc": str(incident.get("created_utc") or ""),
+        "trigger_state": "GREEN" if valid else "RED",
+        "scientific_status": status,
+        "faults": sorted(set(custody_faults)),
+        "implementation_failures": p2a.strings(incident.get("faults")),
+        "scope": (
+            "Exact frozen TMax model and Semantic-IR v2r2 attempt 2, stopped "
+            "after two route-held calls on one consumed task. No model, "
+            "mechanism, D1, D2, serving, training, hosted-model, or automatic "
+            "book-support conclusion is authorized."
+        ),
+        "source_identities": {
+            "interruption": base.source_identity(INTERRUPTION),
+            "runtime_receipts": receipt_identities,
+            "last_backend_receipt": (
+                base.source_identity(backend_path) if backend_path.is_file() else {}
+            ),
+        },
+        "denominators": {
+            "tasks": 0,
+            "learned_model_calls": int(denominators.get("model_calls_observed") or 0),
+            "candidate_outputs_released": int(
+                denominators.get("candidate_outputs_released") or 0
+            ),
+            "consumed_tasks": int(denominators.get("consumed_tasks") or 0),
+            "candidate_unseen_tasks": int(
+                denominators.get("candidate_unseen_tasks") or 0
+            ),
+            "hosted_model_calls": int(denominators.get("hosted_model_calls") or 0),
+            "teacher_calls": int(denominators.get("teacher_calls") or 0),
+            "external_inference_calls": int(
+                denominators.get("external_inference_calls") or 0
+            ),
+            "project_selected_quality_token_cap": denominators.get(
+                "project_selected_quality_token_cap"
+            ),
+        },
+        "termination_custody": {
+            "safety_ceiling_hits": int(
+                denominators.get("physical_context_boundary_hits") or 0
+            ),
+            "physical_context_boundary_hits": int(
+                denominators.get("physical_context_boundary_hits") or 0
+            ),
+            "first_call_backend_telemetry_preserved": False,
+        },
+        "adequacy": {
+            "information_flow_green": valid,
+            "mechanics_floor": False,
+            "experiment_floor": False,
+            "reason": "route_policy_binding_and_backend_telemetry_custody_failed",
+        },
+        "consumption": {
+            "eligible_for_D1": False,
+            "same_denominator_resume_authorized": False,
+            "consumed_task_replay_authorized": False,
+            "consumed_task_stems": p2a.strings(incident.get("consumed_task_stems")),
+            "candidate_unseen_task_stems": p2a.strings(
+                incident.get("candidate_unseen_task_stems")
+            ),
+        },
+        "next_stage": next_stage(status),
+        "maximum_inference": str(incident.get("maximum_inference") or ""),
+    }
 
 
 def audit_source_pool(pool: dict[str, Any]) -> dict[str, Any]:

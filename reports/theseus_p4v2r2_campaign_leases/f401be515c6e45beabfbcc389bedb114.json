@@ -1,0 +1,26 @@
+{
+  "policy": "project_theseus_p4v2r2_interrupted_lease_v1",
+  "lease_id": "f401be515c6e45beabfbcc389bedb114",
+  "state": "INTERRUPTED_FAIL_CLOSED",
+  "created_utc": "2026-08-01T20:07:39.465768Z",
+  "interrupted_utc": "2026-08-01T20:14:03Z",
+  "reason": "two live model calls were withheld by the route-integrity gate because the v2 backend policy was checked against the historical v1 policy",
+  "original_active_lease_sha256": "33e153ee1a9256ef0f81c3ce5ef9dc2bdf4a7cec2bf411732f21609824cfa7fd",
+  "preflight_sha256": "431858b658026bb2d296a8d32b909688d030832d008cd1639e5f0c7b85e6d550",
+  "campaign_command": [
+    "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "/Users/corbensorenson/Documents/Theseus-Hive/scripts/theseus_p4v2r2_campaign.py"
+  ],
+  "model_calls_observed": 2,
+  "candidate_outputs_released": 0,
+  "complete_tasks": 0,
+  "consumed_task_stems": [
+    "p4v2r2_01_flask_5917"
+  ],
+  "remaining_task_stems_candidate_unseen": 9,
+  "physical_context_boundary_hits": 0,
+  "project_selected_quality_token_cap": null,
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "resume_same_denominator_authorized": false,
+  "maximum_inference": "The interruption proves only a route-policy binding defect after two calls on the first task. It is not model, task-correctness, Semantic-IR, cognitive-compilation, or token-boundary evidence."
+}

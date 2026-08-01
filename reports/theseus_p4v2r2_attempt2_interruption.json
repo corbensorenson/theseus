@@ -1,0 +1,82 @@
+{
+  "policy": "project_theseus_p4v2r2_attempt2_interruption_v1",
+  "created_utc": "2026-08-01T20:14:03Z",
+  "trigger_state": "RED",
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "faults": [
+    "route_integrity_v2_backend_checked_against_v1_policy",
+    "first_call_backend_telemetry_overwritten_by_shared_checkpoint_path",
+    "matched_six_call_task_set_incomplete"
+  ],
+  "launch_config": {
+    "path": "configs/theseus_p4v2r2_autonomous_launch.json",
+    "sha256": "c7ab7a6b3c4a099dad780611f44b9a11735d98319f10559407dca4c23f7a21f6"
+  },
+  "lease": {
+    "path": "reports/theseus_p4v2r2_campaign_leases/f401be515c6e45beabfbcc389bedb114.json",
+    "original_active_lease_sha256": "33e153ee1a9256ef0f81c3ce5ef9dc2bdf4a7cec2bf411732f21609824cfa7fd"
+  },
+  "runtime_receipts": [
+    {
+      "path": "runtime/p2a/p2a_p4_p4v2r2-cognitive-compilation-01_direct_target_generation_p4v2r2_attempt1_direct_local_model_1.json",
+      "sha256": "8787b3a9d38bec61c4c059428d7b9a2b8c2054c1a9394700e7e103f4ef48e81e",
+      "trigger_state": "RED",
+      "route_integrity_release_allowed": false,
+      "failed_check": "local_model_backend_owned_by_canonical_assistant_runtime"
+    },
+    {
+      "path": "runtime/p2a/p2a_p4_p4v2r2-cognitive-compilation-01_direct_target_generation_p4v2r2_attempt1_direct_local_model_2.json",
+      "sha256": "48e7bcd1db0526f6506bf5afc18302cc5835905adff1dfc9ff5441702123e6b4",
+      "trigger_state": "RED",
+      "route_integrity_release_allowed": false,
+      "failed_check": "local_model_backend_owned_by_canonical_assistant_runtime"
+    }
+  ],
+  "last_backend_receipt": {
+    "path": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2-cognitive-compilation-01_direct_target_generation_p4v2r2_attempt1_direct_local_mod.json",
+    "sha256": "715ae4d867d7d2c9ed60d8b2843ce68428a2e9e5d9ce716236cb8b9a37ce35a2",
+    "backend_policy": "project_theseus_local_inference_backend_v2",
+    "termination_reason": "model_eos",
+    "generated_tokens": 4,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "note": "The shared checkpoint path retained only the second backend call. The first call remains counted and route-held, but its backend-only termination telemetry was overwritten; this custody gap independently makes the attempt inadequate."
+  },
+  "denominators": {
+    "sealed_tasks": 10,
+    "model_calls_observed": 2,
+    "candidate_outputs_released": 0,
+    "complete_matched_tasks": 0,
+    "consumed_tasks": 1,
+    "candidate_unseen_tasks": 9,
+    "hosted_model_calls": 0,
+    "teacher_calls": 0,
+    "external_inference_calls": 0,
+    "physical_context_boundary_hits": 0,
+    "project_selected_quality_token_cap": null
+  },
+  "consumed_task_stems": [
+    "p4v2r2_01_flask_5917"
+  ],
+  "candidate_unseen_task_stems": [
+    "p4v2r2_02_jinja_2061",
+    "p4v2r2_03_textual_6592",
+    "p4v2r2_04_scrapy_7783",
+    "p4v2r2_05_pyflakes_765",
+    "p4v2r2_06_pycodestyle_1286",
+    "p4v2r2_07_drf_9977",
+    "p4v2r2_08_pylsp_715",
+    "p4v2r2_09_hypothesis_4787",
+    "p4v2r2_10_pillow_9821"
+  ],
+  "disposition": {
+    "same_denominator_resume_authorized": false,
+    "consumed_task_replay_authorized": false,
+    "remaining_nine_tasks_may_enter_a_new_prospectively_sealed_successor_only_if_their_candidate_unseen_status_is_independently_recomputed": true,
+    "replacement_task_must_be_new_licensed_and_source_disjoint": true,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "automatic_book_support_promotion": false
+  },
+  "maximum_inference": "Attempt 2 establishes only an implementation and telemetry-custody failure in the exact v2 route-policy binding after two direct calls on one task. It cannot support any conclusion about TMax competence, Semantic IR, cognitive compilation, integrated Theseus subsystems, or the ASI Stack claim."
+}
