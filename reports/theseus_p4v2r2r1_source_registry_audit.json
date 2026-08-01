@@ -1,0 +1,36 @@
+{
+  "bound_predecessor_evidence": {
+    "predecessor_interruption": {
+      "path": "reports/theseus_p4v2r2_attempt2_interruption.json",
+      "sha256": "f17102b741b27d01a127a5f4a72e8bf47c18ea3c366d17b0e1f6ffc8414afded"
+    },
+    "predecessor_pool": {
+      "path": "configs/theseus_p4v2r2_task_pool.json",
+      "sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd"
+    },
+    "predecessor_registry": {
+      "path": "configs/theseus_p4v2r2_task_sources.json",
+      "sha256": "7264e2a040092de68e98a8a91b97ec38ca9a04a442f80a3c0551e767b0c68915"
+    },
+    "predecessor_terminal_disposition": {
+      "path": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
+      "sha256": "ab916b8c64fe130f00bbbd51e27bf93c37df334cfc6b2b5830eb117e74efa4f8"
+    }
+  },
+  "carried_candidate_unseen_tasks": 9,
+  "faults": [],
+  "maximum_inference": "This seal establishes only a prospectively fixed recovery cohort: nine independently retained candidate-unseen tasks and one metadata-selected licensed source-disjoint replacement. It is not archive, evaluator, candidate, mechanism, D1, D2, serving, training, or ASI Stack support evidence.",
+  "new_archive_fetches": 0,
+  "policy": "project_theseus_p4v2r2r1_source_registry_audit_v1",
+  "project_selected_quality_token_cap": null,
+  "registry": {
+    "path": "configs/theseus_p4v2r2r1_task_sources.json",
+    "sha256": "92cd51cfe0fba5ad794527573aa6cd3d570394d7d01fabbb6a55ef2bb0e25f56"
+  },
+  "replacement_repository": "pydantic/pydantic-ai",
+  "replacement_source_disjoint": true,
+  "replacement_tasks": 1,
+  "sealed_successor_tasks": 10,
+  "successor_candidate_or_control_calls": 0,
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,117 @@
+{
+  "policy": "project_theseus_p4v2r2r1_recovery_source_selection_v1",
+  "state": "SEALED_BEFORE_NEW_ARCHIVE_FETCH_OR_ANY_SUCCESSOR_CANDIDATE_CALL",
+  "sealed_utc": "2026-08-01T20:24:59Z",
+  "selection_rule": "Carry only the nine P4-v2r2 tasks independently retained as candidate-unseen after the route-held two-call implementation failure. Replace the consumed Flask task with exactly one merged, openly licensed, source-disjoint Python maintenance task selected from public metadata, license text, and patch structure only. The replacement must exercise multiple causally related code nodes and admit independent parent-fail, target-pass, corruption, and semantic-IR replay checks. No candidate output was released from the failed campaign, so selection cannot condition on candidate behavior.",
+  "predecessor_interruption": "reports/theseus_p4v2r2_attempt2_interruption.json",
+  "predecessor_interruption_sha256": "f17102b741b27d01a127a5f4a72e8bf47c18ea3c366d17b0e1f6ffc8414afded",
+  "predecessor_terminal_disposition": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
+  "predecessor_terminal_disposition_sha256": "ab916b8c64fe130f00bbbd51e27bf93c37df334cfc6b2b5830eb117e74efa4f8",
+  "predecessor_pool": "configs/theseus_p4v2r2_task_pool.json",
+  "predecessor_pool_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
+  "predecessor_registry": "configs/theseus_p4v2r2_task_sources.json",
+  "predecessor_registry_sha256": "7264e2a040092de68e98a8a91b97ec38ca9a04a442f80a3c0551e767b0c68915",
+  "carried_candidate_unseen_stems": [
+    "p4v2r2_02_jinja_2061",
+    "p4v2r2_03_textual_6592",
+    "p4v2r2_04_scrapy_7783",
+    "p4v2r2_05_pyflakes_765",
+    "p4v2r2_06_pycodestyle_1286",
+    "p4v2r2_07_drf_9977",
+    "p4v2r2_08_pylsp_715",
+    "p4v2r2_09_hypothesis_4787",
+    "p4v2r2_10_pillow_9821"
+  ],
+  "consumed_stems_excluded": ["p4v2r2_01_flask_5917"],
+  "replacement_task": {
+    "campaign_index": 10,
+    "stem": "p4v2r2r1_10_pydantic_ai_6901",
+    "case": "pydantic_ai_openrouter",
+    "repository": "pydantic/pydantic-ai",
+    "license_spdx": "MIT",
+    "license_paths": ["LICENSE"],
+    "pull_request": 6901,
+    "pull_request_title": "Raise ModelAPIError for OpenRouter responses with null choices and no error envelope",
+    "merged_utc": "2026-07-30T23:12:05Z",
+    "parent_revision": "f5577efa6dea7bf226d65ea6171a6c250153a002",
+    "target_revision": "d91f12c0589f156b124216569c16ff4a91a55249",
+    "merge_revision": "9248f267c0a51ba53aa012ac9c6eb34549381a2e",
+    "source_root": "pydantic-ai-f5577efa6dea7bf226d65ea6171a6c250153a002",
+    "target_root": "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249",
+    "allowed_effect_paths": ["pydantic_ai_slim/pydantic_ai/models/openrouter.py"],
+    "natural_request": "Classify OpenRouter responses with null choices and no error envelope as ModelAPIError in both non-streamed and streamed validation. Preserve malformed provider dictionaries and other unknown shapes as fatal validation failures, preserve normal completions and existing error-envelope handling, use the response model name when present, and modify only pydantic_ai_slim/pydantic_ai/models/openrouter.py.",
+    "obligations": [
+      {"id": "O1", "kind": "require", "text": "A response with explicit null choices and no error envelope raises ModelAPIError on both non-streamed and streamed paths."},
+      {"id": "O2", "kind": "require", "text": "The no-completion shape requires choices and accepts only a string-or-null provider so malformed provider dictionaries and unrelated invalid bodies remain fatal."},
+      {"id": "O3", "kind": "preserve", "text": "Normal completions, existing error envelopes, nested-provider handling, and streamed model-name custody retain their behavior."},
+      {"id": "O4", "kind": "non_goal", "text": "Do not change fallback policy, provider transport, tests, or files outside pydantic_ai_slim/pydantic_ai/models/openrouter.py."}
+    ],
+    "obligation_dependencies": [
+      {"before": "O2", "after": "O1"},
+      {"before": "O3", "after": "O1"}
+    ],
+    "reads": [
+      {"path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "start_line": 1, "end_line": 25},
+      {"path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "start_line": 570, "end_line": 650},
+      {"path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "start_line": 1000, "end_line": 1085},
+      {"path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "start_line": 1175, "end_line": 1265}
+    ],
+    "searches": [
+      {"literal": "_OpenRouterErrorResponse", "paths": ["pydantic_ai_slim/pydantic_ai/models/openrouter.py"]},
+      {"literal": "_validate_completion", "paths": ["pydantic_ai_slim/pydantic_ai/models/openrouter.py"]},
+      {"literal": "_validate_response", "paths": ["pydantic_ai_slim/pydantic_ai/models/openrouter.py"]}
+    ],
+    "visible_markers": [
+      {"marker": "P4V2R2R1_VISIBLE_OPENROUTER_NULL_CHOICES", "obligation_ids": ["O1", "O2", "O3"]}
+    ],
+    "oracle_units": [
+      {
+        "id": "U1", "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "obligation_ids": ["O1"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "ImportFrom", "contains": "ModelHTTPError, UserError"},
+        "target_selectors": [{"node_type": "ImportFrom", "contains": "ModelAPIError, ModelHTTPError, UserError"}]
+      },
+      {
+        "id": "U2", "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "obligation_ids": ["O1", "O2"], "operation": "INSERT_BEFORE",
+        "parent_selector": {"node_type": "ClassDef", "qualified_name": "_OpenRouterNestedCompletion"},
+        "target_selectors": [{"node_type": "ClassDef", "qualified_name": "_OpenRouterNoCompletionResponse"}]
+      },
+      {
+        "id": "U3", "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "INSERT_BEFORE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_map_openrouter_provider_details"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "_raise_for_no_completion"}]
+      },
+      {
+        "id": "U4", "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "obligation_ids": ["O1", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "OpenRouterModel._validate_completion"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "OpenRouterModel._validate_completion"}]
+      },
+      {
+        "id": "U5", "path": "pydantic_ai_slim/pydantic_ai/models/openrouter.py", "obligation_ids": ["O1", "O2", "O3", "O4"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "AsyncFunctionDef", "qualified_name": "OpenRouterStreamedResponse._validate_response"},
+        "target_selectors": [{"node_type": "AsyncFunctionDef", "qualified_name": "OpenRouterStreamedResponse._validate_response"}]
+      }
+    ]
+  },
+  "boundaries": {
+    "new_archive_fetches": 0,
+    "new_parent_target_oracle_or_evaluator_executions": 0,
+    "successor_local_model_calls": 0,
+    "successor_hosted_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_or_operator_gate": false,
+    "project_selected_quality_token_cap": null
+  },
+  "contamination_and_use": {
+    "public_benchmark": false,
+    "development_only": true,
+    "training_eligible": false,
+    "D1_eligible": false,
+    "D2_eligible": false,
+    "target_patch_tests_or_oracle_candidate_visible": false,
+    "automatic_ASI_stack_support_promotion": false
+  },
+  "maximum_inference": "This seal establishes only a prospectively fixed recovery cohort: nine independently retained candidate-unseen tasks and one metadata-selected licensed source-disjoint replacement. It is not archive, evaluator, candidate, mechanism, D1, D2, serving, training, or ASI Stack support evidence."
+}

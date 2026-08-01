@@ -1,0 +1,30 @@
+{
+  "policy": "project_theseus_p4v2r2r1_online_selection_receipt_v1",
+  "created_utc": "2026-08-01T20:24:59Z",
+  "trigger_state": "GREEN",
+  "faults": [],
+  "selected_repository": "pydantic/pydantic-ai",
+  "selected_pull_request": 6901,
+  "github_pull_url": "https://github.com/pydantic/pydantic-ai/pull/6901",
+  "license_spdx": "MIT",
+  "merge_base_revision": "f5577efa6dea7bf226d65ea6171a6c250153a002",
+  "target_revision": "d91f12c0589f156b124216569c16ff4a91a55249",
+  "merge_revision": "9248f267c0a51ba53aa012ac9c6eb34549381a2e",
+  "changed_files": [
+    "pydantic_ai_slim/pydantic_ai/models/openrouter.py",
+    "tests/models/test_openrouter.py"
+  ],
+  "candidate_allowed_effect_paths": [
+    "pydantic_ai_slim/pydantic_ai/models/openrouter.py"
+  ],
+  "selection_evidence": "Public GitHub search, pull metadata, license metadata, commit ancestry, merge-base comparison, and production patch structure only.",
+  "network_metadata_queries": 11,
+  "archive_fetches": 0,
+  "parent_target_oracle_or_evaluator_executions": 0,
+  "candidate_or_control_calls": 0,
+  "candidate_outputs_observed": 0,
+  "external_runtime_inference_calls": 0,
+  "teacher_training_rows": 0,
+  "project_selected_quality_token_cap": null,
+  "maximum_inference": "This receipt proves only the stated public metadata and prospective selection boundary. It does not prove archive identity, evaluator adequacy, task solvability, candidate utility, or an ASI Stack claim."
+}
