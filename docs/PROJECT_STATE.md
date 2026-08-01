@@ -3,7 +3,7 @@
 Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
 `cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
 page includes the bounded 13-claim causal-binding transaction, the terminal
-P2A/P2B instrument-adequacy results, and the source-bound P2C successor.
+P2A/P2B instrument-adequacy results, and the terminal adequate P2C successor.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -22,8 +22,9 @@ now also terminated without an evaluable candidate: its matched execution held,
 but TMax did not follow the edit protocol and the task exposed a path-namespace
 ambiguity. P2B also ended inconclusively because its displayed grammar used
 literal backslash-n text while its parser required actual newlines; Qwen3.5
-reproduced the displayed transport. P2C changes only that transport and now has
-a fresh licensed Click task and blind evaluator sealed for one run. In parallel,
+reproduced the displayed transport. P2C changed only that transport and has now
+completed its single licensed Click run: the harness is adequate, but the task
+was not solved. In parallel,
 the neural campaign remains held on clean
 source binding and migration from manual holds to bounded machine-readable
 launch and one-shot evaluation authority. No forward phase depends on Corben
@@ -81,7 +82,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
-| P2C grammar-transport instrument | `TASK_AND_EVALUATOR_SEALED_READY_FOR_ONE_RUN` | The exact P2B denominator is retained except for actual-newline grammar transport; the round-trip audit is GREEN, and one fresh BSD-3-Clause Click task plus network-free blind evaluator are source-bound, audit-GREEN, and eligible for one run |
+| P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -167,8 +168,13 @@ BSD-3-Clause parent emits double-bracketed optional Choice/DateTime metavars,
 while the exact upstream target passes a network-free blind oracle that also
 checks required, deprecated, and repeated-argument behavior. The normalized
 parent/target archives, task manifest, hidden oracle, evaluator, and GREEN
-baseline-fail/target-pass audit are sealed. No candidate call has occurred; the
-task is authorized for one P2C run only.
+baseline-fail/target-pass audit were sealed before generation. The one run used
+one persistent load and three calls. Direct remained malformed after repair;
+integrated produced one safe, authorized, parseable edit, but that edit retained
+the double-bracketing defect and failed the hidden oracle. Rollback passed. The
+harness is therefore adequate for P3 residual measurement, while the task has
+zero useful candidates and is consumed. This single task establishes no
+direct-versus-integrated, subsystem, model-competence, or book claim.
 
 Historical L0 evidence remains preserved:
 
@@ -484,12 +490,11 @@ In order:
 4. Preserve P2B's run, blind evaluation, runtime receipts, and terminal
    disposition. Do not replay its consumed Requests task or infer model or
    subsystem failure from the literal-newline transport mismatch.
-5. Preserve the frozen P2C grammar repair, GREEN exact
-   rendered-example/parser round trip, and sealed source-disjoint Click
-   task/evaluator. Consume that task exactly once without changing any other
-   P2B denominator variable; open P3 only if a candidate reaches independent
-   correctness evaluation.
-6. For P3, freeze the best adequate installed local model and a separately
+5. Preserve the terminal P2C run, blind evaluation, runtime receipts, and
+   disposition. Do not replay the consumed Click task or infer a subsystem
+   effect from its one parseable but incorrect integrated candidate.
+6. For P3, freeze ten fresh licensed source-disjoint tasks, the best retained
+   local model, and a separately
    governed Luna-xhigh reference adapter. Run each model direct and integrated
    on the same ten sealed tasks; interpret within-model Theseus effects and
    report hosted-wrapper differences rather than treating cross-model rank as

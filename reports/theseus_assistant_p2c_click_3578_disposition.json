@@ -1,0 +1,103 @@
+{
+  "consumption": {
+    "eligible_for_D1_or_D2": false,
+    "eligible_for_exact_rerun": false,
+    "eligible_for_training": false,
+    "task_consumed": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:23:54.740349Z",
+  "faults": [],
+  "grammar_transport": {
+    "contains_actual_newline": true,
+    "contains_literal_backslash_n": false,
+    "sha256": "fad102acbc0039c9c2747e6cb25ec07cef5f0fe5b50c9bd18f9904d906af02b7"
+  },
+  "maximum_inference": "P2C proves that the exact Qwen3.5 direct/integrated harness can produce, apply, seal, and independently score an authorized edit under the frozen budget. The one Click task was not solved. A single integrated parseable candidate cannot establish a direct-versus-integrated effect, model competence, any Theseus subsystem benefit, or any ASI Stack claim.",
+  "next_stage": {
+    "id": "P3_TEN_TASK_MATCHED_RESIDUAL_CAMPAIGN",
+    "requirements": [
+      "freeze a fresh ten-task licensed source-disjoint development pool before candidate generation",
+      "retain blind route-hidden evaluation and disposable-snapshot effects",
+      "report direct and integrated denominators separately, including malformed, failed, useful, unsafe, rollback, latency, and weak-tail outcomes",
+      "treat the governed Luna-xhigh 2x2 as a separate hosted reference denominator only after a callable transport is source-bound",
+      "select no P4 mechanism until P3 exposes a nonzero, decision-relevant residual on an adequate instrument"
+    ]
+  },
+  "observed_residuals": [
+    "The direct arm did not emit a parseable typed edit after its one allowed repair.",
+    "The integrated arm emitted one safe, authorized, parseable edit on its first call.",
+    "The integrated edit preserved the original double-bracketing defect and failed the sealed hidden oracle."
+  ],
+  "policy": "project_theseus_p2c_terminal_disposition_v1",
+  "recomputed_checks": {
+    "actual_newline_grammar_transport": true,
+    "correctness_evaluated_candidates": 1,
+    "direct_candidate_parseable": false,
+    "integrated_candidate_parseable": true,
+    "matched_pair_ready": true,
+    "one_persistent_model_load": true,
+    "rollback_verified": true,
+    "route_integrity_ready_for_every_call": true,
+    "three_model_calls": true,
+    "unsafe_candidates": 0,
+    "useful_candidates": 0
+  },
+  "scientific_status": "INSTRUMENT_ADEQUATE_TASK_NOT_SOLVED",
+  "source_identities": {
+    "evaluation": {
+      "path": "reports/theseus_assistant_p2c_click_3578_evaluation.json",
+      "sha256": "48bc92795b5305eb38f41d70cc6636f37dbf493119dad7968bb0eef648e1009c"
+    },
+    "instrument": {
+      "path": "configs/theseus_assistant_p2c_instrument.json",
+      "sha256": "e27d742c6c78e5120a7b96cc7176ec1219a2a55fa4b5426bce9017dbf520219b"
+    },
+    "run": {
+      "path": "reports/theseus_assistant_p2c_click_3578_run.json",
+      "sha256": "ae28b1f04ad681a22d3dee26f825be7918f07d08ef3e08d3ce08b60de51b60d3"
+    },
+    "runtime_reports": [
+      {
+        "arm_id": "direct_local_model",
+        "assistant_output_sha256": "f11c55c17cfa3acbcdd64b6cdce723c0b28a7fb664fc01b0c71ed6fa046479ab",
+        "call_number": 1,
+        "path": "runtime/p2a/p2a_p2c-click-optional-metavar-brackets-001_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "7af4bb707faae05b2aecb73162ca390c1bc764ea2523ff16d9e54b25a030fd3f"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "assistant_output_sha256": "f11c55c17cfa3acbcdd64b6cdce723c0b28a7fb664fc01b0c71ed6fa046479ab",
+        "call_number": 2,
+        "path": "runtime/p2a/p2a_p2c-click-optional-metavar-brackets-001_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "d6f528aabac3a9efd08e33270423e882c40819533418339faac24d8a44e6b380"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "assistant_output_sha256": "4ec9ec933ef6e81cd5add5f08f1b0e76d056e048075c459791d5d8104e80106f",
+        "call_number": 1,
+        "path": "runtime/p2a/p2a_p2c-click-optional-metavar-brackets-001_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "RED",
+        "sha256": "319c6e5f545b258e841e83748b81b5aaa4f9a3eb54145e10fedb8263323576ba"
+      }
+    ],
+    "task": {
+      "path": "configs/theseus_p2c_task_click_3578.json",
+      "sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b"
+    }
+  },
+  "terminal_disposition": "P2C_TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL",
+  "trigger_state": "GREEN"
+}

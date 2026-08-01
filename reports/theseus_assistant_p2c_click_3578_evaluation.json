@@ -1,0 +1,114 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "1e62460b9365c95f9f83b07feb43bf15c02da1462bb4e50464e10564452bb141",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 150.219,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-ko3nviyx/source/theseus_p2c_hidden_test.py\", line 25, in <module>\n    assert optional_choice.make_metavar(ctx) == \"[foo|bar|baz]\", (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: optional choice metavar must not be double bracketed\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T01:20:44.644762Z",
+    "evaluator_sha256": "166641520d77200b10eb33c0fe39a7c681f6731b2b9c331baa6a37b377fd950d",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 428.064,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "1e62460b9365c95f9f83b07feb43bf15c02da1462bb4e50464e10564452bb141",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 96.496,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "b1cc29cf91c223c2d0e20c5a2da18831a11c820215f507b53b4371f8c3d8bf30",
+      "task_sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "ae28b1f04ad681a22d3dee26f825be7918f07d08ef3e08d3ce08b60de51b60d3",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:20:44.927130Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 1,
+    "sealed_candidates": 1,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "7672b490b31d8929c6af266af551e62ac92b3b9b2fca23c4bde4e25d8d5906b8"
+    ]
+  },
+  "evaluator_sha256": "166641520d77200b10eb33c0fe39a7c681f6731b2b9c331baa6a37b377fd950d",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "7672b490b31d8929c6af266af551e62ac92b3b9b2fca23c4bde4e25d8d5906b8",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "src/click/core.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "1e62460b9365c95f9f83b07feb43bf15c02da1462bb4e50464e10564452bb141",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 98.849,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-h96av9xz/candidate/theseus_p2c_hidden_test.py\", line 25, in <module>\n    assert optional_choice.make_metavar(ctx) == \"[foo|bar|baz]\", (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: optional choice metavar must not be double bracketed\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 710.348,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}
