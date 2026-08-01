@@ -1,0 +1,45 @@
+{
+  "policy": "project_theseus_p2b_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "task_manifest": "configs/theseus_p2c_task_click_3578.json",
+  "task_manifest_sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b",
+  "baseline_must_fail": true,
+  "baseline_failure_markers": [
+    "optional choice metavar must not be double bracketed"
+  ],
+  "hidden_test_files": [
+    {
+      "source": "tests/fixtures/theseus_assistant_p2a_online/click_3578_hidden_test.py",
+      "sha256": "8142a2192962fd75246926de31173d3ae64fcfe23eb89a2fd947e9f3ca4ed766",
+      "destination": "theseus_p2c_hidden_test.py"
+    }
+  ],
+  "target_archive": "tests/fixtures/theseus_assistant_p2a_online/click_3578_target.tar.gz",
+  "target_archive_sha256": "ae17f9f5cc239b835e019389455ee556bae02bd6945d08cad576e3611b7106db",
+  "target_archive_root": "pallets-click-762c97e",
+  "target_provenance": {
+    "revision": "762c97eef7c1b3779678992f26a553a2a8c80793",
+    "merge_revision": "09195f6a92972c4e1bbb5493686456e6ba624520",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p2a_online/click_3578_target_upstream.tar.gz",
+    "upstream_archive_sha256": "2065d34ed5bc84700e0c3c8e428883cc41bd39afdc6183f5122937ab34935c71",
+    "archive_sanitization_report": "reports/theseus_p2c_click_3578_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "922f95bf6e51af81f20cac949070cd731ff0bc690b2b0b87abddd8aa22c73893"
+  },
+  "target_must_pass": true,
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "theseus_p2c_hidden_test.py"
+    ],
+    "timeout_seconds": 30,
+    "network": "forbidden"
+  },
+  "blindness": {
+    "candidate_generation_may_read_this_manifest": false,
+    "route_label_passed_to_scoring": false,
+    "later_patch_candidate_visible": false,
+    "hidden_test_candidate_visible": false,
+    "candidate_emitted_integrity_flags_trusted": false
+  },
+  "maximum_inference": "A GREEN audit proves only that this exact Click parent fails and exact upstream target passes the sealed evaluator; it does not establish model or subsystem competence."
+}

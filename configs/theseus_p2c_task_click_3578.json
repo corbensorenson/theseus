@@ -1,0 +1,71 @@
+{
+  "policy": "project_theseus_p2b_licensed_task_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "opaque_task_id": "p2c-click-optional-metavar-brackets-001",
+  "partition": "development_instrument_adequacy",
+  "family": "bounded_python_correctness_repair",
+  "natural_request": "Fix optional argument metavars whose type already returns a bracketed choice or format so the usage synopsis does not add a second pair of brackets. Preserve required, deprecated, and repeated-argument behavior. Modify only src/click/core.py.",
+  "source_archive": "tests/fixtures/theseus_assistant_p2a_online/click_3578_parent.tar.gz",
+  "source_archive_sha256": "b1cc29cf91c223c2d0e20c5a2da18831a11c820215f507b53b4371f8c3d8bf30",
+  "source_archive_root": "pallets-click-8929d39",
+  "source_provenance": {
+    "repository": "pallets/click",
+    "url": "https://github.com/pallets/click",
+    "revision": "8929d392781c8113bc569f388c15c47b94f86581",
+    "retrieved_utc": "2026-08-01T01:12:57Z",
+    "license_spdx": "BSD-3-Clause",
+    "license_path": "LICENSE.txt",
+    "upstream_request_url": "https://github.com/pallets/click/pull/3578",
+    "upstream_request_title": "Fix double-bracketing of choices in synopsis",
+    "upstream_merged_utc": "2026-06-13T03:59:03Z",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p2a_online/click_3578_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "840c0fe8b682c41938def1ade7a606bf12d24421ad013d4bf87139195171ca22",
+    "archive_sanitization_report": "reports/theseus_p2c_click_3578_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "717658b7a4581126500c5b8b601caa8dc49fa2fc804a5f37316c2caf630767b0"
+  },
+  "contamination_screen": {
+    "public_benchmark": false,
+    "previous_theseus_surface": false,
+    "source_disjoint_from_p2a_and_p2b": true,
+    "task_selected_after_p2c_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true,
+    "later_patch_or_tests_candidate_visible": false,
+    "development_task_eligible_for_training": false,
+    "development_task_eligible_for_D1_or_D2": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing"
+  },
+  "allowed_effect_paths": [
+    "src/click/core.py"
+  ],
+  "candidate_visible_context": {
+    "searches": [
+      {
+        "literal": "def make_metavar",
+        "paths": [
+          "src/click/core.py"
+        ]
+      }
+    ],
+    "reads": [
+      {
+        "path": "src/click/core.py",
+        "start_line": 3540,
+        "end_line": 3595
+      }
+    ],
+    "maximum_total_characters": 9000
+  },
+  "visible_verifier": {
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/click/core.py"
+    ],
+    "timeout_seconds": 30,
+    "answer_specific": false
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "maximum_inference": "This task can establish P2C instrument adequacy only; it cannot support a Theseus subsystem, model, D1, D2, or general coding claim."
+}

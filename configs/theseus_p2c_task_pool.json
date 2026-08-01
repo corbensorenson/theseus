@@ -1,0 +1,40 @@
+{
+  "policy": "project_theseus_p2c_licensed_task_pool_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "partition": "development_instrument_adequacy",
+  "candidate_generation_opened": false,
+  "selection_rule": "First audit-GREEN, source-disjoint, non-benchmark, licensed post-freeze maintenance task with a compact network-free parent-fail/target-pass oracle after prospective P2C instrument freeze and construct-validity review.",
+  "instrument": "configs/theseus_assistant_p2c_instrument.json",
+  "instrument_freeze_commit": "9b87c861ce37febdd6daed3cdc700da08f8d6471",
+  "instrument_sha256": "e27d742c6c78e5120a7b96cc7176ec1219a2a55fa4b5426bce9017dbf520219b",
+  "instrument_audit": "reports/theseus_assistant_p2c_instrument_audit.json",
+  "instrument_audit_sha256": "36ea0000edb0770f21c3eb8c3d2cd4977925c8b084e2180ff8c2b084fe37777b",
+  "task_count": 1,
+  "task": "configs/theseus_p2c_task_click_3578.json",
+  "task_sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b",
+  "evaluator": "configs/theseus_p2c_evaluator_click_3578.json",
+  "evaluator_sha256": "166641520d77200b10eb33c0fe39a7c681f6731b2b9c331baa6a37b377fd950d",
+  "evaluator_audit": "reports/theseus_p2c_click_3578_evaluator_audit.json",
+  "evaluator_audit_sha256": "8f1c7d7ed3e404475df1b99890c6e15a88e774ea6cc0e8a703d4d3f9c04c9ec7",
+  "source_disjoint_from": [
+    "p2a-typing-qualifier-inheritance-001",
+    "p2b-multipart-dynamic-read-wrapper-001"
+  ],
+  "exclusions": {
+    "public_benchmarks": true,
+    "training_use": true,
+    "D1_use": true,
+    "D2_use": true,
+    "target_patch_candidate_visibility": true,
+    "hidden_test_candidate_visibility": true,
+    "user_task_or_label_dependency": true
+  },
+  "counters": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_model_calls": 0
+  },
+  "maximum_inference": "This seal establishes only that one P2C development task and its evaluator were fixed after instrument freeze and before candidate generation."
+}

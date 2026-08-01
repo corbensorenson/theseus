@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "1e62460b9365c95f9f83b07feb43bf15c02da1462bb4e50464e10564452bb141",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 197.2,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-69w5j8n4/source/theseus_p2c_hidden_test.py\", line 25, in <module>\n    assert optional_choice.make_metavar(ctx) == \"[foo|bar|baz]\", (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: optional choice metavar must not be double bracketed\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:13:54.001627Z",
+  "evaluator_sha256": "166641520d77200b10eb33c0fe39a7c681f6731b2b9c331baa6a37b377fd950d",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 629.866,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "1e62460b9365c95f9f83b07feb43bf15c02da1462bb4e50464e10564452bb141",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 153.284,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "b1cc29cf91c223c2d0e20c5a2da18831a11c820215f507b53b4371f8c3d8bf30",
+    "task_sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "761aa49fe0d8e60543dccf500d97b63fca41989815e47509e0aa98dd6ba03f2b",
+  "trigger_state": "GREEN"
+}
