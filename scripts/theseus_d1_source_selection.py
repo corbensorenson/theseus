@@ -148,6 +148,14 @@ def build_report(
         d1.read_json(instrument_path)
     )
     ledger_faults.extend(prior_faults)
+    temporal_guard, temporal_faults = audit_temporal_guard(config)
+    ledger_faults.extend(temporal_faults)
+    base["temporal_contamination_guard"] = temporal_guard
+    benchmark_repositories = {
+        str(value)
+        for value in temporal_guard.get("public_benchmark_repositories", [])
+        if isinstance(value, str)
+    }
     cohort_size = int(
         d1.mapping(d1.read_json(instrument_path).get("power_design")).get(
             "design_derived_cohort_size"
@@ -160,6 +168,10 @@ def build_report(
         campaign_id=str(d1.read_json(instrument_path).get("campaign_id") or ""),
         prior_repositories=set(prior_repositories),
         cohort_size=cohort_size,
+        model_snapshot_observed_utc=str(
+            temporal_guard.get("model_snapshot_observed_utc") or ""
+        ),
+        public_benchmark_repositories=benchmark_repositories,
     )
     if len(selected) != cohort_size:
         ledger_faults.append(
@@ -209,6 +221,16 @@ def build_report(
         "materialization_failure_disposition": (
             "INCONCLUSIVE_EXPERIMENT_NOT_REPLACED"
         ),
+        "source_disjoint_from": {
+            "prior_P2_P3_P4_P4R_P4S_repositories": d1.stable_hash(
+                prior_repositories
+            ),
+            "public_benchmark_catalog_repositories": d1.stable_hash(
+                sorted(benchmark_repositories)
+            ),
+            "training": "all_selected_D1_tasks_permanently_excluded",
+            "D2": "independent_neural_surface",
+        },
         "maximum_inference": str(config.get("maximum_inference") or ""),
     }
     base["registry_ready"] = True
@@ -251,7 +273,94 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("registry_write_improperly_authorizes_candidate_calls")
     if authority.get("serving_training_teacher_D2_or_book_promotion_authority") is not False:
         faults.append("cross_stage_authority_present")
+    if authority.get("selected_D1_sources_permanently_excluded_from_training") is not True:
+        faults.append("selected_D1_training_exclusion_missing")
+    temporal = d1.mapping(config.get("temporal_contamination_guard"))
+    if temporal.get(
+        "require_task_merged_strictly_after_model_snapshot_observed_utc"
+    ) is not True:
+        faults.append("post_snapshot_task_requirement_missing")
+    if temporal.get("candidate_emitted_contamination_flags_trusted") is not False:
+        faults.append("candidate_contamination_flags_trusted")
     return faults
+
+
+def audit_temporal_guard(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    faults: list[str] = []
+    temporal = d1.mapping(config.get("temporal_contamination_guard"))
+    preflight_path = d1.resolve(str(temporal.get("model_runtime_preflight") or ""))
+    freeze_path = d1.resolve(str(temporal.get("model_freeze") or ""))
+    benchmark_catalog_path = d1.resolve(
+        str(temporal.get("public_benchmark_catalog") or "")
+    )
+    if not preflight_path.is_file():
+        faults.append("model_runtime_preflight_missing")
+        preflight: dict[str, Any] = {}
+    else:
+        preflight = d1.read_json(preflight_path)
+        if hashlib.sha256(preflight_path.read_bytes()).hexdigest() != temporal.get(
+            "model_runtime_preflight_sha256"
+        ):
+            faults.append("model_runtime_preflight_digest_mismatch")
+    if not freeze_path.is_file():
+        faults.append("model_freeze_missing")
+        freeze: dict[str, Any] = {}
+    else:
+        freeze = d1.read_json(freeze_path)
+        if hashlib.sha256(freeze_path.read_bytes()).hexdigest() != temporal.get(
+            "model_freeze_sha256"
+        ):
+            faults.append("model_freeze_digest_mismatch")
+    preflight_identity = d1.mapping(preflight.get("model_identity"))
+    freeze_identity = d1.mapping(freeze.get("selected_model_identity"))
+    identity_keys = ("repo_id", "revision", "snapshot_manifest_sha256")
+    if (
+        preflight.get("trigger_state") != "GREEN"
+        or any(
+            preflight_identity.get(key) != freeze_identity.get(key)
+            for key in identity_keys
+        )
+    ):
+        faults.append("frozen_model_identity_or_preflight_invalid")
+    observed = str(preflight.get("created_utc") or "")
+    if parse_utc(observed) is None:
+        faults.append("model_snapshot_observed_utc_invalid")
+    benchmark_repositories: list[str] = []
+    if not benchmark_catalog_path.is_file():
+        faults.append("public_benchmark_catalog_missing")
+    else:
+        if hashlib.sha256(benchmark_catalog_path.read_bytes()).hexdigest() != temporal.get(
+            "public_benchmark_catalog_sha256"
+        ):
+            faults.append("public_benchmark_catalog_digest_mismatch")
+        benchmark_repositories = public_benchmark_repositories(
+            d1.read_json(benchmark_catalog_path)
+        )
+        if not benchmark_repositories:
+            faults.append("public_benchmark_repository_inventory_empty")
+    return {
+        "passed": not faults,
+        "faults": sorted(set(faults)),
+        "model_runtime_preflight": (
+            d1.artifact(preflight_path) if preflight_path.is_file() else {}
+        ),
+        "model_freeze": d1.artifact(freeze_path) if freeze_path.is_file() else {},
+        "model_identity": {
+            key: preflight_identity.get(key) for key in identity_keys
+        },
+        "model_snapshot_observed_utc": observed,
+        "public_benchmark_catalog": (
+            d1.artifact(benchmark_catalog_path)
+            if benchmark_catalog_path.is_file()
+            else {}
+        ),
+        "public_benchmark_repository_count": len(benchmark_repositories),
+        "public_benchmark_repositories_sha256": d1.stable_hash(
+            benchmark_repositories
+        ),
+        "public_benchmark_repositories": benchmark_repositories,
+        "candidate_emitted_contamination_flags_trusted": False,
+    }, faults
 
 
 def audit_ledger(
@@ -308,6 +417,8 @@ def select_rows(
     campaign_id: str,
     prior_repositories: set[str],
     cohort_size: int,
+    model_snapshot_observed_utc: str,
+    public_benchmark_repositories: set[str],
 ) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
     required = set(d1.mapping(config.get("metadata_eligibility")).get("required_fields") or [])
     instrument = d1.read_json(d1.resolve(str(config["instrument"])))
@@ -333,6 +444,8 @@ def select_rows(
             allowed_licenses=allowed_licenses,
             allowed_languages=allowed_languages,
             prior_repositories=prior_repositories,
+            model_snapshot_observed_utc=model_snapshot_observed_utc,
+            public_benchmark_repositories=public_benchmark_repositories,
         )
         if reason:
             exclusions.append({"row": str(index), "reason": reason})
@@ -362,6 +475,8 @@ def eligibility_fault(
     allowed_licenses: set[str],
     allowed_languages: set[str],
     prior_repositories: set[str],
+    model_snapshot_observed_utc: str,
+    public_benchmark_repositories: set[str],
 ) -> str:
     if required.difference(row):
         return "required_metadata_missing"
@@ -370,6 +485,8 @@ def eligibility_fault(
         return "repository_identity_invalid"
     if repository.lower() in prior_repositories:
         return "prior_source_repository_overlap"
+    if repository.lower() in public_benchmark_repositories:
+        return "public_benchmark_repository_overlap"
     if str(row.get("license_spdx") or "").lower() not in allowed_licenses:
         return "license_not_allowlisted"
     if str(row.get("primary_language") or "").lower() not in allowed_languages:
@@ -381,6 +498,10 @@ def eligibility_fault(
         return "immutable_revision_invalid"
     if revisions[0] == revisions[1]:
         return "parent_target_identity_equal"
+    merged = parse_utc(str(row.get("merged_utc") or ""))
+    snapshot_observed = parse_utc(model_snapshot_observed_utc)
+    if merged is None or snapshot_observed is None or merged <= snapshot_observed:
+        return "task_not_merged_strictly_after_frozen_model_snapshot_observation"
     pull = row.get("pull_request")
     if not isinstance(pull, int) or isinstance(pull, bool) or pull < 1:
         return "pull_request_identity_invalid"
@@ -394,10 +515,6 @@ def eligibility_fault(
         return "changed_in_scope_source_path_missing"
     if not any(any(marker in part.lower() for marker in TEST_MARKERS) for path in paths for part in Path(path).parts):
         return "changed_test_path_missing"
-    if row.get("public_benchmark_source") is not False:
-        return "public_benchmark_status_not_explicitly_false"
-    if row.get("training_or_distillation_overlap") is not False:
-        return "training_overlap_status_not_explicitly_false"
     if row.get("metadata_only_selection") is not True:
         return "metadata_only_selection_not_explicit"
     if contains_forbidden_outcome_key(row):
@@ -462,6 +579,21 @@ def normalized_languages(values: Any) -> set[str]:
         if name == "html/css":
             normalized.update({"html", "css"})
     return normalized
+
+
+def public_benchmark_repositories(catalog: dict[str, Any]) -> list[str]:
+    repositories: set[str] = set()
+    for row in dictionaries(catalog.get("sources")):
+        category = str(row.get("category") or "").lower()
+        if "benchmark" not in category and "leaderboard" not in category:
+            continue
+        url = str(row.get("url") or "").rstrip("/")
+        match = re.fullmatch(
+            r"https://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)", url
+        )
+        if match:
+            repositories.add(match.group(1).lower())
+    return sorted(repositories)
 
 
 def parse_utc(value: str) -> datetime | None:

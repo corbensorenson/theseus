@@ -8,7 +8,7 @@
   "discovery_frame": {
     "provider": "GitHub_public_repository_and_merged_pull_request_metadata",
     "query_partitioning": "complete_nonoverlapping_UTC_intervals_per_allowed_programming_language",
-    "interval_policy": "Starting at the P4S disposition creation time, expand the retrospective metadata frame in complete 30-day partitions until the metadata-only eligible distinct-repository count reaches the design-derived cohort size; there is no candidate-outcome stopping rule or maximum interval count.",
+    "interval_policy": "Use complete UTC intervals strictly after the exact frozen model snapshot was locally observed. After P4S survivor activation, extend the frame forward through complete intervals until the metadata-only eligible distinct-repository count reaches the design-derived cohort size; there is no candidate-outcome stopping rule, retrospective pre-snapshot task admission, or maximum interval count.",
     "require_every_partition_complete": true,
     "require_raw_response_digests": true,
     "external_inference_calls": 0,
@@ -16,6 +16,16 @@
     "candidate_or_control_calls": 0,
     "parent_target_oracle_or_evaluator_executions": 0,
     "archive_fetches": 0
+  },
+  "temporal_contamination_guard": {
+    "model_runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
+    "model_runtime_preflight_sha256": "0e223d63c3a69999a4207d6c61fb9f681879b72661823fc4f7e8a4686d70f670",
+    "model_freeze": "reports/theseus_p3_local_model_freeze.json",
+    "model_freeze_sha256": "cb37c28ca4c9b84672f7783bb523068dad8a2bb900b81e43b7853c6d4cc71d14",
+    "public_benchmark_catalog": "configs/online_source_catalog.json",
+    "public_benchmark_catalog_sha256": "6531fd86dd6e7b8a4046f1dbaa6416264fa0de12fea6b5fc0122374dcb968188",
+    "require_task_merged_strictly_after_model_snapshot_observed_utc": true,
+    "candidate_emitted_contamination_flags_trusted": false
   },
   "metadata_eligibility": {
     "required_fields": [
@@ -55,7 +65,8 @@
     "candidate_calls_after_registry_write": false,
     "archive_fetch_after_registry_write_only": true,
     "surface_consumption_count": 0,
+    "selected_D1_sources_permanently_excluded_from_training": true,
     "serving_training_teacher_D2_or_book_promotion_authority": false
   },
-  "maximum_inference": "A GREEN frozen registry proves only metadata-level eligibility, deterministic membership, source disjointness, and a before-fetch selection boundary. It does not prove archive materialization, parent failure, target pass, evaluator adequacy, candidate utility, mechanism efficacy, D1 qualification, serving, training, D2, or ASI Stack support."
+  "maximum_inference": "A GREEN frozen registry proves only metadata-level eligibility, deterministic membership, repository disjointness, exact post-snapshot temporal separation from the frozen local model bytes, and a before-fetch selection boundary. It does not prove universal contamination absence, archive materialization, parent failure, target pass, evaluator adequacy, candidate utility, mechanism efficacy, D1 qualification, serving, training, D2, or ASI Stack support."
 }

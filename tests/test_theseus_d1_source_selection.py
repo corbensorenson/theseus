@@ -41,7 +41,7 @@ def candidate(index: int) -> dict[str, object]:
         "pull_request": index + 1,
         "pull_request_url": f"https://github.com/{repository}/pull/{index + 1}",
         "pull_request_title": f"Repair behavior {index}",
-        "merged_utc": "2026-07-01T00:00:00Z",
+        "merged_utc": "2026-08-01T13:00:00Z",
         "parent_revision": digit,
         "target_revision": target,
         "merge_revision": merge,
@@ -107,6 +107,9 @@ def test_survivor_freezes_metadata_only_power_derived_cohort() -> None:
     assert registry["boundaries"]["archive_fetches"] == 0
     assert registry["boundaries"]["candidate_or_control_calls"] == 0
     assert registry["replacement_after_membership_freeze"] is False
+    assert registry["source_disjoint_from"]["training"] == (
+        "all_selected_D1_tasks_permanently_excluded"
+    )
     assert report["candidate_or_control_calls_authorized"] is False
     assert report["archive_fetch_authorized"] is False
 
@@ -161,6 +164,23 @@ def test_answer_identifying_metadata_invalidates_frame() -> None:
     assert "candidate_control_or_evaluator_outcome_in_metadata_frame" in report["faults"]
 
 
+def test_pre_snapshot_task_is_independently_excluded() -> None:
+    value = ledger(45)
+    value["rows"][0]["merged_utc"] = "2026-07-30T04:53:03Z"
+    report = selection.build_report(
+        CONFIG,
+        disposition_override=survivor(),
+        ledger_override=value,
+    )
+    assert report["trigger_state"] == "GREEN"
+    assert report["selection"]["exclusion_reason_counts"][
+        "task_not_merged_strictly_after_frozen_model_snapshot_observation"
+    ] == 1
+    assert report["temporal_contamination_guard"][
+        "candidate_emitted_contamination_flags_trusted"
+    ] is False
+
+
 def test_metadata_acquired_before_survivor_is_rejected() -> None:
     value = ledger()
     value["acquisition_opened_utc"] = "2026-08-01T11:59:59Z"
@@ -193,6 +213,27 @@ def test_prior_consumed_repository_is_excluded() -> None:
     assert report["selection"]["exclusion_reason_counts"][
         "prior_source_repository_overlap"
     ] == 1
+
+
+def test_public_benchmark_repository_is_independently_excluded() -> None:
+    value = ledger(45)
+    value["rows"][0]["repository"] = "SWE-bench/SWE-bench"
+    value["rows"][0]["repository_url"] = "https://github.com/SWE-bench/SWE-bench"
+    value["rows"][0]["pull_request_url"] = (
+        "https://github.com/SWE-bench/SWE-bench/pull/1"
+    )
+    report = selection.build_report(
+        CONFIG,
+        disposition_override=survivor(),
+        ledger_override=value,
+    )
+    assert report["trigger_state"] == "GREEN"
+    assert report["selection"]["exclusion_reason_counts"][
+        "public_benchmark_repository_overlap"
+    ] == 1
+    assert report["temporal_contamination_guard"][
+        "public_benchmark_repository_count"
+    ] > 0
 
 
 def test_selection_contract_has_no_user_gate_or_postfreeze_replacement() -> None:
