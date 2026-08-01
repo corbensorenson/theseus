@@ -1,0 +1,441 @@
+{
+  "policy": "project_theseus_p4v2r2_online_source_selection_v1",
+  "state": "FIXED_BEFORE_ARCHIVE_FETCH_PARENT_TARGET_EXECUTION_OR_CANDIDATE_GENERATION",
+  "sealed_utc": "2026-08-01T17:40:32Z",
+  "selection_rule": "Select ten distinct merged, openly licensed Python maintenance changes from repositories absent from every consumed P2, P3, P4, P4R, and P4S source. Select from public PR metadata, license text, and patch structure only, after the P4-v2r2 instrument freeze and before archive fetch, parent or target execution, oracle construction, evaluator outcomes, deterministic compiler calls, or any candidate/control model call. Prefer behaviorally sharp changes with independently testable parent-fail and exact-target-pass semantics, localized effect paths, and a deliberate range from simple edge conditions through multi-node parsing and state-reconstruction changes. Exclude trivial formatting-only changes when stronger candidates are available. Membership may be excluded only for a preregistered materialization or evaluator impossibility discovered before candidate generation and can never be replaced after any candidate/control call.",
+  "selection_evidence_boundary": "Public PR metadata, exact patch text, and license files were inspected. No source archive was fetched, no parent or target was executed, no oracle or evaluator was constructed, and no candidate or control was called before this registry was fixed.",
+  "instrument": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
+  "instrument_freeze_commit": "10b293eb7972903f11e40f7fcc18be4a437470b7",
+  "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+  "task_count": 10,
+  "distinct_repository_count": 10,
+  "boundaries": {
+    "candidate_generation_opened": false,
+    "archive_fetches_after_membership_freeze": 0,
+    "parent_target_oracle_executions": 0,
+    "local_model_calls": 0,
+    "hosted_model_calls": 0,
+    "deterministic_request_compiler_calls": 0,
+    "teacher_calls": 0,
+    "public_benchmark_cases": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_task_label_or_approval_dependency": false
+  },
+  "source_disjoint_from_repositories": [
+    "agronholm/anyio",
+    "agronholm/apscheduler",
+    "aio-libs/aiohttp",
+    "aio-libs/yarl",
+    "celery/celery",
+    "django/django",
+    "encode/httpcore",
+    "encode/httpx",
+    "encode/starlette",
+    "encode/uvicorn",
+    "fastapi/fastapi",
+    "hynek/structlog",
+    "jd/tenacity",
+    "kludex/starlette",
+    "kludex/uvicorn",
+    "marshmallow-code/marshmallow",
+    "more-itertools/more-itertools",
+    "pallets/click",
+    "pallets/werkzeug",
+    "prompt-toolkit/python-prompt-toolkit",
+    "psf/black",
+    "psf/requests",
+    "pycqa/isort",
+    "pydantic/pydantic",
+    "pypa/installer",
+    "pypa/packaging",
+    "pypa/pip",
+    "pytest-dev/pytest",
+    "python-attrs/attrs",
+    "python-poetry/poetry",
+    "python-poetry/tomlkit",
+    "python-trio/trio",
+    "python/typing",
+    "python/typing_extensions",
+    "textualize/rich",
+    "tkem/cachetools",
+    "tox-dev/filelock",
+    "tox-dev/tox",
+    "urllib3/urllib3"
+  ],
+  "tasks": [
+    {
+      "campaign_index": 1,
+      "stem": "p4v2r2_01_flask_5917",
+      "case": "flask",
+      "repository": "pallets/flask",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 5917,
+      "pull_request_title": "fix provide_automatic_options override",
+      "merged_utc": "2026-02-12T21:07:51Z",
+      "parent_revision": "d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9",
+      "target_revision": "e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad",
+      "merge_revision": "12e95c93b488725f80753f34b2e0d24838ca4646",
+      "source_root": "flask-d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9",
+      "target_root": "flask-e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad",
+      "allowed_effect_paths": ["src/flask/sansio/app.py"],
+      "natural_request": "Make an explicit provide_automatic_options=True override enable automatic OPTIONS even when the application default is disabled. Preserve explicit disabling, implicit default behavior, routes that implement OPTIONS themselves, and all behavior outside src/flask/sansio/app.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "An explicit True view or route override adds automatic OPTIONS even when the configured default is false."},
+        {"id": "O2", "kind": "preserve", "text": "Explicit False still disables automatic OPTIONS and an explicit OPTIONS method remains handled by the route."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change route registration, method inference, or files outside src/flask/sansio/app.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "src/flask/sansio/app.py", "start_line": 600, "end_line": 665}],
+      "searches": [{"literal": "provide_automatic_options", "paths": ["src/flask/sansio/app.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_FLASK_OPTIONS_OVERRIDE", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/flask/sansio/app.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "App.add_url_rule", "contains": "if provide_automatic_options is None"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "App.add_url_rule", "contains": "if provide_automatic_options:"}]
+      }]
+    },
+    {
+      "campaign_index": 2,
+      "stem": "p4v2r2_02_jinja_2061",
+      "case": "jinja",
+      "repository": "pallets/jinja",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 2061,
+      "pull_request_title": "fix default for `Environment.overlay(enable_async)`",
+      "merged_utc": "2024-12-20T02:23:52Z",
+      "parent_revision": "767b23617628419ae3709ccfb02f9602ae9fe51f",
+      "target_revision": "e45bc745a76b7aa573e68888bf49ecef70001815",
+      "merge_revision": "b4b28ec01c60b8753ab53fe60b10d7dbaa55842b",
+      "source_root": "jinja-767b23617628419ae3709ccfb02f9602ae9fe51f",
+      "target_root": "jinja-e45bc745a76b7aa573e68888bf49ecef70001815",
+      "allowed_effect_paths": ["src/jinja2/environment.py"],
+      "natural_request": "Fix Environment.overlay so omitting enable_async inherits the original environment's setting while an explicit True or False still overrides it. Preserve every other overlay parameter and behavior outside src/jinja2/environment.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "An overlay with no enable_async argument inherits the source environment's async setting."},
+        {"id": "O2", "kind": "require", "text": "Explicit enable_async=True and enable_async=False overrides remain effective."},
+        {"id": "O3", "kind": "preserve", "text": "All other overlay defaults and files remain unchanged."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "src/jinja2/environment.py", "start_line": 360, "end_line": 445}],
+      "searches": [{"literal": "def overlay", "paths": ["src/jinja2/environment.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_JINJA_OVERLAY_ASYNC", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/jinja2/environment.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "Environment.overlay", "contains": "enable_async: bool = False"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "Environment.overlay", "contains": "enable_async: bool = missing"}]
+      }]
+    },
+    {
+      "campaign_index": 3,
+      "stem": "p4v2r2_03_textual_6592",
+      "case": "textual",
+      "repository": "Textualize/textual",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 6592,
+      "pull_request_title": "Fix parsing multiple keys",
+      "merged_utc": "2026-06-24T05:57:46Z",
+      "parent_revision": "aea9d4b5529841757aead36670a8a7f75aa61ed9",
+      "target_revision": "fec10399fab3c75f14d36d0faa01589b8ae13408",
+      "merge_revision": "8ce58dc0287e6247f25096c3a1a7349a411cc485",
+      "source_root": "textual-aea9d4b5529841757aead36670a8a7f75aa61ed9",
+      "target_root": "textual-fec10399fab3c75f14d36d0faa01589b8ae13408",
+      "allowed_effect_paths": ["src/textual/_xterm_parser.py"],
+      "natural_request": "Parse Kitty extended-key sequences whose text field contains multiple colon-separated codepoints and emit one key event per codepoint in order. Preserve ordinary single-key parsing, modifier handling, cached parsing, and all behavior outside src/textual/_xterm_parser.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A colon-separated Kitty text field is accepted and emits every represented character in order."},
+        {"id": "O2", "kind": "preserve", "text": "Ordinary single extended keys, modifiers, special keys, and non-Kitty parsing retain their behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change terminal protocols or files outside src/textual/_xterm_parser.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [
+        {"path": "src/textual/_xterm_parser.py", "start_line": 35, "end_line": 50},
+        {"path": "src/textual/_xterm_parser.py", "start_line": 325, "end_line": 420}
+      ],
+      "searches": [
+        {"literal": "_re_extended_key", "paths": ["src/textual/_xterm_parser.py"]},
+        {"literal": "_parse_extended_key", "paths": ["src/textual/_xterm_parser.py"]}
+      ],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_TEXTUAL_MULTI_CODEPOINT", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [
+        {
+          "id": "U1", "path": "src/textual/_xterm_parser.py", "obligation_ids": ["O1"], "operation": "REPLACE",
+          "parent_selector": {"node_type": "AnnAssign", "contains": "_re_extended_key"},
+          "target_selectors": [{"node_type": "AnnAssign", "contains": "_re_extended_key"}]
+        },
+        {
+          "id": "U2", "path": "src/textual/_xterm_parser.py", "obligation_ids": ["O1", "O2"], "operation": "INSERT_AFTER",
+          "parent_selector": {"node_type": "FunctionDef", "qualified_name": "XTermParser.disable_debug_log"},
+          "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "XTermParser._parse_colon_codepoints"}]
+        },
+        {
+          "id": "U3", "path": "src/textual/_xterm_parser.py", "obligation_ids": ["O1", "O2"], "operation": "REPLACE",
+          "parent_selector": {"node_type": "FunctionDef", "qualified_name": "XTermParser._parse_extended_key"},
+          "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "XTermParser._parse_extended_key"}]
+        },
+        {
+          "id": "U4", "path": "src/textual/_xterm_parser.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+          "parent_selector": {"node_type": "FunctionDef", "qualified_name": "XTermParser._sequence_to_key_events"},
+          "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "XTermParser._sequence_to_key_events"}]
+        }
+      ]
+    },
+    {
+      "campaign_index": 4,
+      "stem": "p4v2r2_04_scrapy_7783",
+      "case": "scrapy",
+      "repository": "scrapy/scrapy",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE"],
+      "pull_request": 7783,
+      "pull_request_title": "Fix CaseInsensitiveDict.copy() sharing state with the original",
+      "merged_utc": "2026-07-28T10:21:55Z",
+      "parent_revision": "e710b9c18e18f0a3fe104fbfc72d49c221dfe448",
+      "target_revision": "c2e11bac79d11ed222da2cb4af1ef4901d4f3335",
+      "merge_revision": "59ebb26e60ea1e776ed11d00aef1d20bdb535e98",
+      "source_root": "scrapy-e710b9c18e18f0a3fe104fbfc72d49c221dfe448",
+      "target_root": "scrapy-c2e11bac79d11ed222da2cb4af1ef4901d4f3335",
+      "allowed_effect_paths": ["scrapy/utils/datatypes.py"],
+      "natural_request": "Make CaseInsensitiveDict copies independent from their originals, preserving normalized values, and make in-place union update normalized key bookkeeping. Preserve existing mapping and lookup behavior and all files outside scrapy/utils/datatypes.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Both copy.copy and .copy produce independent data and normalized-key state."},
+        {"id": "O2", "kind": "require", "text": "In-place union updates through normal key/value normalization without duplicate case variants."},
+        {"id": "O3", "kind": "preserve", "text": "Subclass value normalization, case-insensitive lookup, and files outside scrapy/utils/datatypes.py remain unchanged."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [{"path": "scrapy/utils/datatypes.py", "start_line": 90, "end_line": 160}],
+      "searches": [{"literal": "class CaseInsensitiveDict", "paths": ["scrapy/utils/datatypes.py"]}],
+      "visible_markers": [
+        {"marker": "P4V2R2_VISIBLE_SCRAPY_COPY_ISOLATION", "obligation_ids": ["O1", "O3"]},
+        {"marker": "P4V2R2_VISIBLE_SCRAPY_INPLACE_UNION", "obligation_ids": ["O2", "O3"]}
+      ],
+      "oracle_units": [{
+        "id": "U1", "path": "scrapy/utils/datatypes.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "INSERT_AFTER",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__repr__"},
+        "target_selectors": [
+          {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__copy__"},
+          {"node_type": "FunctionDef", "qualified_name": "CaseInsensitiveDict.__ior__"}
+        ]
+      }]
+    },
+    {
+      "campaign_index": 5,
+      "stem": "p4v2r2_05_pyflakes_765",
+      "case": "pyflakes",
+      "repository": "PyCQA/pyflakes",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 765,
+      "pull_request_title": "fix accessed global annotation being redefined in a local scope",
+      "merged_utc": "2023-01-31T18:45:58Z",
+      "parent_revision": "e9324649874a7124a08c3826d4cf78a4dc3aa32c",
+      "target_revision": "ded1acc1f6aa9b32f6afad27cb1652f6d48b3011",
+      "merge_revision": "e19886e583637a7e2eec428cc036094b9630f2d0",
+      "source_root": "pyflakes-e9324649874a7124a08c3826d4cf78a4dc3aa32c",
+      "target_root": "pyflakes-ded1acc1f6aa9b32f6afad27cb1652f6d48b3011",
+      "allowed_effect_paths": ["pyflakes/checker.py"],
+      "natural_request": "Track where an outer annotation is read so a same-named local assignment is still diagnosed with the correct undefined-name and unused-variable behavior. Preserve postponed-annotation handling, ordinary binding use tracking, and all files outside pyflakes/checker.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Reading an outer annotation and assigning the same name locally retains enough use-site identity for correct diagnostics."},
+        {"id": "O2", "kind": "preserve", "text": "Postponed annotations and ordinary binding loads retain their existing handling."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change message classes, scope construction, or files outside pyflakes/checker.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "pyflakes/checker.py", "start_line": 1040, "end_line": 1090}],
+      "searches": [{"literal": "def handleNodeLoad", "paths": ["pyflakes/checker.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_PYFLAKES_ANNOTATION_SCOPE", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "pyflakes/checker.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "contains": "scope[name].used = True"},
+        "target_selectors": [{"node_type": "FunctionDef", "contains": "scope[name].used = (self.scope, node)"}]
+      }]
+    },
+    {
+      "campaign_index": 6,
+      "stem": "p4v2r2_06_pycodestyle_1286",
+      "case": "pycodestyle",
+      "repository": "PyCQA/pycodestyle",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 1286,
+      "pull_request_title": "fix false positive with TypeVar defaults with more than one argument",
+      "merged_utc": "2025-06-11T17:23:48Z",
+      "parent_revision": "292cdd0a8702b8950c51e11275d7c204267204f1",
+      "target_revision": "13c626a9e70401eaf6c787cac522828f61460585",
+      "merge_revision": "8621e318655267c2a6cfa15bfd3f7cc02a60881f",
+      "source_root": "pycodestyle-292cdd0a8702b8950c51e11275d7c204267204f1",
+      "target_root": "pycodestyle-13c626a9e70401eaf6c787cac522828f61460585",
+      "allowed_effect_paths": ["pycodestyle.py"],
+      "natural_request": "Fix whitespace checking for PEP 696 generic defaults so a later type parameter with a default still requires spaced equals after earlier parameters. Preserve annotated function-argument equals handling and all behavior outside pycodestyle.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Every top-level generic type-parameter default uses the spaced-equals rule, including after commas."},
+        {"id": "O2", "kind": "preserve", "text": "Annotated function defaults and nested delimiters retain their established equals-spacing behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change unrelated whitespace checks or files outside pycodestyle.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "pycodestyle.py", "start_line": 1030, "end_line": 1110}],
+      "searches": [{"literal": "whitespace_around_named_parameter_equals", "paths": ["pycodestyle.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_PYCODESTYLE_GENERIC_DEFAULT", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "pycodestyle.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "whitespace_around_named_parameter_equals", "contains": "annotated_func_arg = True"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "whitespace_around_named_parameter_equals", "contains": "in_generic and paren_stack == ['[']"}]
+      }]
+    },
+    {
+      "campaign_index": 7,
+      "stem": "p4v2r2_07_drf_9977",
+      "case": "django_rest_framework",
+      "repository": "encode/django-rest-framework",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE.md"],
+      "pull_request": 9977,
+      "pull_request_title": "Fix OpenAPI schema for zero numeric bounds on ListField children",
+      "merged_utc": "2026-06-10T05:40:51Z",
+      "parent_revision": "7fe6124ab080e1a9552e8bf5b7b768041e67e732",
+      "target_revision": "323af3f5794487aad96c4864445234ce700ca67d",
+      "merge_revision": "cf582fb58e9e5ffcc8ed78a2cb9aaa8f4865666a",
+      "source_root": "django-rest-framework-7fe6124ab080e1a9552e8bf5b7b768041e67e732",
+      "target_root": "django-rest-framework-323af3f5794487aad96c4864445234ce700ca67d",
+      "allowed_effect_paths": ["rest_framework/schemas/openapi.py"],
+      "natural_request": "Include numeric minimum or maximum bounds equal to zero when mapping fields to OpenAPI schema. Preserve absent-bound behavior, nonzero bounds, field type mapping, and all files outside rest_framework/schemas/openapi.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Integer and floating-point minimum or maximum values equal to zero are emitted in schema content."},
+        {"id": "O2", "kind": "preserve", "text": "None remains omitted and nonzero bounds retain their exact values."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change field type/format mapping or files outside rest_framework/schemas/openapi.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "rest_framework/schemas/openapi.py", "start_line": 485, "end_line": 525}],
+      "searches": [{"literal": "def _map_min_max", "paths": ["rest_framework/schemas/openapi.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_DRF_ZERO_BOUNDS", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "rest_framework/schemas/openapi.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "AutoSchema._map_min_max", "contains": "if field.max_value:"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "AutoSchema._map_min_max", "contains": "if field.max_value is not None:"}]
+      }]
+    },
+    {
+      "campaign_index": 8,
+      "stem": "p4v2r2_08_pylsp_715",
+      "case": "python_lsp_server",
+      "repository": "python-lsp/python-lsp-server",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 715,
+      "pull_request_title": "Fix crash in `pylsp_definitions` due to definitions without a source position",
+      "merged_utc": "2026-07-18T03:16:57Z",
+      "parent_revision": "1a10b605aa731daba20e8c1827542b7145ad3059",
+      "target_revision": "f45cf0a39a2a22fa31912b306eb22042f97c8fc3",
+      "merge_revision": "19fc07aa5dd444303cead45d841115a897252cd3",
+      "source_root": "python-lsp-server-1a10b605aa731daba20e8c1827542b7145ad3059",
+      "target_root": "python-lsp-server-f45cf0a39a2a22fa31912b306eb22042f97c8fc3",
+      "allowed_effect_paths": ["pylsp/plugins/definition.py"],
+      "natural_request": "Prevent pylsp_definitions from crashing when a resolved definition has no line or column source position by omitting that unusable location. Preserve valid definitions, optional built-in following, internal-definition filtering, and all files outside pylsp/plugins/definition.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Definitions without a line or column are omitted without arithmetic on None or a crash."},
+        {"id": "O2", "kind": "preserve", "text": "Valid positioned definitions and existing built-in/internal filtering retain their behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not synthesize source positions or change files outside pylsp/plugins/definition.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "pylsp/plugins/definition.py", "start_line": 35, "end_line": 90}],
+      "searches": [{"literal": "def pylsp_definitions", "paths": ["pylsp/plugins/definition.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_PYLSP_POSITION_GUARD", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "pylsp/plugins/definition.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "pylsp_definitions", "contains": "if d.is_definition() and"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "pylsp_definitions", "contains": "and d.line is not None"}]
+      }]
+    },
+    {
+      "campaign_index": 9,
+      "stem": "p4v2r2_09_hypothesis_4787",
+      "case": "hypothesis",
+      "repository": "HypothesisWorks/hypothesis",
+      "license_spdx": "MPL-2.0",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 4787,
+      "pull_request_title": "fix potential `KeyError`",
+      "merged_utc": "2026-07-07T20:01:11Z",
+      "parent_revision": "5f23056911beda9806af126395d803222adbd377",
+      "target_revision": "8edffbaeff9e44b04b2be0f476889e06ac8e8868",
+      "merge_revision": "6bdf847291155bbeb685455a4c450e44c3431fc8",
+      "source_root": "hypothesis-5f23056911beda9806af126395d803222adbd377",
+      "target_root": "hypothesis-8edffbaeff9e44b04b2be0f476889e06ac8e8868",
+      "allowed_effect_paths": ["hypothesis/src/hypothesis/database.py"],
+      "natural_request": "Make GitHubArtifactDatabase read zip artifacts that contain file entries without explicit parent-directory entries, while remaining stable if directory and file entries arrive in either order. Preserve corrupted-archive handling, artifact layout, and all files outside hypothesis/src/hypothesis/database.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A file-only zip entry initializes its parent key path and is readable without KeyError."},
+        {"id": "O2", "kind": "preserve", "text": "Explicit directory entries do not erase files already recorded for that directory and ordinary archives remain readable."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change bad-zip handling, downloads, retention, or files outside hypothesis/src/hypothesis/database.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "hypothesis/src/hypothesis/database.py", "start_line": 930, "end_line": 990}],
+      "searches": [{"literal": "def _prepare_for_io", "paths": ["hypothesis/src/hypothesis/database.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_HYPOTHESIS_ZIP_LAYOUT", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "hypothesis/src/hypothesis/database.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "contains": "self._access_cache[keypath].add"},
+        "target_selectors": [{"node_type": "FunctionDef", "contains": "self._access_cache.setdefault(keypath, set()).add"}]
+      }]
+    },
+    {
+      "campaign_index": 10,
+      "stem": "p4v2r2_10_pillow_9821",
+      "case": "pillow",
+      "repository": "python-pillow/Pillow",
+      "license_spdx": "MIT-CMU",
+      "license_paths": ["LICENSE"],
+      "pull_request": 9821,
+      "pull_request_title": "Fix retrieving ImagePalette colors from raw palettes",
+      "merged_utc": "2026-07-27T13:07:14Z",
+      "parent_revision": "d84a667a99e5406141ee156bb303780d98d95a47",
+      "target_revision": "20b11f85ccb211816a6583b104c2b86618026f37",
+      "merge_revision": "588b43991a942eccf34fafa1c8021da23ee34593",
+      "source_root": "Pillow-d84a667a99e5406141ee156bb303780d98d95a47",
+      "target_root": "Pillow-20b11f85ccb211816a6583b104c2b86618026f37",
+      "allowed_effect_paths": ["src/PIL/ImagePalette.py"],
+      "natural_request": "Return correct RGB color-to-index mappings from ImagePalette.colors when the palette was created in a different raw byte order such as BGRX. Preserve ordinary palettes, duplicate-color first-index behavior, caching, and all files outside src/PIL/ImagePalette.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A raw palette whose rawmode differs from mode is converted to the declared mode before color indexing."},
+        {"id": "O2", "kind": "preserve", "text": "Ordinary palettes, duplicate-color first occurrence, and cached results retain their behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change palette mutation, image loading, or files outside src/PIL/ImagePalette.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "src/PIL/ImagePalette.py", "start_line": 45, "end_line": 90}],
+      "searches": [{"literal": "def colors", "paths": ["src/PIL/ImagePalette.py"]}],
+      "visible_markers": [{"marker": "P4V2R2_VISIBLE_PILLOW_RAW_PALETTE", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/PIL/ImagePalette.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "ImagePalette.colors", "contains": "len(self.palette)"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "ImagePalette.colors", "contains": "if self.rawmode and self.rawmode != self.mode"}]
+      }]
+    }
+  ],
+  "excluded_after_patch_structure_review": [
+    {
+      "repository": "fastapi/typer",
+      "pull_request": 1843,
+      "reason": "Formatting-only one-expression repair contributes less causal and weak-tail resolution than the selected behavior changes."
+    },
+    {
+      "repository": "pallets/markupsafe",
+      "pull_request": 469,
+      "reason": "One-line proxy check has no upstream test in the merged change and contributes less evaluator independence than the selected tasks."
+    }
+  ],
+  "contamination_and_use": {
+    "public_benchmark": false,
+    "development_only": true,
+    "training_eligible": false,
+    "D1_eligible": false,
+    "D2_eligible": false,
+    "serving_eligible": false,
+    "target_patch_tests_or_oracle_candidate_visible": false,
+    "automatic_ASI_stack_support_promotion": false
+  },
+  "maximum_inference": "This fixed registry establishes only prospective P4-v2r2 source membership, public provenance, license metadata, candidate-visible request and obligation design, and semantic-oracle selector intent. It is not evidence that archives materialize, parents fail, targets pass, evaluators are adequate, candidates succeed, the mechanism survives, D1 or D2 qualifies, serving is safe, training data is admissible, or an ASI Stack claim is supported."
+}
