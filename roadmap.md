@@ -317,6 +317,28 @@ prefer the simpler route when practically tied. A local default stays shadowed
 and reversible until at least five distinct real tasks show no safety,
 rollback, or weakest-task-type regression. L0 remains development evidence.
 
+##### P3 hosted reference control
+
+Run the same sealed task pool as a separately labeled 2×2 reference after task
+selection is immutable:
+
+| Model | Direct | Theseus-integrated |
+| --- | --- | --- |
+| Best locally qualified model | Primary local baseline | Primary Theseus causal contrast |
+| `gpt-5.6-luna` at `xhigh` | Hosted reference baseline | Hosted Theseus robustness contrast |
+
+The Luna arms use the same candidate-visible source snapshot, natural request,
+typed-edit protocol, two-call cap, visible verifier, hidden evaluator, effect
+sandbox, and route-blind scoring. Luna outputs are measurement-only: never
+served, never admitted as training rows, never used to choose tasks, and never
+mixed into the local denominator. The within-local and within-Luna Theseus
+deltas are interpretable separately. The cross-model ranking and interaction
+remain exploratory because the hosted Codex wrapper, tokenizer, reasoning
+tokens, latency, cost, and runtime differ. Bind a callable transport and exact
+model/effort receipt before running this row; current official guidance names
+Luna for clear, repeatable, high-volume or focused coding work and permits
+`xhigh` when supported.
+
 #### P4 — Test one ASI Stack mechanism at a time
 
 State: `BLOCKED_ON_NONZERO_AUTONOMOUS_P3_USEFULNESS`.
@@ -392,7 +414,8 @@ Maintenance serves P or N and does not become another research program:
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
 | Autonomous instrument successor | `P2A_IMPLEMENTED_AWAITING_LICENSED_TASK` | Persistent exact TMax, concise atomic typed edits, one repair, and route-blind hidden evaluation are audit-GREEN; empirical adequacy still requires one sealed online task |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
-| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 produced zero independently evaluable candidates; no route or subsystem won |
+| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 produced zero independently evaluable candidates; P3 will compare the best qualified local model and a separately governed Luna-xhigh reference, each direct and integrated |
+| Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_HELD_PENDING_AUTONOMOUS_POLICY` | N0 may refresh readiness; N1/N2 require a machine-readable launch/resource/rollback policy, not a user decision |
@@ -416,10 +439,14 @@ Maintenance serves P or N and does not become another research program:
 5. Run P2A automatically after its source and task packets pass. If it reaches
    independent correctness evaluation, open P3; if it fails, qualify one
    stronger local model under a new denominator.
-6. In parallel, refresh N0 with the training hold installed and implement the
+6. Before P3, select the best adequate installed local model on the sealed
+   development pool and bind the measurement-only Luna-xhigh adapter. Run both
+   models direct and integrated on the same ten tasks without mixing
+   denominators or allowing hosted outputs into serving or training.
+7. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-7. Select no P4 subsystem ablation until P3 establishes nonzero useful work and
+8. Select no P4 subsystem ablation until P3 establishes nonzero useful work and
    the autonomous residual ledger identifies one decision-relevant defect.
 
 ## Historical Rapid Evidence Campaign
@@ -786,7 +813,9 @@ routine approval, scheduling, or continued presence from Corben:
 - read-only audits and source reconciliation;
 - read-only acquisition from allowlisted online task/data sources with local
   caching, provenance, license, retention, and contamination receipts;
-- P2A-P5 local, no-teacher experiments after their machine gates pass;
+- P2A, P4, and P5 local, no-teacher experiments after their machine gates pass;
+- P3 measurement-only Luna reference calls after the exact transport, task,
+  no-serving, no-training, cost, and evaluator gates pass;
 - N0 source/custody readiness and implementation of the automated N1 launch
   controller with the training hold installed;
 - bounded N1-N2 execution after the automated controller proves exact source,

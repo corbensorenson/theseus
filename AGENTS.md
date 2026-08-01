@@ -8,8 +8,14 @@ experimental substrate, not the primary product goal.
 
 ## Hard Rules
 
-1. External inference is permitted only as a governed teacher during training.
-   Externally generated tokens are never served to a user.
+1. External inference is permitted only as a governed teacher during training
+   or as a prospectively sealed OpenAI measurement-only reference control on
+   public, license-compatible experimental tasks. Reference-control outputs
+   are never served to a user, admitted as training rows, used to select or
+   tune tasks, mixed into local-model denominators, or granted source effects.
+   They must use the same candidate-visible task packet and independent hidden
+   evaluator as the corresponding local arms, with provider/model/effort,
+   wrapper, budgets, cost, and information-flow differences reported.
 2. Public benchmarks are calibration only. Never train on public benchmark
    prompts, tests, hidden tests, solutions, traces, or answer templates.
 3. Public benchmarks stay calibration-only, but fresh frozen measurement
@@ -44,6 +50,9 @@ experimental substrate, not the primary product goal.
    no provider credentials, subscription usage, or live generation. Provider
    provenance must remain explicit and does not waive license, quality,
    deduplication, contamination, synthetic-share, retention, or verifier gates.
+   Measurement-only reference controls inherit the same OpenAI-only provider
+   restriction and may run only through ChatGPT, Codex, or an explicitly
+   approved OpenAI API path.
 
 ## Anti-Cheating Guardrail
 

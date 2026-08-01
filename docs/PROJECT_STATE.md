@@ -75,6 +75,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | P2A successor instrument | `IMPLEMENTED_AUDIT_GREEN_AWAITING_TASK` | One persistent exact-TMax load, a bound 1,536-token decoder, at most two calls per arm, atomic typed edits, visible-verifier repair, route-blind hidden evaluation, and rollback recomputation pass the mechanics suite; empirical adequacy is not yet established |
+| Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
 | Training | `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING` | `runtime/control/neural_seed_yield_after_segment` is present; removal must move to the exact automated launch controller |
@@ -433,23 +434,28 @@ In order:
 4. Build a sealed license-compatible online task pool and run P2A
    automatically. Open P3 on adequacy; otherwise qualify one stronger local
    model under a new denominator. Do not replay P2-001.
-5. Refresh neural N0 source/custody readiness in parallel and implement the
+5. For P3, freeze the best adequate installed local model and a separately
+   governed Luna-xhigh reference adapter. Run each model direct and integrated
+   on the same ten sealed tasks; interpret within-model Theseus effects and
+   report hosted-wrapper differences rather than treating cross-model rank as
+   a clean causal contrast.
+6. Refresh neural N0 source/custody readiness in parallel and implement the
    automated launch/resource/checkpoint/rollback controller. N1/N2 wait on its
    machine predicates, not a user decision.
-6. Keep E2, D2, and public calibration sealed. Do not tune or rerun
+7. Keep E2, D2, and public calibration sealed. Do not tune or rerun
    TMax/Worker-v4 on the consumed procedural-effect task.
    Preserve its terminal post-plan edit-commitment disposition and the
    superseded source-state diagnosis.
-7. Model-shopping is optional and nonblocking. Preflight a stronger local
+8. Model-shopping is optional and nonblocking. Preflight a stronger local
    model only when it is installed or a measured worker wall makes that
    comparison the smallest decision-relevant experiment.
-8. Continue cleanup only when it removes a proof/neural blocker or a material
+9. Continue cleanup only when it removes a proof/neural blocker or a material
    storage wall. Inventory the 41 GiB runtime and 1.9 GiB reports trees under
    existing retention authority before deleting anything.
-9. After a live subsystem earns a reversible local default on development
+10. After a live subsystem earns a reversible local default on development
    evidence, freeze a fresh source-disjoint D1 qualification before making a
    claim-bearing comparison.
-10. Continue the already-scoped custody work autonomously: commit coherent
+11. Continue the already-scoped custody work autonomously: commit coherent
     source transactions, establish independent encrypted custody, and leave
     retention or public-root mutation out of scope until exact machine policies
     exist.

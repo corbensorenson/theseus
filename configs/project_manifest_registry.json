@@ -9423,6 +9423,7 @@
         "configs/assistant_trace_schema.json",
         "configs/theseus_assistant_runtime.json",
         "configs/theseus_assistant_p2a_instrument.json",
+        "configs/theseus_external_reference_control.json",
         "configs/reflexive_router_contract.json",
         "configs/reflexive_router_profile.json",
         "scripts/theseus_assistant_product_lane_gate.py",

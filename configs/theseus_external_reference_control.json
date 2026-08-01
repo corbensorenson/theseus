@@ -1,0 +1,63 @@
+{
+  "policy": "project_theseus_openai_measurement_reference_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "state": "PROSPECTIVELY_DEFINED_TRANSPORT_NOT_BOUND",
+  "purpose": "Add a separately labeled hosted reference ceiling without changing the local-serving north star or mixing causal denominators.",
+  "reference_model": {
+    "provider": "OpenAI",
+    "surface": "ChatGPT_or_Codex_only",
+    "requested_model": "gpt-5.6-luna",
+    "reasoning_effort": "xhigh",
+    "role": "measurement_only_reference_control",
+    "current_official_guidance": "Luna is intended for clear, repeatable, high-volume and focused coding tasks; xhigh is for demanding reasoning when supported.",
+    "documentation_url": "https://learn.chatgpt.com/docs/models"
+  },
+  "factorial": {
+    "models": [
+      "best_locally_qualified_model",
+      "gpt-5.6-luna_xhigh_reference"
+    ],
+    "system_conditions": [
+      "direct",
+      "theseus_integrated"
+    ],
+    "primary_local_contrast": "best_local_integrated_minus_best_local_direct",
+    "reference_contrast": "luna_integrated_minus_luna_direct",
+    "exploratory_interaction": "difference_of_within_model_theseus_effects",
+    "cross_model_rank_is_not_a_subsystem_causal_claim": true
+  },
+  "matched_requirements": {
+    "same_sealed_task_pool": true,
+    "same_candidate_visible_source_snapshot": true,
+    "same_natural_request": true,
+    "same_typed_edit_protocol": "theseus_line_edit_v1",
+    "same_visible_verifier": true,
+    "same_hidden_evaluator_after_seal": true,
+    "same_maximum_model_calls_per_arm": 2,
+    "same_effect_root": "disposable_source_snapshot_only",
+    "same_blind_scoring": true,
+    "task_selection_completed_before_any_arm_opens": true
+  },
+  "known_non_equivalences": [
+    "Hosted Codex system prompts and orchestration are not the local MLX runtime.",
+    "Reasoning tokens, tokenizer, context implementation, latency, and monetary cost differ by model and surface.",
+    "Equal output/action budgets do not imply equal training compute or inference FLOPs.",
+    "The hosted reference is an engineering ceiling and robustness check, not a serving candidate or local-model falsifier."
+  ],
+  "admission_gate": {
+    "callable_transport_must_be_source_bound": true,
+    "exact_model_and_effort_receipt_required": true,
+    "raw_private_data_allowed": false,
+    "external_source_effects_allowed": false,
+    "training_row_admission_allowed": false,
+    "runtime_serving_allowed": false,
+    "automatic_book_support_promotion_allowed": false
+  },
+  "counters": {
+    "maximum_reference_calls_per_task_condition": 2,
+    "accepted_training_rows": 0,
+    "user_facing_serving_tokens": 0,
+    "external_source_effects": 0
+  },
+  "current_blocker": "No callable gpt-5.6-luna transport is exposed inside the current experiment harness; bind an approved ChatGPT, Codex, or OpenAI API adapter before execution."
+}
