@@ -14,7 +14,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Iterable
 
 from neural_seed_functional_consumption import (
     complete_reservation,
@@ -159,7 +159,7 @@ def build_contract(
             }
         )
     return {
-        "policy": "project_theseus_local_blind_english_rater_contract_v1",
+        "policy": "project_theseus_local_blind_english_rater_contract_v2",
         "created_utc": now(),
         "trigger_state": "GREEN" if not gaps else "RED",
         "config": relative(config_path),
@@ -169,6 +169,13 @@ def build_contract(
         "packets": packet_rows,
         "models": model_rows,
         "hard_gaps": sorted(set(gaps)),
+        "generation_completion_policy": config.get(
+            "generation_completion_policy"
+        ),
+        "generation_completion_policy_sha256": config.get(
+            "generation_completion_policy_sha256"
+        ),
+        "generation": config.get("generation") or {},
         "boundaries": config.get("boundaries") or {},
     }
 
@@ -182,7 +189,7 @@ def execute(
 ) -> dict[str, Any]:
     contract = build_contract(config, config_path, packet_specs)
     if contract["trigger_state"] != "GREEN":
-        return {**contract, "policy": "project_theseus_local_blind_english_judgment_receipt_v1"}
+        return {**contract, "policy": "project_theseus_local_blind_english_judgment_receipt_v2"}
     packets = {label: read_json(path) for label, path in packet_specs}
     entries = []
     for label, packet in packets.items():
@@ -195,7 +202,7 @@ def execute(
     if control_suite["trigger_state"] != "GREEN":
         return {
             **contract,
-            "policy": "project_theseus_local_blind_english_judgment_receipt_v1",
+            "policy": "project_theseus_local_blind_english_judgment_receipt_v2",
             "trigger_state": "RED",
             "hard_gaps": list(control_suite["hard_gaps"]),
             "adversarial_control_suite": control_suite,
@@ -265,7 +272,7 @@ def execute(
     agreement = agreement_summary(all_judgments, config)
     human_audit_sample = prospective_human_audit_sample(ordered, config)
     return {
-        "policy": "project_theseus_local_blind_english_judgment_receipt_v1",
+        "policy": "project_theseus_local_blind_english_judgment_receipt_v2",
         "created_utc": now(),
         "trigger_state": "GREEN" if not hard_gaps else "RED",
         "config": relative(config_path),
@@ -298,11 +305,127 @@ def execute(
         "local_evaluator_inference_calls": sum(
             int(row["inference_calls"]) for row in model_receipts
         ),
+        "project_selected_quality_token_cap": None,
+        "physical_context_boundary_hits": sum(
+            int(row.get("physical_context_boundary_hits") or 0)
+            for row in model_receipts
+        ),
+        "termination_counts": {
+            reason: sum(
+                telemetry.get("termination_reason") == reason
+                for model_receipt in model_receipts
+                for telemetry in model_receipt.get("call_telemetry") or []
+            )
+            for reason in (
+                "parser_complete",
+                "model_eos",
+                "physical_context_boundary",
+                "host_emergency_stop",
+                "backend_ended_without_finish_reason",
+            )
+        },
         "external_inference_calls": 0,
         "public_training_rows_written": 0,
         "judgments_admitted_to_training": False,
         "raw_model_responses_retained": False,
     }
+
+
+def generate_score_completion(
+    *,
+    stream_generate: Callable[..., Iterable[Any]],
+    model: Any,
+    tokenizer: Any,
+    rendered: str,
+    sampler: Any,
+    context_window_tokens: int,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    bos = getattr(tokenizer, "bos_token", None)
+    add_special_tokens = bos is None or not rendered.startswith(str(bos))
+    prompt_token_ids = list(
+        tokenizer.encode(rendered, add_special_tokens=add_special_tokens)
+    )
+    prompt_tokens = len(prompt_token_ids)
+    residual = int(context_window_tokens) - prompt_tokens
+    if residual <= 0:
+        return {
+            "response": "",
+            "parsed": None,
+            "parse_error": "prompt_exhausts_declared_context_window",
+            "prompt_tokens": prompt_tokens,
+            "generated_tokens": 0,
+            "model_declared_context_window_tokens": int(context_window_tokens),
+            "effective_context_residual_tokens": max(0, residual),
+            "backend_finish_reason": "length",
+            "termination_reason": "physical_context_boundary",
+            "completion_predicate_enabled": True,
+            "safety_ceiling_hit": True,
+        }
+    response = ""
+    parsed = None
+    parse_error = "no_exact_integer_score_object"
+    finish_reason = None
+    generated_tokens = 0
+    stream = stream_generate(
+        model,
+        tokenizer,
+        prompt_token_ids,
+        max_tokens=residual,
+        sampler=sampler,
+    )
+    try:
+        for event in stream:
+            response += str(getattr(event, "text", "") or "")
+            generated_tokens = int(
+                getattr(event, "generation_tokens", generated_tokens) or generated_tokens
+            )
+            finish_reason = getattr(event, "finish_reason", finish_reason)
+            parsed, parse_error = parse_scores(response, config)
+            if finish_reason == "length":
+                parsed = None
+                parse_error = "physical_context_boundary_reached"
+                termination = "physical_context_boundary"
+                break
+            if parsed is not None:
+                termination = "parser_complete"
+                break
+        else:
+            termination = (
+                "model_eos"
+                if finish_reason == "stop"
+                else "physical_context_boundary"
+                if finish_reason == "length"
+                else "backend_ended_without_finish_reason"
+            )
+    finally:
+        close = getattr(stream, "close", None)
+        if callable(close):
+            close()
+    return {
+        "response": response,
+        "parsed": parsed,
+        "parse_error": parse_error,
+        "prompt_tokens": prompt_tokens,
+        "generated_tokens": generated_tokens,
+        "model_declared_context_window_tokens": int(context_window_tokens),
+        "effective_context_residual_tokens": residual,
+        "backend_finish_reason": finish_reason,
+        "termination_reason": termination,
+        "completion_predicate_enabled": True,
+        "safety_ceiling_hit": termination == "physical_context_boundary",
+    }
+
+
+def snapshot_context_window(snapshot: Path) -> int:
+    model_config = read_json(snapshot / "config.json")
+    text_config = model_config.get("text_config") or {}
+    value = text_config.get("max_position_embeddings") or model_config.get(
+        "max_position_embeddings"
+    )
+    if not isinstance(value, int) or value <= 0:
+        raise ValueError("pinned model snapshot has no declared context window")
+    return value
 
 
 def score_with_model(
@@ -313,13 +436,21 @@ def score_with_model(
     adjudicator: bool,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     os.environ["HF_HUB_OFFLINE"] = "1"
-    from mlx_lm import generate, load
+    from mlx_lm import load, stream_generate
     from mlx_lm.sample_utils import make_sampler
     import mlx.core as mx
 
     snapshot, error = local_snapshot(card)
     if error or snapshot is None:
         return [], model_failure_receipt(card, f"local_model_unavailable:{error}")
+    try:
+        context_window_tokens = snapshot_context_window(snapshot)
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        return [], model_failure_receipt(
+            card, f"model_context_window_unavailable:{type(exc).__name__}:{exc}"
+        )
+    if context_window_tokens != int(card["declared_context_window_tokens"]):
+        return [], model_failure_receipt(card, "model_context_window_binding_mismatch")
     identity = snapshot_identity(snapshot)
     load_started = time.perf_counter()
     model, tokenizer = load(str(snapshot), lazy=False)
@@ -331,6 +462,7 @@ def score_with_model(
     retries = 0
     faults = []
     generation_ms = 0.0
+    call_telemetry: list[dict[str, Any]] = []
     try:
         for entry in entries:
             integrity = independent_candidate_integrity(entry, config)
@@ -361,6 +493,7 @@ def score_with_model(
             parsed = None
             last_error = ""
             response_hash = ""
+            observation_invalidated = False
             maximum_attempts = 1 + int(config["generation"]["maximum_format_retries"])
             for attempt in range(maximum_attempts):
                 active_messages = (
@@ -375,25 +508,80 @@ def score_with_model(
                     **dict(card.get("chat_template_kwargs") or {}),
                 )
                 started = time.perf_counter()
-                response = generate(
-                    model,
-                    tokenizer,
-                    rendered,
-                    max_tokens=int(config["generation"]["maximum_output_tokens"]),
-                    sampler=sampler,
-                    verbose=False,
-                )
+                try:
+                    completion = generate_score_completion(
+                        stream_generate=stream_generate,
+                        model=model,
+                        tokenizer=tokenizer,
+                        rendered=rendered,
+                        sampler=sampler,
+                        context_window_tokens=context_window_tokens,
+                        config=config,
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    completion = {
+                        "response": "",
+                        "parsed": None,
+                        "parse_error": f"host_generation_fault:{type(exc).__name__}:{exc}",
+                        "prompt_tokens": 0,
+                        "generated_tokens": 0,
+                        "model_declared_context_window_tokens": context_window_tokens,
+                        "effective_context_residual_tokens": 0,
+                        "backend_finish_reason": None,
+                        "termination_reason": "host_emergency_stop",
+                        "completion_predicate_enabled": True,
+                        "safety_ceiling_hit": False,
+                    }
                 generation_ms += (time.perf_counter() - started) * 1000.0
                 calls += 1
+                response = str(completion["response"])
                 response_hash = hashlib.sha256(response.encode()).hexdigest()
-                parsed, last_error = parse_scores(response, config)
+                parsed = completion["parsed"]
+                last_error = str(completion["parse_error"])
+                call_telemetry.append(
+                    {
+                        "call_index": calls,
+                        "attempt_index": attempt + 1,
+                        "packet_label": entry["packet_label"],
+                        "case_id": entry["case_id"],
+                        "blind_item_id": entry["blind_item_id"],
+                        "prompt_tokens": completion["prompt_tokens"],
+                        "generated_tokens": completion["generated_tokens"],
+                        "model_declared_context_window_tokens": completion[
+                            "model_declared_context_window_tokens"
+                        ],
+                        "effective_context_residual_tokens": completion[
+                            "effective_context_residual_tokens"
+                        ],
+                        "backend_finish_reason": completion["backend_finish_reason"],
+                        "termination_reason": completion["termination_reason"],
+                        "completion_predicate_enabled": completion[
+                            "completion_predicate_enabled"
+                        ],
+                        "safety_ceiling_hit": completion["safety_ceiling_hit"],
+                        "response_sha256": response_hash,
+                    }
+                )
                 if parsed is not None:
+                    break
+                if completion["termination_reason"] in {
+                    "physical_context_boundary",
+                    "host_emergency_stop",
+                    "backend_ended_without_finish_reason",
+                }:
+                    observation_invalidated = True
+                    faults.append(
+                        "invalidated_rater_observation:"
+                        f"{card['rater_id']}:{entry['packet_label']}:{entry['case_id']}:"
+                        f"{completion['termination_reason']}"
+                    )
                     break
                 retries += int(attempt + 1 < maximum_attempts)
             if parsed is None:
-                faults.append(
-                    f"invalid_rater_output:{card['rater_id']}:{entry['packet_label']}:{entry['case_id']}:{last_error}"
-                )
+                if not observation_invalidated:
+                    faults.append(
+                        f"invalid_rater_output:{card['rater_id']}:{entry['packet_label']}:{entry['case_id']}:{last_error}"
+                    )
                 continue
             row = {
                 "case_id": entry["case_id"],
@@ -424,6 +612,12 @@ def score_with_model(
         "format_retries": retries,
         "judgment_count": len(judgments),
         "hard_gaps": faults,
+        "call_telemetry": call_telemetry,
+        "project_selected_quality_token_cap": None,
+        "physical_context_boundary_hits": sum(
+            row["termination_reason"] == "physical_context_boundary"
+            for row in call_telemetry
+        ),
         "raw_model_responses_retained": False,
     }
 
@@ -734,8 +928,32 @@ def adjudication_keys(
 
 def validate_config(config: dict[str, Any]) -> list[str]:
     gaps = []
-    if config.get("policy") != "project_theseus_local_blind_english_raters_v1":
+    if config.get("policy") != "project_theseus_local_blind_english_raters_v2":
         gaps.append("policy_mismatch")
+    completion_path = resolve(str(config.get("generation_completion_policy") or ""))
+    completion_policy: dict[str, Any] = {}
+    if (
+        not completion_path.is_file()
+        or sha256_file(completion_path)
+        != config.get("generation_completion_policy_sha256")
+    ):
+        gaps.append("generation_completion_policy_binding_invalid")
+    else:
+        try:
+            completion_policy = read_json(completion_path)
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            gaps.append("generation_completion_policy_unreadable")
+    if (
+        completion_policy.get("state")
+        != "ACTIVE_FOR_ALL_NEW_GENERATION_INSTRUMENTS"
+        or (completion_policy.get("physical_safety_boundary") or {}).get(
+            "project_selected_token_cap"
+        )
+        is not None
+        or completion_policy.get("normal_completion_states")
+        != ["parser_complete", "model_eos"]
+    ):
+        gaps.append("generation_completion_policy_semantics_invalid")
     primaries = config.get("primary_raters") or []
     adjudicator = config.get("adjudicator") or {}
     cards = [*primaries, adjudicator]
@@ -747,6 +965,23 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         gaps.append("rater_ids_not_distinct")
     if len(set(revisions)) != 3 or any(not re.fullmatch(r"[0-9a-f]{40}", value) for value in revisions):
         gaps.append("rater_revisions_not_distinct_or_pinned")
+    if any(int(card.get("declared_context_window_tokens") or 0) <= 0 for card in cards):
+        gaps.append("rater_declared_context_window_missing")
+    generation = config.get("generation") or {}
+    if "maximum_output_tokens" in generation:
+        gaps.append("arbitrary_quality_token_cap_present")
+    if generation.get("project_selected_quality_token_cap") is not None:
+        gaps.append("arbitrary_quality_token_cap_present")
+    if generation.get("normal_completion") != ["parser_complete", "model_eos"]:
+        gaps.append("normal_completion_policy_invalid")
+    if generation.get("physical_boundary") != (
+        "pinned_model_declared_context_window_minus_exact_prompt_tokens"
+    ):
+        gaps.append("physical_context_boundary_policy_invalid")
+    if generation.get("physical_boundary_disposition") != (
+        "INVALIDATE_OBSERVATION_NOT_MODEL_CANDIDATE_OR_EVALUATOR_FAILURE"
+    ):
+        gaps.append("physical_context_boundary_disposition_invalid")
     scoring = config.get("scoring") or {}
     if scoring.get("dimensions") != [
         "instruction_fulfillment",
@@ -890,6 +1125,9 @@ def model_failure_receipt(card: dict[str, Any], fault: str) -> dict[str, Any]:
         "format_retries": 0,
         "judgment_count": 0,
         "hard_gaps": [fault],
+        "call_telemetry": [],
+        "project_selected_quality_token_cap": None,
+        "physical_context_boundary_hits": 0,
         "raw_model_responses_retained": False,
     }
 
