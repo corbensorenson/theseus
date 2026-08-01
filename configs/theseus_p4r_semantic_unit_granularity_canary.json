@@ -1,0 +1,87 @@
+{
+  "policy": "project_theseus_p4r_semantic_ir_v2_mechanics_canary_config_v1",
+  "state": "FROZEN_BEFORE_LEARNED_MECHANICS_CALLS",
+  "purpose": "Test whether semantic-scope-aligned node selection closes the two exact-verification failures after labeled transport reached 3/3 parse/lower.",
+  "predecessor_failed_canary": "reports/theseus_p4r_semantic_ir_v2r1_mechanics_canary.json",
+  "predecessor_failed_canary_sha256": "337bdfc58663e7832a9854f72d6f701694b4b8d178f62eda48d3da6becbc9b6f",
+  "only_change": {
+    "tuple_add": "Select the complete top-level Assign instead of its Tuple expression.",
+    "return_membership": "Select the complete FunctionDef instead of its nested Return statement.",
+    "assignment_literal": "Retain the already successful complete Assign selection.",
+    "request_source_obligations_expected_source_parser_and_pass_rule_changed": false
+  },
+  "terminal_p4r_disposition": "reports/theseus_p4r_terminal_disposition.json",
+  "terminal_p4r_disposition_sha256": "9e4295294cb29e1a2ab579e6086fe4992886de52d3d73f470d098f4c47684334",
+  "parser": "scripts/theseus_semantic_ir_v2r1.py",
+  "parser_sha256": "77fc569dd097a48b0901ca170825b75427e97b5d02b1e0a5a11cb83757dfbce9",
+  "parser_commit": "985502ac",
+  "runner": "scripts/theseus_p4r_semantic_unit_granularity_canary.py",
+  "runner_sha256": "d2126fc7c7baf5d7e1134acd06b2fb6959cc5570d08e67bb45df31f734cca07e",
+  "runner_commit": "25e6e68f",
+  "base_local_instrument": "configs/theseus_p4r_local_instrument.json",
+  "base_local_instrument_sha256": "66629d03fe402d968d21f0ec734dfe7266634767011a210d7deae5ff8a8445e5",
+  "generation_policy": {
+    "normal_completion": ["parser_complete", "model_eos"],
+    "project_selected_quality_token_cap": null,
+    "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
+    "boundary_hit_invalidates_observation": true
+  },
+  "semantic_unit_policy": {
+    "nested_behavioral_edit": "complete FunctionDef or AsyncFunctionDef",
+    "module_state_edit": "complete top-level Assign or AnnAssign",
+    "forbidden_mismatch": "Do not expose a fine expression/statement node while requesting or accepting enclosing semantic-scope source."
+  },
+  "cases": [
+    {
+      "case_id": "tuple_add",
+      "natural_request": "Change VALUES from (1, 2) to (1, 2, 3).",
+      "source": "VALUES = (1, 2)\n",
+      "expected_source": "VALUES = (1, 2, 3)\n",
+      "target_node_type": "Assign",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "add integer 3 to VALUES"},
+        {"id": "O2", "kind": "preserve", "text": "preserve integers 1 and 2 in order"},
+        {"id": "O3", "kind": "non_goal", "text": "make no other source change"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    },
+    {
+      "case_id": "return_membership",
+      "natural_request": "Change is_member so it returns whether value is not in (1, 2).",
+      "source": "def is_member(value):\n    return value in (1, 2)\n",
+      "expected_source": "def is_member(value):\n    return value not in (1, 2)\n",
+      "target_node_type": "FunctionDef",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "change the membership test from in to not in"},
+        {"id": "O2", "kind": "preserve", "text": "preserve function name, parameter, and tuple values"},
+        {"id": "O3", "kind": "non_goal", "text": "do not change the function signature"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    },
+    {
+      "case_id": "assignment_literal",
+      "natural_request": "Change MODE from the string fast to the string safe.",
+      "source": "MODE = \"fast\"\n",
+      "expected_source": "MODE = \"safe\"\n",
+      "target_node_type": "Assign",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "set MODE to the exact string safe"},
+        {"id": "O2", "kind": "preserve", "text": "preserve the MODE variable name"},
+        {"id": "O3", "kind": "non_goal", "text": "do not add statements or comments"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    }
+  ],
+  "decision_rule": {
+    "pass": "All 3 learned outputs parse and lower, all 3 exact sources verify, one persistent model load serves exactly 3 calls, every call ends by parser completion or model EOS, and zero physical-context boundary hits occur.",
+    "failure": "INCONCLUSIVE_IMPLEMENTATION; preserve the semantic-unit wall and do not acquire fresh P4 tasks.",
+    "pass_authority": "Opens only intervention sensitivity and dependency-local repair mechanics; no P4, D1, or book authority."
+  },
+  "boundaries": {
+    "task_source": "same_hand_authored_non_claim_mechanics_cases",
+    "training_eligible": false,
+    "D1_or_D2_eligible": false,
+    "book_support_state_effect": "none",
+    "user_gate": "none"
+  }
+}
