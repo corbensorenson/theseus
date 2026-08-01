@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -41,3 +42,18 @@ def test_repair_prompt_fixes_observed_header_and_operation_failures(
     assert "TARGET_NODE_SOURCE\nreturn value in (1, 2)" in prompt
     assert "without surrounding indentation or enclosing source" in prompt
 
+
+def test_repair_canary_closes_transport_but_not_semantic_unit_adequacy() -> None:
+    report = json.loads(
+        (
+            ROOT / "reports" / "theseus_p4r_semantic_ir_v2r1_mechanics_canary.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    assert report["trigger_state"] == "YELLOW"
+    assert report["state"] == "INCONCLUSIVE_IMPLEMENTATION"
+    assert report["parse_and_lower"] == "3/3"
+    assert report["verified"] == "1/3"
+    assert report["model_loads"] == 1
+    assert report["model_calls"] == 3
+    assert report["safety_ceiling_hits"] == 0

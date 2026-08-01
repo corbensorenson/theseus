@@ -3853,9 +3853,29 @@
       "semantic_ir_parse_and_lower": "0_of_10_below_predeclared_8_of_10_floor",
       "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
       "D1_eligible": false,
+      "post_terminal_mechanics_repair": {
+        "v2_initial_canary": {
+          "artifact": "reports/theseus_p4r_semantic_ir_v2_mechanics_canary.json",
+          "artifact_sha256": "b6e8bc6f76468a91bafc45872dbe680438f53e22128f95d0c54a885b8796fdd8",
+          "parse_and_lower": "0/3",
+          "verified": "0/3",
+          "finding": "All three outputs omitted the version header; after diagnostic header normalization all labeled fields parsed, but two selected INSERT_AFTER rather than REPLACE."
+        },
+        "v2r1_one_repair_canary": {
+          "artifact": "reports/theseus_p4r_semantic_ir_v2r1_mechanics_canary.json",
+          "artifact_sha256": "337bdfc58663e7832a9854f72d6f701694b4b8d178f62eda48d3da6becbc9b6f",
+          "parse_and_lower": "3/3",
+          "verified": "1/3",
+          "physical_context_boundary_hits": 0,
+          "finding": "Labeled transport and operation semantics are repaired. The remaining two failures replace fine-grained Tuple/Return nodes with enclosing assignment/function source, identifying semantic-unit granularity as the next owner."
+        },
+        "current_owner": "semantic_unit_selection_granularity_and_node_scoped_generation",
+        "fresh_P4_denominator_open": false,
+        "support_state_effect": "none"
+      },
       "hosted_model_calls": 0,
       "support_state_effect": "none",
-      "rule": "The exact ten tasks are consumed and may not be replayed. Repair learned Semantic-IR grammar emission, parsing, lowering, intervention sensitivity, and dependency-local repair on non-claim mechanics fixtures before acquiring any fresh decision denominator. The 0/10 treatment mechanics result cannot falsify cognitive compilation, move book support, or qualify D1."
+      "rule": "The exact ten tasks are consumed and may not be replayed. Labeled transport now parses/lowers 3/3 after one bounded repair, but only 1/3 exact sources verify because the model emits enclosing semantic units for fine-grained AST targets. Repair semantic-unit selection/granularity, then intervention sensitivity and dependency-local repair on non-claim mechanics fixtures before acquiring any fresh decision denominator. No result can move book support or qualify D1."
     },
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
     "shared_flagship_rule": "Book-derived work reaches primary execution only through faithful implementation, instrument adequacy, autonomous machine-verifiable behavior, joined-trace, matched-causal, source-disjoint qualification, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",

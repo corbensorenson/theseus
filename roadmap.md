@@ -556,6 +556,18 @@ result. All ten tasks are consumed. The next work is learned grammar/lowering,
 intervention, and dependency-local repair adequacy on non-claim mechanics
 fixtures before any fresh P4 decision pool; D1 and book support remain closed.
 
+The first non-claim mechanics repair has also completed. A labeled v2 transport
+initially parsed 0/3 because the model omitted the version header and used the
+wrong insertion operation. One frozen repair added non-answer-bearing bound
+header inference and required selected-node replacement. That raised parse and
+lower from 0/3 to 3/3 with zero context-boundary hits, but exact verification
+reached only 1/3: for Tuple and Return targets, the model emitted the enclosing
+assignment and function rather than node-scoped source. The transport owner is
+therefore repaired; semantic-unit selection granularity is now the wall. No
+fresh P4 task, D1 surface, or book-support action is authorized until a
+non-claim canary proves unit selection, intervention sensitivity, and
+dependency-local repair.
+
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
 | 0 | Integrated architecture + evidence-state prerequisites | Downstream-consumed trace joins and independent claim transitions | Direct, record-only, context-decoration-only, producer self-score |
@@ -622,7 +634,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION_SEMANTIC_IR_GRAMMAR` | P4R completed 10/10 tasks and 60 naturally terminated learned calls with zero physical-context hits; direct solved 1/10, plan 2/10, and Semantic IR 0/10. The oracle remained useful 10/10, but learned IR parsed/lowered 0/10 against the 8/10 mechanics floor, so no arm effect, D1 eligibility, book support, or mechanism falsification is authorized |
+| P4 causal development | `INCONCLUSIVE_IMPLEMENTATION_SEMANTIC_UNIT_GRANULARITY` | P4R completed 10/10 tasks and 60 naturally terminated calls with zero physical-context hits; direct solved 1/10, plan 2/10, and Semantic IR 0/10. A bounded labeled-transport repair raised non-claim parse/lower from 0/3 to 3/3, but exact verification remained 1/3 because fine AST targets elicited enclosing semantic-unit source. Fresh P4, D1, book support, and mechanism falsification remain closed |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |

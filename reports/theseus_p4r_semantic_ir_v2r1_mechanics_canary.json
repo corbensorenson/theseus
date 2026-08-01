@@ -1,0 +1,95 @@
+{
+  "cases": [
+    {
+      "apply_faults": [],
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_v2r1_mechanics_tuple_add_direct_local_model_1.json",
+      "backend_report_sha256": "b2b575b717cf9c221c9c570525df831744485336b1cc3a814eba6d44bf4c94e5",
+      "case_id": "tuple_add",
+      "generated_tokens": 214,
+      "parse_and_lower": true,
+      "parse_faults": [],
+      "prompt_tokens": 548,
+      "route_integrity_ready": true,
+      "runtime_report": "runtime/p2a/p2a_p4r_v2r1_mechanics_tuple_add_direct_local_model_1.json",
+      "runtime_report_sha256": "73af25573bb4e0f20154e9cfacd4cd6a542e6f38304ff34f17a7e3b946191ce6",
+      "safety_ceiling_hit": false,
+      "termination_reason": "parser_complete",
+      "verified": false,
+      "version_header_inferred": false
+    },
+    {
+      "apply_faults": [],
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_v2r1_mechanics_return_membership_direct_local_model_1.json",
+      "backend_report_sha256": "71a5fe19b5558a2661698a11fc8075054c0e95b95d342949524370954f0942b7",
+      "case_id": "return_membership",
+      "generated_tokens": 225,
+      "parse_and_lower": true,
+      "parse_faults": [],
+      "prompt_tokens": 558,
+      "route_integrity_ready": true,
+      "runtime_report": "runtime/p2a/p2a_p4r_v2r1_mechanics_return_membership_direct_local_model_1.json",
+      "runtime_report_sha256": "eb18bf53d6fa4df1ce76f13a535242c60097cdbd6c75dfddbdc48d5283a803d5",
+      "safety_ceiling_hit": false,
+      "termination_reason": "parser_complete",
+      "verified": false,
+      "version_header_inferred": false
+    },
+    {
+      "apply_faults": [],
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_v2r1_mechanics_assignment_literal_direct_local_model_1.json",
+      "backend_report_sha256": "d6225e3e8a74463922b6a77dde5d2b0a5a85dc54b6d6522b30ca6ddfb9150360",
+      "case_id": "assignment_literal",
+      "generated_tokens": 202,
+      "parse_and_lower": true,
+      "parse_faults": [],
+      "prompt_tokens": 532,
+      "route_integrity_ready": true,
+      "runtime_report": "runtime/p2a/p2a_p4r_v2r1_mechanics_assignment_literal_direct_local_model_1.json",
+      "runtime_report_sha256": "2770b8bfd58a7bd10fd75bb74f56cb809ba9fbb80c226297faa2747a9ec8e220",
+      "safety_ceiling_hit": false,
+      "termination_reason": "parser_complete",
+      "verified": true,
+      "version_header_inferred": false
+    }
+  ],
+  "config_audit": {
+    "config_sha256": "68d7b5131e66b1f32d57eef5d0191f82e81e4131f8e0a697d691d9ae1da0f941",
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T07:28:54.069553Z",
+    "faults": [],
+    "policy": "project_theseus_p4r_semantic_ir_v2_canary_audit_v1",
+    "trigger_state": "GREEN"
+  },
+  "config_sha256": "68d7b5131e66b1f32d57eef5d0191f82e81e4131f8e0a697d691d9ae1da0f941",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T07:30:29.890128Z",
+  "faults": [
+    "learned_transport_mechanics_floor_not_met"
+  ],
+  "model_calls": 3,
+  "model_loads": 1,
+  "next_gate": "Intervention and dependency-local repair canary.",
+  "parse_and_lower": "3/3",
+  "policy": "project_theseus_p4r_semantic_ir_v2r1_learned_mechanics_canary_v1",
+  "safety_ceiling_hits": 0,
+  "scope": "Prompt/header transport repair on the same non-claim hand-authored mechanics cases. Passing cannot support cognitive compilation or open a fresh P4 denominator by itself.",
+  "state": "INCONCLUSIVE_IMPLEMENTATION",
+  "trigger_state": "YELLOW",
+  "verified": "1/3"
+}
