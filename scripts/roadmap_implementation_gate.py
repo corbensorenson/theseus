@@ -1100,6 +1100,41 @@ def audit_book_implementation_contract(
                 },
             )
         )
+    p4v2r2 = dict_value(
+        completion_program.get("p4v2r2_cognitive_compilation_instrument")
+    )
+    d1_successor = dict_value(p4v2r2.get("prospective_D1_successor"))
+    d1_source_paths = [
+        str(d1_successor.get(key) or "")
+        for key in (
+            "instrument",
+            "source_selection",
+            "autonomous_source_successor_config",
+            "autonomous_source_successor",
+            "autonomous_source_successor_test",
+        )
+    ]
+    if (
+        d1_successor.get("state")
+        != "fail_closed_waiting_for_exact_P4V2R2_survivor"
+        or d1_successor.get("source_stage_implementation")
+        != "complete_waiting_indefinitely_without_user_gate"
+        or d1_successor.get("source_stage_terminal_boundary")
+        != "first_design_complete_44_repository_registry_frozen_before_archive_fetch"
+        or d1_successor.get("downstream_materialization_campaign_and_disposition_state")
+        != "not_implemented_do_not_claim_D1_execution_ready"
+        or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 4
+        or d1_successor.get("candidate_or_control_calls_authorized") is not False
+        or d1_successor.get("automatic_book_support_promotion") is not False
+        or any(not path or not (ROOT / path).is_file() for path in d1_source_paths)
+    ):
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "D1_autonomous_source_successor_contract_invalid",
+                {"required_paths": d1_source_paths},
+            )
+        )
     handoff = dict_value(flagship.get("book_handoff_contract"))
     handoff_implementation = dict_value(handoff.get("implementation"))
     if (

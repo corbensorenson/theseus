@@ -157,6 +157,32 @@ class RoadmapBookSyncTests(unittest.TestCase):
             packages["ASI-32"]["acceptance_boundary"],
         )
 
+    def test_d1_source_successor_is_executable_but_downstream_gap_is_explicit(self) -> None:
+        successor = self.matrix["asi_stack_completion_program"][
+            "p4v2r2_cognitive_compilation_instrument"
+        ]["prospective_D1_successor"]
+        self.assertEqual(
+            "complete_waiting_indefinitely_without_user_gate",
+            successor["source_stage_implementation"],
+        )
+        self.assertEqual(
+            "first_design_complete_44_repository_registry_frozen_before_archive_fetch",
+            successor["source_stage_terminal_boundary"],
+        )
+        self.assertEqual(
+            "not_implemented_do_not_claim_D1_execution_ready",
+            successor["downstream_materialization_campaign_and_disposition_state"],
+        )
+        self.assertEqual(4, len(successor["remaining_D1_execution_owners"]))
+        for key in (
+            "autonomous_source_successor_config",
+            "autonomous_source_successor",
+            "autonomous_source_successor_test",
+        ):
+            self.assertTrue((ROOT / successor[key]).is_file())
+        self.assertFalse(successor["candidate_or_control_calls_authorized"])
+        self.assertFalse(successor["automatic_book_support_promotion"])
+
     def test_high_leverage_claim_bindings_are_exact_and_decision_bounded(self) -> None:
         campaign = self.matrix["core_evidence_campaign"]
         policy = campaign["claim_binding_policy"]

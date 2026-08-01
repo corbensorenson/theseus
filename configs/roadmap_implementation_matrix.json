@@ -3990,6 +3990,18 @@
         "state": "fail_closed_waiting_for_exact_P4V2R2_survivor",
         "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
         "source_selection": "configs/theseus_d1_source_selection.json",
+        "autonomous_source_successor_config": "configs/theseus_d1_autonomous_source_successor.json",
+        "autonomous_source_successor": "scripts/theseus_d1_autonomous_source_successor.py",
+        "autonomous_source_successor_test": "tests/test_theseus_d1_autonomous_source_successor.py",
+        "source_stage_implementation": "complete_waiting_indefinitely_without_user_gate",
+        "source_stage_terminal_boundary": "first_design_complete_44_repository_registry_frozen_before_archive_fetch",
+        "downstream_materialization_campaign_and_disposition_state": "not_implemented_do_not_claim_D1_execution_ready",
+        "remaining_D1_execution_owners": [
+          "source_archive_materialization_and_sanitization",
+          "independent_parent_fail_target_pass_evaluator_seal",
+          "blind_candidate_and_control_campaign",
+          "independent_integrity_recomputation_and_terminal_disposition"
+        ],
         "activation_disposition": "reports/theseus_p4v2r2_terminal_disposition.json",
         "required_scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "historical_P4S_survivor_cannot_activate": true,
