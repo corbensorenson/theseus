@@ -29,8 +29,8 @@ import theseus_p4v2r2_campaign as campaign  # noqa: E402
 POLICY = "project_theseus_p4v2r2_autonomous_launch_v1"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_p4v2r2_autonomous_launch.json"
 CONTEXT_TOKENS = 262_144
-CAMPAIGN_COMMIT = "a38d7b968e3cf76f305616df2e7cfce9f4c837ea"
-DISPOSITION_COMMIT = "e2fdb69ced76a4625e5ad86ddf74e37792aa989c"
+CAMPAIGN_COMMIT = "0da65913ad738a8b0ff1c3878076fa4ad4eb2374"
+DISPOSITION_COMMIT = "0da65913ad738a8b0ff1c3878076fa4ad4eb2374"
 
 
 def main() -> int:

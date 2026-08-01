@@ -29,6 +29,11 @@ def test_p4v2r2_campaign_is_exact_bound_and_completion_based() -> None:
     assert report["pool_seal_commit"] == campaign.POOL_SEAL_COMMIT
     assert report["instrument_sha256"] == campaign.INSTRUMENT_SHA256
     assert report["hosted_reference"]["calls"] == 0
+    repair = report["preconsumption_bootstrap_repair"]
+    assert repair["passed"] is True
+    assert repair["candidate_or_control_calls"] == 0
+    assert repair["tasks_consumed"] == 0
+    assert repair["surface_reuse_authorized"] is True
 
 
 def test_p4v2r2_result_paths_are_campaign_specific_and_unopened() -> None:
@@ -38,7 +43,7 @@ def test_p4v2r2_result_paths_are_campaign_specific_and_unopened() -> None:
     assert len({row["run"] for row in paths}) == 10
     assert len({row["evaluation"] for row in paths}) == 10
     assert all(
-        row["run"].name.startswith("theseus_p4v2r2_attempt1_") for row in paths
+        row["run"].name.startswith("theseus_p4v2r2_attempt2_") for row in paths
     )
     audit = campaign.audit_campaign()
     assert audit["model_calls_retained"] in {

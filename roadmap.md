@@ -640,15 +640,20 @@ licensed repositories are source-disjoint from all P2-through-P4S tasks; all
 ten parent revisions fail both independent evaluator layers, all ten exact
 upstream targets pass both, all ten evaluator-only v2r2 transport oracles replay
 action-equivalently, and every base and dependency corruption is rejected. The
-campaign has consumed 0/10 tasks and 0/60 learned calls. Its only open launch
-predicate is autonomous host readiness: external power, adequate memory and
-disk, and exclusive accelerator custody. This is not a user gate. The campaign
-has no project-selected quality-token cap; model context exhaustion or a host
-emergency invalidates an observation rather than creating negative evidence.
-The one-shot launch controller derives memory from the bound TMax preflight,
-derives disk from the sealed source and worst-case receipt envelope, verifies
-physical power state rather than trusting the misleading `pmset` headline, and
-fails closed when process inventory or exclusive lease custody is unavailable.
+first launch reached autonomous host readiness but exposed a pre-generation
+bootstrap defect: its command used `/usr/local/bin/python3`, which does not
+contain MLX, rather than the already-qualified project runtime. The exact failed
+run, progress, launch, lease, and disposition receipts are preserved at commit
+`209f2f2e`. They prove 0/60 learned calls, zero candidates, zero runtime
+receipts, and 0/10 completed tasks, so the failure carries no model, mechanism,
+task, or token-boundary inference and does not consume the surface. The repaired
+attempt-2 controller binds `runtime/venvs/mlx-0.32.0-py312/bin/python`, checks
+Python 3.12.5, MLX 0.32.0, and MLX-LM 0.31.3 before launch, and writes separate
+attempt-2 evidence paths. Autonomous host readiness remains external power,
+adequate memory and disk, and exclusive accelerator custody; it is not a user
+gate. The campaign still has no project-selected quality-token cap. Model
+context exhaustion or a host emergency invalidates an observation rather than
+creating negative evidence.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |

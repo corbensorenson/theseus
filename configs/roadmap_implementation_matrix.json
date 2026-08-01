@@ -3953,7 +3953,7 @@
       "rule": "Preserve every P4S call, evaluation, failure, cost, and weak-tail result. Do not rescore consumed outputs. The exact emission/parser implementation failed mechanics adequacy and cannot advance to D1, but this does not falsify cognitive compilation generally."
     },
     "p4v2r2_cognitive_compilation_instrument": {
-      "state": "sealed_before_candidate_generation_waiting_on_machine_predicates",
+      "state": "sealed_after_zero_call_runtime_bootstrap_repair_waiting_on_machine_predicates",
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
       "frozen_model": "mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560",
       "instrument": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
@@ -3965,11 +3965,29 @@
       "source_fetch_report_sha256": "7c42c31e8fd1cc2408b3cf9a297882fadd8f409de1cfa5219d8e33b8c4e9f3eb",
       "oracle_materialization_corrections": "configs/theseus_p4v2r2_oracle_materialization_corrections.json",
       "campaign_driver": "scripts/theseus_p4v2r2_campaign.py",
-      "campaign_commit": "a38d7b968e3cf76f305616df2e7cfce9f4c837ea",
+      "campaign_commit": "0da65913ad738a8b0ff1c3878076fa4ad4eb2374",
       "autonomous_launch_controller": "scripts/theseus_p4v2r2_autonomous_launch.py",
       "autonomous_launch_config": "configs/theseus_p4v2r2_autonomous_launch.json",
       "terminal_disposition": "scripts/theseus_p4v2r2_disposition.py",
-      "terminal_disposition_commit": "e2fdb69ced76a4625e5ad86ddf74e37792aa989c",
+      "terminal_disposition_commit": "0da65913ad738a8b0ff1c3878076fa4ad4eb2374",
+      "preconsumption_bootstrap_failure": {
+        "incident_commit": "209f2f2ed22a11835323fc56ff4805c088080fed",
+        "fault": "launcher_used_usr_local_python_without_mlx_instead_of_qualified_project_runtime",
+        "model_calls": 0,
+        "candidate_outputs": 0,
+        "completed_tasks": 0,
+        "scientific_inference": "none_instrument_bootstrap_only"
+      },
+      "runtime_bootstrap_repair": {
+        "implementation_commit": "0da65913ad738a8b0ff1c3878076fa4ad4eb2374",
+        "python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+        "python_version": "3.12.5",
+        "mlx_version": "0.32.0",
+        "mlx_lm_version": "0.31.3",
+        "independent_preflight_gate": "qualified_runtime_executable_bound",
+        "attempt2_reports_preserve_attempt1_evidence": true,
+        "surface_reuse_authorized_only_because_zero_model_calls": true
+      },
       "task_count": 10,
       "distinct_repositories": 10,
       "dual_evaluator_parent_fail_target_pass": "10/10",
@@ -3984,7 +4002,7 @@
       "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
       "physical_boundary_hit_disposition": "invalidate_observation_never_score_as_model_or_mechanism_failure",
       "launch_authority": "machine_predicate_exclusive_one_shot_lease_no_user_gate",
-      "current_machine_wall": "autonomous_controller_running_zero_consumption_waiting_on_physical_external_power_and_battery_not_discharging",
+      "current_machine_wall": "repaired_attempt2_controller_sealed_zero_consumption_not_yet_relaunched",
       "D1_eligible": false,
       "prospective_D1_successor": {
         "state": "fail_closed_waiting_for_exact_P4V2R2_survivor",

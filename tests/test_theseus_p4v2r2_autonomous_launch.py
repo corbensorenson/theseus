@@ -31,6 +31,10 @@ def green_campaign() -> dict:
     }
 
 
+def green_runtime() -> dict:
+    return {"passed": True, "faults": []}
+
+
 def test_config_has_no_user_or_quality_token_gate() -> None:
     value = config()
     assert launcher.validate_config(value) == []
@@ -38,6 +42,16 @@ def test_config_has_no_user_or_quality_token_gate() -> None:
     assert authority["user_or_operator_approval_required"] is False
     assert authority["project_selected_quality_token_cap_allowed"] is False
     assert authority["physical_boundary_is_negative_evidence"] is False
+    assert value["python"] == "runtime/venvs/mlx-0.32.0-py312/bin/python"
+    assert value["preconsumption_bootstrap_repair"]["candidate_or_control_calls"] == 0
+
+
+def test_qualified_runtime_identity_probe_passes_without_loading_metal() -> None:
+    report = launcher.runtime_status(config())
+    assert report["passed"] is True
+    assert report["faults"] == []
+    assert report["observed"]["mlx"] == "0.32.0"
+    assert report["observed"]["mlx_lm"] == "0.31.3"
 
 
 def test_exact_sealed_bindings_pass_before_candidate_generation() -> None:
@@ -56,6 +70,7 @@ def test_machine_predicates_authorize_without_a_user_gate() -> None:
         jobs_override=[],
         campaign_override=green_campaign(),
         lease_exists_override=False,
+        runtime_override=green_runtime(),
     )
     assert report["trigger_state"] == "GREEN"
     assert report["launch_authorized"] is True
@@ -72,6 +87,7 @@ def test_battery_or_competing_accelerator_pauses_without_consumption() -> None:
         jobs_override=[{"pid": 7, "command": "training"}],
         campaign_override=green_campaign(),
         lease_exists_override=False,
+        runtime_override=green_runtime(),
     )
     assert report["trigger_state"] == "PAUSED"
     assert report["launch_authorized"] is False
