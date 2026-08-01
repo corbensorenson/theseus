@@ -1,0 +1,161 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 79.964,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-80ox9dfk/source/theseus_p4s_hidden_test.py\", line 320, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-80ox9dfk/source/theseus_p4s_hidden_test.py\", line 111, in apscheduler\n    validate(None, None, {\"a\": [None, {\"b\": None}], \"ok\": 3})\n  File \"src/apscheduler/_validators.py\", line 57, in valid_metadata\n    check_value(key, val)\n  File \"src/apscheduler/_validators.py\", line 41, in check_value\n    check_value(f\"{path}[{index}]\", item)\n  File \"src/apscheduler/_validators.py\", line 49, in check_value\n    raise ValueError(\nValueError: a[0] has a value that is not JSON compatible: (None)\nP4S_FAIL_apscheduler: ValueError: a[0] has a value that is not JSON compatible: (None)\n",
+      "stdout_tail": ""
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "",
+      "hidden_stdout_tail": "P4S_PASS_apscheduler\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T09:03:38.738209Z",
+    "evaluator_sha256": "ed9d64b89795351058ef0472e44d63991479fb4657c7b734823d7ee1e99fb796",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 860.23,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 63.821,
+      "stderr_tail": "",
+      "stdout_tail": "P4S_PASS_apscheduler\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "a434a4f231abc81222868432b198c3994022e2d167ae515aa7b0a50c59040ab4",
+      "task_sha256": "f20adada688f0d745f04abd71de522cb2801014aea6b283f0f5cd232a7c48e72",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "f20adada688f0d745f04abd71de522cb2801014aea6b283f0f5cd232a7c48e72",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "060bdbc0e7683f58579180eaae7cf1db9978645d7e36459516807cfb4d5b124d",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T09:03:39.492596Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 2,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 1,
+    "sealed_learned_candidates": 1,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 2
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "12286a78d3ce704b32b5f02c2c265444d8cef22ae0a8ce2ab1fc6bb448ee0a6c",
+      "83d6dd391768462ce92ae0640c1a51c06260169fb794597d5fcf89fe89d4343f"
+    ]
+  },
+  "evaluator_sha256": "ed9d64b89795351058ef0472e44d63991479fb4657c7b734823d7ee1e99fb796",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "natural_language_plan_control",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "12286a78d3ce704b32b5f02c2c265444d8cef22ae0a8ce2ab1fc6bb448ee0a6c",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 1,
+      "observed_effect_paths": [
+        "src/apscheduler/_validators.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "1d0a8d43b921fca49ead94590d17f85da34288fd0eea876cc02cd6e8cb22ab02",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 70.94,
+        "stderr_tail": "",
+        "stdout_tail": "P4S_PASS_apscheduler\n"
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "83d6dd391768462ce92ae0640c1a51c06260169fb794597d5fcf89fe89d4343f",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "src/apscheduler/_validators.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "1d0a8d43b921fca49ead94590d17f85da34288fd0eea876cc02cd6e8cb22ab02",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 54.934,
+        "stderr_tail": "",
+        "stdout_tail": "P4S_PASS_apscheduler\n"
+      }
+    }
+  ],
+  "runtime_ms": 1614.737,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,91 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Qwen3.5-9B-MLX-4bit/snapshots/938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "local_snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4s-cognitive-compilation-10",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-01T16:39:40.272758Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": "stop",
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_maximum_tokens": 260864,
+    "generated_tokens": 613,
+    "generation_tokens_per_second": 7.988,
+    "generation_wall_ms": 94469.399,
+    "load_wall_ms": 4732.362,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 11.297,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 5,
+    "prompt_tokens": 1280,
+    "prompt_tokens_per_second": 73.798,
+    "runtime_ms": 94477,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "model_eos"
+  },
+  "policy": "project_theseus_local_inference_backend_v1",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "c119919be0081175de9895fbb8808330cd474e6f457eabaf05ebf8b307ff06a9",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V2\nSOURCE 6ac8f33943f97f85480646b12c117173d3c12ee507d39ce4f8fc2b74bd6fd96a\nALL_OBLIGATIONS O1 O2 O3\nUNIT U1\nOBLIGATIONS O1 O2 O3\nOP REPLACE\nPATH src/werkzeug/routing/map.py\nNODE N-67BC95DF435E42A6 339832e15d99a4f17217e31fe332d6347e92741c1ede36369916e134be48b3f8 FunctionDef src/werkzeug/routing/map.py 869:4-974:76 build\nNODE_SHA 339832e15d99a4f17217e31fe332d6347e92741c1ede36369916e134be48b3f8\n<<<\n        rv = self._partial_build(endpoint, values, method, append_unknown)\n        if rv is None:\n            raise BuildError(endpoint, values, method, self)\n\n        domain_part, path, websocket = rv\n        host = self.get_host(domain_part)\n\n        if url_scheme is None:\n            url_scheme = self.url_scheme\n\n        # Always build WebSocket routes with the scheme (browsers\n        # require full URLs). If bound to a WebSocket, ensure that HTTP\n        # routes are built with an HTTP scheme.\n        secure = url_scheme in {\"https\", \"wss\"}\n\n        if websocket:\n            force_external = True\n            url_scheme = \"wss\" if secure else \"ws\"\n        elif url_scheme:\n            url_scheme = \"https\" if secure else \"http\"\n\n        # Return a plain path if neither host or subdomain matching is enabled,\n        # or if they are enabled and the current host matches.\n        if (\n            not force_external\n            and (self.map.subdomain_matching or self.map.host_matching)\n            and (\n                (self.map.subdomain_matching and domain_part == self.subdomain)\n                or (self.map.host_matching and host == self.server_name)\n            )\n        ):\n            return f\"{self.script_name.rstrip('/')}/{path.lstrip('/')}\"\n\n        scheme = f\"{url_scheme}:\" if url_scheme else \"\"\n        return f\"{scheme}//{host}{self.script_name[:-1]}/{path.lstrip('/')}\"\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4s-cognitive-compilation-10_typed_semantic_ir_treatment_attempt2_direct_local_model_1",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}
