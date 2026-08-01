@@ -1,0 +1,5 @@
+# Minimal clean-checkout verification environment. Runtime and data profiles
+# remain owned by their existing requirements files.
+-c locks/theseus-py312-cpu.lock
+pytest==8.3.5
+ruff==0.15.0

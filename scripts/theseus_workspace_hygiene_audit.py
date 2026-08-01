@@ -73,9 +73,13 @@ ACTIVE_REFERENCE_SUFFIXES = {".py", ".ps1", ".sh", ".json", ".toml", ".md"}
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--project-registry", default=str(PROJECT_REGISTRY.relative_to(ROOT)))
+    parser.add_argument(
+        "--project-registry", default=str(PROJECT_REGISTRY.relative_to(ROOT))
+    )
     parser.add_argument("--out", default=str(DEFAULT_OUT.relative_to(ROOT)))
-    parser.add_argument("--markdown-out", default=str(DEFAULT_MARKDOWN.relative_to(ROOT)))
+    parser.add_argument(
+        "--markdown-out", default=str(DEFAULT_MARKDOWN.relative_to(ROOT))
+    )
     args = parser.parse_args()
 
     started = time.perf_counter()
@@ -92,14 +96,18 @@ def main() -> int:
     candidates.extend(dirty_workspace_candidates())
     candidates = sorted(candidates, key=candidate_sort_key)
     summary = build_summary(candidates, started)
-    trigger_state = "RED" if summary["high_count"] >= 25 else ("YELLOW" if candidates else "GREEN")
+    trigger_state = (
+        "RED" if summary["high_count"] >= 25 else ("YELLOW" if candidates else "GREEN")
+    )
     payload = {
         "policy": "project_theseus_workspace_hygiene_audit_v1",
         "created_utc": now(),
         "trigger_state": trigger_state,
         "summary": summary,
         "canonical_control_plane_scripts": sorted(CANONICAL_CONTROL_PLANE_SCRIPTS),
-        "project_registry": project_registry_summary(project_registry, args.project_registry),
+        "project_registry": project_registry_summary(
+            project_registry, args.project_registry
+        ),
         "control_plane_ownership": control_plane_ownership_summary(ownership),
         "retained_legacy_bridge_scripts": legacy_review["retained"],
         "retained_live_large_artifacts": retained_live_large_artifacts(),
@@ -174,11 +182,17 @@ def project_registry_candidates(registry: dict[str, Any]) -> list[dict[str, Any]
                 "priority": "high",
                 "path": "reports/theseus_project_registry.json",
                 "action": "Materialize the project manifest registry before cleanup decisions so every active surface has an owner/status.",
-                "evidence": {"expected_command": "python3 scripts/theseus_project_registry.py"},
+                "evidence": {
+                    "expected_command": "python3 scripts/theseus_project_registry.py"
+                },
             }
         ]
     candidates: list[dict[str, Any]] = []
-    governance_violations = [row for row in registry.get("governance_violations", []) if isinstance(row, dict)]
+    governance_violations = [
+        row
+        for row in registry.get("governance_violations", [])
+        if isinstance(row, dict)
+    ]
     if governance_violations:
         candidates.append(
             {
@@ -186,17 +200,25 @@ def project_registry_candidates(registry: dict[str, Any]) -> list[dict[str, Any]
                 "kind": "project_registry_evolution_contract_violation",
                 "id": "project_registry_evolution_contract_violations",
                 "priority": "high"
-                if any(str(row.get("severity") or "") == "hard" for row in governance_violations)
+                if any(
+                    str(row.get("severity") or "") == "hard"
+                    for row in governance_violations
+                )
                 else "medium",
                 "path": "",
                 "action": (
                     "Resolve registry evolution contract violations: update canonical registered surfaces first, "
                     "or declare a complete successor/deprecation relationship before adding a new lane."
                 ),
-                "evidence": {"count": len(governance_violations), "violations": governance_violations[:40]},
+                "evidence": {
+                    "count": len(governance_violations),
+                    "violations": governance_violations[:40],
+                },
             }
         )
-    unregistered = [row for row in registry.get("unregistered", []) if isinstance(row, dict)]
+    unregistered = [
+        row for row in registry.get("unregistered", []) if isinstance(row, dict)
+    ]
     if unregistered:
         candidates.append(
             {
@@ -209,17 +231,33 @@ def project_registry_candidates(registry: dict[str, Any]) -> list[dict[str, Any]
                 "evidence": {"count": len(unregistered), "sample": unregistered[:80]},
             }
         )
-    duplicates = [row for row in registry.get("duplicate_families", []) if isinstance(row, dict)]
-    if duplicates:
+    duplicates = [
+        row for row in registry.get("duplicate_families", []) if isinstance(row, dict)
+    ]
+    unclassified_duplicates = [
+        row for row in duplicates if not bool(row.get("classified"))
+    ]
+    if unclassified_duplicates:
         candidates.append(
             {
                 "record_type": "workspace_hygiene_candidate",
                 "kind": "duplicate_family_consolidation",
                 "id": "project_registry_duplicate_families",
-                "priority": "high" if len(duplicates) >= 12 else "medium",
+                "priority": (
+                    "high" if len(unclassified_duplicates) >= 12 else "medium"
+                ),
                 "path": "",
-                "action": "Consolidate duplicate vN/seed/current/after families behind canonical owners or mark deliberate compatibility wrappers.",
-                "evidence": {"count": len(duplicates), "families": duplicates[:50]},
+                "action": (
+                    "Consolidate unclassified duplicate vN/seed/current/after "
+                    "families behind canonical owners or classify deliberate "
+                    "compatibility and evidence-history families."
+                ),
+                "evidence": {
+                    "count": len(unclassified_duplicates),
+                    "families": unclassified_duplicates[:50],
+                    "classified_family_count": len(duplicates)
+                    - len(unclassified_duplicates),
+                },
             }
         )
     stale_or_missing = [
@@ -236,10 +274,17 @@ def project_registry_candidates(registry: dict[str, Any]) -> list[dict[str, Any]
                 "priority": "high" if len(stale_or_missing) >= 12 else "medium",
                 "path": "reports",
                 "action": "Refresh or intentionally retire stale/missing report outputs listed by the project registry before trusting the control plane.",
-                "evidence": {"count": len(stale_or_missing), "reports": stale_or_missing[:80]},
+                "evidence": {
+                    "count": len(stale_or_missing),
+                    "reports": stale_or_missing[:80],
+                },
             }
         )
-    generated_source = [row for row in registry.get("generated_source_artifacts", []) if isinstance(row, dict)]
+    generated_source = [
+        row
+        for row in registry.get("generated_source_artifacts", [])
+        if isinstance(row, dict)
+    ]
     if generated_source:
         candidates.append(
             {
@@ -249,7 +294,10 @@ def project_registry_candidates(registry: dict[str, Any]) -> list[dict[str, Any]
                 "priority": "high",
                 "path": "",
                 "action": "Quarantine generated cache/scratch files from source paths and add ignore coverage where needed.",
-                "evidence": {"count": len(generated_source), "sample": generated_source[:40]},
+                "evidence": {
+                    "count": len(generated_source),
+                    "sample": generated_source[:40],
+                },
             }
         )
     return candidates
@@ -285,7 +333,9 @@ def peripheral_overlap_candidates(ownership: dict[str, Any]) -> list[dict[str, A
         if len(existing) <= 1:
             continue
         owned_scripts = owned.get(group, set())
-        if owned_scripts and {f"scripts/{name}" for name in existing}.issubset(owned_scripts):
+        if owned_scripts and {f"scripts/{name}" for name in existing}.issubset(
+            owned_scripts
+        ):
             continue
         candidates.append(
             {
@@ -342,7 +392,10 @@ def large_report_candidates() -> list[dict[str, Any]]:
         if size < LARGE_REPORT_BYTES:
             continue
         families[large_report_family(path.name)].append(path)
-    for family, paths in sorted(families.items(), key=lambda item: (-sum(p.stat().st_size for p in item[1]), item[0])):
+    for family, paths in sorted(
+        families.items(),
+        key=lambda item: (-sum(p.stat().st_size for p in item[1]), item[0]),
+    ):
         total = sum(path.stat().st_size for path in paths)
         priority = "high" if total >= VERY_LARGE_REPORT_BYTES else "medium"
         candidates.append(
@@ -358,8 +411,13 @@ def large_report_candidates() -> list[dict[str, Any]]:
                     "file_count": len(paths),
                     "total_gib": round(total / (1024**3), 3),
                     "largest_files": [
-                        {"path": rel(path), "gib": round(path.stat().st_size / (1024**3), 3)}
-                        for path in sorted(paths, key=lambda item: item.stat().st_size, reverse=True)[:8]
+                        {
+                            "path": rel(path),
+                            "gib": round(path.stat().st_size / (1024**3), 3),
+                        }
+                        for path in sorted(
+                            paths, key=lambda item: item.stat().st_size, reverse=True
+                        )[:8]
                     ],
                 },
             }
@@ -380,14 +438,22 @@ def dirty_workspace_candidates() -> list[dict[str, Any]]:
             "priority": "high",
             "path": "",
             "action": "Review dirty files, separate intentional architecture changes from generated artifacts, and commit or archive coherent units.",
-            "evidence": {"status_counts": dict(sorted(buckets.items())), "sample": rows[:40], "count": len(rows)},
+            "evidence": {
+                "status_counts": dict(sorted(buckets.items())),
+                "sample": rows[:40],
+                "count": len(rows),
+            },
         }
     ]
 
 
 def active_source_reference_counts() -> dict[str, dict[str, Any]]:
     reference_files = active_reference_files()
-    script_paths = [path for path in SCRIPTS.glob("*.py") if path.name.startswith(LEGACY_SCRIPT_PREFIXES)]
+    script_paths = [
+        path
+        for path in SCRIPTS.glob("*.py")
+        if path.name.startswith(LEGACY_SCRIPT_PREFIXES)
+    ]
     counts: dict[str, dict[str, Any]] = {}
     for script in script_paths:
         count = 0
@@ -423,11 +489,15 @@ def active_reference_files() -> list[Path]:
 
 def owned_peripheral_groups(ownership: dict[str, Any]) -> dict[str, set[str]]:
     owned: dict[str, set[str]] = {}
-    for group in ownership.get("groups", []) if isinstance(ownership.get("groups"), list) else []:
+    for group in (
+        ownership.get("groups", []) if isinstance(ownership.get("groups"), list) else []
+    ):
         if not isinstance(group, dict):
             continue
         group_id = str(group.get("id") or "")
-        decision_owner = str(group.get("decision_owner") or ownership.get("decision_owner") or "")
+        decision_owner = str(
+            group.get("decision_owner") or ownership.get("decision_owner") or ""
+        )
         if decision_owner != "scripts/theseus_control_plane.py":
             continue
         scripts = {
@@ -441,19 +511,25 @@ def owned_peripheral_groups(ownership: dict[str, Any]) -> dict[str, set[str]]:
 
 
 def control_plane_ownership_summary(ownership: dict[str, Any]) -> dict[str, Any]:
-    groups = ownership.get("groups", []) if isinstance(ownership.get("groups"), list) else []
+    groups = (
+        ownership.get("groups", []) if isinstance(ownership.get("groups"), list) else []
+    )
     return {
         "manifest": rel(CONTROL_PLANE_OWNERSHIP),
         "present": bool(ownership),
         "policy": ownership.get("policy"),
         "decision_owner": ownership.get("decision_owner"),
         "group_count": len(groups),
-        "owned_group_ids": [str(group.get("id") or "") for group in groups if isinstance(group, dict)],
+        "owned_group_ids": [
+            str(group.get("id") or "") for group in groups if isinstance(group, dict)
+        ],
     }
 
 
 def project_registry_summary(registry: dict[str, Any], path: str) -> dict[str, Any]:
-    summary = registry.get("summary") if isinstance(registry.get("summary"), dict) else {}
+    summary = (
+        registry.get("summary") if isinstance(registry.get("summary"), dict) else {}
+    )
     return {
         "path": path,
         "present": bool(registry),
@@ -461,16 +537,30 @@ def project_registry_summary(registry: dict[str, Any], path: str) -> dict[str, A
         "surface_count": registry.get("surface_count") if registry else 0,
         "entry_count": summary.get("entry_count", 0),
         "coverage_ratio": summary.get("coverage_ratio"),
-        "unregistered_active_source_count": summary.get("unregistered_active_source_count", 0),
+        "unregistered_active_source_count": summary.get(
+            "unregistered_active_source_count", 0
+        ),
         "duplicate_family_count": summary.get("duplicate_family_count", 0),
-        "source_duplicate_family_count": summary.get("source_duplicate_family_count", 0),
-        "classified_source_duplicate_family_count": summary.get("classified_source_duplicate_family_count", 0),
-        "unclassified_source_duplicate_family_count": summary.get("unclassified_source_duplicate_family_count", 0),
+        "source_duplicate_family_count": summary.get(
+            "source_duplicate_family_count", 0
+        ),
+        "classified_source_duplicate_family_count": summary.get(
+            "classified_source_duplicate_family_count", 0
+        ),
+        "unclassified_source_duplicate_family_count": summary.get(
+            "unclassified_source_duplicate_family_count", 0
+        ),
         "stale_report_output_count": summary.get("stale_report_output_count", 0),
         "missing_report_output_count": summary.get("missing_report_output_count", 0),
-        "generated_source_artifact_count": summary.get("generated_source_artifact_count", 0),
-        "registry_governance_violation_count": summary.get("registry_governance_violation_count", 0),
-        "registry_hard_governance_violation_count": summary.get("registry_hard_governance_violation_count", 0),
+        "generated_source_artifact_count": summary.get(
+            "generated_source_artifact_count", 0
+        ),
+        "registry_governance_violation_count": summary.get(
+            "registry_governance_violation_count", 0
+        ),
+        "registry_hard_governance_violation_count": summary.get(
+            "registry_hard_governance_violation_count", 0
+        ),
     }
 
 
@@ -549,7 +639,9 @@ def candidate(
 
 
 def candidate_sort_key(row: dict[str, Any]) -> tuple[int, str, str]:
-    rank = {"high": 0, "medium": 1, "low": 2}.get(str(row.get("priority") or "medium").lower(), 1)
+    rank = {"high": 0, "medium": 1, "low": 2}.get(
+        str(row.get("priority") or "medium").lower(), 1
+    )
     return rank, str(row.get("kind") or ""), str(row.get("id") or "")
 
 
@@ -562,7 +654,13 @@ def large_report_family(name: str) -> str:
 
 def git_status_rows() -> list[str]:
     try:
-        result = subprocess.run(["git", "status", "--short"], cwd=ROOT, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            ["git", "status", "--short"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
     except (OSError, subprocess.TimeoutExpired):
         return []
     return [line for line in result.stdout.splitlines() if line.strip()]
@@ -576,7 +674,9 @@ def read_json(path: Path, default: Any = None) -> Any:
 
 
 def safe_id(value: str) -> str:
-    return re.sub(r"[^a-zA-Z0-9_.-]+", "_", value).strip("._").lower()[:120] or "unknown"
+    return (
+        re.sub(r"[^a-zA-Z0-9_.-]+", "_", value).strip("._").lower()[:120] or "unknown"
+    )
 
 
 def resolve(path: str | Path) -> Path:

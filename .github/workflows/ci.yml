@@ -18,17 +18,25 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: requirements/theseus-py312-cpu.txt
-      - run: python -m pip install pytest==8.3.5 ruff==0.15.0
+          cache-dependency-path: |
+            requirements/theseus-py312-public-ci.txt
+            requirements/locks/theseus-py312-cpu.lock
+      - run: python -m pip install -r requirements/theseus-py312-public-ci.txt
       - name: Format
         run: >-
           ruff format --check
           scripts/blind_runtime_guard.py
+          scripts/checkpoint_custody.py
           scripts/repository_license_gate.py
           scripts/public_reproducibility_capsule.py
+          scripts/theseus_workspace_hygiene_audit.py
           tests/test_blind_runtime_guard.py
+          tests/test_checkpoint_custody.py
+          tests/test_maintenance_helper_repairs.py
+          tests/test_public_release_audit.py
           tests/test_repository_license_gate.py
           tests/test_public_reproducibility_capsule.py
+          tests/test_workspace_hygiene_audit.py
           tests/test_teacher_share_accounting_ledger.py
           tests/test_dogfood_outcome_accounting.py
           tests/test_vcm_consumer_integration_archive.py
@@ -36,7 +44,9 @@ jobs:
         run: >-
           ruff check --select E9,F63,F7,F82
           scripts/blind_runtime_guard.py
+          scripts/checkpoint_custody.py
           scripts/repository_license_gate.py
+          scripts/public_release_audit.py
           scripts/public_reproducibility_capsule.py
           scripts/openai_compat_server.py
           scripts/sparkstream_dashboard.py
@@ -44,26 +54,37 @@ jobs:
           scripts/hive_node_federation.py
           scripts/hive_node_peer_registry.py
           scripts/hive_users.py
+          scripts/theseus_workspace_hygiene_audit.py
           tests/test_blind_runtime_guard.py
+          tests/test_checkpoint_custody.py
+          tests/test_maintenance_helper_repairs.py
+          tests/test_public_release_audit.py
           tests/test_repository_license_gate.py
           tests/test_public_reproducibility_capsule.py
           tests/test_openai_compat_security.py
           tests/test_sparkstream_dashboard_security.py
           tests/test_hive_authority_security.py
           tests/test_autonomy_authority_security.py
+          tests/test_workspace_hygiene_audit.py
           tests/test_teacher_share_accounting_ledger.py
           tests/test_dogfood_outcome_accounting.py
           tests/test_vcm_consumer_integration_archive.py
+      - name: Repository-wide Python hard errors
+        run: ruff check --select F821 scripts tests
       - name: Public-safe unit slice
         run: >-
           python -m pytest -q
           tests/test_blind_runtime_guard.py
+          tests/test_checkpoint_custody.py
+          tests/test_maintenance_helper_repairs.py
+          tests/test_public_release_audit.py
           tests/test_repository_license_gate.py
           tests/test_public_reproducibility_capsule.py
           tests/test_openai_compat_security.py
           tests/test_sparkstream_dashboard_security.py
           tests/test_hive_authority_security.py
           tests/test_autonomy_authority_security.py
+          tests/test_workspace_hygiene_audit.py
           tests/test_teacher_share_accounting_ledger.py
           tests/test_dogfood_outcome_accounting.py
           tests/test_vcm_consumer_integration_archive.py

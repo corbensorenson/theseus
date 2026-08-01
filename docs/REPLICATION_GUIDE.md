@@ -1,6 +1,6 @@
 # Project Theseus Replication Guide
 
-Last consolidated: 2026-07-29.
+Last consolidated: 2026-07-30.
 
 This guide rebuilds the public-safe source and local control plane. Private
 corpora, checkpoints, runtime ledgers, user traces, and decisive evidence are
@@ -51,6 +51,12 @@ the tracked tree.
 
 ## 3. Clone And Inspect
 
+The existing public remote is not currently an approved source release. Its tip
+and history contain generated evidence and private-evaluation implementation
+material excluded by the current boundary. Until the transition in
+[Public Release](PUBLIC_RELEASE.md) is complete, treat a clone as exposed
+historical development state, not a clean reproducibility package.
+
 ```bash
 git clone https://github.com/corbensorenson/theseus.git
 cd theseus
@@ -67,26 +73,37 @@ docs/GLOSSARY.md
 docs/TOP_TO_BOTTOM_ARCHITECTURE.md
 ```
 
-The public repository may lag the private/local operational state. Never infer
-checkpoint availability or training authority from source alone.
+The public repository may lag the private/local operational state and may
+contain material that a final source-only release excludes. Never infer
+checkpoint availability, evaluator freshness, or training authority from source
+alone.
 
 ## 4. Python And Rust Checks
 
 Install the public-safe test tools:
 
 ```bash
-python3 -m pip install pytest==8.3.5 ruff==0.15.0
+python3 -m pip install -r requirements/theseus-py312-public-ci.txt
 ```
 
-Run the scoped public-safe Python slice defined in
-`.github/workflows/ci.yml`. For local broad checks:
+Verification has three explicit scopes:
+
+- the clean-checkout public-source slice in `.github/workflows/ci.yml`;
+- the broad local-evidence suite, which may consume ignored governed artifacts;
+- guarded accelerator tests, which run only through the qualified host workflow.
+
+The public-source workflow also runs repository-wide F821 checking so an
+uncollected script cannot hide an undefined runtime name. For local broad
+checks:
 
 ```bash
-python3 -m pytest -q
+python3 -m pytest -q -m "not accelerator"
 ```
 
 Some tests are hardware-, private-artifact-, or environment-guarded. A skip is
-not a pass; read its reason.
+not a pass; read its reason. Local-evidence failures do not make a
+clean-checkout test public-safe, and a narrow public slice does not prove the
+private evidence graph current.
 
 Run Rust checks:
 

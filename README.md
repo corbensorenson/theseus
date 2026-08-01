@@ -17,29 +17,41 @@ mature than its measured learned capability.
 ## Current State
 
 The canonical human-readable status is
-[Project State](docs/PROJECT_STATE.md). The short version as of 2026-07-29 is:
+[Project State](docs/PROJECT_STATE.md). The short version as of the
+2026-07-31 local-model program reorientation is:
 
 - the exact 57.3M-parameter modular checkpoint is paused at optimizer step
-  11,416 with model, AdamW, MLX RNG, cursor, and prospective lineage custody;
+  11,416 with model, AdamW, MLX RNG, cursor, and prospective lineage identity;
+- independent encrypted off-machine custody is not complete, so destructive
+  maintenance remains blocked;
 - the operator hold is installed, so long training is `TRAINING_HELD`;
-- the frozen 160-case private functional evaluation is unconsumed and the
-  checkpoint remains `NOT_EVALUATED`;
+- the checkpoint remains unevaluated; its 160-case D2 surface is independently
+  fresh at exact and normalized prompt scope but remains sealed and separately
+  unauthorized;
 - both matched dense controls remain untrained;
 - the selected practical route is compiled FP32 MLX;
 - KERC/RDC is a protected, frozen successor experiment and ANE training was
   not selected for the current campaign;
 - local security and evaluator-integrity repairs pass their bounded tests, but
   LAN or public exposure is not qualified;
+- the existing public Git history is not an approved release surface, and
+  pushes remain frozen pending a clean source-only transition;
 - teacher-accepted rows are about 0.013% of accepted training rows;
-- genuine daily usefulness remains `EMPIRICAL_SUPPORT_INSUFFICIENT`.
+- genuine daily usefulness remains `NOT_ESTABLISHED`;
+- P1 now binds the exact frozen TMax model to the canonical direct and
+  integrated assistant routes with GREEN route-integrity evidence;
+- P2C established an adequate Qwen3.5 instrument but did not solve its one
+  licensed task, and the ten-task P3 campaign found no useful-route winner; and
+- P4 now tests one ASI Stack mechanism at a time on fresh source-disjoint tasks,
+  with no automatic D1, neural, serving, or book-support promotion.
 
 Documentation consolidation does not change any of those evidence states.
-The current [roadmap](roadmap.md) is evidence-first: while multi-day training
-is held, Theseus will run one natural repository-work flagship to test governed
-stack usefulness, route economics, authority, planning, VCM, procedural reuse,
-and clean replay. The later sealed neural campaign separately tests modular
-MoECOT against dense-active and dense-total controls. Other architecture,
-acceleration, product, network, data, and book-expansion work is sidelined.
+The current [roadmap](roadmap.md) is causal-evidence first. P1 route integrity,
+P2 instrument repair, and P3 residual discovery are complete. The active P4
+lane tests typed Semantic IR/cognitive compilation against matched direct,
+planning, and deterministic controls with the same frozen local model. The
+matched neural campaign proceeds independently under its hold and later tests
+modular MoECOT against dense-active and dense-total controls on sealed D2.
 
 ## Operating Boundaries
 
@@ -99,7 +111,7 @@ That prototype must not be confused with the active 57.3M MLX campaign.
 | `scripts/` | Experiment, governance, evaluation, and operator entry points |
 | `tests/` | Python regression and integrity coverage |
 | `crates/` | Rust prototype and runtime components |
-| `apps/` | Local UI and operator surfaces |
+| `dashboard/` | Local operator dashboard source |
 | `reports/` | Generated evidence; not progress by itself |
 | `runtime/` | Private local state and ledgers |
 | `checkpoints/` | Private model and optimizer state |
@@ -130,11 +142,15 @@ MLX, Metal, or checkpoint test is not equivalent to a pass.
 For local assisted use:
 
 ```bash
-python3 scripts/theseus_local_assistant.py --help
+python3 scripts/theseus_assistant_runtime.py --help
 ```
 
+The registered runtime supports the frozen local-model direct and integrated
+experiment routes plus the deterministic grounded-status maintenance path.
 Assisted outputs may use deterministic tools, memory, retrieval, or rules.
-Record them as assisted and never treat them as learned-model capability.
+Record them as assisted and never treat them as learned-model capability. P1
+route integrity is mechanics evidence; P2/P3/P4 own usefulness and causal
+inference.
 
 ## Training
 
@@ -145,10 +161,13 @@ Do not infer launch authority from a command in this repository. Read
 At present:
 
 - no long run is authorized;
-- the source-bound readiness package must be refreshed after the documentation
-  transaction;
+- the independent readiness audit is GREEN after recomputing exact and
+  normalized prompt freshness against the consumed v8 packet;
+- the source-bound replacement package is RED solely because the remaining
+  maintenance transaction is not yet a clean committed source ref;
 - the operator hold remains installed;
-- the frozen evaluation must remain untouched;
+- the frozen D2 material remains untouched and evaluation remains separately
+  unauthorized;
 - no additional KERC, ANE, optimizer, architecture, data, or generic
   acceleration experiment should interrupt the selected matched campaign.
 
@@ -174,9 +193,15 @@ research documents do not override those sources.
 ## Public Source And License
 
 The intended public source repository is
-[corbensorenson/theseus](https://github.com/corbensorenson/theseus). Before a
-public snapshot, run the public-release and registry gates and inspect the
-actual Git diff.
+[corbensorenson/theseus](https://github.com/corbensorenson/theseus), but its
+current tip and history are not an approved public-release surface. Pushes
+remain frozen. Prepare a clean source-only tree, run the public-release and
+registry gates, inspect the actual Git diff and Git object closure, and obtain
+explicit approval before any repository or history transition.
+
+Project Theseus source code is licensed under Apache-2.0. Dataset, model,
+generated-artifact, and third-party dependency terms remain governed by their
+own provenance and license records.
 
 See [LICENSE](LICENSE), [Data And Artifacts](docs/DATA_AND_ARTIFACTS.md), and
 [Public Release](docs/PUBLIC_RELEASE.md) for source, data, model, and generated
@@ -186,8 +211,15 @@ artifact boundaries.
 
 - There is no capability claim for the current neural checkpoint.
 - The matched modular-versus-dense experiment is incomplete.
+- P1 route integrity does not establish that the integrated route is more
+  useful than direct generation.
+- P3 found equal useful completion at 1/10 per route despite higher integrated
+  parseability; no subsystem effect may be inferred from that tie.
 - The first explicit travel-mode dogfood task was recorded as a miss.
 - Hosted CI has not yet verified the latest local workflow changes.
+- Independent encrypted off-machine source/checkpoint custody is not complete.
+- The existing public repository history contains paths excluded by the current
+  public boundary.
 - Local security tests do not qualify Theseus for LAN or public exposure.
 - The complete predecessor checkpoint chain before the prospective step-9,048
   lineage was not retained.

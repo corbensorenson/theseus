@@ -4,6 +4,7 @@
   "require_public_visibility": true,
   "tracked_root_allowlist": [
     ".gitignore",
+    ".github",
     "AGENTS.md",
     "Cargo.lock",
     "Cargo.toml",
@@ -17,6 +18,7 @@
     "benchmarks",
     "bin",
     "configs",
+    "conftest.py",
     "crates",
     "dashboard",
     "data",
@@ -25,7 +27,10 @@
     "examples",
     "ios",
     "memory",
+    "native",
     "packaging",
+    "pytest.ini",
+    "requirements",
     "roadmap.md",
     "scripts",
     "src",
@@ -52,7 +57,12 @@
     "data/training_data/open_conversation_pantry/private_train/",
     "data/training_data/open_conversation_pantry/samples/",
     "data/training_data/open_conversation_pantry/sts_streams/",
-    "data/training_data/residual_code_curriculum/private_train/"
+    "data/training_data/residual_code_curriculum/private_train/",
+    "tests/fixtures/core_evidence_local_8b_hidden/",
+    "tests/fixtures/core_evidence_qwen35_fresh_hidden/",
+    "tests/fixtures/core_evidence_qwen35_fresh_v2_hidden/",
+    "tests/fixtures/core_evidence_repository_stack_development_hidden/",
+    "tests/fixtures/core_evidence_tmax_fresh_v1_hidden/"
   ],
   "forbidden_tracked_paths": [
     "data/public_blimp_train.jsonl",
@@ -61,7 +71,28 @@
     "data/babylm_blimp_filtered_eval.jsonl",
     "data/training_sources/trace_fabric_capsule_candidates.jsonl",
     "data/training_sources/narrow_corpus_manifest_10m.json",
-    "data/training_sources/narrow_corpus_manifest_ladder_v1.json"
+    "data/training_sources/narrow_corpus_manifest_ladder_v1.json",
+    "configs/core_evidence_local_8b_qualification_evaluator.json",
+    "configs/core_evidence_qwen35_fresh_qualification_evaluator.json",
+    "configs/core_evidence_qwen35_fresh_v2_qualification_evaluator.json",
+    "configs/core_evidence_repository_stack_development_evaluator.json",
+    "configs/core_evidence_tmax_fresh_v1_qualification_evaluator.json",
+    "configs/core_evidence_worker_v2_qualification_evaluator.json",
+    "configs/neural_seed_57m_functional_utility_freeze.json",
+    "configs/neural_seed_functional_utility.json",
+    "configs/neural_seed_functional_utility_freeze.json",
+    "configs/neural_seed_local_english_raters.json",
+    "scripts/neural_seed_functional_cases.py",
+    "scripts/neural_seed_functional_consumption.py",
+    "scripts/neural_seed_functional_generate.py",
+    "scripts/neural_seed_functional_utility.py",
+    "scripts/neural_seed_functional_verifiers.py",
+    "scripts/neural_seed_local_english_raters.py",
+    "tests/test_neural_seed_functional_cases.py",
+    "tests/test_neural_seed_functional_consumption.py",
+    "tests/test_neural_seed_functional_utility.py",
+    "tests/test_neural_seed_functional_verifiers.py",
+    "tests/test_neural_seed_local_english_raters.py"
   ],
   "forbidden_suffixes": [
     ".app",
@@ -90,5 +121,72 @@
     "docs/",
     "scripts/",
     "crates/"
-  ]
+  ],
+  "source_release": {
+    "policy": "project_theseus_source_only_release_v1",
+    "include_paths": [
+      ".gitignore",
+      "AGENTS.md",
+      "Cargo.lock",
+      "Cargo.toml",
+      "LICENSE",
+      "NOTICE",
+      "README.md",
+      "conftest.py",
+      "pytest.ini",
+      "roadmap.md"
+    ],
+    "include_prefixes": [
+      ".github/",
+      "adapters/",
+      "android/",
+      "assets/",
+      "bin/",
+      "configs/",
+      "crates/",
+      "dashboard/",
+      "docs/",
+      "examples/",
+      "ios/",
+      "memory/",
+      "native/",
+      "packaging/",
+      "requirements/",
+      "scripts/",
+      "src/",
+      "tests/"
+    ],
+    "exclude_paths": [
+      "configs/checkpoint_backup_policy.json",
+      "configs/checkpoint_retention_pins.json",
+      "configs/narrow_corpus_pretraining_spine.json",
+      "configs/runtime_paths.json",
+      "configs/training_profiles_macos_local.json"
+    ],
+    "exclude_prefixes": [
+      "configs/evaluation_history/",
+      "docs/archive/",
+      "docs/reference/",
+      "tests/fixtures/theseus_assistant_p2a_online/",
+      "tests/fixtures/theseus_assistant_p3_online/",
+      "tests/fixtures/theseus_p4_online/",
+      "tests/fixtures/theseus_p4r_online/",
+      "tests/fixtures/theseus_p4s_online/"
+    ],
+    "exclude_suffixes": [
+      ".docx",
+      ".pdf"
+    ],
+    "maximum_file_bytes": 2097152,
+    "maximum_total_bytes": 134217728,
+    "required_paths": [
+      ".github/workflows/ci.yml",
+      "Cargo.toml",
+      "LICENSE",
+      "README.md",
+      "configs/public_release_manifest.json",
+      "requirements/theseus-py312-public-ci.txt",
+      "scripts/public_release_audit.py"
+    ]
+  }
 }
