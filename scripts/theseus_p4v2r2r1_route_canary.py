@@ -19,7 +19,7 @@ import theseus_assistant_p2a as p2a  # noqa: E402
 INSTRUMENT = ROOT / "configs" / "theseus_p4v2r2r1_cognitive_compilation_instrument.json"
 CANARY = ROOT / "reports" / "theseus_p4v2r2r1_route_canary.json"
 OUT = ROOT / "reports" / "theseus_p4v2r2r1_route_canary_audit.json"
-INSTRUMENT_SHA256 = "70f9829e694f78aff69fa4713a4adc2c013e3103433b9f99f9dfd22a77f25069"
+INSTRUMENT_SHA256 = "028b1ce44961df62ccd5076787bb61f5dd032faee5fc2431cf8566f8a8bdfb7e"
 
 
 def audit() -> dict[str, Any]:

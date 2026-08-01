@@ -2,7 +2,7 @@
   "faults": [],
   "instrument": {
     "path": "configs/theseus_p4v2r2r1_cognitive_compilation_instrument.json",
-    "sha256": "70f9829e694f78aff69fa4713a4adc2c013e3103433b9f99f9dfd22a77f25069"
+    "sha256": "028b1ce44961df62ccd5076787bb61f5dd032faee5fc2431cf8566f8a8bdfb7e"
   },
   "policy": "project_theseus_p4v2r2r1_instrument_audit_v1",
   "project_selected_quality_token_cap": null,

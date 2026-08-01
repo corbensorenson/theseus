@@ -316,9 +316,24 @@ def run_experiment(
     p4.render_final_prompt = render_final_prompt
     p4.run_arm = bound_run_arm
     p4r.completion.candidate_envelope_complete = candidate_envelope_complete
-    p4.p2a.runtime_call = p4s.bind_runtime_attempt_namespace(
+    namespaced_runtime_call = p4s.bind_runtime_attempt_namespace(
         original_runtime_call, namespace
     )
+
+    def route_guarded_runtime_call(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        result = namespaced_runtime_call(*args, **kwargs)
+        runtime_report = p2a.mapping(result.get("runtime_report"))
+        if runtime_report:
+            route_receipt = p2a.mapping(runtime_report.get("route_integrity"))
+            if (
+                runtime_report.get("trigger_state") != "GREEN"
+                or route_receipt.get("ready") is not True
+                or route_receipt.get("release_allowed") is not True
+            ):
+                raise RuntimeError("p4v2r2_route_integrity_release_failed")
+        return result
+
+    p4.p2a.runtime_call = route_guarded_runtime_call
     try:
         report = p4r.run_experiment(
             instrument_path, task_path, session_factory=session_factory

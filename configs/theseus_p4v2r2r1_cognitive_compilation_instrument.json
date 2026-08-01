@@ -109,7 +109,7 @@
     "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
     "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
     "candidate_runner": "scripts/theseus_p4v2r2_cognitive_compilation.py",
-    "candidate_runner_sha256": "e53edc11283149ee39f79a45e8a909f8fc28747834107e24cc1e474863a80a5a",
+    "candidate_runner_sha256": "f5b144d86fc63de0967bd1bb63aa59b3dd3c0c8029e7eb0b9cf69c54ae9e7248",
     "local_backend": "scripts/theseus_local_inference_backend_v2.py",
     "local_backend_sha256": "35a03b9171c15fb92ea66d337f076b46a4012f88fd383cd0408beb5dd619f306",
     "route_integrity_base": "scripts/theseus_assistant_route_integrity.py",

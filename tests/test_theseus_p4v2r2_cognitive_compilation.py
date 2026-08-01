@@ -121,3 +121,13 @@ def test_persistent_session_uses_v2_decoder_and_contract(monkeypatch) -> None:
     assert invalid["trigger_state"] == "RED"
     assert invalid["response"]["answer"] == ""
     assert "instrument_inadequate_generation_boundary_hit" in invalid["faults"]
+
+
+def test_route_guard_contract_is_source_present_and_fail_fast() -> None:
+    source = (ROOT / "scripts" / "theseus_p4v2r2_cognitive_compilation.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "route_guarded_runtime_call" in source
+    assert "p4v2r2_route_integrity_release_failed" in source
+    assert 'route_receipt.get("release_allowed") is not True' in source
