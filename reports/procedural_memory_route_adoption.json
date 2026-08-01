@@ -2285,7 +2285,7 @@
       "warnings": []
     }
   ],
-  "created_utc": "2026-07-30T14:04:04.649302Z",
+  "created_utc": "2026-07-31T17:16:56.748531Z",
   "default_routes": [
     {
       "assistant_intents": [
@@ -4003,7 +4003,7 @@
     "learned_generation_claim_count": 0,
     "public_training_rows_written": 0,
     "registry": "reports/theseus_project_registry.json",
-    "runtime_ms": 56,
+    "runtime_ms": 71,
     "steward": "configs/project_steward.json",
     "toolification": "reports/procedural_memory_toolification.json",
     "transaction_count": 3,
@@ -4023,7 +4023,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "decision": "adopt_default_route",
       "default_route_adopted": true,
       "external_inference_calls": 0,
@@ -4085,7 +4085,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4146,7 +4146,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
       "claim": "procedural memory route adopted as local default metadata route under regression guard",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4213,7 +4213,7 @@
       ],
       "authority_ceiling": "local_metadata_route_packet_only_no_external_effects",
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4275,7 +4275,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4337,7 +4337,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
       "capacity_pool": "local_T0_metadata_route",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4399,7 +4399,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4462,7 +4462,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4523,7 +4523,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4595,7 +4595,7 @@
       "claim_refs": [
         "claim-4b0f502c53bb54f0"
       ],
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4661,7 +4661,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
       "claim_id": "claim-4b0f502c53bb54f0",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "evidence_ref": "reports/procedural_memory_route_adoption.json",
       "external_inference_calls": 0,
@@ -4725,7 +4725,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.9b50fc9d7d977f46",
-      "created_utc": "2026-07-30T14:04:04.648444Z",
+      "created_utc": "2026-07-31T17:16:56.747816Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4787,7 +4787,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "decision": "adopt_default_route",
       "default_route_adopted": true,
       "external_inference_calls": 0,
@@ -4849,7 +4849,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4910,7 +4910,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
       "claim": "procedural memory route adopted as local default metadata route under regression guard",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -4977,7 +4977,7 @@
       ],
       "authority_ceiling": "local_metadata_route_packet_only_no_external_effects",
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5039,7 +5039,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5101,7 +5101,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
       "capacity_pool": "local_T0_metadata_route",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5163,7 +5163,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5226,7 +5226,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5287,7 +5287,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5359,7 +5359,7 @@
       "claim_refs": [
         "claim-dcc8186e9d36ae29"
       ],
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5425,7 +5425,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
       "claim_id": "claim-dcc8186e9d36ae29",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "evidence_ref": "reports/procedural_memory_route_adoption.json",
       "external_inference_calls": 0,
@@ -5489,7 +5489,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.8a297828318fcb33",
-      "created_utc": "2026-07-30T14:04:04.648605Z",
+      "created_utc": "2026-07-31T17:16:56.748021Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5551,7 +5551,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "decision": "adopt_default_route",
       "default_route_adopted": true,
       "external_inference_calls": 0,
@@ -5613,7 +5613,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5674,7 +5674,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
       "claim": "procedural memory route adopted as local default metadata route under regression guard",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5741,7 +5741,7 @@
       ],
       "authority_ceiling": "local_metadata_route_packet_only_no_external_effects",
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5803,7 +5803,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5865,7 +5865,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
       "capacity_pool": "local_T0_metadata_route",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5927,7 +5927,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -5990,7 +5990,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -6051,7 +6051,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -6123,7 +6123,7 @@
       "claim_refs": [
         "claim-70fff8903f335197"
       ],
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
@@ -6189,7 +6189,7 @@
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
       "claim_id": "claim-70fff8903f335197",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "evidence_ref": "reports/procedural_memory_route_adoption.json",
       "external_inference_calls": 0,
@@ -6253,7 +6253,7 @@
         "local_assistant"
       ],
       "candidate_id": "procedural.assistant_trace.30a72b1bfdb0a168",
-      "created_utc": "2026-07-30T14:04:04.648643Z",
+      "created_utc": "2026-07-31T17:16:56.748071Z",
       "default_route_adopted": true,
       "external_inference_calls": 0,
       "fallback_return_count": 0,
