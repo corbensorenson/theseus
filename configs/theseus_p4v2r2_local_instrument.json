@@ -1,0 +1,39 @@
+{
+  "policy": "project_theseus_p4v2r2_completion_local_instrument_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_FRESH_P4V2R2_TASK_POOL",
+  "runtime_config": "configs/theseus_assistant_runtime.json",
+  "runtime_binding": {
+    "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json",
+    "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json"
+  },
+  "frozen_model": {
+    "selection_state": "CANONICAL_UNCAPPED_TMAX_STATIC_CAUSAL_BASE",
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+    "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+    "temperature": 0.0,
+    "model_declared_context_window_tokens": 262144,
+    "project_selected_quality_token_cap": null,
+    "physical_context_boundary_tokens": 262144
+  },
+  "candidate_protocol": {
+    "direct_and_plan_version": "theseus_line_edit_v1",
+    "semantic_treatment_version": "theseus_semantic_ir_v2r2_labeled",
+    "maximum_actions_per_candidate": 8,
+    "maximum_replacement_bytes": 65536,
+    "allowed_operation": "REPLACE",
+    "line_coordinates": "one_based_inclusive_against_current_disposable_snapshot"
+  },
+  "generation_completion": {
+    "policy": "configs/theseus_generation_completion_policy.json",
+    "normal_stop": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "numeric_boundary": "model_declared_context_window_minus_exact_prompt_tokens",
+    "project_selected_quality_token_cap": null,
+    "physical_boundary_hit_invalidates_observation": true
+  }
+}

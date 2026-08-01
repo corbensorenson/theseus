@@ -1,0 +1,158 @@
+{
+  "policy": "project_theseus_p4v2r2_cognitive_compilation_instrument_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01-P4V2R2-COGNITIVE-COMPILATION",
+  "runtime_attempt_namespace": "p4v2r2_attempt1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_FRESH_P4V2R2_TASK_ACQUISITION",
+  "purpose": "Run one fresh source-disjoint causal development test of Semantic-IR v2r2 with canonical uncapped TMax held fixed across direct, plan-control, and typed-treatment arms.",
+  "p4s_terminal_disposition": "reports/theseus_p4s_terminal_disposition.json",
+  "p4s_terminal_disposition_sha256": "2efb3120ddb7396bc45d9c8dd22c66cdaa62b8293fb2b66135a03e89f068c7b8",
+  "v2r2_mechanics_binding": "configs/theseus_semantic_ir_v2r2_mechanics.json",
+  "v2r2_mechanics_binding_sha256": "b5cb83b74373699005f59226a6dac2d26f5b3c352f867a9a5066d2c1bebcc8bd",
+  "generation_completion_policy": "configs/theseus_generation_completion_policy.json",
+  "generation_completion_policy_sha256": "0fa5037ef2d82a71cb4e24aa2f8f15983ccca8891dbe6f3479bbbcb47ea292c7",
+  "base_local_instrument": "configs/theseus_p4v2r2_local_instrument.json",
+  "base_local_instrument_sha256": "2e34a08d063a87748359149c46faa8ddba374d02ab8a0f3b8fdceb2123eb13f7",
+  "selected_claim": {
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "causal_variable": "Typed source-to-semantic-to-target lowering with stable obligation and semantic-scope identities, explicit loss, actual target validation, and dependency-local repair.",
+    "support_state_before": "no_change",
+    "automatic_support_promotion": false
+  },
+  "single_mechanism_change": {
+    "treatment_transport": "theseus_semantic_ir_v2r2_labeled",
+    "change_from_terminal_P4S": "Normalize only unambiguous obligation-list delimiters before the unchanged strict lowerer; do not reinterpret or rescore P4S.",
+    "direct_control_changed_within_denominator": false,
+    "plan_control_changed_within_denominator": false,
+    "task_or_evaluator_selected_before_instrument_freeze": false,
+    "P4S_outputs_reused_or_rescored": false
+  },
+  "harness": {
+    "candidate_runner": "scripts/theseus_p4v2r2_cognitive_compilation.py",
+    "candidate_runner_sha256": "264cc8c346c1025d67d73ce4e4f47ba33a27720140457b117272ab114df8292d",
+    "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
+    "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
+    "local_backend": "scripts/theseus_local_inference_backend_v2.py",
+    "local_backend_sha256": "35a03b9171c15fb92ea66d337f076b46a4012f88fd383cd0408beb5dd619f306",
+    "semantic_parser": "scripts/theseus_semantic_ir_v2r2.py",
+    "semantic_parser_sha256": "092a44f17965c09f4603c40956826d5738fe9b7792c7c92736641cad242790b0"
+  },
+  "matched_arm_contract": {
+    "arms": [
+      "direct_target_generation",
+      "natural_language_plan_control",
+      "typed_semantic_ir_treatment"
+    ],
+    "arm_order_policy": "three_arm_latin_rotation_by_campaign_index",
+    "same_frozen_weights": true,
+    "same_information": true,
+    "same_completion_policy": true,
+    "same_model_context_residual_rule": true,
+    "same_two_model_calls": true,
+    "same_verifier_and_effect_sandbox": true,
+    "same_semantic_scope_symbol_table": true,
+    "natural_early_completion_is_measured_not_padded": true,
+    "natural_language_plan_controls_execution": false,
+    "semantic_ir_controls_lowering_validation_and_repair": true,
+    "only_treatment_difference": "The semantic arm must express edits through stable v2r2 semantic units independently normalized, parsed, identity-checked, dependency-checked, lowered, validated, and locality-audited."
+  },
+  "generation_budget": {
+    "project_selected_quality_token_cap": null,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "numeric_boundary_source": "pinned_model_declared_context_residual",
+    "model_declared_context_window_tokens": 262144,
+    "effective_boundary_formula": "262144 - exact_prompt_tokens",
+    "ceiling_hit_invalidates_observation": true,
+    "ceiling_hit_counts_as_model_or_mechanism_failure": false,
+    "host_emergency_stop_invalidates_observation": true
+  },
+  "budgets": {
+    "task_count": 10,
+    "model_calls_per_learned_arm": 2,
+    "learned_arms_per_task": 3,
+    "maximum_model_calls_per_task": 6,
+    "persistent_model_loads_per_task_set": 1,
+    "maximum_generation_tokens_per_call": 262144,
+    "maximum_generation_tokens_semantics": "Transport binding equal to the pinned model context window, not a quality or answer-length cap. Exact prompt tokens are subtracted and normal completion occurs on a complete artifact or model EOS.",
+    "maximum_semantic_units": 8,
+    "maximum_symbol_nodes": 80,
+    "maximum_replacement_bytes": 65536,
+    "visible_verifier_timeout_seconds": 60,
+    "hidden_verifier_timeout_seconds": 60
+  },
+  "fresh_task_pool_contract": {
+    "candidate_generation_opened": false,
+    "task_count": 10,
+    "distinct_repository_count": 10,
+    "all_tasks_new_after_instrument_freeze": true,
+    "source_disjoint_from_all_consumed_P2_through_P4S": true,
+    "source_disjoint_from_reserved_D1_D2_and_training": true,
+    "licensed_merged_repository_changes_only": true,
+    "parent_source_and_natural_request_candidate_visible": true,
+    "target_patch_tests_commit_identity_and_oracle_candidate_visible": false,
+    "selection_may_condition_on_candidate_or_control_output": false,
+    "parent_target_oracle_execution_only_after_source_membership_freeze": true,
+    "task_replacement_after_any_candidate_call": false,
+    "public_benchmark": false,
+    "training_eligible": false,
+    "user_task_label_or_approval_dependency": false
+  },
+  "adequacy_requirements": {
+    "parent_fails_independent_hidden_evaluator": "10/10",
+    "exact_upstream_target_passes_visible_and_hidden_evaluator": "10/10",
+    "evaluator_only_compiler_oracle_passes_visible_and_hidden_evaluator": "10/10",
+    "source_obligation_target_loss_and_dependency_corruptions_rejected": "10/10 each",
+    "all_learned_calls_have_explicit_termination_telemetry": true,
+    "all_learned_calls_end_parser_complete_or_model_eos": true,
+    "zero_physical_context_boundary_hits": true,
+    "at_least_eight_of_ten_final_treatment_artifacts_parse_and_lower": true,
+    "all_candidates_scored_route_blind": true,
+    "candidate_integrity_recomputed_independently": true,
+    "all_failures_abstentions_time_cost_and_weak_tails_retained": true,
+    "matched_raw_source_information_model_calls_verifier_budget_and_effect_sandbox": true
+  },
+  "decision_rule": {
+    "primary_outcome": "independently_verified_useful_safe_completion",
+    "development_survivor": "The treatment is useful on at least four of ten tasks, solves at least three more tasks than each learned control and the prospective no-model compiler control, loses head-to-head on no more than one task against either learned control, has zero unsafe or rollback failures, meets every mechanics and custody floor, and is not dominated on joined model-call, token, verifier, latency, or rollback cost.",
+    "adequate_no_survivor": "Every adequacy requirement passes but the development-survivor rule does not. This exact implementation is not advanced; no broader cognitive-compilation falsification follows.",
+    "inconclusive_implementation": "Any treatment mechanics, parsing/lowering, intervention/locality, checkpoint-independent replay, or corruption floor fails.",
+    "inconclusive_experiment": "Task diversity, matched resources, blind evaluation, source disjointness, uncertainty, weak-tail, or total-cost custody is incomplete.",
+    "uncertainty": "Report all paired win/loss/tie tables, exact one-sided sign probabilities for non-tied treatment-versus-control outcomes, and task-level bootstrap intervals as descriptive development uncertainty; ten tasks cannot support a general population claim.",
+    "terminal_states": [
+      "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+      "P4V2R2_ADEQUATE_NO_SURVIVOR",
+      "INCONCLUSIVE_IMPLEMENTATION",
+      "INCONCLUSIVE_EXPERIMENT",
+      "INVALID_INFORMATION_FLOW",
+      "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+    ],
+    "negative_scope": "A null or loss applies only to this exact bounded Python Semantic-IR v2r2 implementation, frozen TMax model, ten-task distribution, completion policy, validator, and repair policy. It cannot falsify cognitive compilation generally."
+  },
+  "D1_rule": {
+    "open_only_if": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+    "surface": "one prospectively frozen fresh source-disjoint D1 qualification denominator",
+    "automatic_support_promotion": false,
+    "P4V2R2_tasks_reusable_in_D1": false
+  },
+  "hosted_reference": {
+    "model": "gpt-5.6-luna",
+    "effort": "xhigh",
+    "state": "DEFINED_TRANSPORT_NOT_BOUND",
+    "P4_blocking": false,
+    "future_extension": "Use identical frozen task membership and completion semantics with separately reported within-model denominators after a governed callable transport is source-bound."
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0,
+    "user_gate": "none",
+    "ASI_stack_support_state_effect": "none"
+  },
+  "maximum_inference": "A terminal result can decide only whether this exact TMax plus Semantic-IR v2r2 implementation is a development survivor eligible for one fresh D1 qualification. It cannot establish general cognitive compilation, serving qualification, training eligibility, or ASI Stack book support."
+}
