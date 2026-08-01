@@ -86,7 +86,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
             "shared_trunk_step11416_uncapped_d2_contract_rebind_v1",
         )
 
-    def test_current_phase0_readiness_is_bound_to_dirty_source_package(self) -> None:
+    def test_current_phase0_readiness_is_bound_to_green_source_package(self) -> None:
         payload = json.loads(
             (ROOT / "configs/roadmap_implementation_matrix.json").read_text(
                 encoding="utf-8"
@@ -96,10 +96,10 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         readiness = phase0["pre_training_readiness"]
         evidence = gate.audit_pre_training_backlog_evidence(readiness["evidence"])
 
-        self.assertEqual(readiness["state"], "BLOCKED_SOURCE_BINDING")
-        self.assertFalse(evidence["ready"])
-        self.assertEqual(evidence["trigger_state"], "RED")
-        self.assertIn("trigger_state_mismatch", evidence["faults"])
+        self.assertEqual(readiness["state"], "READY_FOR_FROZEN_CAMPAIGN")
+        self.assertTrue(evidence["ready"])
+        self.assertEqual(evidence["trigger_state"], "GREEN")
+        self.assertEqual(evidence["faults"], [])
 
     def test_deferred_kerc_campaign_exclusion_is_machine_checked(self) -> None:
         import tempfile

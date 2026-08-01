@@ -394,9 +394,10 @@ capability.
 
 ## Why Training Is Paused
 
-The finite acceleration audit and current independent readiness audit are
-GREEN. The source-bound replacement package must be refreshed after any
-machine-authority source repair before another segment may launch.
+The finite acceleration audit, current independent readiness audit, and
+content-addressed replacement package are GREEN. The replacement package is
+bound to a clean source commit and must be refreshed after any source change
+other than its own explicitly allowed evidence-report commit.
 The independent audit now rematerializes the current 160 cases, reproduces
 contract `d48875c5...`, verifies the historical packet digest and consumed
 contract `d724363e...`, and observes zero exact or whitespace/case-normalized
@@ -408,10 +409,11 @@ Therefore:
    training entry point; it requires no user or operator approval;
 2. independent `evaluation_nonconsumption` and
    `evaluation_surface_freshness` pass without authorizing D2 execution;
-3. the replacement package must bind a clean source commit and may be followed
-   only by its own evidence-report commit; any other source drift fails closed;
-4. the pre-training matrix remains not ready because its Phase 0 evidence
-   requires a GREEN package bound to a clean post-maintenance commit;
+3. the replacement package binds a clean source commit and may be followed only
+   by its own evidence-report commit; any other source drift fails closed;
+4. the pre-training matrix is ready only for the exact frozen campaign through
+   the autonomous one-segment controller; its current live AC-power predicate
+   is false, so training remains paused without a user gate;
 5. Phase 8 is globally partial even though the selected M1/MLX campaign route
    is closed; its remaining cross-platform and production-serving work should
    not be confused with a campaign blocker.

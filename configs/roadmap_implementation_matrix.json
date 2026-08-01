@@ -3729,16 +3729,17 @@
       "claim_boundary": "This authorizes semantic plan identity only for the exact unchanged state. It cannot reinterpret incompatible model, optimizer, RNG, cursor, data, objective, schedule, or evaluation state."
     },
     "replacement_freeze": {
-      "state": "RED_BLOCKED_SOURCE_BINDING",
+      "state": "GREEN_SOURCE_BOUND_MACHINE_LEASE_REQUIRED",
       "evidence": "reports/pre_long_run_replacement_freeze.json",
-      "package_identity": "sha256:9416bda77b1646857c01621a2ae22d9f225ca81856ab9c829ffbdf0b72f46bc4",
-      "decision": "BLOCK_FINAL_PACKAGE_UNTIL_CLEAN_POST_MAINTENANCE_SOURCE_COMMIT",
+      "package_identity_source": "evidence.package_identity; intentionally not duplicated here because this matrix is itself a source-bound package input",
+      "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_THROUGH_MACHINE_PREDICATE_LEASE",
       "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
-      "operator_hold_present": true,
+      "historical_review_hold_preserved": true,
+      "user_or_operator_approval_required": false,
       "long_training_authorized_now": false,
       "long_training_started_or_resumed": false,
       "source_binding_required": true,
-      "source_binding_current": false,
+      "source_binding_current": true,
       "incompatible_state_policy": "Any model topology, tensor, optimizer, RNG, cursor, data, objective, schedule, or evaluation mismatch requires a new content-addressed lineage."
     },
     "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
@@ -6052,16 +6053,15 @@
         "the current transformer checkpoint exemption is explicitly development-only and non-routeable; production/default routes require admission, while private signing keys remain outside the repository",
         "shared archive resolution follows inline or retention-sidecar pointers, prefers live originals, and makes the T2 readiness gate recompute archived checkpoint and live vocabulary hashes; corrupted archived bytes fail closed",
         "the independent D2 freshness audit rematerializes all 160 current cases, reproduces contract d48875c5..., verifies the content-addressed consumed v8 packet and contract d724363e..., observes zero exact or whitespace/case-normalized model-visible prompt overlap, and leaves evaluation authorization false",
-        "the replacement freeze now has a mandatory source-binding gate and can be finalized exactly once only from a clean post-maintenance commit",
+        "the replacement freeze is GREEN and content-addressed against a clean post-maintenance source commit; only its own evidence-report commit may follow without a full rebind",
         "the D2 one-shot controller is machine-only, source/freeze/checkpoint bound, collision refusing, append-only, EOS-only, and terminal on invalid observations without rerun or user approval"
       ],
       "missing_items": [
-        "commit the reviewed maintenance transaction, then generate the source-bound step-11,416 replacement package exactly once from that clean commit; keep training and D2 behind their implemented autonomous one-shot controllers until every machine predicate passes",
         "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
       ],
       "pre_training_readiness": {
-        "state": "BLOCKED_SOURCE_BINDING",
-        "acceptance_boundary": "Checkpoint, training implementation, nonconsumption, and scoped exact/normalized prompt freshness are current. The replacement freeze remains RED solely because its mandatory source-binding gate rejects the dirty maintenance worktree; it must be generated exactly once from a clean post-maintenance commit.",
+        "state": "READY_FOR_FROZEN_CAMPAIGN",
+        "acceptance_boundary": "The exact step-11,416 checkpoint, AdamW, RNG, cursor, training implementation, append-only lineage, nonconsumption, scoped exact/normalized prompt freshness, and content-addressed replacement package are current. This opens only the autonomous one-segment controller; live AC power, derived disk reserve, exclusive accelerator custody, rollback snapshot, and every other machine predicate must still pass. No user approval, D2 evaluation, capability claim, or automatic continuation is authorized.",
         "nonblocking_residuals": [
           "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
         ],
@@ -6085,7 +6085,7 @@
         "formal strict-generator/code_lm_closure retirement proof: active imports and gate dependencies removed or extracted into canonical owners, retained comparators non-routeable, superseded reports archived with verified replay pointers, and reference-only source deleted or moved under deprecated with git history as recovery",
         "roadmap entropy enforcement: keep forward requirements in roadmap.md, move run narratives and inventories to matrix/registry/state/history, and hold the live roadmap below 1100 lines without dropping unresolved obligations"
       ],
-      "smallest_next_patch": "Keep the hold installed and preserve the append-only v8 consumption evidence. Review and commit the maintenance transaction, establish independent encrypted custody, and generate the source-bound replacement package exactly once from the clean commit. Do not execute D2 or create an incidental benchmark family.",
+      "smallest_next_patch": "Keep D2 sealed and let the autonomous one-shot controller execute at most one transactional segment only when every live machine predicate passes. Preserve rollback and append-only lineage receipts; do not create an incidental benchmark family or infer capability from training progress.",
       "integration_smoke": [
         "python3 scripts/python_environment_gate.py --profile cpu --gate",
         "python3 scripts/phase0_reproducibility_gate.py --gate",
