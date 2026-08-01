@@ -89,7 +89,8 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
 | P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
-| P4 causal development | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 natural-completion calls with zero context-boundary hits. Information flow, evaluator replay, source custody, 10/10 oracle reachability, and all corruption controls passed, but Semantic IR parsed/lowered 0/10 because its exact-list parser rejected semantically ordinary bracketed, quoted, or whitespace-separated obligation lists. D1 and book support remain closed; consumed outputs will not be rescored |
+| P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 natural-completion calls with zero context-boundary hits. Information flow, evaluator replay, source custody, 10/10 oracle reachability, and all corruption controls passed, but Semantic IR parsed/lowered 0/10 because its exact-list parser rejected semantically ordinary bracketed, quoted, or whitespace-separated obligation lists. D1 and book support remain closed; consumed outputs will not be rescored |
+| P4 causal development | `P4V2R2_SEALED_WAITING_ON_MACHINE_PREDICATES` | Exact TMax, v2r2 mechanics, ten new licensed source-disjoint repositories, dual independent evaluator layers, 10/10 action-equivalent transport oracles, all corruption controls, the one-shot campaign, terminal disposition, and no-user-gate launch controller are sealed before candidate generation. Consumption is 0/10 tasks and 0/60 calls; launch waits autonomously for physical external power, measured-runtime memory, derived disk, process inventory, and exclusive accelerator custody |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -304,6 +305,15 @@ invalid observation, while an explicit OpenAI-compatible `max_tokens` value is
 recorded only as a caller constraint and cannot support capability inference.
 Historical consumed 512/1,536-token instruments and the 8-token resident
 mechanics qualification remain immutable, explicitly non-propagating evidence.
+
+The contract also governs P4-v2r2 and all successor quality-bearing
+experiments: a project-selected output-token number cannot be used as a quality
+budget. Semantic artifact completion or model EOS ends normal generation; the
+exact model context residual is only a physical boundary. Call, verifier,
+effect, and transactional resource budgets may remain finite and matched, but
+they cannot be translated into answer-length ceilings. Provider-constrained
+hosted instruments must retain the provider ceiling and finish reason under a
+separate identity, and a ceiling hit invalidates capability inference.
 
 Historical L0 evidence remains preserved:
 

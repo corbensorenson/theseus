@@ -58,6 +58,25 @@ promote or retire a major idea. The proof program tests one decision-relevant
 mechanism at a time and preserves the strong baseline, matched budget,
 weak-tail, cost, and rollback requirements in the operating charter.
 
+### Generation-boundary policy
+
+Quality-bearing generation has no project-selected output-token cap. Learned
+generation ends on a prospectively defined complete artifact, model EOS, or an
+unavoidable physical boundary. The sole numeric token boundary is the exact
+model context residual after exact prompt tokenization; reaching it invalidates
+the observation and cannot be scored as model, arm, subsystem, or architecture
+failure. Host-safety stops follow the same invalid-observation rule.
+
+Call counts, verifier work, effect authority, and transactional resource
+budgets may still be matched and bounded because they define experimental cost
+and safety. They must not be converted into answer-length ceilings. A provider
+or transport that imposes an unavoidable output ceiling is a separately named,
+transport-constrained instrument; its ceiling and finish reason are retained,
+and it cannot support capability inference if the ceiling is reached. Small
+decode limits remain permissible only for explicitly non-claim smoke or
+mechanics checks. Historical 512- and 1,536-token campaigns remain immutable
+evidence and do not propagate their caps into successor instruments.
+
 ### Bound high-leverage claim portfolio
 
 The exact claim identities are pinned to AI_book commit `17c6ece…` and its
@@ -614,6 +633,23 @@ D1/D2. Repair non-answer-bearing list normalization and round-trip mechanics on
 non-claim evidence, then require an entirely new source-disjoint P4 denominator
 before any effect inference. D1 and book support remain closed.
 
+That successor is now prospectively sealed as P4-v2r2. The exact frozen TMax
+model, three learned arms, completion policy, blind evaluator, controls, and
+terminal disposition were committed before candidate generation. Ten new
+licensed repositories are source-disjoint from all P2-through-P4S tasks; all
+ten parent revisions fail both independent evaluator layers, all ten exact
+upstream targets pass both, all ten evaluator-only v2r2 transport oracles replay
+action-equivalently, and every base and dependency corruption is rejected. The
+campaign has consumed 0/10 tasks and 0/60 learned calls. Its only open launch
+predicate is autonomous host readiness: external power, adequate memory and
+disk, and exclusive accelerator custody. This is not a user gate. The campaign
+has no project-selected quality-token cap; model context exhaustion or a host
+emergency invalidates an observation rather than creating negative evidence.
+The one-shot launch controller derives memory from the bound TMax preflight,
+derives disk from the sealed source and worst-case receipt envelope, verifies
+physical power state rather than trusting the misleading `pmset` headline, and
+fails closed when process inventory or exclusive lease custody is unavailable.
+
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
 | 0 | Integrated architecture + evidence-state prerequisites | Downstream-consumed trace joins and independent claim transitions | Direct, record-only, context-decoration-only, producer self-score |
@@ -680,8 +716,8 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; D1 and book support remain closed |
-| Semantic IR successor mechanics | `V2R2_LIST_NORMALIZATION_MECHANICS_GREEN` | A new prospective parser normalizes bracketed, quoted, comma, and whitespace obligation lists without inventing, sorting, or removing identifiers and without touching replacement source. All 20 retained P4S treatment calls pass this list-only diagnostic; two still expose an unrelated overlong `NODE` field. P4S remains unrescored and a fresh source-disjoint P4 denominator is required |
+| P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; its evidence is immutable and D1/book support remain closed |
+| P4 causal development | `P4V2R2_SEALED_WAITING_ON_MACHINE_PREDICATES` | The corrected parser, frozen TMax instrument, fresh ten-repository source denominator, dual evaluator surface, action-equivalent transport oracles, corruption controls, campaign driver, terminal disposition, and no-user-gate one-shot launcher are prospectively sealed. Candidate consumption remains 0/10 tasks and 0/60 calls; autonomous launch waits only for external power, adequate host resources, and exclusive accelerator custody |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -712,18 +748,21 @@ Maintenance serves P or N and does not become another research program:
    receipts, blind evaluations, and zero-unsafe rollback-valid denominator.
    Never replay or replace a task, and do not promote the integrated
    parseability shift into a usefulness or subsystem claim.
-7. Bind the measurement-only Luna-xhigh adapter when a callable governed
-   transport exists. Run both
-   models direct and integrated on the same ten tasks without mixing
-   denominators or allowing hosted outputs into serving or training.
-8. In parallel, refresh N0 with the training hold installed and implement the
+7. Run the prospectively sealed P4-v2r2 local campaign exactly once when its
+   machine predicates pass. Preserve all natural completions, boundary events,
+   costs, failures, and weak-tail evidence; do not add an answer-length cap,
+   replace a task, or interpret an incomplete/physical stop as a mechanism loss.
+8. Compute the already-sealed terminal disposition. Open one fresh,
+   source-disjoint D1 qualification only if the exact development-survivor rule
+   passes; otherwise retain the exact scoped terminal result and keep D1 and
+   book support closed.
+9. Bind the measurement-only Luna-xhigh adapter when a callable governed
+   transport exists. Run both models direct and integrated on a prospectively
+   shared task surface without mixing local/hosted denominators or allowing
+   hosted outputs into serving or training.
+10. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-9. Preserve the interrupted P4-v1 receipts and disposition without aggregating
-   an arm effect. Keep tasks 1-3 consumed. Run the sealed P4R pool exactly once
-   with the same three learned arms and prospective no-model compiler control,
-   route-blind, invalidating rather than scoring any context-ceiling or
-   host-emergency stop. No task replacement and no other P4 mechanism is active.
 
 ## Historical Rapid Evidence Campaign
 
