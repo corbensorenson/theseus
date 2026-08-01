@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+import types
 from pathlib import Path
 
 
@@ -203,3 +204,61 @@ def test_persistent_session_loads_once_across_matched_arm_requests(
     assert direct["backend"]["persistent_session_id"] == "matched-pair"
     assert integrated["metrics"]["persistent_session_inference_calls"] == 2
     assert direct["backend"]["identity"] == integrated["backend"]["identity"]
+
+
+def test_snapshot_context_window_prefers_nested_text_config(tmp_path: Path) -> None:
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    (snapshot / "config.json").write_text(
+        json.dumps({
+            "max_position_embeddings": 4096,
+            "text_config": {"max_position_embeddings": 262144},
+        }),
+        encoding="utf-8",
+    )
+
+    assert backend.snapshot_context_window(snapshot) == 262144
+
+
+def test_completion_stop_and_ceiling_stop_are_explicit(monkeypatch) -> None:
+    class FakeTokenizer:
+        def apply_chat_template(self, *_args, **_kwargs):
+            return [1, 2, 3]
+
+    class Response:
+        def __init__(self, text: str, finish_reason=None) -> None:
+            self.text = text
+            self.finish_reason = finish_reason
+            self.peak_memory = 0.0
+            self.prompt_tps = 1.0
+            self.generation_tps = 1.0
+
+    streams = iter([
+        [Response("THESEUS_EDIT_V1\n"), Response("END")],
+        [Response("unfinished"), Response("", "length")],
+    ])
+
+    def stream_generate(*_args, **_kwargs):
+        return iter(next(streams))
+
+    monkeypatch.setitem(sys.modules, "mlx_lm", types.SimpleNamespace(stream_generate=stream_generate))
+    model = backend.LocalMlxChatModel.__new__(backend.LocalMlxChatModel)
+    model.model = object()
+    model.tokenizer = FakeTokenizer()
+    model.card = {"chat_template_kwargs": {}}
+    model.maximum_tokens = 32
+    model.model_context_window_tokens = 64
+    model.sampler = None
+    model.logits_processors = []
+    model.generation_cache_kwargs = {}
+    model.load_wall_ms = 0.0
+    model.completion_predicate = lambda text: text.endswith("END")
+
+    assert model.generate([{"role": "user", "content": "prompt"}]).endswith("END")
+    assert model.last_generation_metrics["termination_reason"] == "parser_complete"
+    assert model.last_generation_metrics["safety_ceiling_hit"] is False
+
+    model.completion_predicate = lambda _text: False
+    model.generate([{"role": "user", "content": "prompt"}])
+    assert model.last_generation_metrics["termination_reason"] == "safety_ceiling"
+    assert model.last_generation_metrics["safety_ceiling_hit"] is True

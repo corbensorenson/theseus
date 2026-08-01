@@ -1,0 +1,83 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 1536,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 1536
+      },
+      "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+      "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Qwen3.5-9B-MLX-4bit/snapshots/938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "local_snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4-p4-cognitive-compilation-01",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-01T03:37:58.013009Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "generated_tokens": 211,
+    "generation_tokens_per_second": 8.682,
+    "generation_wall_ms": 78346.559,
+    "load_wall_ms": 5449.289,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 6.687,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 6,
+    "prompt_tokens_per_second": 73.349,
+    "runtime_ms": 78352,
+    "terminal_marker_stripped": false
+  },
+  "policy": "project_theseus_local_inference_backend_v1",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "76b6cfe1c4da0d3c66c93a2aec36e1fa1a0ce09c0ade7b22cb5160c4a507c7cc",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V1\nSOURCE 496f56e5989433f49003b76f78fbea85c86430e42d971ba18b801231453ec965\nOBLIGATIONS O1,O2,O3\nUNIT U-1 O1,INSERT_AFTER N-2020082631479F63 pydantic/types.py 1887:4-1891:88 __eq__\n<<<\n    def __eq__(self, other: Any) -> bool:\n        if not isinstance(other, self.__class__):\n            return False\n\n        try:\n            return secrets.compare_digest(self.get_secret_value(), other.get_secret_value())\n        except (UnicodeDecodeError, UnicodeError):\n            return False\n>>>\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_2",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

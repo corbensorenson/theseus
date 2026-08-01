@@ -1,0 +1,21 @@
+{
+  "extends": "configs/theseus_assistant_runtime.json",
+  "purpose": "Experiment-only completion-based overlay for the repaired P4 Qwen3.5 instrument; no arbitrary quality token cap.",
+  "local_inference": {
+    "worker_config": "configs/core_evidence_qwen35_9b_completion_worker.json",
+    "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
+    "required_runtime_preflight_state": "GREEN",
+    "required_repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "required_revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "required_snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "product_maximum_tokens": 262144
+  },
+  "experiment_boundary": {
+    "runtime_serving_allowed": false,
+    "user_facing_effects": 0,
+    "external_inference_calls": 0,
+    "training_rows_written": 0,
+    "model_qualified": false,
+    "context_capacity_is_not_quality_budget": true
+  }
+}

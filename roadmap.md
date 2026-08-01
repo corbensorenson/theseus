@@ -229,8 +229,9 @@ that changes the candidate protocol before changing the model:
   patch-application, and visible verification capabilities;
 - represent edits as concise typed operations rather than a JSON-wrapped long
   diff;
-- allow 1,024-1,536 generated tokens, at most two model calls per arm, and one
-  verifier-fed repair;
+- use completion-based generation, at most two model calls per arm, and one
+  verifier-fed repair; a model-context or host-safety stop invalidates the
+  observation instead of counting as model or subsystem failure;
 - keep the source snapshot, task, decoder, tools, effect sandbox, visible
   verifier, hidden evaluator, order policy, and total budgets identical; and
 - vary only the named Theseus mechanism. Safety containment and necessary
@@ -468,7 +469,7 @@ Luna for clear, repeatable, high-volume or focused coding work and permits
 
 #### P4 — Test one ASI Stack mechanism at a time
 
-State: `ACTIVE_COGNITIVE_COMPILATION_TASK_POOL_SEALED_RUN_PENDING`.
+State: `ACTIVE_COGNITIVE_COMPILATION_P4R_INSTRUMENT_FROZEN_POOL_REPAIR_PENDING`.
 
 Use the observed instrument and task residuals to select exactly one
 intervention. Do not run a factorial or make record production the dependent
@@ -491,7 +492,7 @@ repair, known-positive reachability, corruption interventions, matched total
 cost, and source-disjoint evaluation are adequacy requirements. No P3 outcome
 supports or falsifies the selected claim.
 
-The P4 instrument is now prospectively frozen before task acquisition at
+The original P4 instrument was prospectively frozen before task acquisition at
 `configs/theseus_p4_cognitive_compilation_instrument.json`. It binds the exact
 Qwen3.5 model and decoder; three information-matched learned arms with two calls
 each; one persistent load per task; direct-local execution for every learned
@@ -508,8 +509,32 @@ ten exact upstream targets pass, all ten evaluator-only Semantic IR oracles
 pass visible and hidden checks, and source, obligation, target, and loss
 corruptions are rejected. Archive-link omissions are symmetric and do not
 overlap licensed or editable paths. No learned arm, Luna, or prospective
-static-compiler call was used to select the tasks. Run this exact pool next;
-do not replace a task after an arm is opened.
+static-compiler call was used to select the tasks.
+
+Execution opened three tasks before an instrument-design defect was accepted.
+Tasks 1 and 2 completed all six learned calls and blind evaluation; task 3
+retains two Semantic-IR receipts plus one interrupted attempted call with no
+durable output. All fourteen retained outputs reached the declared `END`
+envelope and used at most 662 of the inherited 1,536 tokens, so no retained
+output was observed truncated. Nevertheless, the fixed 1,536-token number was
+not adequacy-derived and the v1 backend did not retain an explicit finish
+reason. The run is preserved as
+`P4_V1_INTERRUPTED_BUDGET_POLICY_REJECTED` and
+`INCONCLUSIVE_EXPERIMENT`; it supplies no arm, mechanism, or book inference.
+Tasks 1-3 are consumed and may not be replayed for fresh credit. Tasks 4-10
+remain unopened.
+
+The repaired P4R instrument is now prospectively frozen at
+`configs/theseus_p4_cognitive_compilation_repaired_instrument.json`. Generation
+stops on a complete declared artifact envelope or model EOS and records exact
+prompt tokens, generated tokens, backend finish reason, termination reason, and
+ceiling-hit status. There is no project-selected quality token cap. The only
+numeric token boundary is the pinned model's declared context residual
+(`262,144 - exact prompt tokens`), a physical addressability guard: touching it
+invalidates the observation and can never be scored as a model or mechanism
+loss. Host emergency stops follow the same inconclusive rule. P4R must seal a
+ten-task denominator from the seven unopened tasks plus three newly acquired
+source-disjoint licensed tasks before another candidate call.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -577,7 +602,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `COGNITIVE_COMPILATION_TASK_POOL_SEALED_RUN_PENDING` | The exact Qwen3.5 instrument and ten fresh licensed tasks are sealed before candidate generation; all parent-fail/target-pass/oracle/corruption gates are GREEN, candidate/control calls remain zero, and no claim support follows unless the treatment survives its matched run |
+| P4 causal development | `P4R_COMPLETION_INSTRUMENT_FROZEN_POOL_REPAIR_PENDING` | P4-v1 stopped after 14 retained calls across three consumed tasks because its 1,536-token quality boundary was arbitrary and finish-reason custody incomplete; zero retained calls hit it, but the run is an inconclusive pilot only. P4R is GREEN with parser/EOS completion, explicit termination telemetry, no project-selected quality token cap, seven unopened tasks, and three fresh tasks still required before the repaired pool seals |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -615,13 +640,13 @@ Maintenance serves P or N and does not become another research program:
 8. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-9. Preserve the frozen P4 cognitive-compilation instrument and the sealed
-   ten-task pool. Run the three matched learned arms and prospective no-model
-   compiler control on each exact parent, then score route-blind with the
-   already sealed evaluators and oracle ceiling. Retain every malformed output,
-   edit, verifier result, latency, call receipt, safety/rollback result, and
-   weak-tail observation. No other P4 mechanism is active, and no task may be
-   replaced after candidate generation opens.
+9. Preserve the interrupted P4-v1 receipts and disposition without aggregating
+   an arm effect. Keep tasks 1-3 consumed. Seal P4R from unopened tasks 4-10 and
+   three newly acquired source-disjoint licensed tasks only after the repaired
+   completion instrument commit. Then run the same three learned arms and
+   prospective no-model compiler control route-blind, invalidating rather than
+   scoring any context-ceiling or host-emergency stop. No other P4 mechanism is
+   active.
 
 ## Historical Rapid Evidence Campaign
 

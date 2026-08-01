@@ -1,0 +1,37 @@
+{
+  "policy": "project_theseus_p4r_completion_local_instrument_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_REPAIRED_TASK_POOL",
+  "runtime_config": "configs/theseus_assistant_runtime_p4r_qwen35.json",
+  "runtime_binding": {
+    "worker_config": "configs/core_evidence_qwen35_9b_completion_worker.json",
+    "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json"
+  },
+  "frozen_model": {
+    "selection_state": "SAME_QWEN35_WEIGHTS_NEW_COMPLETION_DECODER_IDENTITY_NOT_CAPABILITY_QUALIFIED",
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+    "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+    "temperature": 0.0,
+    "model_declared_context_window_tokens": 262144,
+    "project_selected_quality_token_cap": null,
+    "backend_physical_context_ceiling_tokens": 262144
+  },
+  "candidate_protocol": {
+    "version": "theseus_line_edit_v1",
+    "maximum_actions_per_candidate": 8,
+    "maximum_replacement_bytes": 65536,
+    "allowed_operation": "REPLACE",
+    "line_coordinates": "one_based_inclusive_against_current_disposable_snapshot",
+    "grammar": "THESEUS_EDIT_V1\nREPLACE <repository-relative-path> <start-line> <end-line>\n<<<\n<replacement text>\n>>>\nEND"
+  },
+  "generation_completion": {
+    "policy": "configs/theseus_generation_completion_policy.json",
+    "normal_stop": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "ceiling_hit_invalidates_observation": true
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "budget_audit": {
+    "all_retained_outputs_reached_protocol_terminal_end": true,
+    "explicit_finish_reason_present_in_v1_receipts": false,
+    "finding": "The retained evidence shows no observed truncation, but the cap remains scientifically arbitrary and v1 termination telemetry is inadequate for a decision campaign.",
+    "maximum_observed_generated_tokens": 662,
+    "observed_ceiling_hits": 0,
+    "requested_fixed_tokens_per_call": 1536,
+    "retained_outputs_observed_truncated": false
+  },
+  "campaign_progress": "reports/theseus_p4_campaign_progress.json",
+  "campaign_progress_sha256": "f46675ec83e37cfc5daa291f5ec3bba083c70500e41ad329521f5dc9fa049b54",
+  "campaign_state": "P4_V1_INTERRUPTED_BUDGET_POLICY_REJECTED",
+  "claim_id": "cognitive-compilation-and-semantic-ir.core",
+  "created_utc": "2026-08-01T04:05:50.200813Z",
+  "evidence_disposition": {
+    "claim_support_state_effect": "none",
+    "model_or_mechanism_negative_inference": "forbidden",
+    "task_3": "Consumed by two retained Semantic-IR calls and one interrupted attempted call; never replay for fresh credit.",
+    "tasks_1_and_2": "Retain as completed mechanics-and-budget pilot rows only; do not aggregate into a P4 treatment effect.",
+    "tasks_4_through_10": "Unopened and eligible only for a prospectively frozen repaired instrument; preserve exact source/evaluator custody."
+  },
+  "execution_custody": {
+    "additional_call_interrupted_without_durable_report": 1,
+    "complete_task_evidence": [
+      {
+        "campaign_index": 1,
+        "evaluation": "reports/theseus_p4_01_pydantic_13537_evaluation.json",
+        "evaluation_sha256": "9e29e65f4019eee5b72e78e597e3490bcac08b11a028e5e24270a991bb9b4765",
+        "run": "reports/theseus_p4_01_pydantic_13537_run.json",
+        "run_sha256": "5084dd72df336a9cf0eb01435ef3404242da7e50987c0f1ccb7b7bcbd0b44ec7",
+        "stem": "p4_01_pydantic_13537"
+      },
+      {
+        "campaign_index": 2,
+        "evaluation": "reports/theseus_p4_02_pytest_14586_evaluation.json",
+        "evaluation_sha256": "da22a680d47d956b12f4d328425e62306dd74b2a95d723a97d4e29c972501d2a",
+        "run": "reports/theseus_p4_02_pytest_14586_run.json",
+        "run_sha256": "0ba23b0369f63dc86193f4f5dfc729ab75ecd521eb8671e4ef8c36bf78410035",
+        "stem": "p4_02_pytest_14586"
+      }
+    ],
+    "complete_tasks_with_run_and_blind_evaluation": 2,
+    "consumed_campaign_indices": [
+      1,
+      2,
+      3
+    ],
+    "retained_calls_inside_complete_task_reports": 12,
+    "retained_model_call_reports": 14,
+    "retained_partial_task_3_calls": 2,
+    "runtime_reports": [
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-01_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "d84a88f2b800902dd387f30e5a1ca2b02cd4895c402182d03450b62fd8210770",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 91,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-01_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "3eead6277cb2ce17077b9b2b907e6cc0dab3c2b70324b219c9a9009711311691"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-01_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "e18ac8fae1492b1e4e54f4dcd8a7ac6b8b6470b8f082a12b318c3f525d4cad94",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 242,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-01_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "2e3197067dc21f22fc1240f2930026863ef0f40ee3c5bd2cb1fd1bc9e95403c1"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-01_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "bfe56069e3b3f83a6c3fdb7814f53e6b5873c9cece1e50465a41cd4cd8e3086e",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 328,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-01_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "76e9d927e7ab4dc97b38afaf67306da8b9ed33664db4585c4837aa76f64565b3"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-01_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "9894ef9dcf62f99e7d636cee63ffc17b4a2dc0bff947369ef21f050b9e7d4da5",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 328,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-01_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "97c3db243457fa5f97897ac837470bc3dc67b94c0fe1f6d837d37e0f39af6166"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "2344a1bca19908ed7872f742e388a9276a4ff4a2990364a4269919be379e8e7e",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 211,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "b10fb76698361630ff8e0a61be4cadcf312b24b563ab2fd57598dcbe63f2e65b"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "d3d6dea32cea24ca1174a4e50c7f75bbf07d37384cbea53930cee89047c0c18c",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 211,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-01_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "657ec3d93c8baf7232416350814f39d7e6e540d0623265be2392aadde50c1cd2"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-02_direct_target_generation_direct_local_model_1.json",
+        "backend_report_sha256": "20a63842978fa58a757ebc0876d7363f812a4c6c329334b2d17b786146a86ab3",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 176,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-02_direct_target_generation_direct_local_model_1.json",
+        "runtime_report_sha256": "a32f89c960d601f0aaf4b90f6ded2b68472312de107dca446cec801324131fce"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-02_direct_target_generation_direct_local_model_2.json",
+        "backend_report_sha256": "338aad324e4ad245940f287865aa03442cfe6de9496f6c71a0ce3d3c5629d89f",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 176,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-02_direct_target_generation_direct_local_model_2.json",
+        "runtime_report_sha256": "f73b0641834d3b9def5583478860bd14d2251cf07226c5aae236836ed1172358"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-02_natural_language_plan_control_direct_local_model_1.json",
+        "backend_report_sha256": "851329aa9302cbc617388786246e44a32f110416a44e91b8c8de0741cb57cea5",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 243,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-02_natural_language_plan_control_direct_local_model_1.json",
+        "runtime_report_sha256": "4470469025942c02111783f46b7bc855d8b4b053becac4079954e9805954654d"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-02_natural_language_plan_control_direct_local_model_2.json",
+        "backend_report_sha256": "06245c55e6bb4cf9ca80697a8108e70e61fd231d50974e57a2f06fc453fcf3d6",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 243,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-02_natural_language_plan_control_direct_local_model_2.json",
+        "runtime_report_sha256": "d9052b1429cb7d92dbaaac3d60b5abf020ae82449c58dd663b12b15592861160"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "a35e846cc6afb7e05268d0c968a492d946171aaff784f465400072a6727d2125",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 306,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "3078049cfaad08c7f8d06d614672b8f221e67a41be71b68dcaec3d8516e63836"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "c032db71977fc0177dbeace58c80d55fb8b4dafaa629854bcb7c7d79f56a51f5",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 304,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-02_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "9ea66131752d65c7ba0fdc93e25b975462978bb4627ba4d4c8c60f4421179ce1"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "backend_report_sha256": "b60a1569e1d717f5d46a1db42cf1ec0c8528df6f75a94cbbe6a026805edcc13d",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 662,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_1.json",
+        "runtime_report_sha256": "105c6c4976816c1687ef4b0c60467fb4965ea7f3414a5f474053671e2ee67cfa"
+      },
+      {
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "backend_report_sha256": "d68b1d6fe2c66977b0e5599f945d0e2d2538398443347f7ce868d3b988c0a564",
+        "explicit_backend_finish_reason_recorded": false,
+        "generated_tokens": 603,
+        "observed_ceiling_hit": false,
+        "protocol_terminal_end_observed": true,
+        "requested_maximum_tokens": 1536,
+        "runtime_report": "runtime/p2a/p2a_p4_p4-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_2.json",
+        "runtime_report_sha256": "0a4d8848cfb2106430b7d5f5d1bcc7fc059f30d0b466df1d0d4613b37c30638e"
+      }
+    ],
+    "unopened_campaign_indices": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  },
+  "instrument": "configs/theseus_p4_cognitive_compilation_instrument.json",
+  "instrument_sha256": "e2c65b0424e2fbfe109502f051ce6294ca2ef0f1573e9cd2d1e7cd65e8b55523",
+  "maximum_inference": "This report establishes interruption custody and a generation-budget adequacy defect only. It cannot rank arms, qualify P4, falsify cognitive compilation, move a book claim, qualify serving, or enter D1/D2/training evidence.",
+  "policy": "project_theseus_p4_budget_interruption_disposition_v1",
+  "pool": "configs/theseus_p4_task_pool.json",
+  "pool_sha256": "27204dbc4009d54181aee176e97fc7a42e42c51089804178fdcb49f23504bd13",
+  "reason": "The inherited 1,536-token cap was not adequacy-derived and the v1 backend did not retain an explicit finish reason. The campaign was stopped before further task consumption.",
+  "replacement_completion_policy": "configs/theseus_generation_completion_policy.json",
+  "replacement_completion_policy_sha256": "0fa5037ef2d82a71cb4e24aa2f8f15983ccca8891dbe6f3479bbbcb47ea292c7",
+  "scientific_status": "INCONCLUSIVE_EXPERIMENT",
+  "successor_requirements": [
+    "stop on a complete declared artifact envelope or model EOS",
+    "derive the only numeric token boundary from the pinned model context residual rather than a project-selected answer length",
+    "retain exact prompt tokens, generated tokens, finish reason, termination reason, and ceiling-hit status",
+    "invalidate rather than score any observation that reaches the physical context ceiling or a host emergency stop",
+    "freeze the repaired runner and completion policy before opening another task",
+    "use the seven unopened tasks plus three new source-disjoint licensed tasks to restore a ten-task decision denominator"
+  ],
+  "trigger_state": "YELLOW"
+}

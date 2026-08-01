@@ -1,0 +1,45 @@
+{
+  "policy": "project_theseus_generation_completion_policy_v1",
+  "state": "ACTIVE_FOR_ALL_NEW_GENERATION_INSTRUMENTS",
+  "purpose": "Prevent convenient decode lengths from becoming hidden capability ceilings or false negative evidence.",
+  "quality_budget_rule": "No fixed generated-token count is a quality, competence, or mechanism-failure boundary. Historical fixed-token instruments remain immutable evidence but their caps do not propagate into successor experiments.",
+  "normal_completion_states": [
+    "parser_complete",
+    "model_eos"
+  ],
+  "physical_safety_boundary": {
+    "kind": "model_declared_context_residual",
+    "formula": "model_declared_context_window_tokens - exact_prompt_tokens",
+    "project_selected_token_cap": null,
+    "qwen35_9b_model_declared_context_window_tokens": 262144,
+    "source": "Pinned model snapshot config.json text_config.max_position_embeddings",
+    "meaning": "A physical addressability guard, not an allocated answer budget or matched-quality claim."
+  },
+  "artifact_completion": {
+    "enabled": true,
+    "rule": "Stop when the declared candidate grammar forms a complete terminal envelope; retain the exact generated artifact and termination receipt.",
+    "candidate_semantics_scored_after_stop": true,
+    "completion_does_not_imply_parseability_or_correctness": true
+  },
+  "ceiling_hit_disposition": {
+    "state": "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT",
+    "score_as_model_failure": false,
+    "score_as_mechanism_failure": false,
+    "include_in_treatment_effect_denominator": false,
+    "required_action": "Preserve the output and receipt, repair the prospective instrument on fresh evidence, and never replay the consumed task for fresh credit."
+  },
+  "required_telemetry": [
+    "exact_prompt_tokens",
+    "generated_tokens",
+    "model_declared_context_window_tokens",
+    "effective_context_residual_tokens",
+    "backend_finish_reason",
+    "termination_reason",
+    "completion_predicate_enabled",
+    "safety_ceiling_hit",
+    "generation_wall_ms"
+  ],
+  "fairness_rule": "Matched learned arms receive the same model, information, callable protocol, model-context residual rule, repair opportunity, verifier access, and effect sandbox. Natural early completion is measured rather than padded.",
+  "host_safety_rule": "Thermal, swap, disk, nonfinite, process failure, and operator emergency stops remain valid safety interlocks. Their activation invalidates the affected observation for capability inference; it does not become a negative model or mechanism outcome.",
+  "maximum_inference": "This policy makes termination and truncation auditable. It does not qualify a model, mechanism, task, or serving route."
+}

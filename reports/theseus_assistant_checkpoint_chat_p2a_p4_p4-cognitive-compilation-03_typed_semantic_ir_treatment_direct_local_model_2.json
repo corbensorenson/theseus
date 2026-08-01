@@ -1,0 +1,83 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 1536,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 1536
+      },
+      "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+      "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Qwen3.5-9B-MLX-4bit/snapshots/938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "local_snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4-p4-cognitive-compilation-03",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-01T03:55:47.436175Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "generated_tokens": 603,
+    "generation_tokens_per_second": 10.08,
+    "generation_wall_ms": 193148.355,
+    "load_wall_ms": 4787.26,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 7.183,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 2,
+    "prompt_tokens_per_second": 63.767,
+    "runtime_ms": 193198,
+    "terminal_marker_stripped": false
+  },
+  "policy": "project_theseus_local_inference_backend_v1",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "3e466c32edb8ddb947fa9f02b2faf6aa7fd644a0bacf79a733747be5e26fd5de",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V1\nSOURCE 9b0b499fb01641b632030c7b1401c7f5955237d803497ef8c6678134c54d4d00\nOBLIGATIONS O1,O2,O3\nUNIT U-001 O1|O2|O3 N-F36019BF9C351F5F 4888ca9c640f4515a4d4dae9f2d24fd52444ca8b678a9577080f4fe6862e48a1\n<<<\ndef format_sse_event(\n    *,\n    data_str: Annotated[\n        str | None,\n        Doc(\n            \"\"\"\n            Pre-serialized data string to use as the `data:` field.\n            \"\"\"\n        ),\n    ] = None,\n    event: Annotated[\n        str | None,\n        Doc(\n            \"\"\"\n            Optional event type name (`event:` field).\n            \"\"\"\n        ),\n    ] = None,\n    id: Annotated[\n        str | None,\n        Doc(\n            \"\"\"\n            Optional event ID (`id:` field).\n            \"\"\"\n        ),\n    ] = None,\n    retry: Annotated[\n        int | None,\n        Doc(\n            \"\"\"\n            Optional reconnection time in milliseconds (`retry:` field).\n            \"\"\"\n        ),\n    ] = None,\n    comment: Annotated[\n        str | None,\n        Doc(\n            \"\"\"\n            Optional comment line(s) (`:` prefix).\n            \"\"\"\n        ),\n    ] = None,\n) -> bytes:\n    \"\"\"Build SSE wire-format bytes from **pre-serialized** data.\n\n    The result always ends with `\\n\\n` (the event terminator).\n    \"\"\"\n    lines: list[str] = []\n\n    if comment is not None:\n        for line in comment.splitlines():\n            lines.append(f\": {line}\")\n\n    if event is not None:\n        lines.append(f\"event: {event}\")\n\n    if data_str is not None:\n        for line in data_str.splitlines():\n            lines.append(f\"data: {line}\")\n\n    if id is not None:\n        lines.append(f\"id: {id}\")\n\n    if retry is not None:\n        lines.append(f\"retry: {retry}\")\n\n    lines.append(\"\")\n    lines.append(\"\")\n    return \"\\n\".join(lines).encode(\"utf-8\")\n>>>\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4-cognitive-compilation-03_typed_semantic_ir_treatment_direct_local_model_2",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

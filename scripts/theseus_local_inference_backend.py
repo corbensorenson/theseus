@@ -58,6 +58,7 @@ class PersistentLocalInferenceSession:
         required_snapshot_manifest_sha256: str = "",
         session_id: str = "p2a_frozen_pair",
         model_factory: Callable[[dict[str, Any], Path, int], Any] | None = None,
+        completion_predicate: Callable[[str], bool] | None = None,
     ) -> None:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
@@ -90,8 +91,15 @@ class PersistentLocalInferenceSession:
         self.model_load_count = 0
         self.inference_calls = 0
         if not self.faults:
-            factory = model_factory or LocalMlxChatModel
-            self.model = factory(self.card, self.snapshot, maximum_tokens)
+            if model_factory is None:
+                self.model = LocalMlxChatModel(
+                    self.card,
+                    self.snapshot,
+                    maximum_tokens,
+                    completion_predicate=completion_predicate,
+                )
+            else:
+                self.model = model_factory(self.card, self.snapshot, maximum_tokens)
             self.model_load_count = 1
 
     @property
@@ -367,7 +375,14 @@ def run_backend(
 
 
 class LocalMlxChatModel:
-    def __init__(self, card: dict[str, Any], snapshot: Path, maximum_tokens: int) -> None:
+    def __init__(
+        self,
+        card: dict[str, Any],
+        snapshot: Path,
+        maximum_tokens: int,
+        *,
+        completion_predicate: Callable[[str], bool] | None = None,
+    ) -> None:
         from mlx_lm import load
         from mlx_lm.sample_utils import make_logits_processors, make_sampler
         import mlx.core as mx
@@ -375,6 +390,8 @@ class LocalMlxChatModel:
         loaded_at = time.perf_counter()
         self.card = card
         self.maximum_tokens = maximum_tokens
+        self.completion_predicate = completion_predicate
+        self.model_context_window_tokens = snapshot_context_window(snapshot)
         self.model, self.tokenizer = load(str(snapshot), lazy=False)
         mx.eval(self.model.parameters())
         self.sampler = make_sampler(temp=float(card.get("temperature") or 0.0))
@@ -395,16 +412,23 @@ class LocalMlxChatModel:
 
         prompt = self.tokenizer.apply_chat_template(
             messages,
-            tokenize=False,
+            tokenize=self.completion_predicate is not None,
             add_generation_prompt=True,
             **dict(self.card.get("chat_template_kwargs") or {}),
         )
+        prompt_tokens = len(prompt) if isinstance(prompt, list) else 0
+        context_residual = (
+            self.model_context_window_tokens - prompt_tokens
+            if self.model_context_window_tokens and prompt_tokens
+            else self.maximum_tokens
+        )
+        effective_maximum_tokens = min(self.maximum_tokens, max(1, context_residual))
         started = time.perf_counter()
         stream = stream_generate(
             self.model,
             self.tokenizer,
             prompt=prompt,
-            max_tokens=self.maximum_tokens,
+            max_tokens=effective_maximum_tokens,
             sampler=self.sampler,
             logits_processors=self.logits_processors,
             **self.generation_cache_kwargs,
@@ -414,6 +438,8 @@ class LocalMlxChatModel:
         peak_memory_gib = 0.0
         prompt_tps = None
         generation_tps = None
+        backend_finish_reason = None
+        termination_reason = "generation_error"
         try:
             for response in stream:
                 generated_tokens += 1
@@ -421,10 +447,30 @@ class LocalMlxChatModel:
                 peak_memory_gib = max(peak_memory_gib, float(getattr(response, "peak_memory", 0.0) or 0.0))
                 prompt_tps = getattr(response, "prompt_tps", prompt_tps)
                 generation_tps = getattr(response, "generation_tps", generation_tps)
+                backend_finish_reason = getattr(response, "finish_reason", backend_finish_reason)
+                if self.completion_predicate is not None and self.completion_predicate("".join(chunks)):
+                    termination_reason = "parser_complete"
+                    break
+            else:
+                termination_reason = (
+                    "model_eos" if backend_finish_reason == "stop"
+                    else "safety_ceiling" if backend_finish_reason == "length"
+                    else "backend_stopped_without_reason"
+                )
         finally:
-            stream.close()
+            close_stream = getattr(stream, "close", None)
+            if callable(close_stream):
+                close_stream()
         self.last_generation_metrics = {
             "generated_tokens": generated_tokens,
+            "prompt_tokens": prompt_tokens or None,
+            "configured_maximum_tokens": self.maximum_tokens,
+            "effective_maximum_tokens": effective_maximum_tokens,
+            "model_context_window_tokens": self.model_context_window_tokens or None,
+            "backend_finish_reason": backend_finish_reason,
+            "termination_reason": termination_reason,
+            "completion_predicate_enabled": self.completion_predicate is not None,
+            "safety_ceiling_hit": termination_reason == "safety_ceiling",
             "load_wall_ms": round(self.load_wall_ms, 3),
             "generation_wall_ms": round((time.perf_counter() - started) * 1000.0, 3),
             "mlx_peak_memory_gib": round(peak_memory_gib, 3),
@@ -432,6 +478,26 @@ class LocalMlxChatModel:
             "generation_tokens_per_second": None if generation_tps is None else round(float(generation_tps), 3),
         }
         return "".join(chunks)
+
+
+def snapshot_context_window(snapshot: Path) -> int:
+    """Return the model-declared context window, never a project-chosen cap."""
+    try:
+        config = json.loads((snapshot / "config.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return 0
+    text_config = config.get("text_config") if isinstance(config.get("text_config"), dict) else {}
+    for value in (
+        text_config.get("max_position_embeddings"),
+        config.get("max_position_embeddings"),
+    ):
+        try:
+            parsed = int(value or 0)
+        except (TypeError, ValueError):
+            continue
+        if parsed > 0:
+            return parsed
+    return 0
 
 
 def local_snapshot(card: dict[str, Any]) -> Path:

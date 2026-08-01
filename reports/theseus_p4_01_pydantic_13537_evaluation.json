@@ -1,0 +1,134 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 741.63,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-4746i3je/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-4746i3je/source/theseus_p4_hidden_test.py\", line 107, in check_pydantic\n    assert Secret(\"caf\u00e9\") == Secret(\"caf\u00e9\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"pydantic/types.py\", line 1891, in __eq__\n    return secrets.compare_digest(self.get_secret_value(), other.get_secret_value())\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: comparing strings with non-ASCII characters is not supported\nP4_FAIL_pydantic: TypeError: comparing strings with non-ASCII characters is not supported\n",
+      "stdout_tail": ""
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "",
+      "hidden_stdout_tail": "P4_PASS_pydantic\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T03:38:09.899751Z",
+    "evaluator_sha256": "ba0aa284cb3e7509a4befc4379a9ceb83d4e04604c22dcc32c19c37e76408482",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 8623.505,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 259.519,
+      "stderr_tail": "",
+      "stdout_tail": "P4_PASS_pydantic\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "9d12ebc1ba2cc07bbc3c6c0b57e6c510dc23bbdd9448b3912e15a27be1346968",
+      "task_sha256": "48fb54f4164c0009ef97890204d7b30df2cdae62d685a163bdda28e8f137b42c",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "48fb54f4164c0009ef97890204d7b30df2cdae62d685a163bdda28e8f137b42c",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "5084dd72df336a9cf0eb01435ef3404242da7e50987c0f1ccb7b7bcbd0b44ec7",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T03:38:14.150770Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 1,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 0,
+    "sealed_learned_candidates": 0,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 1
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "327cef09a4387d9886ce0bda5b0642dc212a8ff6179b36aaed5b88e3a30164a8"
+    ]
+  },
+  "evaluator_sha256": "ba0aa284cb3e7509a4befc4379a9ceb83d4e04604c22dcc32c19c37e76408482",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "327cef09a4387d9886ce0bda5b0642dc212a8ff6179b36aaed5b88e3a30164a8",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "pydantic/types.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "edd0e8ee71b7e4e81565a1fad4cc8a9200bc1e7790540464a1c2d43af6895d7a",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 414.304,
+        "stderr_tail": "",
+        "stdout_tail": "P4_PASS_pydantic\n"
+      }
+    }
+  ],
+  "runtime_ms": 12876.222,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

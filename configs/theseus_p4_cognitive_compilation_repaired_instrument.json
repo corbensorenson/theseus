@@ -1,0 +1,129 @@
+{
+  "policy": "project_theseus_p4_cognitive_compilation_repaired_instrument_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01-P4R-COGNITIVE-COMPILATION",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_REPAIRED_TASK_POOL",
+  "purpose": "Repeat the exact selected cognitive-compilation development test with completion-based generation, explicit termination custody, and no project-selected answer-length cap.",
+  "predecessor_disposition": "reports/theseus_p4_budget_interruption_disposition.json",
+  "predecessor_disposition_sha256": "014a29a11d98369a2fcf80b96b9475fd86f167d180b0b240148086ce0e267f21",
+  "generation_completion_policy": "configs/theseus_generation_completion_policy.json",
+  "generation_completion_policy_sha256": "0fa5037ef2d82a71cb4e24aa2f8f15983ccca8891dbe6f3479bbbcb47ea292c7",
+  "base_local_instrument": "configs/theseus_p4r_local_instrument.json",
+  "base_local_instrument_sha256": "66629d03fe402d968d21f0ec734dfe7266634767011a210d7deae5ff8a8445e5",
+  "selected_claim": {
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "causal_variable": "Typed source-to-semantic-to-target lowering with stable obligation and AST identities, explicit loss or ambiguity, actual target validation, and dependency-local repair.",
+    "support_state_before": "no_change",
+    "automatic_support_promotion": false
+  },
+  "harness": {
+    "candidate_runner": "scripts/theseus_p4_cognitive_compilation_repaired.py",
+    "candidate_runner_sha256": "bb600f6db5626dedc30b17167bfd3b3a6f36919766250cdd4a4ab5058c2d9999",
+    "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
+    "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
+    "local_backend": "scripts/theseus_local_inference_backend.py",
+    "local_backend_sha256": "35ef4d10f60f5d6097bddf4a93f0102243dde54dec91c73477d3b6508780feca"
+  },
+  "matched_arm_contract": {
+    "arms": [
+      "direct_target_generation",
+      "natural_language_plan_control",
+      "typed_semantic_ir_treatment"
+    ],
+    "arm_order_policy": "three_arm_latin_rotation_by_campaign_index",
+    "same_frozen_weights": true,
+    "same_information": true,
+    "same_completion_policy": true,
+    "same_model_context_residual_rule": true,
+    "same_two_model_calls": true,
+    "same_verifier_and_effect_sandbox": true,
+    "natural_early_completion_is_measured_not_padded": true,
+    "natural_language_plan_controls_execution": false,
+    "semantic_ir_controls_lowering_validation_and_repair": true
+  },
+  "generation_budget": {
+    "project_selected_quality_token_cap": null,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "numeric_boundary_source": "pinned_model_declared_context_residual",
+    "model_declared_context_window_tokens": 262144,
+    "effective_boundary_formula": "262144 - exact_prompt_tokens",
+    "ceiling_hit_invalidates_observation": true,
+    "ceiling_hit_counts_as_model_or_mechanism_failure": false,
+    "host_emergency_stop_invalidates_observation": true
+  },
+  "budgets": {
+    "task_count": 10,
+    "model_calls_per_learned_arm": 2,
+    "learned_arms_per_task": 3,
+    "maximum_model_calls_per_task": 6,
+    "persistent_model_loads_per_task_set": 1,
+    "maximum_semantic_units": 8,
+    "maximum_symbol_nodes": 80,
+    "maximum_replacement_bytes": 65536,
+    "visible_verifier_timeout_seconds": 60,
+    "hidden_verifier_timeout_seconds": 60
+  },
+  "repaired_task_pool_contract": {
+    "reuse_unopened_predecessor_indices": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "permanently_exclude_consumed_predecessor_indices": [
+      1,
+      2,
+      3
+    ],
+    "new_fresh_source_disjoint_tasks_required": 3,
+    "new_tasks_selected_only_after_this_instrument_freeze": true,
+    "task_selection_may_condition_on_candidate_or_control_output": false,
+    "source_disjoint_from_P2_P3_D1_D2_training": true
+  },
+  "adequacy_requirements": {
+    "all_learned_calls_have_explicit_termination_telemetry": true,
+    "all_learned_calls_end_parser_complete_or_model_eos": true,
+    "zero_physical_context_ceiling_hits": true,
+    "compiler_oracle_must_pass_every_task": true,
+    "source_obligation_target_and_loss_corruptions_must_fail": true,
+    "all_candidates_scored_route_blind": true,
+    "all_failures_and_costs_retained": true
+  },
+  "decision_rule": {
+    "primary_outcome": "independently_verified_useful_completion",
+    "minimum_development_survivor_effect": "Typed Semantic IR must solve at least two more of ten tasks than direct generation, natural-language planning, and the prospective deterministic request-compiler control; lose on no more than one task against either learned control; and introduce zero unsafe or rollback failures.",
+    "mechanics_floor": "Compiler oracle 10 of 10 useful; all four corruption classes rejected; at least 8 of 10 treatment IRs parse and lower; every learned call has a valid natural termination receipt.",
+    "terminal_states": [
+      "P4_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+      "P4_ADEQUATE_NO_SURVIVOR",
+      "INCONCLUSIVE_IMPLEMENTATION",
+      "INCONCLUSIVE_EXPERIMENT",
+      "INVALID_INFORMATION_FLOW",
+      "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+    ],
+    "negative_scope": "A null or loss applies only to this exact bounded Python Semantic IR, model, task distribution, completion policy, validator, and repair policy; it cannot falsify cognitive compilation generally."
+  },
+  "hosted_reference": {
+    "model": "gpt-5.6-luna",
+    "effort": "xhigh",
+    "state": "DEFINED_TRANSPORT_NOT_BOUND",
+    "P4R_blocking": false,
+    "future_extension": "Use the same completion semantics and separate denominators after a governed callable transport is source-bound."
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0,
+    "user_gate": "none",
+    "ASI_stack_support_state_effect": "none"
+  },
+  "maximum_inference": "A terminal P4R result can decide only whether this exact Semantic IR implementation is a development survivor for one fresh D1 qualification. It cannot establish general cognitive compilation, serving qualification, or book support."
+}
