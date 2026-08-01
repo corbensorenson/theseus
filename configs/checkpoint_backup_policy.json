@@ -20,6 +20,50 @@
     "include_roms_or_games": false,
     "include_model_binaries": false
   },
+  "custody": {
+    "enabled": true,
+    "purpose": "Privately preserve the exact active unpromoted checkpoint, governed evidence, and clean source ref before destructive maintenance. This is custody only, never promotion or public release.",
+    "local_config": "configs/checkpoint_custody.local.json",
+    "active_freeze": "configs/pre_long_run_replacement_freeze.json",
+    "source_ref": "HEAD",
+    "require_clean_git": true,
+    "require_distinct_device": true,
+    "require_private_encrypted_acknowledgement": true,
+    "destination_free_reserve_bytes": 2147483648,
+    "source_bundle_estimate_bytes": 536870912,
+    "required_checkpoint_files": [
+      "weights.safetensors",
+      "weights.step-{optimizer_step:08d}.safetensors",
+      "optimizer.safetensors",
+      "optimizer.step-{optimizer_step:08d}.safetensors",
+      "optimizer.mlx-rng.safetensors",
+      "optimizer.step-{optimizer_step:08d}.mlx-rng.safetensors",
+      "training_receipt.json",
+      "training_heartbeat.json"
+    ],
+    "evidence_from_freeze_keys": [
+      "report",
+      "supersedes",
+      "production_trainer_config",
+      "candidate_contract",
+      "pre_long_run_review",
+      "factorized_bakeoff",
+      "acceleration_residual_audit",
+      "independent_readiness_audit",
+      "functional_freeze",
+      "functional_consumption_registry",
+      "yield_control"
+    ],
+    "evidence_maps_from_freeze_keys": [
+      "candidate_reports"
+    ],
+    "lineage_root_key": "lineage_root",
+    "reports": {
+      "last": "reports/checkpoint_custody_last.json"
+    },
+    "external_inference_calls": 0,
+    "capability_or_promotion_claim": false
+  },
   "forbidden_paths": [
     "games/**",
     "data/local_roms/**",
