@@ -46,7 +46,9 @@ def test_consumed_p2b_retains_its_source_bound_green_instrument_audit() -> None:
 
 
 def test_p2c_rendered_grammar_round_trips_through_exact_parser() -> None:
-    report = p2a.audit_instrument(ROOT / "configs" / "theseus_assistant_p2c_instrument.json")
+    report = json.loads(
+        (ROOT / "reports" / "theseus_assistant_p2c_instrument_audit.json").read_text()
+    )
 
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
@@ -58,6 +60,16 @@ def test_p2c_rendered_grammar_round_trips_through_exact_parser() -> None:
         "example_action_count": 1,
         "ready": True,
     }
+
+
+def test_p3_counterbalances_arm_order_by_campaign_index() -> None:
+    instrument = {"policy": "project_theseus_p3_frozen_model_campaign_v1"}
+
+    assert p2a.arm_order_for_experiment(instrument, {"campaign_index": 1}) == p2a.ARMS
+    assert p2a.arm_order_for_experiment(instrument, {"campaign_index": 2}) == (
+        p2a.ARMS[1],
+        p2a.ARMS[0],
+    )
 
 
 def test_p2c_retains_p2b_denominator_variables() -> None:

@@ -391,7 +391,23 @@ label, approval, or scheduling dependency.
 
 #### P3 — Autonomous paired development
 
-State: `READY_FOR_PROSPECTIVE_POOL_LUNA_TRANSPORT_UNBOUND`.
+State: `INSTRUMENT_FROZEN_TASK_POOL_NOT_ACQUIRED_LUNA_TRANSPORT_UNBOUND`.
+
+The local P3 instrument is now frozen before task-pool acquisition. It retains
+the exact P2C Qwen3.5 revision, snapshot, decoder, runtime overlay, 1,536-token
+and two-call-per-arm caps, actual-newline typed-edit protocol, repository-root
+path namespace, disposable effects, blind evaluator, and route-integrity/product
+health separation. Qwen3.5 is the best retained development denominator because
+it is the only installed candidate with any prior useful retained outcome and it
+exercised the complete parse/apply/seal/evaluate path in P2C; it is not promoted
+as capability-qualified. The ten-task count and source-disjointness rules are
+fixed. Odd campaign indices run direct first and even indices run integrated
+first, eliminating a systematic arm-order assignment while keeping each task's
+source, request, context, model, decoder, budgets, verifier, and evaluator
+matched. The instrument audit is GREEN. No P3 task or candidate call has opened.
+The Luna-xhigh reference remains separately defined but transport-unbound; the
+local campaign may proceed without inventing hosted results, and Luna must use
+the identical sealed pool if a governed callable transport becomes available.
 
 Select the next ten distinct eligible repository-engineering tasks from a
 prospectively sealed autonomous pool. Cover at least diagnosis, bounded code
@@ -515,7 +531,7 @@ Maintenance serves P or N and does not become another research program:
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | Qwen3.5 reproduced the prompt's literal backslash-n transport on all four matched calls, but the parser required actual newlines; zero candidates were evaluable, so the exact result is a harness implementation failure only |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
-| Autonomous usefulness | `NOT_ESTABLISHED_INSTRUMENT_NOW_ADEQUATE` | P2C independently evaluated one safe integrated candidate but it failed correctness; P3 may now freeze ten fresh tasks and compare the best retained local model direct/integrated, with Luna-xhigh added as a separate reference when its governed transport is callable |
+| Autonomous usefulness | `P3_INSTRUMENT_FROZEN_TASK_POOL_PENDING` | P2C independently evaluated one safe integrated candidate but it failed correctness; the exact best-retained Qwen3.5 P3 denominator and counterbalanced ten-task contract are now audit-GREEN before task acquisition |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -542,8 +558,8 @@ Maintenance serves P or N and does not become another research program:
 5. Preserve the terminal P2C run, blind evaluation, runtime receipts, and
    disposition. Do not rerun the consumed Click task or infer a subsystem effect
    from one parseable but incorrect integrated candidate.
-6. Open P3 by prospectively freezing ten fresh licensed source-disjoint tasks
-   and the best retained local-model denominator. Keep malformed, incorrect,
+6. Preserve the frozen P3 instrument and autonomously acquire and seal ten
+   fresh licensed source-disjoint tasks. Keep malformed, incorrect,
    useful, unsafe, rollback, latency, and weak-tail outcomes explicit.
 7. Bind the measurement-only Luna-xhigh adapter when a callable governed
    transport exists. Run both

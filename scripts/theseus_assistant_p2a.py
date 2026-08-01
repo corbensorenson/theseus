@@ -31,6 +31,7 @@ INSTRUMENT_POLICIES = {
     "project_theseus_p2a_frozen_model_instrument_v1",
     "project_theseus_p2b_frozen_model_instrument_v1",
     "project_theseus_p2c_frozen_model_instrument_v1",
+    "project_theseus_p3_frozen_model_campaign_v1",
 }
 ARMS = (route_integrity.DIRECT_MODE, route_integrity.INTEGRATED_MODE)
 FORBIDDEN_TASK_FIELDS = {
@@ -78,6 +79,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         "PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
         "P2B_PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
         "P2C_PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+        "P3_PROSPECTIVELY_BOUND_BEFORE_TASK_POOL_ACQUISITION",
     }:
         faults.append("instrument_not_prospectively_bound")
     runtime_config = assistant_runtime.load_runtime_config(resolve(str(value.get("runtime_config") or "")))
@@ -123,6 +125,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     successor_policy = value.get("policy") in {
         "project_theseus_p2b_frozen_model_instrument_v1",
         "project_theseus_p2c_frozen_model_instrument_v1",
+        "project_theseus_p3_frozen_model_campaign_v1",
     }
     grammar_round_trip: dict[str, Any] = {}
     if successor_policy:
@@ -132,7 +135,12 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         if sha256_file(selection_path) != str(value.get("model_selection_report_sha256") or ""):
             faults.append("p2b_model_selection_digest_mismatch")
         selection = read_json(selection_path)
-        if selection.get("selection_state") != "SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED":
+        expected_selection_state = (
+            "FROZEN_AS_BEST_RETAINED_P3_DEVELOPMENT_LOCAL_DENOMINATOR_NOT_CAPABILITY_QUALIFIED"
+            if value.get("policy") == "project_theseus_p3_frozen_model_campaign_v1"
+            else "SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED"
+        )
+        if selection.get("selection_state") != expected_selection_state:
             faults.append("p2b_model_selection_state_invalid")
         if mapping(selection.get("selected_model_identity")).get("revision") != frozen.get("revision"):
             faults.append("p2b_selected_model_revision_mismatch")
@@ -141,7 +149,10 @@ def audit_instrument(path: Path) -> dict[str, Any]:
             harness_path = resolve(str(harness.get(name) or ""))
             if sha256_file(harness_path) != str(harness.get(f"{name}_sha256") or ""):
                 faults.append(f"p2b_{name}_digest_mismatch")
-    if value.get("policy") == "project_theseus_p2c_frozen_model_instrument_v1":
+    if value.get("policy") in {
+        "project_theseus_p2c_frozen_model_instrument_v1",
+        "project_theseus_p3_frozen_model_campaign_v1",
+    }:
         protocol = mapping(value.get("candidate_protocol"))
         grammar = str(protocol.get("grammar") or "")
         example = (
@@ -170,6 +181,14 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         }
         if grammar_round_trip["ready"] is not True:
             faults.append("p2c_rendered_grammar_parser_round_trip_invalid")
+    if value.get("policy") == "project_theseus_p3_frozen_model_campaign_v1":
+        if matched.get("arm_order_policy") != "campaign_index_parity_counterbalance_v1":
+            faults.append("p3_arm_order_policy_invalid")
+        campaign = mapping(value.get("campaign_contract"))
+        if int(campaign.get("task_count") or 0) != 10:
+            faults.append("p3_task_count_invalid")
+        if campaign.get("task_pool_frozen_before_candidate_generation") is not True:
+            faults.append("p3_task_pool_not_prospectively_frozen")
     return {
         "policy": "project_theseus_p2a_instrument_audit_v1",
         "created_utc": now(),
@@ -189,6 +208,7 @@ def audit_task(path: Path) -> dict[str, Any]:
     if task.get("policy") not in {
         "project_theseus_p2a_licensed_task_v1",
         "project_theseus_p2b_licensed_task_v1",
+        "project_theseus_p3_licensed_task_v1",
     }:
         faults.append("task_policy_invalid")
     if task.get("state") != "SEALED_BEFORE_CANDIDATE_GENERATION":
@@ -199,8 +219,15 @@ def audit_task(path: Path) -> dict[str, Any]:
     if sha256_file(archive) != str(task.get("source_archive_sha256") or ""):
         faults.append("source_archive_digest_mismatch")
     source_root = str(task.get("source_archive_root") or "")
-    if task.get("policy") == "project_theseus_p2b_licensed_task_v1" and not source_root:
+    if task.get("policy") in {
+        "project_theseus_p2b_licensed_task_v1",
+        "project_theseus_p3_licensed_task_v1",
+    } and not source_root:
         faults.append("source_archive_root_missing")
+    if task.get("policy") == "project_theseus_p3_licensed_task_v1":
+        campaign_index = int(task.get("campaign_index") or 0)
+        if campaign_index < 1 or campaign_index > 10:
+            faults.append("p3_campaign_index_invalid")
     if source_root:
         try:
             with tarfile.open(archive) as handle:
@@ -273,8 +300,9 @@ def run_experiment(
             "counters": zero_counters(),
         }
     attempts: list[dict[str, Any]] = []
+    actual_arm_order = arm_order_for_experiment(instrument, task)
     with assistant_runtime.bind_local_inference_runner(session.runtime_runner):
-        for arm in ARMS:
+        for arm in actual_arm_order:
             attempts.append(run_arm(arm, instrument, task, session))
     pair = pair_receipt(attempts, session)
     parseable = sum(int(row.get("parseable_candidate") is True) for row in attempts)
@@ -290,6 +318,7 @@ def run_experiment(
         "instrument_audit": instrument_audit,
         "task_audit": task_audit,
         "attempts": attempts,
+        "actual_arm_order": list(actual_arm_order),
         "matched_pair": pair,
         "denominators": {
             "tasks": 1, "arms": 2, "parseable_candidates": parseable,
@@ -302,6 +331,17 @@ def run_experiment(
         "counters": zero_counters(),
         "runtime_ms": round((time.perf_counter() - started) * 1000, 3),
     }
+
+
+def arm_order_for_experiment(
+    instrument: dict[str, Any], task: dict[str, Any]
+) -> tuple[str, str]:
+    if instrument.get("policy") != "project_theseus_p3_frozen_model_campaign_v1":
+        return ARMS
+    index = int(task.get("campaign_index") or 0)
+    if index < 1 or index > 10:
+        raise InstrumentFault("p3_campaign_index_invalid")
+    return ARMS if index % 2 else (ARMS[1], ARMS[0])
 
 
 def run_arm(arm: str, instrument: dict[str, Any], task: dict[str, Any], session: Any) -> dict[str, Any]:

@@ -83,6 +83,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
+| P3 ten-task instrument | `INSTRUMENT_FROZEN_TASK_POOL_NOT_ACQUIRED` | Exact Qwen3.5 identity, decoder, runtime, typed-edit grammar, two-call cap, blind evaluator, ten-task count, and odd/even arm-order counterbalance are source-bound and audit-GREEN before task acquisition; the model is a development denominator, not capability-qualified |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -175,6 +176,17 @@ the double-bracketing defect and failed the hidden oracle. Rollback passed. The
 harness is therefore adequate for P3 residual measurement, while the task has
 zero useful candidates and is consumed. This single task establishes no
 direct-versus-integrated, subsystem, model-competence, or book claim.
+
+P3 is now prospectively frozen before task acquisition. It retains the exact
+P2C local model, decoder, runtime overlay, grammar, path namespace, effect
+sandbox, repair budget, route integrity, and blind scoring. Its ten-task count
+is fixed, with odd campaign indices direct-first and even indices
+integrated-first. The local-model freeze names Qwen3.5 only as the strongest
+retained development denominator; it does not grant serving or general
+capability status. The instrument audit is GREEN. No P3 task or candidate call
+has opened. Luna-xhigh remains a separately defined reference whose callable
+transport is not yet bound; any later hosted run must use the same sealed tasks
+and remain outside serving and training.
 
 Historical L0 evidence remains preserved:
 
@@ -493,9 +505,9 @@ In order:
 5. Preserve the terminal P2C run, blind evaluation, runtime receipts, and
    disposition. Do not replay the consumed Click task or infer a subsystem
    effect from its one parseable but incorrect integrated candidate.
-6. For P3, freeze ten fresh licensed source-disjoint tasks, the best retained
-   local model, and a separately
-   governed Luna-xhigh reference adapter. Run each model direct and integrated
+6. Preserve the frozen local P3 instrument, then acquire and seal ten fresh
+   licensed source-disjoint tasks. Bind a separately governed Luna-xhigh
+   reference adapter when a callable transport exists. Run each model direct and integrated
    on the same ten sealed tasks; interpret within-model Theseus effects and
    report hosted-wrapper differences rather than treating cross-model rank as
    a clean causal contrast.

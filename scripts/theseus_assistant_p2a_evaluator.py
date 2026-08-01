@@ -51,6 +51,7 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
     if value.get("policy") not in {
         "project_theseus_p2a_route_blind_evaluator_v1",
         "project_theseus_p2b_route_blind_evaluator_v1",
+        "project_theseus_p3_route_blind_evaluator_v1",
     }:
         faults.append("evaluator_policy_invalid")
     if value.get("state") != "SEALED_BEFORE_CANDIDATE_GENERATION":
@@ -70,7 +71,10 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
             faults.append(f"hidden_test_{index}_destination_unsafe")
     target_archive = p2a.resolve(str(value.get("target_archive") or ""))
     task = p2a.read_json(task_path)
-    if task.get("policy") == "project_theseus_p2b_licensed_task_v1" and not str(value.get("target_archive_root") or ""):
+    if task.get("policy") in {
+        "project_theseus_p2b_licensed_task_v1",
+        "project_theseus_p3_licensed_task_v1",
+    } and not str(value.get("target_archive_root") or ""):
         faults.append("target_archive_root_missing")
     if value.get("target_must_pass") is True and (
         p2a.sha256_file(target_archive) != str(value.get("target_archive_sha256") or "")
