@@ -52,6 +52,14 @@ def test_generation_has_no_arbitrary_output_cap() -> None:
     ] is False
 
 
+def test_D1_language_scope_matches_the_exact_P4_implementation() -> None:
+    config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    assert config["source_surface"]["programming_language_scope"] == ["Python"]
+    assert "cross-language portability" in config["source_surface"][
+        "language_scope_reason"
+    ]
+
+
 def test_green_survivor_opens_only_source_acquisition() -> None:
     disposition = {
         "trigger_state": "GREEN",

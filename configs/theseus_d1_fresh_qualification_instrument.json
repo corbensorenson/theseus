@@ -43,11 +43,9 @@
     "task_family": "merged_machine_verifiable_real_repository_maintenance_changes",
     "natural_language_scope": "English",
     "programming_language_scope": [
-      "Python",
-      "JavaScript/TypeScript",
-      "HTML/CSS",
-      "Rust"
+      "Python"
     ],
+    "language_scope_reason": "The exact P4S survivor candidate is the current Python AST and labeled Semantic-IR implementation. D1 qualifies that implementation only; cross-language portability requires separately implemented and mechanics-qualified treatments and cannot be inferred here.",
     "allowed_license_spdx": [
       "Apache-2.0",
       "MIT",
@@ -138,5 +136,5 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "maximum_inference": "A GREEN D1 result may qualify only the exact frozen local model, runtime, labeled Semantic-IR mechanism, controls, task distribution, and evaluator for claim-level governed review. It cannot establish cognitive compilation generally, prove AGI or ASI, authorize serving or training, decide the independent D2 neural claim, or automatically promote ASI Stack book support. A null, boundary, underpowered, or inadequate result is scoped to the exact implementation and observation and cannot falsify the broader mechanism."
+  "maximum_inference": "A GREEN D1 result may qualify only the exact frozen local model, runtime, Python AST and labeled Semantic-IR mechanism, controls, task distribution, and evaluator for claim-level governed review. It cannot establish cognitive compilation generally, establish cross-language portability, prove AGI or ASI, authorize serving or training, decide the independent D2 neural claim, or automatically promote ASI Stack book support. A null, boundary, underpowered, or inadequate result is scoped to the exact implementation and observation and cannot falsify the broader mechanism."
 }

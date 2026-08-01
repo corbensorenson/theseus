@@ -244,7 +244,7 @@ def test_selection_contract_has_no_user_gate_or_postfreeze_replacement() -> None
     assert config["discovery_frame"]["external_inference_calls"] == 0
 
 
-def test_combined_scope_labels_admit_each_programming_language() -> None:
+def test_D1_selector_inherits_only_the_mechanics_qualified_Python_scope() -> None:
     instrument_config = json.loads(
         (ROOT / "configs/theseus_d1_fresh_qualification_instrument.json").read_text(
             encoding="utf-8"
@@ -253,4 +253,4 @@ def test_combined_scope_labels_admit_each_programming_language() -> None:
     languages = selection.normalized_languages(
         instrument_config["source_surface"]["programming_language_scope"]
     )
-    assert {"python", "javascript", "typescript", "html", "css", "rust"} <= languages
+    assert languages == {"python"}
