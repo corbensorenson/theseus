@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 192.674,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-9_5ycpfc/source/theseus_p3_hidden_test.py\", line 28, in <module>\n    assert \"assert_hostname\" not in pool.conn_kw, \"HTTP pool retained assert_hostname\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: HTTP pool retained assert_hostname\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:48:41.024123Z",
+  "evaluator_sha256": "f3fde407e2260102ce975991ea51875c0b8ce7af5f8aa709796bb1528eda3eb6",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 528.021,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 128.724,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "0c33e77123217e0f8afcc5ff155fbf90d31f7ab353e3caef23fe794b77daa63f",
+    "task_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5",
+  "trigger_state": "GREEN"
+}

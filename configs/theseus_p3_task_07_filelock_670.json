@@ -1,0 +1,77 @@
+{
+  "allowed_effect_paths": [
+    "src/filelock/_marker.py"
+  ],
+  "campaign_index": 7,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 18,
+        "path": "src/filelock/_marker.py",
+        "start_line": 1
+      },
+      {
+        "end_line": 158,
+        "path": "src/filelock/_marker.py",
+        "start_line": 104
+      }
+    ],
+    "searches": [
+      {
+        "literal": "def parse_marker",
+        "paths": [
+          "src/filelock/_marker.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_or_tests_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2a_p2b_p2c": true,
+    "task_selected_after_p3_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "This task contributes only one P3 development residual observation. It cannot support a subsystem, general model, D1, D2, training, or ASI Stack claim.",
+  "natural_request": "Treat NaN, infinite, and nonpositive lease durations as malformed marker records while preserving finite positive durations. Modify only src/filelock/_marker.py.",
+  "opaque_task_id": "p3-licensed-maintenance-07",
+  "partition": "development_residual_campaign",
+  "policy": "project_theseus_p3_licensed_task_v1",
+  "source_archive": "tests/fixtures/theseus_assistant_p3_online/p3_07_filelock_670_parent.tar.gz",
+  "source_archive_root": "tox-dev-filelock-cfafd70",
+  "source_archive_sha256": "5c50a758d933d2ce11546249f162f4869e7cfadaca28f425010a91de611e30c4",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_07_filelock_670_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "0df69b358e54fcba6b137f79b7b569b3988388c85feb8436c17638113fba5e62",
+    "license_path": "LICENSE",
+    "license_spdx": "MIT",
+    "repository": "tox-dev/filelock",
+    "retrieved_utc": "2026-08-01T01:43:04Z",
+    "revision": "cfafd70e9118ded6bda9d643ebbedfff12ae46f2",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_07_filelock_670_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "fa99aa562c39c13e65770d9e19c670394fb2b16447c8e0724654dc17956c57aa",
+    "upstream_merged_utc": "2026-07-16T16:45:49Z",
+    "upstream_request_title": "Validate lease duration finiteness",
+    "upstream_request_url": "https://github.com/tox-dev/filelock/pull/670",
+    "url": "https://github.com/tox-dev/filelock"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_verifier": {
+    "answer_specific": false,
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/filelock/_marker.py"
+    ],
+    "timeout_seconds": 30
+  }
+}

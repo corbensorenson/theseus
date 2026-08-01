@@ -1,0 +1,72 @@
+{
+  "allowed_effect_paths": [
+    "src/prompt_toolkit/contrib/telnet/protocol.py"
+  ],
+  "campaign_index": 4,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 154,
+        "path": "src/prompt_toolkit/contrib/telnet/protocol.py",
+        "start_line": 112
+      }
+    ],
+    "searches": [
+      {
+        "literal": "def ttype",
+        "paths": [
+          "src/prompt_toolkit/contrib/telnet/protocol.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_or_tests_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2a_p2b_p2c": true,
+    "task_selected_after_p3_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "This task contributes only one P3 development residual observation. It cannot support a subsystem, general model, D1, D2, training, or ASI Stack claim.",
+  "natural_request": "Decode terminal-type bytes containing invalid ASCII without raising, replacing invalid bytes while preserving valid callbacks and non-IS behavior. Modify only src/prompt_toolkit/contrib/telnet/protocol.py.",
+  "opaque_task_id": "p3-licensed-maintenance-04",
+  "partition": "development_residual_campaign",
+  "policy": "project_theseus_p3_licensed_task_v1",
+  "source_archive": "tests/fixtures/theseus_assistant_p3_online/p3_04_prompt_toolkit_2080_parent.tar.gz",
+  "source_archive_root": "prompt-toolkit-python-prompt-toolkit-25ff042",
+  "source_archive_sha256": "8cc0db170d7e625ca58cb4e3aed7442c6c7779e16456ab9645e16c5011d680c8",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_04_prompt_toolkit_2080_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "51b97e83eecd4440090a1c8c869d488595e41b8aff7601eb9749c2ee0b4cefde",
+    "license_path": "LICENSE",
+    "license_spdx": "BSD-3-Clause",
+    "repository": "prompt-toolkit/python-prompt-toolkit",
+    "retrieved_utc": "2026-08-01T01:43:04Z",
+    "revision": "25ff04203a4627679709db650b5d2f00dc1d93c2",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_04_prompt_toolkit_2080_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "2b75dd5e1494f6b54345e6ab7d9a43cdbde7284e8fe556a42beaa5fdee89dbc4",
+    "upstream_merged_utc": "2026-07-26T20:34:09Z",
+    "upstream_request_title": "Handle invalid ASCII bytes in telnet terminal type",
+    "upstream_request_url": "https://github.com/prompt-toolkit/python-prompt-toolkit/pull/2080",
+    "url": "https://github.com/prompt-toolkit/python-prompt-toolkit"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_verifier": {
+    "answer_specific": false,
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/prompt_toolkit/contrib/telnet/protocol.py"
+    ],
+    "timeout_seconds": 30
+  }
+}

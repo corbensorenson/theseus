@@ -1,0 +1,77 @@
+{
+  "allowed_effect_paths": [
+    "src/urllib3/poolmanager.py"
+  ],
+  "campaign_index": 1,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 62,
+        "path": "src/urllib3/poolmanager.py",
+        "start_line": 30
+      },
+      {
+        "end_line": 288,
+        "path": "src/urllib3/poolmanager.py",
+        "start_line": 250
+      }
+    ],
+    "searches": [
+      {
+        "literal": "SSL_KEYWORDS",
+        "paths": [
+          "src/urllib3/poolmanager.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_or_tests_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2a_p2b_p2c": true,
+    "task_selected_after_p3_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "This task contributes only one P3 development residual observation. It cannot support a subsystem, general model, D1, D2, training, or ASI Stack claim.",
+  "natural_request": "Treat assert_hostname and assert_fingerprint as SSL-only pool keywords so PoolManager removes them before constructing an HTTP connection pool while preserving HTTPS behavior. Modify only src/urllib3/poolmanager.py.",
+  "opaque_task_id": "p3-licensed-maintenance-01",
+  "partition": "development_residual_campaign",
+  "policy": "project_theseus_p3_licensed_task_v1",
+  "source_archive": "tests/fixtures/theseus_assistant_p3_online/p3_01_urllib3_5102_parent.tar.gz",
+  "source_archive_root": "urllib3-urllib3-4e5ce63",
+  "source_archive_sha256": "0c33e77123217e0f8afcc5ff155fbf90d31f7ab353e3caef23fe794b77daa63f",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_01_urllib3_5102_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "cc7aaa86665f491b1886b8e95873d7b7057ab25cffc7df0156cf5025572dd4be",
+    "license_path": "LICENSE.txt",
+    "license_spdx": "MIT",
+    "repository": "urllib3/urllib3",
+    "retrieved_utc": "2026-08-01T01:43:04Z",
+    "revision": "4e5ce638723118dc41f218cd6715f91a9f321908",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_01_urllib3_5102_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "ba2a3643755a4cfefd8de07ebbc0e818e8131d47acc28ea5489ac253be0caf17",
+    "upstream_merged_utc": "2026-07-12T16:10:14Z",
+    "upstream_request_title": "Add assert_hostname and assert_fingerprint to SSL_KEYWORDS",
+    "upstream_request_url": "https://github.com/urllib3/urllib3/pull/5102",
+    "url": "https://github.com/urllib3/urllib3"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_verifier": {
+    "answer_specific": false,
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/urllib3/poolmanager.py"
+    ],
+    "timeout_seconds": 30
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "baseline_failure_markers": [
+    "ForwardRef ClassVar was not recognized"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p3_hidden_test.py",
+      "sha256": "1f38a3dc8172067a480eb8ce239bf45eefcb87c89996e2bf16ab6a4d2cf3bad9",
+      "source": "tests/fixtures/theseus_assistant_p3_online/p3_02_attrs_1593_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "theseus_p3_hidden_test.py"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit proves only that this exact parent fails and the exact upstream target passes this sealed evaluator. It does not establish model or subsystem competence.",
+  "policy": "project_theseus_p3_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_assistant_p3_online/p3_02_attrs_1593_target.tar.gz",
+  "target_archive_root": "python-attrs-attrs-2e082f1",
+  "target_archive_sha256": "8442cf8fdfcae1bc83a10e4c40f2ebae2275fb3df65c544c3e39470f30228519",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_02_attrs_1593_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "510c2ea11f08db9d2f0f037b60696380c7c723849b1d310d74a00d5aea671859",
+    "merge_revision": "97f8d175656bc03c373a1c9038048a4d312c307c",
+    "revision": "2e082f1c1efb019885fbdb601b32f8464dbe5d47",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_02_attrs_1593_target_upstream.tar.gz",
+    "upstream_archive_sha256": "ca50972f60d6101fa77914b0a57a4ae253a438f9ed3d06c8b091edf0ba8e7ac2"
+  },
+  "task_manifest": "configs/theseus_p3_task_02_attrs_1593.json",
+  "task_manifest_sha256": "04fa7614e16cc1d53603bba45f434cde2b9a0ba694a498dea597cf640f16965e"
+}

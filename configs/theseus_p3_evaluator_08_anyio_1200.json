@@ -1,0 +1,45 @@
+{
+  "baseline_failure_markers": [
+    "empty stem with non-empty suffix was accepted"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p3_hidden_test.py",
+      "sha256": "37996b202b130bd72832fd46498c70c47fd66fbbefaf4622df5127c2c886561f",
+      "source": "tests/fixtures/theseus_assistant_p3_online/p3_08_anyio_1200_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "theseus_p3_hidden_test.py"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit proves only that this exact parent fails and the exact upstream target passes this sealed evaluator. It does not establish model or subsystem competence.",
+  "policy": "project_theseus_p3_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_assistant_p3_online/p3_08_anyio_1200_target.tar.gz",
+  "target_archive_root": "agronholm-anyio-da244de",
+  "target_archive_sha256": "d0a41ed9d43892e56849a56b9643bd6e94ccac2123b2b13953eef28bd5f237d7",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_08_anyio_1200_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "88397904e0bb4de9e1097b42d108dc1c908612d23df4c63910c235c24efd617b",
+    "merge_revision": "586e3cf49a32379139309034382046288742b479",
+    "revision": "da244def56aa425fe5655104564a50fbd33c4357",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_08_anyio_1200_target_upstream.tar.gz",
+    "upstream_archive_sha256": "f3766ccd905a156972d3dbc2177683b1f6064398b38513a8bffc6109ccec4f80"
+  },
+  "task_manifest": "configs/theseus_p3_task_08_anyio_1200.json",
+  "task_manifest_sha256": "f8e63b2719c1abf130cb5b0fec5eb0653e4d0f11e2a7cfc931a7af7e2af2c1d4"
+}

@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 123.749,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-7czjv4lz/source/theseus_p3_hidden_test.py\", line 26, in <module>\n    assert proxy.isatty() is True, \"FileProxy did not forward isatty\"\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: FileProxy did not forward isatty\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:48:43.403746Z",
+  "evaluator_sha256": "83141f184f9c2032f69c429c9eacaf64c127540496051b3d9da0f5173db1bc36",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 1071.956,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 113.163,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "f37967d95cbeff03d6a6a75c8eb0824aa33e21f354ceaa9771296e3893ebd4b7",
+    "task_sha256": "106fc9ea8bb664c06b5ffafff2d6d8c675d65778bddf709487fe386709e03b9b",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "106fc9ea8bb664c06b5ffafff2d6d8c675d65778bddf709487fe386709e03b9b",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 136.162,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-a1cnlehv/source/theseus_p3_hidden_test.py\", line 24, in <module>\n    raise AssertionError(\"empty stem with non-empty suffix was accepted\")\nAssertionError: empty stem with non-empty suffix was accepted\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:48:44.473153Z",
+  "evaluator_sha256": "6bd6e242a6551c6ae5ccfa5ee3f999e459357275cc4219d1b28a9002fa7cde95",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 385.218,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 126.043,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "700a63e80b7a2cdd4bb058eb1f06c49ef253849136a10ceea1b4ea9ef1a9ff6e",
+    "task_sha256": "f8e63b2719c1abf130cb5b0fec5eb0653e4d0f11e2a7cfc931a7af7e2af2c1d4",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "f8e63b2719c1abf130cb5b0fec5eb0653e4d0f11e2a7cfc931a7af7e2af2c1d4",
+  "trigger_state": "GREEN"
+}

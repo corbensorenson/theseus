@@ -1,0 +1,28 @@
+{
+  "admitted_regular_file_or_directory_count": 107,
+  "faults": [],
+  "input": {
+    "path": "tests/fixtures/theseus_assistant_p3_online/p3_07_filelock_670_parent_upstream.tar.gz",
+    "sha256": "fa99aa562c39c13e65770d9e19c670394fb2b16447c8e0724654dc17956c57aa"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "tests/fixtures/theseus_assistant_p3_online/p3_07_filelock_670_parent.tar.gz",
+    "sha256": "5c50a758d933d2ce11546249f162f4869e7cfadaca28f425010a91de611e30c4"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "tox-dev-filelock-cfafd70",
+  "trigger_state": "GREEN"
+}

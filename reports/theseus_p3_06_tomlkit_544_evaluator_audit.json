@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 93.59,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-3v6db9h8/source/theseus_p3_hidden_test.py\", line 26, in <module>\n    raise AssertionError(\"multiline item comment was accepted\")\nAssertionError: multiline item comment was accepted\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:48:43.722592Z",
+  "evaluator_sha256": "231edbe32ab33de672a74f1c7729710d8797524612e6d9f7cac7d567f16cfd17",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 259.629,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 90.737,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "ee354fa83504bb04f6b94bfb6bf69a17cf1e788b051a5bd36967aa71b50ed794",
+    "task_sha256": "a57c7223ceaad1b052e894a279fb834a0ece18809a33a5307476c6bcb302ffba",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "a57c7223ceaad1b052e894a279fb834a0ece18809a33a5307476c6bcb302ffba",
+  "trigger_state": "GREEN"
+}

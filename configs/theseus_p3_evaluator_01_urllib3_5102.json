@@ -1,0 +1,45 @@
+{
+  "baseline_failure_markers": [
+    "HTTP pool retained assert_hostname"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p3_hidden_test.py",
+      "sha256": "57f240153d2fe7e30c8c853c105db5844a9f26deee9475234eae67241bfdf681",
+      "source": "tests/fixtures/theseus_assistant_p3_online/p3_01_urllib3_5102_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "theseus_p3_hidden_test.py"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit proves only that this exact parent fails and the exact upstream target passes this sealed evaluator. It does not establish model or subsystem competence.",
+  "policy": "project_theseus_p3_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_assistant_p3_online/p3_01_urllib3_5102_target.tar.gz",
+  "target_archive_root": "urllib3-urllib3-c9ba2b4",
+  "target_archive_sha256": "0a0182ab2ce5a4e7da24d970c0ce7d282741607fe30b3a1bab8382ace95fb855",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_01_urllib3_5102_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "d4f98a42313afbcd5f1c5dd2227825d4ce9c0284d22be20b4d5b932aebf2b43d",
+    "merge_revision": "8f5c1b46387b4d86aa54c2c526e4930ae58200a7",
+    "revision": "c9ba2b43d176ad10d945937b19d139f441584d92",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_01_urllib3_5102_target_upstream.tar.gz",
+    "upstream_archive_sha256": "2ba0f1838ee18c819b318e27b4b151edeb98fd43831d972a59fac7674226e137"
+  },
+  "task_manifest": "configs/theseus_p3_task_01_urllib3_5102.json",
+  "task_manifest_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5"
+}

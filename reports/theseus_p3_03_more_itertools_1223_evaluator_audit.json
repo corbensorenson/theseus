@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 80.092,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-h7_wewpc/source/theseus_p3_hidden_test.py\", line 20, in <module>\n    list(chunked(\"ABCDE\", -1))\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-h7_wewpc/source/more_itertools/recipes.py\", line 126, in take\n    return list(islice(iterable, n))\n                ^^^^^^^^^^^^^^^^^^^\nValueError: Stop argument for islice() must be None or an integer: 0 <= x <= sys.maxsize.\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-h7_wewpc/source/theseus_p3_hidden_test.py\", line 22, in <module>\n    assert str(exc) == \"n must be at least 0\", \"negative chunk size error is unclear\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: negative chunk size error is unclear\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:48:41.659135Z",
+  "evaluator_sha256": "4d81ed4bb6b366603d97907bd14487da8ad4b68981e1b5e8776878b615976144",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 215.699,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 85.356,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "f2c79702de0fd5993893bbbcd608631642bbddb203044fd1988dc650d47099ae",
+    "task_sha256": "916a18a993f90cddacfc99ec20c0ca0dec07e9daeb85d665a83a0f86622ad849",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "916a18a993f90cddacfc99ec20c0ca0dec07e9daeb85d665a83a0f86622ad849",
+  "trigger_state": "GREEN"
+}

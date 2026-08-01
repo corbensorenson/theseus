@@ -1,0 +1,28 @@
+{
+  "admitted_regular_file_or_directory_count": 48,
+  "faults": [],
+  "input": {
+    "path": "tests/fixtures/theseus_assistant_p3_online/p3_03_more_itertools_1223_parent_upstream.tar.gz",
+    "sha256": "fe5543e66ea2c5e4c83e4bd1e19c67b9d360a26830759148e354e9d1ccc5d645"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "tests/fixtures/theseus_assistant_p3_online/p3_03_more_itertools_1223_parent.tar.gz",
+    "sha256": "f2c79702de0fd5993893bbbcd608631642bbddb203044fd1988dc650d47099ae"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "more-itertools-more-itertools-516f0a8",
+  "trigger_state": "GREEN"
+}

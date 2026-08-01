@@ -1,0 +1,45 @@
+{
+  "baseline_failure_markers": [
+    "UnicodeDecodeError"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p3_hidden_test.py",
+      "sha256": "329a4b05d960505df5cde9532487f7b43f6acff3c95100bd8d49e30f2d28755b",
+      "source": "tests/fixtures/theseus_assistant_p3_online/p3_04_prompt_toolkit_2080_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "theseus_p3_hidden_test.py"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit proves only that this exact parent fails and the exact upstream target passes this sealed evaluator. It does not establish model or subsystem competence.",
+  "policy": "project_theseus_p3_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_assistant_p3_online/p3_04_prompt_toolkit_2080_target.tar.gz",
+  "target_archive_root": "prompt-toolkit-python-prompt-toolkit-6e897b9",
+  "target_archive_sha256": "32bc35c57882b1a1db0cd2fdcc8326971b909cee1e39c25862174f169470d5c4",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_04_prompt_toolkit_2080_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "9541402c57a5a41727fd260e4c8e6276d2a4f820fa25191a15115f8209f479c5",
+    "merge_revision": "c6c89302841bb47c4b56403d676a4c705032d875",
+    "revision": "6e897b9770cca91d3ec41a35d5b368a6d8999e78",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_04_prompt_toolkit_2080_target_upstream.tar.gz",
+    "upstream_archive_sha256": "3613894cfe1d48414508cd3fc5d94b18d49935b991d19a5bc302541268574de2"
+  },
+  "task_manifest": "configs/theseus_p3_task_04_prompt_toolkit_2080.json",
+  "task_manifest_sha256": "8c4bfbc711e262526af478b7de001b172633f867c19cb9112745acee259afa92"
+}

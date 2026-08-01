@@ -1,0 +1,52 @@
+{
+  "baseline_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": false,
+    "returncode": 1,
+    "runtime_ms": 118.784,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-o5pt9tdk/source/theseus_p3_hidden_test.py\", line 26, in <module>\n    assert default_field.deserialize(None) is None, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-o5pt9tdk/source/src/marshmallow/fields.py\", line 380, in deserialize\n    self._validate_missing(value)\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-o5pt9tdk/source/src/marshmallow/fields.py\", line 312, in _validate_missing\n    raise self.make_error(\"null\")\nmarshmallow.exceptions.ValidationError: Field may not be null.\n",
+    "stdout_tail": ""
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:48:45.358456Z",
+  "evaluator_sha256": "e9e3a3157e49f8d2d828a07c908992c7ce006aa11faaff03b095cf4d33715824",
+  "faults": [],
+  "policy": "project_theseus_p2a_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 344.751,
+  "target_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+    "passed": true,
+    "returncode": 0,
+    "runtime_ms": 117.106,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "26bec2a14f213897db460fd20f95b21db9c86e8912ffc484a5b347156d9975c9",
+    "task_sha256": "c782e2e316b446361cb7027016121c03f58409d74c42f6bfdd7b4e471034c91c",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "c782e2e316b446361cb7027016121c03f58409d74c42f6bfdd7b4e471034c91c",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,72 @@
+{
+  "allowed_effect_paths": [
+    "src/marshmallow/fields.py"
+  ],
+  "campaign_index": 10,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 1995,
+        "path": "src/marshmallow/fields.py",
+        "start_line": 1910
+      }
+    ],
+    "searches": [
+      {
+        "literal": "class Enum",
+        "paths": [
+          "src/marshmallow/fields.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_or_tests_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2a_p2b_p2c": true,
+    "task_selected_after_p3_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "This task contributes only one P3 development residual observation. It cannot support a subsystem, general model, D1, D2, training, or ASI Stack claim.",
+  "natural_request": "When Enum is configured with by_value and any member value is None, default allow_none to true unless the caller supplied allow_none explicitly. Preserve explicit false and name-mode behavior. Modify only src/marshmallow/fields.py.",
+  "opaque_task_id": "p3-licensed-maintenance-10",
+  "partition": "development_residual_campaign",
+  "policy": "project_theseus_p3_licensed_task_v1",
+  "source_archive": "tests/fixtures/theseus_assistant_p3_online/p3_10_marshmallow_2994_parent.tar.gz",
+  "source_archive_root": "marshmallow-code-marshmallow-3265c13",
+  "source_archive_sha256": "26bec2a14f213897db460fd20f95b21db9c86e8912ffc484a5b347156d9975c9",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_10_marshmallow_2994_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "5c45add976b30da57f6cbf1e92e514bf655885a6ea6fe90b809dc44dd0ac5088",
+    "license_path": "LICENSE",
+    "license_spdx": "MIT",
+    "repository": "marshmallow-code/marshmallow",
+    "retrieved_utc": "2026-08-01T01:43:04Z",
+    "revision": "3265c13945a9533f9a3ade8d47eb9b32412c4c27",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_10_marshmallow_2994_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "2f4c1927c5e8f3b352000c7d3dc3efee6ee42a4fd9ec98fe5bb00d93d75af0d6",
+    "upstream_merged_utc": "2026-07-22T17:28:33Z",
+    "upstream_request_title": "Infer allow_none for None-valued enums",
+    "upstream_request_url": "https://github.com/marshmallow-code/marshmallow/pull/2994",
+    "url": "https://github.com/marshmallow-code/marshmallow"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_verifier": {
+    "answer_specific": false,
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/marshmallow/fields.py"
+    ],
+    "timeout_seconds": 30
+  }
+}

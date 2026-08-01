@@ -1,0 +1,72 @@
+{
+  "allowed_effect_paths": [
+    "starlette/datastructures.py"
+  ],
+  "campaign_index": 9,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 150,
+        "path": "starlette/datastructures.py",
+        "start_line": 86
+      }
+    ],
+    "searches": [
+      {
+        "literal": "def replace",
+        "paths": [
+          "starlette/datastructures.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_or_tests_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2a_p2b_p2c": true,
+    "task_selected_after_p3_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "This task contributes only one P3 development residual observation. It cannot support a subsystem, general model, D1, D2, training, or ASI Stack claim.",
+  "natural_request": "Make URL.replace handle username, password, hostname, or port changes on a relative URL with no existing authority without raising IndexError, while preserving normal and IPv6 authority behavior. Modify only starlette/datastructures.py.",
+  "opaque_task_id": "p3-licensed-maintenance-09",
+  "partition": "development_residual_campaign",
+  "policy": "project_theseus_p3_licensed_task_v1",
+  "source_archive": "tests/fixtures/theseus_assistant_p3_online/p3_09_starlette_3317_parent.tar.gz",
+  "source_archive_root": "Kludex-starlette-4a18cd4",
+  "source_archive_sha256": "5e2a7b361f54bfa813480f54948ace6b348256cb4dbbf57c5c94881a9db4f025",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_09_starlette_3317_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "0a298061c26be90d59980107fdb611d5a796bf06fd30b724c5345c4abd2193b1",
+    "license_path": "LICENSE.md",
+    "license_spdx": "BSD-3-Clause",
+    "repository": "Kludex/starlette",
+    "retrieved_utc": "2026-08-01T01:43:04Z",
+    "revision": "4a18cd4a0869158f830e9bf519979d6f6f60f36a",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_09_starlette_3317_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "d00b1e65a7fc956aa989e8792bbbb11a5b4753666d22af09cb960bac18f6abe2",
+    "upstream_merged_utc": "2026-06-10T06:46:44Z",
+    "upstream_request_title": "Handle authority replacement on relative URLs",
+    "upstream_request_url": "https://github.com/Kludex/starlette/pull/3317",
+    "url": "https://github.com/Kludex/starlette"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_verifier": {
+    "answer_specific": false,
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "starlette/datastructures.py"
+    ],
+    "timeout_seconds": 30
+  }
+}

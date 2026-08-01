@@ -1,0 +1,72 @@
+{
+  "allowed_effect_paths": [
+    "src/attr/_make.py"
+  ],
+  "campaign_index": 2,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 316,
+        "path": "src/attr/_make.py",
+        "start_line": 280
+      }
+    ],
+    "searches": [
+      {
+        "literal": "def _is_class_var",
+        "paths": [
+          "src/attr/_make.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_or_tests_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2a_p2b_p2c": true,
+    "task_selected_after_p3_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "This task contributes only one P3 development residual observation. It cannot support a subsystem, general model, D1, D2, training, or ASI Stack claim.",
+  "natural_request": "Make the ClassVar detector recognize typing.ForwardRef annotations whose forward argument is ClassVar or typing.ClassVar without evaluating arbitrary annotations. Preserve string and non-ClassVar behavior. Modify only src/attr/_make.py.",
+  "opaque_task_id": "p3-licensed-maintenance-02",
+  "partition": "development_residual_campaign",
+  "policy": "project_theseus_p3_licensed_task_v1",
+  "source_archive": "tests/fixtures/theseus_assistant_p3_online/p3_02_attrs_1593_parent.tar.gz",
+  "source_archive_root": "python-attrs-attrs-6851ab5",
+  "source_archive_sha256": "9280383a635e2dcdd8864adfb244ab1e51c07386c8d8d3a391b7080a6a58e4ec",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p3_02_attrs_1593_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "bc3aa838f96a8107a3b917b17f82ec4f1cab81d279de2ec8e27e69e7e001b882",
+    "license_path": "LICENSE",
+    "license_spdx": "MIT",
+    "repository": "python-attrs/attrs",
+    "retrieved_utc": "2026-08-01T01:43:04Z",
+    "revision": "6851ab593cd25f3c14393e9355d57d22bec2a074",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p3_online/p3_02_attrs_1593_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "4af726184dea49414aa62bf2cc649e4b20dd62089dab08b2f28c01b098e69fca",
+    "upstream_merged_utc": "2026-07-31T13:30:57Z",
+    "upstream_request_title": "Recognize ForwardRef-wrapped ClassVar annotations",
+    "upstream_request_url": "https://github.com/python-attrs/attrs/pull/1593",
+    "url": "https://github.com/python-attrs/attrs"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_verifier": {
+    "answer_specific": false,
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/attr/_make.py"
+    ],
+    "timeout_seconds": 30
+  }
+}
