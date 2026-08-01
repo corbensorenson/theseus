@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Consent-gated dogfood trace event logger.
 
-By default this script refuses to write events because
-configs/dogfood_trace.local.json is absent. It is a local operator tool, not a
-training importer.
+The script writes only when ``--execute`` is supplied and the local capture
+configuration contains explicit valid consent. It is a local operator tool,
+not a training importer.
 """
 
 from __future__ import annotations
@@ -53,6 +53,46 @@ ALLOWED_LANES = {
     "tool_assistant",
     "planning_assistant",
 }
+ALLOWED_EXPERIMENT_ARMS = {
+    "direct_fixed_worker",
+    "full_theseus",
+    "single_owner_ablation",
+}
+ALLOWED_VERIFIER_STATES = {
+    "not_run",
+    "passed",
+    "failed",
+    "inconclusive",
+    "blocked",
+}
+ALLOWED_ROLLBACK_STATES = {
+    "not_applicable",
+    "not_run",
+    "verified",
+    "failed",
+}
+PAIRED_EVENT_FIELDS = (
+    "experiment_id",
+    "task_pair_id",
+    "arm_id",
+    "subsystem_hypothesis_id",
+    "cost_policy_id",
+    "route_identity",
+    "acceptance_contract_completed",
+    "selected_for_use",
+    "verifier_state",
+    "rollback_state",
+    "unsafe_effect_count",
+    "false_block_count",
+    "model_calls",
+    "generated_tokens",
+    "tool_calls",
+    "verification_ms",
+    "human_review_and_repair_minutes",
+    "residual_count",
+    "residual_owner",
+    "total_contract_cost_units",
+)
 
 
 def main() -> int:
@@ -68,6 +108,26 @@ def main() -> int:
     parser.add_argument("--artifact-ref", action="append", default=[])
     parser.add_argument("--error-family", default="")
     parser.add_argument("--duration-ms", type=int, default=0)
+    parser.add_argument("--experiment-id", default="")
+    parser.add_argument("--task-pair-id", default="")
+    parser.add_argument("--arm-id", default="")
+    parser.add_argument("--subsystem-hypothesis-id", default="")
+    parser.add_argument("--cost-policy-id", default="")
+    parser.add_argument("--route-identity", default="")
+    parser.add_argument("--acceptance-contract-completed", action="store_true")
+    parser.add_argument("--selected-for-use", action="store_true")
+    parser.add_argument("--verifier-state", default="not_run")
+    parser.add_argument("--rollback-state", default="not_applicable")
+    parser.add_argument("--unsafe-effect-count", type=int, default=0)
+    parser.add_argument("--false-block-count", type=int, default=0)
+    parser.add_argument("--model-calls", type=int, default=0)
+    parser.add_argument("--generated-tokens", type=int, default=0)
+    parser.add_argument("--tool-calls", type=int, default=0)
+    parser.add_argument("--verification-ms", type=int, default=0)
+    parser.add_argument("--human-review-and-repair-minutes", type=float, default=0.0)
+    parser.add_argument("--residual-count", type=int, default=0)
+    parser.add_argument("--residual-owner", default="")
+    parser.add_argument("--total-contract-cost-units", type=float, default=0.0)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
 
@@ -97,6 +157,31 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
         gate("explicit_capture_consent_valid", capture_consent, {"explicit_capture_consent_utc": local_config.get("explicit_capture_consent_utc")}, "soft"),
         gate("outcome_allowed", event["outcome"] in ALLOWED_OUTCOMES, event["outcome"], "hard"),
         gate("assistant_lane_allowed", event["assistant_lane"] in ALLOWED_LANES, event["assistant_lane"], "hard"),
+        gate(
+            "paired_experiment_metadata_complete",
+            paired_experiment_metadata_complete(event),
+            paired_experiment_metadata_evidence(event),
+            "hard",
+        ),
+        gate(
+            "experiment_arm_allowed",
+            not paired_experiment_requested(event)
+            or event["arm_id"] in ALLOWED_EXPERIMENT_ARMS,
+            event["arm_id"],
+            "hard",
+        ),
+        gate(
+            "verifier_state_allowed",
+            event["verifier_state"] in ALLOWED_VERIFIER_STATES,
+            event["verifier_state"],
+            "hard",
+        ),
+        gate(
+            "rollback_state_allowed",
+            event["rollback_state"] in ALLOWED_ROLLBACK_STATES,
+            event["rollback_state"],
+            "hard",
+        ),
         gate("redacted_metadata_present", redacted_metadata_present(event), redacted_metadata_evidence(event), "hard"),
         gate("forbidden_fields_absent", forbidden_fields_absent(event), sorted(FORBIDDEN_EVENT_KEYS.intersection(flat_keys(event))), "hard"),
         gate("training_not_performed_by_event_logger", True, {"training_enabled": training_enabled}, "hard"),
@@ -117,11 +202,14 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
             handle.write(json.dumps(event, sort_keys=True) + "\n")
         event_written = True
         state = "GREEN"
+    elif not args.execute:
+        state = "YELLOW"
+        write_blocker = "execute_not_requested"
     else:
         state = "YELLOW"
         write_blocker = "capture_disabled_or_consent_missing"
     return {
-        "policy": "project_theseus_dogfood_trace_event_logger_v0",
+        "policy": "project_theseus_dogfood_trace_event_logger_v1",
         "created_utc": now(),
         "trigger_state": state,
         "config": rel(config_path),
@@ -152,6 +240,9 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
 
 def build_event(args: argparse.Namespace) -> dict[str, Any]:
     created = now()
+    experiment_id = arg(args, "experiment_id")
+    task_pair_id = arg(args, "task_pair_id")
+    arm_id = arg(args, "arm_id")
     seed = "|".join(
         [
             created,
@@ -159,6 +250,9 @@ def build_event(args: argparse.Namespace) -> dict[str, Any]:
             str(args.assistant_lane),
             str(args.outcome),
             str(args.intent_summary_redacted),
+            experiment_id,
+            task_pair_id,
+            arm_id,
         ]
     )
     return {
@@ -167,13 +261,96 @@ def build_event(args: argparse.Namespace) -> dict[str, Any]:
         "surface": str(args.surface),
         "assistant_lane": str(args.assistant_lane),
         "outcome": str(args.outcome),
-        "consent_scope": "dogfood_metadata_only_v0",
+        "consent_scope": "dogfood_metadata_only_v1",
         "intent_summary_redacted": str(args.intent_summary_redacted or ""),
         "artifact_refs": [str(item) for item in args.artifact_ref],
         "error_family": str(args.error_family or ""),
         "duration_ms": max(0, int(args.duration_ms or 0)),
+        "experiment_id": experiment_id,
+        "task_pair_id": task_pair_id,
+        "arm_id": arm_id,
+        "subsystem_hypothesis_id": arg(args, "subsystem_hypothesis_id"),
+        "cost_policy_id": arg(args, "cost_policy_id"),
+        "route_identity": arg(args, "route_identity"),
+        "acceptance_contract_completed": bool(
+            getattr(args, "acceptance_contract_completed", False)
+        ),
+        "selected_for_use": bool(getattr(args, "selected_for_use", False)),
+        "verifier_state": arg(args, "verifier_state", "not_run"),
+        "rollback_state": arg(args, "rollback_state", "not_applicable"),
+        "unsafe_effect_count": nonnegative_int(args, "unsafe_effect_count"),
+        "false_block_count": nonnegative_int(args, "false_block_count"),
+        "model_calls": nonnegative_int(args, "model_calls"),
+        "generated_tokens": nonnegative_int(args, "generated_tokens"),
+        "tool_calls": nonnegative_int(args, "tool_calls"),
+        "verification_ms": nonnegative_int(args, "verification_ms"),
+        "human_review_and_repair_minutes": nonnegative_float(
+            args, "human_review_and_repair_minutes"
+        ),
+        "residual_count": nonnegative_int(args, "residual_count"),
+        "residual_owner": arg(args, "residual_owner"),
+        "total_contract_cost_units": nonnegative_float(
+            args, "total_contract_cost_units"
+        ),
         "learned_model_credit_allowed": False,
         "capability_credit": "none_assisted_or_tool_mediated",
+    }
+
+
+def arg(args: argparse.Namespace, name: str, default: str = "") -> str:
+    return str(getattr(args, name, default) or default)
+
+
+def nonnegative_int(args: argparse.Namespace, name: str) -> int:
+    return max(0, int(getattr(args, name, 0) or 0))
+
+
+def nonnegative_float(args: argparse.Namespace, name: str) -> float:
+    return max(0.0, float(getattr(args, name, 0.0) or 0.0))
+
+
+def paired_experiment_requested(event: dict[str, Any]) -> bool:
+    return any(
+        str(event.get(key) or "").strip()
+        for key in (
+            "experiment_id",
+            "task_pair_id",
+            "arm_id",
+            "subsystem_hypothesis_id",
+            "cost_policy_id",
+            "route_identity",
+        )
+    )
+
+
+def paired_experiment_metadata_complete(event: dict[str, Any]) -> bool:
+    if not paired_experiment_requested(event):
+        return True
+    required = (
+        "experiment_id",
+        "task_pair_id",
+        "arm_id",
+        "subsystem_hypothesis_id",
+        "cost_policy_id",
+        "route_identity",
+    )
+    return all(str(event.get(key) or "").strip() for key in required)
+
+
+def paired_experiment_metadata_evidence(event: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "paired_experiment_requested": paired_experiment_requested(event),
+        "present": {
+            key: bool(str(event.get(key) or "").strip())
+            for key in (
+                "experiment_id",
+                "task_pair_id",
+                "arm_id",
+                "subsystem_hypothesis_id",
+                "cost_policy_id",
+                "route_identity",
+            )
+        },
     }
 
 

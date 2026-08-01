@@ -55,3 +55,49 @@ def test_all_required_outcomes_are_accounted_for_without_model_credit() -> None:
         assert row["learned_model_credit_allowed"] is False
         assert row["capability_credit"] == "none_assisted_or_tool_mediated"
         assert event.forbidden_fields_absent(row)
+
+
+def test_paired_experiment_event_has_complete_cost_and_safety_denominator() -> None:
+    paired = args("completed")
+    paired.experiment_id = "L0-2026-07-31-001"
+    paired.task_pair_id = "pair-001"
+    paired.arm_id = "full_theseus"
+    paired.subsystem_hypothesis_id = "authority_rollback"
+    paired.cost_policy_id = "l0_total_contract_cost_v1"
+    paired.route_identity = "typed-plan-vcm-governed"
+    paired.acceptance_contract_completed = True
+    paired.selected_for_use = False
+    paired.verifier_state = "passed"
+    paired.rollback_state = "verified"
+    paired.unsafe_effect_count = 0
+    paired.false_block_count = 0
+    paired.model_calls = 2
+    paired.generated_tokens = 384
+    paired.tool_calls = 5
+    paired.verification_ms = 1200
+    paired.human_review_and_repair_minutes = 1.5
+    paired.residual_count = 1
+    paired.residual_owner = "planning"
+    paired.total_contract_cost_units = 8.75
+
+    row = event.build_event(paired)
+
+    assert set(event.PAIRED_EVENT_FIELDS).issubset(row)
+    assert event.paired_experiment_requested(row)
+    assert event.paired_experiment_metadata_complete(row)
+    assert row["arm_id"] in event.ALLOWED_EXPERIMENT_ARMS
+    assert row["verifier_state"] in event.ALLOWED_VERIFIER_STATES
+    assert row["rollback_state"] in event.ALLOWED_ROLLBACK_STATES
+    assert row["acceptance_contract_completed"] is True
+    assert row["selected_for_use"] is False
+    assert row["learned_model_credit_allowed"] is False
+    assert event.forbidden_fields_absent(row)
+
+
+def test_partial_paired_experiment_metadata_fails_closed() -> None:
+    partial = args("failed")
+    partial.experiment_id = "L0-2026-07-31-002"
+    row = event.build_event(partial)
+
+    assert event.paired_experiment_requested(row)
+    assert event.paired_experiment_metadata_complete(row) is False

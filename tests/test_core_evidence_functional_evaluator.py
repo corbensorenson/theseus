@@ -176,6 +176,109 @@ def test_target_free_functional_patch_passes_and_rolls_back(
     assert row["causal_wall"] == "NONE_USEFUL"
 
 
+def test_paired_report_scores_without_route_labels_then_joins_arm_costs(
+    tmp_path: Path,
+) -> None:
+    repo, parent = repository(tmp_path)
+    useful_patch = patch(
+        "scripts/calc.py",
+        "def value():\n    return 1\n",
+        "def value():\n    return 2\n",
+    )
+    direct = candidate(parent, useful_patch)
+    direct["event_metrics"] = {
+        "model_calls": 2,
+        "generated_tokens": 20,
+        "prompt_tokens": 200,
+        "uncached_prompt_tokens": 40,
+        "tool_calls": 1,
+        "verification_count": 1,
+        "generation_wall_ms": 50,
+    }
+    direct["candidate_seal"]["worker_wall_ms"] = 100
+    paired = {
+        "opaque_task_id": "task-functional-1",
+        "variant_results": [
+            {
+                "arm_id": "direct_fixed_worker",
+                "adapter_variant_id": "direct",
+                "dispatch_allowed": True,
+                "pre_generation_denied": False,
+                "candidate": direct,
+            },
+            {
+                "arm_id": "full_theseus",
+                "adapter_variant_id": "full_stack",
+                "dispatch_allowed": False,
+                "pre_generation_denied": True,
+                "candidate": None,
+            },
+        ],
+    }
+    candidate_path, manifest_path = write_inputs(tmp_path, parent, paired)
+
+    report = functional.evaluate_report(
+        candidate_path,
+        manifest_path,
+        repo_root=repo,
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["evaluation_blinding"]["route_labels_passed_to_scoring"] is False
+    assert report["evaluation_blinding"]["route_labels_attached_after_scoring"] is True
+    assert report["arm_denominators"]["direct_fixed_worker"]["useful"] == 1
+    assert report["arm_denominators"]["full_theseus"]["denied"] == 1
+    assert report["arm_resources"]["direct_fixed_worker"]["model_calls"] == 2
+    assert report["arm_resources"]["direct_fixed_worker"][
+        "total_contract_cost_units"
+    ] > 0
+
+
+def test_paired_timeout_is_retained_as_costed_infrastructure_failure(
+    tmp_path: Path,
+) -> None:
+    repo, parent = repository(tmp_path)
+    paired = {
+        "opaque_task_id": "task-functional-1",
+        "variant_results": [
+            {
+                "arm_id": "full_theseus",
+                "adapter_variant_id": "full_stack",
+                "dispatch_allowed": True,
+                "pre_generation_denied": False,
+                "candidate": None,
+                "run_failure": {
+                    "terminal_reason": "worker_process_timeout",
+                    "worker_wall_ms": 1800000,
+                    "event_metrics": {
+                        "model_calls": 17,
+                        "generated_tokens": 3834,
+                        "prompt_tokens": 1000,
+                        "uncached_prompt_tokens": 500,
+                        "tool_calls": 15,
+                        "verification_count": 0,
+                        "generation_wall_ms": 1509000,
+                    },
+                },
+            }
+        ],
+    }
+    candidate_path, manifest_path = write_inputs(tmp_path, parent, paired)
+
+    report = functional.evaluate_report(
+        candidate_path,
+        manifest_path,
+        repo_root=repo,
+    )
+
+    row = report["tasks"][0]
+    assert row["infrastructure_failed"] == 1
+    assert row["timed_out"] == 1
+    assert row["causal_wall"] == "INFRASTRUCTURE_WORKER_PROCESS_TIMEOUT"
+    assert row["resource_metrics"]["model_calls"] == 17
+    assert row["resource_metrics"]["total_contract_cost_units"] == 1800
+
+
 def test_green_parent_baseline_invalidates_evaluator(
     tmp_path: Path,
 ) -> None:

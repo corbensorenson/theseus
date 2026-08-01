@@ -1,0 +1,57 @@
+{
+  "policy": "project_theseus_l0_real_work_task_manifest_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "experiment_id": "L0-003-R2",
+  "replay_of_experiment_id": "L0-003",
+  "created_utc": "2026-07-31T16:04:17Z",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_CANDIDATE_GENERATION",
+  "evidence_scope": "reusable_development_replay_not_fresh_qualification",
+  "subsystem_hypothesis_id": "terminal_verification_turn_reservation",
+  "arm_order": [
+    "full_theseus",
+    "direct_fixed_worker"
+  ],
+  "cost_policy": {
+    "id": "l0_elapsed_equivalent_seconds_v1",
+    "units": "seconds",
+    "formula": "(worker_wall_ms + evaluator_verification_wall_ms + human_review_and_repair_minutes * 60000) / 1000",
+    "component_metrics_reported_separately": [
+      "model_calls",
+      "generated_tokens",
+      "prompt_tokens",
+      "uncached_prompt_tokens",
+      "tool_calls",
+      "verification_count",
+      "generation_wall_ms"
+    ]
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-l0-003-r2-workspace-status-fail-closed",
+      "task_pair_id": "L0-003-R2-pair-001",
+      "family": "repository_maintenance",
+      "natural_request": "In scripts/theseus_workspace_hygiene_audit.py, stop treating failure to collect git status as a clean workspace. Add a WorkspaceStatusFault exception. Make git_status_rows raise it with exactly git_status_unavailable for OSError, git_status_timeout for subprocess.TimeoutExpired, and git_status_failed for a nonzero process return; never include stdout or stderr in the exception. Make dirty_workspace_candidates catch that fault and emit exactly one high-priority candidate with kind workspace_status_unavailable and id dirty_workspace_status_unavailable instead of reporting a clean workspace. Preserve normal successful status-row parsing, the audit's non-destructive behavior, and zero external inference. Add focused coverage in tests/test_workspace_hygiene_audit.py.",
+      "parent_source_commit": "7134acfc15e3a94c40af89bf82a2686bc3650e0d",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "partition": "development",
+      "denominator": "L0_DEVELOPMENT",
+      "effect_class": "bounded_repository_change"
+    }
+  ],
+  "boundaries": {
+    "development_rows_reusable": true,
+    "development_rows_eligible_for_D1": false,
+    "development_rows_eligible_for_D2": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "automatic_source_of_truth_effects": 0,
+    "ASI_stack_support_state_effect": "none"
+  }
+}

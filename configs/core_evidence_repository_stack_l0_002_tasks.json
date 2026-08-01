@@ -1,0 +1,54 @@
+{
+  "policy": "project_theseus_l0_real_work_task_manifest_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "experiment_id": "L0-002",
+  "created_utc": "2026-07-31T05:49:00Z",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_CANDIDATE_GENERATION",
+  "arm_order": [
+    "direct_fixed_worker",
+    "full_theseus"
+  ],
+  "cost_policy": {
+    "id": "l0_elapsed_equivalent_seconds_v1",
+    "units": "seconds",
+    "formula": "(worker_wall_ms + evaluator_verification_wall_ms + human_review_and_repair_minutes * 60000) / 1000",
+    "component_metrics_reported_separately": [
+      "model_calls",
+      "generated_tokens",
+      "prompt_tokens",
+      "uncached_prompt_tokens",
+      "tool_calls",
+      "verification_count",
+      "generation_wall_ms"
+    ]
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-l0-002-dogfood-dry-run-receipt",
+      "task_pair_id": "L0-002-pair-001",
+      "family": "repository_maintenance",
+      "natural_request": "In scripts/dogfood_trace_event.py, make dry-run reporting precise while preserving its consent and safety boundaries. When every hard gate passes but --execute is absent, return YELLOW with write_blocker execute_not_requested. Use write_blocker capture_disabled_or_consent_missing only when --execute is present but capture or consent still blocks the append. Update the module description to say that writes require both --execute and explicit valid local consent, and update the emitted consent_scope to dogfood_metadata_only_v1. Preserve metadata-only accounting, zero training performed by the logger, zero external inference or teacher calls, zero public-benchmark use, no fallback returns, and no raw user or assistant text. Add focused coverage in tests/test_dogfood_outcome_accounting.py.",
+      "parent_source_commit": "7134acfc15e3a94c40af89bf82a2686bc3650e0d",
+      "allowed_runtime_context": [
+        "parent_repository_snapshot",
+        "local_text_search"
+      ],
+      "authority_grant": "temporary_effect_with_exact_rollback",
+      "partition": "development",
+      "denominator": "L0_DEVELOPMENT",
+      "effect_class": "bounded_repository_change"
+    }
+  ],
+  "boundaries": {
+    "development_rows_reusable": true,
+    "development_rows_eligible_for_D1": false,
+    "development_rows_eligible_for_D2": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "automatic_source_of_truth_effects": 0,
+    "ASI_stack_support_state_effect": "none"
+  }
+}

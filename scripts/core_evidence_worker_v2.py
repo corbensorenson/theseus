@@ -96,7 +96,12 @@ def run_worker(
     terminal_reason = "turn_budget_exhausted"
     previous_stagnant_signature: str | None = None
     repeated_stagnant_actions = 0
-    for turn in range(1, int(budgets["maximum_agent_turns"]) + 1):
+    maximum_agent_turns = int(budgets["maximum_agent_turns"])
+    for turn in range(1, maximum_agent_turns + 1):
+        # Controller-owned scheduling state. This is the number of complete
+        # model turns remaining after the action generated now, allowing the
+        # phase contract to reserve verify + finish within the same budget.
+        state.remaining_turns_after_current_action = maximum_agent_turns - turn
         generation_started = time.perf_counter()
         retained = int(budgets.get("maximum_retained_tool_turns") or 6) * 2
         active_messages = (
@@ -222,7 +227,10 @@ def run_worker(
                     budgets["minimum_pre_mutation_distinct_paths"]
                 ),
             },
-            "remaining_turns": int(budgets["maximum_agent_turns"]) - turn,
+            "remaining_turns": state.remaining_turns_after_current_action,
+            "terminal_closeout_reserved": (
+                state.terminal_closeout_reservation_active()
+            ),
             "required_next_phase": state.required_next_phase(),
         }
         emit_event(event_sink, {
@@ -240,6 +248,12 @@ def run_worker(
             ),
             "changed_path_count": len(state.changed_paths()),
             "verification_count": len(state.verification_receipts),
+            "remaining_turns_after_current_action": (
+                state.remaining_turns_after_current_action
+            ),
+            "terminal_closeout_reserved": (
+                state.terminal_closeout_reservation_active()
+            ),
             "terminal": result.get("terminal") is True,
             "fault": result.get("fault"),
         })
@@ -355,8 +369,10 @@ class RepositoryState:
         self.navigation_actions = 0
         self.read_paths: set[str] = set()
         self.read_spans: set[tuple[str, int, int, str]] = set()
+        self.structured_test_case_names: dict[str, set[str]] = {}
         self.abstention_reason: str | None = None
         self.advisory_plan: dict[str, Any] | None = None
+        self.remaining_turns_after_current_action: int | None = None
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         kind = str(action.get("action") or "")
@@ -483,7 +499,13 @@ class RepositoryState:
                 return mutations | {"abstain"}
             if self.planned_missing_effect_paths():
                 return mutations | {"abstain"}
-            return {"verify", "abstain"}
+            if self.terminal_closeout_reservation_active():
+                return {"verify", "abstain"}
+            return (
+                {"create_test", "verify", "abstain"}
+                if self.can_append_structured_test()
+                else {"verify", "abstain"}
+            )
         if self.inspection_complete():
             if (
                 self.config["budgets"].get(
@@ -498,6 +520,27 @@ class RepositoryState:
                 else {"abstain"}
             )
         return navigation | {"abstain"}
+
+    def terminal_closeout_reservation_active(self) -> bool:
+        """Reserve two final model turns for verify then finish.
+
+        The phase contract remains permissive until every prospectively
+        planned effect path exists. Unit-level RepositoryState callers do not
+        have a run-loop budget and retain the prior behavior. Failed
+        verification also retains its existing bounded-repair policy.
+        """
+        remaining = self.remaining_turns_after_current_action
+        return bool(
+            self.config["budgets"].get(
+                "enforce_phase_action_contract", False
+            )
+            and remaining is not None
+            and 0 <= remaining <= 2
+            and self.changed_paths()
+            and not self.failed_verification_seen
+            and not self.verification_current()
+            and not self.planned_missing_effect_paths()
+        )
 
     def enforce_phase_action(self, kind: str) -> None:
         allowed = self.allowed_phase_actions()
@@ -537,6 +580,15 @@ class RepositoryState:
             for path in self.advisory_plan["target_paths"]
             if path not in changed
         ]
+
+    def can_append_structured_test(self) -> bool:
+        maximum = int(
+            self.config["budgets"].get("maximum_structured_tests", 3)
+        )
+        return any(
+            len(names) < maximum
+            for names in self.structured_test_case_names.values()
+        )
 
     def current_effect_sha256(self) -> str:
         return sha256_text(
@@ -1069,16 +1121,52 @@ class RepositoryState:
             )
         if "structured_test_creation_required" in fault:
             return (
-                "Use create_test, not create, for a new Python test. Supply "
-                "path, a short preamble, and at most three entries with name, "
-                "parameters, and concise body. The controller provides ROOT, "
-                "SCRIPTS, Path, sys, and imports the planned script as target."
+                "Use one compact create_test action, not create, for a new "
+                "Python test. Supply only path, name, optional one-line "
+                "parameters, and concise body. Do not emit imports or a whole "
+                "file. The controller supplies ROOT, SCRIPTS, Path, sys, and "
+                "imports the planned script as target."
             )
         if "structured_test_schema_invalid" in fault:
             return (
-                "Return a smaller create_test action: at most three test rows; "
-                "each name must match test_[a-z0-9_]+; parameters must be one "
-                "line; each body must stay within its configured ceiling."
+                "Return exactly one compact create_test action with path, name, "
+                "optional parameters, and body. The name must match "
+                "test_[a-z0-9_]+, parameters must be one line, and body must "
+                "stay within its configured ceiling. Do not include preamble, "
+                "imports, scaffolding, or a tests array."
+            )
+        if "structured_test_name_invalid" in fault:
+            return (
+                "Return one compact create_test with a unique lowercase name "
+                "matching test_[a-z0-9_]+. Keep the same authorized test path."
+            )
+        if "structured_test_parameters_invalid" in fault:
+            return (
+                "Return one compact create_test whose optional parameters are "
+                "a single line under the configured ceiling."
+            )
+        if "structured_test_body_invalid" in fault:
+            return (
+                "Return one compact create_test with one nonempty body under "
+                "the per-case character ceiling. Cover only one request "
+                "criterion; another case may be appended in a later action."
+            )
+        if "structured_test_duplicate_name" in fault:
+            return (
+                "Append one compact create_test with a new unique test name and "
+                "one request criterion. Keep the same authorized test path."
+            )
+        if "structured_test_total_case_ceiling_exceeded" in fault:
+            return (
+                "The structured test reached its total case ceiling. NEXT "
+                "ACTION MUST BE verify with empty pytest, py_compile, and json "
+                "arrays."
+            )
+        if "structured_test_append_preamble_forbidden" in fault:
+            return (
+                "Append one compact create_test using only path, a new unique "
+                "name, optional one-line parameters, and one concise body. Do "
+                "not repeat imports or scaffolding."
             )
         if "request_criteria_plan_schema_invalid" in fault:
             return (
@@ -1218,8 +1306,14 @@ class RepositoryState:
             or not relative.endswith(".py")
         ):
             raise WorkerFault("structured_test_path_invalid")
-        preamble = action.get("preamble")
+        preamble = action.get("preamble", "")
         tests = action.get("tests")
+        if tests is None and ("name" in action or "body" in action):
+            tests = [{
+                "name": action.get("name"),
+                "parameters": action.get("parameters", ""),
+                "body": action.get("body"),
+            }]
         maximum_tests = int(
             self.config["budgets"].get("maximum_structured_tests", 3)
         )
@@ -1256,6 +1350,7 @@ class RepositoryState:
         preamble_lines = list(dict.fromkeys(preamble_lines))[:12]
         sanitized_preamble = "\n".join(preamble_lines)
         rendered_tests = []
+        candidate_names: list[str] = []
         for row in tests:
             if not isinstance(row, dict):
                 raise WorkerFault("structured_test_schema_invalid")
@@ -1265,14 +1360,21 @@ class RepositoryState:
             if (
                 not isinstance(name, str)
                 or re.fullmatch(r"test_[a-z0-9_]+", name) is None
-                or not isinstance(parameters, str)
+            ):
+                raise WorkerFault("structured_test_name_invalid")
+            if (
+                not isinstance(parameters, str)
                 or len(parameters) > 200
                 or "\n" in parameters
-                or not isinstance(body, str)
+            ):
+                raise WorkerFault("structured_test_parameters_invalid")
+            if (
+                not isinstance(body, str)
                 or not body.strip()
                 or len(body) > maximum_body
             ):
-                raise WorkerFault("structured_test_schema_invalid")
+                raise WorkerFault("structured_test_body_invalid")
+            candidate_names.append(name)
             indented = "\n".join(
                 ("    " + line) if line else ""
                 for line in body.strip().splitlines()
@@ -1311,11 +1413,47 @@ class RepositoryState:
             )
             if part.strip()
         ) + "\n"
-        result = self.create_file(
-            relative, content, structured_test=True
-        )
+        existing_names = self.structured_test_case_names.get(relative)
+        if existing_names is not None:
+            if sanitized_preamble:
+                raise WorkerFault("structured_test_append_preamble_forbidden")
+            if len(existing_names) + len(candidate_names) > maximum_tests:
+                raise WorkerFault(
+                    "structured_test_total_case_ceiling_exceeded"
+                )
+            if existing_names.intersection(candidate_names):
+                raise WorkerFault("structured_test_duplicate_name")
+            self.require_request_scoped_effect(relative)
+            self.before_mutation()
+            path = self.safe_path(relative)
+            appended = (
+                path.read_text(encoding="utf-8").rstrip()
+                + "\n\n"
+                + "\n\n".join(rendered_tests)
+                + "\n"
+            )
+            write_normalized_text(path, appended)
+            existing_names.update(candidate_names)
+            result = {
+                "ok": True,
+                "path": relative,
+                "changed": True,
+                "appended": True,
+            }
+        else:
+            if len(set(candidate_names)) != len(candidate_names):
+                raise WorkerFault("structured_test_duplicate_name")
+            result = self.create_file(
+                relative, content, structured_test=True
+            )
+            self.structured_test_case_names[relative] = set(
+                candidate_names
+            )
         return {
             **result,
+            "total_structured_test_cases": len(
+                self.structured_test_case_names[relative]
+            ),
             "candidate_preamble_lines": len(preamble.splitlines()),
             "accepted_import_lines": len(preamble_lines),
         }
@@ -1764,8 +1902,8 @@ Allowed actions, with exact JSON shapes:
 {"action":"read","path":"scripts/x.py","start_line":1,"end_line":120}
 {"action":"replace","path":"scripts/x.py","old":"exact existing text","new":"replacement"}
 {"action":"insert_before","path":"scripts/x.py","anchor":"def next_function(","content":"compact complete helper"}
-{"action":"create","path":"tests/test_x.py","content":"complete nonempty file"}
-{"action":"create_test","path":"tests/test_x.py","preamble":"short imports only","tests":[{"name":"test_behavior","parameters":"tmp_path: Path","body":"request-derived assertions using target"}]}
+{"action":"create","path":"scripts/new_helper.py","content":"complete nonempty non-test file"}
+{"action":"create_test","path":"tests/test_x.py","name":"test_behavior","parameters":"tmp_path: Path","body":"assert target.behavior() is True"}
 {"action":"delete","path":"obsolete allowed path"}
 {"action":"plan","criteria":["request-derived criterion"],"target_paths":["scripts/x.py"],"implementation":"general edit strategy","verification":"checks to run"}
 {"action":"verify","pytest":[],"py_compile":[],"json":[]}
@@ -1790,9 +1928,12 @@ The request_scoped_effect_paths are a controller-derived authority boundary, not
 answers. Never mutate another path. A listed path with exists=false is an authorized
 request-derived creation path: do not try to read it before creating it. Read the existing
 priority inspection paths instead.
-For a new Python test, use create_test rather than create. The controller provides Path,
-ROOT, SCRIPTS, sys, and imports the one planned scripts/*.py target as target. Supply at
-most three concise request-derived tests; do not generate a comprehensive suite.
+For a new Python test, use create_test rather than create. Emit one concise test case
+per action using only path, name, optional one-line parameters, and body. The controller
+provides Path, ROOT, SCRIPTS, sys, and imports the one planned scripts/*.py target as
+target. Reuse the same path with a new unique name to append another independently
+validated case, up to the reported total-case ceiling. Do not emit imports, scaffolding,
+a complete test file, or a comprehensive suite.
 For verification, prefer empty arrays so the worker independently selects tests, compilation,
 and JSON checks from the actual changed paths. Finish only after green verification.
 Candidate claims of success are ignored."""
@@ -1989,6 +2130,12 @@ def tool_result_message(
         {
             "required_next_phase": state.required_next_phase(),
             "allowed_action_kinds": sorted(state.allowed_phase_actions()),
+            "remaining_turns_after_current_action": (
+                state.remaining_turns_after_current_action
+            ),
+            "terminal_closeout_reserved": (
+                state.terminal_closeout_reservation_active()
+            ),
         },
         sort_keys=True,
         separators=(",", ":"),
@@ -2041,17 +2188,27 @@ def repair_common_replace_concatenation(
 
 
 def complete_action_json(raw: str) -> str | None:
-    """Return the first complete JSON object without waiting for model EOS."""
-    start = raw.find("{")
-    if start < 0:
-        return None
-    try:
-        result, consumed = json.JSONDecoder().raw_decode(raw[start:])
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(result, dict):
-        raise WorkerFault("action_must_be_object")
-    return raw[start:start + consumed]
+    """Return the first complete action object without waiting for model EOS.
+
+    A local chat template can be echoed before the intended action. Scan past
+    non-action objects and malformed leading fragments, but never infer action
+    semantics: the controller still validates the recovered action kind,
+    phase, fields, authority, and effect.
+    """
+    decoder = json.JSONDecoder()
+    for match in re.finditer(r"\{", raw):
+        start = match.start()
+        try:
+            result, consumed = decoder.raw_decode(raw[start:])
+        except json.JSONDecodeError:
+            continue
+        if (
+            isinstance(result, dict)
+            and isinstance(result.get("action"), str)
+            and result["action"]
+        ):
+            return raw[start:start + consumed]
+    return None
 
 
 def prepare_prompt_boundary_cache(
@@ -2138,11 +2295,42 @@ def safe_action_detail(action: dict[str, Any]) -> dict[str, Any]:
                 str(action.get("content") or "")
             )
         elif kind == "create_test":
+            rows = action.get("tests")
+            if not isinstance(rows, list):
+                rows = [{
+                    "name": action.get("name"),
+                    "parameters": action.get("parameters", ""),
+                    "body": action.get("body"),
+                }]
+            first = rows[0] if rows and isinstance(rows[0], dict) else {}
+            name = first.get("name")
+            parameters = first.get("parameters")
+            body = first.get("body")
             detail.update({
                 "preamble_characters": len(
                     str(action.get("preamble") or "")
                 ),
-                "test_count": len(action.get("tests") or []),
+                "test_count": (
+                    len(action.get("tests") or [])
+                    if isinstance(action.get("tests"), list)
+                    else int("name" in action or "body" in action)
+                ),
+                "first_name_valid": (
+                    isinstance(name, str)
+                    and re.fullmatch(r"test_[a-z0-9_]+", name) is not None
+                ),
+                "first_parameters_characters": (
+                    len(parameters) if isinstance(parameters, str) else None
+                ),
+                "first_parameters_one_line": (
+                    isinstance(parameters, str) and "\n" not in parameters
+                ),
+                "first_body_characters": (
+                    len(body) if isinstance(body, str) else None
+                ),
+                "first_body_nonempty": (
+                    isinstance(body, str) and bool(body.strip())
+                ),
             })
         return detail
     if kind == "verify":

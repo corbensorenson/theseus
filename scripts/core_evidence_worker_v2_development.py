@@ -30,6 +30,13 @@ EVENTS = ROOT / "runtime" / "core_evidence_worker_v2_development_events.jsonl"
 MLX_PYTHON = Path("/Users/corbensorenson/miniforge3/bin/python")
 
 
+class DevelopmentRunFault(RuntimeError):
+    def __init__(self, reason: str, partial_receipt: dict[str, Any]) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.partial_receipt = partial_receipt
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--task-index", type=int, default=0)
@@ -211,32 +218,72 @@ def run_task(
         worker_input.write_text(
             json.dumps(visible, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
+        event_offset = events_path.stat().st_size if events_path.exists() else 0
         started_utc = now()
         started = time.perf_counter()
-        process = subprocess.run(
-            [
-                str(mlx_python),
-                str(ROOT / "scripts" / "core_evidence_worker_v2.py"),
-                "--input", str(worker_input),
-                "--snapshot-root", str(snapshot),
-                "--out", str(worker_output),
-                "--config", str(config_path),
-                "--events-out", str(events_path),
-            ],
-            cwd=snapshot,
-            capture_output=True,
-            text=True,
-            timeout=1800,
-            env={
-                **os.environ,
-                "HF_HUB_OFFLINE": "1",
-                "TRANSFORMERS_OFFLINE": "1",
-                "NO_PROXY": "*",
-                "no_proxy": "*",
-                "PYTHONHASHSEED": "0",
-            },
-            check=False,
-        )
+        command = [
+            str(mlx_python),
+            str(ROOT / "scripts" / "core_evidence_worker_v2.py"),
+            "--input", str(worker_input),
+            "--snapshot-root", str(snapshot),
+            "--out", str(worker_output),
+            "--config", str(config_path),
+            "--events-out", str(events_path),
+        ]
+        try:
+            process = subprocess.run(
+                command,
+                cwd=snapshot,
+                capture_output=True,
+                text=True,
+                timeout=1800,
+                env={
+                    **os.environ,
+                    "HF_HUB_OFFLINE": "1",
+                    "TRANSFORMERS_OFFLINE": "1",
+                    "NO_PROXY": "*",
+                    "no_proxy": "*",
+                    "PYTHONHASHSEED": "0",
+                },
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            finished_utc = now()
+            worker_wall_ms = round(
+                (time.perf_counter() - started) * 1000.0,
+                3,
+            )
+            raise DevelopmentRunFault(
+                "worker_process_timeout",
+                {
+                    "terminal_reason": "worker_process_timeout",
+                    "candidate_available": False,
+                    "worker_wall_ms": worker_wall_ms,
+                    "event_metrics": appended_event_metrics(
+                        events_path, event_offset
+                    ),
+                    "model_identity": {
+                        "repo_id": mapping(config.get("model")).get("repo_id"),
+                        "revision": mapping(config.get("model")).get("revision"),
+                        "runtime": "mlx_lm_local_metal",
+                    },
+                    "worker_config_sha256": sha256_file(config_path),
+                    "started_utc": started_utc,
+                    "finished_utc": finished_utc,
+                    "timeout_seconds": 1800,
+                    "returncode": None,
+                    "stdout_tail_sha256": hashlib.sha256(
+                        bytes(exc.stdout or b"")
+                        if isinstance(exc.stdout, bytes)
+                        else str(exc.stdout or "").encode()
+                    ).hexdigest(),
+                    "stderr_tail_sha256": hashlib.sha256(
+                        bytes(exc.stderr or b"")
+                        if isinstance(exc.stderr, bytes)
+                        else str(exc.stderr or "").encode()
+                    ).hexdigest(),
+                },
+            ) from exc
         finished_utc = now()
         worker_wall_ms = round((time.perf_counter() - started) * 1000.0, 3)
         if process.returncode != 0 or not worker_output.is_file():
@@ -244,6 +291,7 @@ def run_task(
                 f"worker_failed:returncode={process.returncode}:stderr={process.stderr[-1000:]}"
             )
         candidate = read_json(worker_output)
+        event_metrics = appended_event_metrics(events_path, event_offset)
         receipts = dicts(candidate.get("verification_receipts"))
         seal = {
             "candidate_output_sha256": sha256_file(worker_output),
@@ -279,6 +327,7 @@ def run_task(
             "learned_generation_credit": candidate.get("learned_generation_credit"),
             "local_model_inference_calls": candidate.get("local_model_inference_calls"),
             "model_identity": candidate.get("model_identity"),
+            "event_metrics": event_metrics,
             "input_adapter_receipt": input_adapter_receipt,
             "external_inference_calls": candidate.get("external_inference_calls"),
             "teacher_calls": candidate.get("teacher_calls"),
@@ -287,6 +336,57 @@ def run_task(
             "worker_stdout_sha256": hashlib.sha256(process.stdout.encode()).hexdigest(),
             "worker_stderr_sha256": hashlib.sha256(process.stderr.encode()).hexdigest(),
         }
+
+
+def appended_event_metrics(path: Path, offset: int) -> dict[str, Any]:
+    if not path.is_file():
+        return {
+            "model_calls": 0,
+            "generated_tokens": 0,
+            "prompt_tokens": 0,
+            "uncached_prompt_tokens": 0,
+            "tool_calls": 0,
+            "verification_count": 0,
+            "generation_wall_ms": 0.0,
+            "failed_actions": 0,
+            "action_counts": {},
+        }
+    with path.open("rb") as handle:
+        handle.seek(max(0, int(offset)))
+        payload = handle.read().decode("utf-8")
+    rows = []
+    for line in payload.splitlines():
+        if not line.strip():
+            continue
+        value = json.loads(line)
+        if isinstance(value, dict):
+            rows.append(value)
+    action_counts: dict[str, int] = {}
+    for row in rows:
+        action = str(row.get("action") or "")
+        action_counts[action] = action_counts.get(action, 0) + 1
+    return {
+        "model_calls": len(rows),
+        "generated_tokens": sum(int(row.get("generated_tokens") or 0) for row in rows),
+        "prompt_tokens": sum(int(row.get("prompt_tokens") or 0) for row in rows),
+        "uncached_prompt_tokens": sum(
+            int(row.get("uncached_prompt_tokens") or 0) for row in rows
+        ),
+        "tool_calls": sum(
+            count
+            for action, count in action_counts.items()
+            if action not in {"", "plan", "abstain"}
+        ),
+        "verification_count": sum(
+            int(row.get("verification_count") or 0) for row in rows
+        ),
+        "generation_wall_ms": round(
+            sum(float(row.get("generation_wall_ms") or 0.0) for row in rows),
+            3,
+        ),
+        "failed_actions": sum(row.get("ok") is not True for row in rows),
+        "action_counts": dict(sorted(action_counts.items())),
+    }
 
 
 def safe_extract(bundle: tarfile.TarFile, destination: Path) -> None:
@@ -319,6 +419,10 @@ def stable_hash(value: Any) -> str:
 
 
 def dict_value(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def mapping(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 

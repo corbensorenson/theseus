@@ -5,6 +5,8 @@ import re
 import sys
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -45,14 +47,27 @@ def requested_scripts(manifest: dict) -> set[str]:
     }
 
 
-def test_tmax_freeze_binds_current_candidate_sources_and_floor() -> None:
+def test_tmax_freeze_binds_sealed_candidate_sources_and_detects_later_drift() -> None:
     public = read_json(PUBLIC_PATH)
     freeze = read_json(FREEZE_PATH)
+    sealed_candidates = read_json(
+        ROOT
+        / "reports"
+        / "core_evidence_tmax_fresh_v1_1_qualification_candidates.json"
+    )
     worker_config = read_json(
         ROOT / freeze["candidate_worker_config_path"]
     )
 
-    qualification.validate_frozen_inputs(public, freeze, PUBLIC_PATH)
+    assert (
+        sealed_candidates["source_identities"]
+        == freeze["candidate_source_identities"]
+    )
+    with pytest.raises(
+        ValueError,
+        match="candidate_source_mutated_after_freeze",
+    ):
+        qualification.validate_frozen_inputs(public, freeze, PUBLIC_PATH)
 
     assert worker_config["policy"] == (
         "project_theseus_local_8b_stack_worker_v1"

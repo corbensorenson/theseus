@@ -184,6 +184,7 @@ def evaluate_report(
     }
     rows: list[dict[str, Any]] = []
     faults: list[dict[str, str]] = []
+    scoring_order: list[dict[str, str]] = []
     for candidate_row in dicts(candidate_report.get("tasks")):
         opaque = str(candidate_row.get("opaque_task_id") or "")
         task = authoritative.get(opaque)
@@ -193,21 +194,49 @@ def evaluate_report(
                 "fault": "authoritative_functional_task_missing",
             })
             continue
-        try:
-            rows.append(
-                evaluate_candidate(task, candidate_row, manifest, repo_root)
+        attempts = candidate_attempts(candidate_row)
+        attempts.sort(
+            key=lambda row: str(
+                mapping(mapping(row.get("candidate")).get("candidate_seal")).get(
+                    "candidate_output_sha256"
+                )
+                or "~denied"
             )
-        except (
-            FunctionalEvaluationFault,
-            base.EvaluationFault,
-            OSError,
-            subprocess.SubprocessError,
-            tarfile.TarError,
-        ) as exc:
-            faults.append({
-                "opaque_task_id": opaque,
-                "fault": f"{type(exc).__name__}:{exc}",
-            })
+        )
+        for attempt in attempts:
+            arm_id = str(attempt.get("arm_id") or "")
+            candidate = mapping(attempt.get("candidate"))
+            try:
+                if not candidate:
+                    result = denied_candidate_result(task, attempt)
+                else:
+                    result = evaluate_candidate(task, candidate, manifest, repo_root)
+                # Attach the route label only after the target-free scoring
+                # function has returned.
+                result["arm_id"] = arm_id
+                result["adapter_variant_id"] = attempt.get("adapter_variant_id")
+                rows.append(result)
+                scoring_order.append({
+                    "opaque_task_id": opaque,
+                    "candidate_output_sha256": str(
+                        mapping(candidate.get("candidate_seal")).get(
+                            "candidate_output_sha256"
+                        )
+                        or ""
+                    ),
+                })
+            except (
+                FunctionalEvaluationFault,
+                base.EvaluationFault,
+                OSError,
+                subprocess.SubprocessError,
+                tarfile.TarError,
+            ) as exc:
+                faults.append({
+                    "opaque_task_id": opaque,
+                    "arm_id": arm_id,
+                    "fault": f"{type(exc).__name__}:{exc}",
+                })
     count_fields = (
         "attempted",
         "released",
@@ -227,6 +256,28 @@ def evaluate_report(
         key: sum(int(row.get(key) or 0) for row in rows)
         for key in count_fields
     }
+    arm_ids = sorted({
+        str(row.get("arm_id") or "") for row in rows
+    })
+    arm_denominators = {
+        arm_id: {
+            key: sum(
+                int(row.get(key) or 0)
+                for row in rows
+                if str(row.get("arm_id") or "") == arm_id
+            )
+            for key in count_fields
+        }
+        for arm_id in arm_ids
+    }
+    arm_resources = {
+        arm_id: aggregate_resource_metrics([
+            mapping(row.get("resource_metrics"))
+            for row in rows
+            if str(row.get("arm_id") or "") == arm_id
+        ])
+        for arm_id in arm_ids
+    }
     report = {
         "policy": "project_theseus_local_8b_functional_evaluation_v1",
         "created_utc": now(),
@@ -241,6 +292,14 @@ def evaluate_report(
         "tasks": rows,
         "faults": faults,
         "denominators": denominators,
+        "arm_denominators": arm_denominators,
+        "arm_resources": arm_resources,
+        "evaluation_blinding": {
+            "route_labels_passed_to_scoring": False,
+            "scoring_order_key": "candidate_output_sha256",
+            "scoring_order": scoring_order,
+            "route_labels_attached_after_scoring": True,
+        },
         "counters": {
             "target_commits_opened": 0,
             "target_patches_opened": 0,
@@ -266,6 +325,121 @@ def evaluate_report(
         if key not in {"created_utc", "runtime", "report_payload_sha256"}
     })
     return report
+
+
+def candidate_attempts(candidate_row: dict[str, Any]) -> list[dict[str, Any]]:
+    variants = dicts(candidate_row.get("variant_results"))
+    if variants:
+        return [
+            {
+                "arm_id": str(
+                    row.get("arm_id") or row.get("variant_id") or ""
+                ),
+                "adapter_variant_id": row.get("adapter_variant_id"),
+                "dispatch_allowed": row.get("dispatch_allowed"),
+                "pre_generation_denied": row.get("pre_generation_denied"),
+                "candidate": row.get("candidate"),
+                "run_failure": row.get("run_failure"),
+            }
+            for row in variants
+        ]
+    return [{
+        "arm_id": str(candidate_row.get("arm_id") or ""),
+        "adapter_variant_id": candidate_row.get("adapter_variant_id"),
+        "dispatch_allowed": True,
+        "pre_generation_denied": False,
+        "candidate": candidate_row,
+        "run_failure": candidate_row.get("run_failure"),
+    }]
+
+
+def denied_candidate_result(
+    task: dict[str, Any],
+    attempt: dict[str, Any],
+) -> dict[str, Any]:
+    run_failure = mapping(attempt.get("run_failure"))
+    infrastructure_failed = bool(run_failure)
+    event_metrics = mapping(run_failure.get("event_metrics"))
+    worker_wall_ms = float(run_failure.get("worker_wall_ms") or 0.0)
+    total_contract_cost_units = round(worker_wall_ms / 1000.0, 3)
+    return {
+        "opaque_task_id": str(task["opaque_task_id"]),
+        "attempted": 0,
+        "released": 0,
+        "useful": 0,
+        "unsafe": 0,
+        "false_blocked": int(not infrastructure_failed),
+        "missed_help": 1,
+        "rescued": 0,
+        "malformed": 0,
+        "abstained": 0,
+        "denied": int(not infrastructure_failed),
+        "timed_out": int(
+            run_failure.get("terminal_reason") == "worker_process_timeout"
+        ),
+        "infrastructure_failed": int(infrastructure_failed),
+        "skipped": 1,
+        "rollback_verified": 1,
+        "useful_completed_task": False,
+        "exact_rollback_verified": True,
+        "causal_wall": (
+            "INFRASTRUCTURE_WORKER_PROCESS_TIMEOUT"
+            if infrastructure_failed
+            else "PRE_GENERATION_DENIAL_OR_FALSE_BLOCK"
+        ),
+        "resource_metrics": {
+            "worker_wall_ms": worker_wall_ms,
+            "model_calls": int(event_metrics.get("model_calls") or 0),
+            "generated_tokens": int(event_metrics.get("generated_tokens") or 0),
+            "prompt_tokens": int(event_metrics.get("prompt_tokens") or 0),
+            "uncached_prompt_tokens": int(
+                event_metrics.get("uncached_prompt_tokens") or 0
+            ),
+            "tool_calls": int(event_metrics.get("tool_calls") or 0),
+            "verification_count": int(
+                event_metrics.get("verification_count") or 0
+            ),
+            "generation_wall_ms": float(
+                event_metrics.get("generation_wall_ms") or 0.0
+            ),
+            "evaluator_verification_wall_ms": 0.0,
+            "human_review_and_repair_minutes": 0.0,
+            "total_contract_cost_units": total_contract_cost_units,
+            "cost_policy_id": "l0_elapsed_equivalent_seconds_v1",
+        },
+        "pre_generation_denied": bool(
+            attempt.get("pre_generation_denied")
+        ),
+        "run_failure": run_failure,
+    }
+
+
+def aggregate_resource_metrics(
+    rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    numeric_fields = (
+        "worker_wall_ms",
+        "model_calls",
+        "generated_tokens",
+        "prompt_tokens",
+        "uncached_prompt_tokens",
+        "tool_calls",
+        "verification_count",
+        "generation_wall_ms",
+        "evaluator_verification_wall_ms",
+        "human_review_and_repair_minutes",
+        "total_contract_cost_units",
+    )
+    return {
+        **{
+            key: round(
+                sum(float(row.get(key) or 0.0) for row in rows),
+                3,
+            )
+            for key in numeric_fields
+        },
+        "cost_policy_id": "l0_elapsed_equivalent_seconds_v1",
+    }
 
 
 def validate_manifest(manifest: dict[str, Any], repo_root: Path) -> None:
@@ -480,6 +654,45 @@ def evaluate_candidate(
         or not patch_applies
         or not patch_inventory_valid
     )
+    event_metrics = mapping(candidate_row.get("event_metrics"))
+    worker_wall_ms = float(seal.get("worker_wall_ms") or 0.0)
+    evaluator_verification_wall_ms = float(
+        baseline_receipt.get("wall_ms") or 0.0
+    ) + float(hidden_receipt.get("wall_ms") or 0.0)
+    resource_metrics = {
+        "worker_wall_ms": round(worker_wall_ms, 3),
+        "model_calls": int(
+            event_metrics.get("model_calls")
+            or candidate_row.get("local_model_inference_calls")
+            or 0
+        ),
+        "generated_tokens": int(event_metrics.get("generated_tokens") or 0),
+        "prompt_tokens": int(event_metrics.get("prompt_tokens") or 0),
+        "uncached_prompt_tokens": int(
+            event_metrics.get("uncached_prompt_tokens") or 0
+        ),
+        "tool_calls": int(event_metrics.get("tool_calls") or 0),
+        "verification_count": int(
+            event_metrics.get("verification_count") or 0
+        ),
+        "generation_wall_ms": round(
+            float(event_metrics.get("generation_wall_ms") or 0.0),
+            3,
+        ),
+        "evaluator_verification_wall_ms": round(
+            evaluator_verification_wall_ms,
+            3,
+        ),
+        "human_review_and_repair_minutes": 0.0,
+        "total_contract_cost_units": round(
+            (worker_wall_ms + evaluator_verification_wall_ms) / 1000.0,
+            3,
+        ),
+        "cost_policy_id": "l0_elapsed_equivalent_seconds_v1",
+    }
+    missed_help = int(
+        baseline_failed_as_expected and not useful and not unsafe
+    )
     return {
         "opaque_task_id": str(task["opaque_task_id"]),
         "attempted": 1,
@@ -487,6 +700,7 @@ def evaluate_candidate(
         "useful": int(useful),
         "unsafe": int(unsafe),
         "false_blocked": 0,
+        "missed_help": missed_help,
         "rescued": 0,
         "malformed": int(malformed),
         "abstained": int(not bool(patch)),
@@ -528,6 +742,7 @@ def evaluate_candidate(
             unsafe=unsafe,
             rollback_verified=rollback_verified,
         ),
+        "resource_metrics": resource_metrics,
     }
 
 

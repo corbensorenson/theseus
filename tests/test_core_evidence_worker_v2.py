@@ -312,6 +312,345 @@ def test_first_complete_action_can_stop_generation_before_trailing_text() -> Non
     assert worker.complete_action_json('{"action":"read"') is None
 
 
+def test_complete_action_skips_echoed_directive_and_malformed_fragment() -> None:
+    raw = (
+        '<|im_start|>user\n'
+        '{"allowed_action_kinds":["verify"],"required_next_phase":"verify"}'
+        '\n{"unfinished":\n'
+        '<|im_start|>assistant\n'
+        '{"action":"verify","pytest":[],"py_compile":[],"json":[]}'
+        '<|im_end|>'
+    )
+
+    assert worker.parse_action(raw) == {
+        "action": "verify",
+        "pytest": [],
+        "py_compile": [],
+        "json": [],
+    }
+
+
+def test_single_case_create_test_protocol_keeps_structural_enforcement(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "def policy():\n    return 'bounded'\n",
+        encoding="utf-8",
+    )
+    local = permissive_config()
+    local["budgets"]["enforce_phase_action_contract"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "Update scripts/policy.py and add focused coverage in "
+            "tests/test_policy.py."
+        ),
+    )
+    state.advisory_plan = {
+        "target_paths": [
+            "scripts/policy.py",
+            "tests/test_policy.py",
+        ]
+    }
+    state.replace(
+        "scripts/policy.py",
+        "return 'bounded'",
+        "return 'still bounded'",
+    )
+
+    result = state.create_structured_test({
+        "action": "create_test",
+        "path": "tests/test_policy.py",
+        "name": "test_policy_is_bounded",
+        "parameters": "",
+        "body": "assert target.policy() == 'bounded'",
+    })
+
+    assert result["ok"] is True
+    rendered = (tmp_path / "tests" / "test_policy.py").read_text(
+        encoding="utf-8"
+    )
+    assert "import policy as target" in rendered
+    assert "def test_policy_is_bounded():" in rendered
+    assert "assert target.policy() == 'bounded'" in rendered
+
+    appended = state.execute({
+        "action": "create_test",
+        "path": "tests/test_policy.py",
+        "name": "test_policy_is_not_open",
+        "parameters": "",
+        "body": "assert target.policy() != 'open'",
+    })
+    assert appended["appended"] is True
+    assert appended["total_structured_test_cases"] == 2
+    rendered = (tmp_path / "tests" / "test_policy.py").read_text(
+        encoding="utf-8"
+    )
+    assert rendered.count("from __future__ import annotations") == 1
+    assert "def test_policy_is_not_open():" in rendered
+    assert state.allowed_phase_actions() == {
+        "create_test",
+        "verify",
+        "abstain",
+    }
+
+    with pytest.raises(worker.WorkerFault, match="structured_test_name_invalid"):
+        state.create_structured_test({
+            "action": "create_test",
+            "path": "tests/test_other.py",
+            "name": "unsafe name",
+            "body": "assert True",
+        })
+
+
+def test_incremental_structured_test_enforces_duplicates_and_total_ceiling(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "def policy():\n    return 'bounded'\n",
+        encoding="utf-8",
+    )
+    local = permissive_config()
+    local["budgets"]["enforce_phase_action_contract"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "Update scripts/policy.py and add focused coverage in "
+            "tests/test_policy.py."
+        ),
+    )
+    state.advisory_plan = {
+        "target_paths": [
+            "scripts/policy.py",
+            "tests/test_policy.py",
+        ]
+    }
+    state.replace(
+        "scripts/policy.py",
+        "return 'bounded'",
+        "return 'still bounded'",
+    )
+
+    def create(name: str, body: str = "assert target.policy()") -> dict:
+        return state.create_structured_test({
+            "action": "create_test",
+            "path": "tests/test_policy.py",
+            "name": name,
+            "body": body,
+        })
+
+    create("test_one")
+    with pytest.raises(worker.WorkerFault, match="structured_test_duplicate_name"):
+        create("test_one")
+    create("test_two")
+    create("test_three")
+    with pytest.raises(
+        worker.WorkerFault,
+        match="structured_test_total_case_ceiling_exceeded",
+    ):
+        create("test_four")
+    assert state.can_append_structured_test() is False
+    assert state.allowed_phase_actions() == {"verify", "abstain"}
+
+
+def test_terminal_closeout_reserves_verify_then_finish(tmp_path: Path) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "def policy():\n    return 'open'\n", encoding="utf-8"
+    )
+    local = permissive_config()
+    local["budgets"]["enforce_phase_action_contract"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "Update scripts/policy.py and add focused coverage in "
+            "tests/test_policy.py."
+        ),
+    )
+    state.advisory_plan = {
+        "target_paths": ["scripts/policy.py", "tests/test_policy.py"]
+    }
+    state.replace("scripts/policy.py", "return 'open'", "return 'bounded'")
+    state.create_structured_test({
+        "action": "create_test",
+        "path": "tests/test_policy.py",
+        "name": "test_policy_is_bounded",
+        "body": "assert target.policy() == 'bounded'",
+    })
+    state.remaining_turns_after_current_action = 2
+
+    assert state.terminal_closeout_reservation_active() is True
+    assert state.allowed_phase_actions() == {"verify", "abstain"}
+    directive = worker.tool_result_message(
+        {"ok": True}, state, maximum_characters=1000
+    )
+    assert '"terminal_closeout_reserved":true' in directive
+    assert '"allowed_action_kinds":["abstain","verify"]' in directive
+
+    assert state.verify([], [], [])["passed"] is True
+    assert state.terminal_closeout_reservation_active() is False
+    assert state.allowed_phase_actions() == {"finish", "abstain"}
+
+
+def test_terminal_closeout_preserves_missing_path_and_failure_repair(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "def policy():\n    return 'open'\n", encoding="utf-8"
+    )
+    local = permissive_config()
+    local["budgets"]["enforce_phase_action_contract"] = True
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "Update scripts/policy.py and add focused coverage in "
+            "tests/test_policy.py."
+        ),
+    )
+    state.advisory_plan = {
+        "target_paths": ["scripts/policy.py", "tests/test_policy.py"]
+    }
+    state.replace("scripts/policy.py", "return 'open'", "return 'bounded'")
+    state.remaining_turns_after_current_action = 2
+
+    assert state.terminal_closeout_reservation_active() is False
+    assert "create_test" in state.allowed_phase_actions()
+
+    state.create_structured_test({
+        "action": "create_test",
+        "path": "tests/test_policy.py",
+        "name": "test_policy_is_bounded",
+        "body": "assert False",
+    })
+    assert state.verify([], [], [])["passed"] is False
+    state.remaining_turns_after_current_action = 1
+    assert state.terminal_closeout_reservation_active() is False
+    assert "replace" in state.allowed_phase_actions()
+    assert "verify" not in state.allowed_phase_actions()
+
+
+def test_run_worker_reserves_terminal_closeout_in_events_and_prompt(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "def policy():\n    return 'open'\n", encoding="utf-8"
+    )
+    local = permissive_config()
+    local["budgets"]["maximum_agent_turns"] = 5
+    local["budgets"]["require_plan_before_mutation"] = True
+    local["budgets"]["enforce_phase_action_contract"] = True
+    local["budgets"]["enforce_request_scoped_effect_paths"] = True
+    task = visible()
+    task["natural_request"] = (
+        "Update scripts/policy.py and add focused coverage in "
+        "tests/test_policy.py."
+    )
+    actions = iter([
+        json.dumps({
+            "action": "plan",
+            "criteria": ["Return bounded and add focused coverage."],
+            "target_paths": ["scripts/policy.py", "tests/test_policy.py"],
+            "implementation": "Replace the value and add one focused test.",
+            "verification": "Run the selected focused test and compile.",
+        }),
+        json.dumps({
+            "action": "replace",
+            "path": "scripts/policy.py",
+            "old": "return 'open'",
+            "new": "return 'bounded'",
+        }),
+        json.dumps({
+            "action": "create_test",
+            "path": "tests/test_policy.py",
+            "name": "test_policy_is_bounded",
+            "body": "assert target.policy() == 'bounded'",
+        }),
+        json.dumps({
+            "action": "verify",
+            "pytest": [],
+            "py_compile": [],
+            "json": [],
+        }),
+        json.dumps({"action": "finish"}),
+    ])
+    prompts: list[str] = []
+    events: list[dict] = []
+
+    def generate(messages: list[dict[str, str]]) -> str:
+        prompts.append(messages[-1]["content"])
+        return next(actions)
+
+    result = worker.run_worker(
+        task,
+        tmp_path,
+        local,
+        generator=generate,
+        event_sink=events.append,
+    )
+
+    assert result["terminal_reason"] == "finished"
+    assert result["verification_receipts"][-1]["passed"] is True
+    assert [row["action"] for row in events] == [
+        "plan", "replace", "create_test", "verify", "finish"
+    ]
+    assert events[2]["remaining_turns_after_current_action"] == 2
+    assert events[2]["terminal_closeout_reserved"] is True
+    assert '"terminal_closeout_reserved":true' in prompts[3]
+    assert '"allowed_action_kinds":["abstain","verify"]' in prompts[3]
+
+
+def test_structured_test_faults_localize_safe_field_without_raw_text(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "scripts" / "policy.py").write_text(
+        "def policy():\n    return True\n",
+        encoding="utf-8",
+    )
+    local = permissive_config()
+    local["budgets"]["maximum_structured_test_body_characters"] = 20
+    state = worker.RepositoryState(
+        tmp_path,
+        local,
+        request=(
+            "Update scripts/policy.py and add focused coverage in "
+            "tests/test_policy.py."
+        ),
+    )
+    state.advisory_plan = {"target_paths": ["scripts/policy.py"]}
+    action = {
+        "action": "create_test",
+        "path": "tests/test_policy.py",
+        "name": "test_body_limit",
+        "parameters": "",
+        "body": "assert target.policy() is True",
+    }
+
+    detail = worker.safe_action_detail(action)
+    assert detail["first_name_valid"] is True
+    assert detail["first_parameters_characters"] == 0
+    assert detail["first_parameters_one_line"] is True
+    assert detail["first_body_characters"] == 30
+    assert detail["first_body_nonempty"] is True
+    assert "body" not in detail
+    with pytest.raises(worker.WorkerFault, match="structured_test_body_invalid"):
+        state.create_structured_test(action)
+
+
 def test_tool_result_keeps_phase_directive_before_truncated_read(
     tmp_path: Path,
 ) -> None:

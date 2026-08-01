@@ -1,0 +1,90 @@
+{
+  "policy": "project_theseus_local_8b_functional_evaluator_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "experiment_id": "L0-001",
+  "cohort_id": "L0_real_work_paired_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_CANDIDATE_GENERATION",
+  "cost_policy": {
+    "id": "l0_elapsed_equivalent_seconds_v1",
+    "units": "seconds",
+    "formula": "(worker_wall_ms + evaluator_verification_wall_ms + human_review_and_repair_minutes * 60000) / 1000"
+  },
+  "candidate_output_schema": {
+    "required_fields": [
+      "worker_id",
+      "natural_request_sha256",
+      "parent_source_commit",
+      "patch_unified_diff",
+      "proposed_paths",
+      "verification_commands",
+      "abstained"
+    ],
+    "maximum_patch_bytes": 262144,
+    "maximum_proposed_paths": 16
+  },
+  "tasks": [
+    {
+      "opaque_task_id": "task-l0-001-paired-runner-static-model-contract",
+      "family": "repository_maintenance",
+      "natural_request": "In scripts/core_evidence_repository_stack_development.py, make the reusable L0 path executable while preserving the historical consumed-development path. Use configs/core_evidence_tmax_9b_worker_control_v3.json as DEFAULT_WORKER_CONFIG. Add project_theseus_l0_real_work_task_manifest_v1 to a fail-closed TASK_MANIFEST_CONTRACTS mapping and provide select_task_rows(tasks, *, manifest_policy, task_index, task_limit) so only development/L0_DEVELOPMENT rows are selected by select_task_rows. Add L0_ARM_VARIANTS plus canonical_arm_variant_id mapping direct_fixed_worker to direct and full_theseus to full_stack. Add fixed_model_identity_audit(variants, *, worker_config, worker_config_sha256) that rejects any dispatched arm whose exact repo_id, revision, runtime, or worker-config digest differs across the pair. Report both the requested arm and adapter variant without changing the target-blind visible-field boundary. Preserve zero external inference, teacher, public-calibration, E2, D2, and automatic source-of-truth effects. Add focused tests in tests/test_core_evidence_repository_stack_development.py.",
+      "parent_source_commit": "7134acfc15e3a94c40af89bf82a2686bc3650e0d",
+      "allowed_effect_paths": [
+        "scripts/core_evidence_repository_stack_development.py",
+        "tests/test_core_evidence_repository_stack_development.py"
+      ],
+      "hidden_test_files": [
+        {
+          "source": "tests/fixtures/core_evidence_repository_stack_development_hidden/l0_static_model_pair_contract.py",
+          "destination": "tests/functional_hidden/test_l0_static_model_pair_contract.py"
+        }
+      ],
+      "acceptance_contract": [
+        {
+          "criterion": "the L0 runner defaults to the exact fixed Worker-v3 model configuration",
+          "request_quote": "Use configs/core_evidence_tmax_9b_worker_control_v3.json as DEFAULT_WORKER_CONFIG.",
+          "hidden_test": "tests/functional_hidden/test_l0_static_model_pair_contract.py",
+          "assertion_marker": "request_contract:fixed_worker_v3"
+        },
+        {
+          "criterion": "the L0 manifest can select only reusable L0 development rows",
+          "request_quote": "only development/L0_DEVELOPMENT rows are selected by select_task_rows",
+          "hidden_test": "tests/functional_hidden/test_l0_static_model_pair_contract.py",
+          "assertion_marker": "request_contract:l0_rows_only"
+        },
+        {
+          "criterion": "the human-facing L0 arms map to the existing target-blind adapter variants",
+          "request_quote": "canonical_arm_variant_id mapping direct_fixed_worker to direct and full_theseus to full_stack",
+          "hidden_test": "tests/functional_hidden/test_l0_static_model_pair_contract.py",
+          "assertion_marker": "request_contract:l0_arm_aliases"
+        },
+        {
+          "criterion": "all dispatched arms must bind the same exact local model and worker configuration",
+          "request_quote": "fixed_model_identity_audit(variants, *, worker_config, worker_config_sha256) that rejects any dispatched arm whose exact repo_id, revision, runtime, or worker-config digest differs across the pair",
+          "hidden_test": "tests/functional_hidden/test_l0_static_model_pair_contract.py",
+          "assertion_marker": "request_contract:static_model_identity"
+        }
+      ],
+      "baseline_failure_markers": [
+        "request_contract:fixed_worker_v3",
+        "request_contract:l0_rows_only",
+        "request_contract:l0_arm_aliases",
+        "request_contract:static_model_identity"
+      ],
+      "verification_timeout_seconds": 180
+    }
+  ],
+  "boundaries": {
+    "authoritative_target_patch_used": false,
+    "target_commits_opened": 0,
+    "target_patches_opened": 0,
+    "candidate_authored_claims_trusted": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "E2_heldout_cases_consumed": 0,
+    "automatic_source_of_truth_effects": 0,
+    "fresh_capability_credit_allowed": false,
+    "ASI_stack_support_state_effect": "none"
+  }
+}
