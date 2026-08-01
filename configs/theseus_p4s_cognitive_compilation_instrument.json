@@ -30,14 +30,32 @@
   },
   "harness": {
     "candidate_runner": "scripts/theseus_p4s_cognitive_compilation.py",
-    "candidate_runner_sha256": "c6f63fe980d0932d6ef944ef6d3d23445582ca20024b9ce8131e2cd825efe393",
-    "candidate_runner_commit": "d2185efe",
+    "candidate_runner_sha256": "8e0daadf1b399f171d73e26b1af4e949df69b660962d761f9462e7abcfd958f0",
+    "candidate_runner_commit": "47ffe8a79ea28e4e49f059105628ef8d7903c9c4",
     "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
     "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
     "local_backend": "scripts/theseus_local_inference_backend.py",
     "local_backend_sha256": "35ef4d10f60f5d6097bddf4a93f0102243dde54dec91c73477d3b6508780feca",
     "semantic_parser": "scripts/theseus_semantic_ir_v2r1.py",
     "semantic_parser_sha256": "77fc569dd097a48b0901ca170825b75427e97b5d02b1e0a5a11cb83757dfbce9"
+  },
+  "post_source_selection_pre_candidate_repair": {
+    "state": "PROSPECTIVELY_REBOUND_BEFORE_ANY_CANDIDATE_OR_CONTROL_CALL",
+    "selection_instrument_commit": "42abb39b",
+    "selection_instrument_sha256": "466225cc14169c4d4f01700eb38880b93fdb419f138fc85d68528f0009fd2d90",
+    "repair_commit": "47ffe8a79ea28e4e49f059105628ef8d7903c9c4",
+    "original_candidate_runner_sha256": "c6f63fe980d0932d6ef944ef6d3d23445582ca20024b9ce8131e2cd825efe393",
+    "repaired_candidate_runner_sha256": "8e0daadf1b399f171d73e26b1af4e949df69b660962d761f9462e7abcfd958f0",
+    "repair": "Apply the maximum semantic-symbol-node bound after filtering the broad AST inventory to eligible complete semantic scopes. The prior order could discard later eligible scopes while returning fewer than the bound.",
+    "discovered_during": "source materialization before pool sealing",
+    "task_membership_changed": false,
+    "candidate_visible_source_changed": false,
+    "evaluator_or_decision_rule_changed": false,
+    "model_or_completion_policy_changed": false,
+    "candidate_or_control_calls_before_repair": 0,
+    "local_or_hosted_model_calls_before_repair": 0,
+    "teacher_calls_before_repair": 0,
+    "maximum_inference": "Pre-candidate instrument-adequacy repair only; no model, mechanism, D1, D2, serving, training, or book evidence."
   },
   "matched_arm_contract": {
     "arms": [
