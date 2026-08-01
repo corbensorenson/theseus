@@ -23,9 +23,14 @@ POOL = ROOT / "configs" / "theseus_p4s_task_pool.json"
 INSTRUMENT = ROOT / "configs" / "theseus_p4s_cognitive_compilation_instrument.json"
 POOL_SEAL_COMMIT = "7744c18f6624ed915cfc34e1a9359bc454d98e51"
 POOL_SHA256 = "76826de011e74f460e80a6b5012d04e9836f727981125c7c98886d77ed21c76a"
-EXECUTION_INSTRUMENT_REBIND_COMMIT = "bf4f63b97ce3830ed8a26e616be65154c396323f"
-INSTRUMENT_SHA256 = "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828"
-PROGRESS = ROOT / "reports" / "theseus_p4s_campaign_progress.json"
+POOL_EXECUTION_INSTRUMENT_REBIND_COMMIT = "bf4f63b97ce3830ed8a26e616be65154c396323f"
+POOL_INSTRUMENT_SHA256 = "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828"
+ATTEMPT2_INSTRUMENT_REBIND_COMMIT = "5296ec8a"
+INSTRUMENT_SHA256 = "6dba153b0d54753c3000fa3c4b949ffdce2ab3e24363084b962f34d035b771b1"
+INVALID_ATTEMPT = ROOT / "reports" / "theseus_p4s_campaign_attempt1_failure.json"
+INVALID_ATTEMPT_SHA256 = "ad3ff3898a4210c0b358740e01bdf5b52c143a89b01d2ddeb3da917d048d76c8"
+RUNTIME_ATTEMPT_NAMESPACE = "attempt2"
+PROGRESS = ROOT / "reports" / "theseus_p4s_campaign_attempt2_progress.json"
 NORMAL_TERMINATIONS = {"parser_complete", "model_eos"}
 
 
@@ -81,9 +86,9 @@ def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
     if pool.get("state") != "SEALED_BEFORE_CANDIDATE_GENERATION":
         faults.append("task_pool_not_sealed")
     if pool.get("execution_instrument_rebind_commit") != (
-        EXECUTION_INSTRUMENT_REBIND_COMMIT[:8]
+        POOL_EXECUTION_INSTRUMENT_REBIND_COMMIT[:8]
     ):
-        faults.append("execution_instrument_rebind_invalid")
+        faults.append("pool_execution_instrument_rebind_invalid")
     if int(pool.get("green_evaluator_audits") or 0) != 10:
         faults.append("evaluator_adequacy_floor_invalid")
     if int(pool.get("dependency_corruptions_rejected") or 0) != 10:
@@ -96,11 +101,29 @@ def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
     ):
         if int(counters.get(key) or 0) != 0:
             faults.append(f"pre_campaign_counter_nonzero:{key}")
+    if str(pool.get("instrument_sha256") or "") != POOL_INSTRUMENT_SHA256:
+        faults.append("pool_original_instrument_binding_mismatch")
     if p2a.sha256_file(INSTRUMENT) != INSTRUMENT_SHA256:
         faults.append("instrument_digest_mismatch")
-    if p2a.sha256_file(INSTRUMENT) != str(pool.get("instrument_sha256") or ""):
-        faults.append("pool_instrument_binding_mismatch")
     instrument = p2a.read_json(INSTRUMENT)
+    invalid_repair = p2a.mapping(instrument.get("invalid_attempt1_transport_repair"))
+    namespace_repair = p2a.mapping(
+        instrument.get("invalid_attempt1_runtime_namespace_repair")
+    )
+    if (
+        p2a.sha256_file(INVALID_ATTEMPT) != INVALID_ATTEMPT_SHA256
+        or invalid_repair.get("retained_model_inference_calls_before_repair") != 0
+        or invalid_repair.get("retained_model_responses_before_repair") != 0
+        or invalid_repair.get("parseable_or_sealed_candidates_before_repair") != 0
+        or invalid_repair.get("blind_evaluations_before_repair") != 0
+    ):
+        faults.append("invalid_attempt_repair_binding_invalid")
+    if (
+        instrument.get("runtime_attempt_namespace") != RUNTIME_ATTEMPT_NAMESPACE
+        or namespace_repair.get("runtime_attempt_namespace")
+        != RUNTIME_ATTEMPT_NAMESPACE
+    ):
+        faults.append("runtime_attempt_namespace_invalid")
     generation = p2a.mapping(instrument.get("generation_budget"))
     budgets = p2a.mapping(instrument.get("budgets"))
     if generation.get("project_selected_quality_token_cap") is not None:
@@ -223,7 +246,10 @@ def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
         "pool_seal_commit": POOL_SEAL_COMMIT,
         "instrument": relative(INSTRUMENT),
         "instrument_sha256": p2a.sha256_file(INSTRUMENT),
-        "execution_instrument_rebind_commit": EXECUTION_INSTRUMENT_REBIND_COMMIT,
+        "attempt2_instrument_rebind_commit": ATTEMPT2_INSTRUMENT_REBIND_COMMIT,
+        "invalid_attempt": relative(INVALID_ATTEMPT),
+        "invalid_attempt_sha256": p2a.sha256_file(INVALID_ATTEMPT),
+        "runtime_attempt_namespace": RUNTIME_ATTEMPT_NAMESPACE,
         "instrument_audit": instrument_audit,
         "complete_tasks": complete,
         "pending_tasks": pending,
@@ -250,15 +276,19 @@ def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
 def result_paths(row: dict[str, Any]) -> dict[str, Path]:
     suffix = str(row.get("stem") or "").removeprefix("p4s_")
     return {
-        "run": ROOT / "reports" / f"theseus_p4s_{suffix}_run.json",
-        "evaluation": ROOT / "reports" / f"theseus_p4s_{suffix}_evaluation.json",
+        "run": ROOT / "reports" / f"theseus_p4s_attempt2_{suffix}_run.json",
+        "evaluation": ROOT / "reports" / f"theseus_p4s_attempt2_{suffix}_evaluation.json",
     }
 
 
 def runtime_reports(row: dict[str, Any]) -> list[Path]:
     task = p2a.read_json(ROOT / str(row.get("task") or ""))
     task_id = p2a.safe_slug(str(task.get("opaque_task_id") or ""))
-    return sorted((ROOT / "runtime" / "p2a").glob(f"*{task_id}*.json"))
+    return sorted(
+        (ROOT / "runtime" / "p2a").glob(
+            f"*{task_id}*{RUNTIME_ATTEMPT_NAMESPACE}*.json"
+        )
+    )
 
 
 def relative(path: Path) -> str:

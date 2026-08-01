@@ -37,9 +37,11 @@ def test_p4s_result_paths_are_campaign_specific_and_initially_unopened() -> None
 
     assert len({row["run"] for row in paths}) == 10
     assert len({row["evaluation"] for row in paths}) == 10
-    assert all(row["run"].name.startswith("theseus_p4s_") for row in paths)
+    assert all(row["run"].name.startswith("theseus_p4s_attempt2_") for row in paths)
     audit = campaign.audit_campaign()
     assert audit["model_calls_retained"] in {0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60}
+    assert audit["runtime_attempt_namespace"] == "attempt2"
+    assert audit["invalid_attempt_sha256"] == campaign.INVALID_ATTEMPT_SHA256
 
 
 def test_p4s_pool_binds_zero_pre_campaign_calls_and_all_five_corruptions() -> None:

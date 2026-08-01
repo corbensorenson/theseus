@@ -1,0 +1,193 @@
+{
+  "attempt2_instrument_rebind_commit": "5296ec8a",
+  "complete_tasks": 0,
+  "created_utc": "2026-08-01T08:50:58.161839Z",
+  "faults": [],
+  "hosted_reference": {
+    "P4S_blocking": false,
+    "calls": 0,
+    "effort": "xhigh",
+    "model": "gpt-5.6-luna",
+    "state": "DEFINED_TRANSPORT_NOT_BOUND"
+  },
+  "instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+  "instrument_audit": {
+    "completion_model_contract": {
+      "faults": [],
+      "identity": {
+        "decoder": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "kv_bits": null,
+          "kv_group_size": null,
+          "maximum_tokens": 262144,
+          "quantized_kv_start": null,
+          "repetition_context_size": 128,
+          "repetition_penalty": 1.05,
+          "temperature": 0.0,
+          "worker_maximum_action_tokens": 262144
+        },
+        "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+        "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+        "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+      },
+      "model_card": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "maximum_action_tokens": 262144,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+        "temperature": 0.0
+      },
+      "ready": true,
+      "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
+      "worker_config": "configs/core_evidence_qwen35_9b_completion_worker.json"
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T08:50:58.152651Z",
+    "faults": [],
+    "instrument_sha256": "6dba153b0d54753c3000fa3c4b949ffdce2ab3e24363084b962f34d035b771b1",
+    "mechanics_qualification": {
+      "report_sha256": "2b217ccbab42ac4cd2da37e1f0cc7a3fced97b39bccdf2ee1c245e18df111135",
+      "state": "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN"
+    },
+    "policy": "project_theseus_p4s_cognitive_compilation_instrument_audit_v1",
+    "runtime_ms": 1.204,
+    "trigger_state": "GREEN"
+  },
+  "instrument_sha256": "6dba153b0d54753c3000fa3c4b949ffdce2ab3e24363084b962f34d035b771b1",
+  "invalid_attempt": "reports/theseus_p4s_campaign_attempt1_failure.json",
+  "invalid_attempt_sha256": "ad3ff3898a4210c0b358740e01bdf5b52c143a89b01d2ddeb3da917d048d76c8",
+  "maximum_inference": "Campaign execution custody only; terminal scientific status is computed separately from sealed blind evaluations.",
+  "model_calls_retained": 0,
+  "model_eos_calls": 0,
+  "parser_complete_calls": 0,
+  "pending_tasks": 10,
+  "policy": "project_theseus_p4s_cognitive_compilation_campaign_v1",
+  "pool": "configs/theseus_p4s_task_pool.json",
+  "pool_seal_commit": "7744c18f6624ed915cfc34e1a9359bc454d98e51",
+  "pool_sha256": "76826de011e74f460e80a6b5012d04e9836f727981125c7c98886d77ed21c76a",
+  "project_selected_quality_token_cap": null,
+  "runtime_attempt_namespace": "attempt2",
+  "safety_ceiling_hits": 0,
+  "scope": "Exact sealed completion-based P4S local decision-development campaign; no hosted, D1, D2, serving, training, or automatic book-support authority.",
+  "tasks": [
+    {
+      "campaign_index": 1,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_01_tenacity_660"
+    },
+    {
+      "campaign_index": 2,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_02_apscheduler_1100"
+    },
+    {
+      "campaign_index": 3,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_03_poetry_10959"
+    },
+    {
+      "campaign_index": 4,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_04_pip_14199"
+    },
+    {
+      "campaign_index": 5,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_05_aiohttp_13125"
+    },
+    {
+      "campaign_index": 6,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_06_httpx_3699"
+    },
+    {
+      "campaign_index": 7,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_07_httpcore_1000"
+    },
+    {
+      "campaign_index": 8,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_08_isort_2599"
+    },
+    {
+      "campaign_index": 9,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_09_cachetools_408"
+    },
+    {
+      "campaign_index": 10,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4s_10_werkzeug_3215"
+    }
+  ],
+  "trigger_state": "GREEN"
+}
