@@ -1,0 +1,39 @@
+{
+  "policy": "project_theseus_p2b_licensed_task_pool_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "partition": "development_instrument_adequacy",
+  "candidate_generation_opened": false,
+  "selection_rule": "First audit-GREEN, source-disjoint, non-benchmark, licensed post-freeze maintenance task with a compact network-free parent-fail/target-pass oracle after deterministic repository ordering and manual construct-validity review.",
+  "instrument": "configs/theseus_assistant_p2b_instrument.json",
+  "instrument_freeze_commit": "d616ff2c",
+  "instrument_sha256": "03172d8a88aa0fc23c2ddc762328a0753f424f357cb540b04329fbee56129b18",
+  "instrument_audit": "reports/theseus_assistant_p2b_instrument_audit.json",
+  "instrument_audit_sha256": "7c1d690c38c0a498249d163578158b58c94e67581c505d88bd1a49f9cd4b98ae",
+  "task_count": 1,
+  "task": "configs/theseus_p2b_task_requests_7502.json",
+  "task_sha256": "daff0dbf7ed21a5fee32daafd7ad393e2a0a88fe6a4bf41d056659ff3f49450e",
+  "evaluator": "configs/theseus_p2b_evaluator_requests_7502.json",
+  "evaluator_sha256": "5a5df98115b085f48b09b4a907855232489cdd5b32a3a154581ddfed2faff743",
+  "evaluator_audit": "reports/theseus_p2b_requests_7502_evaluator_audit.json",
+  "evaluator_audit_sha256": "116f9b26579b143b0b320837d0708b800956cf7dd752ae9c4e7c23f18a522bee",
+  "source_disjoint_from": [
+    "p2a-typing-qualifier-inheritance-001"
+  ],
+  "exclusions": {
+    "public_benchmarks": true,
+    "training_use": true,
+    "D1_use": true,
+    "D2_use": true,
+    "target_patch_candidate_visibility": true,
+    "hidden_test_candidate_visibility": true,
+    "user_task_or_label_dependency": true
+  },
+  "counters": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_model_calls": 0
+  },
+  "maximum_inference": "This seal establishes only that one P2B development task and its evaluator were fixed after instrument freeze and before candidate generation."
+}

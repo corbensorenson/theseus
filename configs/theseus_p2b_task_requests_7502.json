@@ -1,0 +1,71 @@
+{
+  "policy": "project_theseus_p2b_licensed_task_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "opaque_task_id": "p2b-multipart-dynamic-read-wrapper-001",
+  "partition": "development_instrument_adequacy",
+  "family": "bounded_python_correctness_repair",
+  "natural_request": "Fix multipart file encoding so file-like wrappers that expose read dynamically through __getattr__ are read rather than passed through as raw values. Preserve the existing behavior for strings, bytes, bytearrays, None, and tuple-supplied filename/content-type/header metadata. Modify only src/requests/models.py.",
+  "source_archive": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_parent.tar.gz",
+  "source_archive_sha256": "a2c4271154ef98364b05a26f94dcfa6d65e6b0732dcfac26ff1c3182b06450c5",
+  "source_archive_root": "psf-requests-661970d",
+  "source_provenance": {
+    "repository": "psf/requests",
+    "url": "https://github.com/psf/requests",
+    "revision": "661970d171d9c3e12e4c789c4768db647d8c4da0",
+    "retrieved_utc": "2026-08-01T00:55:00Z",
+    "license_spdx": "Apache-2.0",
+    "license_path": "LICENSE",
+    "upstream_request_url": "https://github.com/psf/requests/pull/7502",
+    "upstream_request_title": "Fix `_encode_files` detection for `__getattr__`-based file wrappers",
+    "upstream_merged_utc": "2026-06-08T20:52:51Z",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "d2a33474ca0343e326b142102f4938a5e75188ba3854b510349f037016349c1b",
+    "archive_sanitization_report": "reports/theseus_p2b_requests_7502_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "38aa8acd70c8909064b1667a71fb0f0084dddbf1666f7e2c7a991680f6333703"
+  },
+  "contamination_screen": {
+    "public_benchmark": false,
+    "previous_theseus_surface": false,
+    "source_disjoint_from_p2a": true,
+    "task_selected_after_p2b_instrument_freeze": true,
+    "task_selected_before_candidate_generation": true,
+    "later_patch_or_tests_candidate_visible": false,
+    "development_task_eligible_for_training": false,
+    "development_task_eligible_for_D1_or_D2": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing"
+  },
+  "allowed_effect_paths": [
+    "src/requests/models.py"
+  ],
+  "candidate_visible_context": {
+    "searches": [
+      {
+        "literal": "_SupportsRead",
+        "paths": [
+          "src/requests/models.py"
+        ]
+      }
+    ],
+    "reads": [
+      {
+        "path": "src/requests/models.py",
+        "start_line": 145,
+        "end_line": 252
+      }
+    ],
+    "maximum_total_characters": 12000
+  },
+  "visible_verifier": {
+    "command": [
+      "python3",
+      "-m",
+      "compileall",
+      "-q",
+      "src/requests/models.py"
+    ],
+    "timeout_seconds": 30,
+    "answer_specific": false
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "maximum_inference": "This task can establish P2B instrument adequacy only; it cannot support a Theseus subsystem, model, D1, D2, or general coding claim."
+}

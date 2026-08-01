@@ -272,7 +272,7 @@ fresh licensed source-disjoint development task.
 
 #### P2B — Qualify the repaired instrument with the strongest retained local candidate
 
-State: `INSTRUMENT_SEALED_TASK_NOT_ACQUIRED`.
+State: `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN`.
 
 The retained local-model bakeoff qualified no model, so P2B does not pretend
 otherwise. It prospectively selects Qwen3.5-9B only as the strongest diagnostic
@@ -292,6 +292,17 @@ for one another. The model-selection report, runtime overlay, candidate runner,
 assistant runtime, evaluator, and their hashes are frozen before task
 acquisition. P2B remains instrument infrastructure: it cannot support a
 Theseus mechanism or book claim.
+
+The first P2B task is now sealed from Apache-2.0-licensed `psf/requests`
+PR 7502 after the instrument-freeze commit. The exact upstream parent and
+target archives are retained; deterministic regular-file-only derivatives
+omit two unrelated certificate-directory links that the sandbox rejects. A
+network-free evaluator confirms the parent fails on a dynamically proxied
+`read` method and the exact target passes. The model sees only the natural
+request and repository-relative `src/requests/models.py` context; the later
+patch, hidden test, PR identity, and evaluator remain sealed. Candidate model
+calls remain zero. The next action is one source-bound P2B run and blind
+evaluation; this exact task may be consumed only once.
 
 ##### Autonomous task-source contract
 
@@ -327,7 +338,7 @@ label, approval, or scheduling dependency.
 
 #### P3 — Autonomous paired development
 
-State: `BLOCKED_ON_P2A_INSTRUMENT_ADEQUACY`.
+State: `BLOCKED_ON_P2B_INSTRUMENT_ADEQUACY`.
 
 Select the next ten distinct eligible repository-engineering tasks from a
 prospectively sealed autonomous pool. Cover at least diagnosis, bounded code
@@ -448,7 +459,7 @@ Maintenance serves P or N and does not become another research program:
 | Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
 | Autonomous instrument successor | `P2A_TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | The exact matched TMax run held its route/persistence budgets but produced zero parseable candidates; a repo-relative/archive-prefix mismatch also made the task packet ambiguous, so no subsystem comparison is valid |
-| P2B repaired instrument | `INSTRUMENT_SEALED_TASK_NOT_ACQUIRED` | Exact Qwen3.5 diagnostic candidate, runtime overlay, harness hashes, canonical repository-relative paths, matched budgets, and separate product/route health accounting are audit-GREEN before a fresh task is opened |
+| P2B repaired instrument | `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN` | Exact Qwen3.5 diagnostic candidate and the Apache-2.0 Requests parent/target task are hash-bound after instrument freeze; the parent fails and target passes the sealed network-free evaluator, with zero candidate calls |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 and P2A produced zero independently evaluable candidates under their exact protocols; P3 remains closed until a new instrument qualifies, then compares the best qualified local model and governed Luna-xhigh reference, each direct and integrated |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
@@ -472,8 +483,8 @@ Maintenance serves P or N and does not become another research program:
    consumed `typing_extensions` task or translate its instrument failure into a
    subsystem result.
 4. Preserve the now-frozen P2B identity, canonical repo-relative path namespace,
-   product/route-health separation, and Qwen3.5 diagnostic selection. Acquire,
-   seal, and consume one fresh licensed source-disjoint task exactly once.
+   product/route-health separation, Qwen3.5 diagnostic selection, and sealed
+   Requests task/evaluator. Consume that exact task once and evaluate blindly.
 5. Open P3 only if P2B reaches independent correctness evaluation within its
    frozen budget; otherwise preserve the exact failure and repair the measured
    owner under another new denominator rather than stretching P2B.

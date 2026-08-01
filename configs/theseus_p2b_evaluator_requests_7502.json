@@ -1,0 +1,45 @@
+{
+  "policy": "project_theseus_p2b_route_blind_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "task_manifest": "configs/theseus_p2b_task_requests_7502.json",
+  "task_manifest_sha256": "daff0dbf7ed21a5fee32daafd7ad393e2a0a88fe6a4bf41d056659ff3f49450e",
+  "baseline_must_fail": true,
+  "baseline_failure_markers": [
+    "TypeError: a bytes-like object is required"
+  ],
+  "hidden_test_files": [
+    {
+      "source": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_hidden_test.py",
+      "sha256": "8dba51a67ac3815890baacd32f0a0392a111f4126538faa57fc53b255186df74",
+      "destination": "theseus_p2b_hidden_test.py"
+    }
+  ],
+  "target_archive": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_target.tar.gz",
+  "target_archive_sha256": "d537beb693772c2cb6dc67d572f76b739d87978c2a68acf78107788881644ad7",
+  "target_archive_root": "psf-requests-be53ff1",
+  "target_provenance": {
+    "revision": "be53ff13b12df758cba1220f48fca0be31bcf03c",
+    "merge_revision": "6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6",
+    "upstream_archive": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_target_upstream.tar.gz",
+    "upstream_archive_sha256": "c79d34c5c90f2211cfcff8b08706c7d55f896baa23863b87076d3ce319293744",
+    "archive_sanitization_report": "reports/theseus_p2b_requests_7502_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "fd0b51a93742ad7c5106ac69bf2f99919dbefdd3679a376c405ade97ad9251f1"
+  },
+  "target_must_pass": true,
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "theseus_p2b_hidden_test.py"
+    ],
+    "timeout_seconds": 30,
+    "network": "forbidden"
+  },
+  "blindness": {
+    "candidate_generation_may_read_this_manifest": false,
+    "route_label_passed_to_scoring": false,
+    "later_patch_candidate_visible": false,
+    "hidden_test_candidate_visible": false,
+    "candidate_emitted_integrity_flags_trusted": false
+  },
+  "maximum_inference": "A GREEN audit proves only that this exact parent fails and exact target passes the sealed evaluator; it does not establish model or subsystem competence."
+}

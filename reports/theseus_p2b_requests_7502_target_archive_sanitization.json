@@ -1,0 +1,39 @@
+{
+  "admitted_regular_file_or_directory_count": 152,
+  "faults": [],
+  "input": {
+    "path": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_target_upstream.tar.gz",
+    "sha256": "c79d34c5c90f2211cfcff8b08706c7d55f896baa23863b87076d3ce319293744"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [
+    {
+      "kind": "symbolic_link",
+      "linkname": "../../expired/ca/",
+      "path": "psf-requests-be53ff1/tests/certs/mtls/client/ca"
+    },
+    {
+      "kind": "symbolic_link",
+      "linkname": "../expired/ca",
+      "path": "psf-requests-be53ff1/tests/certs/valid/ca"
+    }
+  ],
+  "output": {
+    "path": "tests/fixtures/theseus_assistant_p2a_online/requests_7502_target.tar.gz",
+    "sha256": "d537beb693772c2cb6dc67d572f76b739d87978c2a68acf78107788881644ad7"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "psf-requests-be53ff1",
+  "trigger_state": "GREEN"
+}
