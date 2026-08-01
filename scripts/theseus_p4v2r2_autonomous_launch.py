@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -96,12 +97,14 @@ def preflight(
     jobs_override: list[dict[str, Any]] | None = None,
     campaign_override: dict[str, Any] | None = None,
     lease_exists_override: bool | None = None,
+    runtime_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     config_faults = validate_config(config)
     bindings = audit_bindings(config)
     power = power_override or power_status()
     memory = memory_override or memory_status(config)
     disk = disk_override or disk_status(config)
+    runtime = runtime_override or runtime_status(config)
     jobs = jobs_override
     if jobs is None:
         jobs = resource_owner.active_accelerator_jobs(
@@ -123,6 +126,7 @@ def preflight(
         "battery_not_discharging": power.get("discharging") is False,
         "measured_runtime_memory_available": memory.get("passed") is True,
         "derived_disk_envelope_available": disk.get("passed") is True,
+        "qualified_runtime_executable_bound": runtime.get("passed") is True,
         "no_competing_accelerator_job": not jobs,
         "exclusive_lease_available": not lease_exists,
     }
@@ -145,6 +149,7 @@ def preflight(
         "power": power,
         "memory": memory,
         "disk": disk,
+        "runtime": runtime,
         "competing_accelerator_jobs": jobs,
         "active_lease": p2a.rel(lease_path),
         "authority": p2a.mapping(config.get("authority")),
@@ -309,6 +314,20 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         or 0
     ) != 60:
         faults.append("disk_call_denominator_invalid")
+    runtime = p2a.mapping(config.get("qualified_runtime"))
+    if (
+        runtime.get("python_version") != [3, 12, 5]
+        or runtime.get("mlx_version") != "0.32.0"
+        or runtime.get("mlx_lm_version") != "0.31.3"
+    ):
+        faults.append("qualified_runtime_identity_invalid")
+    repair = p2a.mapping(config.get("preconsumption_bootstrap_repair"))
+    if (
+        repair.get("incident_commit") != campaign.BOOTSTRAP_FAILURE_COMMIT
+        or repair.get("candidate_or_control_calls") != 0
+        or repair.get("tasks_consumed") != 0
+    ):
+        faults.append("preconsumption_bootstrap_repair_invalid")
     return sorted(set(faults))
 
 
@@ -321,6 +340,7 @@ def audit_bindings(config: dict[str, Any]) -> dict[str, Any]:
         ("task_pool", "task_pool_sha256"),
         ("instrument", "instrument_sha256"),
         ("runtime_preflight", "runtime_preflight_sha256"),
+        ("python", "python_sha256"),
     ):
         path = p2a.resolve(str(config.get(path_key) or ""))
         expected = str(config.get(hash_key) or "")
@@ -344,7 +364,59 @@ def audit_bindings(config: dict[str, Any]) -> dict[str, Any]:
         faults.append("campaign_commit_invalid")
     if config.get("disposition_commit") != DISPOSITION_COMMIT:
         faults.append("disposition_commit_invalid")
+    repair = campaign.audit_preconsumption_bootstrap_failure()
+    if repair.get("passed") is not True:
+        faults.extend(p2a.strings(repair.get("faults")))
     return {"passed": not faults, "faults": sorted(set(faults)), "owners": rows}
+
+
+def runtime_status(config: dict[str, Any]) -> dict[str, Any]:
+    python = p2a.resolve(str(config.get("python") or ""))
+    expected = p2a.mapping(config.get("qualified_runtime"))
+    faults: list[str] = []
+    observed: dict[str, Any] = {}
+    try:
+        completed = subprocess.run(
+            [
+                str(python),
+                "-c",
+                (
+                    "import importlib.metadata,json,sys;"
+                    "print(json.dumps({'executable':sys.executable,"
+                    "'version':list(sys.version_info[:3]),"
+                    "'mlx':importlib.metadata.version('mlx'),"
+                    "'mlx_lm':importlib.metadata.version('mlx-lm')},sort_keys=True))"
+                ),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=10,
+        )
+        if completed.returncode != 0:
+            faults.append("qualified_runtime_probe_failed")
+        else:
+            observed = json.loads(completed.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+        faults.append("qualified_runtime_probe_failed")
+    if observed.get("version") != expected.get("python_version"):
+        faults.append("qualified_python_version_mismatch")
+    if observed.get("mlx") != expected.get("mlx_version"):
+        faults.append("qualified_mlx_version_mismatch")
+    if observed.get("mlx_lm") != expected.get("mlx_lm_version"):
+        faults.append("qualified_mlx_lm_version_mismatch")
+    expected_executable = str(python)
+    if observed.get("executable") != expected_executable:
+        faults.append("qualified_python_executable_mismatch")
+    return {
+        "passed": not faults,
+        "faults": sorted(set(faults)),
+        "expected": expected,
+        "observed": observed,
+        "python": p2a.rel(python),
+        "python_sha256": p2a.sha256_file(python),
+    }
 
 
 def power_status() -> dict[str, Any]:

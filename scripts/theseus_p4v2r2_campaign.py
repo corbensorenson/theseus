@@ -25,8 +25,34 @@ POOL_SEAL_COMMIT = "9cd965514ea4babbd58317e5d9908563f0b440ba"
 POOL_SHA256 = "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd"
 INSTRUMENT_SHA256 = "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff"
 RUNTIME_ATTEMPT_NAMESPACE = "p4v2r2_attempt1"
-PROGRESS = ROOT / "reports" / "theseus_p4v2r2_campaign_attempt1_progress.json"
+PROGRESS = ROOT / "reports" / "theseus_p4v2r2_campaign_attempt2_progress.json"
 NORMAL_TERMINATIONS = {"parser_complete", "model_eos"}
+BOOTSTRAP_FAILURE_COMMIT = "209f2f2ed22a11835323fc56ff4805c088080fed"
+BOOTSTRAP_FAILURES = {
+    "candidate_run": (
+        ROOT / "reports" / "theseus_p4v2r2_attempt1_01_flask_5917_run.json",
+        "b40a957528e1b47b0e4354250199a401c869a74be709771358ca0d0ddde9f6b6",
+    ),
+    "campaign_progress": (
+        ROOT / "reports" / "theseus_p4v2r2_campaign_attempt1_progress.json",
+        "a246708f88053bfc13141de100ec5575f3d2b17997a3239626ea6fd2b0a54fe8",
+    ),
+    "terminal_disposition": (
+        ROOT / "reports" / "theseus_p4v2r2_terminal_disposition.json",
+        "c2543ea2419444b4f1046ff74014057bb2f2e66b4b40e92af85dd299376e09b1",
+    ),
+    "autonomous_launch": (
+        ROOT / "reports" / "theseus_p4v2r2_autonomous_launch.json",
+        "622690097dd4c204655b298a286141dd1489bb7f2b763a88b787ab724c883561",
+    ),
+    "lease": (
+        ROOT
+        / "reports"
+        / "theseus_p4v2r2_campaign_leases"
+        / "7847d0a1444f4447bf513e5a0a983ab7.json",
+        "bff06225ffa81e7062c1e50d8ebc9ef925ab017b2ff12166927514de4af01698",
+    ),
+}
 
 
 def main() -> int:
@@ -81,6 +107,9 @@ def run_campaign() -> dict[str, Any]:
 
 def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
     faults = list(extra_faults or [])
+    bootstrap_repair = audit_preconsumption_bootstrap_failure()
+    if bootstrap_repair["passed"] is not True:
+        faults.extend(bootstrap_repair["faults"])
     if p2a.sha256_file(POOL) != POOL_SHA256:
         faults.append("task_pool_digest_mismatch")
     pool = p2a.read_json(POOL)
@@ -252,6 +281,7 @@ def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
         "instrument": relative(INSTRUMENT),
         "instrument_sha256": p2a.sha256_file(INSTRUMENT),
         "runtime_attempt_namespace": RUNTIME_ATTEMPT_NAMESPACE,
+        "preconsumption_bootstrap_repair": bootstrap_repair,
         "instrument_audit": instrument_audit,
         "complete_tasks": complete,
         "pending_tasks": pending,
@@ -278,9 +308,75 @@ def audit_campaign(extra_faults: list[str] | None = None) -> dict[str, Any]:
 def result_paths(row: dict[str, Any]) -> dict[str, Path]:
     suffix = str(row.get("stem") or "").removeprefix("p4v2r2_")
     return {
-        "run": ROOT / "reports" / f"theseus_p4v2r2_attempt1_{suffix}_run.json",
+        "run": ROOT / "reports" / f"theseus_p4v2r2_attempt2_{suffix}_run.json",
         "evaluation": (
-            ROOT / "reports" / f"theseus_p4v2r2_attempt1_{suffix}_evaluation.json"
+            ROOT / "reports" / f"theseus_p4v2r2_attempt2_{suffix}_evaluation.json"
+        ),
+    }
+
+
+def audit_preconsumption_bootstrap_failure() -> dict[str, Any]:
+    faults: list[str] = []
+    identities: dict[str, dict[str, Any]] = {}
+    for name, (path, expected) in BOOTSTRAP_FAILURES.items():
+        observed = p2a.sha256_file(path)
+        if observed != expected:
+            faults.append(f"bootstrap_failure_binding_invalid:{name}")
+        identities[name] = {
+            "path": relative(path),
+            "expected_sha256": expected,
+            "observed_sha256": observed,
+        }
+
+    run = p2a.read_json(BOOTSTRAP_FAILURES["candidate_run"][0])
+    if run.get("trigger_state") != "RED" or sorted(
+        p2a.strings(run.get("faults"))
+    ) != ["persistent_backend_not_ready", "qualified_mlx_runtime_missing"]:
+        faults.append("bootstrap_failure_signature_invalid")
+    if any(int(value or 0) != 0 for value in p2a.mapping(run.get("counters")).values()):
+        faults.append("bootstrap_failure_counter_nonzero")
+
+    progress = p2a.read_json(BOOTSTRAP_FAILURES["campaign_progress"][0])
+    if (
+        int(progress.get("complete_tasks") or 0) != 0
+        or int(progress.get("model_calls_retained") or 0) != 0
+        or int(progress.get("safety_ceiling_hits") or 0) != 0
+    ):
+        faults.append("bootstrap_failure_consumption_nonzero")
+
+    launch = p2a.read_json(BOOTSTRAP_FAILURES["autonomous_launch"][0])
+    final_audit = p2a.mapping(launch.get("final_campaign_audit"))
+    if (
+        launch.get("child_returncode") != 2
+        or int(final_audit.get("model_calls_retained") or 0) != 0
+        or int(final_audit.get("complete_tasks") or 0) != 0
+    ):
+        faults.append("bootstrap_launch_receipt_invalid")
+
+    disposition = p2a.read_json(BOOTSTRAP_FAILURES["terminal_disposition"][0])
+    denominators = p2a.mapping(disposition.get("denominators"))
+    if (
+        disposition.get("scientific_status") != "P4V2R2_REVIEW_REQUIRED"
+        or int(denominators.get("learned_model_calls") or 0) != 0
+        or int(denominators.get("tasks") or 0) != 0
+    ):
+        faults.append("bootstrap_disposition_invalid")
+
+    return {
+        "passed": not faults,
+        "faults": sorted(set(faults)),
+        "incident_commit": BOOTSTRAP_FAILURE_COMMIT,
+        "failure_class": "qualified_runtime_executable_not_bound",
+        "candidate_or_control_calls": 0,
+        "tasks_consumed": 0,
+        "candidate_outputs": 0,
+        "surface_reuse_authorized": not faults,
+        "runtime_attempt_namespace_reused_because_no_runtime_receipt_exists": True,
+        "identities": identities,
+        "maximum_inference": (
+            "The preserved first launch proves only a pre-generation interpreter "
+            "binding defect with zero model calls. It is not a model, mechanism, "
+            "task, or token-boundary result."
         ),
     }
 

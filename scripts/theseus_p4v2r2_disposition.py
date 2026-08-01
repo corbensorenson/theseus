@@ -22,8 +22,8 @@ import theseus_p4v2r2_cognitive_compilation as p4v2r2  # noqa: E402
 POLICY = "project_theseus_p4v2r2_cognitive_compilation_terminal_disposition_v1"
 POOL = ROOT / "configs" / "theseus_p4v2r2_task_pool.json"
 INSTRUMENT = ROOT / "configs" / "theseus_p4v2r2_cognitive_compilation_instrument.json"
-PROGRESS = ROOT / "reports" / "theseus_p4v2r2_campaign_attempt1_progress.json"
-OUT = ROOT / "reports" / "theseus_p4v2r2_terminal_disposition.json"
+PROGRESS = ROOT / "reports" / "theseus_p4v2r2_campaign_attempt2_progress.json"
+OUT = ROOT / "reports" / "theseus_p4v2r2_attempt2_terminal_disposition.json"
 ORACLE_CORRECTIONS = (
     ROOT / "configs" / "theseus_p4v2r2_oracle_materialization_corrections.json"
 )
@@ -83,7 +83,7 @@ def build_report() -> dict[str, Any]:
     # and replace the fields before this successor report can be returned or written.
     campaign_placeholders = {
         "INVALID_ATTEMPT": ORACLE_CORRECTIONS,
-        "ATTEMPT2_INSTRUMENT_REBIND_COMMIT": "not_applicable_p4v2r2_attempt1",
+        "ATTEMPT2_INSTRUMENT_REBIND_COMMIT": "not_applicable_p4v2r2_runtime_bootstrap_repair",
     }
     campaign_original = {
         name: getattr(campaign, name, None) for name in campaign_placeholders
