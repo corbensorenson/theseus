@@ -68,7 +68,10 @@ def test_semantic_scope_cap_applies_after_scope_filtering() -> None:
             "candidate_visible_context": {
                 "reads": [{"path": "sample.py", "start_line": 1, "end_line": 20}]
             },
-            "semantic_ir_contract": {"maximum_symbol_nodes": 2},
+            "semantic_ir_contract": {
+                "maximum_symbol_nodes": 1000,
+                "maximum_semantic_scope_nodes": 2,
+            },
             "obligations": [{"id": "O1", "kind": "require", "text": "change"}],
             "obligation_dependencies": [],
         }

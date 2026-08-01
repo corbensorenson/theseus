@@ -278,7 +278,10 @@ def semantic_scope_symbol_table(root: Path, task: dict[str, Any]) -> dict[str, A
         ) in eligible.get(str(row.get("path") or ""), set())
     ]
     cap = int(
-        p2a.mapping(task.get("semantic_ir_contract")).get("maximum_symbol_nodes")
+        p2a.mapping(task.get("semantic_ir_contract")).get(
+            "maximum_semantic_scope_nodes"
+        )
+        or p2a.mapping(task.get("semantic_ir_contract")).get("maximum_symbol_nodes")
         or 80
     )
     nodes = nodes[:cap]
