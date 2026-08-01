@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import uuid
 from pathlib import Path
 from typing import Any
@@ -36,16 +37,53 @@ def main() -> int:
     parser.add_argument("--config", default=p2a.rel(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--wait-until-ready", action="store_true")
+    parser.add_argument("--poll-seconds", type=float, default=30.0)
     args = parser.parse_args()
     config_path = p2a.resolve(args.config)
     config = p2a.read_json(config_path)
-    report = execute_once(config, config_path=config_path) if args.execute else preflight(
-        config, config_path=config_path
-    )
     out = p2a.resolve(args.out or str(config["report"]))
-    p2a.write_json(out, report)
-    print(json.dumps(summary(report), indent=2, sort_keys=True))
+    if args.wait_until_ready:
+        if not args.execute:
+            parser.error("--wait-until-ready requires --execute")
+        if args.poll_seconds <= 0 or args.poll_seconds > 60:
+            parser.error("--poll-seconds must be in (0, 60]")
+        report = wait_and_execute(
+            config,
+            config_path=config_path,
+            out=out,
+            poll_seconds=args.poll_seconds,
+        )
+    else:
+        report = (
+            execute_once(config, config_path=config_path)
+            if args.execute
+            else preflight(config, config_path=config_path)
+        )
+        p2a.write_json(out, report)
+        print(json.dumps(summary(report), indent=2, sort_keys=True), flush=True)
     return 0 if report.get("trigger_state") in {"GREEN", "PAUSED"} else 2
+
+
+def wait_and_execute(
+    config: dict[str, Any],
+    *,
+    config_path: Path,
+    out: Path,
+    poll_seconds: float,
+) -> dict[str, Any]:
+    while True:
+        report = preflight(config, config_path=config_path)
+        p2a.write_json(out, report)
+        print(json.dumps(summary(report), sort_keys=True), flush=True)
+        if report["trigger_state"] == "GREEN":
+            final = execute_once(config, config_path=config_path)
+            p2a.write_json(out, final)
+            print(json.dumps(summary(final), sort_keys=True), flush=True)
+            return final
+        if report["trigger_state"] == "RED":
+            return report
+        time.sleep(poll_seconds)
 
 
 def preflight(
@@ -90,10 +128,13 @@ def preflight(
     }
     failed = [name for name, passed in gates.items() if not passed]
     faults = sorted(set(config_faults + p2a.strings(bindings.get("faults"))))
+    trigger_state = (
+        "GREEN" if not failed and not faults else "RED" if faults else "PAUSED"
+    )
     return {
         "policy": POLICY,
         "created_utc": p2a.now(),
-        "trigger_state": "GREEN" if not failed and not faults else "PAUSED",
+        "trigger_state": trigger_state,
         "launch_authorized": not failed and not faults,
         "config": source_identity(config_path),
         "gates": gates,
@@ -156,18 +197,46 @@ def execute_once(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]
     except Exception as exc:  # noqa: BLE001
         error = f"{type(exc).__name__}: {exc}"[:2000]
     final_audit = campaign.audit_campaign()
-    complete = (
+    campaign_complete = (
         completed is not None
         and completed.returncode == 0
         and final_audit.get("trigger_state") == "GREEN"
         and int(final_audit.get("complete_tasks") or 0) == 10
         and int(final_audit.get("pending_tasks") or 0) == 0
     )
+    disposition_completed: subprocess.CompletedProcess[str] | None = None
+    disposition_report_path = p2a.resolve(str(config["disposition_report"]))
+    if completed is not None:
+        try:
+            disposition_completed = subprocess.run(
+                [str(config["python"]), str(p2a.resolve(str(config["disposition"])))],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        except Exception as exc:  # noqa: BLE001
+            suffix = f"disposition:{type(exc).__name__}: {exc}"[:2000]
+            error = f"{error}; {suffix}".strip("; ")
+    disposition_report = (
+        p2a.read_json(disposition_report_path)
+        if disposition_report_path.is_file()
+        else {}
+    )
+    disposition_complete = (
+        disposition_completed is not None
+        and disposition_completed.returncode == 0
+        and disposition_report.get("trigger_state") == "GREEN"
+    )
+    complete = campaign_complete and disposition_complete
     lease.update(
         {
             "state": "COMPLETED" if complete else "STOPPED_RETAIN_EVIDENCE",
             "completed_utc": p2a.now(),
             "child_returncode": completed.returncode if completed else None,
+            "disposition_returncode": (
+                disposition_completed.returncode if disposition_completed else None
+            ),
             "stdout_tail": completed.stdout[-2000:] if completed else "",
             "stderr_tail": completed.stderr[-2000:] if completed else "",
             "error": error,
@@ -183,13 +252,22 @@ def execute_once(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]
         "trigger_state": "GREEN" if complete else "RED",
         "launch_authorized": True,
         "campaign_complete": complete,
+        "campaign_execution_complete": campaign_complete,
+        "disposition_complete": disposition_complete,
         "preflight": before,
         "lease": source_identity(archive_path),
         "child_returncode": completed.returncode if completed else None,
         "child_stdout_tail": completed.stdout[-2000:] if completed else "",
         "child_stderr_tail": completed.stderr[-2000:] if completed else "",
+        "disposition_stdout_tail": (
+            disposition_completed.stdout[-2000:] if disposition_completed else ""
+        ),
+        "disposition_stderr_tail": (
+            disposition_completed.stderr[-2000:] if disposition_completed else ""
+        ),
         "error": error,
         "final_campaign_audit": final_audit,
+        "terminal_disposition": disposition_report,
         "physical_stop_is_negative_evidence": False,
         "project_selected_quality_token_cap": None,
     }
@@ -259,6 +337,9 @@ def audit_bindings(config: dict[str, Any]) -> dict[str, Any]:
                 "passed": passed,
             }
         )
+    disposition_report = p2a.resolve(str(config.get("disposition_report") or ""))
+    if disposition_report == ROOT:
+        faults.append("disposition_report_invalid")
     if config.get("campaign_commit") != CAMPAIGN_COMMIT:
         faults.append("campaign_commit_invalid")
     if config.get("disposition_commit") != DISPOSITION_COMMIT:

@@ -4,6 +4,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -84,3 +86,45 @@ def test_disk_envelope_is_derived_from_bound_sources_and_context_not_a_quality_c
     assert report["source_fixture_bytes"] > 0
     assert report["maximum_retained_output_bytes"] == 60 * 262_144 * 8
     assert report["required_bytes"] > report["maximum_retained_output_bytes"]
+
+
+def test_waiter_pauses_without_deadline_then_executes_when_machine_turns_green(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    paused = {
+        "trigger_state": "PAUSED",
+        "launch_authorized": False,
+        "campaign_audit": green_campaign(),
+        "failed_gates": ["external_power_physically_connected"],
+        "faults": [],
+    }
+    green = {
+        "trigger_state": "GREEN",
+        "launch_authorized": True,
+        "campaign_audit": green_campaign(),
+        "failed_gates": [],
+        "faults": [],
+    }
+    states = iter((paused, green))
+    monkeypatch.setattr(launcher, "preflight", lambda *_args, **_kwargs: next(states))
+    monkeypatch.setattr(launcher.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        launcher,
+        "execute_once",
+        lambda *_args, **_kwargs: {
+            "trigger_state": "GREEN",
+            "launch_authorized": True,
+            "final_campaign_audit": {
+                "complete_tasks": 10,
+                "pending_tasks": 0,
+            },
+        },
+    )
+    result = launcher.wait_and_execute(
+        config(),
+        config_path=CONFIG_PATH,
+        out=tmp_path / "wait.json",
+        poll_seconds=30.0,
+    )
+    assert result["trigger_state"] == "GREEN"
+    assert json.loads((tmp_path / "wait.json").read_text())["trigger_state"] == "GREEN"

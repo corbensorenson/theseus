@@ -6,6 +6,7 @@
   "disposition": "scripts/theseus_p4v2r2_disposition.py",
   "disposition_sha256": "4a8e31f28ada85c3449d767107db08c0b3133a009fcecdfb43ae68bd92704031",
   "disposition_commit": "e2fdb69ced76a4625e5ad86ddf74e37792aa989c",
+  "disposition_report": "reports/theseus_p4v2r2_terminal_disposition.json",
   "task_pool": "configs/theseus_p4v2r2_task_pool.json",
   "task_pool_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
   "instrument": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
