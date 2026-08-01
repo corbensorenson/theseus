@@ -1236,7 +1236,7 @@ def code_residual_forge_step(card_id: str, seed: int) -> dict[str, Any]:
 
 
 def student_code_candidate_generator_step(card_id: str, seed: int, *, max_cases_per_card: int = 32) -> dict[str, Any]:
-    card_safe = safe_name(card_id)
+    card_safe = safe_card_id(card_id)
     work_steps = code_lm_work_steps(max_cases_per_card)
     return step_command(
         f"code_lm_closure_{card_id}_seed{int(seed)}",
@@ -1298,7 +1298,7 @@ def student_code_candidate_generator_step(card_id: str, seed: int, *, max_cases_
 
 
 def student_code_candidate_manifest_path(card_id: str, seed: int) -> str:
-    return f"reports/student_code_candidates_{safe_name(card_id)}_seed{int(seed)}.jsonl"
+    return f"reports/student_code_candidates_{safe_card_id(card_id)}_seed{int(seed)}.jsonl"
 
 
 def real_code_benchmark_graduation_step(
