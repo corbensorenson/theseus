@@ -111,6 +111,108 @@ def artifact_row(path: Path) -> dict[str, Any]:
     }
 
 
+def machine_authority_boundary(
+    training_availability: dict[str, Any],
+    d2_controller: dict[str, Any],
+    *,
+    emergency_yield_present: bool,
+    active_d2_lease_present: bool,
+) -> dict[str, Any]:
+    faults: list[str] = []
+    disk = training_availability.get("disk_reserve") or {}
+    lineage = training_availability.get("lineage_custody") or {}
+    segment = training_availability.get("segment_behavior") or {}
+    if training_availability.get("policy") != (
+        "project_theseus_resource_aware_training_segments_v2"
+    ):
+        faults.append("training_availability_policy_mismatch")
+    if training_availability.get("enabled") is not True:
+        faults.append("training_availability_disabled")
+    if "launch_windows" in training_availability:
+        faults.append("clock_launch_window_present")
+    if "minimum_disk_free_gib" in training_availability:
+        faults.append("arbitrary_disk_floor_present")
+    if (
+        disk.get("policy") != "two_complete_checkpoint_transactions_v1"
+        or int(disk.get("complete_transactions_required") or 0) < 2
+    ):
+        faults.append("derived_disk_transaction_reserve_missing")
+    if (
+        lineage.get("policy")
+        != "project_theseus_append_only_training_segment_lineage_v1"
+        or any(
+            lineage.get(key) is not True
+            for key in (
+                "archive_before_and_after_receipts",
+                "archive_child_and_host_guard_receipts",
+                "require_contiguous_identity_before_launch",
+                "manifest_written_last",
+            )
+        )
+    ):
+        faults.append("append_only_lineage_boundary_missing")
+    if any(
+        segment.get(key) is not True
+        for key in (
+            "never_suspend_in_flight_metal_graph",
+            "reevaluate_after_every_transactional_segment",
+            "stop_launching_when_gate_closes",
+            "atomic_checkpoint_before_yield",
+        )
+    ):
+        faults.append("transactional_segment_boundary_missing")
+    if emergency_yield_present:
+        faults.append("emergency_yield_requested")
+
+    authority = d2_controller.get("authority") or {}
+    local_acquisition = d2_controller.get("local_rater_model_acquisition") or {}
+    if d2_controller.get("policy") != (
+        "project_theseus_neural_seed_d2_autonomous_one_shot_evaluation_v1"
+    ):
+        faults.append("d2_controller_policy_mismatch")
+    required_true = (
+        "require_clean_source",
+        "require_exact_freeze_source_hashes",
+        "require_all_checkpoints_complete",
+        "require_no_competing_accelerator_job",
+    )
+    if authority.get("kind") != "machine_predicate_exclusive_one_shot_lease":
+        faults.append("d2_machine_lease_kind_mismatch")
+    if any(authority.get(key) is not True for key in required_true):
+        faults.append("d2_required_machine_predicate_missing")
+    required_false = (
+        "user_or_operator_approval_required",
+        "rerun_consumed_identity_allowed",
+        "physical_boundary_is_negative_evidence",
+        "project_selected_quality_token_cap_allowed",
+        "public_calibration_authorized",
+        "external_inference_authorized",
+        "serving_authorized",
+        "training_row_admission_authorized",
+    )
+    if any(authority.get(key) is not False for key in required_false):
+        faults.append("d2_forbidden_authority_present")
+    if (
+        local_acquisition.get("automatic_only_when_every_other_gate_is_green")
+        is not True
+        or int(local_acquisition.get("external_inference_calls", -1)) != 0
+        or int(local_acquisition.get("training_rows_written", -1)) != 0
+    ):
+        faults.append("d2_local_rater_acquisition_boundary_mismatch")
+    if active_d2_lease_present:
+        faults.append("active_d2_evaluation_lease_present")
+    return {
+        "passed": not faults,
+        "faults": faults,
+        "user_or_operator_approval_required": False,
+        "emergency_yield_requested": emergency_yield_present,
+        "active_d2_evaluation_lease_present": active_d2_lease_present,
+        "training_segments_recheck_machine_gates": True,
+        "d2_requires_exclusive_one_shot_machine_lease": True,
+        "package_acquires_execution_lease": False,
+    }
+
+
 def selected_recipe(trainer: dict[str, Any]) -> dict[str, Any]:
     execution = trainer["training"]["execution_policy"]
     pretraining = execution["pretraining"]
@@ -317,7 +419,23 @@ def execute(
         functional_freeze_sha256,
         list(surface_integrity["equivalent_consumed_case_contract_sha256s"]),
     )
-    yield_path = resolve(config["yield_control"])
+    machine_paths = {
+        name: resolve(path) for name, path in config["machine_authority"].items()
+    }
+    training_availability = read_json(
+        machine_paths["training_availability_config"]
+    )
+    d2_controller = read_json(machine_paths["d2_controller_config"])
+    emergency_yield_path = resolve(
+        str(training_availability["yield_after_segment_control"])
+    )
+    active_d2_lease_path = resolve(str(d2_controller["active_lease"]))
+    machine_boundary = machine_authority_boundary(
+        training_availability,
+        d2_controller,
+        emergency_yield_present=emergency_yield_path.is_file(),
+        active_d2_lease_present=active_d2_lease_path.is_file(),
+    )
     superseded_path = resolve(config["supersedes"])
     recipe = selected_recipe(trainer)
 
@@ -517,20 +635,26 @@ def execute(
                 "once only from a clean post-maintenance commit."
             ),
         },
-        "transactional_hold": {
+        "machine_authority_boundary": {
+            **machine_boundary,
             "passed": (
-                yield_path.is_file()
+                machine_boundary["passed"]
                 and review.get("state") == "HOLD_FOR_FINITE_REVIEW"
                 and review["execution_hold"]["new_long_segment_authorized"] is False
                 and review["execution_hold"][
                     "new_architecture_may_touch_live_checkpoint"
                 ]
                 is False
+                and review["execution_hold"]["in_flight_transaction_interrupted"]
+                is False
                 and config["boundaries"]["long_training_started_or_resumed"] is False
-                and config["boundaries"]["hold_removed_by_freeze"] is False
+                and config["boundaries"][
+                    "machine_authority_bypassed_by_freeze"
+                ]
+                is False
             ),
-            "hold_present": yield_path.is_file(),
-            "hold_removed": False,
+            "historical_review_hold_preserved": True,
+            "machine_authority_bypassed": False,
         },
     }
     required = list(config["required_gates"])
@@ -548,11 +672,11 @@ def execute(
         "independent_readiness_audit": independent_path,
         "functional_freeze": freeze_path,
         "functional_consumption_registry": registry_path,
-        "yield_control": yield_path,
+        **machine_paths,
     }
     report = {
         "policy": POLICY,
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "campaign_id": config["campaign_id"],
         "trigger_state": trigger_state,
         "support_state": (
@@ -575,8 +699,10 @@ def execute(
                 if trigger_state == "GREEN"
                 else "NONE"
             ),
-            "transactional_hold_present": yield_path.is_file(),
-            "transactional_hold_removed_by_package": False,
+            "machine_authority_boundary_present": machine_boundary["passed"],
+            "machine_authority_bypassed_by_package": False,
+            "user_or_operator_approval_required": False,
+            "active_d2_evaluation_lease_present": active_d2_lease_path.is_file(),
             "long_training_authorized_now": False,
             "long_training_started_or_resumed": False,
             "incompatible_state_policy": (
@@ -645,7 +771,7 @@ def execute(
             "This package does not prove physical performance optimality.",
             "This package does not evaluate model capability or utility.",
             "Scoped candidate dispositions are not broad scientific falsifications.",
-            "This package does not lease the transactional hold or start long training.",
+            "This package does not acquire a training or D2 execution lease or start long training.",
         ],
     }
     report["package_identity"] = content_identity(report)

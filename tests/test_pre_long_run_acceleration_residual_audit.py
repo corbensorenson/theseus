@@ -10,7 +10,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-import pre_long_run_acceleration_residual_audit as audit
+import pre_long_run_acceleration_residual_audit as audit  # noqa: E402
 
 
 def test_config_covers_every_cross_domain_residual() -> None:
@@ -29,14 +29,14 @@ def test_config_covers_every_cross_domain_residual() -> None:
         "thermal",
         "joined_wall",
         "architecture_candidates",
-        "custody_hold",
+        "machine_authority",
     }
     assert config["selected_recipe"]["training_step_mode"] == "compiled"
     assert config["selected_recipe"]["self_attention_projection"] == "separate"
     assert config["selected_recipe"]["per_head_muon"] is False
 
 
-def test_current_finite_residual_audit_is_green_and_keeps_hold() -> None:
+def test_current_finite_residual_audit_is_green_and_machine_governed() -> None:
     report = audit.execute(
         ROOT / "configs/pre_long_run_acceleration_residual_audit.json",
         publish_report=False,
@@ -52,9 +52,32 @@ def test_current_finite_residual_audit_is_green_and_keeps_hold() -> None:
     assert report["checkpoint_custody"]["lineage"]["pre_anchor_chain_available"] is False
     assert report["domains"]["memory_disk"]["fixed_available_memory_floor_mib"] == 0
     assert report["long_training_started_or_resumed"] is False
-    assert (
-        ROOT / "runtime/control/neural_seed_yield_after_segment"
-    ).is_file()
+    boundary = report["domains"]["machine_authority"]
+    assert boundary["passed"] is True
+    assert boundary["user_or_operator_approval_required"] is False
+    assert boundary["emergency_yield_requested"] is False
+    assert boundary["active_d2_evaluation_lease_present"] is False
+    assert "yield_control" not in report["authority"]
+
+
+def test_machine_authority_rejects_human_gate_and_active_controls() -> None:
+    training = audit.read_json(
+        ROOT / "configs/neural_seed_training_availability.json"
+    )
+    d2 = audit.read_json(
+        ROOT / "configs/neural_seed_d2_autonomous_evaluation_controller.json"
+    )
+    d2["authority"]["user_or_operator_approval_required"] = True
+    result = audit.validate_machine_authority(
+        training,
+        d2,
+        emergency_yield_present=True,
+        active_d2_lease_present=True,
+    )
+    assert result["passed"] is False
+    assert "emergency_yield_requested" in result["faults"]
+    assert "d2_forbidden_authority_present" in result["faults"]
+    assert "active_d2_evaluation_lease_present" in result["faults"]
 
 
 def test_lineage_audit_rejects_terminal_identity_tampering(tmp_path: Path) -> None:

@@ -31,7 +31,12 @@
     },
     "disposition": "The exact and normalized model-visible prompt rows are fresh against the consumed v8 packet. D2 remains sealed until a separate machine-predicate one-shot evaluation controller passes; no user or operator approval is required."
   },
-  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "machine_authority": {
+    "training_availability_config": "configs/neural_seed_training_availability.json",
+    "training_campaign": "scripts/neural_seed_training_campaign.py",
+    "d2_controller_config": "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+    "d2_controller": "scripts/neural_seed_d2_autonomous_evaluation_controller.py"
+  },
   "lineage_root": "reports/neural_seed_training_campaign_lineage",
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
   "candidate_reports": {
@@ -74,6 +79,6 @@
     "evaluation_surface_freshness",
     "negative_evidence_scope",
     "claim_boundary",
-    "execution_hold"
+    "machine_authority_boundary"
   ]
 }

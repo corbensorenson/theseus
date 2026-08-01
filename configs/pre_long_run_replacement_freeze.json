@@ -14,10 +14,17 @@
   "source_artifact_paths": [
     "configs/project_manifest_registry.json",
     "configs/roadmap_implementation_matrix.json",
+    "configs/neural_seed_training_availability.json",
+    "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+    "configs/pre_long_run_acceleration_residual_audit.json",
     "configs/pre_long_run_independent_readiness_audit.json",
     "configs/pre_long_run_replacement_freeze.json",
+    "scripts/neural_seed_training_campaign.py",
+    "scripts/neural_seed_d2_autonomous_evaluation_controller.py",
+    "scripts/pre_long_run_acceleration_residual_audit.py",
     "scripts/pre_long_run_independent_readiness_audit.py",
     "scripts/pre_long_run_replacement_freeze.py",
+    "tests/test_pre_long_run_acceleration_residual_audit.py",
     "tests/test_pre_long_run_independent_readiness_audit.py",
     "tests/test_pre_long_run_replacement_freeze.py"
   ],
@@ -37,7 +44,12 @@
     },
     "disposition": "The exact and normalized model-visible prompt rows are fresh against the consumed v8 packet. D2 remains sealed until a separate machine-predicate one-shot evaluation controller passes; no user or operator approval is required."
   },
-  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "machine_authority": {
+    "training_availability_config": "configs/neural_seed_training_availability.json",
+    "training_campaign": "scripts/neural_seed_training_campaign.py",
+    "d2_controller_config": "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+    "d2_controller": "scripts/neural_seed_d2_autonomous_evaluation_controller.py"
+  },
   "lineage_root": "reports/neural_seed_training_campaign_lineage",
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
   "candidate_reports": {
@@ -83,12 +95,12 @@
     "candidate_dispositions",
     "resource_policy",
     "source_binding",
-    "transactional_hold"
+    "machine_authority_boundary"
   ],
   "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_THROUGH_MACHINE_PREDICATE_LEASE",
   "boundaries": {
     "long_training_started_or_resumed": false,
-    "hold_removed_by_freeze": false,
+    "machine_authority_bypassed_by_freeze": false,
     "public_training_rows": 0,
     "external_inference_calls": 0,
     "fallback_template_router_tool_credit": 0,

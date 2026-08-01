@@ -1,10 +1,15 @@
 {
-  "policy": "project_theseus_pre_long_run_acceleration_residual_audit_v1",
+  "policy": "project_theseus_pre_long_run_acceleration_residual_audit_v2",
   "report": "reports/pre_long_run_acceleration_residual_audit.json",
   "production_trainer_config": "configs/moecot_language_arm_training.json",
   "candidate_contract": "configs/pretraining_architecture_candidates.json",
   "pre_long_run_review": "configs/neural_seed_pre_long_run_review.json",
-  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "machine_authority": {
+    "training_availability_config": "configs/neural_seed_training_availability.json",
+    "training_campaign_script": "scripts/neural_seed_training_campaign.py",
+    "d2_controller_config": "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+    "d2_controller_script": "scripts/neural_seed_d2_autonomous_evaluation_controller.py"
+  },
   "lineage_root": "reports/neural_seed_training_campaign_lineage",
   "checkpoint_root": "checkpoints/moecot_mlx_57m_active_preregistered_v1/shared_trunk",
   "expected_checkpoint": {
@@ -51,7 +56,7 @@
     "thermal",
     "joined_wall",
     "architecture_candidates",
-    "custody_hold"
+    "machine_authority"
   ],
   "selection_claim": "No currently source- or measured-profile-justified open acceleration residual remains among the tested eligible routes.",
   "non_claims": [

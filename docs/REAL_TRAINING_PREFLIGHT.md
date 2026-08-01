@@ -122,34 +122,40 @@ historical step-3480 transaction and must not be regenerated against the
 evolved step-11416 plan. The three pre-long-run commands above are the current
 content-addressed readiness chain.
 
-Then verify the repository and hold state:
+Then verify the repository and machine-authority state:
 
 ```bash
 git status --short
-test -f runtime/control/neural_seed_yield_after_segment
+python3 scripts/neural_seed_training_campaign.py
+python3 scripts/neural_seed_d2_autonomous_evaluation_controller.py
 ```
 
 The independent audit is currently GREEN after recomputing the 160 current
 model-visible prompts against the content-addressed consumed v8 packet with
 zero exact or whitespace/case-normalized overlap. The replacement package
 still fails closed on `source_binding` because the maintenance tree is dirty.
-At this point the hold must still exist. A final package generated from a clean
-post-maintenance commit can mean `TRAINING_READY_BUT_HELD`; the autonomous
-controller, not Corben, decides whether the next one-shot lease is permitted.
+The optional `runtime/control/neural_seed_yield_after_segment` file is an
+emergency stop request and is normally absent; it is not approval authority. A
+final package generated from a clean post-maintenance commit can authorize the
+registered machine-predicate controllers to decide whether training or the
+one-shot D2 evaluation may acquire its exclusive lease. Corben is not a gate.
 
 ## Transactional Qualification
 
 When every machine predicate passes and no competing accelerator job is active,
-run the registered controller. It leases exactly one transaction, restores the
-hold on every exit, and requires no user or operator approval:
+run the registered campaign controller. It rechecks resource and lineage gates
+between atomic checkpoint transactions and requires no user or operator
+approval:
 
 ```bash
-python3 scripts/neural_seed_autonomous_launch_controller.py --execute
+python3 scripts/neural_seed_training_campaign.py --execute
 ```
 
-Do not invoke the child training command directly. The controller owns the
-source binding, exclusive lease, checkpoint snapshot, rollback, lineage check,
-and hold restoration.
+Do not invoke the child trainer directly. The campaign controller owns machine
+availability checks, checkpoint transactions, exact lineage verification, and
+stop-on-gate-close behavior. A positive `--max-segments` value is a diagnostic
+invocation bound; zero, the default, continues until pretraining completion or a
+causal machine gate closes.
 
 After the segment:
 
@@ -158,7 +164,7 @@ After the segment:
 - verify the appended lineage manifest;
 - inspect host/swap/thermal/write evidence;
 - confirm both exact contract and semantic case identities remain unconsumed;
-- restore or retain the hold before unrelated work.
+- confirm no emergency yield request or competing accelerator lease appeared.
 
 ## Full Campaign Order
 

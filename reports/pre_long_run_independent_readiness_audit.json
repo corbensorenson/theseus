@@ -27,7 +27,7 @@
     },
     "evaluation_nonconsumption": {
       "freeze_path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "freeze_sha256": "56f5cd08c4e08556e31a7ab3ee31f067ff7d6dc94a5d810910bba2383828ddec",
+      "freeze_sha256": "c5ef451dd051ac0d2796911bf852a1ef180cb10a952a628555a6a0e9562a6236",
       "matching_consumption_rows": [],
       "passed": true,
       "registry_path": "reports/private_functional_consumption_registry.jsonl",
@@ -91,12 +91,6 @@
       "faults": [],
       "independence": "Every path and digest asserted by the residual audit was recomputed from disk; its GREEN label alone was insufficient.",
       "passed": true
-    },
-    "execution_hold": {
-      "long_training_started_or_resumed": false,
-      "passed": true,
-      "yield_control_path": "runtime/control/neural_seed_yield_after_segment",
-      "yield_control_sha256": "94faffd130960b3583b2877b7a749da76838626ded0606775d661b976547b529"
     },
     "lineage_custody": {
       "alias_hashes": {
@@ -936,6 +930,19 @@
         "optimizer": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb"
       }
     },
+    "machine_authority_boundary": {
+      "active_d2_evaluation_lease_present": false,
+      "audit_acquires_execution_lease": false,
+      "d2_requires_exclusive_one_shot_machine_lease": true,
+      "emergency_yield_requested": false,
+      "faults": [],
+      "historical_review_hold_preserved": true,
+      "long_training_started_or_resumed": false,
+      "machine_authority_bypassed": false,
+      "passed": true,
+      "training_segments_recheck_machine_gates": true,
+      "user_or_operator_approval_required": false
+    },
     "negative_evidence_scope": {
       "candidate_report_sha256s": {
         "attention_residuals": "a16874c9490f6e5e3b553e427035e42eec564dc4f100ef5d8d50b44018beec20",
@@ -953,7 +960,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 50314072064,
+      "disk_free_bytes": 52164288512,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -964,9 +971,17 @@
       "path": "configs/pretraining_architecture_candidates.json",
       "sha256": "255803b4a017bf84b2829a1e26a4cc9db5370ed5caff320c740d5c213740c180"
     },
+    "d2_controller": {
+      "path": "scripts/neural_seed_d2_autonomous_evaluation_controller.py",
+      "sha256": "9095c88b32eae9c6d85ab0686a8b1cb78b288cb64d7c161e4ca6645246c0036c"
+    },
+    "d2_controller_config": {
+      "path": "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+      "sha256": "85a440dbacc96f97b37d7707bff57cbf6b673c8b87ab68c31d7d4ea8c17d148c"
+    },
     "functional_freeze": {
       "path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "sha256": "56f5cd08c4e08556e31a7ab3ee31f067ff7d6dc94a5d810910bba2383828ddec"
+      "sha256": "c5ef451dd051ac0d2796911bf852a1ef180cb10a952a628555a6a0e9562a6236"
     },
     "pre_long_run_review": {
       "path": "configs/neural_seed_pre_long_run_review.json",
@@ -978,12 +993,20 @@
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "e14088b59977a76963a821f8f093b9fddffb08b46655a47fde7f3a175d261440"
+      "sha256": "ff78212957d57e6bd13b2c659d9f78a4bf0017e55d3e9ec5ef1d538bf02ef3f1"
+    },
+    "training_availability_config": {
+      "path": "configs/neural_seed_training_availability.json",
+      "sha256": "96358877261da8cfe01d24921f7550f683b88fc9fef9129b8f9ef4c05732b475"
+    },
+    "training_campaign": {
+      "path": "scripts/neural_seed_training_campaign.py",
+      "sha256": "ca623d022722c8facdd86bd55dbe8996e96b8fd28dde320a1c60d5128d879622"
     }
   },
   "capability_claim": "NONE_INDEPENDENT_READINESS_AUDIT_ONLY",
   "config": "configs/pre_long_run_independent_readiness_audit.json",
-  "config_sha256": "2d1a99faeb84c4f2113c004e0535602d562086821e2893ed3ac279399c6d89a2",
+  "config_sha256": "3cc8cbbec4ffc46dee79511fa484915c757148846709abe3ff84e3f31b380dff",
   "decision": "INDEPENDENT_AUDITS_GREEN_READY_FOR_CONTENT_ADDRESSED_REPLACEMENT_FREEZE",
   "failed_audits": [],
   "long_training_authorized": false,
@@ -1003,7 +1026,7 @@
     "evaluation_surface_freshness",
     "negative_evidence_scope",
     "claim_boundary",
-    "execution_hold"
+    "machine_authority_boundary"
   ],
   "support_state": "SUPPORTED_INDEPENDENT_PRE_LONG_RUN_READINESS_AUDIT",
   "trigger_state": "GREEN"

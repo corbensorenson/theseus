@@ -3694,7 +3694,7 @@
         "thermal",
         "joined_wall",
         "architecture_candidates",
-        "custody_hold"
+        "machine_authority"
       ],
       "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
       "claim_boundary": "No currently source- or measured-profile-justified open acceleration residual remains among tested eligible routes. This does not prove the route is physically fastest possible.",
@@ -3712,7 +3712,7 @@
         "evaluation_surface_freshness",
         "negative_evidence_scope",
         "claim_boundary",
-        "execution_hold"
+        "machine_authority_boundary"
       ],
       "claim_boundary": "The current audit independently rematerializes all 160 current cases, verifies the content-addressed consumed v8 packet, and finds zero exact or whitespace/case-normalized model-visible prompt overlap. This scoped freshness result does not evaluate the 57M candidate, authorize D2 execution, or authorize long training."
     },

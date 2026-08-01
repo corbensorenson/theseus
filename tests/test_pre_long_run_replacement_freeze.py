@@ -42,8 +42,9 @@ def test_replacement_freeze_config_has_exact_resume_boundary() -> None:
     assert config["expected"]["optimizer_steps"] == 11416
     assert config["expected"]["optimizer_positions"] == 87441996
     assert config["boundaries"]["long_training_started_or_resumed"] is False
-    assert config["boundaries"]["hold_removed_by_freeze"] is False
+    assert config["boundaries"]["machine_authority_bypassed_by_freeze"] is False
     assert "source_binding" in config["required_gates"]
+    assert "machine_authority_boundary" in config["required_gates"]
 
 
 def test_dirty_source_replacement_freeze_is_blocked_deterministic_and_held() -> None:
@@ -76,13 +77,14 @@ def test_dirty_source_replacement_freeze_is_blocked_deterministic_and_held() -> 
         first["functional_surface"]["integrity"]["state"]
         == "VALID_FRESH_PRIVATE_SURFACE"
     )
-    assert first["resume_authority"]["transactional_hold_present"] is True
-    assert first["resume_authority"]["transactional_hold_removed_by_package"] is False
+    assert first["resume_authority"]["machine_authority_boundary_present"] is True
+    assert first["resume_authority"]["machine_authority_bypassed_by_package"] is False
+    assert first["resume_authority"]["user_or_operator_approval_required"] is False
     assert first["resume_authority"]["long_training_authorized_now"] is False
     assert first["resume_authority"]["long_training_started_or_resumed"] is False
 
 
-def test_clean_source_replacement_freeze_is_green_but_preserves_transactional_hold() -> None:
+def test_clean_source_replacement_freeze_is_green_but_preserves_machine_authority() -> None:
     report = freeze.execute(
         ROOT / "configs/pre_long_run_replacement_freeze.json",
         publish_report=False,
@@ -95,17 +97,45 @@ def test_clean_source_replacement_freeze_is_green_but_preserves_transactional_ho
     assert set(report["source_artifacts"]) == {
         "configs/project_manifest_registry.json",
         "configs/roadmap_implementation_matrix.json",
+        "configs/neural_seed_training_availability.json",
+        "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+        "configs/pre_long_run_acceleration_residual_audit.json",
         "configs/pre_long_run_independent_readiness_audit.json",
         "configs/pre_long_run_replacement_freeze.json",
+        "scripts/neural_seed_training_campaign.py",
+        "scripts/neural_seed_d2_autonomous_evaluation_controller.py",
+        "scripts/pre_long_run_acceleration_residual_audit.py",
         "scripts/pre_long_run_independent_readiness_audit.py",
         "scripts/pre_long_run_replacement_freeze.py",
+        "tests/test_pre_long_run_acceleration_residual_audit.py",
         "tests/test_pre_long_run_independent_readiness_audit.py",
         "tests/test_pre_long_run_replacement_freeze.py",
     }
-    assert report["resume_authority"]["transactional_hold_present"] is True
-    assert report["resume_authority"]["transactional_hold_removed_by_package"] is False
+    assert report["resume_authority"]["machine_authority_boundary_present"] is True
+    assert report["resume_authority"]["machine_authority_bypassed_by_package"] is False
+    assert report["resume_authority"]["user_or_operator_approval_required"] is False
     assert report["resume_authority"]["long_training_authorized_now"] is False
     assert report["resume_authority"]["long_training_started_or_resumed"] is False
+
+
+def test_machine_authority_boundary_rejects_emergency_stop_and_human_gate() -> None:
+    training = freeze.read_json(
+        ROOT / "configs/neural_seed_training_availability.json"
+    )
+    d2 = freeze.read_json(
+        ROOT / "configs/neural_seed_d2_autonomous_evaluation_controller.json"
+    )
+    d2["authority"]["user_or_operator_approval_required"] = True
+    report = freeze.machine_authority_boundary(
+        training,
+        d2,
+        emergency_yield_present=True,
+        active_d2_lease_present=True,
+    )
+    assert report["passed"] is False
+    assert "emergency_yield_requested" in report["faults"]
+    assert "d2_forbidden_authority_present" in report["faults"]
+    assert "active_d2_evaluation_lease_present" in report["faults"]
 
 
 def test_package_identity_rejects_tampering() -> None:

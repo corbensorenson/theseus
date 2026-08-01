@@ -29,7 +29,7 @@ def test_independent_audit_config_covers_all_required_boundaries() -> None:
         "evaluation_surface_freshness",
         "negative_evidence_scope",
         "claim_boundary",
-        "execution_hold",
+        "machine_authority_boundary",
     }
     assert config["expected"]["optimizer_steps"] == 11416
     assert config["expected"]["prospective_anchor_step"] == 9048
@@ -76,6 +76,31 @@ def test_current_independent_audit_recomputes_fresh_surface_without_authorizing_
         report["audits"]["resource_integrity"]["fixed_available_memory_floor_mib"] == 0
     )
     assert report["long_training_authorized"] is False
+    boundary = report["audits"]["machine_authority_boundary"]
+    assert boundary["passed"] is True
+    assert boundary["user_or_operator_approval_required"] is False
+    assert boundary["emergency_yield_requested"] is False
+    assert boundary["active_d2_evaluation_lease_present"] is False
+
+
+def test_machine_authority_audit_rejects_human_gate_and_active_lease() -> None:
+    training = audit.read_json(
+        ROOT / "configs/neural_seed_training_availability.json"
+    )
+    d2 = audit.read_json(
+        ROOT / "configs/neural_seed_d2_autonomous_evaluation_controller.json"
+    )
+    d2["authority"]["user_or_operator_approval_required"] = True
+    report = audit.recompute_machine_authority_boundary(
+        training,
+        d2,
+        emergency_yield_present=True,
+        active_d2_lease_present=True,
+    )
+    assert report["passed"] is False
+    assert "emergency_yield_requested" in report["faults"]
+    assert "d2_forbidden_authority_present" in report["faults"]
+    assert "active_d2_evaluation_lease_present" in report["faults"]
 
 
 def test_exact_step_11416_plan_migration_is_accepted_without_state_reset() -> None:
