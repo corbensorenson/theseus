@@ -594,6 +594,26 @@ opens only the design and prospective freeze of a fresh, source-disjoint P4
 decision denominator. It does not establish a cognitive-compilation effect,
 move book support, open D1, create training rows, or widen serving authority.
 
+P4S then consumed that fresh denominator exactly once. All ten licensed,
+source-disjoint tasks completed, with sixty retained calls, ten parser-complete
+terminations, fifty model-EOS terminations, zero context-boundary hits, and a
+maximum natural output of 149,505 tokens. Source/license custody, route
+blinding, candidate-integrity recomputation, independent evaluator replay, all
+five corruption classes, and evaluator-only oracle reachability passed 10/10.
+Natural-language plan control was useful on 1/10; direct generation, learned
+Semantic IR, and the no-model compiler control were useful on 0/10.
+
+The treatment produced the exact version header and terminal `END` on all ten
+tasks but parsed/lowered 0/10 against the frozen 8/10 mechanics floor. Its
+obligation identities were expressed as bracketed, quoted, or
+whitespace-separated lists while the parser accepted only comma-only tokens.
+The terminal status is `INCONCLUSIVE_IMPLEMENTATION`: this exact parser and
+emission contract is inadequate, and cognitive compilation is not falsified.
+The ten P4S tasks are consumed and cannot be rescored, trained on, or reused in
+D1/D2. Repair non-answer-bearing list normalization and round-trip mechanics on
+non-claim evidence, then require an entirely new source-disjoint P4 denominator
+before any effect inference. D1 and book support remain closed.
+
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
 | 0 | Integrated architecture + evidence-state prerequisites | Downstream-consumed trace joins and independent claim transitions | Direct, record-only, context-decoration-only, producer self-score |
@@ -660,11 +680,11 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `MECHANICS_GREEN_FRESH_DECISION_DENOMINATOR_NEXT` | P4R remains `INCONCLUSIVE_IMPLEMENTATION` and its ten tasks are consumed. Non-claim labeled transport and semantic-unit selection pass 3/3 exact verification; the repaired intervention/locality canary passes 2/2 provisional verification, validator-feedback closure, final verification, and dependency-local repair, with 5/5 static corruptions rejected and zero boundary hits. This opens only a fresh source-disjoint P4 decision denominator; D1, book support, and mechanism claims remain closed |
+| P4 causal development | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; D1 and book support remain closed |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
-| Long training | `TRAINING_HELD_PENDING_AUTONOMOUS_POLICY` | N0 may refresh readiness; N1/N2 require a machine-readable launch/resource/rollback policy, not a user decision |
+| Long training | `TRAINING_WAITING_ON_MACHINE_PREDICATES` | The campaign controller requires clean source binding, derived disk custody, exact lineage continuity, resource checks, and exclusive accelerator availability. The optional yield file is an emergency stop, not approval authority; Corben is not a gate |
 | D2 student capability | `NOT_EVALUATED_SEALED` | The 57M candidate and dense controls have no verdict |
 | Runtime exposure | `LOCAL_ONLY` | No LAN or public exposure qualification |
 
@@ -1126,7 +1146,7 @@ defaults to 128 tokens while the resident neural runtime exposes 32-token API
 defaults and an 8-token mechanics qualification. These values may remain in
 immutable consumed evidence and small mechanics tests, but none may propagate
 into a successor serving, repair, ranking, or capability-measurement route.
-After the live P4S campaign seals, migrate the canonical assistant backend,
+The P4S campaign is sealed. Migrate the canonical assistant backend,
 worker, resident runtime, and local compatibility shim to exact prompt
 tokenization plus model-declared context residual, parser/artifact completion or
 EOS, explicit termination telemetry, and invalid-observation handling at any

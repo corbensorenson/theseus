@@ -3747,7 +3747,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "active_fresh_P4_decision_denominator_design_mechanics_green",
+    "execution_state": "terminal_P4S_inconclusive_implementation_parser_normalization_next",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -3910,6 +3910,46 @@
       "hosted_model_calls": 0,
       "support_state_effect": "none",
       "rule": "The exact ten P4R tasks and the failed first intervention-canary call are consumed and may not be replayed for fresh credit. Labeled transport and semantic-unit selection pass 3/3 parse/lower and exact verification; the repaired intervention/locality canary passes 2/2 provisional verification, authentic feedback closure, final verification, and dependency-local repair with five of five static corruptions rejected and zero physical-boundary hits. These non-claim mechanics open only the design and prospective freeze of a fresh source-disjoint P4 decision denominator. They do not move book support, qualify D1, or establish a mechanism effect."
+    },
+    "p4s_cognitive_compilation_instrument": {
+      "state": "terminal_inconclusive_implementation_obligation_list_grammar_repair_required",
+      "claim_id": "cognitive-compilation-and-semantic-ir.core",
+      "instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+      "task_pool": "configs/theseus_p4s_task_pool.json",
+      "campaign_driver": "scripts/theseus_p4s_campaign.py",
+      "campaign_progress": "reports/theseus_p4s_campaign_attempt2_progress.json",
+      "terminal_disposition": "reports/theseus_p4s_terminal_disposition.json",
+      "terminal_disposition_sha256": "2efb3120ddb7396bc45d9c8dd22c66cdaa62b8293fb2b66135a03e89f068c7b8",
+      "complete_tasks": 10,
+      "local_model_calls": 60,
+      "parser_complete_calls": 10,
+      "model_eos_calls": 50,
+      "physical_context_boundary_hits": 0,
+      "maximum_observed_generated_tokens": 149505,
+      "information_flow_green": true,
+      "independent_evaluator_replay": "10/10",
+      "compiler_oracle_useful": "10/10",
+      "all_five_corruption_classes_rejected": "10/10",
+      "useful_by_arm": {
+        "direct_target_generation": 0,
+        "natural_language_plan_control": 1,
+        "typed_semantic_ir_treatment": 0,
+        "deterministic_request_compiler_baseline": 0,
+        "deterministic_compiler_oracle_ceiling": 10
+      },
+      "treatment_protocol_signature": {
+        "exact_headers": "10/10",
+        "terminal_END": "10/10",
+        "parse_and_lower": "0/10_below_predeclared_8/10_floor",
+        "fault": "Every output used a semantically ordinary bracketed, quoted, or whitespace-separated obligation list while the frozen parser accepted only comma-only identifiers."
+      },
+      "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+      "D1_eligible": false,
+      "exact_rerun_eligible": false,
+      "training_eligible": false,
+      "support_state_effect": "none",
+      "next_owner": "non_claim_obligation_list_normalization_and_round_trip_mechanics_then_entirely_fresh_source_disjoint_P4",
+      "rule": "Preserve every P4S call, evaluation, failure, cost, and weak-tail result. Do not rescore consumed outputs. The exact emission/parser implementation failed mechanics adequacy and cannot advance to D1, but this does not falsify cognitive compilation generally."
     },
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
     "shared_flagship_rule": "Book-derived work reaches primary execution only through faithful implementation, instrument adequacy, autonomous machine-verifiable behavior, joined-trace, matched-causal, source-disjoint qualification, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",
@@ -4561,8 +4601,8 @@
     "Kernel English immutable source and protected-object capture, uncertainty-preserving semantic compilation, stable concept identity/runtime-code separation, surface/Kernel/pointer vocabularies, grammar-safe expandable macros, four-level VCM residual state, structured answer packets, copy-aware rendering, round-trip fidelity checks, versioned migration, total-system accounting, adversarial lifecycle tests, and matched falsification under Phases 0, 2, 3, 4, 5, 7, 8, 10, 11, 13, 14, 16, and 18"
   ],
   "weekly_focus_decision": {
-    "date": "2026-07-31",
-    "recommendation": "Preserve terminal P3, interrupted P4-v1, and terminal P4R without replay or overclaim. P4R completed 60 natural-completion calls with zero context-boundary hits, but the learned Semantic-IR treatment parsed and lowered 0/10 against an 8/10 mechanics floor while the oracle remained useful 10/10; classify INCONCLUSIVE_IMPLEMENTATION and repair grammar emission/lowering on non-claim mechanics fixtures before any fresh P4 denominator. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
+    "date": "2026-08-01",
+    "recommendation": "Preserve terminal P3, interrupted P4-v1, terminal P4R, and terminal P4S without replay or overclaim. P4S completed 60 natural-completion calls with zero context-boundary hits and every custody/information-flow audit green, but the learned Semantic-IR treatment parsed and lowered 0/10 against its frozen 8/10 mechanics floor because the exact parser rejected bracketed, quoted, and whitespace-separated obligation lists. Classify INCONCLUSIVE_IMPLEMENTATION, never rescore consumed P4S outputs, repair non-answer-bearing list normalization and round-trip mechanics, and require an entirely fresh source-disjoint P4 denominator before any effect inference. Migrate remaining canonical runtime token ceilings now that P4S is sealed. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4572,9 +4612,11 @@
       "preserve_the_P3_1_of_10_vs_1_of_10_useful_result_and_zero_unsafe_denominator",
       "preserve_P4_v1_as_interrupted_inconclusive_and_never_replay_consumed_tasks_1_3",
       "preserve_terminal_P4R_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits",
-      "repair_learned_Semantic_IR_grammar_and_lowering_on_non_claim_mechanics_fixtures_before_any_fresh_P4_denominator",
+      "preserve_terminal_P4S_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits_without_rescoring",
+      "repair_non_answer_bearing_obligation_list_normalization_and_round_trip_mechanics_before_an_entirely_fresh_P4_denominator",
+      "migrate_remaining_canonical_runtime_quality_token_ceilings_to_completion_or_EOS_with_physical_context_residual_custody",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
-      "refresh_step_11416_source_and_custody_readiness_with_training_hold_installed",
+      "refresh_step_11416_source_and_custody_readiness_under_machine_predicate_authority_without_user_approval",
       "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training",
       "preserve_remaining_mixed_neural_Rust_release_and_cleanup_work_outside_the_bound_P1_P2_roadmap_transactions"
     ],

@@ -89,7 +89,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
 | P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
-| P4 causal development | `MECHANICS_GREEN_FRESH_DECISION_DENOMINATOR_NEXT` | P4R remains `INCONCLUSIVE_IMPLEMENTATION` and its ten tasks are consumed. Non-claim labeled transport and semantic-unit selection pass 3/3 exact verification; the repaired intervention/locality canary passes 2/2 provisional verification, validator-feedback closure, final verification, and dependency-local repair, with 5/5 static corruptions rejected and zero boundary hits. This opens only a fresh source-disjoint P4 decision denominator; D1, book support, and mechanism claims remain closed |
+| P4 causal development | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 natural-completion calls with zero context-boundary hits. Information flow, evaluator replay, source custody, 10/10 oracle reachability, and all corruption controls passed, but Semantic IR parsed/lowered 0/10 because its exact-list parser rejected semantically ordinary bracketed, quoted, or whitespace-separated obligation lists. D1 and book support remain closed; consumed outputs will not be rescored |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -267,6 +267,26 @@ model load, four parser-complete calls, and zero physical-boundary hits. These
 are mechanics-only results. They open a fresh source-disjoint P4 decision
 denominator, not D1, book support, training use, or serving authority.
 
+That P4S denominator is now terminal. Ten source-disjoint licensed tasks
+consumed sixty frozen-model calls: ten ended at parser completion, fifty at
+model EOS, none reached the 262,144-token physical context boundary, and the
+largest natural output used 149,505 tokens. The independent evaluator replay,
+route blinding, candidate-integrity recomputation, source custody, and all five
+corruption classes passed 10/10; evaluator-only oracles were useful 10/10.
+Natural-language plan control solved 1/10 while direct generation, learned
+Semantic IR, and the no-model compiler control solved 0/10.
+
+The treatment emitted the exact version header and terminal `END` on 10/10,
+but parsed and lowered 0/10 against the preregistered 8/10 mechanics floor.
+Every output expressed the required obligation identities using a semantically
+ordinary list spelling that the exact parser rejected: bracketed comma lists,
+quoted Python-style lists, or whitespace-separated identifiers. The terminal
+status is `INCONCLUSIVE_IMPLEMENTATION`, not evidence against cognitive
+compilation. P4S tasks and outputs are consumed and cannot be rescored, trained
+on, or reused in D1/D2. The next owner is a non-claim parser-normalization and
+round-trip mechanics repair, followed—only if adequate—by a new source-disjoint
+P4 denominator. D1 and book support remain closed.
+
 The no-arbitrary-generation-cap contract is not yet universal. P4R/P4S and the
 frozen D2 candidate and local-rater paths use artifact completion or EOS with
 the exact model context residual as their only numeric token boundary. The live
@@ -275,7 +295,7 @@ worker declares 1,536 action tokens; the disabled resident OpenAI-compatible
 route declares 128 tokens; and the resident neural runtime retains 32-token API
 defaults plus an 8-token mechanics qualification. These are migration debt, not
 acceptable successor quality boundaries. They must not be silently widened or
-used for a negative claim. After P4S seals, the canonical runtime migration must
+used for a negative claim. P4S is now sealed, so the canonical runtime migration must
 replace them with exact prompt-token accounting, parser/artifact completion or
 EOS, full termination telemetry, and invalid-observation treatment whenever a
 physical or caller-requested boundary truncates an answer. Historical consumed
