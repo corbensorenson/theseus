@@ -468,7 +468,7 @@ Luna for clear, repeatable, high-volume or focused coding work and permits
 
 #### P4 — Test one ASI Stack mechanism at a time
 
-State: `ACTIVE_COGNITIVE_COMPILATION_SELECTED_INSTRUMENT_NOT_YET_FROZEN`.
+State: `ACTIVE_COGNITIVE_COMPILATION_INSTRUMENT_FROZEN_TASK_POOL_PENDING`.
 
 Use the observed instrument and task residuals to select exactly one
 intervention. Do not run a factorial or make record production the dependent
@@ -490,6 +490,19 @@ stable identities, explicit loss/ambiguity, target validation, dependency-local
 repair, known-positive reachability, corruption interventions, matched total
 cost, and source-disjoint evaluation are adequacy requirements. No P3 outcome
 supports or falsifies the selected claim.
+
+The P4 instrument is now prospectively frozen before task acquisition at
+`configs/theseus_p4_cognitive_compilation_instrument.json`. It binds the exact
+Qwen3.5 model and decoder; three information-matched learned arms with two calls
+each; one persistent load per task; direct-local execution for every learned
+call; stable obligation, source, and AST identities; deterministic lowering;
+actual visible validation; dependency-local repair; and route-blind hidden
+scoring. A prospectively fixed, visible-request-only no-model compiler is the
+real deterministic control and must explicitly abstain outside two narrow
+rules. A separate evaluator-only target-derived oracle is only a mechanics
+ceiling and receives no learned or treatment credit. The instrument audit and
+all mechanics/corruption tests are GREEN. Acquire and seal ten fresh licensed
+tasks next without selecting on any arm or compiler outcome.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -557,7 +570,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `COGNITIVE_COMPILATION_SELECTED_INSTRUMENT_PENDING` | The dominant P3 residual was semantic translation/repair (12/14 evaluated edits incorrect), activating only `cognitive-compilation-and-semantic-ir.core`; no claim support follows until a faithful fresh-task P4 instrument survives adequacy and matched controls |
+| P4 causal development | `COGNITIVE_COMPILATION_INSTRUMENT_FROZEN_TASK_POOL_PENDING` | The exact Qwen3.5 three-arm instrument, prospective no-model compiler control, evaluator-only oracle ceiling, budgets, integrity checks, and decision rule are frozen before task acquisition; no claim support follows unless ten fresh licensed tasks pass adequacy and the treatment survives matched controls |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -595,12 +608,11 @@ Maintenance serves P or N and does not become another research program:
 8. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-9. Build one prospectively frozen, fresh-task P4 instrument for
-   `cognitive-compilation-and-semantic-ir.core`. First prove model use,
-   learnability/reachability, target validation, intervention sensitivity,
-   dependency-local repair, and matched budgets; then run its strongest direct,
-   natural-language-plan, and compiler-only controls. No other P4 mechanism is
-   active.
+9. Preserve the frozen P4 cognitive-compilation instrument and GREEN mechanics
+   audit. Acquire and seal ten fresh licensed, machine-verifiable tasks without
+   observing any arm or static-compiler outcome; then run the three matched
+   learned arms, prospective no-model compiler control, and evaluator-only
+   mechanics oracle. No other P4 mechanism is active.
 
 ## Historical Rapid Evidence Campaign
 

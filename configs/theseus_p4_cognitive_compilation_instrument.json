@@ -1,0 +1,161 @@
+{
+  "policy": "project_theseus_p4_cognitive_compilation_instrument_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01-P4-COGNITIVE-COMPILATION",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+  "purpose": "Test whether typed Semantic IR with stable obligation and AST identities, explicit loss, deterministic lowering, actual target validation, and dependency-local repair improves fresh Python maintenance outcomes for the exact frozen local model.",
+  "p3_terminal_disposition": "reports/theseus_assistant_p3_terminal_disposition.json",
+  "p3_terminal_disposition_sha256": "80d62e8e3e23b71c0adb5562f7f8d41bb62ab8cba3c2d369be81ea27410eccb0",
+  "p3_terminal_commit": "fffe0c62b2eaf58b47e512a677fe6ecee9f604e6",
+  "base_local_instrument": "configs/theseus_assistant_p3_instrument.json",
+  "base_local_instrument_sha256": "3462e683e23133b796a7258445e26680dc91d0e1d9ec184ece520391b93255ba",
+  "selected_claim": {
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "core_claim_sha256": "5372bb85802c06f411fd74815a1d8e3bc2288568f680226324d03b6a0e91a6ac",
+    "causal_variable": "Typed source-to-semantic-to-target lowering with stable obligation and AST identities, explicit loss or ambiguity, actual target validation, and dependency-local repair.",
+    "selection_basis": "P3 observed 12 incorrect outcomes among 14 independently evaluated typed edits plus 6 malformed outputs, while direct and integrated each solved 1 of 10 tasks. This is the preregistered translation-or-repair residual.",
+    "support_state_before": "no_change",
+    "automatic_support_promotion": false
+  },
+  "frozen_model": {
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+    "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+    "temperature": 0.0,
+    "capability_status": "development_denominator_not_serving_or_D1_qualified"
+  },
+  "harness": {
+    "candidate_runner": "scripts/theseus_p4_cognitive_compilation.py",
+    "candidate_runner_sha256": "5b8ac424f1494b20447fc6da3081e6f3ff0d4352d0247fecc2b268232a15a6c9",
+    "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
+    "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70"
+  },
+  "matched_arm_contract": {
+    "arms": [
+      "direct_target_generation",
+      "natural_language_plan_control",
+      "typed_semantic_ir_treatment"
+    ],
+    "arm_order_policy": "three_arm_latin_rotation_by_campaign_index",
+    "same_frozen_model": true,
+    "same_source_snapshot": true,
+    "same_natural_request": true,
+    "same_obligation_information": true,
+    "same_symbol_table": true,
+    "same_visible_verifier": true,
+    "same_hidden_evaluator_after_seal": true,
+    "same_two_model_calls": true,
+    "same_generation_token_cap": true,
+    "same_effect_sandbox": true,
+    "all_learned_calls_use_execution_mode": "direct_local_model",
+    "natural_language_plan_controls_execution": false,
+    "semantic_ir_controls_lowering_validation_and_repair": true
+  },
+  "budgets": {
+    "task_count": 10,
+    "model_calls_per_learned_arm": 2,
+    "learned_arms_per_task": 3,
+    "maximum_model_calls_per_task": 6,
+    "persistent_model_loads_per_task_set": 1,
+    "maximum_generation_tokens_per_call": 1536,
+    "maximum_semantic_units": 8,
+    "maximum_symbol_nodes": 80,
+    "maximum_replacement_bytes": 65536,
+    "visible_verifier_timeout_seconds": 60,
+    "hidden_verifier_timeout_seconds": 60
+  },
+  "semantic_ir_contract": {
+    "version": "theseus_semantic_ir_v1",
+    "source_identity": "stable digest of exact allowed source files",
+    "target_identity": "AST node id plus exact source-segment SHA-256",
+    "obligation_identity": "prospectively assigned IDs over request-visible requirements, preservation constraints, and non-goals",
+    "operations": [
+      "REPLACE",
+      "INSERT_BEFORE",
+      "INSERT_AFTER"
+    ],
+    "lowering": "deterministic AST-identity-to-line-edit lowering against the exact original snapshot",
+    "loss": "explicit NONE or unresolved obligation IDs; unresolved loss cannot release a candidate",
+    "repair": "second complete IR against the original snapshot; changed units must remain within the dependency closure implicated by actual validation feedback",
+    "actual_target_validation": "apply lowered action to a disposable original snapshot and execute the identical visible verifier",
+    "model_use_required": true,
+    "deterministic_renderer_learned_credit": false
+  },
+  "compiler_only_control": {
+    "label": "deterministic_request_compiler_baseline",
+    "location": "candidate_runner_before_hidden_evaluation",
+    "input": "only the natural request, allowed source snapshot, and allowed paths",
+    "prospectively_fixed": true,
+    "fixed_rules": [
+      "unique single-line exact literal replacement explicitly named with backticks",
+      "add or remove an explicitly named AST collection-literal element from an explicitly named symbol",
+      "otherwise abstain"
+    ],
+    "task_selection_may_condition_on_control_outcome": false,
+    "target_or_oracle_visibility": false,
+    "explicit_abstention": true,
+    "model_calls": 0,
+    "purpose": "Measure what a fixed, visible-request-only deterministic compiler can solve without learned generation.",
+    "learned_generation_credit": false,
+    "matched_model_call_claim": false,
+    "cannot_satisfy_treatment_effect": true
+  },
+  "compiler_oracle_ceiling": {
+    "label": "deterministic_compiler_oracle_ceiling",
+    "location": "evaluator_only",
+    "input": "sealed hand-authored oracle Semantic IR derived from the exact upstream target",
+    "candidate_generation_visibility": false,
+    "purpose": "Prove target reachability, lowerer adequacy, validator sensitivity, and the deterministic lowering ceiling.",
+    "learned_generation_credit": false,
+    "matched_model_call_claim": false,
+    "cannot_satisfy_treatment_effect": true
+  },
+  "adequacy_requirements": {
+    "fresh_tasks_after_freeze": true,
+    "minimum_obligations_per_task": 3,
+    "preservation_or_non_goal_required": true,
+    "localized_repairable_defect_required": true,
+    "parent_fail_target_pass_required": true,
+    "compiler_oracle_must_pass_every_task": true,
+    "source_obligation_target_and_loss_corruptions_must_fail": true,
+    "all_learned_arms_receive_identical_information": true,
+    "all_learned_arms_use_exactly_two_calls": true,
+    "all_candidates_scored_route_blind": true,
+    "source_disjoint_from_P2_P3_D1_D2_training": true,
+    "all_failures_and_costs_retained": true
+  },
+  "decision_rule": {
+    "primary_outcome": "independently_verified_useful_completion",
+    "minimum_development_survivor_effect": "typed Semantic IR must solve at least two more of ten tasks than direct generation, natural-language planning, and the prospective deterministic request-compiler control; lose on no more than one task against either learned control; and introduce zero unsafe or rollback failures",
+    "mechanics_floor": "compiler oracle 10 of 10 useful; all four corruption classes rejected; at least 8 of 10 treatment IRs parse and lower; every treatment candidate binds model-generated IR and actual validation",
+    "cost_rule": "all learned arms receive six total calls per task collectively and two each; report latency and total calls without hiding compiler or validation cost",
+    "terminal_states": [
+      "P4_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+      "P4_ADEQUATE_NO_SURVIVOR",
+      "INCONCLUSIVE_IMPLEMENTATION",
+      "INCONCLUSIVE_EXPERIMENT",
+      "INVALID_INFORMATION_FLOW"
+    ],
+    "negative_scope": "A null or loss applies only to this exact bounded Python Semantic IR, model, task distribution, budget, validator, and repair policy; it cannot falsify cognitive compilation generally."
+  },
+  "hosted_reference": {
+    "model": "gpt-5.6-luna",
+    "effort": "xhigh",
+    "state": "DEFINED_TRANSPORT_NOT_BOUND",
+    "P4_blocking": false,
+    "future_extension": "If a governed callable transport binds, freeze a separate identical-information P4 row before calls and keep local and hosted denominators separate."
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0,
+    "task_source": "autonomously_acquired_licensed_online_repositories",
+    "user_gate": "none",
+    "ASI_stack_support_state_effect": "none"
+  },
+  "maximum_inference": "A terminal P4 result can decide only whether this exact bounded Semantic IR implementation is a development survivor for one fresh D1 qualification. It cannot establish a general cognitive-compilation claim, any synthesis claim, serving qualification, or book support transition."
+}

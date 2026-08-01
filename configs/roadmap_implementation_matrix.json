@@ -3746,7 +3746,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "active_P3_terminal_cognitive_compilation_P4_selected_instrument_pending",
+    "execution_state": "active_P4_cognitive_compilation_instrument_frozen_task_pool_pending",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -3777,6 +3777,25 @@
       "selected_p4_claim_id": "cognitive-compilation-and-semantic-ir.core",
       "support_state_effect": "none",
       "rule": "P3 selects the semantic translation/repair residual for one fresh-task P4 instrument; it neither supports nor falsifies the selected claim, and all ten local P3 tasks are consumed."
+    },
+    "p4_cognitive_compilation_instrument": {
+      "state": "frozen_before_task_acquisition",
+      "claim_id": "cognitive-compilation-and-semantic-ir.core",
+      "instrument": "configs/theseus_p4_cognitive_compilation_instrument.json",
+      "candidate_runner": "scripts/theseus_p4_cognitive_compilation.py",
+      "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
+      "instrument_audit": "reports/theseus_p4_cognitive_compilation_instrument_audit.json",
+      "learned_arms": [
+        "direct_target_generation",
+        "natural_language_plan_control",
+        "typed_semantic_ir_treatment"
+      ],
+      "prospective_no_model_control": "deterministic_request_compiler_baseline",
+      "evaluator_only_mechanics_ceiling": "deterministic_compiler_oracle_ceiling",
+      "fresh_task_count": 10,
+      "task_pool_state": "pending_autonomous_licensed_source_disjoint_acquisition",
+      "support_state_effect": "none",
+      "rule": "Task selection may not condition on any learned arm, deterministic compiler, or oracle outcome; the exact frozen instrument decides only P4 development-survivor eligibility."
     },
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
     "shared_flagship_rule": "Book-derived work reaches primary execution only through faithful implementation, instrument adequacy, autonomous machine-verifiable behavior, joined-trace, matched-causal, source-disjoint qualification, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",
