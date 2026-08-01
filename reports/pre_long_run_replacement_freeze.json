@@ -43,7 +43,7 @@
     "independent_readiness_audit": {
       "bytes": 61873,
       "path": "reports/pre_long_run_independent_readiness_audit.json",
-      "sha256": "34d218265989ed25cb47756e5469dd6e8e28239a9c7fefd180a80d3553951cec"
+      "sha256": "ad80c61818c861bb3ca7bb65dc28e399d7097cf468428d3a6fc4c240800e133e"
     },
     "pre_long_run_review": {
       "bytes": 17569,
@@ -2063,7 +2063,7 @@
       "source_state": {
         "branch": "main",
         "clean_at_generation": true,
-        "commit": "be85c876ab6388a2dce814fef845f8738db834e0",
+        "commit": "2a1f93aa65135dcc3ea04039bcdab44aa248991a",
         "dirty_path_count": 0,
         "dirty_paths": []
       }
@@ -2076,7 +2076,7 @@
     "Scoped candidate dispositions are not broad scientific falsifications.",
     "This package does not acquire a training or D2 execution lease or start long training."
   ],
-  "package_identity": "sha256:8f08a2336154be7051518415449615f4c1bf9616d7e44fe30051938be142c6cf",
+  "package_identity": "sha256:6379ab97b29db5836690ca48ca326d233ef77bc380b74367a6d9ab71e38a1183",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",
@@ -2164,9 +2164,9 @@
       "sha256": "344451c1f6809464bc2b388038859df49c0d96c0e13348ecbfc7aaa1aa48b926"
     },
     "configs/roadmap_implementation_matrix.json": {
-      "bytes": 1682905,
+      "bytes": 1685679,
       "path": "configs/roadmap_implementation_matrix.json",
-      "sha256": "22e5f646b159f86a76bf38fda7281c0309d7db35664462a965ed50287c38a805"
+      "sha256": "68fc33f0aa1093abddce2bbc921dfaeca6938cd15532e3973e2eb7633b7fdabc"
     },
     "scripts/neural_seed_autonomous_launch_controller.py": {
       "bytes": 24884,
@@ -2222,7 +2222,7 @@
   "source_binding": {
     "branch": "main",
     "clean_at_generation": true,
-    "commit": "be85c876ab6388a2dce814fef845f8738db834e0",
+    "commit": "2a1f93aa65135dcc3ea04039bcdab44aa248991a",
     "dirty_path_count": 0,
     "dirty_paths": []
   },
