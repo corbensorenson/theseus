@@ -113,6 +113,46 @@ def test_command_plan_has_no_human_gate_or_project_token_cap() -> None:
     assert "--max-tokens" not in flattened
 
 
+def test_checkpoint_audit_honors_exact_registered_plan_migration() -> None:
+    value = config()
+    freeze = json.loads(
+        (ROOT / value["freeze"]).read_text(encoding="utf-8")
+    )
+    report = controller.checkpoint_audit(value, freeze)
+    rows = {row["target_id"]: row for row in report["targets"]}
+    shared = rows["shared_trunk"]
+    assert shared["plan_binding"]["state"] == (
+        "ACCEPTED_EXACT_IDENTITY_MIGRATION"
+    )
+    assert shared["plan_binding"]["migration"]["migration_id"] == (
+        "shared_trunk_step11416_uncapped_d2_contract_rebind_v1"
+    )
+    assert "plan_mismatch" not in shared["hard_gaps"]
+    assert "training_incomplete" in shared["hard_gaps"]
+
+
+def test_unregistered_plan_mismatch_remains_a_hard_gap() -> None:
+    binding = controller.checkpoint_plan_binding(
+        {
+            "plan_sha256": "legacy",
+            "checkpoint_sha256": "checkpoint",
+            "optimizer_state_sha256": "optimizer",
+            "optimizer_steps": 1,
+            "optimizer_positions": 1,
+        },
+        {
+            "plan_sha256": "current",
+            "plan_identity": {
+                "policy": "project_theseus_semantic_training_plan_identity_v3",
+                "legacy_migrations": [],
+            },
+        },
+        {"target_id": "shared_trunk"},
+    )
+    assert binding["state"] == "UNBOUND_PLAN_MISMATCH"
+    assert binding["migration"] == {}
+
+
 def test_dead_lease_is_archived_without_authorizing_rerun(tmp_path: Path) -> None:
     value = config()
     active = tmp_path / "active.json"

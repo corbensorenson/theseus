@@ -388,7 +388,8 @@ def checkpoint_audit(config: dict[str, Any], freeze: dict[str, Any]) -> dict[str
         row_gaps = []
         if not receipt.get("complete"):
             row_gaps.append("training_incomplete")
-        if receipt.get("plan_sha256") != plan.get("plan_sha256"):
+        plan_binding = checkpoint_plan_binding(receipt, plan, target)
+        if plan_binding["state"] == "UNBOUND_PLAN_MISMATCH":
             row_gaps.append("plan_mismatch")
         if receipt.get("stage_signature") != freeze.get("training_stage_signature"):
             row_gaps.append("stage_mismatch")
@@ -402,6 +403,7 @@ def checkpoint_audit(config: dict[str, Any], freeze: dict[str, Any]) -> dict[str
                 "target_id": target_id,
                 "receipt": relative(receipt_path),
                 "checkpoint": relative(checkpoint),
+                "plan_binding": plan_binding,
                 "hard_gaps": row_gaps,
             }
         )
@@ -409,6 +411,36 @@ def checkpoint_audit(config: dict[str, Any], freeze: dict[str, Any]) -> dict[str
         "trigger_state": "GREEN" if not gaps else "PAUSED",
         "targets": rows,
         "hard_gaps": gaps,
+    }
+
+
+def checkpoint_plan_binding(
+    receipt: dict[str, Any],
+    plan: dict[str, Any],
+    target: dict[str, Any],
+) -> dict[str, Any]:
+    receipt_sha256 = str(receipt.get("plan_sha256") or "")
+    current_sha256 = str(plan.get("plan_sha256") or "")
+    if receipt_sha256 and receipt_sha256 == current_sha256:
+        return {
+            "state": "EXACT_CURRENT_PLAN",
+            "receipt_plan_sha256": receipt_sha256,
+            "current_plan_sha256": current_sha256,
+            "migration": {},
+        }
+    migration = training.accepted_plan_identity_migration(receipt, plan, target)
+    if migration is not None:
+        return {
+            "state": "ACCEPTED_EXACT_IDENTITY_MIGRATION",
+            "receipt_plan_sha256": receipt_sha256,
+            "current_plan_sha256": current_sha256,
+            "migration": migration,
+        }
+    return {
+        "state": "UNBOUND_PLAN_MISMATCH",
+        "receipt_plan_sha256": receipt_sha256,
+        "current_plan_sha256": current_sha256,
+        "migration": {},
     }
 
 
