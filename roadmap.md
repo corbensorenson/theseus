@@ -568,6 +568,13 @@ fresh P4 task, D1 surface, or book-support action is authorized until a
 non-claim canary proves unit selection, intervention sensitivity, and
 dependency-local repair.
 
+The follow-on semantic-unit canary changed only granularity: Tuple became its
+complete assignment and Return became its complete function. It passed 3/3
+parse/lower and 3/3 exact verification in one persistent model load, with three
+natural-completion calls and zero context-boundary hits. Unit selection is now
+GREEN for these non-claim mechanics. The remaining owner is intervention
+sensitivity plus dependency-local repair; fresh P4 and D1 remain closed.
+
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
 | 0 | Integrated architecture + evidence-state prerequisites | Downstream-consumed trace joins and independent claim transitions | Direct, record-only, context-decoration-only, producer self-score |
@@ -634,7 +641,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `INCONCLUSIVE_IMPLEMENTATION_SEMANTIC_UNIT_GRANULARITY` | P4R completed 10/10 tasks and 60 naturally terminated calls with zero physical-context hits; direct solved 1/10, plan 2/10, and Semantic IR 0/10. A bounded labeled-transport repair raised non-claim parse/lower from 0/3 to 3/3, but exact verification remained 1/3 because fine AST targets elicited enclosing semantic-unit source. Fresh P4, D1, book support, and mechanism falsification remain closed |
+| P4 causal development | `MECHANICS_INTERVENTION_AND_LOCAL_REPAIR_PENDING` | P4R remains `INCONCLUSIVE_IMPLEMENTATION`; its ten tasks are consumed. Labeled transport and coarser semantic-unit selection now pass 3/3 parse/lower and 3/3 exact verification on non-claim mechanics with zero boundary hits. Intervention sensitivity and dependency-local repair remain required before fresh P4; D1, book support, and mechanism falsification remain closed |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
