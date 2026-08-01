@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import copy
 import json
 import sys
 import time
@@ -235,7 +236,15 @@ def candidate_envelope_complete(text: str) -> bool:
 
 
 def semantic_scope_symbol_table(root: Path, task: dict[str, Any]) -> dict[str, Any]:
-    table = ORIGINAL_SEMANTIC_SYMBOL_TABLE(root, task)
+    # The base v1 table contains fine-grained statements and expressions. Applying
+    # the task's final semantic-node cap there would discard later complete scopes
+    # before this P4S filter ever sees them. Inventory the visible ranges first,
+    # filter to P4S semantic scopes, and only then apply the bound.
+    inventory_task = copy.deepcopy(task)
+    inventory_contract = p2a.mapping(inventory_task.get("semantic_ir_contract"))
+    inventory_contract["maximum_symbol_nodes"] = 1_000_000
+    inventory_task["semantic_ir_contract"] = inventory_contract
+    table = ORIGINAL_SEMANTIC_SYMBOL_TABLE(root, inventory_task)
     eligible: dict[str, set[tuple[str, int, int]]] = {}
     for path in p2a.strings(task.get("allowed_effect_paths")):
         source_path = p2a.checked_source_path(root, path)
@@ -268,6 +277,11 @@ def semantic_scope_symbol_table(root: Path, task: dict[str, Any]) -> dict[str, A
             int(row.get("end_line") or 0),
         ) in eligible.get(str(row.get("path") or ""), set())
     ]
+    cap = int(
+        p2a.mapping(task.get("semantic_ir_contract")).get("maximum_symbol_nodes")
+        or 80
+    )
+    nodes = nodes[:cap]
     return {**table, "nodes": nodes, "semantic_unit_policy": "p4s_complete_scope_v1"}
 
 

@@ -50,6 +50,34 @@ def test_semantic_scope_table_excludes_nested_statements_and_assignments() -> No
     assert table["semantic_unit_policy"] == "p4s_complete_scope_v1"
 
 
+def test_semantic_scope_cap_applies_after_scope_filtering() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        (root / "sample.py").write_text(
+            "def first():\n"
+            "    a = 1\n"
+            "    b = 2\n"
+            "    c = 3\n"
+            "    return a + b + c\n\n"
+            "def second():\n"
+            "    return 2\n",
+            encoding="utf-8",
+        )
+        task = {
+            "allowed_effect_paths": ["sample.py"],
+            "candidate_visible_context": {
+                "reads": [{"path": "sample.py", "start_line": 1, "end_line": 20}]
+            },
+            "semantic_ir_contract": {"maximum_symbol_nodes": 2},
+            "obligations": [{"id": "O1", "kind": "require", "text": "change"}],
+            "obligation_dependencies": [],
+        }
+
+        table = p4s.semantic_scope_symbol_table(root, task)
+
+    assert [row["label"] for row in table["nodes"]] == ["first", "second"]
+
+
 def test_semantic_prompt_ends_in_labeled_output_shape() -> None:
     prompt = p4s.render_arm_prompt(
         p4.SEMANTIC,
