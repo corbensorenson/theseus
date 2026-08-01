@@ -960,7 +960,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 47205421056,
+      "disk_free_bytes": 51482595328,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -985,7 +985,7 @@
     },
     "pre_long_run_review": {
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "b7f683d777f388e04752f1bf64e84e9815730e9a6fe118f5cd00c7469141bdba"
+      "sha256": "d165a3c4ff4d309fe4b30437f080335ca611b33726327920b41ac667674e8158"
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
@@ -993,7 +993,7 @@
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "2ca67a0dd9f08eeb4d880554dde7f94b786e9f660713562d6b5faadc00cc44b5"
+      "sha256": "e51c44f16245358c183b92fa23600fc1d1865e8aae35d6d67e2bad46bd86af9b"
     },
     "training_availability_config": {
       "path": "configs/neural_seed_training_availability.json",
