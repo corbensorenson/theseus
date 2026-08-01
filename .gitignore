@@ -36,6 +36,7 @@
 /benchmarks/requests/
 /benchmarks/responses/
 /runtime/
+/tests/fixtures/theseus_p4v2r2r1_online/*_upstream.tar.gz
 /personality-documents/
 /runtime/candidate_replay_contract_v1/
 /runtime/sts_conditioning_cache/*

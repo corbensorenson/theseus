@@ -1,0 +1,87 @@
+{
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "archive_fetches_after_membership_seal": 2,
+  "artifacts": [
+    {
+      "expected_root": "pydantic-ai-f5577efa6dea7bf226d65ea6171a6c250153a002",
+      "label": "parent",
+      "missing_required_members": [],
+      "normalized": "p4v2r2r1_10_pydantic_ai_6901_parent.tar.gz",
+      "normalized_path": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_parent.tar.gz",
+      "normalized_sha256": "1e873237251355d3b9820a160bb9b13c6221dac1d0f96c8d91a06d42fd70c595",
+      "projection": {
+        "gzip_mtime": 0,
+        "member_mtime": 0,
+        "omitted_member_count": null,
+        "output_sha256": "1e873237251355d3b9820a160bb9b13c6221dac1d0f96c8d91a06d42fd70c595",
+        "policy": "project_theseus_exact_task_source_projection_v1",
+        "retained_members": [
+          "pydantic-ai-f5577efa6dea7bf226d65ea6171a6c250153a002/LICENSE",
+          "pydantic-ai-f5577efa6dea7bf226d65ea6171a6c250153a002/pydantic_ai_slim/pydantic_ai/models/openrouter.py"
+        ],
+        "uid_gid": 0
+      },
+      "required_members": [
+        "pydantic-ai-f5577efa6dea7bf226d65ea6171a6c250153a002/LICENSE",
+        "pydantic-ai-f5577efa6dea7bf226d65ea6171a6c250153a002/pydantic_ai_slim/pydantic_ai/models/openrouter.py"
+      ],
+      "revision": "f5577efa6dea7bf226d65ea6171a6c250153a002",
+      "sanitization_report": "theseus_p4v2r2r1_10_pydantic_ai_6901_parent_archive_sanitization.json",
+      "sanitization_report_path": "reports/theseus_p4v2r2r1_10_pydantic_ai_6901_parent_archive_sanitization.json",
+      "sanitization_report_sha256": "a8bdddb94e8b0406476d6ea653794be2887836f62bee478408ae2ff9272d733c",
+      "upstream": "p4v2r2r1_10_pydantic_ai_6901_parent_upstream.tar.gz",
+      "upstream_path": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_parent_upstream.tar.gz",
+      "upstream_sha256": "e8ec7602a965db680b0fd8f0a9d1c95c824c07eb039b200944456827415a27db",
+      "url": "https://codeload.github.com/pydantic/pydantic-ai/tar.gz/f5577efa6dea7bf226d65ea6171a6c250153a002"
+    },
+    {
+      "expected_root": "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249",
+      "label": "target",
+      "missing_required_members": [],
+      "normalized": "p4v2r2r1_10_pydantic_ai_6901_target.tar.gz",
+      "normalized_path": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_target.tar.gz",
+      "normalized_sha256": "8b12bffade1b2e3fbed815eafd05a9667d6b1e49e5a77bf4e1b24be885ea0edc",
+      "projection": {
+        "gzip_mtime": 0,
+        "member_mtime": 0,
+        "omitted_member_count": null,
+        "output_sha256": "8b12bffade1b2e3fbed815eafd05a9667d6b1e49e5a77bf4e1b24be885ea0edc",
+        "policy": "project_theseus_exact_task_source_projection_v1",
+        "retained_members": [
+          "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249/LICENSE",
+          "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249/pydantic_ai_slim/pydantic_ai/models/openrouter.py"
+        ],
+        "uid_gid": 0
+      },
+      "required_members": [
+        "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249/LICENSE",
+        "pydantic-ai-d91f12c0589f156b124216569c16ff4a91a55249/pydantic_ai_slim/pydantic_ai/models/openrouter.py"
+      ],
+      "revision": "d91f12c0589f156b124216569c16ff4a91a55249",
+      "sanitization_report": "theseus_p4v2r2r1_10_pydantic_ai_6901_target_archive_sanitization.json",
+      "sanitization_report_path": "reports/theseus_p4v2r2r1_10_pydantic_ai_6901_target_archive_sanitization.json",
+      "sanitization_report_sha256": "38929ae9e00201ce0ad5d356560cc37886d417fc52c03d4f22d96ebfe5ff8919",
+      "upstream": "p4v2r2r1_10_pydantic_ai_6901_target_upstream.tar.gz",
+      "upstream_path": "tests/fixtures/theseus_p4v2r2r1_online/p4v2r2r1_10_pydantic_ai_6901_target_upstream.tar.gz",
+      "upstream_sha256": "a7627a5694af6a700b4294db128541d966a92b68d543cfc16f9e9290a53b42db",
+      "url": "https://codeload.github.com/pydantic/pydantic-ai/tar.gz/d91f12c0589f156b124216569c16ff4a91a55249"
+    }
+  ],
+  "candidate_or_control_calls": 0,
+  "faults": [],
+  "hosted_model_calls": 0,
+  "license_spdx": "MIT",
+  "maximum_inference": "A GREEN receipt establishes only exact licensed archive transport, normalization, root identity, and required effect/license member presence for the sealed replacement task.",
+  "network_use": "two_immutable_licensed_github_codeload_archives_only",
+  "parent_target_oracle_or_evaluator_executions": 0,
+  "policy": "project_theseus_p4v2r2r1_source_fetch_v1",
+  "project_selected_quality_token_cap": null,
+  "repository": "pydantic/pydantic-ai",
+  "source_registry": "configs/theseus_p4v2r2r1_task_sources.json",
+  "source_registry_sha256": "92cd51cfe0fba5ad794527573aa6cd3d570394d7d01fabbb6a55ef2bb0e25f56",
+  "source_selection_commit": "b0a43dc8aacc722a92b5520026f4e91aa6e3497c",
+  "teacher_calls": 0,
+  "training_rows_written": 0,
+  "trigger_state": "GREEN"
+}
