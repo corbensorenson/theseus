@@ -1101,6 +1101,7 @@ def audit_book_implementation_contract(
             )
         )
     handoff = dict_value(flagship.get("book_handoff_contract"))
+    handoff_implementation = dict_value(handoff.get("implementation"))
     if (
         not list_values(handoff.get("book_owns"))
         or not list_values(handoff.get("theseus_owns"))
@@ -1112,6 +1113,33 @@ def audit_book_implementation_contract(
                 "book_implementation_contract",
                 "shared_flagship_book_handoff_contract_invalid",
                 {},
+            )
+        )
+    required_handoff_paths = [
+        str(handoff_implementation.get(key) or "")
+        for key in ("config", "builder", "test")
+    ]
+    if (
+        handoff_implementation.get("state")
+        != "prospectively_bound_waiting_for_terminal_P4V2R2_evidence"
+        or handoff_implementation.get("book_pin_commit")
+        != dict_value(matrix.get("latest_ai_book_reconciliation")).get("book_commit")
+        or handoff_implementation.get("claim_id")
+        != "cognitive-compilation-and-semantic-ir.core"
+        or handoff_implementation.get("d1_requirement")
+        != "required_once_only_if_P4V2R2_survives"
+        or handoff_implementation.get("public_safe_aggregate_only") is not True
+        or handoff_implementation.get("automatic_support_transition_proposed") is not False
+        or handoff_implementation.get("support_state_effect") != "none"
+        or handoff_implementation.get("publication_authority") != "none"
+        or handoff_implementation.get("release_authority") != "none"
+        or any(not path or not (ROOT / path).is_file() for path in required_handoff_paths)
+    ):
+        hard_gaps.append(
+            gap(
+                "book_implementation_contract",
+                "shared_flagship_book_handoff_implementation_invalid",
+                {"required_paths": required_handoff_paths},
             )
         )
 

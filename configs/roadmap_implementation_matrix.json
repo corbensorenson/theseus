@@ -8763,7 +8763,22 @@
       "book_owns": ["claim identity", "competence standard", "preregistration", "evidence transition", "argument-exit language", "publication boundary"],
       "theseus_owns": ["local student", "autonomous machine-verifiable task path", "runtime effects", "joined traces", "matched controls", "public-safe evidence pack"],
       "forbidden_shared_state": ["hidden answers", "held-out outcomes", "private payloads", "implied support movement"],
-      "support_state_effect": "none_from_roadmap_or_handoff_alone"
+      "support_state_effect": "none_from_roadmap_or_handoff_alone",
+      "implementation": {
+        "state": "prospectively_bound_waiting_for_terminal_P4V2R2_evidence",
+        "config": "configs/theseus_asi_stack_claim_handoff.json",
+        "builder": "scripts/theseus_asi_stack_claim_handoff.py",
+        "test": "tests/test_theseus_asi_stack_claim_handoff.py",
+        "book_pin_commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+        "claim_id": "cognitive-compilation-and-semantic-ir.core",
+        "p4_activation_status": "terminal_green_P4V2R2_disposition",
+        "d1_requirement": "required_once_only_if_P4V2R2_survives",
+        "public_safe_aggregate_only": true,
+        "automatic_support_transition_proposed": false,
+        "support_state_effect": "none",
+        "publication_authority": "none",
+        "release_authority": "none"
+      }
     },
     "rule": "The primary goal is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. The 84-chapter pin and 13-claim causal portfolio are source-bound; immediate work is P2A instrument adequacy and P3 autonomous pairs, then exactly one residual-selected P4 mechanism and fresh P5/D1 qualification. Neural N0 source/custody readiness proceeds in parallel; N1/N2 require the automated launch/resource/rollback controller, never user presence. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
     "why": "Theseus currently has a canonical control-plane runtime without the frozen local model and a local-model worker without the canonical control plane. Joining those halves is the smallest honest step. Only causally live mechanisms and useful natural outcomes can justify subsystem A/B work; record production, route labels, and context decoration cannot.",

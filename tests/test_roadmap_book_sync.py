@@ -248,6 +248,50 @@ class RoadmapBookSyncTests(unittest.TestCase):
             policy["global_decision_rule"]["SUPPORT_EFFECT"],
         )
 
+    def test_claim_handoff_is_executable_pinned_and_non_authorizing(self) -> None:
+        handoff = self.matrix["flagship_lane_governance"]["book_handoff_contract"]
+        implementation = handoff["implementation"]
+
+        self.assertEqual(
+            self.matrix["latest_ai_book_reconciliation"]["book_commit"],
+            implementation["book_pin_commit"],
+        )
+        self.assertEqual(
+            "cognitive-compilation-and-semantic-ir.core",
+            implementation["claim_id"],
+        )
+        self.assertEqual(
+            "required_once_only_if_P4V2R2_survives",
+            implementation["d1_requirement"],
+        )
+        self.assertTrue(implementation["public_safe_aggregate_only"])
+        self.assertFalse(implementation["automatic_support_transition_proposed"])
+        self.assertEqual("none", implementation["support_state_effect"])
+        self.assertEqual("none", implementation["publication_authority"])
+        self.assertEqual("none", implementation["release_authority"])
+        for key in ("config", "builder", "test"):
+            self.assertTrue((ROOT / implementation[key]).is_file())
+
+        report = self.audit(self.matrix)
+        self.assertNotIn(
+            "shared_flagship_book_handoff_implementation_invalid",
+            self.gap_kinds(report),
+        )
+
+    def test_claim_handoff_support_laundering_fails_closed(self) -> None:
+        matrix = copy.deepcopy(self.matrix)
+        implementation = matrix["flagship_lane_governance"][
+            "book_handoff_contract"
+        ]["implementation"]
+        implementation["automatic_support_transition_proposed"] = True
+        implementation["support_state_effect"] = "empirical-test-backed"
+
+        report = self.audit(matrix)
+        self.assertIn(
+            "shared_flagship_book_handoff_implementation_invalid",
+            self.gap_kinds(report),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -105,6 +105,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
 | ASI Stack synchronization | `RECONCILED_84_OF_84` | Immutable book commit `17c6ece…` is bound in exact order with zero unmapped chapters and no automatic support movement |
 | ASI Stack claim portfolio | `BOUND_13_EXACT_CLAIMS` | Two integrity prerequisites, eight one-variable P4 candidates, one independent D2 neural claim, and two synthesis claims now have exact causal, adequacy, control, decision, and maximum-inference contracts |
+| ASI Stack claim handoff | `PROSPECTIVELY_BOUND_WAITING_FOR_TERMINAL_P4V2R2` | The public-safe handoff binds the reviewed 84-chapter commit, exact cognitive-compilation core claim, Appendix C `argument` state, and book evidence-transition schema. It emits no packet before terminal evidence, waits for one fresh D1 result only if P4 survives, excludes candidate/hidden/oracle payloads, and grants no support, publication, or release authority |
 
 ## The Active Local-Model Program
 

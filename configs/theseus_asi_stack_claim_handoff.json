@@ -1,0 +1,77 @@
+{
+  "policy": "project_theseus_asi_stack_claim_evidence_handoff_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_P4V2R2_TERMINAL_EVIDENCE",
+  "book_repository": "../AI_book",
+  "book_pin": {
+    "commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+    "manifest_path": "book_structure.json",
+    "manifest_sha256": "ab8db6fddc6a367beac24d16866d0dc687b85cc796f5fc4086833b752bbfae4e",
+    "chapter_count": 84,
+    "claim_matrix_path": "appendices/C_claim_evidence_matrix.qmd",
+    "claim_matrix_sha256": "fdbbb62faa4630acb0b3ebadbdd3826eb33bc98ba62265bb6fea54f9ccae22d0",
+    "evidence_transition_schema_path": "schemas/evidence_transition_record.schema.json",
+    "evidence_transition_schema_sha256": "6f684709d3dd1317b5db372cf99a86ec57f67c70ae9a635e7bae416c486d15fd"
+  },
+  "claim": {
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "chapter_id": "cognitive-compilation-and-semantic-ir",
+    "chapter_title": "Cognitive Compilation and Semantic IR",
+    "chapter_path": "chapters/cognitive-compilation-and-semantic-ir.qmd",
+    "claim_label": "Design rationale",
+    "current_support_state": "argument",
+    "claim_contract_sha256": "f2549b21d928a184f26646a90cf47a735a8b7089075e2889c3f7280894520e0c"
+  },
+  "activation": {
+    "p4_terminal_disposition": "reports/theseus_p4v2r2_terminal_disposition.json",
+    "required_p4_trigger_state": "GREEN",
+    "p4_survivor_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+    "p4_terminal_non_survivor_statuses": [
+      "P4V2R2_ADEQUATE_NO_SURVIVOR",
+      "INCONCLUSIVE_IMPLEMENTATION",
+      "INCONCLUSIVE_EXPERIMENT",
+      "INVALID_INFORMATION_FLOW",
+      "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+    ],
+    "d1_terminal_disposition": "reports/theseus_d1_terminal_disposition.json",
+    "required_d1_trigger_state": "GREEN",
+    "d1_terminal_statuses": [
+      "D1_EXACT_IMPLEMENTATION_QUALIFIED",
+      "D1_EXACT_IMPLEMENTATION_NOT_QUALIFIED",
+      "INCONCLUSIVE_IMPLEMENTATION",
+      "INCONCLUSIVE_EXPERIMENT",
+      "INVALID_INFORMATION_FLOW",
+      "INVALID_OBSERVATION_CONTEXT_OR_HOST_BOUNDARY",
+      "INVALID_SOURCE_OR_CONSUMPTION_CUSTODY"
+    ]
+  },
+  "packet_policy": {
+    "public_safe_aggregate_only": true,
+    "candidate_outputs_included": false,
+    "hidden_tests_or_oracles_included": false,
+    "private_payloads_included": false,
+    "task_selection_metadata_included": false,
+    "negative_results_and_weak_tails_required": true,
+    "exact_artifact_digests_required": true,
+    "maximum_inference_required": true,
+    "automatic_support_transition_proposed": false,
+    "book_review_required": true,
+    "user_or_operator_approval_required": false
+  },
+  "consumer": {
+    "owner": "ASI Stack governed evidence-transition workflow",
+    "action": "independently review the packet against the pinned claim and create, reject, or block a separate evidence_transition_record",
+    "support_state_effect_from_handoff": "none",
+    "publication_authority": "none",
+    "release_authority": "none"
+  },
+  "lifecycle": {
+    "preterminal": "PAUSED_NO_PACKET",
+    "p4_non_survivor_terminal": "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1",
+    "p4_survivor_pre_d1": "PAUSED_WAITING_FOR_ONE_FRESH_D1_TERMINAL_RESULT",
+    "p4_survivor_post_d1": "READY_FOR_GOVERNED_BOOK_REVIEW",
+    "book_pin_or_claim_drift": "RED_REBIND_REQUIRED",
+    "post_review": "RETAIN_PACKET_AND_SEPARATE_BOOK_TRANSITION_IDENTITY"
+  },
+  "report": "reports/theseus_asi_stack_claim_handoff.json",
+  "maximum_inference": "A GREEN handoff proves only that public-safe terminal Theseus evidence is bound to the reviewed 84-chapter book pin and exact cognitive-compilation core claim for independent book review. It does not itself change support state, prove the chapter core claim, authorize publication or release, establish general cognitive compilation, or transfer beyond the exact model, mechanism, tasks, controls, evaluator, budgets, and operating regime recorded by the terminal evidence."
+}
