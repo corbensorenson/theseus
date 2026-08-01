@@ -220,7 +220,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     )
     vcm_governor["consumer_abi"] = vcm_consumer_packet
     vcm_governor["ready"] = bool(vcm_governor.get("ready")) and bool(vcm_consumer_packet.get("ready"))
-    checkpoint_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
+    checkpoint_out = backend_receipt_path(session_id, args.out)
     code_route = code_route_packet(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
     code_private_probe = run_code_private_probe(intent, route) if dispatch_prepared else {"active": False, "skipped": True}
     tool_required = "assistant.deterministic_tool" in selected_capabilities
@@ -1031,6 +1031,13 @@ def bind_local_inference_runner(
         _LOCAL_INFERENCE_RUNNER.reset(token)
 
 
+def backend_receipt_path(session_id: str, assistant_out: str | Path) -> Path:
+    """Give every assistant call an immutable backend-telemetry owner."""
+    output_identity = rel(resolve(assistant_out))
+    call_suffix = sha256_text(output_identity)[:16]
+    return REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}_{call_suffix}.json"
+
+
 def build_direct_local_model_report(
     *,
     args: argparse.Namespace,
@@ -1058,7 +1065,7 @@ def build_direct_local_model_report(
         prompt=prompt,
         model_identity=dict(model_contract.get("identity") or {}),
     )
-    backend_out = REPORTS / f"theseus_assistant_checkpoint_chat_{session_id}.json"
+    backend_out = backend_receipt_path(session_id, args.out)
     ready_to_infer = (
         model_contract.get("ready") is True
         and request.get("ready") is True

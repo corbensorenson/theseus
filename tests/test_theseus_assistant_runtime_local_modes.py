@@ -161,6 +161,15 @@ def args(tmp_path: Path, mode: str) -> argparse.Namespace:
     )
 
 
+def test_backend_receipt_path_is_unique_per_assistant_call(tmp_path: Path) -> None:
+    first = runtime.backend_receipt_path("fixed_session", tmp_path / "call_1.json")
+    second = runtime.backend_receipt_path("fixed_session", tmp_path / "call_2.json")
+
+    assert first != second
+    assert first.name.startswith("theseus_assistant_checkpoint_chat_fixed_session_")
+    assert len(first.stem.rsplit("_", 1)[-1]) == 16
+
+
 def test_canonical_runtime_runs_matched_direct_and_integrated_paths_without_real_model_load(
     tmp_path: Path, monkeypatch
 ) -> None:

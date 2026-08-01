@@ -17,11 +17,11 @@ import theseus_p4v2r2_cognitive_compilation as p4v  # noqa: E402
 INSTRUMENT = ROOT / "configs/theseus_p4v2r2_cognitive_compilation_instrument.json"
 
 
-def test_prospective_instrument_audits_green_before_task_acquisition() -> None:
+def test_consumed_predecessor_instrument_stays_bound_to_its_original_runner() -> None:
     report = p4v.audit_instrument(INSTRUMENT)
 
-    assert report["trigger_state"] == "GREEN"
-    assert report["faults"] == []
+    assert report["trigger_state"] == "RED"
+    assert report["faults"] == ["candidate_runner_digest_mismatch"]
     assert report["v2r2_mechanics"]["state"] == (
         "PROSPECTIVE_LIST_NORMALIZATION_MECHANICS_GREEN"
     )

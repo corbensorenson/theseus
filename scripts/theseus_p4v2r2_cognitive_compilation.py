@@ -72,11 +72,15 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     faults: list[str] = []
     if value.get("policy") != INSTRUMENT_POLICY:
         faults.append("instrument_policy_invalid")
-    if value.get("state") != (
-        "PROSPECTIVELY_BOUND_BEFORE_FRESH_P4V2R2_TASK_ACQUISITION"
-    ):
+    if value.get("state") not in {
+        "PROSPECTIVELY_BOUND_BEFORE_FRESH_P4V2R2_TASK_ACQUISITION",
+        "PROSPECTIVELY_RESEALED_AFTER_ROUTE_IMPLEMENTATION_FAILURE",
+    }:
         faults.append("instrument_not_prospectively_bound")
-    if value.get("runtime_attempt_namespace") != "p4v2r2_attempt1":
+    if value.get("runtime_attempt_namespace") not in {
+        "p4v2r2_attempt1",
+        "p4v2r2r1_attempt1",
+    }:
         faults.append("runtime_attempt_namespace_invalid")
 
     for name, digest_name in (

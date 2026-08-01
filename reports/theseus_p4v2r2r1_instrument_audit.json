@@ -1,0 +1,16 @@
+{
+  "faults": [],
+  "instrument": {
+    "path": "configs/theseus_p4v2r2r1_cognitive_compilation_instrument.json",
+    "sha256": "70f9829e694f78aff69fa4713a4adc2c013e3103433b9f99f9dfd22a77f25069"
+  },
+  "policy": "project_theseus_p4v2r2r1_instrument_audit_v1",
+  "project_selected_quality_token_cap": null,
+  "runtime_attempt_namespace": "p4v2r2r1_attempt1",
+  "task_candidate_or_control_calls": 0,
+  "task_pool": {
+    "path": "configs/theseus_p4v2r2r1_task_pool.json",
+    "sha256": "12fa1a25276bd2d3bbed497a4b6e2fef4ebd868c81d570ac7d9e3c2d5c65bfa5"
+  },
+  "trigger_state": "GREEN"
+}
