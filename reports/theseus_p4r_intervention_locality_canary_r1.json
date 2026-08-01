@@ -1,0 +1,188 @@
+{
+  "cases": [
+    {
+      "case_id": "repair_primary_preserve_secondary",
+      "dependency_local_repair": true,
+      "expected_implicated_obligation_ids": [
+        "O1",
+        "O2"
+      ],
+      "expected_source_sha256": "a738b02f069ffc3a6e4de66b845503105aaaae1c4f1501ce37e112008089dd24",
+      "feedback_marker": "FAIL_O1_PRIMARY_VALUE",
+      "final_apply_faults": [],
+      "final_parse_faults": [],
+      "final_source_sha256": "a738b02f069ffc3a6e4de66b845503105aaaae1c4f1501ce37e112008089dd24",
+      "final_verified": true,
+      "first_apply_faults": [],
+      "first_parse_faults": [],
+      "first_verified": true,
+      "implicated_obligation_ids": [
+        "O1",
+        "O2"
+      ],
+      "injected_apply_faults": [],
+      "injected_feedback_verified": true,
+      "injected_parse_faults": [],
+      "injected_unit_id": "U1",
+      "locality_faults": [],
+      "route_integrity_ready": true,
+      "runtime_calls": [
+        {
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_intervention_locality_r1_repair_primary_preserve_secondary_direct_local_model_1.json",
+          "backend_report_sha256": "1f768c5560bfc9e95ce4b1f418e69a7493894a92817281c16d5cc0bb9cf71b31",
+          "generated_tokens": 311,
+          "prompt_tokens": 593,
+          "route_integrity_ready": true,
+          "runtime_report": "runtime/p2a/p2a_p4r_intervention_locality_r1_repair_primary_preserve_secondary_direct_local_model_1.json",
+          "runtime_report_sha256": "9c20b3df5bccbf76ed240ff0de5985e0074b328eb82e08bf6bad5425c6b2174c",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        },
+        {
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_intervention_locality_r1_repair_primary_preserve_secondary_direct_local_model_2.json",
+          "backend_report_sha256": "fe32e93723fde276c64dbd0103a921550ba64ce4c14b5cc0b0657b50961e7361",
+          "generated_tokens": 311,
+          "prompt_tokens": 1055,
+          "route_integrity_ready": true,
+          "runtime_report": "runtime/p2a/p2a_p4r_intervention_locality_r1_repair_primary_preserve_secondary_direct_local_model_2.json",
+          "runtime_report_sha256": "3d100675309b75aaf1b143becd21cc049b951b05e1b093bdeae96c54629f17f7",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        }
+      ],
+      "safety_ceiling_hits": 0,
+      "targeted_unit_changed": true,
+      "termination_ready": true,
+      "untouched_unit_byte_stable": true,
+      "untouched_unit_id": "U2"
+    },
+    {
+      "case_id": "repair_secondary_preserve_primary",
+      "dependency_local_repair": true,
+      "expected_implicated_obligation_ids": [
+        "O3",
+        "O4"
+      ],
+      "expected_source_sha256": "a738b02f069ffc3a6e4de66b845503105aaaae1c4f1501ce37e112008089dd24",
+      "feedback_marker": "FAIL_O3_SECONDARY_VALUE",
+      "final_apply_faults": [],
+      "final_parse_faults": [],
+      "final_source_sha256": "a738b02f069ffc3a6e4de66b845503105aaaae1c4f1501ce37e112008089dd24",
+      "final_verified": true,
+      "first_apply_faults": [],
+      "first_parse_faults": [],
+      "first_verified": true,
+      "implicated_obligation_ids": [
+        "O3",
+        "O4"
+      ],
+      "injected_apply_faults": [],
+      "injected_feedback_verified": true,
+      "injected_parse_faults": [],
+      "injected_unit_id": "U2",
+      "locality_faults": [],
+      "route_integrity_ready": true,
+      "runtime_calls": [
+        {
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_intervention_locality_r1_repair_secondary_preserve_primary_direct_local_model_1.json",
+          "backend_report_sha256": "2655877b8dae3751787682bfc4e9eaff2d879b3b4538d1936663a303415dc44a",
+          "generated_tokens": 311,
+          "prompt_tokens": 593,
+          "route_integrity_ready": true,
+          "runtime_report": "runtime/p2a/p2a_p4r_intervention_locality_r1_repair_secondary_preserve_primary_direct_local_model_1.json",
+          "runtime_report_sha256": "fe5a2a16627ad3a7ce299ecdadcb3acacafc865169eb08f6eca38b869c569df8",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        },
+        {
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_intervention_locality_r1_repair_secondary_preserve_primary_direct_local_model_2.json",
+          "backend_report_sha256": "c212f35b71416994f23e181956c96213ed2f9e2760533abe6202c3babdbceeb2",
+          "generated_tokens": 311,
+          "prompt_tokens": 1056,
+          "route_integrity_ready": true,
+          "runtime_report": "runtime/p2a/p2a_p4r_intervention_locality_r1_repair_secondary_preserve_primary_direct_local_model_2.json",
+          "runtime_report_sha256": "5068772080da85676a4287705950f4c05ef78da2b4a3b7970ea4ce4b49e76f51",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        }
+      ],
+      "safety_ceiling_hits": 0,
+      "targeted_unit_changed": true,
+      "termination_ready": true,
+      "untouched_unit_byte_stable": true,
+      "untouched_unit_id": "U1"
+    }
+  ],
+  "config_audit": {
+    "config_sha256": "106b458cbe2c2c1e4a2cabfc931f75d4cfeecf89bfc1674f3fd2e2d4bb7c5a3e",
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T07:52:05.000482Z",
+    "faults": [],
+    "policy": "project_theseus_p4r_intervention_locality_canary_r1_audit_v1",
+    "trigger_state": "GREEN"
+  },
+  "config_sha256": "106b458cbe2c2c1e4a2cabfc931f75d4cfeecf89bfc1674f3fd2e2d4bb7c5a3e",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T07:54:48.269742Z",
+  "dependency_local_repairs": "2/2",
+  "faults": [],
+  "final_verified": "2/2",
+  "first_verified": "2/2",
+  "injected_feedback_verified": "2/2",
+  "model_calls": 4,
+  "model_loads": 1,
+  "next_gate": "Freeze a fresh source-disjoint P4 decision denominator; D1 and book support remain closed until a claim-bearing survivor exists.",
+  "policy": "project_theseus_p4r_intervention_locality_canary_r1_v1",
+  "repair_revision": "r1_bound_output_skeleton_and_fail_closed_terminalization",
+  "safety_ceiling_hits": 0,
+  "scope": "Bound-skeleton repair of the failed two-unit prompt transport on the same two hand-authored non-claim mechanics cases. No P4, D1, training, serving, or book claim is available from this canary.",
+  "state": "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN",
+  "static_intervention_ladder": {
+    "corruption_faults": {
+      "dependency_closure": [
+        "semantic_obligation_coverage_incomplete",
+        "semantic_unit_dependency_not_closed"
+      ],
+      "loss_record": [
+        "semantic_loss_unresolved"
+      ],
+      "obligation_coverage": [
+        "semantic_obligation_identity_or_order_invalid"
+      ],
+      "source_identity": [
+        "semantic_source_identity_invalid"
+      ],
+      "target_identity": [
+        "semantic_target_identity_invalid"
+      ]
+    },
+    "learned_generation_credit": false,
+    "required_corruption_rejections": {
+      "dependency_closure": true,
+      "loss_record": true,
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true
+    },
+    "trigger_state": "GREEN",
+    "valid_fixture_action_count": 2,
+    "valid_fixture_parse_faults": []
+  },
+  "trigger_state": "GREEN"
+}

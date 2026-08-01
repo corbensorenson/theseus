@@ -3746,7 +3746,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "active_P4R_completion_task_pool_sealed_run_pending",
+    "execution_state": "active_fresh_P4_decision_denominator_design_mechanics_green",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -3879,13 +3879,36 @@
           "physical_context_boundary_hits": 0,
           "finding": "Complete assignment/function semantic units align model-emitted scope with deterministic lowering and close the exact-verification wall on non-claim mechanics."
         },
-        "current_owner": "intervention_sensitivity_and_dependency_local_repair",
-        "fresh_P4_denominator_open": false,
+        "intervention_locality_attempt1": {
+          "artifact": "reports/theseus_p4r_intervention_locality_canary_attempt1.json",
+          "artifact_sha256": "25ef3147732b9936a009e48aa08846df17e996f085eb220388386e128288e5ea",
+          "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+          "model_calls": 1,
+          "physical_context_boundary_hits": 0,
+          "finding": "The first frozen two-unit prompt copied descriptive prompt sections instead of the bound grammar, and the runner raised before aggregate terminalization. The consumed receipt is preserved separately and tests neither intervention sensitivity nor repair locality."
+        },
+        "intervention_and_dependency_local_repair_canary_r1": {
+          "artifact": "reports/theseus_p4r_intervention_locality_canary_r1.json",
+          "artifact_sha256": "2b217ccbab42ac4cd2da37e1f0cc7a3fced97b39bccdf2ee1c245e18df111135",
+          "state": "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN",
+          "first_verified": "2/2",
+          "injected_feedback_verified": "2/2",
+          "final_verified": "2/2",
+          "dependency_local_repairs": "2/2",
+          "static_corruption_classes_rejected": "5/5",
+          "model_loads": 1,
+          "model_calls": 4,
+          "physical_context_boundary_hits": 0,
+          "finding": "A fully bound two-unit output skeleton produced exact provisional artifacts. Rotated single-unit fault injections yielded the preregistered dependency closures; learned repairs changed only the implicated unit, preserved the unrelated unit byte-for-byte, and exactly verified."
+        },
+        "current_owner": "fresh_source_disjoint_P4_decision_denominator",
+        "fresh_P4_denominator_open": true,
+        "D1_open": false,
         "support_state_effect": "none"
       },
       "hosted_model_calls": 0,
       "support_state_effect": "none",
-      "rule": "The exact ten tasks are consumed and may not be replayed. Labeled transport and semantic-unit selection now pass 3/3 parse/lower and exact verification on non-claim mechanics with zero boundary hits. Intervention sensitivity and dependency-local repair must still pass before acquiring any fresh decision denominator. No mechanics result can move book support or qualify D1."
+      "rule": "The exact ten P4R tasks and the failed first intervention-canary call are consumed and may not be replayed for fresh credit. Labeled transport and semantic-unit selection pass 3/3 parse/lower and exact verification; the repaired intervention/locality canary passes 2/2 provisional verification, authentic feedback closure, final verification, and dependency-local repair with five of five static corruptions rejected and zero physical-boundary hits. These non-claim mechanics open only the design and prospective freeze of a fresh source-disjoint P4 decision denominator. They do not move book support, qualify D1, or establish a mechanism effect."
     },
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
     "shared_flagship_rule": "Book-derived work reaches primary execution only through faithful implementation, instrument adequacy, autonomous machine-verifiable behavior, joined-trace, matched-causal, source-disjoint qualification, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",

@@ -84,7 +84,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
 | P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
-| P4 causal development | `MECHANICS_INTERVENTION_AND_LOCAL_REPAIR_PENDING` | P4R remains `INCONCLUSIVE_IMPLEMENTATION`; its ten tasks are consumed. Labeled transport and coarser semantic-unit selection now pass 3/3 parse/lower and 3/3 exact verification on non-claim mechanics with zero boundary hits. Intervention sensitivity and dependency-local repair remain required before fresh P4; D1, book support, and mechanism falsification remain closed |
+| P4 causal development | `MECHANICS_GREEN_FRESH_DECISION_DENOMINATOR_NEXT` | P4R remains `INCONCLUSIVE_IMPLEMENTATION` and its ten tasks are consumed. Non-claim labeled transport and semantic-unit selection pass 3/3 exact verification; the repaired intervention/locality canary passes 2/2 provisional verification, validator-feedback closure, final verification, and dependency-local repair, with 5/5 static corruptions rejected and zero boundary hits. This opens only a fresh source-disjoint P4 decision denominator; D1, book support, and mechanism claims remain closed |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -246,6 +246,21 @@ seven exact unopened Yarl, Packaging, Structlog, Trio, Tox, Uvicorn, and
 Installer surfaces plus prospectively selected Black, Django, and Celery
 tasks. All ten parents fail, all exact targets and evaluator-only oracles pass,
 all corruption interventions reject, and candidate/control calls remain zero.
+
+P4R later completed all ten tasks and sixty natural-completion calls with zero
+physical-boundary hits, but learned Semantic IR parsed and lowered 0/10 against
+its predeclared mechanics floor while the evaluator-only oracle remained useful
+10/10. It is terminal `INCONCLUSIVE_IMPLEMENTATION`; all ten tasks are consumed.
+The non-claim repair sequence then recovered labeled transport and semantic-unit
+granularity to 3/3 exact verification. The first two-unit intervention attempt
+consumed one call and was retained inconclusive after copying descriptive prompt
+sections into an invalid envelope. A prospectively frozen bound-skeleton R1
+used a new namespace and passed both rotations: 2/2 provisional and final exact
+verification, 2/2 authentic feedback closures, 2/2 dependency-local repairs,
+2/2 unrelated units byte-stable, 5/5 static corruptions rejected, one persistent
+model load, four parser-complete calls, and zero physical-boundary hits. These
+are mechanics-only results. They open a fresh source-disjoint P4 decision
+denominator, not D1, book support, training use, or serving authority.
 
 Historical L0 evidence remains preserved:
 

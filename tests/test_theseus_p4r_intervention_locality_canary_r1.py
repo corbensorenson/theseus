@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -61,3 +62,23 @@ def test_frozen_r1_config_audits_green() -> None:
 
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
+
+
+def test_r1_intervention_locality_report_is_green() -> None:
+    report = json.loads(
+        (ROOT / "reports" / "theseus_p4r_intervention_locality_canary_r1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["state"] == "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN"
+    assert report["first_verified"] == "2/2"
+    assert report["injected_feedback_verified"] == "2/2"
+    assert report["final_verified"] == "2/2"
+    assert report["dependency_local_repairs"] == "2/2"
+    assert report["model_loads"] == 1
+    assert report["model_calls"] == 4
+    assert report["safety_ceiling_hits"] == 0
+    assert all(report["static_intervention_ladder"]["required_corruption_rejections"].values())
+    assert all(case["untouched_unit_byte_stable"] for case in report["cases"])

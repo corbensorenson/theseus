@@ -469,7 +469,7 @@ Luna for clear, repeatable, high-volume or focused coding work and permits
 
 #### P4 — Test one ASI Stack mechanism at a time
 
-State: `ACTIVE_COGNITIVE_COMPILATION_P4R_TASK_POOL_SEALED_RUN_PENDING`.
+State: `ACTIVE_FRESH_P4_DECISION_DENOMINATOR_DESIGN_MECHANICS_GREEN`.
 
 Use the observed instrument and task residuals to select exactly one
 intervention. Do not run a factorial or make record production the dependent
@@ -572,8 +572,27 @@ The follow-on semantic-unit canary changed only granularity: Tuple became its
 complete assignment and Return became its complete function. It passed 3/3
 parse/lower and 3/3 exact verification in one persistent model load, with three
 natural-completion calls and zero context-boundary hits. Unit selection is now
-GREEN for these non-claim mechanics. The remaining owner is intervention
-sensitivity plus dependency-local repair; fresh P4 and D1 remain closed.
+GREEN for these non-claim mechanics.
+
+The first frozen intervention/locality attempt then consumed one learned call
+and stopped fail-closed. Its descriptive two-unit prompt was copied into an
+invalid envelope, so no intervention or repair occurred; the runner also
+raised instead of writing an aggregate terminal result. That exact attempt is
+retained as `INCONCLUSIVE_IMPLEMENTATION` and cannot count against the model or
+mechanism. A prospectively frozen R1 changed only the prompt transport to one
+fully bound two-unit skeleton, added graceful terminalization, and used a new
+runtime namespace. R1 passed both rotations: 2/2 provisional artifacts exactly
+verified, 2/2 controlled single-unit interventions produced authentic
+validator markers and the preregistered dependency closures, 2/2 final repairs
+exactly verified, and 2/2 unrelated units remained byte-stable. Five static
+source/obligation/target/loss/dependency corruptions were rejected. One
+persistent model load served four parser-complete calls with zero physical
+context-boundary hits.
+
+The non-claim Semantic-IR mechanics prerequisite is therefore GREEN. This
+opens only the design and prospective freeze of a fresh, source-disjoint P4
+decision denominator. It does not establish a cognitive-compilation effect,
+move book support, open D1, create training rows, or widen serving authority.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -641,7 +660,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `MECHANICS_INTERVENTION_AND_LOCAL_REPAIR_PENDING` | P4R remains `INCONCLUSIVE_IMPLEMENTATION`; its ten tasks are consumed. Labeled transport and coarser semantic-unit selection now pass 3/3 parse/lower and 3/3 exact verification on non-claim mechanics with zero boundary hits. Intervention sensitivity and dependency-local repair remain required before fresh P4; D1, book support, and mechanism falsification remain closed |
+| P4 causal development | `MECHANICS_GREEN_FRESH_DECISION_DENOMINATOR_NEXT` | P4R remains `INCONCLUSIVE_IMPLEMENTATION` and its ten tasks are consumed. Non-claim labeled transport and semantic-unit selection pass 3/3 exact verification; the repaired intervention/locality canary passes 2/2 provisional verification, validator-feedback closure, final verification, and dependency-local repair, with 5/5 static corruptions rejected and zero boundary hits. This opens only a fresh source-disjoint P4 decision denominator; D1, book support, and mechanism claims remain closed |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
