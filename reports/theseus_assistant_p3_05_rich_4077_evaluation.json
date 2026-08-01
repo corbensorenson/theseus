@@ -1,0 +1,140 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 160.877,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-5x3_zwr6/source/theseus_p3_hidden_test.py\", line 26, in <module>\n    assert proxy.isatty() is True, \"FileProxy did not forward isatty\"\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: FileProxy did not forward isatty\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:11:11.777509Z",
+    "evaluator_sha256": "83141f184f9c2032f69c429c9eacaf64c127540496051b3d9da0f5173db1bc36",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 1058.82,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 128.051,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "f37967d95cbeff03d6a6a75c8eb0824aa33e21f354ceaa9771296e3893ebd4b7",
+      "task_sha256": "106fc9ea8bb664c06b5ffafff2d6d8c675d65778bddf709487fe386709e03b9b",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "106fc9ea8bb664c06b5ffafff2d6d8c675d65778bddf709487fe386709e03b9b",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "53a86d1a73cbe2723044643319c0b9dcc2dd0d0a10cd7430e3ec7df32c1d65fe",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:11:14.036625Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 2,
+    "sealed_candidates": 2,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "20dec549a564d2ab4c5efc32b98f6b9510e913d5c608e9673ae82dc1b05eb431",
+      "a9a9370b1df01259cd6b1a02cc6456cd4b050f8184e55a59fa163f08a2097f55"
+    ]
+  },
+  "evaluator_sha256": "83141f184f9c2032f69c429c9eacaf64c127540496051b3d9da0f5173db1bc36",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "20dec549a564d2ab4c5efc32b98f6b9510e913d5c608e9673ae82dc1b05eb431",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "rich/file_proxy.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 135.142,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-mff56r1m/candidate/theseus_p3_hidden_test.py\", line 17, in <module>\n    from rich.file_proxy import FileProxy  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-mff56r1m/candidate/rich/file_proxy.py\", line 44\n    output = Text(\"\\n\").join(\n                            ^\nSyntaxError: '(' was never closed\n",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "a9a9370b1df01259cd6b1a02cc6456cd4b050f8184e55a59fa163f08a2097f55",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "rich/file_proxy.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 135.996,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-fb0csmfw/candidate/theseus_p3_hidden_test.py\", line 17, in <module>\n    from rich.file_proxy import FileProxy  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-fb0csmfw/candidate/rich/file_proxy.py\", line 44\n    output = Text(\"\\n\").join(\n                            ^\nSyntaxError: '(' was never closed\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 3317.879,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

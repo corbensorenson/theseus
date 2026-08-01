@@ -1,0 +1,140 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 63.05,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-yv8z_t4k/source/theseus_p3_hidden_test.py\", line 42, in <module>\n    assert parse_marker(prefix + \"duration=nan\\n\") is None, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: NaN lease duration was accepted\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:15:03.927491Z",
+    "evaluator_sha256": "c6bdb8848b091f58820b2a2fdc47bf4b69b31bfb66523194ddb36933057bdde9",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 232.68,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 62.284,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "5c50a758d933d2ce11546249f162f4869e7cfadaca28f425010a91de611e30c4",
+      "task_sha256": "9377a7d58887b3e6c0a49f9c129c99ab4e7843397125c47279df3fee655e4507",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "9377a7d58887b3e6c0a49f9c129c99ab4e7843397125c47279df3fee655e4507",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "601d9bcb8ab2b512f5a576eebdf8755f3186e4e9868daa3fb22f1d29822f5365",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:15:04.304894Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 2,
+    "sealed_candidates": 2,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "3969eac4a0f2cdc770773b5a7d1596c6fc8c75554a55f5ff8456d912f2693ac0",
+      "3b773c3199fb944dac01ae4d7cfd33d776857fb22db29520ddd1c64044269f2f"
+    ]
+  },
+  "evaluator_sha256": "c6bdb8848b091f58820b2a2fdc47bf4b69b31bfb66523194ddb36933057bdde9",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "3969eac4a0f2cdc770773b5a7d1596c6fc8c75554a55f5ff8456d912f2693ac0",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "src/filelock/_marker.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 62.291,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-947829lm/candidate/theseus_p3_hidden_test.py\", line 42, in <module>\n    assert parse_marker(prefix + \"duration=nan\\n\") is None, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-947829lm/candidate/src/filelock/_marker.py\", line 117, in parse_marker\n    return _build_record(fields)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-947829lm/candidate/src/filelock/_marker.py\", line 125, in _build_record\n    if not 1 <= pid <= _MAX_PID:\n                ^^^\nUnboundLocalError: cannot access local variable 'pid' where it is not associated with a value\n",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "3b773c3199fb944dac01ae4d7cfd33d776857fb22db29520ddd1c64044269f2f",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "src/filelock/_marker.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 61.508,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-ry0a18sn/candidate/theseus_p3_hidden_test.py\", line 42, in <module>\n    assert parse_marker(prefix + \"duration=nan\\n\") is None, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-ry0a18sn/candidate/src/filelock/_marker.py\", line 117, in parse_marker\n    return _build_record(fields)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-ry0a18sn/candidate/src/filelock/_marker.py\", line 125, in _build_record\n    if not 1 <= pid <= _MAX_PID:\n                ^^^\nUnboundLocalError: cannot access local variable 'pid' where it is not associated with a value\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 609.959,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

@@ -391,7 +391,7 @@ label, approval, or scheduling dependency.
 
 #### P3 — Autonomous paired development
 
-State: `INSTRUMENT_AND_TEN_TASK_POOL_SEALED_LOCAL_RUN_NOT_OPENED_LUNA_TRANSPORT_UNBOUND`.
+State: `TERMINAL_LOCAL_P3_COMPLETE_NO_USEFULNESS_ROUTE_WINNER_LUNA_TRANSPORT_UNBOUND`.
 
 The local P3 instrument is now frozen before task-pool acquisition. It retains
 the exact P2C Qwen3.5 revision, snapshot, decoder, runtime overlay, 1,536-token
@@ -411,11 +411,20 @@ request, candidate-visible context, allowed path, target archive, hidden oracle,
 and evaluator digest is bound. All ten parents fail and all ten exact upstream
 targets pass their network-free evaluators under Python 3.12. Candidate-visible
 manifests contain no later patch, hidden test, source-task identifier, or answer
-label. No P3 candidate call has opened. The Luna-xhigh reference remains
-separately defined but transport-unbound; the local campaign may proceed without
-inventing hosted results, and Luna must use this identical sealed pool if a
-governed callable transport becomes available. Repeated tasks are regression
-checks only.
+label. The local campaign is now terminal: ten persistent matched-pair loads
+served 36 model calls and produced 14 independently scored edits. Direct emitted
+5/10 parseable candidates and solved 1/10; integrated emitted 9/10 parseable
+candidates and solved 1/10. The useful paired outcomes were one direct-only,
+one integrated-only, and eight neither. All evaluated candidates were authorized
+and rollback-valid; unsafe outcomes were zero. Integration used 17 calls versus
+direct's 19, but its four-task parseability advantage had an exact paired
+two-sided p-value of 0.125 and did not improve useful completion. Twelve of 14
+scored edits were semantically wrong. The exact ten tasks are consumed for local
+P3 and cannot be replayed or used for training, D1, or D2. The Luna-xhigh
+reference remains separately defined but transport-unbound; its reserved hosted
+cell must use this identical pool exactly once if a governed callable transport
+becomes available, and its denominator remains separate. Repeated local tasks
+are regression checks only.
 
 For each pair:
 
@@ -459,7 +468,7 @@ Luna for clear, repeatable, high-volume or focused coding work and permits
 
 #### P4 — Test one ASI Stack mechanism at a time
 
-State: `BLOCKED_ON_NONZERO_AUTONOMOUS_P3_USEFULNESS`.
+State: `ACTIVE_COGNITIVE_COMPILATION_SELECTED_INSTRUMENT_NOT_YET_FROZEN`.
 
 Use the observed instrument and task residuals to select exactly one
 intervention. Do not run a factorial or make record production the dependent
@@ -468,6 +477,19 @@ claims; P2A and P3 exist to make these comparisons interpretable.
 
 P3 residuals select the first matching eligible mechanism; the order below is
 only a deterministic tie-break, not permission to run every row.
+
+P3 observed nonzero useful work but no direct/integrated usefulness difference.
+Its dominant residual was semantic translation and repair: 12/14 independently
+evaluated typed edits were incorrect, plus 6/20 attempts were malformed. Under
+the prospectively bound residual mapping, this activates only
+`cognitive-compilation-and-semantic-ir.core` (order 3). P4 must use fresh
+development tasks and compare information-matched direct target generation,
+an information-matched natural-language structured plan, a deterministic
+compiler-only baseline, and one faithful typed Semantic IR treatment. Model use,
+stable identities, explicit loss/ambiguity, target validation, dependency-local
+repair, known-positive reachability, corruption interventions, matched total
+cost, and source-disjoint evaluation are adequacy requirements. No P3 outcome
+supports or falsifies the selected claim.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -534,7 +556,8 @@ Maintenance serves P or N and does not become another research program:
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | Qwen3.5 reproduced the prompt's literal backslash-n transport on all four matched calls, but the parser required actual newlines; zero candidates were evaluable, so the exact result is a harness implementation failure only |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
-| Autonomous usefulness | `P3_INSTRUMENT_AND_TEN_TASK_POOL_SEALED_RUN_PENDING` | The exact best-retained Qwen3.5 denominator and counterbalanced ten-task contract are audit-GREEN; ten distinct licensed source tasks now have parent-fail/target-pass blind evaluators sealed before any candidate call |
+| Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
+| P4 causal development | `COGNITIVE_COMPILATION_SELECTED_INSTRUMENT_PENDING` | The dominant P3 residual was semantic translation/repair (12/14 evaluated edits incorrect), activating only `cognitive-compilation-and-semantic-ir.core`; no claim support follows until a faithful fresh-task P4 instrument survives adequacy and matched controls |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -561,10 +584,10 @@ Maintenance serves P or N and does not become another research program:
 5. Preserve the terminal P2C run, blind evaluation, runtime receipts, and
    disposition. Do not rerun the consumed Click task or infer a subsystem effect
    from one parseable but incorrect integrated candidate.
-6. Preserve the frozen P3 instrument and sealed ten-task pool. Run every task
-   exactly once through its counterbalanced direct/integrated local pair, then
-   score route-blind. Keep malformed, incorrect, useful, unsafe, rollback,
-   latency, and weak-tail outcomes explicit; never replace a hard task.
+6. Preserve the terminal P3 campaign, all ten consumed tasks, 36 runtime
+   receipts, blind evaluations, and zero-unsafe rollback-valid denominator.
+   Never replay or replace a task, and do not promote the integrated
+   parseability shift into a usefulness or subsystem claim.
 7. Bind the measurement-only Luna-xhigh adapter when a callable governed
    transport exists. Run both
    models direct and integrated on the same ten tasks without mixing
@@ -572,8 +595,12 @@ Maintenance serves P or N and does not become another research program:
 8. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-9. Select no P4 subsystem ablation until P3 establishes nonzero useful work and
-   the autonomous residual ledger identifies one decision-relevant defect.
+9. Build one prospectively frozen, fresh-task P4 instrument for
+   `cognitive-compilation-and-semantic-ir.core`. First prove model use,
+   learnability/reachability, target validation, intervention sensitivity,
+   dependency-local repair, and matched budgets; then run its strongest direct,
+   natural-language-plan, and compiler-only controls. No other P4 mechanism is
+   active.
 
 ## Historical Rapid Evidence Campaign
 

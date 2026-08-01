@@ -1,0 +1,1303 @@
+{
+  "actual_arm_order": [
+    "direct_local_model",
+    "integrated_local_model"
+  ],
+  "attempts": [
+    {
+      "apply_faults": [],
+      "arm_id": "direct_local_model",
+      "candidate": {},
+      "candidate_seal": {},
+      "model_calls": 2,
+      "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "parse_faults": [
+        "typed_action_unparsed_text",
+        "typed_actions_missing"
+      ],
+      "parseable_candidate": false,
+      "repair_fault_history": [
+        {
+          "apply_faults": [],
+          "call_number": 1,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ]
+        }
+      ],
+      "route_integrity": {
+        "checks": {
+          "D2_consumption_zero": true,
+          "authority_controls_effect_scope": true,
+          "backend_completed": true,
+          "backend_model_identity_bound": true,
+          "backend_prompt_bound": true,
+          "backend_route_bound": true,
+          "backend_user_facing_effects_zero": true,
+          "compiled_plan_executed_or_held": true,
+          "decorative_labels_cannot_satisfy_integrated_route": true,
+          "effect_observation_and_exact_rollback_bound": true,
+          "execution_mode_bound": true,
+          "external_inference_zero": true,
+          "fallback_returns_zero": true,
+          "local_model_backend_owned_by_canonical_assistant_runtime": true,
+          "public_calibration_consumption_zero": true,
+          "public_training_rows_zero": true,
+          "request_binding_digest_valid": true,
+          "response_present": true,
+          "route_changes_callable_capability_budget_tool_or_hold": true,
+          "selected_vcm_content_consumed_by_model": true,
+          "single_model_call_budget": true,
+          "supported_execution_mode": true,
+          "teacher_calls_zero": true,
+          "verification_controls_release_or_repair": true
+        },
+        "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+        "execution_mode": "direct_local_model",
+        "expected_model_identity": {
+          "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+          "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+          "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+        },
+        "failed_checks": [],
+        "non_claims": [
+          "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+          "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+        ],
+        "observed_model_identity": {
+          "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+          "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+          "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+        },
+        "pair_contract": {
+          "automatic_effects": 0,
+          "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+          "maximum_model_calls": 1,
+          "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+        },
+        "policy": "project_theseus_live_route_integrity_v1",
+        "ready": true,
+        "receipt_sha256": "2f7fa3b4a0ddd9b00fdfb2d6ea6b50360f409d51f07cfb10fbdd13adaf4106a3",
+        "release_allowed": true,
+        "request_binding": {
+          "automatic_effects": 0,
+          "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "context_pages": [],
+          "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+          "execution_mode": "direct_local_model",
+          "maximum_model_calls": 1,
+          "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "model_prompt_sha256": "b89f230d428a6247fe528864360b1764dd8b1d265351c834dc544f61b60a607c",
+          "policy": "project_theseus_live_route_integrity_v1",
+          "raw_context_text_stored": false,
+          "raw_prompt_stored": false,
+          "request_binding_sha256": "605d8d61e11ccc5b40b010389440592b5dc82d7e8426307065402c6a79b44ddc",
+          "route_packet": {
+            "automatic_effects": 0,
+            "planning": "none",
+            "route_kind": "direct_fixed_model",
+            "tool_calls": 0,
+            "vcm": "none"
+          },
+          "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+          "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+          "user_prompt_sha256": "b89f230d428a6247fe528864360b1764dd8b1d265351c834dc544f61b60a607c"
+        },
+        "structural_verification": {
+          "checks": {
+            "D2_consumption_zero": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "response_present": true,
+            "single_model_call_budget": true,
+            "teacher_calls_zero": true
+          },
+          "independent_from_backend": true,
+          "passed": true,
+          "task_correctness_evaluated": false,
+          "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+          "verifier_id": "theseus_local_response_integrity_verifier_v1"
+        }
+      },
+      "route_integrity_rounds": [
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v1",
+          "ready": true,
+          "receipt_sha256": "2f7fa3b4a0ddd9b00fdfb2d6ea6b50360f409d51f07cfb10fbdd13adaf4106a3",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "model_prompt_sha256": "b89f230d428a6247fe528864360b1764dd8b1d265351c834dc544f61b60a607c",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "605d8d61e11ccc5b40b010389440592b5dc82d7e8426307065402c6a79b44ddc",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "b89f230d428a6247fe528864360b1764dd8b1d265351c834dc544f61b60a607c"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        },
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v1",
+          "ready": true,
+          "receipt_sha256": "c5abb6ed962bb98288b027c25b79aa87942353e75f95afc506380a8fc7636b52",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "model_prompt_sha256": "35bcd0497c6e0cb76c928301bc1b0d46b17b0b52ae1bf3c1edc1b7d9e4b4699a",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "c02651967128d1a5b68e6d6e4565b8942539a574a662a04248087c77010ac884",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "35bcd0497c6e0cb76c928301bc1b0d46b17b0b52ae1bf3c1edc1b7d9e4b4699a"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        }
+      ],
+      "runtime_calls": [
+        {
+          "call_number": 1,
+          "candidate_output_sha256": "921b7e459e2261913cb4297e775bc8e793d919a8008c74b74c63f97491b50832",
+          "report_path": "runtime/p2a/p2a_p3-licensed-maintenance-01_direct_local_model_1.json",
+          "report_sha256": "deadb7668ef75984d73763cd76821b48ce32d1fc6b4d662110a4ab5513916efd",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 19097.035,
+          "runtime_trigger_state": "GREEN"
+        },
+        {
+          "call_number": 2,
+          "candidate_output_sha256": "3b2b1c24c6f0cbbf77cd8ca9f6cb5a1451a92ed6d721468285fe9ce4d3291c9b",
+          "report_path": "runtime/p2a/p2a_p3-licensed-maintenance-01_direct_local_model_2.json",
+          "report_sha256": "4356b3abd515c17e7ae17382a8cd0bc47a547ebbbe7fbc10b2b924bac8a616be",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 19413.425,
+          "runtime_trigger_state": "GREEN"
+        }
+      ],
+      "visible_verifier_passed": false
+    },
+    {
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate": {
+        "actions": [
+          {
+            "end_line": 48,
+            "op": "REPLACE",
+            "path": "src/urllib3/poolmanager.py",
+            "replacement": "SSL_KEYWORDS = (\n    \"key_file\",\n    \"cert_file\",\n    \"cert_reqs\",\n    \"ca_certs\",\n    \"ca_cert_data\",\n    \"ssl_version\",\n    \"ssl_minimum_version\",\n    \"ssl_maximum_version\",\n    \"ca_cert_dir\",\n    \"ssl_context\",\n    \"key_password\",\n    \"server_hostname\",\n    \"assert_hostname\",\n    \"assert_fingerprint\",\n)",
+            "start_line": 37
+          },
+          {
+            "end_line": 53,
+            "op": "REPLACE",
+            "path": "src/urllib3/poolmanager.py",
+            "replacement": "            for kw in SSL_KEYWORDS:\n                request_context.pop(kw, None)",
+            "start_line": 52
+          }
+        ],
+        "changed_paths": [
+          "src/urllib3/poolmanager.py"
+        ],
+        "final_inventory_sha256": "89a2d7db915395501be4c0713017d02818292d14d2d6d69cca262f3559813fba",
+        "protocol": "theseus_line_edit_v1",
+        "visible_verifier": {
+          "command_sha256": "c72544e4f8f4b12f5550d2eaacc39bfd35ea945fbd50bc23e5ed1f29ce140500",
+          "passed": false,
+          "returncode": 1,
+          "runtime_ms": 66.851,
+          "stderr_tail": "",
+          "stdout_tail": "*** Error compiling 'src/urllib3/poolmanager.py'...\n  File \"src/urllib3/poolmanager.py\", line 52\n    for kw in SSL_KEYWORDS:\n    ^\nSyntaxError: invalid syntax\n\n"
+        }
+      },
+      "candidate_seal": {
+        "candidate_output_sha256": "cf7701cd73e85bafd79e73ef9664bbb697afa3c2025c3831818be92a36e24ab5",
+        "sealed_before_hidden_evaluation": true,
+        "task_sha256": "424b2281154b966469039e6ad0b66d6d136499ef4d6bc135fd80ca7bd3f3b17d"
+      },
+      "model_calls": 2,
+      "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "parse_faults": [],
+      "parseable_candidate": true,
+      "repair_fault_history": [
+        {
+          "apply_faults": [],
+          "call_number": 1,
+          "parse_faults": []
+        }
+      ],
+      "route_integrity": {
+        "checks": {
+          "D2_consumption_zero": true,
+          "authority_controls_effect_scope": true,
+          "backend_completed": true,
+          "backend_model_identity_bound": true,
+          "backend_prompt_bound": true,
+          "backend_route_bound": true,
+          "backend_user_facing_effects_zero": true,
+          "compiled_plan_executed_or_held": true,
+          "decorative_labels_cannot_satisfy_integrated_route": true,
+          "effect_observation_and_exact_rollback_bound": true,
+          "execution_mode_bound": true,
+          "external_inference_zero": true,
+          "fallback_returns_zero": true,
+          "local_model_backend_owned_by_canonical_assistant_runtime": true,
+          "public_calibration_consumption_zero": true,
+          "public_training_rows_zero": true,
+          "request_binding_digest_valid": true,
+          "response_present": true,
+          "route_changes_callable_capability_budget_tool_or_hold": true,
+          "selected_vcm_content_consumed_by_model": true,
+          "single_model_call_budget": true,
+          "supported_execution_mode": true,
+          "teacher_calls_zero": true,
+          "verification_controls_release_or_repair": true
+        },
+        "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+        "execution_mode": "integrated_local_model",
+        "expected_model_identity": {
+          "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+          "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+          "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+        },
+        "failed_checks": [],
+        "non_claims": [
+          "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+          "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+        ],
+        "observed_model_identity": {
+          "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+          "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+          "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+          "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+        },
+        "pair_contract": {
+          "automatic_effects": 0,
+          "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+          "maximum_model_calls": 1,
+          "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+        },
+        "policy": "project_theseus_live_route_integrity_v1",
+        "ready": true,
+        "receipt_sha256": "9986d053a03eac10239ff42bb028502b6c5a6531b6c40e249e4b0c45bb2f4670",
+        "release_allowed": true,
+        "request_binding": {
+          "automatic_effects": 0,
+          "context_content_sha256": "d7ff3514cd890e6ae9c0bac342790d834798e9918537ff1cb6f1ef28e824b317",
+          "context_pages": [
+            {
+              "address": "vcm://theseus/docs/system_policy/11e99a354db667984d40c260@v1",
+              "certificate_id": "cert:59340e385de80d8b5386e8d1",
+              "characters": 191,
+              "content_sha256": "066fd8c96b96fef61288fc98b58d368b11915014f7a788e8be68fdd342ce9979",
+              "execution_class": "constitutional_policy",
+              "taints": [
+                "external_source",
+                "teacher_metadata"
+              ]
+            },
+            {
+              "address": "vcm://theseus/docs/virtual_context_memory_spec/b5f04d769037cf9f67650989@v1",
+              "certificate_id": "cert:fdc321be609c2b15e5f368cb",
+              "characters": 818,
+              "content_sha256": "eb47ee10eea025f864f5dd7ec944cc3ac21e7b7242b054b2b71c6dfe9282e711",
+              "execution_class": "authorized_task_state",
+              "taints": []
+            },
+            {
+              "address": "vcm://theseus/context/legacy-training-sources/6ac197b226eb8669c2f3817b@v1",
+              "certificate_id": "cert:14b7652a13ee7c1ac0aa1e93",
+              "characters": 92,
+              "content_sha256": "9f24bc64f11ba0ea5e74c199ad1c0f57ddff69cec0b37786302aa62c306f5a3e",
+              "execution_class": "authorized_task_state",
+              "taints": []
+            },
+            {
+              "address": "vcm://theseus/context/legacy-adapter-bank-training-plan/269e5d5842aece75fca10e14@v1",
+              "certificate_id": "cert:93a3251e04daaef1528732fc",
+              "characters": 123,
+              "content_sha256": "28269eb71742fc504e454f3955e007e11353830ffbb0d22e06c8859bfb072b31",
+              "execution_class": "authorized_task_state",
+              "taints": []
+            },
+            {
+              "address": "vcm://theseus/context/legacy-training-sample/862c7ae1e4465a18231e41aa@v1",
+              "certificate_id": "cert:3281453d7a2b7e8f46fcf8a5",
+              "characters": 64,
+              "content_sha256": "f0bd33eca45b0ae00862e67c178b0e3030fa83936f64b2435ed8e6feaef73007",
+              "execution_class": "authorized_task_state",
+              "taints": []
+            },
+            {
+              "address": "vcm://theseus/context/legacy-training-sources/1215f162edce4cd9d3561dfc@v1",
+              "certificate_id": "cert:6d894986719d6d11f5010e83",
+              "characters": 92,
+              "content_sha256": "9f24bc64f11ba0ea5e74c199ad1c0f57ddff69cec0b37786302aa62c306f5a3e",
+              "execution_class": "authorized_task_state",
+              "taints": []
+            },
+            {
+              "address": "vcm://theseus/context/conclusion/95cac024c9ddbd98d39aae38@v1",
+              "certificate_id": "cert:ce7f30d28d1c1dcaeb16e811",
+              "characters": 278,
+              "content_sha256": "c8799f7efa088ab649bee7cc29f00ee5a10695ca303deb3079d3ca5638a70e0e",
+              "execution_class": "evidence_observation",
+              "taints": []
+            },
+            {
+              "address": "vcm://theseus/context/conclusion/e264440be73185f1bc6fb5ea@v1",
+              "certificate_id": "cert:18125078a1bcc3627befee96",
+              "characters": 278,
+              "content_sha256": "c8799f7efa088ab649bee7cc29f00ee5a10695ca303deb3079d3ca5638a70e0e",
+              "execution_class": "evidence_observation",
+              "taints": []
+            }
+          ],
+          "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+          "execution_mode": "integrated_local_model",
+          "maximum_model_calls": 1,
+          "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+          "model_prompt_sha256": "2d508fde5da40b0aef1b09a4d0cb55574effa626b268b9f621af0cd2afef7c92",
+          "policy": "project_theseus_live_route_integrity_v1",
+          "raw_context_text_stored": false,
+          "raw_prompt_stored": false,
+          "request_binding_sha256": "6deef68b81fd4f3d8123def6c5d91d487083628b009038266d0827629baa634c",
+          "route_packet": {
+            "automatic_effects": 0,
+            "decision_digest": "sha256:262572cbec04b92953123253db58b796582442c45ee432010029cd5d6e50a6c9",
+            "effect": {
+              "dispatch_bound": false,
+              "enabled": false,
+              "ready": true,
+              "rollback_complete": false,
+              "rollback_residual_count": 0
+            },
+            "plan_nodes": [
+              {
+                "capability_id": "assistant.code_candidate",
+                "deadline_ms": null,
+                "depends_on": [],
+                "node_id": "reflex-node:b532ad1bf6218b836dc8afff"
+              }
+            ],
+            "planner": {
+              "active": false,
+              "compiled_goal_count": 13,
+              "required": false,
+              "state": "GREEN"
+            },
+            "procedural_route": {
+              "active": false,
+              "ready": false,
+              "required": false,
+              "route_id": "",
+              "selection_matched": false
+            },
+            "realized_limits": {
+              "deadline_ms": 30000,
+              "max_aggregate_cost_units": 100,
+              "max_depth": 4,
+              "max_fanout": 3,
+              "max_nodes": 8,
+              "max_retries_per_node": 1
+            },
+            "route_kind": "integrated_theseus",
+            "selected_capabilities": [
+              "assistant.code_candidate"
+            ],
+            "structured_execution": {
+              "active": false,
+              "effect_authority_granted": false,
+              "execution_digest": null,
+              "failed_count": 0,
+              "resolved_count": 0,
+              "terminal_outcome": "not_required"
+            },
+            "terminal_outcome": "prepared",
+            "tool": {
+              "active": false,
+              "evidence_ref": "",
+              "required": false,
+              "result_count": 0,
+              "trigger_state": null
+            },
+            "trace_id": "reflex-trace:e626a93c0f12450ccb9c2b39",
+            "verification_state": "VERIFIED"
+          },
+          "route_packet_sha256": "7fc667cfa8b47268e4737ffc48ed034a123324b7059f28c30ed4a303671d72f5",
+          "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+          "user_prompt_sha256": "b89f230d428a6247fe528864360b1764dd8b1d265351c834dc544f61b60a607c"
+        },
+        "structural_verification": {
+          "checks": {
+            "D2_consumption_zero": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "response_present": true,
+            "single_model_call_budget": true,
+            "teacher_calls_zero": true
+          },
+          "independent_from_backend": true,
+          "passed": true,
+          "task_correctness_evaluated": false,
+          "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+          "verifier_id": "theseus_local_response_integrity_verifier_v1"
+        }
+      },
+      "route_integrity_rounds": [
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "integrated_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v1",
+          "ready": true,
+          "receipt_sha256": "9986d053a03eac10239ff42bb028502b6c5a6531b6c40e249e4b0c45bb2f4670",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "d7ff3514cd890e6ae9c0bac342790d834798e9918537ff1cb6f1ef28e824b317",
+            "context_pages": [
+              {
+                "address": "vcm://theseus/docs/system_policy/11e99a354db667984d40c260@v1",
+                "certificate_id": "cert:59340e385de80d8b5386e8d1",
+                "characters": 191,
+                "content_sha256": "066fd8c96b96fef61288fc98b58d368b11915014f7a788e8be68fdd342ce9979",
+                "execution_class": "constitutional_policy",
+                "taints": [
+                  "external_source",
+                  "teacher_metadata"
+                ]
+              },
+              {
+                "address": "vcm://theseus/docs/virtual_context_memory_spec/b5f04d769037cf9f67650989@v1",
+                "certificate_id": "cert:fdc321be609c2b15e5f368cb",
+                "characters": 818,
+                "content_sha256": "eb47ee10eea025f864f5dd7ec944cc3ac21e7b7242b054b2b71c6dfe9282e711",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-training-sources/6ac197b226eb8669c2f3817b@v1",
+                "certificate_id": "cert:14b7652a13ee7c1ac0aa1e93",
+                "characters": 92,
+                "content_sha256": "9f24bc64f11ba0ea5e74c199ad1c0f57ddff69cec0b37786302aa62c306f5a3e",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-adapter-bank-training-plan/269e5d5842aece75fca10e14@v1",
+                "certificate_id": "cert:93a3251e04daaef1528732fc",
+                "characters": 123,
+                "content_sha256": "28269eb71742fc504e454f3955e007e11353830ffbb0d22e06c8859bfb072b31",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-training-sample/862c7ae1e4465a18231e41aa@v1",
+                "certificate_id": "cert:3281453d7a2b7e8f46fcf8a5",
+                "characters": 64,
+                "content_sha256": "f0bd33eca45b0ae00862e67c178b0e3030fa83936f64b2435ed8e6feaef73007",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-training-sources/1215f162edce4cd9d3561dfc@v1",
+                "certificate_id": "cert:6d894986719d6d11f5010e83",
+                "characters": 92,
+                "content_sha256": "9f24bc64f11ba0ea5e74c199ad1c0f57ddff69cec0b37786302aa62c306f5a3e",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/conclusion/95cac024c9ddbd98d39aae38@v1",
+                "certificate_id": "cert:ce7f30d28d1c1dcaeb16e811",
+                "characters": 278,
+                "content_sha256": "c8799f7efa088ab649bee7cc29f00ee5a10695ca303deb3079d3ca5638a70e0e",
+                "execution_class": "evidence_observation",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/conclusion/e264440be73185f1bc6fb5ea@v1",
+                "certificate_id": "cert:18125078a1bcc3627befee96",
+                "characters": 278,
+                "content_sha256": "c8799f7efa088ab649bee7cc29f00ee5a10695ca303deb3079d3ca5638a70e0e",
+                "execution_class": "evidence_observation",
+                "taints": []
+              }
+            ],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "integrated_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "model_prompt_sha256": "2d508fde5da40b0aef1b09a4d0cb55574effa626b268b9f621af0cd2afef7c92",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "6deef68b81fd4f3d8123def6c5d91d487083628b009038266d0827629baa634c",
+            "route_packet": {
+              "automatic_effects": 0,
+              "decision_digest": "sha256:262572cbec04b92953123253db58b796582442c45ee432010029cd5d6e50a6c9",
+              "effect": {
+                "dispatch_bound": false,
+                "enabled": false,
+                "ready": true,
+                "rollback_complete": false,
+                "rollback_residual_count": 0
+              },
+              "plan_nodes": [
+                {
+                  "capability_id": "assistant.code_candidate",
+                  "deadline_ms": null,
+                  "depends_on": [],
+                  "node_id": "reflex-node:b532ad1bf6218b836dc8afff"
+                }
+              ],
+              "planner": {
+                "active": false,
+                "compiled_goal_count": 13,
+                "required": false,
+                "state": "GREEN"
+              },
+              "procedural_route": {
+                "active": false,
+                "ready": false,
+                "required": false,
+                "route_id": "",
+                "selection_matched": false
+              },
+              "realized_limits": {
+                "deadline_ms": 30000,
+                "max_aggregate_cost_units": 100,
+                "max_depth": 4,
+                "max_fanout": 3,
+                "max_nodes": 8,
+                "max_retries_per_node": 1
+              },
+              "route_kind": "integrated_theseus",
+              "selected_capabilities": [
+                "assistant.code_candidate"
+              ],
+              "structured_execution": {
+                "active": false,
+                "effect_authority_granted": false,
+                "execution_digest": null,
+                "failed_count": 0,
+                "resolved_count": 0,
+                "terminal_outcome": "not_required"
+              },
+              "terminal_outcome": "prepared",
+              "tool": {
+                "active": false,
+                "evidence_ref": "",
+                "required": false,
+                "result_count": 0,
+                "trigger_state": null
+              },
+              "trace_id": "reflex-trace:e626a93c0f12450ccb9c2b39",
+              "verification_state": "VERIFIED"
+            },
+            "route_packet_sha256": "7fc667cfa8b47268e4737ffc48ed034a123324b7059f28c30ed4a303671d72f5",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "b89f230d428a6247fe528864360b1764dd8b1d265351c834dc544f61b60a607c"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        },
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "integrated_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+            "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+            "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+            "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v1",
+          "ready": true,
+          "receipt_sha256": "20a11e0d79bda93ef7afbf134759dc2da58550cdd8d852267957fe0e05602e43",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "d7ff3514cd890e6ae9c0bac342790d834798e9918537ff1cb6f1ef28e824b317",
+            "context_pages": [
+              {
+                "address": "vcm://theseus/docs/system_policy/11e99a354db667984d40c260@v1",
+                "certificate_id": "cert:59340e385de80d8b5386e8d1",
+                "characters": 191,
+                "content_sha256": "066fd8c96b96fef61288fc98b58d368b11915014f7a788e8be68fdd342ce9979",
+                "execution_class": "constitutional_policy",
+                "taints": [
+                  "external_source",
+                  "teacher_metadata"
+                ]
+              },
+              {
+                "address": "vcm://theseus/docs/virtual_context_memory_spec/b5f04d769037cf9f67650989@v1",
+                "certificate_id": "cert:fdc321be609c2b15e5f368cb",
+                "characters": 818,
+                "content_sha256": "eb47ee10eea025f864f5dd7ec944cc3ac21e7b7242b054b2b71c6dfe9282e711",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-training-sources/6ac197b226eb8669c2f3817b@v1",
+                "certificate_id": "cert:14b7652a13ee7c1ac0aa1e93",
+                "characters": 92,
+                "content_sha256": "9f24bc64f11ba0ea5e74c199ad1c0f57ddff69cec0b37786302aa62c306f5a3e",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-adapter-bank-training-plan/269e5d5842aece75fca10e14@v1",
+                "certificate_id": "cert:93a3251e04daaef1528732fc",
+                "characters": 123,
+                "content_sha256": "28269eb71742fc504e454f3955e007e11353830ffbb0d22e06c8859bfb072b31",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-training-sample/862c7ae1e4465a18231e41aa@v1",
+                "certificate_id": "cert:3281453d7a2b7e8f46fcf8a5",
+                "characters": 64,
+                "content_sha256": "f0bd33eca45b0ae00862e67c178b0e3030fa83936f64b2435ed8e6feaef73007",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/legacy-training-sources/1215f162edce4cd9d3561dfc@v1",
+                "certificate_id": "cert:6d894986719d6d11f5010e83",
+                "characters": 92,
+                "content_sha256": "9f24bc64f11ba0ea5e74c199ad1c0f57ddff69cec0b37786302aa62c306f5a3e",
+                "execution_class": "authorized_task_state",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/conclusion/95cac024c9ddbd98d39aae38@v1",
+                "certificate_id": "cert:ce7f30d28d1c1dcaeb16e811",
+                "characters": 278,
+                "content_sha256": "c8799f7efa088ab649bee7cc29f00ee5a10695ca303deb3079d3ca5638a70e0e",
+                "execution_class": "evidence_observation",
+                "taints": []
+              },
+              {
+                "address": "vcm://theseus/context/conclusion/e264440be73185f1bc6fb5ea@v1",
+                "certificate_id": "cert:18125078a1bcc3627befee96",
+                "characters": 278,
+                "content_sha256": "c8799f7efa088ab649bee7cc29f00ee5a10695ca303deb3079d3ca5638a70e0e",
+                "execution_class": "evidence_observation",
+                "taints": []
+              }
+            ],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "integrated_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+            "model_prompt_sha256": "97522f66d7a022c71fa00138271b95fab5de079a9a422f4504977ec7be1ae30b",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "260cf1780a381447407991f99d6e39c2468e90d75884a7d2b56c5e0dcc19f85b",
+            "route_packet": {
+              "automatic_effects": 0,
+              "decision_digest": "sha256:262572cbec04b92953123253db58b796582442c45ee432010029cd5d6e50a6c9",
+              "effect": {
+                "dispatch_bound": false,
+                "enabled": false,
+                "ready": true,
+                "rollback_complete": false,
+                "rollback_residual_count": 0
+              },
+              "plan_nodes": [
+                {
+                  "capability_id": "assistant.code_candidate",
+                  "deadline_ms": null,
+                  "depends_on": [],
+                  "node_id": "reflex-node:b532ad1bf6218b836dc8afff"
+                }
+              ],
+              "planner": {
+                "active": false,
+                "compiled_goal_count": 13,
+                "required": false,
+                "state": "GREEN"
+              },
+              "procedural_route": {
+                "active": false,
+                "ready": false,
+                "required": false,
+                "route_id": "",
+                "selection_matched": false
+              },
+              "realized_limits": {
+                "deadline_ms": 30000,
+                "max_aggregate_cost_units": 100,
+                "max_depth": 4,
+                "max_fanout": 3,
+                "max_nodes": 8,
+                "max_retries_per_node": 1
+              },
+              "route_kind": "integrated_theseus",
+              "selected_capabilities": [
+                "assistant.code_candidate"
+              ],
+              "structured_execution": {
+                "active": false,
+                "effect_authority_granted": false,
+                "execution_digest": null,
+                "failed_count": 0,
+                "resolved_count": 0,
+                "terminal_outcome": "not_required"
+              },
+              "terminal_outcome": "prepared",
+              "tool": {
+                "active": false,
+                "evidence_ref": "",
+                "required": false,
+                "result_count": 0,
+                "trigger_state": null
+              },
+              "trace_id": "reflex-trace:dce5f6627953ce594b6ad0ef",
+              "verification_state": "VERIFIED"
+            },
+            "route_packet_sha256": "6bc223da4c3a96b8ff095a8436ee810ee10ae2fede635e80be80b3eb9946e520",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "154b31588960df326aa83fee126c499e9b3b7677ea84e9c6f0ee30b1e70929b7"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        }
+      ],
+      "runtime_calls": [
+        {
+          "call_number": 1,
+          "candidate_output_sha256": "fc9d4745b4dc41473f1d2d70b8fc62cda4edfdc1f9794018e836e55b956af5db",
+          "report_path": "runtime/p2a/p2a_p3-licensed-maintenance-01_integrated_local_model_1.json",
+          "report_sha256": "0d6fd2ae739e2d38a502225031d528fa9cf1a52ead917706eab0a727c79bcb14",
+          "returncode": 2,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [
+            {
+              "name": "code_private_probe_reports_current_capability_wall",
+              "severity": "warning"
+            },
+            {
+              "name": "dogfood_feedback_processed",
+              "severity": "warning"
+            },
+            {
+              "name": "assistant_product_trace_exercises_required_surfaces",
+              "severity": "hard"
+            }
+          ],
+          "runtime_ms": 58458.798,
+          "runtime_trigger_state": "RED"
+        },
+        {
+          "call_number": 2,
+          "candidate_output_sha256": "b3194648c889ccc5c45c1152c04a6ada0e9ca7b07b1deac7be16b0f15ff6cc73",
+          "report_path": "runtime/p2a/p2a_p3-licensed-maintenance-01_integrated_local_model_2.json",
+          "report_sha256": "130b72924be125d536b50d1842dabe9ed6d45d64c90f9b2c49cda80630a85eb0",
+          "returncode": 2,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [
+            {
+              "name": "code_private_probe_reports_current_capability_wall",
+              "severity": "warning"
+            },
+            {
+              "name": "dogfood_feedback_processed",
+              "severity": "warning"
+            },
+            {
+              "name": "assistant_product_trace_exercises_required_surfaces",
+              "severity": "hard"
+            }
+          ],
+          "runtime_ms": 47313.337,
+          "runtime_trigger_state": "RED"
+        }
+      ],
+      "visible_verifier_passed": false
+    }
+  ],
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:57:33.624499Z",
+  "denominators": {
+    "arms": 2,
+    "model_calls": 4,
+    "model_loads": 1,
+    "parseable_candidates": 1,
+    "tasks": 1
+  },
+  "faults": [],
+  "instrument_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T01:54:58.807409Z",
+    "faults": [],
+    "grammar_round_trip": {
+      "configured_grammar_contains_actual_newlines": true,
+      "configured_grammar_contains_literal_backslash_n": false,
+      "configured_grammar_rendered_exactly": true,
+      "example_action_count": 1,
+      "example_parse_faults": [],
+      "ready": true
+    },
+    "instrument_sha256": "3462e683e23133b796a7258445e26680dc91d0e1d9ec184ece520391b93255ba",
+    "model_identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 1536,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 1536
+      },
+      "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+      "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+    },
+    "policy": "project_theseus_p2a_instrument_audit_v1",
+    "runtime_ms": 6.746,
+    "trigger_state": "GREEN"
+  },
+  "instrument_disposition": "P2A_CANDIDATES_READY_FOR_BLIND_EVALUATION",
+  "instrument_sha256": "3462e683e23133b796a7258445e26680dc91d0e1d9ec184ece520391b93255ba",
+  "matched_pair": {
+    "persistent_inference_calls": 4,
+    "persistent_model_load_count": 1,
+    "persistent_model_load_ready": true,
+    "ready": true,
+    "route_pair": {
+      "checks": {
+        "direct_mode_present": true,
+        "direct_receipt_digest_valid": true,
+        "direct_route_integrity_ready": true,
+        "integrated_mode_present": true,
+        "integrated_receipt_digest_valid": true,
+        "integrated_route_integrity_ready": true,
+        "model_decoder_snapshot_sandbox_evaluator_equal": true,
+        "same_user_request": true
+      },
+      "direct_receipt_sha256": "2f7fa3b4a0ddd9b00fdfb2d6ea6b50360f409d51f07cfb10fbdd13adaf4106a3",
+      "failed_checks": [],
+      "integrated_receipt_sha256": "9986d053a03eac10239ff42bb028502b6c5a6531b6c40e249e4b0c45bb2f4670",
+      "policy": "project_theseus_local_model_matched_pair_integrity_v1",
+      "ready": true
+    },
+    "same_model_identity": true
+  },
+  "policy": "project_theseus_p2a_frozen_model_run_v1",
+  "runtime_ms": 154818.228,
+  "scope": "P2A instrument and one development task only; no subsystem, D1, D2, or book-support claim",
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p2a_task_audit_v1",
+    "source_archive_sha256": "0c33e77123217e0f8afcc5ff155fbf90d31f7ab353e3caef23fe794b77daa63f",
+    "task_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5",
+    "trigger_state": "GREEN"
+  },
+  "task_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5",
+  "trigger_state": "GREEN"
+}

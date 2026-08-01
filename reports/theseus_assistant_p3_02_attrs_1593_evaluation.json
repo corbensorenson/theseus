@@ -1,0 +1,140 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 97.179,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-9zpjtcyq/source/theseus_p3_hidden_test.py\", line 20, in <module>\n    assert _is_class_var(typing.ForwardRef(\"ClassVar[str]\")), (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ForwardRef ClassVar was not recognized\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:00:54.536508Z",
+    "evaluator_sha256": "6b81faa76285d8daa1686ada0eb9be6011c96201d7a041c9b14b42066d5b870e",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 466.668,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 88.898,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "9280383a635e2dcdd8864adfb244ab1e51c07386c8d8d3a391b7080a6a58e4ec",
+      "task_sha256": "04fa7614e16cc1d53603bba45f434cde2b9a0ba694a498dea597cf640f16965e",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "04fa7614e16cc1d53603bba45f434cde2b9a0ba694a498dea597cf640f16965e",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "a43731ab76977accf0b47020d2e255751d0ff85873f4857c882570ad93eff479",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:00:55.071089Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 2,
+    "sealed_candidates": 2,
+    "tasks": 1,
+    "useful_candidates": 1
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "07923c55cd8102f15e1604ebb3b620863fbc184f7b15ddb7ef9f3bd3aca06bae",
+      "b90c9c184493754ad3dcc528ad79422133b5adfec75a3bea749ab5d3edb9da36"
+    ]
+  },
+  "evaluator_sha256": "6b81faa76285d8daa1686ada0eb9be6011c96201d7a041c9b14b42066d5b870e",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "07923c55cd8102f15e1604ebb3b620863fbc184f7b15ddb7ef9f3bd3aca06bae",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "observed_effect_paths": [
+        "src/attr/_make.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 78.259,
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "b90c9c184493754ad3dcc528ad79422133b5adfec75a3bea749ab5d3edb9da36",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "src/attr/_make.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 89.407,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-phx51anz/candidate/theseus_p3_hidden_test.py\", line 20, in <module>\n    assert _is_class_var(typing.ForwardRef(\"ClassVar[str]\")), (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ForwardRef ClassVar was not recognized\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 1000.613,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,86 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 101.012,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-0384o1v6/source/theseus_p3_hidden_test.py\", line 47, in <module>\n    TelnetProtocol.ttype(Receiver(), IS + b\"x\\xffterm\")  # type: ignore[arg-type]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-0384o1v6/source/src/prompt_toolkit/contrib/telnet/protocol.py\", line 138, in ttype\n    ttype = data.decode(\"ascii\")\n            ^^^^^^^^^^^^^^^^^^^^\nUnicodeDecodeError: 'ascii' codec can't decode byte 0xff in position 1: ordinal not in range(128)\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:08:47.419356Z",
+    "evaluator_sha256": "9649268c62302800e7d84293dcd8ad9255d46c2b2de7a37d5a8435db53a01688",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 541.349,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 60.235,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "8cc0db170d7e625ca58cb4e3aed7442c6c7779e16456ab9645e16c5011d680c8",
+      "task_sha256": "8c4bfbc711e262526af478b7de001b172633f867c19cb9112745acee259afa92",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "8c4bfbc711e262526af478b7de001b172633f867c19cb9112745acee259afa92",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "72743c89687ad91c372c8bd61c8a38cd565b3daffa827a6b0ce4dcbe6b5eae96",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:08:47.420337Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 0,
+    "sealed_candidates": 0,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_INADEQUATE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": []
+  },
+  "evaluator_sha256": "9649268c62302800e7d84293dcd8ad9255d46c2b2de7a37d5a8435db53a01688",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [],
+  "runtime_ms": 541.92,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,114 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 306.928,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-4noabi6k/source/theseus_p3_hidden_test.py\", line 24, in <module>\n    raise AssertionError(\"empty stem with non-empty suffix was accepted\")\nAssertionError: empty stem with non-empty suffix was accepted\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:17:59.469072Z",
+    "evaluator_sha256": "6bd6e242a6551c6ae5ccfa5ee3f999e459357275cc4219d1b28a9002fa7cde95",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 645.436,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 170.861,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "700a63e80b7a2cdd4bb058eb1f06c49ef253849136a10ceea1b4ea9ef1a9ff6e",
+      "task_sha256": "f8e63b2719c1abf130cb5b0fec5eb0653e4d0f11e2a7cfc931a7af7e2af2c1d4",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "f8e63b2719c1abf130cb5b0fec5eb0653e4d0f11e2a7cfc931a7af7e2af2c1d4",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "c2f1d59b114ed9abbc00f44357974ac1857c92342d319abdd93225a2668a70d7",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:17:59.766214Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 1,
+    "sealed_candidates": 1,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "f3b214e8bbc3f3f0b84c188f19d00bf6b138c3844c96114e337a424ae4d566fb"
+    ]
+  },
+  "evaluator_sha256": "6bd6e242a6551c6ae5ccfa5ee3f999e459357275cc4219d1b28a9002fa7cde95",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "f3b214e8bbc3f3f0b84c188f19d00bf6b138c3844c96114e337a424ae4d566fb",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "src/anyio/_core/_fileio.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 106.351,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-hi17taxh/candidate/theseus_p3_hidden_test.py\", line 16, in <module>\n    from anyio import Path  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-hi17taxh/candidate/src/anyio/__init__.py\", line 29, in <module>\n    from ._core._fileio import AsyncFile as AsyncFile\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-hi17taxh/candidate/src/anyio/_core/_fileio.py\", line 928\n    return type(self)(\n                     ^\nSyntaxError: '(' was never closed\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 942.457,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

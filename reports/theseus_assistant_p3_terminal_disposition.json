@@ -1,0 +1,1030 @@
+{
+  "arm_totals": {
+    "direct_local_model": {
+      "correctness_evaluated_candidates": 5,
+      "incorrect_candidates": 4,
+      "malformed_candidates": 5,
+      "model_calls": 19,
+      "parseable_candidates": 5,
+      "parseable_rate": 0.5,
+      "parseable_rate_wilson_95": [
+        0.236593,
+        0.763407
+      ],
+      "rollback_verified_candidates": 5,
+      "runtime_ms": 623868.567,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 1,
+      "useful_rate": 0.1,
+      "useful_rate_wilson_95": [
+        0.017876,
+        0.40415
+      ]
+    },
+    "integrated_local_model": {
+      "correctness_evaluated_candidates": 9,
+      "incorrect_candidates": 8,
+      "malformed_candidates": 1,
+      "model_calls": 17,
+      "parseable_candidates": 9,
+      "parseable_rate": 0.9,
+      "parseable_rate_wilson_95": [
+        0.59585,
+        0.982124
+      ],
+      "rollback_verified_candidates": 9,
+      "runtime_ms": 1095639.005,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 1,
+      "useful_rate": 0.1,
+      "useful_rate_wilson_95": [
+        0.017876,
+        0.40415
+      ]
+    }
+  },
+  "consumption": {
+    "all_failures_retained": true,
+    "all_ten_tasks_consumed": true,
+    "eligible_for_D1_or_D2": false,
+    "eligible_for_exact_rerun": false,
+    "eligible_for_training": false
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:30:28.869484Z",
+  "denominators": {
+    "arms": 20,
+    "correctness_evaluated_candidates": 14,
+    "hosted_reference_calls": 0,
+    "hosted_reference_tasks": 0,
+    "model_calls": 36,
+    "persistent_model_loads": 10,
+    "tasks": 10,
+    "unsafe_candidates": 0,
+    "useful_candidates": 2
+  },
+  "faults": [],
+  "hosted_reference": {
+    "denominators_must_remain_separate": true,
+    "effort": "xhigh",
+    "local_campaign_valid_without_hosted_results": true,
+    "model": "gpt-5.6-luna",
+    "results": "NOT_RUN",
+    "same_consumed_pool_required_if_transport_binds": true,
+    "transport_state": "DEFINED_NOT_BOUND"
+  },
+  "maximum_inference": "For the exact frozen Qwen3.5 model, ten licensed development tasks, and budgets, direct and integrated each solved one task. Integration produced more parseable edits but no useful-completion advantage. This exposes a semantic translation/repair residual and selects cognitive compilation for P4; it supports no subsystem, serving, D1, D2, or ASI Stack claim and cannot falsify any book mechanism.",
+  "next_stage": {
+    "id": "P4_SINGLE_MECHANISM_CAUSAL_DEVELOPMENT",
+    "qualification_boundary": "P4 must use fresh development tasks and first pass learnability, model-use, intervention, validator, repair-locality, matched-budget, and known-positive adequacy checks. P3 tasks are consumed and may not be replayed.",
+    "required_controls": [
+      "information-matched direct target generation",
+      "information-matched natural-language structured plan",
+      "deterministic compiler-only baseline",
+      "typed Semantic IR treatment with model use, stable identities, explicit loss or ambiguity, target validation, and dependency-local repair"
+    ],
+    "selected_claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "selection_basis": "The preregistered P4 mapping selects cognitive compilation for a translation or repair residual. The dominant observed failure is semantic incorrectness after successful typed-edit lowering (12/14 evaluated candidates), with an additional 6/20 malformed outputs. Context dependence, dependency/replan behavior, adaptive verification allocation, authority, memory, routing, and replacement were not construct-validly varied by P3."
+  },
+  "paired_outcomes": {
+    "parseable": {
+      "both": 5,
+      "direct_only": 0,
+      "discordant": 4,
+      "integrated_only": 4,
+      "neither": 1
+    },
+    "useful": {
+      "both": 0,
+      "direct_only": 1,
+      "discordant": 2,
+      "integrated_only": 1,
+      "neither": 8
+    }
+  },
+  "policy": "project_theseus_p3_terminal_disposition_v1",
+  "residual_ledger": {
+    "dominant_residual": "semantic_correctness_after_successful_typed_edit_lowering",
+    "evaluated_but_incorrect_candidates": 12,
+    "false_blocked": "NOT_CONSTRUCT_VALIDLY_MEASURED_BY_THIS_TYPED_EDIT_PROTOCOL",
+    "interpretation": "Integration increased parseable typed edits from 5/10 to 9/10 and used two fewer model calls, but each arm solved exactly 1/10 tasks. The wrapper therefore exposed a translation/protocol effect without a useful-completion advantage. Twelve of fourteen independently evaluated edits were semantically incorrect.",
+    "malformed_typed_edit_attempts": 6,
+    "rollback_failures": 0,
+    "route_integrity_failures": 0,
+    "unsafe_candidates": 0,
+    "useful_candidates": 2
+  },
+  "scientific_status": "P3_COMPLETE_RESIDUAL_EXPOSED_NO_USEFULNESS_ROUTE_WINNER",
+  "scope": "Ten licensed development tasks for the exact frozen Qwen3.5 local model. This is residual-selection evidence, not D1, D2, serving qualification, subsystem support, or a general coding benchmark.",
+  "source_identities": {
+    "instrument": {
+      "path": "configs/theseus_assistant_p3_instrument.json",
+      "sha256": "3462e683e23133b796a7258445e26680dc91d0e1d9ec184ece520391b93255ba"
+    },
+    "instrument_freeze_commit": "d08bf94653ee3a5ca508a2457ca21d58a4010a98",
+    "pool": {
+      "path": "configs/theseus_p3_task_pool.json",
+      "sha256": "3c523454dd8b64462a6cd3326def3151262b96b73fdff26d2e965c007635dd0a"
+    },
+    "runtime_receipts": [
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 1,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-01_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 19097.035,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "deadb7668ef75984d73763cd76821b48ce32d1fc6b4d662110a4ab5513916efd"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 1,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-01_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 19413.425,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "4356b3abd515c17e7ae17382a8cd0bc47a547ebbbe7fbc10b2b924bac8a616be"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 1,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-01_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 58458.798,
+        "runtime_trigger_state": "RED",
+        "sha256": "0d6fd2ae739e2d38a502225031d528fa9cf1a52ead917706eab0a727c79bcb14"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 1,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-01_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 47313.337,
+        "runtime_trigger_state": "RED",
+        "sha256": "130b72924be125d536b50d1842dabe9ed6d45d64c90f9b2c49cda80630a85eb0"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 2,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-02_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 28069.847,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "29d0d6880db8c950f8e956eb86f72ed817908381acb7391ad50ba7ee9f6f60c7"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 2,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-02_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 39743.929,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "090431355215adb37c6f0d7c23e4a26329aaf5914a3617fee4df2a8d0f38aa2a"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 2,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-02_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 70479.454,
+        "runtime_trigger_state": "RED",
+        "sha256": "017809e2aca4e79701cfc77154a517d8b56d859d8d4f05ff5cb52cb97e746d28"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 3,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-03_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 45221.348,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "845a1058772d657391d6772e1bc33abb19be239cbec8f269a44764704983ce16"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 3,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-03_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 47215.563,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "6e2f4ae975c65978dade2b46dc9934b893d321e2375bc55eff97aa9373b12590"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 3,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-03_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 74958.797,
+        "runtime_trigger_state": "RED",
+        "sha256": "9923e45d65c9b9273c1247737ccfbb0be5d12dbe76aec489e5ffdd9c3c461ff6"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 3,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-03_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 51539.257,
+        "runtime_trigger_state": "RED",
+        "sha256": "e1ab99cacf677f531aaadd8228e3a4f1519c7e245674ddfd57ed0e44b0083231"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 4,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-04_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 27285.029,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "f045decf3469e43ed0b91dcac599396d0a8ddfe958bdfc8ab2546f03381a2c45"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 4,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-04_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 29112.741,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "e7c3bfaed39763fae0a97719c9d5c9a1eedc65e5fd4ba7c7fd488666934534e6"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 4,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-04_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 64241.18,
+        "runtime_trigger_state": "RED",
+        "sha256": "f87a8f948fa392d4ce67c44374e3653c5945feec61a6fd79c62ced86c285587c"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 4,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-04_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 65939.617,
+        "runtime_trigger_state": "RED",
+        "sha256": "0d7e87c1f429933a84d0881bf20cefeaefb81a2bf982805863a3259ea0c35105"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 5,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-05_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 14034.992,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "81c7b73acfd45febfe85cb265d877703369a8943b16d98a1176f0362da66d4fe"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 5,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-05_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 13806.371,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "d4348602e7533cacb315fd21dff8a24505a8b4db9aca80022f9f6834cc90e19d"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 5,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-05_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 42675.93,
+        "runtime_trigger_state": "RED",
+        "sha256": "baa3b7cb791109d9e1443f35477126ad0d08993fc880b70768389433cb4cbc9a"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 5,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-05_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 48575.261,
+        "runtime_trigger_state": "RED",
+        "sha256": "af4083921addc26abc18cc5f4f8ca3f180eb85ab3c33ded05c29b06cab9542a4"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 6,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-06_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 27436.982,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "740eb191e0b9f9ab81e4d2bf0f5d3fe86479ec18bb46babce635eac12669b7cf"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 6,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-06_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 60596.839,
+        "runtime_trigger_state": "RED",
+        "sha256": "1eab34af7a24881da115c42e9e3f537f2b114634dab662198049204510ef7665"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 7,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-07_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 26991.695,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "1fbddd8b5e0271692b0c6c13abb4967cec962a92c49f5809905bbc85794c011e"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 7,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-07_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 24513.752,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "94d6e38e20b13862c15047123cc70fae7389897241e60acf87a5d49ca8cece65"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 7,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-07_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 56733.242,
+        "runtime_trigger_state": "RED",
+        "sha256": "88525aadf363056d3e58b499e32541c9ab5ef9e2bb1fc15680972495d724df97"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 8,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-08_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 22635.498,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "1affc04b9720464aa26705f8f8eb68a58bd4d0cd6916d5b1dae4aebce789f11f"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 8,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-08_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 25211.04,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "7b853a1c76f803b64c204de1b6176177141b12ddd0ee0d93a19f7cd07b27b547"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 8,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-08_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 58334.974,
+        "runtime_trigger_state": "RED",
+        "sha256": "8e93c65632fabeb659c6d3641d67b8f96b88e892f457252e61453bf086750a1c"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 8,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-08_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 61287.511,
+        "runtime_trigger_state": "RED",
+        "sha256": "6f7ebb9999f683e7ce9aff9cff6e14afafc19ad50c5c7b4a2c235ed75fe55ee3"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 9,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-09_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 45834.985,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "8ca4695a4e6549ee1b319c8627c06f6005fcda6a241723176254d27e2da3c1b1"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 9,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-09_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 42310.199,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "4a6541c17b95fe817e8a2b372ce4a61e696eb716dfc7c7c0471b590b57a4147d"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 9,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-09_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 87933.375,
+        "runtime_trigger_state": "RED",
+        "sha256": "7d2d93a13bfe05be319c743f721425c067a891d8e4c465c9451692026d8d1f82"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 9,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-09_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 73564.907,
+        "runtime_trigger_state": "RED",
+        "sha256": "e960ea4bf0fd25eb8f679e7dc1e42a6d04816c75be56ee4e401c49c8a8f59edf"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "campaign_index": 10,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-10_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 44036.057,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "d674cdcf96cfe5a5789a14e78d7e38bce4adb216082b183f50c3bc0ef24ab7df"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "campaign_index": 10,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-10_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 81898.079,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "be01b5962b1351cff2c16c5960bac258cfdab37487e91653f4237e21acc4c875"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "campaign_index": 10,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-10_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 113094.625,
+        "runtime_trigger_state": "RED",
+        "sha256": "021bc71e530c1fc40197548083a2afd70f89c681d19b90a5d33519c419096b10"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "campaign_index": 10,
+        "path": "runtime/p2a/p2a_p3-licensed-maintenance-10_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_ms": 59911.901,
+        "runtime_trigger_state": "RED",
+        "sha256": "ad932a99dc2896c2fe1755da421c67762c6e66c45cc74e972eb6379aa5f59eab"
+      }
+    ],
+    "task_pool_seal_commit": "1408abc829e3243f66f2b606b76aef514b11ab57"
+  },
+  "statistical_boundary": {
+    "minimum_claim_boundary": "The ten-task campaign is underpowered for a route-effect claim and the integrated arm is a compound wrapper. The parseability shift selects a residual; it does not identify a causal Theseus subsystem.",
+    "parseable_discordant_pairs": 4,
+    "parseable_exact_two_sided_sign_test_p": 0.125,
+    "parseable_rate_difference_integrated_minus_direct": 0.4,
+    "useful_discordant_pairs": 2,
+    "useful_exact_two_sided_sign_test_p": 1.0,
+    "useful_rate_difference_integrated_minus_direct": 0.0
+  },
+  "task_results": [
+    {
+      "actual_arm_order": [
+        "direct_local_model",
+        "integrated_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 0,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [],
+          "outcome": "MALFORMED",
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "src/urllib3/poolmanager.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 1,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_01_urllib3_5102_evaluation.json",
+        "sha256": "1e29ce396ab3cea86effdf5c31f343524897fea298dfea7668ba19e34e66567e"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "urllib3/urllib3",
+      "run": {
+        "path": "reports/theseus_assistant_p3_01_urllib3_5102_run.json",
+        "sha256": "8a67a1af5a784841fe44785da636fcadbcdbee3ef459035d11a1c9a1061f34d0"
+      },
+      "stem": "p3_01_urllib3_5102"
+    },
+    {
+      "actual_arm_order": [
+        "integrated_local_model",
+        "direct_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 1,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "src/attr/_make.py"
+          ],
+          "outcome": "USEFUL",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 1,
+          "observed_effect_paths": [
+            "src/attr/_make.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 2,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_02_attrs_1593_evaluation.json",
+        "sha256": "61b46405735956fd90c72f33a1c825f14c9d278cb46922ad8f01e03eecde8179"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "python-attrs/attrs",
+      "run": {
+        "path": "reports/theseus_assistant_p3_02_attrs_1593_run.json",
+        "sha256": "a43731ab76977accf0b47020d2e255751d0ff85873f4857c882570ad93eff479"
+      },
+      "stem": "p3_02_attrs_1593"
+    },
+    {
+      "actual_arm_order": [
+        "direct_local_model",
+        "integrated_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "more_itertools/more.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 1,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "more_itertools/more.py"
+          ],
+          "outcome": "USEFUL",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        }
+      },
+      "campaign_index": 3,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_03_more_itertools_1223_evaluation.json",
+        "sha256": "ae16ac91e50598a318ff32afd36a5c6fcaf8ea4572d91d6ae91bef91be7e4686"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "more-itertools/more-itertools",
+      "run": {
+        "path": "reports/theseus_assistant_p3_03_more_itertools_1223_run.json",
+        "sha256": "e26e980eb8017d2236791f3e0635c9caf7a124956254b1d75d3e4f0afd2c3c59"
+      },
+      "stem": "p3_03_more_itertools_1223"
+    },
+    {
+      "actual_arm_order": [
+        "integrated_local_model",
+        "direct_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 0,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [],
+          "outcome": "MALFORMED",
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 0,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [],
+          "outcome": "MALFORMED",
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 4,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_04_prompt_toolkit_2080_evaluation.json",
+        "sha256": "4532ef3d85458151c32a407944592f1c7647dac22d1c778655491eaa86d002db"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "prompt-toolkit/python-prompt-toolkit",
+      "run": {
+        "path": "reports/theseus_assistant_p3_04_prompt_toolkit_2080_run.json",
+        "sha256": "72743c89687ad91c372c8bd61c8a38cd565b3daffa827a6b0ce4dcbe6b5eae96"
+      },
+      "stem": "p3_04_prompt_toolkit_2080"
+    },
+    {
+      "actual_arm_order": [
+        "direct_local_model",
+        "integrated_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "rich/file_proxy.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "rich/file_proxy.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 5,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_05_rich_4077_evaluation.json",
+        "sha256": "d36e74e4c1df904ab4d379aad47293d77a54f3adfac30eca65965d19096d2505"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "Textualize/rich",
+      "run": {
+        "path": "reports/theseus_assistant_p3_05_rich_4077_run.json",
+        "sha256": "53a86d1a73cbe2723044643319c0b9dcc2dd0d0a10cd7430e3ec7df32c1d65fe"
+      },
+      "stem": "p3_05_rich_4077"
+    },
+    {
+      "actual_arm_order": [
+        "integrated_local_model",
+        "direct_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 1,
+          "observed_effect_paths": [
+            "tomlkit/items.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 1,
+          "observed_effect_paths": [
+            "tomlkit/items.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 6,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_06_tomlkit_544_evaluation.json",
+        "sha256": "1d05549925fc66447fe3364c752123d0abde666345f41af708ba966ff767ebce"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "python-poetry/tomlkit",
+      "run": {
+        "path": "reports/theseus_assistant_p3_06_tomlkit_544_run.json",
+        "sha256": "c4a5e000df864ecd1e163abc474a77251ac31f4ca6101d02dfdab40ffc9b6128"
+      },
+      "stem": "p3_06_tomlkit_544"
+    },
+    {
+      "actual_arm_order": [
+        "direct_local_model",
+        "integrated_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "src/filelock/_marker.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 1,
+          "observed_effect_paths": [
+            "src/filelock/_marker.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 7,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_07_filelock_670_evaluation.json",
+        "sha256": "0a1ed1f4ccd2cc527942a19b306037c471c3e0e4c692d23930dc9449287f33de"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "tox-dev/filelock",
+      "run": {
+        "path": "reports/theseus_assistant_p3_07_filelock_670_run.json",
+        "sha256": "601d9bcb8ab2b512f5a576eebdf8755f3186e4e9868daa3fb22f1d29822f5365"
+      },
+      "stem": "p3_07_filelock_670"
+    },
+    {
+      "actual_arm_order": [
+        "integrated_local_model",
+        "direct_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 0,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [],
+          "outcome": "MALFORMED",
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "src/anyio/_core/_fileio.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 8,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_08_anyio_1200_evaluation.json",
+        "sha256": "61adf9588953920e23eb005ed17738dd8bd2f82b3fec9181b8e359bb6f6faf09"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "agronholm/anyio",
+      "run": {
+        "path": "reports/theseus_assistant_p3_08_anyio_1200_run.json",
+        "sha256": "c2f1d59b114ed9abbc00f44357974ac1857c92342d319abdd93225a2668a70d7"
+      },
+      "stem": "p3_08_anyio_1200"
+    },
+    {
+      "actual_arm_order": [
+        "direct_local_model",
+        "integrated_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 0,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [],
+          "outcome": "MALFORMED",
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "starlette/datastructures.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 9,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_09_starlette_3317_evaluation.json",
+        "sha256": "33ca90bb6091a00ec1b2577af2e15a83fc69e8a2f626907f2c239151cb7bdeff"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "Kludex/starlette",
+      "run": {
+        "path": "reports/theseus_assistant_p3_09_starlette_3317_run.json",
+        "sha256": "ee397508914de0855a4bdf35fa63785bd14212b9520fd060f59d2a1f97ab0091"
+      },
+      "stem": "p3_09_starlette_3317"
+    },
+    {
+      "actual_arm_order": [
+        "integrated_local_model",
+        "direct_local_model"
+      ],
+      "arms": {
+        "direct_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 0,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [],
+          "outcome": "MALFORMED",
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "integrated_local_model": {
+          "apply_faults": [],
+          "correctness_evaluated": 1,
+          "hidden_verifier_passed": 0,
+          "model_calls": 2,
+          "observed_effect_paths": [
+            "src/marshmallow/fields.py"
+          ],
+          "outcome": "INCORRECT",
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 10,
+      "evaluation": {
+        "path": "reports/theseus_assistant_p3_10_marshmallow_2994_evaluation.json",
+        "sha256": "91f6641d562dc0134f7936e176c4167ef9884b387b71ef6e85864c1ec116e9e1"
+      },
+      "matched_pair_ready": true,
+      "model_loads": 1,
+      "repository": "marshmallow-code/marshmallow",
+      "run": {
+        "path": "reports/theseus_assistant_p3_10_marshmallow_2994_run.json",
+        "sha256": "94e91a38d182a4e420d5aedbe3b6b5a42d5824b1cf23f9e849cf2ebb8387b3b0"
+      },
+      "stem": "p3_10_marshmallow_2994"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

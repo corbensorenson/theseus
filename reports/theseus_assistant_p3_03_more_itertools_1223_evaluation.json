@@ -1,0 +1,140 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 106.594,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-0gdrkpzd/source/theseus_p3_hidden_test.py\", line 20, in <module>\n    list(chunked(\"ABCDE\", -1))\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-0gdrkpzd/source/more_itertools/recipes.py\", line 126, in take\n    return list(islice(iterable, n))\n                ^^^^^^^^^^^^^^^^^^^\nValueError: Stop argument for islice() must be None or an integer: 0 <= x <= sys.maxsize.\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-0gdrkpzd/source/theseus_p3_hidden_test.py\", line 22, in <module>\n    assert str(exc) == \"n must be at least 0\", \"negative chunk size error is unclear\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: negative chunk size error is unclear\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:05:12.295519Z",
+    "evaluator_sha256": "4d81ed4bb6b366603d97907bd14487da8ad4b68981e1b5e8776878b615976144",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 255.481,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 94.54,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "f2c79702de0fd5993893bbbcd608631642bbddb203044fd1988dc650d47099ae",
+      "task_sha256": "916a18a993f90cddacfc99ec20c0ca0dec07e9daeb85d665a83a0f86622ad849",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "916a18a993f90cddacfc99ec20c0ca0dec07e9daeb85d665a83a0f86622ad849",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "e26e980eb8017d2236791f3e0635c9caf7a124956254b1d75d3e4f0afd2c3c59",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:05:12.607334Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 2,
+    "sealed_candidates": 2,
+    "tasks": 1,
+    "useful_candidates": 1
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "18f1ce925768ea9a70c41f4536b0f5199b8f1ecd32c9db368bb9dd02a9cea6a2",
+      "5dd6ad32842e57f2be59a075bcc6b4a0e550ba0b309a01d13bddbe5fa576612c"
+    ]
+  },
+  "evaluator_sha256": "4d81ed4bb6b366603d97907bd14487da8ad4b68981e1b5e8776878b615976144",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "18f1ce925768ea9a70c41f4536b0f5199b8f1ecd32c9db368bb9dd02a9cea6a2",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "observed_effect_paths": [
+        "more_itertools/more.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 103.386,
+        "stderr_tail": "",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "5dd6ad32842e57f2be59a075bcc6b4a0e550ba0b309a01d13bddbe5fa576612c",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "more_itertools/more.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 72.715,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-v62e_dr9/candidate/theseus_p3_hidden_test.py\", line 16, in <module>\n    from more_itertools import chunked  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-v62e_dr9/candidate/more_itertools/__init__.py\", line 3, in <module>\n    from .more import *  # noqa\n    ^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-v62e_dr9/candidate/more_itertools/more.py\", line 263\n    raise ValueError('n must not be None when using strict mode.')\nIndentationError: unexpected indent\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 566.951,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

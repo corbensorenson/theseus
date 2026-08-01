@@ -1,0 +1,114 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 149.116,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-gehustny/source/theseus_p3_hidden_test.py\", line 20, in <module>\n    with_port = url.replace(port=8080)\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-gehustny/source/starlette/datastructures.py\", line 126, in replace\n    if hostname[-1] != \"]\":\n       ~~~~~~~~^^^^\nIndexError: string index out of range\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:22:17.625039Z",
+    "evaluator_sha256": "2e0b626b50da47a97fecb5af32e697a7804919a27116f4bb663fe044d4e046f6",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 435.307,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 102.195,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "5e2a7b361f54bfa813480f54948ace6b348256cb4dbbf57c5c94881a9db4f025",
+      "task_sha256": "dd0a736b55369b05c077b8b4a0fcade0dd512536e85131f752e3b0eda9910ed1",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "dd0a736b55369b05c077b8b4a0fcade0dd512536e85131f752e3b0eda9910ed1",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "ee397508914de0855a4bdf35fa63785bd14212b9520fd060f59d2a1f97ab0091",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:22:17.857066Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 1,
+    "sealed_candidates": 1,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "7ec4edc5412b0320e2e5234b6077763f81bcb828ba408fdd2cdd2a9dddb4492e"
+    ]
+  },
+  "evaluator_sha256": "2e0b626b50da47a97fecb5af32e697a7804919a27116f4bb663fe044d4e046f6",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "7ec4edc5412b0320e2e5234b6077763f81bcb828ba408fdd2cdd2a9dddb4492e",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "starlette/datastructures.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 52.811,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-wsg1bwla/candidate/theseus_p3_hidden_test.py\", line 16, in <module>\n    from starlette.datastructures import URL  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-wsg1bwla/candidate/starlette/datastructures.py\", line 142\n    netloc += f\":{port}\"\nIndentationError: unexpected indent\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 667.233,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

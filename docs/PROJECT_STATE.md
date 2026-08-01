@@ -83,7 +83,8 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
-| P3 ten-task instrument | `INSTRUMENT_AND_TASK_POOL_SEALED_RUN_NOT_OPENED` | Exact Qwen3.5 identity, decoder, runtime, typed-edit grammar, two-call cap, blind evaluator, and odd/even counterbalance are source-bound; ten distinct licensed parents fail and exact upstream targets pass sealed evaluators before any candidate call |
+| P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
+| P4 causal development | `COGNITIVE_COMPILATION_SELECTED_INSTRUMENT_PENDING` | P3's dominant semantic translation/repair residual activates only `cognitive-compilation-and-semantic-ir.core`; it has no support state and awaits a fresh-task, adequacy-qualified, matched-control instrument |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -183,13 +184,28 @@ sandbox, repair budget, route integrity, and blind scoring. Its ten-task count
 is fixed, with odd campaign indices direct-first and even indices
 integrated-first. The local-model freeze names Qwen3.5 only as the strongest
 retained development denominator; it does not grant serving or general
-capability status. The instrument audit is GREEN. The pool now binds ten
+capability status. The instrument audit is GREEN. The pool binds ten
 distinct MIT/BSD-licensed repositories, normalized parent and target archives,
 exact revisions, candidate-visible contexts, allowed edit paths, hidden
 network-free oracles, and independent evaluator receipts. All ten parents fail
-and all ten upstream targets pass. No P3 candidate call has opened. Luna-xhigh
-remains a separately defined reference whose callable transport is not yet
-bound; any later hosted run must use this exact sealed pool and remain outside
+and all ten upstream targets pass. The terminal local run used ten persistent
+model loads and 36 calls. Direct produced 5/10 parseable edits and one useful
+completion; integrated produced 9/10 parseable edits and one useful completion.
+The useful discordant pairs split 1–1, so the useful-rate difference is zero.
+All 14 evaluated edits were authorized and rollback-valid, but 12 were
+incorrect. No unsafe candidate or route-integrity failure occurred. P3 therefore
+exposes a semantic translation/repair residual without a route winner. The ten
+local tasks are consumed and ineligible for replay, training, D1, or D2.
+
+The preregistered mapping selects only
+`cognitive-compilation-and-semantic-ir.core` for P4. A faithful P4 treatment must
+make the fixed model use typed Semantic IR with stable obligation identities,
+explicit loss or ambiguity, target validation, and dependency-local repair,
+against information-matched direct generation, natural-language structured
+planning, and deterministic compiler-only controls on fresh tasks. The P3
+result neither supports nor falsifies that claim. Luna-xhigh remains a separate
+measurement-only reference whose callable transport is not bound; any later
+hosted cell must consume the reserved identical pool once and remain outside
 serving and training.
 
 Historical L0 evidence remains preserved:
@@ -509,12 +525,12 @@ In order:
 5. Preserve the terminal P2C run, blind evaluation, runtime receipts, and
    disposition. Do not replay the consumed Click task or infer a subsystem
    effect from its one parseable but incorrect integrated candidate.
-6. Preserve the frozen local P3 instrument and sealed ten-task source-disjoint
-   pool. Run each task once through the counterbalanced local direct/integrated
-   pair and score it route-blind. Bind a separately governed Luna-xhigh adapter
-   only when a callable transport exists; it must use the same sealed tasks,
-   retain separate denominators, and report hosted-wrapper differences rather
-   than treating cross-model rank as a clean causal contrast.
+6. Preserve terminal P3 and its ten consumed tasks, 36 runtime receipts, blind
+   evaluations, exact 1/10 versus 1/10 useful result, and zero-unsafe rollback
+   evidence. Build one fresh-task P4 instrument for
+   `cognitive-compilation-and-semantic-ir.core`; no other mechanism is active.
+   Bind Luna-xhigh only when a callable governed transport exists, using the
+   reserved identical pool once and retaining separate denominators.
 7. Refresh neural N0 source/custody readiness in parallel and implement the
    automated launch/resource/checkpoint/rollback controller. N1/N2 wait on its
    machine predicates, not a user decision.

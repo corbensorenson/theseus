@@ -1,0 +1,140 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 114.702,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-ptoqdf3l/source/theseus_p3_hidden_test.py\", line 26, in <module>\n    raise AssertionError(\"multiline item comment was accepted\")\nAssertionError: multiline item comment was accepted\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T02:13:08.521622Z",
+    "evaluator_sha256": "231edbe32ab33de672a74f1c7729710d8797524612e6d9f7cac7d567f16cfd17",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 354.214,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 124.35,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "ee354fa83504bb04f6b94bfb6bf69a17cf1e788b051a5bd36967aa71b50ed794",
+      "task_sha256": "a57c7223ceaad1b052e894a279fb834a0ece18809a33a5307476c6bcb302ffba",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "a57c7223ceaad1b052e894a279fb834a0ece18809a33a5307476c6bcb302ffba",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "c4a5e000df864ecd1e163abc474a77251ac31f4ca6101d02dfdab40ffc9b6128",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T02:13:08.952733Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 2,
+    "sealed_candidates": 2,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "27ecafae4491e89ea505f36d5b783f24080f4cb1ac05dbbd296a163f520675e9",
+      "a98b42412b63565dafd130e5e821fc520be4a56012387f5a667402df74e9eb91"
+    ]
+  },
+  "evaluator_sha256": "231edbe32ab33de672a74f1c7729710d8797524612e6d9f7cac7d567f16cfd17",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "27ecafae4491e89ea505f36d5b783f24080f4cb1ac05dbbd296a163f520675e9",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "tomlkit/items.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 104.813,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-w1lpfg04/candidate/theseus_p3_hidden_test.py\", line 22, in <module>\n    document[\"x\"].comment(\"first line\\nsecond line\")\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-w1lpfg04/candidate/tomlkit/items.py\", line 508, in comment\n    raise ValueError(\"Comment cannot contain carriage return or line feed characters\")\nValueError: Comment cannot contain carriage return or line feed characters\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-w1lpfg04/candidate/theseus_p3_hidden_test.py\", line 24, in <module>\n    assert \"line breaks\" in str(exc)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+        "stdout_tail": ""
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "a98b42412b63565dafd130e5e821fc520be4a56012387f5a667402df74e9eb91",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "tomlkit/items.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 110.659,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-2r73qv8r/candidate/theseus_p3_hidden_test.py\", line 35, in <module>\n    raise AssertionError(\"multiline array comment was accepted\")\nAssertionError: multiline array comment was accepted\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 783.289,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}

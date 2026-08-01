@@ -1,0 +1,114 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 157.849,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-q43vgfo_/source/theseus_p3_hidden_test.py\", line 28, in <module>\n    assert \"assert_hostname\" not in pool.conn_kw, \"HTTP pool retained assert_hostname\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: HTTP pool retained assert_hostname\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T01:57:39.689044Z",
+    "evaluator_sha256": "f3fde407e2260102ce975991ea51875c0b8ce7af5f8aa709796bb1528eda3eb6",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 451.019,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 139.159,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "0c33e77123217e0f8afcc5ff155fbf90d31f7ab353e3caef23fe794b77daa63f",
+      "task_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "579fec0fe9d32161314e8e150019b841fd263195f82749e6f0705f3f130f85b5",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "8a67a1af5a784841fe44785da636fcadbcdbee3ef459035d11a1c9a1061f34d0",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:57:40.023299Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 1,
+    "sealed_candidates": 1,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_ADEQUATE_P3_ELIGIBLE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": [
+      "cf7701cd73e85bafd79e73ef9664bbb697afa3c2025c3831818be92a36e24ab5"
+    ]
+  },
+  "evaluator_sha256": "f3fde407e2260102ce975991ea51875c0b8ce7af5f8aa709796bb1528eda3eb6",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "integrated_local_model",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "cf7701cd73e85bafd79e73ef9664bbb697afa3c2025c3831818be92a36e24ab5",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "observed_effect_paths": [
+        "src/urllib3/poolmanager.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "337099513d1e78e38a0c408f9970343d42c3392dde22415001733bc7cfb5f134",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 138.089,
+        "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-bfxtbj69/candidate/theseus_p3_hidden_test.py\", line 20, in <module>\n    from urllib3 import PoolManager  # noqa: E402\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-bfxtbj69/candidate/src/urllib3/__init__.py\", line 20, in <module>\n    from .poolmanager import PoolManager, ProxyManager, proxy_from_url\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-score-bfxtbj69/candidate/src/urllib3/poolmanager.py\", line 52\n    for kw in SSL_KEYWORDS:\n    ^^^\nSyntaxError: invalid syntax\n",
+        "stdout_tail": ""
+      }
+    }
+  ],
+  "runtime_ms": 784.975,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}
