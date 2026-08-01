@@ -3,10 +3,17 @@
   "state": "BOUND_BEFORE_P4_SURVIVOR_AND_D1_METADATA_ACQUISITION",
   "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
   "candidate_metadata_ledger": "runtime/d1_acquisition/theseus_d1_online_metadata_frame.json",
+  "metadata_acquisition_script": "scripts/theseus_d1_online_metadata_acquisition.py",
   "frozen_source_registry": "configs/theseus_d1_task_sources.json",
   "report": "reports/theseus_d1_source_selection.json",
   "discovery_frame": {
     "provider": "GitHub_public_repository_and_merged_pull_request_metadata",
+    "maintenance_title_terms": [
+      "fix",
+      "bug",
+      "repair",
+      "prevent"
+    ],
     "query_partitioning": "complete_nonoverlapping_UTC_intervals_per_allowed_programming_language",
     "interval_policy": "Use complete UTC intervals strictly after the exact frozen model snapshot was locally observed. After P4S survivor activation, extend the frame forward through complete intervals until the metadata-only eligible distinct-repository count reaches the design-derived cohort size; there is no candidate-outcome stopping rule, retrospective pre-snapshot task admission, or maximum interval count.",
     "require_every_partition_complete": true,
