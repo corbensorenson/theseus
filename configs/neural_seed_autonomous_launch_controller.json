@@ -1,0 +1,42 @@
+{
+  "policy": "project_theseus_neural_seed_autonomous_one_shot_launch_v1",
+  "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+  "replacement_freeze": "reports/pre_long_run_replacement_freeze.json",
+  "independent_readiness_audit": "reports/pre_long_run_independent_readiness_audit.json",
+  "scale_preregistration": "reports/neural_seed_50m_scale_preregistration.json",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "availability_config": "configs/neural_seed_training_availability.json",
+  "review_config": "configs/neural_seed_architecture_review.json",
+  "yield_control": "runtime/control/neural_seed_yield_after_segment",
+  "active_lease": "runtime/control/neural_seed_autonomous_launch_lease.json",
+  "lease_archive_directory": "reports/neural_seed_autonomous_launch_leases",
+  "rollback_staging_root": "runtime/rollback/neural_seed_autonomous_launch",
+  "child_report": "reports/neural_seed_autonomous_launch_child.json",
+  "report": "reports/neural_seed_autonomous_launch_controller.json",
+  "exclusive_accelerator_process_patterns": [
+    "theseus_p4s_campaign.py",
+    "neural_seed_training_campaign.py --execute",
+    "moecot_language_arm_training.py --execute",
+    "fresh_process_pretraining_qualification.py --execute",
+    "selected_route_sustained_qualification.py --execute"
+  ],
+  "one_shot_command": {
+    "script": "scripts/neural_seed_training_campaign.py",
+    "max_segments": 1,
+    "expected_maximum_optimizer_steps": 64
+  },
+  "authority": {
+    "kind": "machine_predicate_lease",
+    "user_or_operator_approval_required": false,
+    "removes_hold_permanently": false,
+    "reevaluate_before_every_segment": true,
+    "restore_hold_on_every_exit": true,
+    "require_clean_source_bound_to_replacement_freeze": true,
+    "require_no_competing_accelerator_job": true,
+    "require_atomic_checkpoint_rollback_snapshot": true,
+    "require_append_only_lineage_commit": true,
+    "D2_evaluation_authorized": false,
+    "public_calibration_authorized": false,
+    "external_inference_authorized": false
+  }
+}
