@@ -33,6 +33,14 @@ def test_frozen_p2a_instrument_audit_is_green() -> None:
     assert report["model_identity"]["decoder"]["maximum_tokens"] == 1536
 
 
+def test_prospectively_bound_p2b_instrument_audit_is_green() -> None:
+    report = p2a.audit_instrument(ROOT / "configs" / "theseus_assistant_p2b_instrument.json")
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["faults"] == []
+    assert report["model_identity"]["repo_id"] == "mlx-community/Qwen3.5-9B-MLX-4bit"
+
+
 def test_typed_line_edits_are_concise_authorized_and_deterministically_applied(tmp_path: Path) -> None:
     source = tmp_path / "src"
     source.mkdir()
@@ -109,3 +117,19 @@ def test_task_audit_binds_license_archive_and_visible_verifier(tmp_path: Path) -
 
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
+
+
+def test_declared_archive_root_extracts_to_repository_relative_namespace(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    nested = source / "github-prefix" / "src"
+    nested.mkdir(parents=True)
+    (nested / "example.py").write_text("value = 1\n", encoding="utf-8")
+    archive = tmp_path / "source.tar"
+    with tarfile.open(archive, "w") as handle:
+        handle.add(source / "github-prefix", arcname="github-prefix")
+    destination = tmp_path / "candidate"
+
+    p2a.extract_source_archive(archive, destination, "github-prefix")
+
+    assert (destination / "src" / "example.py").read_text(encoding="utf-8") == "value = 1\n"
+    assert not (destination / "github-prefix").exists()

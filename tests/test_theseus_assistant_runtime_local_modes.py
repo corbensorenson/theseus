@@ -268,3 +268,15 @@ def test_runtime_experimental_token_override_is_explicit_and_context_scoped(
     assert report["trigger_state"] == "GREEN"
     assert observed["maximum_tokens"] == 1536
     assert runtime._LOCAL_INFERENCE_RUNNER.get() is None
+
+
+def test_runtime_config_overlay_deep_merges_local_model_binding(tmp_path: Path) -> None:
+    parent = tmp_path / "parent.json"
+    parent.write_text(json.dumps({"local_inference": {"worker_config": "old", "timeout_seconds": 1}, "keep": 2}))
+    child = tmp_path / "child.json"
+    child.write_text(json.dumps({"extends": str(parent), "local_inference": {"worker_config": "new"}}))
+
+    merged = runtime.load_runtime_config(child)
+
+    assert merged["local_inference"] == {"worker_config": "new", "timeout_seconds": 1}
+    assert merged["keep"] == 2

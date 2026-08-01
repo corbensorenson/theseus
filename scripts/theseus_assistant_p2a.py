@@ -27,6 +27,10 @@ import theseus_local_inference_backend as local_backend
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INSTRUMENT = ROOT / "configs" / "theseus_assistant_p2a_instrument.json"
 POLICY = "project_theseus_p2a_frozen_model_run_v1"
+INSTRUMENT_POLICIES = {
+    "project_theseus_p2a_frozen_model_instrument_v1",
+    "project_theseus_p2b_frozen_model_instrument_v1",
+}
 ARMS = (route_integrity.DIRECT_MODE, route_integrity.INTEGRATED_MODE)
 FORBIDDEN_TASK_FIELDS = {
     "answer", "category", "expected", "hidden_tests", "required_constructs",
@@ -67,17 +71,21 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     started = time.perf_counter()
     value = read_json(path)
     faults: list[str] = []
-    if value.get("policy") != "project_theseus_p2a_frozen_model_instrument_v1":
+    if value.get("policy") not in INSTRUMENT_POLICIES:
         faults.append("instrument_policy_invalid")
-    if value.get("state") != "PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION":
+    if value.get("state") not in {
+        "PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+        "P2B_PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+    }:
         faults.append("instrument_not_prospectively_bound")
-    runtime_config = read_json(resolve(str(value.get("runtime_config") or "")))
+    runtime_config = assistant_runtime.load_runtime_config(resolve(str(value.get("runtime_config") or "")))
     local = mapping(runtime_config.get("local_inference"))
+    runtime_binding = mapping(value.get("runtime_binding")) or local
     frozen = mapping(value.get("frozen_model"))
     maximum = int(frozen.get("maximum_generation_tokens_per_call") or 0)
     contract = route_integrity.load_model_contract(
-        str(local.get("worker_config") or ""),
-        str(local.get("runtime_preflight") or ""),
+        str(runtime_binding.get("worker_config") or ""),
+        str(runtime_binding.get("runtime_preflight") or ""),
         maximum_tokens=maximum,
         required_repo_id=str(frozen.get("repo_id") or ""),
         required_revision=str(frozen.get("revision") or ""),
@@ -110,6 +118,22 @@ def audit_instrument(path: Path) -> dict[str, Any]:
             faults.append(f"matched_contract_false:{key}")
     if matched.get("same_typed_edit_protocol") != "theseus_line_edit_v1":
         faults.append("typed_edit_protocol_mismatch")
+    if value.get("policy") == "project_theseus_p2b_frozen_model_instrument_v1":
+        if value.get("candidate_path_namespace") != "repository_root_relative_no_archive_prefix":
+            faults.append("p2b_candidate_path_namespace_invalid")
+        selection_path = resolve(str(value.get("model_selection_report") or ""))
+        if sha256_file(selection_path) != str(value.get("model_selection_report_sha256") or ""):
+            faults.append("p2b_model_selection_digest_mismatch")
+        selection = read_json(selection_path)
+        if selection.get("selection_state") != "SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED":
+            faults.append("p2b_model_selection_state_invalid")
+        if mapping(selection.get("selected_model_identity")).get("revision") != frozen.get("revision"):
+            faults.append("p2b_selected_model_revision_mismatch")
+        harness = mapping(value.get("harness"))
+        for name in ("candidate_runner", "blind_evaluator", "assistant_runtime"):
+            harness_path = resolve(str(harness.get(name) or ""))
+            if sha256_file(harness_path) != str(harness.get(f"{name}_sha256") or ""):
+                faults.append(f"p2b_{name}_digest_mismatch")
     return {
         "policy": "project_theseus_p2a_instrument_audit_v1",
         "created_utc": now(),
@@ -125,7 +149,10 @@ def audit_instrument(path: Path) -> dict[str, Any]:
 def audit_task(path: Path) -> dict[str, Any]:
     task = read_json(path)
     faults: list[str] = []
-    if task.get("policy") != "project_theseus_p2a_licensed_task_v1":
+    if task.get("policy") not in {
+        "project_theseus_p2a_licensed_task_v1",
+        "project_theseus_p2b_licensed_task_v1",
+    }:
         faults.append("task_policy_invalid")
     if task.get("state") != "SEALED_BEFORE_CANDIDATE_GENERATION":
         faults.append("task_not_sealed")
@@ -134,6 +161,17 @@ def audit_task(path: Path) -> dict[str, Any]:
     archive = resolve(str(task.get("source_archive") or ""))
     if sha256_file(archive) != str(task.get("source_archive_sha256") or ""):
         faults.append("source_archive_digest_mismatch")
+    source_root = str(task.get("source_archive_root") or "")
+    if task.get("policy") == "project_theseus_p2b_licensed_task_v1" and not source_root:
+        faults.append("source_archive_root_missing")
+    if source_root:
+        try:
+            with tarfile.open(archive) as handle:
+                visible = [strip_source_root(member.name, source_root) for member in handle.getmembers()]
+            if not any(path for path in visible):
+                faults.append("source_archive_root_empty")
+        except (tarfile.TarError, InstrumentFault):
+            faults.append("source_archive_root_invalid")
     provenance = mapping(task.get("source_provenance"))
     if not all(str(provenance.get(key) or "").strip() for key in ("url", "revision", "license_spdx")):
         faults.append("source_provenance_incomplete")
@@ -144,6 +182,12 @@ def audit_task(path: Path) -> dict[str, Any]:
     context = mapping(task.get("candidate_visible_context"))
     if not dicts(context.get("reads")) and not dicts(context.get("searches")):
         faults.append("candidate_visible_context_empty")
+    candidate_paths = [*strings(task.get("allowed_effect_paths"))]
+    candidate_paths.extend(str(row.get("path") or "") for row in dicts(context.get("reads")))
+    for row in dicts(context.get("searches")):
+        candidate_paths.extend(strings(row.get("paths")))
+    if source_root and any(path == source_root or path.startswith(source_root.rstrip("/") + "/") for path in candidate_paths):
+        faults.append("archive_prefix_exposed_in_candidate_path_namespace")
     verifier = mapping(task.get("visible_verifier"))
     command = strings(verifier.get("command"))
     if not command or command[0] not in {"python3", "pytest"}:
@@ -171,12 +215,13 @@ def run_experiment(
         return invalid_report(instrument_audit, task_audit)
     instrument = read_json(instrument_path)
     task = read_json(task_path)
-    runtime_config = read_json(resolve(str(instrument.get("runtime_config") or "")))
+    runtime_config = assistant_runtime.load_runtime_config(resolve(str(instrument.get("runtime_config") or "")))
     local = mapping(runtime_config.get("local_inference"))
+    runtime_binding = mapping(instrument.get("runtime_binding")) or local
     frozen = mapping(instrument.get("frozen_model"))
     session = session_factory(
-        worker_config_path=resolve(str(local.get("worker_config") or "")),
-        runtime_preflight_path=resolve(str(local.get("runtime_preflight") or "")),
+        worker_config_path=resolve(str(runtime_binding.get("worker_config") or "")),
+        runtime_preflight_path=resolve(str(runtime_binding.get("runtime_preflight") or "")),
         maximum_tokens=int(frozen.get("maximum_generation_tokens_per_call") or 0),
         required_repo_id=str(frozen.get("repo_id") or ""),
         required_revision=str(frozen.get("revision") or ""),
@@ -228,14 +273,20 @@ def run_arm(arm: str, instrument: dict[str, Any], task: dict[str, Any], session:
     maximum = int(mapping(instrument.get("frozen_model")).get("maximum_generation_tokens_per_call") or 0)
     with tempfile.TemporaryDirectory(prefix=f"theseus-p2a-{arm}-") as tmp:
         candidate = Path(tmp) / "candidate"
-        extract_source_archive(resolve(str(task.get("source_archive") or "")), candidate)
+        extract_source_archive(
+            resolve(str(task.get("source_archive") or "")),
+            candidate,
+            str(task.get("source_archive_root") or ""),
+        )
         baseline = inventory(candidate)
         context = render_visible_context(candidate, task)
         prompt = render_candidate_prompt(str(task.get("natural_request") or ""), context, protocol)
         calls: list[dict[str, Any]] = []
         route_rounds: list[dict[str, Any]] = []
         fault_history: list[dict[str, Any]] = []
-        response = runtime_call(arm, task_id, 1, prompt, maximum)
+        response = runtime_call(
+            arm, task_id, 1, prompt, maximum, str(instrument.get("runtime_config") or "")
+        )
         calls.append(response["receipt"])
         route_rounds.append(mapping(response["runtime_report"]).get("route_integrity"))
         actions, parse_faults = parse_actions(response["assistant_text"], task, protocol)
@@ -246,7 +297,9 @@ def run_arm(arm: str, instrument: dict[str, Any], task: dict[str, Any], session:
             fault_history.append({"call_number": 1, "parse_faults": parse_faults, "apply_faults": apply_faults})
             feedback = bounded_feedback(parse_faults, apply_faults, verification)
             repair_prompt = render_repair_prompt(prompt, feedback)
-            response = runtime_call(arm, task_id, 2, repair_prompt, maximum)
+            response = runtime_call(
+                arm, task_id, 2, repair_prompt, maximum, str(instrument.get("runtime_config") or "")
+            )
             calls.append(response["receipt"])
             route_rounds.append(mapping(response["runtime_report"]).get("route_integrity"))
             repair_actions, repair_parse_faults = parse_actions(response["assistant_text"], task, protocol)
@@ -294,11 +347,19 @@ def run_arm(arm: str, instrument: dict[str, Any], task: dict[str, Any], session:
         }
 
 
-def runtime_call(arm: str, task_id: str, call_number: int, prompt: str, maximum: int) -> dict[str, Any]:
+def runtime_call(
+    arm: str,
+    task_id: str,
+    call_number: int,
+    prompt: str,
+    maximum: int,
+    runtime_config: str,
+) -> dict[str, Any]:
     session_id = f"p2a_{task_id}_{arm}_{call_number}"
     base = ROOT / "runtime" / "p2a" / session_id
     argv = [
         "theseus_assistant_runtime.py", "--execution-mode", arm, "--intent", "code",
+        "--config", runtime_config,
         "--session-id", session_id, "--prompt", prompt,
         "--local-maximum-tokens", str(maximum),
         "--out", rel(base.with_suffix(".json")),
@@ -327,6 +388,11 @@ def runtime_call(arm: str, task_id: str, call_number: int, prompt: str, maximum:
             "report_path": rel(base.with_suffix(".json")),
             "report_sha256": sha256_file(base.with_suffix(".json")),
             "route_integrity_ready": mapping(report.get("route_integrity")).get("ready") is True,
+            "runtime_trigger_state": report.get("trigger_state"),
+            "runtime_failed_gates": [
+                {"name": row.get("name"), "severity": row.get("severity")}
+                for row in dicts(report.get("gates")) if row.get("passed") is False
+            ],
             "candidate_output_sha256": sha256_text(str(report.get("assistant_text") or "")),
         },
     }
@@ -486,17 +552,44 @@ def pair_receipt(attempts: list[dict[str, Any]], session: Any) -> dict[str, Any]
     }
 
 
-def extract_source_archive(archive: Path, destination: Path) -> None:
+def extract_source_archive(archive: Path, destination: Path, source_root: str = "") -> None:
     destination.mkdir(parents=True, exist_ok=False)
     with tarfile.open(archive) as handle:
         members = handle.getmembers()
         for member in members:
-            target = (destination / member.name).resolve()
+            relative = strip_source_root(member.name, source_root)
+            if relative is None:
+                continue
+            target = (destination / relative).resolve()
             if destination.resolve() not in target.parents and target != destination.resolve():
                 raise InstrumentFault("unsafe_source_archive_member")
             if member.issym() or member.islnk():
                 raise InstrumentFault("source_archive_links_forbidden")
-        handle.extractall(destination, filter="data")
+            if member.isdir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+            if not member.isfile():
+                raise InstrumentFault("source_archive_special_member_forbidden")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            source = handle.extractfile(member)
+            if source is None:
+                raise InstrumentFault("source_archive_member_unreadable")
+            target.write_bytes(source.read())
+            target.chmod(member.mode & 0o777)
+
+
+def strip_source_root(member_name: str, source_root: str) -> str | None:
+    name = member_name.strip("/")
+    root = source_root.strip("/")
+    if not root:
+        return name
+    if name == root:
+        return None
+    prefix = root + "/"
+    if not name.startswith(prefix):
+        raise InstrumentFault("source_archive_member_outside_declared_root")
+    relative = name[len(prefix):]
+    return relative or None
 
 
 def checked_source_path(root: Path, relative: str) -> Path:

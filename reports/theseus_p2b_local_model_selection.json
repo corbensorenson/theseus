@@ -1,0 +1,87 @@
+{
+  "P3_eligible": false,
+  "candidates": [
+    {
+      "attempted": 3,
+      "candidate_id": "qwen3_8b_general",
+      "evaluated": 3,
+      "infrastructure_failed": 0,
+      "model_identity": {
+        "config_sha256": "40eaf8e4707d36a2825e4f51e14f0ee56f7aabf6d238c3ba6883e762b279639b",
+        "repo_id": "mlx-community/Qwen3-8B-4bit",
+        "revision": "545dc4251c05440727734bcd94334791f6ab0192"
+      },
+      "old_worker_adequacy_passed": false,
+      "preflight": {
+        "missing": true,
+        "path": "reports/core_evidence_qwen3_8b_preflight.json"
+      },
+      "preflight_ready": false,
+      "useful": 0
+    },
+    {
+      "attempted": 3,
+      "candidate_id": "qwen25_coder_7b",
+      "evaluated": 3,
+      "infrastructure_failed": 0,
+      "model_identity": {
+        "config_sha256": "f17ab980ff30efe02e1f4d2f787a257b607f8133a9958701619441380734ac35",
+        "repo_id": "mlx-community/Qwen2.5-Coder-7B-Instruct-4bit",
+        "revision": "019cc73c45c770444708a6dd8690c66243cc5c80"
+      },
+      "old_worker_adequacy_passed": false,
+      "preflight": {
+        "path": "reports/core_evidence_qwen25_coder_7b_preflight.json",
+        "sha256": "1584577975e2fef930c3c51ae12daafd68130dc7176862307e9b1e999ed25d95"
+      },
+      "preflight_ready": true,
+      "useful": 0
+    },
+    {
+      "attempted": 3,
+      "candidate_id": "qwen35_9b_general",
+      "evaluated": 1,
+      "infrastructure_failed": 2,
+      "model_identity": {
+        "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+        "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+        "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+      },
+      "old_worker_adequacy_passed": false,
+      "preflight": {
+        "path": "reports/core_evidence_qwen35_9b_preflight.json",
+        "sha256": "0e223d63c3a69999a4207d6c61fb9f681879b72661823fc4f7e8a4686d70f670"
+      },
+      "preflight_ready": true,
+      "useful": 1
+    }
+  ],
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fresh_tasks_consumed": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0
+  },
+  "created_utc": "2026-08-01T00:41:30.039061Z",
+  "faults": [],
+  "maximum_inference": "Qwen3.5-9B is the strongest retained diagnostic candidate for this bounded successor instrument. The selection does not establish repository competence, P3 eligibility, general superiority, or a Theseus effect.",
+  "model_qualified": false,
+  "next_decision": "Run once under the new P2B instrument on a fresh licensed source-disjoint development task.",
+  "policy": "project_theseus_p2b_local_model_selection_v1",
+  "selected_candidate_id": "qwen35_9b_general",
+  "selected_model_identity": {
+    "config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652",
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631"
+  },
+  "selection_rule": "Among exact-action preflight-GREEN installed candidates, maximize retained useful outcomes, then useful/evaluated rate; selection is diagnostic because no candidate passed the old adequacy floor.",
+  "selection_state": "SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED",
+  "source_identity": {
+    "path": "reports/core_evidence_local_model_bakeoff_synthesis.json",
+    "sha256": "92bff74c8c2a9ec8acc5fed59862eeebfaa94434e91fa77026f615c57460e5a0"
+  },
+  "source_terminal_disposition": "NO_LOCAL_MODEL_ADEQUATE_FOR_FRESH_QUALIFICATION",
+  "state": "FROZEN_BEFORE_P2B_TASK_ACQUISITION",
+  "trigger_state": "GREEN"
+}

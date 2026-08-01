@@ -48,7 +48,10 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
     started = time.perf_counter()
     value = p2a.read_json(path)
     faults: list[str] = []
-    if value.get("policy") != "project_theseus_p2a_route_blind_evaluator_v1":
+    if value.get("policy") not in {
+        "project_theseus_p2a_route_blind_evaluator_v1",
+        "project_theseus_p2b_route_blind_evaluator_v1",
+    }:
         faults.append("evaluator_policy_invalid")
     if value.get("state") != "SEALED_BEFORE_CANDIDATE_GENERATION":
         faults.append("evaluator_not_sealed")
@@ -66,6 +69,9 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
         if p2a.unsafe_relative_path(destination):
             faults.append(f"hidden_test_{index}_destination_unsafe")
     target_archive = p2a.resolve(str(value.get("target_archive") or ""))
+    task = p2a.read_json(task_path)
+    if task.get("policy") == "project_theseus_p2b_licensed_task_v1" and not str(value.get("target_archive_root") or ""):
+        faults.append("target_archive_root_missing")
     if value.get("target_must_pass") is True and (
         p2a.sha256_file(target_archive) != str(value.get("target_archive_sha256") or "")
     ):
@@ -80,13 +86,19 @@ def audit_evaluator(path: Path) -> dict[str, Any]:
         try:
             with tempfile.TemporaryDirectory(prefix="theseus-p2a-evaluator-audit-") as tmp:
                 root = Path(tmp) / "source"
-                p2a.extract_source_archive(p2a.resolve(str(task.get("source_archive") or "")), root)
+                p2a.extract_source_archive(
+                    p2a.resolve(str(task.get("source_archive") or "")),
+                    root,
+                    str(task.get("source_archive_root") or ""),
+                )
                 overlay_hidden_tests(value, root)
                 baseline = run_hidden_verifier(value, root)
             if value.get("target_must_pass") is True:
                 with tempfile.TemporaryDirectory(prefix="theseus-p2a-evaluator-target-") as tmp:
                     root = Path(tmp) / "source"
-                    p2a.extract_source_archive(target_archive, root)
+                    p2a.extract_source_archive(
+                        target_archive, root, str(value.get("target_archive_root") or "")
+                    )
                     overlay_hidden_tests(value, root)
                     target = run_hidden_verifier(value, root)
         except (OSError, EvaluationFault, p2a.InstrumentFault) as exc:
@@ -199,7 +211,7 @@ def evaluate_candidate_blind(task: dict[str, Any], evaluator: dict[str, Any], ro
     with tempfile.TemporaryDirectory(prefix="theseus-p2a-score-") as tmp:
         root = Path(tmp) / "candidate"
         archive = p2a.resolve(str(task.get("source_archive") or ""))
-        p2a.extract_source_archive(archive, root)
+        p2a.extract_source_archive(archive, root, str(task.get("source_archive_root") or ""))
         baseline = p2a.inventory(root)
         actions = p2a.dicts(candidate.get("actions"))
         apply_faults = p2a.apply_actions(root, actions)
@@ -211,7 +223,7 @@ def evaluate_candidate_blind(task: dict[str, Any], evaluator: dict[str, Any], ro
             overlay_hidden_tests(evaluator, root)
             verification = run_hidden_verifier(evaluator, root)
         shutil.rmtree(root)
-        p2a.extract_source_archive(archive, root)
+        p2a.extract_source_archive(archive, root, str(task.get("source_archive_root") or ""))
         rollback_verified = p2a.inventory(root) == baseline
     evaluated = bool(not apply_faults and authorized and inventory_match and verification)
     useful = evaluated and verification.get("passed") is True and rollback_verified

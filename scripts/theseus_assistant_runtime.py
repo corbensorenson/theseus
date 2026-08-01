@@ -133,7 +133,7 @@ def main() -> int:
 
 
 def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
-    config = read_json(resolve(args.config), {})
+    config = load_runtime_config(resolve(args.config))
     local_maximum_tokens = int(getattr(args, "local_maximum_tokens", 0) or 0)
     if local_maximum_tokens:
         config = dict(config)
@@ -3751,6 +3751,34 @@ def stable_id(prefix: str, *parts: Any) -> str:
 
 def gate(name: str, passed: bool, evidence: Any, severity: str) -> dict[str, Any]:
     return {"name": name, "passed": bool(passed), "severity": severity, "evidence": evidence}
+
+
+def load_runtime_config(path: Path, seen: set[Path] | None = None) -> dict[str, Any]:
+    """Load a small experiment overlay without duplicating the product config."""
+    resolved = path.resolve()
+    visited = set(seen or set())
+    if resolved in visited:
+        raise ValueError("runtime_config_extends_cycle")
+    visited.add(resolved)
+    value = read_json(resolved, {})
+    if not isinstance(value, dict):
+        raise ValueError("runtime_config_not_object")
+    parent_ref = str(value.get("extends") or "")
+    if not parent_ref:
+        return dict(value)
+    parent = load_runtime_config(resolve(parent_ref), visited)
+    child = {key: item for key, item in value.items() if key != "extends"}
+    return deep_merge(parent, child)
+
+
+def deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(base)
+    for key, value in overlay.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = deep_merge(dict(merged[key]), value)
+        else:
+            merged[key] = value
+    return merged
 
 
 def read_json(path: Path, default: Any | None = None) -> Any:

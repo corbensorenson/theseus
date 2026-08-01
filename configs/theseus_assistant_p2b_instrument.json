@@ -1,0 +1,79 @@
+{
+  "policy": "project_theseus_p2b_frozen_model_instrument_v1",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
+  "state": "P2B_PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+  "purpose": "Successor instrument-adequacy test after terminal P2A; infrastructure only, with no subsystem claim authority.",
+  "runtime_config": "configs/theseus_assistant_runtime_p2b_qwen35.json",
+  "model_selection_report": "reports/theseus_p2b_local_model_selection.json",
+  "model_selection_report_sha256": "5bc480da59d210b980bc38618a0b72d7544b95f4c9af0abafaa81ada11fe6f54",
+  "harness": {
+    "candidate_runner": "scripts/theseus_assistant_p2a.py",
+    "candidate_runner_sha256": "1184c691b62bcc4e99e316aed31838c127f21ae762b526c33011c011c21856c9",
+    "blind_evaluator": "scripts/theseus_assistant_p2a_evaluator.py",
+    "blind_evaluator_sha256": "9ec27f406025c2c70545a23b953ed45c6976302c201a0829230a8d001eeb3217",
+    "assistant_runtime": "scripts/theseus_assistant_runtime.py",
+    "assistant_runtime_sha256": "08acad51bbf688e1d85d60176da1f25bf72267400a61e77cedbe86eb11e5cc5a"
+  },
+  "runtime_binding": {
+    "worker_config": "configs/core_evidence_qwen35_9b_worker.json",
+    "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json"
+  },
+  "frozen_model": {
+    "selection_state": "SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED",
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+    "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+    "maximum_generation_tokens_per_call": 1536,
+    "maximum_model_calls_per_arm": 2,
+    "persistent_model_loads_per_pair": 1,
+    "temperature": 0.0
+  },
+  "candidate_path_namespace": "repository_root_relative_no_archive_prefix",
+  "matched_arm_contract": {
+    "arm_order": [
+      "direct_local_model",
+      "integrated_local_model"
+    ],
+    "same_source_snapshot": true,
+    "same_natural_request": true,
+    "same_candidate_visible_repository_context": true,
+    "same_typed_edit_protocol": "theseus_line_edit_v1",
+    "same_patch_application": true,
+    "same_visible_verifier": true,
+    "same_hidden_evaluator_after_seal": true,
+    "same_decoder_and_budget_caps": true,
+    "one_visible_verifier_repair_allowed": true,
+    "route_label_hidden_from_evaluator": true
+  },
+  "candidate_protocol": {
+    "version": "theseus_line_edit_v1",
+    "maximum_actions_per_candidate": 8,
+    "maximum_replacement_bytes": 65536,
+    "allowed_operation": "REPLACE",
+    "line_coordinates": "one_based_inclusive_against_current_disposable_snapshot",
+    "grammar": "THESEUS_EDIT_V1\\nREPLACE <repository-relative-path> <start-line> <end-line>\\n<<<\\n<replacement text>\\n>>>\\nEND"
+  },
+  "runtime_health_interpretation": {
+    "route_integrity_receipt_controls_pair_validity": true,
+    "top_level_runtime_red_reported_separately": true,
+    "product_or_dogfood_gate_cannot_be_relabelled_as_task_correctness": true,
+    "route_integrity_green_cannot_relabel_product_health_green": true
+  },
+  "adequacy_rule": {
+    "instrument_adequate": "At least one arm emits a parseable authorized edit and an independent hidden evaluator reaches a correctness decision inside the frozen budget.",
+    "both_arms_malformed": "P2B_INSTRUMENT_INADEQUATE",
+    "missing_persistence_or_pair_match": "INVALID_P2B_INSTRUMENT",
+    "model_failure_after_adequate_instrument": "SCOPED_TO_EXACT_FROZEN_MODEL_TASK_AND_BUDGET"
+  },
+  "boundaries": {
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0,
+    "ASI_stack_support_state_effect": "none"
+  }
+}

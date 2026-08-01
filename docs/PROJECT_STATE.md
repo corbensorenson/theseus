@@ -3,7 +3,7 @@
 Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
 `cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
 page includes the bounded 13-claim causal-binding transaction and the terminal
-P2A instrument-adequacy result.
+P2A instrument-adequacy result plus the prospectively frozen P2B successor.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -78,6 +78,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
+| P2B repaired instrument | `INSTRUMENT_SEALED_TASK_NOT_ACQUIRED` | Qwen3.5-9B is selected for instrument diagnosis only, not qualified; exact runtime/harness hashes, persistent matched budgets, canonical repo-relative path extraction, and separate product/route health accounting are audit-GREEN before fresh task acquisition |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -126,6 +127,16 @@ The integrated runtime's product-trace gate was also RED on both calls while
 the experiment-relevant route-integrity receipts were GREEN. The consumed task
 is permanently ineligible for rerun, training, D1, or D2. This is exact
 instrument/task evidence only and cannot support a route or subsystem verdict.
+
+P2B is now prospectively frozen before opening its task. The retained bakeoff
+selected Qwen3.5-9B because it produced the only useful completed result, but
+two of its three old tasks timed out and no candidate passed the old adequacy
+floor; its state is therefore `SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED`.
+The new runtime overlay binds that exact local snapshot without changing the
+serving default. The harness strips one declared source-archive root so every
+candidate-visible and evaluator path is repository-relative, and it records
+the assistant product trigger separately from the route-integrity receipt.
+Instrument audit is GREEN. No fresh P2B task has yet been acquired or consumed.
 
 Historical L0 evidence remains preserved:
 
@@ -438,11 +449,11 @@ In order:
 3. Preserve P2A's run, blind evaluation, runtime receipts, and terminal
    disposition as immutable `INCONCLUSIVE_IMPLEMENTATION` evidence. Do not
    replay its consumed `typing_extensions` task or infer a subsystem effect.
-4. Freeze P2B under a new identity with one canonical repository-relative path
-   namespace and explicit runtime-product versus route-integrity accounting.
-   Prospectively select a stronger installed local candidate, then consume one
-   fresh licensed source-disjoint development task exactly once. Open P3 only
-   if at least one candidate reaches independent correctness evaluation.
+4. Preserve the now-frozen P2B identity, Qwen3.5 diagnostic selection, canonical
+   repository-relative path namespace, and runtime-product versus
+   route-integrity accounting. Acquire, seal, and consume one fresh licensed
+   source-disjoint development task exactly once. Open P3 only if at least one
+   candidate reaches independent correctness evaluation.
 5. For P3, freeze the best adequate installed local model and a separately
    governed Luna-xhigh reference adapter. Run each model direct and integrated
    on the same ten sealed tasks; interpret within-model Theseus effects and
