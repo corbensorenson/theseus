@@ -1,0 +1,141 @@
+{
+  "consumption": {
+    "eligible_for_D1_or_D2": false,
+    "eligible_for_exact_rerun": false,
+    "eligible_for_training": false,
+    "task_consumed": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:04:15.910284Z",
+  "faults": [],
+  "grammar_transport": {
+    "contains_actual_newline": false,
+    "contains_literal_backslash_n": true,
+    "sha256": "0b8d6c88bca51e285c5962415c5d03c161c470d70c3a629354b4ad8a804c1964"
+  },
+  "maximum_inference": "The exact P2B prompt serialized newline separators as literal backslash-n text and all four Qwen3.5 outputs reproduced that transport, while the parser required actual newlines. P2B therefore cannot assess model competence, direct-versus-integrated quality, any Theseus subsystem effect, or any ASI Stack claim.",
+  "next_stage": {
+    "id": "P2C_NEW_INSTRUMENT_AND_SOURCE_DISJOINT_TASK",
+    "requirements": [
+      "freeze a new instrument identity before opening a fresh task",
+      "retain Qwen3.5, decoder, persistence, arm order, budgets, runtime overlay, and repository-relative namespace",
+      "unit-test the exact rendered prompt grammar against the exact parser",
+      "consume a fresh licensed source-disjoint development task exactly once"
+    ],
+    "single_intended_change": "Encode the displayed edit grammar with actual newline characters and add an audit that rendered grammar round-trips through the parser."
+  },
+  "policy": "project_theseus_p2b_terminal_disposition_v1",
+  "recomputed_checks": {
+    "correctness_evaluated_candidates": 0,
+    "escaped_grammar_transport_reproduced_in_every_output": true,
+    "every_output_uses_authorized_repo_relative_path": true,
+    "four_model_calls": true,
+    "matched_pair_ready": true,
+    "one_persistent_model_load": true,
+    "parseable_candidates": 0,
+    "route_integrity_ready_for_every_call": true,
+    "three_of_four_outputs_contain_replace_token": true
+  },
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "source_identities": {
+    "evaluation": {
+      "path": "reports/theseus_assistant_p2b_requests_7502_evaluation.json",
+      "sha256": "e00a2e64224658da919344668666efd4c369050bf64509a605ad01cc5cf796bd"
+    },
+    "instrument": {
+      "path": "configs/theseus_assistant_p2b_instrument.json",
+      "sha256": "03172d8a88aa0fc23c2ddc762328a0753f424f357cb540b04329fbee56129b18"
+    },
+    "run": {
+      "path": "reports/theseus_assistant_p2b_requests_7502_run.json",
+      "sha256": "ee53aaa31e4f48e5d5ef5515b7d6cde6e537b5c4572bcbb7b8aff538e3d0b221"
+    },
+    "runtime_reports": [
+      {
+        "arm_id": "direct_local_model",
+        "assistant_output_characters": 421,
+        "assistant_output_sha256": "07de133dbc34b3ad6c300bbb671244527bc0e21a4ca5688bd609d128fefd8ea9",
+        "call_number": 1,
+        "contains_actual_newline": false,
+        "contains_authorized_repo_relative_path": true,
+        "contains_close_marker": true,
+        "contains_end_marker": true,
+        "contains_header": true,
+        "contains_literal_backslash_n": true,
+        "contains_open_marker": true,
+        "contains_replace_token": false,
+        "path": "runtime/p2a/p2a_p2b-multipart-dynamic-read-wrapper-001_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "9c57aca960f4ac477456f13be4abf6e87973475f970d5b3ad0953643b214aaae"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "assistant_output_characters": 405,
+        "assistant_output_sha256": "d72b73b25671915a311bd56a03206f69c0f1cd808ef962da658110316607ac90",
+        "call_number": 2,
+        "contains_actual_newline": false,
+        "contains_authorized_repo_relative_path": true,
+        "contains_close_marker": true,
+        "contains_end_marker": true,
+        "contains_header": true,
+        "contains_literal_backslash_n": true,
+        "contains_open_marker": true,
+        "contains_replace_token": true,
+        "path": "runtime/p2a/p2a_p2b-multipart-dynamic-read-wrapper-001_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "GREEN",
+        "sha256": "5bc066149534730645c865a6fc76e820b730bcf170849a22d5ba7fae4167def6"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "assistant_output_characters": 405,
+        "assistant_output_sha256": "80080d37bd5492e88d2a9bb9bb5f74e418fffe2bb48677fdddbb41caec23a8b6",
+        "call_number": 1,
+        "contains_actual_newline": false,
+        "contains_authorized_repo_relative_path": true,
+        "contains_close_marker": true,
+        "contains_end_marker": true,
+        "contains_header": true,
+        "contains_literal_backslash_n": true,
+        "contains_open_marker": true,
+        "contains_replace_token": true,
+        "path": "runtime/p2a/p2a_p2b-multipart-dynamic-read-wrapper-001_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "RED",
+        "sha256": "654f5df6cf8b8785cfb542eb0f6a279d1a76742d476a15a893399164f0d478f0"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "assistant_output_characters": 405,
+        "assistant_output_sha256": "80080d37bd5492e88d2a9bb9bb5f74e418fffe2bb48677fdddbb41caec23a8b6",
+        "call_number": 2,
+        "contains_actual_newline": false,
+        "contains_authorized_repo_relative_path": true,
+        "contains_close_marker": true,
+        "contains_end_marker": true,
+        "contains_header": true,
+        "contains_literal_backslash_n": true,
+        "contains_open_marker": true,
+        "contains_replace_token": true,
+        "path": "runtime/p2a/p2a_p2b-multipart-dynamic-read-wrapper-001_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "runtime_trigger_state": "RED",
+        "sha256": "a86fd84a5717af71ccece7a5e92e1038d2b2a6ec6fbf9269ff0693d5d5418856"
+      }
+    ],
+    "task": {
+      "path": "configs/theseus_p2b_task_requests_7502.json",
+      "sha256": "daff0dbf7ed21a5fee32daafd7ad393e2a0a88fe6a4bf41d056659ff3f49450e"
+    }
+  },
+  "terminal_disposition": "P2B_TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT",
+  "trigger_state": "GREEN"
+}

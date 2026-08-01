@@ -20,8 +20,10 @@ only repair produced no applicable candidate under the 512-token protocol.
 Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. P2A has
 now also terminated without an evaluable candidate: its matched execution held,
 but TMax did not follow the edit protocol and the task exposed a path-namespace
-ambiguity. The next step is a newly frozen P2B instrument with a stronger local
-diagnostic candidate and one fresh licensed source-disjoint task. In parallel,
+ambiguity. P2B also ended inconclusively because its displayed grammar used
+literal backslash-n text while its parser required actual newlines; Qwen3.5
+reproduced the displayed transport. The next step is a newly frozen P2C that
+changes only that transport and uses a fresh licensed task. In parallel,
 the neural campaign remains held on clean
 source binding and migration from manual holds to bounded machine-readable
 launch and one-shot evaluation authority. No forward phase depends on Corben
@@ -78,7 +80,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
-| P2B repaired instrument | `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN` | Qwen3.5-9B is selected for instrument diagnosis only, not qualified; exact runtime/harness hashes and the Apache-2.0 Requests parent/target task are sealed after instrument freeze, with a parent-fail/target-pass network-free oracle and zero candidate calls |
+| P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -113,7 +115,7 @@ Both repaired candidates sealed safely but reached exactly 512 tokens, ended
 mid-patch, and failed independent patch application. The exact TMax/512-token
 instrument is terminally unsuitable for this coding denominator. Theseus
 subsystem efficacy remains `INCONCLUSIVE_IMPLEMENTATION`; P3, P4, and all
-subsystem-specific claim experiments remain blocked until a newly frozen P2B
+subsystem-specific claim experiments remain blocked until a newly frozen P2C
 successor proves instrument adequacy.
 
 P2A used one persistent frozen backend, concise line-addressed edits, atomic
@@ -141,8 +143,19 @@ sealed after the instrument commit. Exact upstream archives are retained and
 their deterministic link-free derivatives expose a single repository-relative
 namespace. The independent network-free oracle observes the exact parent fail
 and exact target pass; the model cannot see the patch, hidden test, PR identity,
-or evaluator. Candidate model calls remain zero, so the next action is the one
-allowed source-bound P2B run and blind evaluation.
+or evaluator. Candidate model calls were zero at seal time; the exact task was
+eligible for one run only.
+
+That one allowed run is complete. Pair identity, one-load persistence, four-call
+budget, route integrity, no external inference, and no effects all held. The
+frozen grammar string contained literal `\\n` separators; all four Qwen3.5
+outputs reproduced that escaped representation, three included the required
+`REPLACE` token, and all used the correct repository-relative path. The parser
+requires actual newlines, so no candidate was sealed or scored. The terminal
+status is `INCONCLUSIVE_IMPLEMENTATION`, the Requests task is consumed, and no
+model, route, subsystem, or book claim follows. P2C will change only the grammar
+transport and add an exact render-to-parser round-trip audit before acquiring a
+fresh licensed task.
 
 Historical L0 evidence remains preserved:
 
@@ -455,20 +468,23 @@ In order:
 3. Preserve P2A's run, blind evaluation, runtime receipts, and terminal
    disposition as immutable `INCONCLUSIVE_IMPLEMENTATION` evidence. Do not
    replay its consumed `typing_extensions` task or infer a subsystem effect.
-4. Preserve the frozen P2B identity, Qwen3.5 diagnostic selection, canonical
-   repository-relative namespace, runtime/route accounting, and sealed Requests
-   task/evaluator. Consume that exact source-disjoint development task once and
-   score it blindly. Open P3 only if at least one candidate reaches independent
-   correctness evaluation.
-5. For P3, freeze the best adequate installed local model and a separately
+4. Preserve P2B's run, blind evaluation, runtime receipts, and terminal
+   disposition. Do not replay its consumed Requests task or infer model or
+   subsystem failure from the literal-newline transport mismatch.
+5. Freeze P2C before task acquisition. Change only the grammar transport to
+   actual newlines, require an exact rendered-example/parser round trip, and
+   retain Qwen3.5 plus every other denominator variable. Consume one fresh
+   licensed source-disjoint task exactly once; open P3 only if a candidate
+   reaches independent correctness evaluation.
+6. For P3, freeze the best adequate installed local model and a separately
    governed Luna-xhigh reference adapter. Run each model direct and integrated
    on the same ten sealed tasks; interpret within-model Theseus effects and
    report hosted-wrapper differences rather than treating cross-model rank as
    a clean causal contrast.
-6. Refresh neural N0 source/custody readiness in parallel and implement the
+7. Refresh neural N0 source/custody readiness in parallel and implement the
    automated launch/resource/checkpoint/rollback controller. N1/N2 wait on its
    machine predicates, not a user decision.
-7. Keep E2, D2, and public calibration sealed. Do not tune or rerun
+8. Keep E2, D2, and public calibration sealed. Do not tune or rerun
    TMax/Worker-v4 on the consumed procedural-effect task.
    Preserve its terminal post-plan edit-commitment disposition and the
    superseded source-state diagnosis.

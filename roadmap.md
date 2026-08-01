@@ -272,7 +272,7 @@ fresh licensed source-disjoint development task.
 
 #### P2B — Qualify the repaired instrument with the strongest retained local candidate
 
-State: `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN`.
+State: `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT`.
 
 The retained local-model bakeoff qualified no model, so P2B does not pretend
 otherwise. It prospectively selects Qwen3.5-9B only as the strongest diagnostic
@@ -301,8 +301,25 @@ network-free evaluator confirms the parent fails on a dynamically proxied
 `read` method and the exact target passes. The model sees only the natural
 request and repository-relative `src/requests/models.py` context; the later
 patch, hidden test, PR identity, and evaluator remain sealed. Candidate model
-calls remain zero. The next action is one source-bound P2B run and blind
-evaluation; this exact task may be consumed only once.
+calls were zero at seal time; this exact task was eligible for one run only.
+
+The one allowed run is now complete. One persistent Qwen3.5 load served four
+matched calls, every route-integrity receipt was GREEN, and external inference
+and user-facing effects remained zero. However, the frozen JSON grammar
+contained literal `\\n` characters while the parser required real newline
+characters. All four outputs reproduced literal `\\n`; three contained the
+`REPLACE` token and all four used the authorized repository-relative path.
+Thus zero candidates parsed and zero reached correctness evaluation. The model
+followed the displayed transport closely enough that this is decisively
+`INCONCLUSIVE_IMPLEMENTATION`, not evidence of model incompetence or a Theseus
+effect. The Requests task is consumed and may not be rerun.
+
+P2C must change only the grammar transport: actual newline characters in the
+rendered prompt plus an audit proving that the exact displayed example
+round-trips through the exact parser. Qwen3.5, decoder, persistence, arm order,
+budgets, runtime overlay, path namespace, evaluator boundary, and effect
+authority stay fixed. P2C receives a fresh licensed source-disjoint task under
+a new pre-task instrument identity.
 
 ##### Autonomous task-source contract
 
@@ -338,7 +355,7 @@ label, approval, or scheduling dependency.
 
 #### P3 — Autonomous paired development
 
-State: `BLOCKED_ON_P2B_INSTRUMENT_ADEQUACY`.
+State: `BLOCKED_ON_P2C_INSTRUMENT_ADEQUACY`.
 
 Select the next ten distinct eligible repository-engineering tasks from a
 prospectively sealed autonomous pool. Cover at least diagnosis, bounded code
@@ -459,9 +476,9 @@ Maintenance serves P or N and does not become another research program:
 | Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
 | Autonomous instrument successor | `P2A_TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | The exact matched TMax run held its route/persistence budgets but produced zero parseable candidates; a repo-relative/archive-prefix mismatch also made the task packet ambiguous, so no subsystem comparison is valid |
-| P2B repaired instrument | `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN` | Exact Qwen3.5 diagnostic candidate and the Apache-2.0 Requests parent/target task are hash-bound after instrument freeze; the parent fails and target passes the sealed network-free evaluator, with zero candidate calls |
+| P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | Qwen3.5 reproduced the prompt's literal backslash-n transport on all four matched calls, but the parser required actual newlines; zero candidates were evaluable, so the exact result is a harness implementation failure only |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
-| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 and P2A produced zero independently evaluable candidates under their exact protocols; P3 remains closed until a new instrument qualifies, then compares the best qualified local model and governed Luna-xhigh reference, each direct and integrated |
+| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001, P2A, and P2B produced zero independently evaluable candidates under their exact protocols; P3 remains closed until a new instrument qualifies, then compares the best qualified local model and governed Luna-xhigh reference, each direct and integrated |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -482,20 +499,23 @@ Maintenance serves P or N and does not become another research program:
    independent disposition as immutable negative evidence. Do not rerun its
    consumed `typing_extensions` task or translate its instrument failure into a
    subsystem result.
-4. Preserve the now-frozen P2B identity, canonical repo-relative path namespace,
-   product/route-health separation, Qwen3.5 diagnostic selection, and sealed
-   Requests task/evaluator. Consume that exact task once and evaluate blindly.
-5. Open P3 only if P2B reaches independent correctness evaluation within its
+4. Preserve P2B's run, blind evaluation, runtime receipts, and terminal
+   disposition. Do not rerun its consumed Requests task or infer model or
+   subsystem failure from the literal-newline transport mismatch.
+5. Freeze P2C before opening a fresh task. Change only the displayed grammar to
+   actual newlines and prove the rendered example round-trips through the exact
+   parser; retain Qwen3.5 and every other P2B denominator variable.
+6. Open P3 only if P2C reaches independent correctness evaluation within its
    frozen budget; otherwise preserve the exact failure and repair the measured
-   owner under another new denominator rather than stretching P2B.
-6. Before P3, select the best adequate installed local model on the sealed
+   owner under another new denominator rather than stretching P2C.
+7. Before P3, select the best adequate installed local model on the sealed
    development pool and bind the measurement-only Luna-xhigh adapter. Run both
    models direct and integrated on the same ten tasks without mixing
    denominators or allowing hosted outputs into serving or training.
-7. In parallel, refresh N0 with the training hold installed and implement the
+8. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-8. Select no P4 subsystem ablation until P3 establishes nonzero useful work and
+9. Select no P4 subsystem ablation until P3 establishes nonzero useful work and
    the autonomous residual ledger identifies one decision-relevant defect.
 
 ## Historical Rapid Evidence Campaign

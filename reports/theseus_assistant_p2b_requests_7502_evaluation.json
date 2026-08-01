@@ -1,0 +1,86 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "command_sha256": "0cfcc3b8f8596cc3c60370faf0a947fd0b918822e23b08f7cca0e56b530cad57",
+      "passed": false,
+      "returncode": 1,
+      "runtime_ms": 243.318,
+      "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-_1ewf15l/source/theseus_p2b_hidden_test.py\", line 22, in <module>\n    body, content_type = RequestEncodingMixin._encode_files({\"file\": handle}, {})\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p2a-evaluator-audit-_1ewf15l/source/src/requests/models.py\", line 250, in _encode_files\n    body, content_type = encode_multipart_formdata(new_fields)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/urllib3/filepost.py\", line 81, in encode_multipart_formdata\n    body.write(data)\nTypeError: a bytes-like object is required, not '_TemporaryFileWrapper'\n",
+      "stdout_tail": ""
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T01:02:46.837291Z",
+    "evaluator_sha256": "5a5df98115b085f48b09b4a907855232489cdd5b32a3a154581ddfed2faff743",
+    "faults": [],
+    "policy": "project_theseus_p2a_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 569.934,
+    "target_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "command_sha256": "0cfcc3b8f8596cc3c60370faf0a947fd0b918822e23b08f7cca0e56b530cad57",
+      "passed": true,
+      "returncode": 0,
+      "runtime_ms": 143.049,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p2a_task_audit_v1",
+      "source_archive_sha256": "a2c4271154ef98364b05a26f94dcfa6d65e6b0732dcfac26ff1c3182b06450c5",
+      "task_sha256": "daff0dbf7ed21a5fee32daafd7ad393e2a0a88fe6a4bf41d056659ff3f49450e",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "daff0dbf7ed21a5fee32daafd7ad393e2a0a88fe6a4bf41d056659ff3f49450e",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "ee53aaa31e4f48e5d5ef5515b7d6cde6e537b5c4572bcbb7b8aff538e3d0b221",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:02:46.838568Z",
+  "denominators": {
+    "correctness_evaluated_candidates": 0,
+    "sealed_candidates": 0,
+    "tasks": 1,
+    "useful_candidates": 0
+  },
+  "disposition": "P2A_INSTRUMENT_INADEQUATE",
+  "evaluation_blinding": {
+    "candidate_authored_integrity_flags_trusted": false,
+    "route_labels_attached_after_scoring": true,
+    "route_labels_passed_to_scoring": false,
+    "scoring_order": []
+  },
+  "evaluator_sha256": "5a5df98115b085f48b09b4a907855232489cdd5b32a3a154581ddfed2faff743",
+  "faults": [],
+  "maximum_inference": "Only whether the exact P2A instrument reached independent correctness evaluation on this task; a useful result is not a causal subsystem result.",
+  "policy": "project_theseus_p2a_route_blind_evaluation_v1",
+  "results": [],
+  "runtime_ms": 570.715,
+  "scope": "P2A instrument adequacy on one licensed development task; no subsystem or general model claim",
+  "trigger_state": "GREEN"
+}
