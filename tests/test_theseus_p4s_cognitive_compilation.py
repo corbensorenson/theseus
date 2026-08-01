@@ -67,3 +67,15 @@ def test_semantic_prompt_ends_in_labeled_output_shape() -> None:
 def test_p4s_runner_has_no_project_selected_quality_cap() -> None:
     assert p4s.MODEL_CONTEXT_TOKENS == 262144
     assert "fresh p4 decision" in p4s.__doc__.lower()
+
+
+def test_frozen_p4s_instrument_audits_green() -> None:
+    report = p4s.audit_instrument(
+        ROOT / "configs" / "theseus_p4s_cognitive_compilation_instrument.json"
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["faults"] == []
+    assert report["mechanics_qualification"]["state"] == (
+        "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN"
+    )
