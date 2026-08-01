@@ -1,0 +1,521 @@
+{
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "archive_fetches_after_membership_freeze": 20,
+  "candidate_or_control_calls": 0,
+  "faults": [],
+  "maximum_inference": "Exact licensed-source transport, deterministic archive normalization, root checks, and required effect/license member presence only; no parent or target behavior, evaluator adequacy, candidate, mechanism, D1, D2, serving, training, or book claim.",
+  "model_calls": 0,
+  "network_use": "licensed_source_archive_acquisition_only",
+  "parent_target_oracle_executions": 0,
+  "policy": "project_theseus_p4v2r2_source_fetch_v1",
+  "public_benchmark_cases": 0,
+  "source_registry": "configs/theseus_p4v2r2_task_sources.json",
+  "source_registry_sha256": "7264e2a040092de68e98a8a91b97ec38ca9a04a442f80a3c0551e767b0c68915",
+  "source_selection_commit": "8cebe4a65bb03965e9f62efa8249f2f9ddb8fc08",
+  "tasks": [
+    {
+      "allowed_effect_paths": [
+        "src/flask/sansio/app.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_01_flask_5917_parent.tar.gz",
+          "normalized_sha256": "88e165f9794d9cbbe8feeda43937d12cd127e4b71a80b5caf536c236d7924824",
+          "omitted_members": [],
+          "required_members": [
+            "flask-d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9/LICENSE.txt",
+            "flask-d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9/src/flask/sansio/app.py"
+          ],
+          "revision": "d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9",
+          "sanitization_report": "reports/theseus_p4v2r2_01_flask_5917_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "cdec72c555c42aba7f4a833cfd4cd0926ba19f9a16af5cbbae4229ab1ae91127",
+          "source_archive_root": "flask-d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_01_flask_5917_parent_upstream.tar.gz",
+          "upstream_sha256": "44793407c9bdcebae341bb82c5dab6f98bb9bf8a9ce7a944d758d5fb7d55bdd9",
+          "url": "https://codeload.github.com/pallets/flask/tar.gz/d3b78fd18a8d9e224cb9ef58a23cec9b1ffc9ce9"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_01_flask_5917_target.tar.gz",
+          "normalized_sha256": "252a2d938dc3906827ecc7581e20d19c6141fe351142b5b83c09ca806981fc32",
+          "omitted_members": [],
+          "required_members": [
+            "flask-e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad/LICENSE.txt",
+            "flask-e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad/src/flask/sansio/app.py"
+          ],
+          "revision": "e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad",
+          "sanitization_report": "reports/theseus_p4v2r2_01_flask_5917_target_archive_sanitization.json",
+          "sanitization_report_sha256": "11f0aeb89ff63f6810930ea0033abbc54baae37a70b568bac5f2aabefa959b62",
+          "source_archive_root": "flask-e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_01_flask_5917_target_upstream.tar.gz",
+          "upstream_sha256": "1af980e8e27de0a9df18b82b1172ae12824354a3cc47d86f5ef849489f8510cf",
+          "url": "https://codeload.github.com/pallets/flask/tar.gz/e82db2ca3a22c9614c1987392c9cfaa8c6ce99ad"
+        }
+      ],
+      "campaign_index": 1,
+      "license_paths": [
+        "LICENSE.txt"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "pallets/flask",
+      "stem": "p4v2r2_01_flask_5917"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/jinja2/environment.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_02_jinja_2061_parent.tar.gz",
+          "normalized_sha256": "78d43497f20b355da7c267898da3d2f8d1d2996a067dd0f239b09a3cb03e54a3",
+          "omitted_members": [],
+          "required_members": [
+            "jinja-767b23617628419ae3709ccfb02f9602ae9fe51f/LICENSE.txt",
+            "jinja-767b23617628419ae3709ccfb02f9602ae9fe51f/src/jinja2/environment.py"
+          ],
+          "revision": "767b23617628419ae3709ccfb02f9602ae9fe51f",
+          "sanitization_report": "reports/theseus_p4v2r2_02_jinja_2061_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "512e091905900f6e8c9847b07135325adb311a734a2b1536c5102aed6f9ca65b",
+          "source_archive_root": "jinja-767b23617628419ae3709ccfb02f9602ae9fe51f",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_02_jinja_2061_parent_upstream.tar.gz",
+          "upstream_sha256": "a761a47dde48fb8d88304e166d76a464f2af2de49f1b8d737abc7069a882c55d",
+          "url": "https://codeload.github.com/pallets/jinja/tar.gz/767b23617628419ae3709ccfb02f9602ae9fe51f"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_02_jinja_2061_target.tar.gz",
+          "normalized_sha256": "9e76abb763e39d628102cd54b582e1927fc7fdf051db2d6f54f432577341431d",
+          "omitted_members": [],
+          "required_members": [
+            "jinja-e45bc745a76b7aa573e68888bf49ecef70001815/LICENSE.txt",
+            "jinja-e45bc745a76b7aa573e68888bf49ecef70001815/src/jinja2/environment.py"
+          ],
+          "revision": "e45bc745a76b7aa573e68888bf49ecef70001815",
+          "sanitization_report": "reports/theseus_p4v2r2_02_jinja_2061_target_archive_sanitization.json",
+          "sanitization_report_sha256": "2f13481ba4f4c64d28edcba72111be7b13d7027ac7faa7d6fb4ddf91db67206b",
+          "source_archive_root": "jinja-e45bc745a76b7aa573e68888bf49ecef70001815",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_02_jinja_2061_target_upstream.tar.gz",
+          "upstream_sha256": "5d5d139acab7829ca9744177bc7e1995c08ed7d60530f6cc8dabbadb7dafb21a",
+          "url": "https://codeload.github.com/pallets/jinja/tar.gz/e45bc745a76b7aa573e68888bf49ecef70001815"
+        }
+      ],
+      "campaign_index": 2,
+      "license_paths": [
+        "LICENSE.txt"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "pallets/jinja",
+      "stem": "p4v2r2_02_jinja_2061"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/textual/_xterm_parser.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_03_textual_6592_parent.tar.gz",
+          "normalized_sha256": "0b125d3a42ebc58ca517d1c6a52dfb4d83b272a604d3ea9ea9a2e1be3c2b42b2",
+          "omitted_members": [],
+          "required_members": [
+            "textual-aea9d4b5529841757aead36670a8a7f75aa61ed9/LICENSE",
+            "textual-aea9d4b5529841757aead36670a8a7f75aa61ed9/src/textual/_xterm_parser.py"
+          ],
+          "revision": "aea9d4b5529841757aead36670a8a7f75aa61ed9",
+          "sanitization_report": "reports/theseus_p4v2r2_03_textual_6592_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "f7fa438e5ce56b01803c9c8603e322795408eba6c1b56509827da6268b03bdb4",
+          "source_archive_root": "textual-aea9d4b5529841757aead36670a8a7f75aa61ed9",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_03_textual_6592_parent_upstream.tar.gz",
+          "upstream_sha256": "65f0fa054c7750540686d14b6e545401cc56704539be39d3ee5f2cb6497f3488",
+          "url": "https://codeload.github.com/Textualize/textual/tar.gz/aea9d4b5529841757aead36670a8a7f75aa61ed9"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_03_textual_6592_target.tar.gz",
+          "normalized_sha256": "625115b02eed2ed42af140fb90b2448caf16f89a2e87e29947a179f8afc18bc6",
+          "omitted_members": [],
+          "required_members": [
+            "textual-fec10399fab3c75f14d36d0faa01589b8ae13408/LICENSE",
+            "textual-fec10399fab3c75f14d36d0faa01589b8ae13408/src/textual/_xterm_parser.py"
+          ],
+          "revision": "fec10399fab3c75f14d36d0faa01589b8ae13408",
+          "sanitization_report": "reports/theseus_p4v2r2_03_textual_6592_target_archive_sanitization.json",
+          "sanitization_report_sha256": "a9f30cf38a6bf66d6edda19e04483d9c9c66f42d554d209f91c8cfe36b8269a2",
+          "source_archive_root": "textual-fec10399fab3c75f14d36d0faa01589b8ae13408",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_03_textual_6592_target_upstream.tar.gz",
+          "upstream_sha256": "183822e032b51d2254e062b6e945c6c4ba22e6dbdda375c39910689557920f0f",
+          "url": "https://codeload.github.com/Textualize/textual/tar.gz/fec10399fab3c75f14d36d0faa01589b8ae13408"
+        }
+      ],
+      "campaign_index": 3,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "Textualize/textual",
+      "stem": "p4v2r2_03_textual_6592"
+    },
+    {
+      "allowed_effect_paths": [
+        "scrapy/utils/datatypes.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_04_scrapy_7783_parent.tar.gz",
+          "normalized_sha256": "c448f4c41fe7cb372a7762d0c3e94336f3a5564aee85848766063cfd5ee86197",
+          "omitted_members": [],
+          "required_members": [
+            "scrapy-e710b9c18e18f0a3fe104fbfc72d49c221dfe448/LICENSE",
+            "scrapy-e710b9c18e18f0a3fe104fbfc72d49c221dfe448/scrapy/utils/datatypes.py"
+          ],
+          "revision": "e710b9c18e18f0a3fe104fbfc72d49c221dfe448",
+          "sanitization_report": "reports/theseus_p4v2r2_04_scrapy_7783_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "ae57edd6e0ae085d38902a9a9eac12b527e4474d6614b4f191e17321e2ef1443",
+          "source_archive_root": "scrapy-e710b9c18e18f0a3fe104fbfc72d49c221dfe448",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_04_scrapy_7783_parent_upstream.tar.gz",
+          "upstream_sha256": "60ee951b231c83ae3a5b43e1d071450ec9f26376f0a145b842037d95fb23cd80",
+          "url": "https://codeload.github.com/scrapy/scrapy/tar.gz/e710b9c18e18f0a3fe104fbfc72d49c221dfe448"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_04_scrapy_7783_target.tar.gz",
+          "normalized_sha256": "152fbfd294230e63912d114c0e9967776a50b2ed1f37602cfdecca0179252c11",
+          "omitted_members": [],
+          "required_members": [
+            "scrapy-c2e11bac79d11ed222da2cb4af1ef4901d4f3335/LICENSE",
+            "scrapy-c2e11bac79d11ed222da2cb4af1ef4901d4f3335/scrapy/utils/datatypes.py"
+          ],
+          "revision": "c2e11bac79d11ed222da2cb4af1ef4901d4f3335",
+          "sanitization_report": "reports/theseus_p4v2r2_04_scrapy_7783_target_archive_sanitization.json",
+          "sanitization_report_sha256": "2f33568108f78bbfec268714c3865ba973a130c3675ded3862c277dd09bda81d",
+          "source_archive_root": "scrapy-c2e11bac79d11ed222da2cb4af1ef4901d4f3335",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_04_scrapy_7783_target_upstream.tar.gz",
+          "upstream_sha256": "41f4a57fc6566b2c3ed0cacfa2a1aa31f9df14327fd5c198e3f5ec2b1adf82e5",
+          "url": "https://codeload.github.com/scrapy/scrapy/tar.gz/c2e11bac79d11ed222da2cb4af1ef4901d4f3335"
+        }
+      ],
+      "campaign_index": 4,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "scrapy/scrapy",
+      "stem": "p4v2r2_04_scrapy_7783"
+    },
+    {
+      "allowed_effect_paths": [
+        "pyflakes/checker.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_05_pyflakes_765_parent.tar.gz",
+          "normalized_sha256": "7791ef42c65452d5a3cd0eab619e095b1278b1328d0386d28e44c64cb2c96ea3",
+          "omitted_members": [],
+          "required_members": [
+            "pyflakes-e9324649874a7124a08c3826d4cf78a4dc3aa32c/LICENSE",
+            "pyflakes-e9324649874a7124a08c3826d4cf78a4dc3aa32c/pyflakes/checker.py"
+          ],
+          "revision": "e9324649874a7124a08c3826d4cf78a4dc3aa32c",
+          "sanitization_report": "reports/theseus_p4v2r2_05_pyflakes_765_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "4af3d40975a99ebe1ff8d8a5581426c09a935bcae0841c0f9ced250721372949",
+          "source_archive_root": "pyflakes-e9324649874a7124a08c3826d4cf78a4dc3aa32c",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_05_pyflakes_765_parent_upstream.tar.gz",
+          "upstream_sha256": "78119b6c0f4b5b5e8f923e58b1e53f5f9c7020fc6a826e7886e96025959f03aa",
+          "url": "https://codeload.github.com/PyCQA/pyflakes/tar.gz/e9324649874a7124a08c3826d4cf78a4dc3aa32c"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_05_pyflakes_765_target.tar.gz",
+          "normalized_sha256": "942e7083401e16ad7a38ceebe942a9becb0a5db10945ef11d1fd6b3ba0a080b2",
+          "omitted_members": [],
+          "required_members": [
+            "pyflakes-ded1acc1f6aa9b32f6afad27cb1652f6d48b3011/LICENSE",
+            "pyflakes-ded1acc1f6aa9b32f6afad27cb1652f6d48b3011/pyflakes/checker.py"
+          ],
+          "revision": "ded1acc1f6aa9b32f6afad27cb1652f6d48b3011",
+          "sanitization_report": "reports/theseus_p4v2r2_05_pyflakes_765_target_archive_sanitization.json",
+          "sanitization_report_sha256": "a18fb6884dd83dd6696df2fa2c8cac1b3f4dfa17062029f6f7b2cd0def0b3b7e",
+          "source_archive_root": "pyflakes-ded1acc1f6aa9b32f6afad27cb1652f6d48b3011",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_05_pyflakes_765_target_upstream.tar.gz",
+          "upstream_sha256": "fe4f5d897c773a226b5384dfa68018241cdd45741c0040e525f549bb7ea8bd73",
+          "url": "https://codeload.github.com/PyCQA/pyflakes/tar.gz/ded1acc1f6aa9b32f6afad27cb1652f6d48b3011"
+        }
+      ],
+      "campaign_index": 5,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "PyCQA/pyflakes",
+      "stem": "p4v2r2_05_pyflakes_765"
+    },
+    {
+      "allowed_effect_paths": [
+        "pycodestyle.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_parent.tar.gz",
+          "normalized_sha256": "cbb7eff9b93feaab9c35af344038edd6dcc5d9175ae31eb7e57adb2b81a60c8c",
+          "omitted_members": [],
+          "required_members": [
+            "pycodestyle-292cdd0a8702b8950c51e11275d7c204267204f1/LICENSE",
+            "pycodestyle-292cdd0a8702b8950c51e11275d7c204267204f1/pycodestyle.py"
+          ],
+          "revision": "292cdd0a8702b8950c51e11275d7c204267204f1",
+          "sanitization_report": "reports/theseus_p4v2r2_06_pycodestyle_1286_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "54c82079f5f6edcbfbbc017bff4c525e9c35f0b320e811f3e6d9b60b346812c8",
+          "source_archive_root": "pycodestyle-292cdd0a8702b8950c51e11275d7c204267204f1",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_parent_upstream.tar.gz",
+          "upstream_sha256": "8b93c2c7813d25945e75b2cf31699ed77808f0ffb091376429ecf93855e336c5",
+          "url": "https://codeload.github.com/PyCQA/pycodestyle/tar.gz/292cdd0a8702b8950c51e11275d7c204267204f1"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_target.tar.gz",
+          "normalized_sha256": "3c5fddd462f519a13e3fa3dd1c03d989a3315cbda13d9a67641425940f8e8df7",
+          "omitted_members": [],
+          "required_members": [
+            "pycodestyle-13c626a9e70401eaf6c787cac522828f61460585/LICENSE",
+            "pycodestyle-13c626a9e70401eaf6c787cac522828f61460585/pycodestyle.py"
+          ],
+          "revision": "13c626a9e70401eaf6c787cac522828f61460585",
+          "sanitization_report": "reports/theseus_p4v2r2_06_pycodestyle_1286_target_archive_sanitization.json",
+          "sanitization_report_sha256": "dda80a60a42cca2727a425f79e3107028352fe2eb718ba5c365b65dea5ca4509",
+          "source_archive_root": "pycodestyle-13c626a9e70401eaf6c787cac522828f61460585",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_06_pycodestyle_1286_target_upstream.tar.gz",
+          "upstream_sha256": "595c961deefb455c4ab52f943ad94a4b9b302352fb1cad85733a50d1fb0532a3",
+          "url": "https://codeload.github.com/PyCQA/pycodestyle/tar.gz/13c626a9e70401eaf6c787cac522828f61460585"
+        }
+      ],
+      "campaign_index": 6,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "PyCQA/pycodestyle",
+      "stem": "p4v2r2_06_pycodestyle_1286"
+    },
+    {
+      "allowed_effect_paths": [
+        "rest_framework/schemas/openapi.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_parent.tar.gz",
+          "normalized_sha256": "282a79917a4240e32ee723c96927341f052a9d2fd1ac8775d023f347aa9183ba",
+          "omitted_members": [],
+          "required_members": [
+            "django-rest-framework-7fe6124ab080e1a9552e8bf5b7b768041e67e732/LICENSE.md",
+            "django-rest-framework-7fe6124ab080e1a9552e8bf5b7b768041e67e732/rest_framework/schemas/openapi.py"
+          ],
+          "revision": "7fe6124ab080e1a9552e8bf5b7b768041e67e732",
+          "sanitization_report": "reports/theseus_p4v2r2_07_drf_9977_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "00571031ca5796f332e28ebe1a3606697756b9c962aad905c7a7932da0059a1f",
+          "source_archive_root": "django-rest-framework-7fe6124ab080e1a9552e8bf5b7b768041e67e732",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_parent_upstream.tar.gz",
+          "upstream_sha256": "dbbf018a7cc3ac5ac55b1df5ac08951a8077b8f9b5edcacf0a2093b3b5f3a9b1",
+          "url": "https://codeload.github.com/encode/django-rest-framework/tar.gz/7fe6124ab080e1a9552e8bf5b7b768041e67e732"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_target.tar.gz",
+          "normalized_sha256": "802e6145b9108ae00ae7fed65a10d83113bdd5b48f8c7dd084b904a470a7d4e4",
+          "omitted_members": [],
+          "required_members": [
+            "django-rest-framework-323af3f5794487aad96c4864445234ce700ca67d/LICENSE.md",
+            "django-rest-framework-323af3f5794487aad96c4864445234ce700ca67d/rest_framework/schemas/openapi.py"
+          ],
+          "revision": "323af3f5794487aad96c4864445234ce700ca67d",
+          "sanitization_report": "reports/theseus_p4v2r2_07_drf_9977_target_archive_sanitization.json",
+          "sanitization_report_sha256": "0c2aace8728916a81a6131ba1f2e90df364d8603709f22d7638778657921f69d",
+          "source_archive_root": "django-rest-framework-323af3f5794487aad96c4864445234ce700ca67d",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_07_drf_9977_target_upstream.tar.gz",
+          "upstream_sha256": "a39abd97d169aec583a3d757898a118a890fbd42f47c0e6a44084ba7d366aa2c",
+          "url": "https://codeload.github.com/encode/django-rest-framework/tar.gz/323af3f5794487aad96c4864445234ce700ca67d"
+        }
+      ],
+      "campaign_index": 7,
+      "license_paths": [
+        "LICENSE.md"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "encode/django-rest-framework",
+      "stem": "p4v2r2_07_drf_9977"
+    },
+    {
+      "allowed_effect_paths": [
+        "pylsp/plugins/definition.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_08_pylsp_715_parent.tar.gz",
+          "normalized_sha256": "f92439d8b9c0d66438427b0c99085e5e0a6b3af9b76c1150fe25fb130c467f06",
+          "omitted_members": [],
+          "required_members": [
+            "python-lsp-server-1a10b605aa731daba20e8c1827542b7145ad3059/LICENSE",
+            "python-lsp-server-1a10b605aa731daba20e8c1827542b7145ad3059/pylsp/plugins/definition.py"
+          ],
+          "revision": "1a10b605aa731daba20e8c1827542b7145ad3059",
+          "sanitization_report": "reports/theseus_p4v2r2_08_pylsp_715_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "0f03dfba448379ffcf52fc7aad8f29e5a12e4501a07ecae959b445338040c53d",
+          "source_archive_root": "python-lsp-server-1a10b605aa731daba20e8c1827542b7145ad3059",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_08_pylsp_715_parent_upstream.tar.gz",
+          "upstream_sha256": "09285505c18c2cc7863174ca52ee756a4c267c393c86b8fc380451e1fc0b4a75",
+          "url": "https://codeload.github.com/python-lsp/python-lsp-server/tar.gz/1a10b605aa731daba20e8c1827542b7145ad3059"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_08_pylsp_715_target.tar.gz",
+          "normalized_sha256": "fc10d42a460010d6a710d643e7ccedeb69aba4be832f0337f8235023f78d3f47",
+          "omitted_members": [],
+          "required_members": [
+            "python-lsp-server-f45cf0a39a2a22fa31912b306eb22042f97c8fc3/LICENSE",
+            "python-lsp-server-f45cf0a39a2a22fa31912b306eb22042f97c8fc3/pylsp/plugins/definition.py"
+          ],
+          "revision": "f45cf0a39a2a22fa31912b306eb22042f97c8fc3",
+          "sanitization_report": "reports/theseus_p4v2r2_08_pylsp_715_target_archive_sanitization.json",
+          "sanitization_report_sha256": "c18efa3fd6c57e9a0cc66430ec169ae22623fd7888dfe54a865e334c7ebe6d1d",
+          "source_archive_root": "python-lsp-server-f45cf0a39a2a22fa31912b306eb22042f97c8fc3",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_08_pylsp_715_target_upstream.tar.gz",
+          "upstream_sha256": "f859d48d4542407151b3f62cbdab18b9b1ce3a25d9743a1be803077ecab1ecae",
+          "url": "https://codeload.github.com/python-lsp/python-lsp-server/tar.gz/f45cf0a39a2a22fa31912b306eb22042f97c8fc3"
+        }
+      ],
+      "campaign_index": 8,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "python-lsp/python-lsp-server",
+      "stem": "p4v2r2_08_pylsp_715"
+    },
+    {
+      "allowed_effect_paths": [
+        "hypothesis/src/hypothesis/database.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_09_hypothesis_4787_parent.tar.gz",
+          "normalized_sha256": "144560c2a74ec2def3c0fc02a48ddf70dc4d2e90f2d1f22654e27f1914db2c7d",
+          "omitted_members": [],
+          "required_members": [
+            "hypothesis-5f23056911beda9806af126395d803222adbd377/LICENSE.txt",
+            "hypothesis-5f23056911beda9806af126395d803222adbd377/hypothesis/src/hypothesis/database.py"
+          ],
+          "revision": "5f23056911beda9806af126395d803222adbd377",
+          "sanitization_report": "reports/theseus_p4v2r2_09_hypothesis_4787_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "0e332419094e3be7edc5b3236be61628fe1760caae4f7a4c4b94d0546f5e76d2",
+          "source_archive_root": "hypothesis-5f23056911beda9806af126395d803222adbd377",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_09_hypothesis_4787_parent_upstream.tar.gz",
+          "upstream_sha256": "700a193bc44f83c4c335aa84d94a525115a306b6d9512741ecde30582e19e3f9",
+          "url": "https://codeload.github.com/HypothesisWorks/hypothesis/tar.gz/5f23056911beda9806af126395d803222adbd377"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_09_hypothesis_4787_target.tar.gz",
+          "normalized_sha256": "dc22c317856156e174e12f42bef2bb7cce2e08678bf9d4b7215979f7920b477d",
+          "omitted_members": [],
+          "required_members": [
+            "hypothesis-8edffbaeff9e44b04b2be0f476889e06ac8e8868/LICENSE.txt",
+            "hypothesis-8edffbaeff9e44b04b2be0f476889e06ac8e8868/hypothesis/src/hypothesis/database.py"
+          ],
+          "revision": "8edffbaeff9e44b04b2be0f476889e06ac8e8868",
+          "sanitization_report": "reports/theseus_p4v2r2_09_hypothesis_4787_target_archive_sanitization.json",
+          "sanitization_report_sha256": "12deb6b1d6b2bbf8a352b1301fa00cdf0a3eacbd92c85b9a3fa87858e692c155",
+          "source_archive_root": "hypothesis-8edffbaeff9e44b04b2be0f476889e06ac8e8868",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_09_hypothesis_4787_target_upstream.tar.gz",
+          "upstream_sha256": "4f7ade7990997cd369e7bc7609b6a1f35a441f6b9cd5389e6a24f8b6d037aae3",
+          "url": "https://codeload.github.com/HypothesisWorks/hypothesis/tar.gz/8edffbaeff9e44b04b2be0f476889e06ac8e8868"
+        }
+      ],
+      "campaign_index": 9,
+      "license_paths": [
+        "LICENSE.txt"
+      ],
+      "license_spdx": "MPL-2.0",
+      "repository": "HypothesisWorks/hypothesis",
+      "stem": "p4v2r2_09_hypothesis_4787"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/PIL/ImagePalette.py"
+      ],
+      "artifacts": [
+        {
+          "label": "parent",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_10_pillow_9821_parent.tar.gz",
+          "normalized_sha256": "4dc9ac6b75e928ba79a35b2fa8a585d88711844ce9685f52da567ba3a5052b70",
+          "omitted_members": [],
+          "required_members": [
+            "Pillow-d84a667a99e5406141ee156bb303780d98d95a47/LICENSE",
+            "Pillow-d84a667a99e5406141ee156bb303780d98d95a47/src/PIL/ImagePalette.py"
+          ],
+          "revision": "d84a667a99e5406141ee156bb303780d98d95a47",
+          "sanitization_report": "reports/theseus_p4v2r2_10_pillow_9821_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "42cdab086db0fa87c13346a6caaefbafcde8d9bf4b39de132aefbbbf2a82d99e",
+          "source_archive_root": "Pillow-d84a667a99e5406141ee156bb303780d98d95a47",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_10_pillow_9821_parent_upstream.tar.gz",
+          "upstream_sha256": "cc2adacb0906c0592292dc56e42e43e624bb840c6a6ac47be15dc045624d2414",
+          "url": "https://codeload.github.com/python-pillow/Pillow/tar.gz/d84a667a99e5406141ee156bb303780d98d95a47"
+        },
+        {
+          "label": "target",
+          "missing_required_members": [],
+          "normalized": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_10_pillow_9821_target.tar.gz",
+          "normalized_sha256": "e2219a85c769fefe7803cb3f399f5c9148a370f0d65827fa911f1b37a9c3d38d",
+          "omitted_members": [],
+          "required_members": [
+            "Pillow-20b11f85ccb211816a6583b104c2b86618026f37/LICENSE",
+            "Pillow-20b11f85ccb211816a6583b104c2b86618026f37/src/PIL/ImagePalette.py"
+          ],
+          "revision": "20b11f85ccb211816a6583b104c2b86618026f37",
+          "sanitization_report": "reports/theseus_p4v2r2_10_pillow_9821_target_archive_sanitization.json",
+          "sanitization_report_sha256": "b7bee96ba528067fbbdb6aa5b477d64343fb26180abe92813f6141844b920276",
+          "source_archive_root": "Pillow-20b11f85ccb211816a6583b104c2b86618026f37",
+          "upstream": "tests/fixtures/theseus_p4v2r2_online/p4v2r2_10_pillow_9821_target_upstream.tar.gz",
+          "upstream_sha256": "76b18de0ba609db0b4da6d1039f12311083764a38e46ba1b4733c4fc0978e8be",
+          "url": "https://codeload.github.com/python-pillow/Pillow/tar.gz/20b11f85ccb211816a6583b104c2b86618026f37"
+        }
+      ],
+      "campaign_index": 10,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT-CMU",
+      "repository": "python-pillow/Pillow",
+      "stem": "p4v2r2_10_pillow_9821"
+    }
+  ],
+  "teacher_calls": 0,
+  "training_rows_written": 0,
+  "trigger_state": "GREEN"
+}
