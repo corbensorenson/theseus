@@ -960,7 +960,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 52164288512,
+      "disk_free_bytes": 47205421056,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -993,7 +993,7 @@
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "ff78212957d57e6bd13b2c659d9f78a4bf0017e55d3e9ec5ef1d538bf02ef3f1"
+      "sha256": "2ca67a0dd9f08eeb4d880554dde7f94b786e9f660713562d6b5faadc00cc44b5"
     },
     "training_availability_config": {
       "path": "configs/neural_seed_training_availability.json",

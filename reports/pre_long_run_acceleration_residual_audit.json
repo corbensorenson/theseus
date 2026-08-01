@@ -341,7 +341,7 @@
     },
     "memory_disk": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 52166717440,
+      "disk_free_bytes": 47204843520,
       "disposition": "predicted_exhaustion_and_derived_two_transaction_disk_custody",
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
