@@ -3,7 +3,7 @@
     "acceleration_residual_audit": {
       "bytes": 19293,
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "2ca67a0dd9f08eeb4d880554dde7f94b786e9f660713562d6b5faadc00cc44b5"
+      "sha256": "e51c44f16245358c183b92fa23600fc1d1865e8aae35d6d67e2bad46bd86af9b"
     },
     "candidate_contract": {
       "bytes": 40694,
@@ -11,9 +11,9 @@
       "sha256": "255803b4a017bf84b2829a1e26a4cc9db5370ed5caff320c740d5c213740c180"
     },
     "config": {
-      "bytes": 5287,
+      "bytes": 5469,
       "path": "configs/pre_long_run_replacement_freeze.json",
-      "sha256": "38357fd968dd17b8fd6b93c22b1c3e7ad36a5a2e866200c21c039377276cdde5"
+      "sha256": "5dfe50f4ef452b4e2520c9f49795904f6bed5201485063b83bd5ef6b2d151022"
     },
     "d2_controller": {
       "bytes": 27553,
@@ -43,12 +43,12 @@
     "independent_readiness_audit": {
       "bytes": 61873,
       "path": "reports/pre_long_run_independent_readiness_audit.json",
-      "sha256": "1607ff4a02f3811f68341b96fae637bd7bf6bc0bd56cad08246f4a6092cdd5e2"
+      "sha256": "34d218265989ed25cb47756e5469dd6e8e28239a9c7fefd180a80d3553951cec"
     },
     "pre_long_run_review": {
-      "bytes": 17524,
+      "bytes": 17569,
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "b7f683d777f388e04752f1bf64e84e9815730e9a6fe118f5cd00c7469141bdba"
+      "sha256": "d165a3c4ff4d309fe4b30437f080335ca611b33726327920b41ac667674e8158"
     },
     "production_trainer_config": {
       "bytes": 144982,
@@ -2063,7 +2063,7 @@
       "source_state": {
         "branch": "main",
         "clean_at_generation": true,
-        "commit": "8bba1b41f16e2fee341aa655e757ad63f0969e57",
+        "commit": "be85c876ab6388a2dce814fef845f8738db834e0",
         "dirty_path_count": 0,
         "dirty_paths": []
       }
@@ -2076,7 +2076,7 @@
     "Scoped candidate dispositions are not broad scientific falsifications.",
     "This package does not acquire a training or D2 execution lease or start long training."
   ],
-  "package_identity": "sha256:d6cd3bbdab7be715455f83b7e92dc9b3982363c74b45aef456e02585dee74f90",
+  "package_identity": "sha256:8f08a2336154be7051518415449615f4c1bf9616d7e44fe30051938be142c6cf",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",
@@ -2128,6 +2128,11 @@
     }
   },
   "source_artifacts": {
+    "configs/neural_seed_autonomous_launch_controller.json": {
+      "bytes": 2157,
+      "path": "configs/neural_seed_autonomous_launch_controller.json",
+      "sha256": "6e1f2c7be54ee4db6b816f55b16102ed80596a0d2d7a5d867f95d2028622b11c"
+    },
     "configs/neural_seed_d2_autonomous_evaluation_controller.json": {
       "bytes": 3709,
       "path": "configs/neural_seed_d2_autonomous_evaluation_controller.json",
@@ -2149,9 +2154,9 @@
       "sha256": "3cc8cbbec4ffc46dee79511fa484915c757148846709abe3ff84e3f31b380dff"
     },
     "configs/pre_long_run_replacement_freeze.json": {
-      "bytes": 5287,
+      "bytes": 5469,
       "path": "configs/pre_long_run_replacement_freeze.json",
-      "sha256": "38357fd968dd17b8fd6b93c22b1c3e7ad36a5a2e866200c21c039377276cdde5"
+      "sha256": "5dfe50f4ef452b4e2520c9f49795904f6bed5201485063b83bd5ef6b2d151022"
     },
     "configs/project_manifest_registry.json": {
       "bytes": 548106,
@@ -2162,6 +2167,11 @@
       "bytes": 1682905,
       "path": "configs/roadmap_implementation_matrix.json",
       "sha256": "22e5f646b159f86a76bf38fda7281c0309d7db35664462a965ed50287c38a805"
+    },
+    "scripts/neural_seed_autonomous_launch_controller.py": {
+      "bytes": 24884,
+      "path": "scripts/neural_seed_autonomous_launch_controller.py",
+      "sha256": "562333be4d62d162638e94996b7bec964693d05e34c8acdf6d73a1999c4fdfd6"
     },
     "scripts/neural_seed_d2_autonomous_evaluation_controller.py": {
       "bytes": 27553,
@@ -2188,6 +2198,11 @@
       "path": "scripts/pre_long_run_replacement_freeze.py",
       "sha256": "0714c0c78ec883a844b8afb2957f6dd85a2c37d13c4bc241c432e060eb2910a2"
     },
+    "tests/test_neural_seed_autonomous_launch_controller.py": {
+      "bytes": 10725,
+      "path": "tests/test_neural_seed_autonomous_launch_controller.py",
+      "sha256": "95c0872864442fc2c06d57ecc795b8c21daced99555ea438d12cd3513de012b2"
+    },
     "tests/test_pre_long_run_acceleration_residual_audit.py": {
       "bytes": 4521,
       "path": "tests/test_pre_long_run_acceleration_residual_audit.py",
@@ -2199,15 +2214,15 @@
       "sha256": "36c39355485ba25c4c01e9f45b20b13bc0df4bfe9d1a5920530b2b6477b884f3"
     },
     "tests/test_pre_long_run_replacement_freeze.py": {
-      "bytes": 6851,
+      "bytes": 7045,
       "path": "tests/test_pre_long_run_replacement_freeze.py",
-      "sha256": "0f1a31f36af32f539a871cff948442d5a17644e42a511f693a0c6296c5a623f8"
+      "sha256": "beeb93cd57115aad510d47cde9028b8449b97894cce4f60fe3beecc62e04379e"
     }
   },
   "source_binding": {
     "branch": "main",
     "clean_at_generation": true,
-    "commit": "8bba1b41f16e2fee341aa655e757ad63f0969e57",
+    "commit": "be85c876ab6388a2dce814fef845f8738db834e0",
     "dirty_path_count": 0,
     "dirty_paths": []
   },
