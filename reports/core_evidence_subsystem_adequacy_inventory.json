@@ -1,9 +1,9 @@
 {
-  "created_utc": "2026-07-30T16:24:33.311256Z",
+  "created_utc": "2026-08-01T13:23:12.744110Z",
   "policy": "project_theseus_core_evidence_subsystem_adequacy_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "config_sha256": "5048bbfb44565d0675fcea743bdd21092d5b3262a0f8ed2b97c9115cd1454b76",
-  "registry_sha256": "8161ec7383436560f7dfe9dade673eb82f0fcdabd64e82979b27f88bff098743",
+  "config_sha256": "f3f8e23a9b83d9a757c483fc45e7b88fb219715580ff1444605e957007b8de3d",
+  "registry_sha256": "344451c1f6809464bc2b388038859df49c0d96c0e13348ecbfc7aaa1aa48b926",
   "qualified_worker_disposition_sha256": "3aa9a485ecef4fd8ee1ccbd8b6314f1cd31b1b99c79fe409589eea18dc9a1337",
   "development_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
   "development_terminal_disposition_sha256": "a23c91ed6569ea5806d0b9b5022a745457b4c380c2d55c8bb65f5daf8b5e994d",
@@ -11,11 +11,63 @@
     "historical_freeze": "configs/core_evidence_tmax_fresh_v1_qualification_freeze.json",
     "historical_frozen_worker_sha256": "0d66eddbb96b8ac7a3bb47be96682363fa97dba17bf8136f447e4bffb821dd19",
     "current_worker_source": "scripts/core_evidence_worker_v2.py",
-    "current_worker_sha256": "23a37ebe378ae58a9ba6116efd3d0759779fa3f8e4ec4aa20ddc37364a920d11",
+    "current_worker_sha256": "3c2bc37db799c99183edfd1122d2bc095bd86912c9da2dbc6dbf78826dc2d4db",
     "historical_identity_current": false,
     "active_worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
     "active_worker_config_sha256": "6b0c9c0a207ffc92cb739ea3d43b7ce2be4c34320f4db232cb7019c812905163",
-    "state": "DEVELOPMENT_SUCCESSOR_TERMINAL_FAIL_SELECT_STRONGER_MODEL"
+    "state": "HISTORICAL_SUPERSEDED_NO_CURRENT_AUTHORITY"
+  },
+  "development_dogfood": {
+    "state": "HISTORICAL_SUPERSEDED_NO_CURRENT_AUTHORITY",
+    "program_phase": "HISTORICAL_PRE_P1_L0_INVENTORY_SUPERSEDED",
+    "ready": false,
+    "current_authority": {
+      "state": "NO_CURRENT_EXECUTION_OR_CLAIM_AUTHORITY",
+      "canonical_state": "docs/PROJECT_STATE.md",
+      "canonical_roadmap": "roadmap.md",
+      "current_instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+      "current_progress": "reports/theseus_p4s_campaign_attempt2_progress.json",
+      "reason": "This inventory preserves the pre-P1 L0 owner audit and worker-repair lineage. P1 route integrity, P2C instrument adequacy, P3 residuals, and P4 mechanics supersede it for current scheduling."
+    },
+    "findings": [
+      {
+        "check": "historical_supersession_explicit",
+        "passed": true,
+        "detail": [
+          "canonical_roadmap",
+          "canonical_state",
+          "current_instrument",
+          "current_progress"
+        ]
+      },
+      {
+        "check": "current_execution_authority_absent",
+        "passed": true,
+        "detail": "NO_CURRENT_EXECUTION_OR_CLAIM_AUTHORITY"
+      }
+    ],
+    "boundaries": {
+      "network": "forbidden",
+      "external_inference": "forbidden",
+      "teacher_calls": "forbidden",
+      "public_benchmark_consumption": "forbidden",
+      "D2_consumption": "forbidden",
+      "E2_heldout_consumption": "forbidden",
+      "automatic_user_facing_effects": 0,
+      "learned_theseus_student_credit": 0,
+      "ASI_stack_support_state_effect": "none"
+    },
+    "latest_experiment_disposition": "reports/core_evidence_repository_stack_development_l0_003_r1_disposition.json",
+    "latest_experiment_state": "POSITIVE_SCOPED_FUNCTIONAL_RESCUE_TERMINAL_VERIFICATION_UNRESOLVED",
+    "maximum_inference": "This row establishes only that the pre-P1 L0 inventory is retained and explicitly superseded. It cannot schedule work, qualify a model, open D1 or D2, establish subsystem efficacy, or move an ASI Stack claim."
+  },
+  "current_authority": {
+    "state": "NO_CURRENT_EXECUTION_OR_CLAIM_AUTHORITY",
+    "canonical_state": "docs/PROJECT_STATE.md",
+    "canonical_roadmap": "roadmap.md",
+    "current_instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+    "current_progress": "reports/theseus_p4s_campaign_attempt2_progress.json",
+    "reason": "This inventory preserves the pre-P1 L0 owner audit and worker-repair lineage. P1 route integrity, P2C instrument adequacy, P3 residuals, and P4 mechanics supersede it for current scheduling."
   },
   "boundaries": {
     "network": "forbidden",
@@ -30,7 +82,7 @@
   "owners": [
     {
       "owner_id": "authority_governance",
-      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "state": "INVENTORY_GREEN_TESTS_NOT_RUN",
       "required_interventions": [
         "allowed",
         "denied",
@@ -74,23 +126,14 @@
         {
           "path": "tests/test_autonomy_authority_security.py",
           "exists": true,
-          "sha256": "39d2a01077fbba5bd30fb6cb84961bb3da36338e36a890d2ef0adf2b259bc611"
+          "sha256": "74f73840ccaf729299cdff6dc3e414c7c11ffd42687bbad99d65e4c04698d141"
         }
       ],
       "test_receipt": {
-        "run": true,
-        "command": [
-          "python3",
-          "-m",
-          "pytest",
-          "-q",
-          "tests/test_governance_architecture_kernel.py",
-          "tests/test_hive_authority_security.py",
-          "tests/test_autonomy_authority_security.py"
-        ],
-        "returncode": 0,
-        "passed": true,
-        "stdout_tail": "...............                                                          [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n15 passed, 1 warning in 0.80s\n",
+        "run": false,
+        "returncode": null,
+        "passed": null,
+        "stdout_tail": "",
         "stderr_tail": ""
       },
       "findings": [
@@ -148,17 +191,12 @@
           "check": "focused_tests_exist",
           "passed": true,
           "detail": []
-        },
-        {
-          "check": "focused_tests_pass",
-          "passed": true,
-          "detail": 0
         }
       ]
     },
     {
       "owner_id": "vcm",
-      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "state": "INVENTORY_GREEN_TESTS_NOT_RUN",
       "required_interventions": [
         "correct",
         "omitted",
@@ -198,19 +236,10 @@
         }
       ],
       "test_receipt": {
-        "run": true,
-        "command": [
-          "python3",
-          "-m",
-          "pytest",
-          "-q",
-          "tests/test_vcm_semantic_memory.py",
-          "tests/test_vcm_consumer_abi.py",
-          "tests/test_vcm_consumer_integration_archive.py"
-        ],
-        "returncode": 0,
-        "passed": true,
-        "stdout_tail": ".........................                                              [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n25 passed, 1 warning, 2 subtests passed in 0.85s\n",
+        "run": false,
+        "returncode": null,
+        "passed": null,
+        "stdout_tail": "",
         "stderr_tail": ""
       },
       "findings": [
@@ -243,17 +272,12 @@
           "check": "focused_tests_exist",
           "passed": true,
           "detail": []
-        },
-        {
-          "check": "focused_tests_pass",
-          "passed": true,
-          "detail": 0
         }
       ]
     },
     {
       "owner_id": "planning",
-      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "state": "INVENTORY_GREEN_TESTS_NOT_RUN",
       "required_interventions": [
         "typed_plan",
         "direct_execution",
@@ -286,7 +310,7 @@
         {
           "path": "tests/test_assistant_reflexive_dispatch.py",
           "exists": true,
-          "sha256": "217deb25e51e9efc231d22653eb3447552c7ee98f5c47e5b6d6a73124d468ad8"
+          "sha256": "b4a6c65fea25b4fe68da3c855f553f5f0cb8b4ff0dcab998e453acffaaf77913"
         },
         {
           "path": "tests/test_semantic_ir.py",
@@ -301,25 +325,14 @@
         {
           "path": "tests/test_core_evidence_repository_stack_development.py",
           "exists": true,
-          "sha256": "59b13c37d8ce82c0ca1715bb41d0fe17606c490d0684474476b9363ae3466d04"
+          "sha256": "a3d0a26460f2b3cf262c4b6b62ef66d004434d0085593b015453082128cb1b47"
         }
       ],
       "test_receipt": {
-        "run": true,
-        "command": [
-          "python3",
-          "-m",
-          "pytest",
-          "-q",
-          "tests/test_verifier_guided_search.py",
-          "tests/test_assistant_reflexive_dispatch.py",
-          "tests/test_semantic_ir.py",
-          "tests/test_core_evidence_repository_stack_adapter.py",
-          "tests/test_core_evidence_repository_stack_development.py"
-        ],
-        "returncode": 0,
-        "passed": true,
-        "stdout_tail": "....................................................................     [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n68 passed, 1 warning in 1.99s\n",
+        "run": false,
+        "returncode": null,
+        "passed": null,
+        "stdout_tail": "",
         "stderr_tail": ""
       },
       "findings": [
@@ -442,17 +455,12 @@
           "check": "focused_tests_exist",
           "passed": true,
           "detail": []
-        },
-        {
-          "check": "focused_tests_pass",
-          "passed": true,
-          "detail": 0
         }
       ]
     },
     {
       "owner_id": "routing",
-      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "state": "INVENTORY_GREEN_TESTS_NOT_RUN",
       "required_interventions": [
         "full",
         "direct",
@@ -483,22 +491,14 @@
         {
           "path": "tests/test_assistant_reflexive_dispatch.py",
           "exists": true,
-          "sha256": "217deb25e51e9efc231d22653eb3447552c7ee98f5c47e5b6d6a73124d468ad8"
+          "sha256": "b4a6c65fea25b4fe68da3c855f553f5f0cb8b4ff0dcab998e453acffaaf77913"
         }
       ],
       "test_receipt": {
-        "run": true,
-        "command": [
-          "python3",
-          "-m",
-          "pytest",
-          "-q",
-          "tests/test_octopus_router_integrity.py",
-          "tests/test_assistant_reflexive_dispatch.py"
-        ],
-        "returncode": 0,
-        "passed": true,
-        "stdout_tail": ".................                                                        [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 1 warning in 0.54s\n",
+        "run": false,
+        "returncode": null,
+        "passed": null,
+        "stdout_tail": "",
         "stderr_tail": ""
       },
       "findings": [
@@ -531,17 +531,12 @@
           "check": "focused_tests_exist",
           "passed": true,
           "detail": []
-        },
-        {
-          "check": "focused_tests_pass",
-          "passed": true,
-          "detail": 0
         }
       ]
     },
     {
       "owner_id": "verified_reuse",
-      "state": "MECHANICS_GREEN_PENDING_CAUSAL_SMOKE",
+      "state": "INVENTORY_GREEN_TESTS_NOT_RUN",
       "required_interventions": [
         "fresh",
         "verified_reuse",
@@ -576,17 +571,10 @@
         }
       ],
       "test_receipt": {
-        "run": true,
-        "command": [
-          "python3",
-          "-m",
-          "pytest",
-          "-q",
-          "tests/test_procedural_memory_assets.py"
-        ],
-        "returncode": 0,
-        "passed": true,
-        "stdout_tail": "......                                                                   [100%]\n=============================== warnings summary ===============================\n../../../../Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428\n  /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/_pytest/config/__init__.py:1428: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope\n  \n    self._warn_or_fail_if_strict(f\"Unknown config option: {key}\\n\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n6 passed, 1 warning in 0.27s\n",
+        "run": false,
+        "returncode": null,
+        "passed": null,
+        "stdout_tail": "",
         "stderr_tail": ""
       },
       "findings": [
@@ -694,22 +682,17 @@
           "check": "focused_tests_exist",
           "passed": true,
           "detail": []
-        },
-        {
-          "check": "focused_tests_pass",
-          "passed": true,
-          "detail": 0
         }
       ]
     }
   ],
   "counts": {
     "owners": 5,
-    "mechanics_green": 5,
-    "inventory_green_tests_not_run": 0,
+    "mechanics_green": 0,
+    "inventory_green_tests_not_run": 5,
     "inconclusive_implementation": 0
   },
-  "trigger_state": "RED_WORKER_SUCCESSOR_REQUIRED",
+  "trigger_state": "HISTORICAL_SUPERSEDED_NO_CURRENT_AUTHORITY",
   "E2_heldouts_opened": 0,
   "terminal_rules": {
     "missing_or_unfaithful_owner": "INCONCLUSIVE_IMPLEMENTATION",
@@ -717,5 +700,5 @@
     "all_mechanics_green": "ADVANCE_TO_CONSUMED_DEVELOPMENT_CAUSAL_SMOKES",
     "invalid_information_flow": "INVALID_INFORMATION_FLOW"
   },
-  "maximum_inference": "This inventory can establish only that canonical subsystem implementations are registered and their focused mechanics tests pass. It cannot establish causal task lift, local-model competence beyond the frozen qualification, stack efficacy, AGI, or ASI."
+  "maximum_inference": "This historical inventory can establish only what the pre-P1 owner and worker audit observed and that its evidence is retained. It has no current scheduling or claim authority and cannot establish causal task lift, current local-model competence, stack efficacy, AGI, or ASI."
 }

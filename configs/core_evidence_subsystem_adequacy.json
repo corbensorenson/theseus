@@ -8,7 +8,178 @@
   "required_worker_disposition": "QUALIFIED_PASS_TMAX9B_WORKER_V3_REPOSITORY_CORRECTNESS",
   "development_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
   "required_development_terminal_disposition": "TERMINAL_FAIL_TMAX9B_WORKER_V4_EDIT_COMMITMENT",
-  "active_worker_state": "TERMINAL_FAIL_SELECT_MATERIALLY_STRONGER_LOCAL_SUCCESSOR",
+  "active_worker_state": "HISTORICAL_SUPERSEDED_BY_SOURCE_BOUND_P1_THROUGH_P4S",
+  "current_authority": {
+    "state": "NO_CURRENT_EXECUTION_OR_CLAIM_AUTHORITY",
+    "canonical_state": "docs/PROJECT_STATE.md",
+    "canonical_roadmap": "roadmap.md",
+    "current_instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+    "current_progress": "reports/theseus_p4s_campaign_attempt2_progress.json",
+    "reason": "This inventory preserves the pre-P1 L0 owner audit and worker-repair lineage. P1 route integrity, P2C instrument adequacy, P3 residuals, and P4 mechanics supersede it for current scheduling."
+  },
+  "development_dogfood": {
+    "state": "HISTORICAL_PRE_P1_L0_INVENTORY_SUPERSEDED",
+    "purpose": "Preserve the pre-P1 fixed-model L0 experiments, owner repairs, denominators, and negative-evidence boundaries without granting current scheduling, qualification, D1, D2, or ASI Stack claim authority.",
+    "model_config": "configs/core_evidence_tmax_9b_worker_control_v3.json",
+    "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+    "required_preflight_trigger_state": "GREEN",
+    "required_model": {
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560"
+    },
+    "canonical_product_runtime": "scripts/theseus_assistant_runtime.py",
+    "current_generation_backend": "scripts/checkpoint_chat.py",
+    "current_generation_backend_state": "DETERMINISTIC_STATUS_SHIM_NOT_LOCAL_LEARNED_GENERATION",
+    "required_generation_backend_state": "FROZEN_TMAX_LOCAL_INFERENCE",
+    "historical_context_wrapper_runner": "scripts/core_evidence_repository_stack_development.py",
+    "historical_context_wrapper_adapter": "configs/core_evidence_repository_stack_adapter.json",
+    "historical_context_wrapper_scope": "The adapter renders a typed context packet for the worker. It does not execute the registered plan, VCM, routing, verification, authority, effect, and rollback path and must not be labeled full Theseus.",
+    "prior_experiment_dispositions": [
+      "reports/core_evidence_repository_stack_development_l0_001_interrupted_disposition.json",
+      "reports/core_evidence_repository_stack_development_l0_002_disposition.json",
+      "reports/core_evidence_repository_stack_development_l0_003_disposition.json",
+      "reports/core_evidence_repository_stack_development_l0_003_r1_disposition.json"
+    ],
+    "latest_experiment_disposition": "reports/core_evidence_repository_stack_development_l0_003_r1_disposition.json",
+    "latest_experiment_id": "L0-003-R1",
+    "latest_experiment_state": "POSITIVE_SCOPED_FUNCTIONAL_RESCUE_TERMINAL_VERIFICATION_UNRESOLVED",
+    "interrupted_attempt": {
+      "experiment_id": "L0-003-R2",
+      "state": "INTERRUPTED_DIRECTION_CANCELLED",
+      "event_trace": "runtime/core_evidence_repository_stack_development_l0_003_r2_events.jsonl",
+      "observed_actions": 5,
+      "mutation_count": 0,
+      "candidate_count": 0,
+      "verification_count": 0,
+      "arm_comparison_available": false,
+      "resume_allowed": false
+    },
+    "prior_repair_receipts": [
+      "reports/core_evidence_structured_action_protocol_closure_repair.json",
+      "reports/core_evidence_structured_test_incremental_case_closure_repair.json"
+    ],
+    "maintenance_repair_receipt": "reports/core_evidence_terminal_verification_turn_reservation_repair.json",
+    "maintenance_repair_scope": "Retained as worker regression maintenance only; no replay or subsystem claim is authorized.",
+    "active_single_owner_hypothesis": {
+      "owner": "theseus_assistant_runtime",
+      "canonical_runtime": "scripts/theseus_assistant_runtime.py",
+      "hypothesis_id": "canonical_local_model_runtime_integration",
+      "allowed_change": "Add one frozen TMax local inference backend behind the existing canonical assistant contract plus a matched direct mode, then prove that VCM, planning, routing, verification, authority, effects, rollback, and outcome accounting are consumed by downstream live execution rather than rendered as labels or prompt decoration.",
+      "held_constant": [
+        "model repo and revision",
+        "MLX runtime",
+        "decoding and product budgets within each pair",
+        "parent snapshot and candidate-visible information",
+        "safety boundaries",
+        "route-blind evaluator",
+        "no automatic source effects"
+      ],
+      "exit_condition": "A route-integrity gate proves the integrated path executes and consumes every enabled subsystem, the direct baseline shares the same model/decoder/snapshot/effect sandbox/evaluator, and one new real-work canary is eligible to run within six model calls and twelve minutes per arm."
+    },
+    "required_route_integrity_properties": [
+      "local_model_backend_owned_by_canonical_assistant_runtime",
+      "direct_and_integrated_model_identity_equal",
+      "compiled_plan_executed_or_held",
+      "selected_vcm_content_consumed_by_model",
+      "route_changes_callable_capability_budget_tool_or_hold",
+      "verification_controls_release_or_repair",
+      "authority_controls_effect_scope",
+      "effect_observation_and_exact_rollback_bound",
+      "decorative_labels_cannot_satisfy_integrated_route"
+    ],
+    "dogfood_event_owner": "scripts/dogfood_trace_event.py",
+    "dogfood_event_policy": "project_theseus_dogfood_trace_event_logger_v1",
+    "required_event_fields": [
+      "experiment_id",
+      "task_pair_id",
+      "arm_id",
+      "subsystem_hypothesis_id",
+      "cost_policy_id",
+      "route_identity",
+      "acceptance_contract_completed",
+      "selected_for_use",
+      "verifier_state",
+      "rollback_state",
+      "unsafe_effect_count",
+      "false_block_count",
+      "model_calls",
+      "generated_tokens",
+      "tool_calls",
+      "verification_ms",
+      "human_review_and_repair_minutes",
+      "residual_count",
+      "residual_owner",
+      "total_contract_cost_units"
+    ],
+    "arms": [
+      {
+        "id": "direct_fixed_model_runtime",
+        "role": "baseline",
+        "planning": "none",
+        "vcm": "none",
+        "routing": "direct",
+        "governance": "shared_effect_sandbox_only",
+        "procedural_reuse": "fresh_execution"
+      },
+      {
+        "id": "integrated_theseus_runtime",
+        "role": "candidate",
+        "planning": "executed_typed_plan",
+        "vcm": "selected_content_consumed_by_model",
+        "routing": "live_least_sufficient_capability_route",
+        "governance": "authority_effect_and_rollback_enforced",
+        "procedural_reuse": "verified_when_eligible_otherwise_fresh",
+        "state": "HISTORICAL_SUPERSEDED_P1_ROUTE_INTEGRITY_NOW_SOURCE_BOUND"
+      },
+      {
+        "id": "single_owner_ablation",
+        "role": "causal_diagnostic",
+        "constraint": "Change exactly one registered live subsystem mechanism from integrated_theseus_runtime after P3 establishes nonzero useful work; do not run an unconstrained factorial."
+      }
+    ],
+    "task_policy": {
+      "source": "historical in-scope repository-maintenance work retained as reusable development evidence",
+      "development_rows_reusable": true,
+      "development_rows_eligible_for_fresh_qualification": false,
+      "candidate_visible_information_matched": true,
+      "effects": "historical independent disposable snapshots only; no source-of-truth effect authority",
+      "selected_effect_requires_independent_machine_gate": true,
+      "raw_user_text_training_allowed": false,
+      "metadata_only_outcome_accounting": true
+    },
+    "metrics": [
+      "acceptance_contract_completed",
+      "unsafe_or_unauthorized_effect",
+      "false_block_or_missed_help",
+      "abstention",
+      "wall_time",
+      "model_calls",
+      "generated_tokens",
+      "tool_calls",
+      "verification_cost",
+      "human_review_and_repair_minutes",
+      "rollback_closure",
+      "residual_count_and_owner",
+      "total_contract_cost",
+      "accepted_missed_ignored_corrected_completed_failed_abstained"
+    ],
+    "promotion_policy": {
+      "local_adoption": "This historical packet cannot change a local default. Any current adoption requires a source-bound machine decision with paired useful-safe evidence, no unauthorized effect, and no material regression.",
+      "claim_bearing": "A claim-bearing result requires a later prospectively frozen source-disjoint qualification with competent positive controls, independent evaluation, uncertainty, weak-tail reporting, and a fixed minimum worthwhile effect.",
+      "negative_scope": "A development miss diagnoses this exact worker, wrapper, task, budget, and subsystem state only."
+    },
+    "boundaries": {
+      "network": "forbidden",
+      "external_inference": "forbidden",
+      "teacher_calls": "forbidden",
+      "public_benchmark_consumption": "forbidden",
+      "D2_consumption": "forbidden",
+      "E2_heldout_consumption": "forbidden",
+      "automatic_user_facing_effects": 0,
+      "learned_theseus_student_credit": 0,
+      "ASI_stack_support_state_effect": "none"
+    }
+  },
   "registry": "configs/project_manifest_registry.json",
   "owners": [
     {
@@ -150,5 +321,5 @@
     "all_mechanics_green": "ADVANCE_TO_CONSUMED_DEVELOPMENT_CAUSAL_SMOKES",
     "invalid_information_flow": "INVALID_INFORMATION_FLOW"
   },
-  "maximum_inference": "This inventory can establish only that canonical subsystem implementations are registered and their focused mechanics tests pass. It cannot establish causal task lift, local-model competence beyond the frozen qualification, stack efficacy, AGI, or ASI."
+  "maximum_inference": "This historical inventory can establish only what the pre-P1 owner and worker audit observed and that its evidence is retained. It has no current scheduling or claim authority and cannot establish causal task lift, current local-model competence, stack efficacy, AGI, or ASI."
 }

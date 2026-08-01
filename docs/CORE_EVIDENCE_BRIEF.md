@@ -1,8 +1,15 @@
 # Project Theseus: First Flagship Evidence Result
 
+Historical status: this brief preserves the pre-P1 E2/E3 result. It has no
+current scheduling or claim authority. P1 route integrity, P2C instrument
+adequacy, P3 residual measurement, and P4 mechanics are now source-bound;
+current state lives in `docs/PROJECT_STATE.md` and current execution order in
+`roadmap.md`.
+
 ## The answer
 
-The governance mechanics replay cleanly; the current frozen worker cannot yet do the work needed to test stack efficacy.
+The governance mechanics replayed cleanly; the worker frozen for this
+historical packet could not do the work needed to test stack efficacy.
 
 This is a useful negative result. Theseus reproduced one exact local
 allowed/block/revoke/rollback packet from a clean archive, but its frozen
@@ -52,8 +59,14 @@ predicate.
 
 It does not yet support governed-stack efficacy, planning utility, VCM utility,
 procedural-reuse efficiency, least-sufficient routing, learned generation, or
-student competence. D2 and public calibration remained untouched; there were
-zero external-inference or teacher calls.
+student competence. This packet did not evaluate the 57M D2 candidate and did
+not consume public calibration; there were zero external-inference or teacher
+calls. A later independent maintenance audit recomputed both the current and
+historical functional contracts, verified the historical packet's append-only
+consumption, and found zero exact or normalized model-visible prompt overlap.
+That freshness result is scoped to exact measurement-surface identity; it does
+not evaluate D2, authorize its execution, or turn task-family reuse into a new
+capability claim.
 
 The 95% Wilson interval for the E2 useful rate is
 **0.000–0.561**.
@@ -62,11 +75,12 @@ falsification.
 
 ## Fastest meaningful next move
 
-Do not add another governance surface and do not weaken the evaluator. Build or
-qualify one genuinely patch-producing **local** worker on the already-open
-development partition. It must emit a real unified diff that applies to the
-parent snapshot and passes the independent hidden evaluator. Only after the
-frozen competence floor is met should the unopened E2 heldout be consumed.
+Do not replay this cohort, add another governance surface, or weaken the
+evaluator. Continue the fresh source-disjoint P4S cognitive-compilation campaign
+under its current frozen local model and completion policy. Run D1 once only if
+the independent terminal disposition identifies a survivor; otherwise retain a
+scoped negative and move to the independently sealed modular-versus-dense D2
+experiment.
 
 ## Reproduce
 

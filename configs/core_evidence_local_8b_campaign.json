@@ -1,8 +1,16 @@
 {
   "policy": "project_theseus_local_8b_stack_causal_campaign_v1",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "state": "tmax_worker_v4_terminal_fail_successor_selection_required",
-  "question": "Which existing Theseus components improve useful-safe natural repository work over the same fixed local 8B model under matched information and total lifecycle budgets?",
+  "state": "HISTORICAL_SUPERSEDED_BY_SOURCE_BOUND_P1_THROUGH_P4S",
+  "question": "Historical design question: after a frozen local model is joined to the canonical Theseus runtime and route integrity is proved, which causally active components improve useful-safe outcomes or reduce total contract cost over the same model on a matched direct route?",
+  "current_authority": {
+    "state": "NO_CURRENT_EXECUTION_OR_CLAIM_AUTHORITY",
+    "canonical_state": "docs/PROJECT_STATE.md",
+    "canonical_roadmap": "roadmap.md",
+    "current_instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+    "current_progress": "reports/theseus_p4s_campaign_attempt2_progress.json",
+    "reason": "P1, P2A/P2B/P2C, P3, and P4 mechanics are source-bound. This pre-P1 L0 design is retained only to explain historical tasks, controls, and negative evidence."
+  },
   "preserved_invalid_packet": {
     "disposition": "INVALID_EVALUATOR",
     "candidate_report": "reports/core_evidence_worker_v2_qualification_candidates.json",
@@ -16,15 +24,16 @@
     "runtime": "mlx_lm_local_metal",
     "enable_thinking": false,
     "temperature": 0.0,
-    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
+    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v3.json",
+    "terminal_worker_v4_config": "configs/core_evidence_tmax_9b_worker_control_v4_development.json",
     "historical_qualification_disposition": "reports/core_evidence_tmax_fresh_v1_qualification_disposition.json",
     "development_terminal_disposition": "reports/core_evidence_repository_stack_development_worker_v4_edit_commitment_disposition.json",
-    "qualification_status": "TERMINAL_FAIL_DEVELOPMENT_SUCCESSOR_SELECTION_REQUIRED",
+    "qualification_status": "L0_DEVELOPMENT_AUTHORIZED_D1_SEALED_AFTER_WORKER_V4_TERMINAL_FAIL",
     "credit": "third_party_local_learned_generation_not_theseus_student",
-    "operator_authorization": {
-      "state": "EXPLICITLY_RATIFIED_FOR_D1_STACK_EVALUATION_ONLY",
+    "historical_authorization": {
+      "state": "HISTORICAL_L0_LOCAL_DEVELOPMENT_ONLY_D1_REQUIRES_FRESH_FREEZE",
       "date": "2026-07-30",
-      "scope": "Use the strongest locally runnable model to isolate governance, VCM, planning, routing, and verified-reuse effects.",
+      "scope": "Use the exact locally runnable model as a fixed instrument only after it is joined to the canonical assistant runtime and a route-integrity gate distinguishes live subsystem execution from context wrapping. Reusable L0 rows may guide existing-owner repairs but cannot qualify the worker, support a book claim, or enter D1 or D2.",
       "never_claim": [
         "Theseus student capability",
         "from-scratch model capability",
@@ -35,6 +44,7 @@
     }
   },
   "competence_floor": {
+    "scope": "fresh_D1_only_not_L0",
     "minimum_attempted_tasks": 3,
     "minimum_useful_rate": 0.5,
     "minimum_weakest_family_rate": 0.34,
@@ -43,19 +53,19 @@
   "ordered_stages": [
     "L0_historical_tmax_worker_v3_qualification_preserved",
     "L1_tmax_worker_v4_consumed_development_terminal_fail",
-    "L2_materially_stronger_local_successor_selection_and_preflight",
-    "L3_successor_consumed_development_then_source_disjoint_qualification_once",
-    "L4_matched_integrated_stack_comparison_if_qualified",
-    "L5_governance_and_subsystem_causal_ablations_if_qualified",
-    "L6_conditional_E2_and_second_model_replication",
-    "L7_claim_dispositions_and_public_safe_brief"
+    "P1_join_fixed_tmax_to_canonical_runtime_and_prove_route_integrity",
+    "P2_one_new_route_blind_canary_under_model_context_boundary_only",
+    "P3_ten_distinct_real_work_pairs",
+    "P4_one_registered_live_owner_ablation_from_nonzero_useful_residual",
+    "P5_reversible_local_default_or_scoped_L0_negative",
+    "P6_freeze_fresh_competent_local_identity_source_disjoint_D1_tasks_and_decisions",
+    "P7_D1_qualification_and_matched_causal_comparison_once",
+    "P8_claim_dispositions_and_public_safe_brief"
   ],
   "matched_generation_arms": [
-    "model_only_fixed_context",
-    "tool_enabled_worker",
-    "governed_worker",
-    "full_theseus",
-    "conservative_hold"
+    "direct_fixed_model_runtime",
+    "integrated_theseus_runtime",
+    "single_owner_ablation"
   ],
   "governance_replay_arms": [
     "direct",
@@ -137,9 +147,9 @@
     "teacher_calls": 0,
     "public_calibration_cases_consumed": 0,
     "D2_cases_consumed": 0,
-    "user_facing_effects": 0,
+    "automatic_user_facing_effects": 0,
     "training_hold": "installed",
     "all_effects": "disposable_snapshot_only"
   },
-  "terminal_rule": "Qualification failure stops stack-efficacy experiments and preserves E2. Qualification success unlocks matched causal experiments without changing frozen identities, budgets, evaluator, floors, or tests."
+  "terminal_rule": "This historical campaign no longer schedules work. Do not replay its L0 rows or treat its pre-P1 states as current. Current P4S/D1/D2 decisions are owned by roadmap.md, docs/PROJECT_STATE.md, and their source-bound machine artifacts. Historical misses remain scoped to the exact model, wrapper, task, budget, and implementation observed."
 }
