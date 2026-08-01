@@ -9,7 +9,7 @@
   "metadata_acquisition_sha256": "64b025a6bcb561abb205507c06dc0ad5c9ee082b470e4d1e2a5d26acd6764c5e",
   "source_selection": "scripts/theseus_d1_source_selection.py",
   "source_selection_sha256": "14a346138b8412b0c386a086a9b2d9bf872998ca91d56a2d02311626d4ad2746",
-  "p4_terminal_disposition": "reports/theseus_p4v2r2_terminal_disposition.json",
+  "p4_terminal_disposition": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
   "p4_survivor_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
   "p4_terminal_non_survivor_statuses": [
     "P4V2R2_ADEQUATE_NO_SURVIVOR",

@@ -4029,7 +4029,7 @@
           "blind_candidate_and_control_campaign",
           "independent_integrity_recomputation_and_terminal_disposition"
         ],
-        "activation_disposition": "reports/theseus_p4v2r2_terminal_disposition.json",
+        "activation_disposition": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
         "required_scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "historical_P4S_survivor_cannot_activate": true,
         "temporal_contamination_identity": "mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560",
