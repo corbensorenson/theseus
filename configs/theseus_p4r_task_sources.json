@@ -1,0 +1,186 @@
+{
+  "policy": "project_theseus_p4r_online_source_selection_v1",
+  "state": "FIXED_BEFORE_TASK_MATERIALIZATION_OR_CANDIDATE_GENERATION",
+  "sealed_utc": "2026-08-01T04:17:21Z",
+  "selection_rule": "Retain the seven P4-v1 tasks never opened by any candidate or control, then add three distinct merged licensed Python maintenance changes from repositories absent from P2, P3, and P4. Selection is fixed before parent/target execution, oracle construction, learned calls, static compiler calls, or hosted calls; evaluator defects are repaired without replacing a source task.",
+  "instrument_freeze_commit": "744d29e8",
+  "instrument_sha256": "64afd82f5dd44b773b9b3f5fb739fee6b8e9ac6a757aea338aaecb620c0b1794",
+  "instrument_audit_sha256": "faffc010d292abd07e5e5e1e0097f506fed44abbf09a20fd617a6234c0a83e92",
+  "task_count": 10,
+  "boundaries": {
+    "candidate_generation_opened": false,
+    "local_model_calls": 0,
+    "hosted_model_calls": 0,
+    "deterministic_request_compiler_calls": 0,
+    "new_task_parent_target_oracle_calls_before_selection": 0,
+    "user_task_or_label_dependency": false
+  },
+  "reused_unopened_tasks": [
+    {
+      "campaign_index": 1,
+      "predecessor_campaign_index": 4,
+      "stem": "p4r_01_yarl_1802",
+      "repository": "aio-libs/yarl",
+      "task": "configs/theseus_p4_task_04_yarl_1802.json",
+      "evaluator": "configs/theseus_p4_evaluator_04_yarl_1802.json"
+    },
+    {
+      "campaign_index": 2,
+      "predecessor_campaign_index": 5,
+      "stem": "p4r_02_packaging_1351",
+      "repository": "pypa/packaging",
+      "task": "configs/theseus_p4_task_05_packaging_1351.json",
+      "evaluator": "configs/theseus_p4_evaluator_05_packaging_1351.json"
+    },
+    {
+      "campaign_index": 3,
+      "predecessor_campaign_index": 6,
+      "stem": "p4r_03_structlog_811",
+      "repository": "hynek/structlog",
+      "task": "configs/theseus_p4_task_06_structlog_811.json",
+      "evaluator": "configs/theseus_p4_evaluator_06_structlog_811.json"
+    },
+    {
+      "campaign_index": 4,
+      "predecessor_campaign_index": 7,
+      "stem": "p4r_04_trio_3416",
+      "repository": "python-trio/trio",
+      "task": "configs/theseus_p4_task_07_trio_3416.json",
+      "evaluator": "configs/theseus_p4_evaluator_07_trio_3416.json"
+    },
+    {
+      "campaign_index": 5,
+      "predecessor_campaign_index": 8,
+      "stem": "p4r_05_tox_3988",
+      "repository": "tox-dev/tox",
+      "task": "configs/theseus_p4_task_08_tox_3988.json",
+      "evaluator": "configs/theseus_p4_evaluator_08_tox_3988.json"
+    },
+    {
+      "campaign_index": 6,
+      "predecessor_campaign_index": 9,
+      "stem": "p4r_06_uvicorn_3019",
+      "repository": "encode/uvicorn",
+      "task": "configs/theseus_p4_task_09_uvicorn_3019.json",
+      "evaluator": "configs/theseus_p4_evaluator_09_uvicorn_3019.json"
+    },
+    {
+      "campaign_index": 7,
+      "predecessor_campaign_index": 10,
+      "stem": "p4r_07_installer_345",
+      "repository": "pypa/installer",
+      "task": "configs/theseus_p4_task_10_installer_345.json",
+      "evaluator": "configs/theseus_p4_evaluator_10_installer_345.json"
+    }
+  ],
+  "new_tasks": [
+    {
+      "campaign_index": 8,
+      "stem": "p4r_08_black_5258",
+      "case": "black",
+      "repository": "psf/black",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 5258,
+      "pull_request_title": "Ignore permission errors when reading cache",
+      "merged_utc": "2026-07-24T21:51:22Z",
+      "parent_revision": "8049246eddaed76bb36501100a1fd79a80bad5bc",
+      "target_revision": "183ef41c315579a60988d2e7c094593d26f054b8",
+      "merge_revision": "db2e3e7b317b40685ba4618235a8388c7c6ea5e2",
+      "source_root": "black-8049246eddaed76bb36501100a1fd79a80bad5bc",
+      "target_root": "black-183ef41c315579a60988d2e7c094593d26f054b8",
+      "allowed_effect_paths": ["src/black/cache.py"],
+      "natural_request": "When Black reads its mode cache, treat PermissionError like a corrupt or unreadable cache and return an empty cache instead of failing. Preserve valid cache loading, existing corrupt-cache handling, cache identity, and all behavior outside src/black/cache.py. Modify only src/black/cache.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A PermissionError raised while unpickling a mode cache returns an empty Cache instead of escaping."},
+        {"id": "O2", "kind": "preserve", "text": "Valid cache entries and the existing corrupt-cache exception cases retain their behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change cache writing, grammar caching, or any file other than src/black/cache.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "src/black/cache.py", "start_line": 60, "end_line": 100}],
+      "searches": [{"literal": "pickle.load", "paths": ["src/black/cache.py"]}],
+      "visible_marker": "P4R_VISIBLE_black_PRIMARY",
+      "visible_obligation_ids": ["O1", "O2", "O3"],
+      "oracle_units": [{
+        "id": "U1",
+        "obligation_ids": ["O1", "O2", "O3"],
+        "operation": "REPLACE",
+        "parent_selector": {"node_type": "ExceptHandler", "qualified_name": "Cache.read", "contains": "pickle.UnpicklingError"},
+        "target_selectors": [{"node_type": "ExceptHandler", "qualified_name": "Cache.read", "contains": "PermissionError"}]
+      }]
+    },
+    {
+      "campaign_index": 9,
+      "stem": "p4r_09_django_21700",
+      "case": "django",
+      "repository": "django/django",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE"],
+      "pull_request": 21700,
+      "pull_request_title": "Fixed simplify_regex() with multiple unnamed groups",
+      "merged_utc": "2026-07-31T07:37:06Z",
+      "parent_revision": "274a1d494d11d87a1b767340d1f398f197810f93",
+      "target_revision": "7a24488c2377de6df2e2421892253d4d5814f111",
+      "merge_revision": "ca14173f968cf36115f22d6c6785f738de4391ed",
+      "source_root": "django-274a1d494d11d87a1b767340d1f398f197810f93",
+      "target_root": "django-7a24488c2377de6df2e2421892253d4d5814f111",
+      "allowed_effect_paths": ["django/urls/utils.py"],
+      "natural_request": "Make replace_unnamed_groups preserve the text between every unnamed regex group while replacing each group with <var>. Preserve named groups, nested unnamed groups, anchors, escaped parentheses, and regex simplification behavior. Modify only django/urls/utils.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Multiple sequential unnamed groups are each replaced without duplicating or dropping the text between them."},
+        {"id": "O2", "kind": "preserve", "text": "Named groups, nested unnamed groups, anchors, and escaped parentheses retain their current simplified form."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not alter group discovery or any file other than django/urls/utils.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "django/urls/utils.py", "start_line": 115, "end_line": 155}],
+      "searches": [{"literal": "replace_unnamed_groups", "paths": ["django/urls/utils.py"]}],
+      "visible_marker": "P4R_VISIBLE_django_PRIMARY",
+      "visible_obligation_ids": ["O1", "O2", "O3"],
+      "oracle_units": [{
+        "id": "U1",
+        "obligation_ids": ["O1", "O2", "O3"],
+        "operation": "REPLACE",
+        "parent_selector": {"node_type": "For", "qualified_name": "replace_unnamed_groups", "contains": "final_pattern"},
+        "target_selectors": [{"node_type": "For", "qualified_name": "replace_unnamed_groups", "contains": "pattern[prev_end:start]"}]
+      }]
+    },
+    {
+      "campaign_index": 10,
+      "stem": "p4r_10_celery_10406",
+      "case": "celery",
+      "repository": "celery/celery",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE"],
+      "pull_request": 10406,
+      "pull_request_title": "Handle UUID task ids in key-value store backend key generation",
+      "merged_utc": "2026-07-15T13:49:33Z",
+      "parent_revision": "a094d2a891cb77dcaa6ee432a5102a4863e5beff",
+      "target_revision": "243522cad53e955cadeaa1be441b4193cdabef97",
+      "merge_revision": "6e0d683085f591de55106b0de698de93d6638af0",
+      "source_root": "celery-a094d2a891cb77dcaa6ee432a5102a4863e5beff",
+      "target_root": "celery-243522cad53e955cadeaa1be441b4193cdabef97",
+      "allowed_effect_paths": ["celery/backends/base.py"],
+      "natural_request": "Allow UUID objects as task, group, and chord identifiers when constructing key-value backend keys by normalizing them to their canonical string form. Preserve string and bytes identifiers, prefixes, suffixes, and invalid-identifier behavior. Modify only celery/backends/base.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Task, group, and chord key generation accepts UUID objects and matches the keys for their canonical string values."},
+        {"id": "O2", "kind": "preserve", "text": "String and bytes identifiers, key prefixes, optional suffixes, and key conversion retain existing behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change result storage or any file other than celery/backends/base.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [
+        {"path": "celery/backends/base.py", "start_line": 1, "end_line": 25},
+        {"path": "celery/backends/base.py", "start_line": 1025, "end_line": 1055}
+      ],
+      "searches": [{"literal": "def _get_key_for", "paths": ["celery/backends/base.py"]}],
+      "visible_marker": "P4R_VISIBLE_celery_PRIMARY",
+      "visible_obligation_ids": ["O1", "O2", "O3"],
+      "oracle_units": [{
+        "id": "U1",
+        "obligation_ids": ["O1", "O2", "O3"],
+        "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "BaseKeyValueStoreBackend._get_key_for"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "BaseKeyValueStoreBackend._get_key_for", "contains": "isinstance(id, UUID)"}]
+      }]
+    }
+  ]
+}
