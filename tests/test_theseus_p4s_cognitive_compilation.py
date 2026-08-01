@@ -37,6 +37,24 @@ def test_completion_wrapper_does_not_recurse_when_shared_symbol_is_patched() -> 
         p4s.p4r.completion.candidate_envelope_complete = original
 
 
+def test_runtime_attempt_namespace_changes_only_session_identity() -> None:
+    observed = {}
+
+    def runtime_call(*args, **kwargs):
+        observed["args"] = args
+        observed["kwargs"] = kwargs
+        return "receipt"
+
+    bound = p4s.bind_runtime_attempt_namespace(runtime_call, "attempt2")
+    result = bound("direct_local_model", "p4_task_arm", 1, "prompt", 262144, "config")
+
+    assert result == "receipt"
+    assert observed["args"] == (
+        "direct_local_model", "p4_task_arm_attempt2", 1, "prompt", 262144, "config"
+    )
+    assert observed["kwargs"] == {}
+
+
 def test_semantic_scope_table_excludes_nested_statements_and_assignments() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)

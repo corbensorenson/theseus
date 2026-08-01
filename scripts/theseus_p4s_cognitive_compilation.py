@@ -69,6 +69,8 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         faults.append("instrument_policy_invalid")
     if value.get("state") != "PROSPECTIVELY_BOUND_BEFORE_FRESH_P4S_TASK_ACQUISITION":
         faults.append("instrument_not_prospectively_bound")
+    if value.get("runtime_attempt_namespace") != "attempt2":
+        faults.append("runtime_attempt_namespace_invalid")
     for name, digest_name in (
         ("p4r_terminal_disposition", "p4r_terminal_disposition_sha256"),
         ("mechanics_qualification", "mechanics_qualification_sha256"),
@@ -189,6 +191,11 @@ def run_experiment(
     original_final = p4.render_final_prompt
     original_run_arm = p4.run_arm
     original_complete = p4r.completion.candidate_envelope_complete
+    original_runtime_call = p4.p2a.runtime_call
+    execution_instrument = p2a.read_json(instrument_path)
+    runtime_namespace = str(
+        execution_instrument.get("runtime_attempt_namespace") or ""
+    )
 
     def bound_run_arm(
         arm: str, instrument: dict[str, Any], task: dict[str, Any], session: Any
@@ -207,6 +214,9 @@ def run_experiment(
     p4.render_final_prompt = render_final_prompt
     p4.run_arm = bound_run_arm
     p4r.completion.candidate_envelope_complete = candidate_envelope_complete
+    p4.p2a.runtime_call = bind_runtime_attempt_namespace(
+        original_runtime_call, runtime_namespace
+    )
     try:
         report = p4r.run_experiment(
             instrument_path, task_path, session_factory=session_factory
@@ -219,6 +229,7 @@ def run_experiment(
         p4.render_final_prompt = original_final
         p4.run_arm = original_run_arm
         p4r.completion.candidate_envelope_complete = original_complete
+        p4.p2a.runtime_call = original_runtime_call
     report["policy"] = POLICY
     report["scope"] = (
         "Fresh source-disjoint P4 cognitive-compilation decision development only; "
@@ -234,6 +245,24 @@ def run_experiment(
 
 def candidate_envelope_complete(text: str) -> bool:
     return BASE_CANDIDATE_ENVELOPE_COMPLETE(text) or ir_v2r1.complete(text)
+
+
+def bind_runtime_attempt_namespace(
+    runtime_call: Callable[..., Any], namespace: str
+) -> Callable[..., Any]:
+    suffix = p2a.safe_slug(namespace)
+
+    def namespaced(*args: Any, **kwargs: Any) -> Any:
+        positional = list(args)
+        if len(positional) >= 2:
+            positional[1] = f"{positional[1]}_{suffix}"
+        elif "session_id" in kwargs:
+            kwargs = {**kwargs, "session_id": f"{kwargs['session_id']}_{suffix}"}
+        else:
+            raise ValueError("runtime_call_session_id_missing")
+        return runtime_call(*positional, **kwargs)
+
+    return namespaced
 
 
 def semantic_scope_symbol_table(root: Path, task: dict[str, Any]) -> dict[str, Any]:
