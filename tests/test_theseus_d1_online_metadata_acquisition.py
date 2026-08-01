@@ -115,8 +115,20 @@ class CandidateClient:
             return {"parents": [{"sha": "a" * 40}]}
         if path.endswith("/pulls/7/files"):
             return [
-                {"filename": "package/core.py"},
-                {"filename": "tests/test_core.py"},
+                {
+                    "filename": "package/core.py",
+                    "status": "modified",
+                    "additions": 3,
+                    "deletions": 1,
+                    "changes": 4,
+                },
+                {
+                    "filename": "tests/test_core.py",
+                    "status": "added",
+                    "additions": 9,
+                    "deletions": 0,
+                    "changes": 9,
+                },
             ]
         raise AssertionError(path)
 
@@ -141,5 +153,23 @@ def test_candidate_metadata_uses_merge_parent_and_complete_file_inventory() -> N
     assert row["target_revision"] == "b" * 40
     assert row["license_spdx"] == "MIT"
     assert row["changed_paths"] == ["package/core.py", "tests/test_core.py"]
+    assert row["changed_files"] == [
+        {
+            "filename": "package/core.py",
+            "status": "modified",
+            "previous_filename": "",
+            "additions": 3,
+            "deletions": 1,
+            "changes": 4,
+        },
+        {
+            "filename": "tests/test_core.py",
+            "status": "added",
+            "previous_filename": "",
+            "additions": 9,
+            "deletions": 0,
+            "changes": 9,
+        },
+    ]
     assert "solution" not in row
     assert "tests" not in row

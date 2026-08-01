@@ -170,14 +170,21 @@ class RoadmapBookSyncTests(unittest.TestCase):
             successor["source_stage_terminal_boundary"],
         )
         self.assertEqual(
-            "not_implemented_do_not_claim_D1_execution_ready",
-            successor["downstream_materialization_campaign_and_disposition_state"],
+            "complete_waiting_on_frozen_registry_no_user_gate",
+            successor["source_materialization_implementation"],
         )
-        self.assertEqual(4, len(successor["remaining_D1_execution_owners"]))
+        self.assertEqual(
+            "not_implemented_do_not_claim_D1_execution_ready",
+            successor["downstream_evaluator_campaign_and_disposition_state"],
+        )
+        self.assertEqual(3, len(successor["remaining_D1_execution_owners"]))
         for key in (
             "autonomous_source_successor_config",
             "autonomous_source_successor",
             "autonomous_source_successor_test",
+            "source_materialization_config",
+            "source_materialization",
+            "source_materialization_test",
         ):
             self.assertTrue((ROOT / successor[key]).is_file())
         self.assertFalse(successor["candidate_or_control_calls_authorized"])

@@ -3995,9 +3995,12 @@
         "autonomous_source_successor_test": "tests/test_theseus_d1_autonomous_source_successor.py",
         "source_stage_implementation": "complete_waiting_indefinitely_without_user_gate",
         "source_stage_terminal_boundary": "first_design_complete_44_repository_registry_frozen_before_archive_fetch",
-        "downstream_materialization_campaign_and_disposition_state": "not_implemented_do_not_claim_D1_execution_ready",
+        "source_materialization_config": "configs/theseus_d1_source_materialization.json",
+        "source_materialization": "scripts/theseus_d1_source_materialization.py",
+        "source_materialization_test": "tests/test_theseus_d1_source_materialization.py",
+        "source_materialization_implementation": "complete_waiting_on_frozen_registry_no_user_gate",
+        "downstream_evaluator_campaign_and_disposition_state": "not_implemented_do_not_claim_D1_execution_ready",
         "remaining_D1_execution_owners": [
-          "source_archive_materialization_and_sanitization",
           "independent_parent_fail_target_pass_evaluator_seal",
           "blind_candidate_and_control_campaign",
           "independent_integrity_recomputation_and_terminal_disposition"

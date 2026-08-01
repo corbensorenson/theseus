@@ -9,7 +9,7 @@ import gzip
 import hashlib
 import json
 import tarfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
@@ -41,6 +41,13 @@ def sanitize(source: Path, destination: Path) -> dict[str, Any]:
                 with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as outgoing:
                     for member in incoming.getmembers():
                         roots.add(member.name.strip("/").split("/", 1)[0])
+                        if not safe_member_name(member.name):
+                            omitted.append({
+                                "path": member.name,
+                                "kind": "unsafe_member_path",
+                                "linkname": member.linkname,
+                            })
+                            continue
                         if member.issym() or member.islnk():
                             omitted.append({
                                 "path": member.name,
@@ -70,6 +77,8 @@ def sanitize(source: Path, destination: Path) -> dict[str, Any]:
         faults.append("source_archive_root_count_invalid")
     if not admitted:
         faults.append("source_archive_no_admitted_members")
+    if any(row["kind"] == "unsafe_member_path" for row in omitted):
+        faults.append("source_archive_unsafe_member_path")
     return {
         "policy": POLICY,
         "trigger_state": "GREEN" if not faults else "RED",
@@ -89,6 +98,15 @@ def sanitize(source: Path, destination: Path) -> dict[str, Any]:
         },
         "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
     }
+
+
+def safe_member_name(value: str) -> bool:
+    if not value or "\x00" in value or "\\" in value or value.startswith("/"):
+        return False
+    path = PurePosixPath(value)
+    return not path.is_absolute() and all(
+        part not in {"", ".", ".."} for part in path.parts
+    )
 
 
 def sha256_file(path: Path) -> str:

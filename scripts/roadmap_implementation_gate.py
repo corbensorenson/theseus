@@ -1112,6 +1112,9 @@ def audit_book_implementation_contract(
             "autonomous_source_successor_config",
             "autonomous_source_successor",
             "autonomous_source_successor_test",
+            "source_materialization_config",
+            "source_materialization",
+            "source_materialization_test",
         )
     ]
     if (
@@ -1121,9 +1124,11 @@ def audit_book_implementation_contract(
         != "complete_waiting_indefinitely_without_user_gate"
         or d1_successor.get("source_stage_terminal_boundary")
         != "first_design_complete_44_repository_registry_frozen_before_archive_fetch"
-        or d1_successor.get("downstream_materialization_campaign_and_disposition_state")
+        or d1_successor.get("source_materialization_implementation")
+        != "complete_waiting_on_frozen_registry_no_user_gate"
+        or d1_successor.get("downstream_evaluator_campaign_and_disposition_state")
         != "not_implemented_do_not_claim_D1_execution_ready"
-        or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 4
+        or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 3
         or d1_successor.get("candidate_or_control_calls_authorized") is not False
         or d1_successor.get("automatic_book_support_promotion") is not False
         or any(not path or not (ROOT / path).is_file() for path in d1_source_paths)

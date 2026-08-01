@@ -412,18 +412,28 @@ def fetch_candidate_row(
         return None
     parent_revision = str(parents[0].get("sha") or "").lower()
     changed_files = int(pull.get("changed_files") or 0)
-    paths: list[str] = []
+    file_rows: list[dict[str, Any]] = []
     for page in range(1, max(1, math.ceil(changed_files / PER_PAGE)) + 1):
         payload = client.get(
             f"/repos/{repository}/pulls/{number}/files",
             {"per_page": PER_PAGE, "page": page},
         )
-        paths.extend(
-            str(row.get("filename") or "")
-            for row in selection.dictionaries(payload)
-            if str(row.get("filename") or "")
-        )
-    if len(paths) != changed_files:
+        file_rows.extend(selection.dictionaries(payload))
+    if len(file_rows) != changed_files:
+        return None
+    changed_file_inventory = [
+        {
+            "filename": str(row.get("filename") or ""),
+            "status": str(row.get("status") or ""),
+            "previous_filename": str(row.get("previous_filename") or ""),
+            "additions": int(row.get("additions") or 0),
+            "deletions": int(row.get("deletions") or 0),
+            "changes": int(row.get("changes") or 0),
+        }
+        for row in file_rows
+        if str(row.get("filename") or "")
+    ]
+    if len(changed_file_inventory) != changed_files:
         return None
     return {
         "repository": repository,
@@ -437,7 +447,13 @@ def fetch_candidate_row(
         "parent_revision": parent_revision,
         "target_revision": merge_revision,
         "merge_revision": merge_revision,
-        "changed_paths": sorted(set(paths)),
+        "changed_paths": sorted(
+            {str(row["filename"]) for row in changed_file_inventory}
+        ),
+        "changed_files": sorted(
+            changed_file_inventory,
+            key=lambda row: (str(row["filename"]), str(row["status"])),
+        ),
         "metadata_retrieved_utc": metadata_retrieved_utc,
         "metadata_only_selection": True,
     }

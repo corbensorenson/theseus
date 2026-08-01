@@ -1,0 +1,33 @@
+{
+  "policy": "project_theseus_d1_source_materialization_v1",
+  "state": "BOUND_BEFORE_D1_SOURCE_REGISTRY_EXISTS",
+  "source_successor_config": "configs/theseus_d1_autonomous_source_successor.json",
+  "source_successor_config_sha256": "255d4c1bc9b39ccf49367397dcac37f5d3538425c367d1106b5e852678d515ae",
+  "source_registry": "configs/theseus_d1_task_sources.json",
+  "sanitizer": "scripts/theseus_p2b_sanitize_archive.py",
+  "sanitizer_sha256": "492aade0141d9f3bec3a0e9871a413ff9cf2fae4d540bc231e62c7ded04b9816",
+  "archive_root": "runtime/d1_acquisition/source_archives",
+  "sanitization_report_root": "reports/theseus_d1_source_archive_sanitization",
+  "report": "reports/theseus_d1_source_materialization.json",
+  "active_lease": "runtime/control/theseus_d1_source_materialization_lease.json",
+  "lease_archive_directory": "reports/theseus_d1_source_materialization_leases",
+  "poll_seconds": 60,
+  "allowed_transport_origin": "https://codeload.github.com",
+  "authority": {
+    "kind": "exclusive_idempotent_frozen_registry_materialization_lease",
+    "user_or_operator_approval_required": false,
+    "network_source_archives_only_after_registry_freeze": true,
+    "exact_parent_and_target_revisions_only": true,
+    "postfreeze_task_replacement_allowed": false,
+    "parent_target_execution_authorized": false,
+    "oracle_or_evaluator_execution_authorized": false,
+    "candidate_or_control_calls_authorized": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false
+  },
+  "maximum_inference": "A GREEN materialization report proves only exact parent/target archive transport from the frozen D1 registry, immutable upstream-byte custody, deterministic regular-file-only normalization, safe member names, declared changed-member presence by file status, and license-file presence. It does not prove parent failure, target pass, evaluator adequacy, task prompt adequacy, candidate utility, D1 qualification, serving, training, D2, or ASI Stack support."
+}

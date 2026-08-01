@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import tarfile
+import io
 from pathlib import Path
 
 
@@ -37,3 +38,21 @@ def test_sanitizer_is_deterministic_and_omits_links(tmp_path: Path) -> None:
     with tarfile.open(first) as handle:
         assert "repo-root/value.txt" in handle.getnames()
         assert "repo-root/linked.txt" not in handle.getnames()
+
+
+def test_sanitizer_rejects_absolute_and_parent_traversal_members(tmp_path: Path) -> None:
+    source = tmp_path / "unsafe.tar.gz"
+    with tarfile.open(source, "w:gz") as handle:
+        for name in ("repo/good.py", "../escape.py", "/absolute.py"):
+            payload = b"value = 1\n"
+            member = tarfile.TarInfo(name)
+            member.size = len(payload)
+            handle.addfile(member, io.BytesIO(payload))
+    report = sanitizer.sanitize(source, tmp_path / "normalized.tar.gz")
+    assert report["trigger_state"] == "RED"
+    assert "source_archive_unsafe_member_path" in report["faults"]
+    assert [
+        row["path"]
+        for row in report["omitted_members"]
+        if row["kind"] == "unsafe_member_path"
+    ] == ["../escape.py", "/absolute.py"]

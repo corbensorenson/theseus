@@ -47,9 +47,10 @@
       "merged_utc",
       "parent_revision",
       "target_revision",
-      "merge_revision",
-      "changed_paths",
-      "metadata_retrieved_utc"
+    "merge_revision",
+    "changed_paths",
+    "changed_files",
+    "metadata_retrieved_utc"
     ],
     "require_changed_in_scope_source_path": true,
     "require_changed_test_path": true,
