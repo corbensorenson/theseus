@@ -1,6 +1,6 @@
 {
   "policy": "project_theseus_roadmap_implementation_gate_v1",
-  "created_utc": "2026-07-29T05:11:08.592445+00:00",
+  "created_utc": "2026-07-31T04:16:16.459607+00:00",
   "trigger_state": "RED",
   "summary": {
     "matrix": "configs/roadmap_implementation_matrix.json",
@@ -63,15 +63,20 @@
     "planned_codex_test_backlog_missing_required_field_count": 0,
     "planned_codex_test_backlog_invalid_ref_count": 0,
     "planned_codex_test_backlog_status_counts": {
-      "pretraining_wired_behavior_qualification_pending": 11,
+      "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate": 3,
       "retired_by_pretraining_verdict": 3,
       "implemented_negative_result_rung_falsified": 1,
       "partial": 1,
-      "implemented": 3,
-      "wired": 7,
+      "pretraining_wired_behavior_qualification_pending": 10,
+      "terminal_E2_E3_zero_useful_cost_contrast_inconclusive_worker_inadequate": 1,
+      "implemented_E4_claim_scoped_disposition": 1,
       "protected_discovery_lane": 1,
-      "planned": 2,
-      "queued_after_nonfallback_candidate_quality": 1
+      "planned": 1,
+      "terminal_E2_inconclusive_worker_inadequate_heldout_preserved": 1,
+      "terminal_E3_deterministic_quality_wall_learned_routing_still_blocked_by_D2": 1,
+      "wired": 4,
+      "implemented_E0_E4_integrity_and_disposition": 1,
+      "implemented": 1
     },
     "planned_codex_test_backlog_technique_family_counts": {
       "qualification_first_pre_deliberative_dispatch_and_reflex_compilation": 1,
@@ -104,9 +109,9 @@
       "independent_token_corpus_and_kerc_acceleration": 1,
       "finite_pretraining_architecture_and_efficiency_closure": 1
     },
-    "planned_codex_test_backlog_blocked_or_queued_count": 1,
+    "planned_codex_test_backlog_blocked_or_queued_count": 0,
     "pre_training_architecture_ready": false,
-    "pre_training_architecture_blocker_count": 2,
+    "pre_training_architecture_blocker_count": 1,
     "pre_training_architecture_warning_count": 0,
     "kerc_fidelity_gate_state": "GREEN",
     "kerc_fidelity_fault_count": 0,
@@ -115,12 +120,12 @@
     "kerc_replacement_qualification_ready": true,
     "kerc_replacement_qualification_state": "FIRST_CAMPAIGN_SCOPE_EXCLUDED_INCONCLUSIVE_EXPERIMENT",
     "kerc_replacement_remaining_step_count": 6,
-    "runtime_ms": 20860,
+    "runtime_ms": 35118,
     "book_to_theseus_crosswalk_item_count": 20,
-    "book_to_theseus_ai_book_source_file_count": 4244,
-    "book_to_theseus_ai_book_source_manifest_hash": "afdf50c669de13665d7424917c07bc66d53dece177cbbf08d1baf7372c8afe0b",
-    "book_to_theseus_stale_phase_count": 1,
-    "book_to_theseus_roadmap_backlog_item_count": 366,
+    "book_to_theseus_ai_book_source_file_count": 4578,
+    "book_to_theseus_ai_book_source_manifest_hash": "3260893aef8ddcaaa80e6df484f722f2bc44296436516d8af78fa4178814da78",
+    "book_to_theseus_stale_phase_count": 0,
+    "book_to_theseus_roadmap_backlog_item_count": 383,
     "theseus_to_book_evidence_count": 107,
     "book_to_theseus_source_sync_smoke_passed": true,
     "public_safe_evidence_smoke_passed": true
@@ -364,7 +369,7 @@
       "required_records": [
         "assistant_trace",
         "dogfood_event",
-        "accepted_missed_ignored_outcome",
+        "accepted_missed_ignored_corrected_completed_failed_abstained_outcome",
         "redaction_receipt"
       ],
       "required_gates": [
@@ -373,7 +378,7 @@
         "python3 scripts/theseus_assistant_e2e.py",
         "python3 scripts/theseus_assistant_product_lane_gate.py --gate"
       ],
-      "current_evidence_count": 16,
+      "current_evidence_count": 18,
       "missing_item_count": 1,
       "hard_gap_count": 0,
       "warning_count": 0,
@@ -490,7 +495,7 @@
         "python3 scripts/hive_node.py operator-status --out reports/hive_operator_status.json",
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the teacher-share governance state and no-runtime-external-token boundary.\" --intent planning --feedback completed --session-id teacher_share_phase7_smoke --out reports/theseus_assistant_teacher_share_smoke.json --markdown-out reports/theseus_assistant_teacher_share_smoke.md --events-out reports/theseus_assistant_teacher_share_events.jsonl --viea-trace-out reports/theseus_assistant_teacher_share_trace.jsonl --skip-context-refresh"
       ],
-      "current_evidence_count": 24,
+      "current_evidence_count": 25,
       "missing_item_count": 2,
       "hard_gap_count": 0,
       "warning_count": 0,
@@ -531,7 +536,7 @@
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate"
       ],
       "current_evidence_count": 160,
-      "missing_item_count": 2,
+      "missing_item_count": 1,
       "hard_gap_count": 0,
       "warning_count": 0,
       "hard_gaps": [],
@@ -1102,15 +1107,20 @@
       "planned_codex_test_backlog_invalid_ref_count": 0,
       "planned_codex_test_backlog_duplicate_id_count": 0,
       "planned_codex_test_backlog_status_counts": {
-        "pretraining_wired_behavior_qualification_pending": 11,
+        "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate": 3,
         "retired_by_pretraining_verdict": 3,
         "implemented_negative_result_rung_falsified": 1,
         "partial": 1,
-        "implemented": 3,
-        "wired": 7,
+        "pretraining_wired_behavior_qualification_pending": 10,
+        "terminal_E2_E3_zero_useful_cost_contrast_inconclusive_worker_inadequate": 1,
+        "implemented_E4_claim_scoped_disposition": 1,
         "protected_discovery_lane": 1,
-        "planned": 2,
-        "queued_after_nonfallback_candidate_quality": 1
+        "planned": 1,
+        "terminal_E2_inconclusive_worker_inadequate_heldout_preserved": 1,
+        "terminal_E3_deterministic_quality_wall_learned_routing_still_blocked_by_D2": 1,
+        "wired": 4,
+        "implemented_E0_E4_integrity_and_disposition": 1,
+        "implemented": 1
       },
       "planned_codex_test_backlog_technique_family_counts": {
         "qualification_first_pre_deliberative_dispatch_and_reflex_compilation": 1,
@@ -1143,7 +1153,7 @@
         "independent_token_corpus_and_kerc_acceleration": 1,
         "finite_pretraining_architecture_and_efficiency_closure": 1
       },
-      "planned_codex_test_backlog_blocked_or_queued_count": 1
+      "planned_codex_test_backlog_blocked_or_queued_count": 0
     },
     "hard_gaps": [],
     "warnings": [
@@ -2194,7 +2204,7 @@
       "policy": "project_theseus_kerc_first_campaign_exclusion_audit_v1",
       "ready": true,
       "config": "configs/moecot_language_arm_training.json",
-      "config_sha256": "3e7beec6d9b3261ef5a08bdfe39095864f7754d3e1a7495c0dc8a02f9cc10683",
+      "config_sha256": "e136b823814d8fed6e34d802a2487d71f76b2da4bd003f4b7333b6f3cdedde25",
       "candidate_ids": [
         "dense_active_parameter",
         "dense_total_parameter",
@@ -2307,7 +2317,7 @@
   "pre_training_architecture_readiness": {
     "policy": "project_theseus_pre_training_architecture_readiness_v1",
     "ready": false,
-    "blocker_count": 2,
+    "blocker_count": 1,
     "warning_count": 0,
     "phase_status_counts": {
       "partial": 7,
@@ -2353,66 +2363,44 @@
         "scoped_readiness_declared": true,
         "scoped_readiness_ready": false,
         "missing_items": [
-          "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
+          "commit the reviewed maintenance transaction, then generate the source-bound step-11,416 replacement package exactly once from that clean commit; the operator hold and separate D2 execution gate remain in force",
           "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
         ],
         "nonblocking_residuals": [
-          "preserve the GREEN KERC/T0A replacement package and its exact registry bindings while completing the remaining Phase 0 reproduction and cleanup work",
           "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
         ],
         "required_source_artifact_paths": [
+          "configs/pre_long_run_independent_readiness_audit.json",
+          "configs/pre_long_run_replacement_freeze.json",
           "configs/project_manifest_registry.json",
           "configs/roadmap_implementation_matrix.json",
-          "scripts/pretraining_architecture_freeze.py",
-          "tests/test_pretraining_architecture_freeze.py"
+          "scripts/pre_long_run_independent_readiness_audit.py",
+          "scripts/pre_long_run_replacement_freeze.py",
+          "tests/test_pre_long_run_independent_readiness_audit.py",
+          "tests/test_pre_long_run_replacement_freeze.py"
         ],
         "missing_source_artifact_paths": [],
         "evidence": {
           "declared": true,
           "ready": false,
-          "path": "reports/pretraining_architecture_freeze_package.json",
-          "policy": "project_theseus_pretraining_architecture_freeze_v1",
-          "trigger_state": "GREEN",
-          "disposition": "architecture_frozen_training_not_started",
-          "source_artifact_count": 143,
-          "historical_source_artifact_drift_count": 12,
+          "path": "reports/pre_long_run_replacement_freeze.json",
+          "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
+          "trigger_state": "RED",
+          "disposition": null,
+          "source_artifact_count": 8,
+          "historical_source_artifact_drift_count": 0,
           "historical_source_artifact_drift_accepted_after_activation": false,
           "post_activation_currentness": {
-            "declared": true,
+            "declared": false,
             "ready": false,
-            "path": "configs/neural_seed_t1_lineage_anchor.json",
-            "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
-            "plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
-            "migration_id": "",
-            "lineage": {
-              "policy": "project_theseus_append_only_training_segment_lineage_v1",
-              "anchor": "configs/neural_seed_t1_lineage_anchor.json",
-              "ledger_directory": "reports/neural_seed_training_campaign_lineage",
-              "manifest_count": 37,
-              "head_identity": {
-                "optimizer_steps": 11416,
-                "optimizer_positions": 87441996,
-                "pretrain_optimizer_positions": 87441996,
-                "checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
-                "optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
-                "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
-                "receipt_sha256": "4ae6cf532884838da99c41674ae9ce496aaf85b3b893f1277ce923a4d8ad2c60"
-              },
-              "pre_anchor_full_chain_available": false,
-              "trigger_state": "GREEN"
-            },
-            "pre_anchor_full_chain_available": false,
-            "capability_claim": "NOT_EVALUATED",
-            "faults": [
-              "current_plan_migration_missing"
-            ]
+            "faults": []
           },
           "acceptance_observed": {},
           "faults": [
-            "source_artifacts_stale:ROADMAP.md,configs/moecot_language_arm_training.json,configs/neural_seed_training_availability.json,configs/project_manifest_registry.json,configs/roadmap_implementation_matrix.json,docs/PROJECT_STATE.md,scripts/neural_seed_training_campaign.py,scripts/roadmap_implementation_gate.py,tests/test_moecot_language_arm_training.py,tests/test_neural_seed_training_campaign.py,tests/test_pretraining_architecture_freeze.py,tests/test_roadmap_pretraining_gate.py"
+            "trigger_state_mismatch"
           ]
         },
-        "smallest_next_patch": "Bank the independently replayed T0A acceleration transaction as a coherent reviewed checkpoint with bound source/config/report/replay identities, leaving unrelated user changes outside it; committing is custody, not qualification. Then complete Phase 0 reproduction and audit and retire the superseded strict-generator/code_lm_closure family, extract live mechanisms into canonical owners, remove retired imports from active gates, archive reports through verified retention pointers, and compact roadmap evidence prose. Real signed release/custody evidence remains a separate post-checkpoint task."
+        "smallest_next_patch": "Keep the hold installed and preserve the append-only v8 consumption evidence. Review and commit the maintenance transaction, establish independent encrypted custody, and generate the source-bound replacement package exactly once from the clean commit. Do not execute D2 or create an incidental benchmark family."
       },
       {
         "phase": 1,
@@ -2431,7 +2419,7 @@
           "ready": true,
           "faults": []
         },
-        "smallest_next_patch": "Maintain the effect-complete assistant profile as a required VIEA contract and repeat the same independent observation/rollback discipline for every new side-effect class."
+        "smallest_next_patch": "Use the existing effect-complete VIEA owner for E1 and E2: join one natural allowed path, one blocked or revoked path, and one exact rollback path through intent, context, plan, route, authority, effect, observation, terminal acknowledgement, residual, and claim disposition. Add no new side-effect class or execution-spine family."
       },
       {
         "phase": 2,
@@ -2469,7 +2457,7 @@
           "ready": true,
           "faults": []
         },
-        "smallest_next_patch": "Consume the wired semantic lifecycle records in Phase 7 continual-update/deletion campaigns and Phase 10 model context paths; keep dense embedding, parametric unlearning, and public-memory capability claims separately evidence-gated."
+        "smallest_next_patch": "Use a denominator disjoint from E2 to compare a correct VCM packet with no-VCM, stale, shuffled, and declared-omission packets on natural repeated repository work. Measure actual downstream use, useful completion, failure, repair, latency, total cost, and authority preservation. Defer continual learning, deletion, embedding expansion, and public-memory claims."
       },
       {
         "phase": 4,
@@ -2513,17 +2501,15 @@
         "phase": 8,
         "title": "Resource, Cost, And Mac Acceleration Routing",
         "status": "partial",
-        "ready": false,
+        "ready": true,
         "ordinary_zero_gap_ready": false,
         "scoped_readiness_declared": true,
-        "scoped_readiness_ready": false,
+        "scoped_readiness_ready": true,
         "missing_items": [
-          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign.",
-          "Evidence-preserving compaction of superseded T0A scratch canaries remains repository-health follow-through. The selected route already derives launch disk headroom from two complete checkpoint transactions, so cleanup cannot delay or mutate the frozen campaign."
+          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
         ],
         "nonblocking_residuals": [
-          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign.",
-          "Evidence-preserving compaction of superseded T0A scratch canaries remains repository-health follow-through. The selected route already derives launch disk headroom from two complete checkpoint transactions, so cleanup cannot delay or mutate the frozen campaign."
+          "Cross-platform CUDA/Windows/Linux parity, production-serving quality, continuous multi-request batching, and system energy measurement remain Phase 8 follow-through; they do not alter the frozen M1 training campaign."
         ],
         "required_source_artifact_paths": [
           "configs/mlx_fast_sync_qualification_2026_07_27.json",
@@ -2564,21 +2550,21 @@
         "missing_source_artifact_paths": [],
         "evidence": {
           "declared": true,
-          "ready": false,
+          "ready": true,
           "path": "reports/pretraining_architecture_freeze_package.json",
           "policy": "project_theseus_pretraining_architecture_freeze_v1",
           "trigger_state": "GREEN",
           "disposition": "architecture_frozen_training_not_started",
           "source_artifact_count": 143,
-          "historical_source_artifact_drift_count": 12,
-          "historical_source_artifact_drift_accepted_after_activation": false,
+          "historical_source_artifact_drift_count": 28,
+          "historical_source_artifact_drift_accepted_after_activation": true,
           "post_activation_currentness": {
             "declared": true,
-            "ready": false,
+            "ready": true,
             "path": "configs/neural_seed_t1_lineage_anchor.json",
             "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
-            "plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
-            "migration_id": "",
+            "plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
+            "migration_id": "shared_trunk_step11416_committed_plan_digest_rebind_v1",
             "lineage": {
               "policy": "project_theseus_append_only_training_segment_lineage_v1",
               "anchor": "configs/neural_seed_t1_lineage_anchor.json",
@@ -2598,16 +2584,12 @@
             },
             "pre_anchor_full_chain_available": false,
             "capability_claim": "NOT_EVALUATED",
-            "faults": [
-              "current_plan_migration_missing"
-            ]
+            "faults": []
           },
           "acceptance_observed": {},
-          "faults": [
-            "source_artifacts_stale:ROADMAP.md,configs/moecot_language_arm_training.json,configs/neural_seed_training_availability.json,configs/project_manifest_registry.json,configs/roadmap_implementation_matrix.json,docs/PROJECT_STATE.md,scripts/neural_seed_training_campaign.py,scripts/roadmap_implementation_gate.py,tests/test_moecot_language_arm_training.py,tests/test_neural_seed_training_campaign.py,tests/test_pretraining_architecture_freeze.py,tests/test_roadmap_pretraining_gate.py"
-          ]
+          "faults": []
         },
-        "smallest_next_patch": "Keep compiled FP32 MLX authoritative. The exact native ANE decoder block is complete and not selected at 0.552679x of MLX; target-window projection is not selected because one live tensor exceeds the frozen continuity tolerance, and MLX fast synchronization is not selected because the fourth pair reverses while the host swaps despite green state parity. These are semantics/resource dispositions with no percentage hurdle. Run the sustained selected-route qualification and corrected compiled-state fresh-process amendment when the host can produce a no-swap receipt, then freeze the replacement package and continue the matched 57M campaign. Preserve whole-microbatch and matched-arm ANE concurrency as separate candidates, extend checkpoint reference accounting, and use no clock-of-day, arbitrary memory-floor, or arbitrary percentage rule."
+        "smallest_next_patch": "Measure complete E2/E3 lifecycle cost through existing resource owners and keep compiled FP32 MLX authoritative for D2. Refresh selected-route currentness at step 11,416 with the hold installed. Cross-platform parity, serving, continuous batching, energy studies, ANE, Rust rewrites, and generic acceleration are sidelined unless a terminal flagship result identifies a measured selected-route defect."
       },
       {
         "phase": 11,
@@ -2645,7 +2627,7 @@
           "ready": true,
           "faults": []
         },
-        "smallest_next_patch": "Qualify the Phase 7 admission subset of the EpistemicTCBManifest before 57.315M training authorization. Then complete strict-lane retirement and roadmap compaction after the data campaign while maintaining assurance compilation in the canonical evidence store; no green report self-authorizes trust."
+        "smallest_next_patch": "Use the canonical claim/evidence owner for E4. Preserve complete positive, negative, null, blocked, invalid, skipped, weak-tail, cost, residual, and replay evidence; issue one scoped disposition and maximum inference for every mapped claim. Do not expand proof volume, add a report family, or move a book support state automatically."
       },
       {
         "phase": 15,
@@ -2664,7 +2646,7 @@
           "ready": true,
           "faults": []
         },
-        "smallest_next_patch": "After a behavior-positive selected local model produces real governed traces, extend the canonical Loop-Closure owner from exact procedural lookup through negative-space guard synthesis, differential plus live-shadow qualification, canary SCF replacement, route-regret monitoring, and decompilation. Preserve the three current exact assets and do not create a second procedural-memory or router lane."
+        "smallest_next_patch": "Within E3, test the existing verified-procedure path against fresh execution on source-disjoint natural repeated work, including false-trigger, drift, quarantine, decompilation, rollback, retirement, and total-cost outcomes. This may support assisted procedural reuse only; learned procedural-memory claims still wait for behavior-positive D2. Create no second foundry or router lane."
       },
       {
         "phase": 18,
@@ -2683,7 +2665,7 @@
           "ready": true,
           "faults": []
         },
-        "smallest_next_patch": "Close ASI-31 on the existing local authority surfaces before routine exposure: request-local false-by-default teacher/network authority, mutation auth, Origin/CSRF/JSON/body/rate/concurrency controls, tokened non-wildcard-CORS OpenAI defaults, loopback signed-discovery header-only Hive credentials, worker and untrusted-code isolation, fixed safety-grade floors, attempted-transmission accounting, and adversarial denials. This security repair may run beside KERC and does not create a product lane."
+        "smallest_next_patch": "Use the completed local authority package in E1/E2 natural allowed, denied, revoked, confused-deputy, partial-failure, and rollback paths. Measure useful release, unsafe release, false block, fair rescue, containment, rollback completeness, and lifecycle cost. Keep remote execution fail-closed and every service loopback-only; do not turn local tests into an exposure claim."
       },
       {
         "phase": 19,
@@ -2702,7 +2684,7 @@
           "ready": true,
           "faults": []
         },
-        "smallest_next_patch": "Keep the historical 54-row pin authoritative while ASI-00 reconciles committed book revision df0b675230c73e1a749f7d48f3263d126023f692 and its 84 chapters in one reviewed transaction. Map the 30 missing IDs into existing capability fields with one disposition, maturity/evidence/route state, activation gate, tests, residuals, and non-claims; create no new registry or automatic runtime/support-state effect. This intake is nonblocking unless it exposes a concrete campaign correctness or evaluator-integrity defect."
+        "smallest_next_patch": "Keep the reviewed historical pin authoritative and bind only the ten selected flagship claim IDs to E0-E4 and N0-N4. Defer full live-manifest reconciliation, chapter expansion, prose rewriting, theorem growth, reader derivatives, and publication packaging. After each terminal result, return a public-safe exact claim disposition for book-side review; grant no automatic support-state effect."
       }
     ],
     "training_or_behavior_qualification_phase_ids": [
@@ -2739,7 +2721,8 @@
       "implemented",
       "pretraining_wired_behavior_qualification_pending",
       "qualified",
-      "retired_by_pretraining_verdict"
+      "retired_by_pretraining_verdict",
+      "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate"
     ],
     "required_backlog_contracts": [
       {
@@ -3001,7 +2984,7 @@
       },
       {
         "backlog_id": "planned.reflexive_router_integration_v1",
-        "status": "pretraining_wired_behavior_qualification_pending",
+        "status": "terminal_E3_mechanics_green_efficacy_inconclusive_worker_inadequate",
         "ready": true,
         "pre_training_acceptance_boundary_present": true,
         "evidence": {
@@ -3039,21 +3022,21 @@
     "training_authority_state": "denied_until_finite_docket_and_freeze_package_are_green",
     "architecture_freeze_package": {
       "declared": true,
-      "ready": false,
+      "ready": true,
       "path": "reports/pretraining_architecture_freeze_package.json",
       "policy": "project_theseus_pretraining_architecture_freeze_v1",
       "trigger_state": "GREEN",
       "disposition": "architecture_frozen_training_not_started",
       "source_artifact_count": 143,
-      "historical_source_artifact_drift_count": 12,
-      "historical_source_artifact_drift_accepted_after_activation": false,
+      "historical_source_artifact_drift_count": 28,
+      "historical_source_artifact_drift_accepted_after_activation": true,
       "post_activation_currentness": {
         "declared": true,
-        "ready": false,
+        "ready": true,
         "path": "configs/neural_seed_t1_lineage_anchor.json",
         "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
-        "plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
-        "migration_id": "",
+        "plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
+        "migration_id": "shared_trunk_step11416_committed_plan_digest_rebind_v1",
         "lineage": {
           "policy": "project_theseus_append_only_training_segment_lineage_v1",
           "anchor": "configs/neural_seed_t1_lineage_anchor.json",
@@ -3073,14 +3056,10 @@
         },
         "pre_anchor_full_chain_available": false,
         "capability_claim": "NOT_EVALUATED",
-        "faults": [
-          "current_plan_migration_missing"
-        ]
+        "faults": []
       },
       "acceptance_observed": {},
-      "faults": [
-        "source_artifacts_stale:ROADMAP.md,configs/moecot_language_arm_training.json,configs/neural_seed_training_availability.json,configs/project_manifest_registry.json,configs/roadmap_implementation_matrix.json,docs/PROJECT_STATE.md,scripts/neural_seed_training_campaign.py,scripts/roadmap_implementation_gate.py,tests/test_moecot_language_arm_training.py,tests/test_neural_seed_training_campaign.py,tests/test_pretraining_architecture_freeze.py,tests/test_roadmap_pretraining_gate.py"
-      ]
+      "faults": []
     },
     "deferred_unfinished_phases": [
       {
@@ -3142,57 +3121,8 @@
     },
     "blockers": [
       {
-        "kind": "architecture_freeze_package_not_ready",
-        "evidence": {
-          "declared": true,
-          "ready": false,
-          "path": "reports/pretraining_architecture_freeze_package.json",
-          "policy": "project_theseus_pretraining_architecture_freeze_v1",
-          "trigger_state": "GREEN",
-          "disposition": "architecture_frozen_training_not_started",
-          "source_artifact_count": 143,
-          "historical_source_artifact_drift_count": 12,
-          "historical_source_artifact_drift_accepted_after_activation": false,
-          "post_activation_currentness": {
-            "declared": true,
-            "ready": false,
-            "path": "configs/neural_seed_t1_lineage_anchor.json",
-            "policy": "project_theseus_t1_prospective_lineage_anchor_v1",
-            "plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
-            "migration_id": "",
-            "lineage": {
-              "policy": "project_theseus_append_only_training_segment_lineage_v1",
-              "anchor": "configs/neural_seed_t1_lineage_anchor.json",
-              "ledger_directory": "reports/neural_seed_training_campaign_lineage",
-              "manifest_count": 37,
-              "head_identity": {
-                "optimizer_steps": 11416,
-                "optimizer_positions": 87441996,
-                "pretrain_optimizer_positions": 87441996,
-                "checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
-                "optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
-                "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
-                "receipt_sha256": "4ae6cf532884838da99c41674ae9ce496aaf85b3b893f1277ce923a4d8ad2c60"
-              },
-              "pre_anchor_full_chain_available": false,
-              "trigger_state": "GREEN"
-            },
-            "pre_anchor_full_chain_available": false,
-            "capability_claim": "NOT_EVALUATED",
-            "faults": [
-              "current_plan_migration_missing"
-            ]
-          },
-          "acceptance_observed": {},
-          "faults": [
-            "source_artifacts_stale:ROADMAP.md,configs/moecot_language_arm_training.json,configs/neural_seed_training_availability.json,configs/project_manifest_registry.json,configs/roadmap_implementation_matrix.json,docs/PROJECT_STATE.md,scripts/neural_seed_training_campaign.py,scripts/roadmap_implementation_gate.py,tests/test_moecot_language_arm_training.py,tests/test_neural_seed_training_campaign.py,tests/test_pretraining_architecture_freeze.py,tests/test_roadmap_pretraining_gate.py"
-          ]
-        },
-        "required_action": "Build and independently replay the exact content-addressed architecture package before authorizing long training."
-      },
-      {
         "kind": "unfinished_architecture_prerequisite_phases",
-        "count": 2,
+        "count": 1,
         "phases": [
           {
             "phase": 0,
@@ -3200,15 +3130,7 @@
             "status": "partial",
             "missing_item_count": 2,
             "missing_source_artifact_paths": [],
-            "smallest_next_patch": "Bank the independently replayed T0A acceleration transaction as a coherent reviewed checkpoint with bound source/config/report/replay identities, leaving unrelated user changes outside it; committing is custody, not qualification. Then complete Phase 0 reproduction and audit and retire the superseded strict-generator/code_lm_closure family, extract live mechanisms into canonical owners, remove retired imports from active gates, archive reports through verified retention pointers, and compact roadmap evidence prose. Real signed release/custody evidence remains a separate post-checkpoint task."
-          },
-          {
-            "phase": 8,
-            "title": "Resource, Cost, And Mac Acceleration Routing",
-            "status": "partial",
-            "missing_item_count": 2,
-            "missing_source_artifact_paths": [],
-            "smallest_next_patch": "Keep compiled FP32 MLX authoritative. The exact native ANE decoder block is complete and not selected at 0.552679x of MLX; target-window projection is not selected because one live tensor exceeds the frozen continuity tolerance, and MLX fast synchronization is not selected because the fourth pair reverses while the host swaps despite green state parity. These are semantics/resource dispositions with no percentage hurdle. Run the sustained selected-route qualification and corrected compiled-state fresh-process amendment when the host can produce a no-swap receipt, then freeze the replacement package and continue the matched 57M campaign. Preserve whole-microbatch and matched-arm ANE concurrency as separate candidates, extend checkpoint reference accounting, and use no clock-of-day, arbitrary memory-floor, or arbitrary percentage rule."
+            "smallest_next_patch": "Keep the hold installed and preserve the append-only v8 consumption evidence. Review and commit the maintenance transaction, establish independent encrypted custody, and generate the source-bound replacement package exactly once from the clean commit. Do not execute D2 or create an incidental benchmark family."
           }
         ],
         "required_action": "Complete or explicitly external-freeze every architecture prerequisite before making training the primary roadmap focus."
@@ -3276,7 +3198,7 @@
       "kind": "architecture_not_ready_for_training",
       "severity": "hard",
       "evidence": {
-        "blocker_count": 2,
+        "blocker_count": 1,
         "ready": false,
         "rule": "complete book-derived architecture slices before training, public calibration, or score-chasing"
       }

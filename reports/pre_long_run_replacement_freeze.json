@@ -1,9 +1,9 @@
 {
   "authority_manifest": {
     "acceleration_residual_audit": {
-      "bytes": 18278,
+      "bytes": 18279,
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "f30382b08cd211a4376d308ac2794d5953a11ef27c5f0318d5dd914d78c2ddb6"
+      "sha256": "4264c02887c90484a1f7c1f88352414f92e45d2cfe32502136d0f886d9e35f9f"
     },
     "candidate_contract": {
       "bytes": 40694,
@@ -11,9 +11,9 @@
       "sha256": "255803b4a017bf84b2829a1e26a4cc9db5370ed5caff320c740d5c213740c180"
     },
     "config": {
-      "bytes": 3137,
+      "bytes": 4559,
       "path": "configs/pre_long_run_replacement_freeze.json",
-      "sha256": "7809170c6a8a80c13e4d36797d677ccb14fa9596300848e1665f1442d8d2854a"
+      "sha256": "ec2f4e60d9df6f6773940654549afe1839168120e7cf3558b15df0e1f2d925a3"
     },
     "factorized_bakeoff": {
       "bytes": 5587,
@@ -26,24 +26,24 @@
       "sha256": "2af66e41c2b8ee4270971b69b0c9481429187b405737ca1fc5d5a501f939d382"
     },
     "functional_freeze": {
-      "bytes": 4335,
+      "bytes": 4096,
       "path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "sha256": "0cbf3fb16baa40ed12cb50eace5fe63d3ef417ec9ae93d103562d1961c0e758a"
+      "sha256": "c3875bb3b8d286038c109659e073acdb30f573fa1907ffa6d63cbdf5c29522cd"
     },
     "independent_readiness_audit": {
-      "bytes": 58249,
+      "bytes": 60855,
       "path": "reports/pre_long_run_independent_readiness_audit.json",
-      "sha256": "6206828ca1b8eac638a5de00e7710908c8688525612f0fc884792c0afe9c5a1e"
+      "sha256": "45df100b23aba4a48931f551350d091b27842e5573f5089b57b688cf6afa479e"
     },
     "pre_long_run_review": {
-      "bytes": 16070,
+      "bytes": 16430,
       "path": "configs/neural_seed_pre_long_run_review.json",
-      "sha256": "c7bd59a5c2323ee8421bcbff1356a1f1b9fd5ca0ca75785e140b28861d41cc2f"
+      "sha256": "7abca750c0e85f4413548c8c0bc51689e4136dfa954d9e1392c67e8f9a959553"
     },
     "production_trainer_config": {
-      "bytes": 140653,
+      "bytes": 142712,
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "3e124d4087af0002ebee23d368ddbce4067100d525154917d57541803368f56f"
+      "sha256": "334428e567a7c10173f793b5e10cdd55eb5861af8146554caf47b32c2d0b7eee"
     },
     "yield_control": {
       "bytes": 77,
@@ -1885,17 +1885,35 @@
       }
     }
   },
-  "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD",
-  "failed_gates": [],
+  "decision": "BLOCK_RESUME_AND_REQUIRE_REPAIR_OR_NEW_LINEAGE",
+  "failed_gates": [
+    "source_binding"
+  ],
   "functional_surface": {
     "capability_claim": "NOT_EVALUATED",
     "case_count": 160,
     "consumed_case_count": 0,
     "evaluation_state": "NOT_EVALUATED",
     "freeze": {
-      "bytes": 4335,
+      "bytes": 4096,
       "path": "configs/neural_seed_57m_functional_utility_freeze.json",
-      "sha256": "0cbf3fb16baa40ed12cb50eace5fe63d3ef417ec9ae93d103562d1961c0e758a"
+      "sha256": "c3875bb3b8d286038c109659e073acdb30f573fa1907ffa6d63cbdf5c29522cd"
+    },
+    "integrity": {
+      "current_case_contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+      "disposition": "The exact and normalized model-visible prompt rows are fresh against the consumed v8 packet. D2 remains sealed until a separate machine-predicate one-shot evaluation controller passes; no user or operator approval is required.",
+      "equivalence_basis": {
+        "exact_prompt_overlap_count": 0,
+        "historical_contract_consumed": true,
+        "historical_packet_content_addressed": true,
+        "independent_readiness_audit_recomputes_current_contract": true,
+        "normalized_prompt_overlap_count": 0,
+        "task_family_reuse_is_not_exact_surface_reuse": true
+      },
+      "equivalent_consumed_case_contract_sha256s": [],
+      "evaluation_authorized": false,
+      "fresh_surface": true,
+      "state": "VALID_FRESH_PRIVATE_SURFACE"
     },
     "matching_registry_lines": [],
     "registry": {
@@ -1932,10 +1950,59 @@
       "matching_consumption_registry_lines": [],
       "passed": true
     },
-    "operator_hold": {
-      "hold_present": true,
-      "hold_removed": false,
-      "passed": true
+    "functional_surface_freshness": {
+      "current_case_contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+      "disposition": "The exact and normalized model-visible prompt rows are fresh against the consumed v8 packet. D2 remains sealed until a separate machine-predicate one-shot evaluation controller passes; no user or operator approval is required.",
+      "equivalence_basis": {
+        "exact_prompt_overlap_count": 0,
+        "historical_contract_consumed": true,
+        "historical_packet_content_addressed": true,
+        "independent_readiness_audit_recomputes_current_contract": true,
+        "normalized_prompt_overlap_count": 0,
+        "task_family_reuse_is_not_exact_surface_reuse": true
+      },
+      "equivalent_consumed_case_contract_sha256s": [],
+      "evaluation_authorized": false,
+      "fresh_surface": true,
+      "independent_recomputation": {
+        "current": {
+          "case_count": 160,
+          "config": "configs/neural_seed_functional_utility.json",
+          "config_sha256": "a8d14f0311d3f343eb4a2f785623ec34b886d59aab5d690c5210495b04705442",
+          "consumption_registry_lines": [],
+          "contract_sha256": "d48875c5acdb883ef8dfc251914109186c21ff9d07eaf6c06b9b00927ca1c676",
+          "model_visible_sha256": "03a6121c9b253c9621e295294ec80f8f78122dfe14882c2acd18ae4fceef1a9e"
+        },
+        "exact_prompt_overlaps": [],
+        "faults": [],
+        "freshness_scope": "Exact and whitespace/case-normalized model-visible prompts against content-addressed, consumed historical candidate packets. Reuse of task families is not treated as reuse of an exact measurement surface.",
+        "historical_packets": [
+          {
+            "consumption_registry_lines": [
+              1,
+              3,
+              5,
+              7,
+              9,
+              11,
+              15,
+              17,
+              19
+            ],
+            "contract_sha256": "d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792",
+            "model_visible_sha256": "a6d5e82a86f24d259d315a9db0e7970536eec76bde48f45a3090d49fdc5dfc40",
+            "path": "configs/evaluation_history/neural_seed_v8_candidate_packet.json",
+            "row_count": 160,
+            "sha256": "83ac6d3ad447cc04bba708a87881792622683775e2e3f13d93319c4362f5670c"
+          }
+        ],
+        "normalized_prompt_overlaps": [],
+        "passed": true,
+        "state": "VALID_FRESH_PRIVATE_SURFACE"
+      },
+      "matching_consumption_registry_lines": [],
+      "passed": true,
+      "state": "VALID_FRESH_PRIVATE_SURFACE"
     },
     "prospective_lineage": {
       "passed": true
@@ -1946,24 +2013,74 @@
       "production_wall_deadline_seconds": 0
     },
     "semantic_plan_resume": {
-      "current_plan_sha256": "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d",
+      "current_plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
       "migration": {
-        "current_plan_sha256": "5d5b77e5d47814e9c3e8a8842b6f20966668d8d9f483f3584561fc550f196b1d",
-        "evidence": "reports/pre_long_run_acceleration_residual_audit.json reports/pre_long_run_independent_readiness_audit.json reports/per_head_muon_qualification.json reports/kimi_k3_attnres_qualification.json reports/kimi_k3_situ_glu_qualification.json reports/fused_qkv_full_route_qualification.json configs/neural_seed_pre_long_run_review.json",
+        "current_plan_sha256": "8f1af969a552cdbd83171e50a2424d88ee06d1140a811758ac1f7c6b756cdf0e",
+        "evidence": "configs/moecot_language_arm_training.json configs/neural_seed_t1_lineage_anchor.json reports/neural_seed_training_campaign_lineage reports/pre_long_run_independent_readiness_audit.json tests/test_moecot_language_arm_training.py tests/test_roadmap_pretraining_gate.py",
         "legacy_checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
         "legacy_optimizer_positions": 87441996,
         "legacy_optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
         "legacy_optimizer_steps": 11416,
         "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
         "legacy_scale_report_sha256": null,
-        "migration_id": "shared_trunk_step11416_finite_candidate_and_guard_closure_v1",
+        "migration_id": "shared_trunk_step11416_committed_plan_digest_rebind_v1",
         "policy": "project_theseus_semantic_training_plan_identity_v3",
-        "reason": "Continue the exact step-11416 FP32 model, AdamW state, MLX RNG, sampler cursor, data order, objective mass, learning-rate schedule, and immutable functional surface after the finite pre-long-run review. The implementation closure gained isolated, default-off Per-Head Muon, Attention Residual, SiTU-GLU, and fused-QKV candidate paths plus their matched qualification owners; every challenger was not selected and the production route remains compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, and sequential unscaled residuals. The candidate contract also removes fixed available-memory reserves and uses predicted exhaustion with process limits and report-only swap telemetry; this changes only candidate/resource governance, not training math. Independent audits re-hash the exact live state, all 37 prospective lineage manifests, replay reports, frozen evaluation nonconsumption, scoped negatives, and the operator hold. No production model topology, active operation, tensor, optimizer byte, RNG byte, data row/order/cursor, objective mass, schedule, evaluation contract, or capability state changes.",
+        "reason": "Rebind the exact immutable step-11416 receipt to the plan digest deterministically recomputed from the committed semantic training contract, implementation closure, stage signature, model accounting, and admitted training artifacts. The earlier 5d5b77e5 migration target is retained as historical intent but is not the digest produced by the committed closure. This repair changes no model topology, active operation, tensor, checkpoint byte, optimizer byte, RNG byte, sampler cursor, data row or order, objective mass, schedule, evaluation contract, capability state, or training authority; the transactional safety hold remains active until the autonomous controller acquires its one-shot lease.",
         "reset_data_cursor_phase": null,
         "reset_data_cursor_seed": null
       },
       "passed": true,
       "receipt_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea"
+    },
+    "source_binding": {
+      "final_generation_rule": "The source-bound replacement package may be finalized exactly once only from a clean post-maintenance commit.",
+      "passed": false,
+      "source_state": {
+        "branch": "main",
+        "clean_at_generation": false,
+        "commit": "ae6d03ccfaac6d99d94df8085b5be181119e9ec4",
+        "dirty_path_count": 33,
+        "dirty_paths": [
+          " M configs/core_evidence_local_8b_campaign.json",
+          " M configs/core_evidence_subsystem_adequacy.json",
+          " M configs/moecot_language_arm_training.json",
+          " M configs/neural_seed_pre_long_run_review.json",
+          " M configs/pre_long_run_independent_readiness_audit.json",
+          " M configs/pre_long_run_replacement_freeze.json",
+          " M configs/pretraining_architecture_freeze.json",
+          " M configs/project_manifest_registry.json",
+          " M docs/CORE_EVIDENCE_BRIEF.md",
+          " M docs/REAL_TRAINING_PREFLIGHT.md",
+          " M reports/core_evidence_subsystem_adequacy_inventory.json",
+          " M reports/pre_long_run_acceleration_residual_audit.json",
+          " M reports/pre_long_run_independent_readiness_audit.json",
+          " M reports/pre_long_run_replacement_freeze.json",
+          " M reports/procedural_memory_route_adoption.json",
+          " M reports/roadmap_pre_training_architecture_readiness_gate.json",
+          " M reports/roadmap_pre_training_architecture_readiness_gate.md",
+          " M reports/theseus_p4s_campaign_attempt2_progress.json",
+          " M scripts/core_evidence_subsystem_adequacy_inventory.py",
+          " M scripts/macos_metal_production_route_readiness.py",
+          " M scripts/neural_seed_functional_generate.py",
+          " M scripts/neural_seed_functional_utility.py",
+          " M scripts/pre_long_run_independent_readiness_audit.py",
+          " M scripts/pre_long_run_replacement_freeze.py",
+          " M scripts/theseus_project_registry.py",
+          " M tests/test_core_evidence_subsystem_adequacy_inventory.py",
+          " M tests/test_neural_seed_functional_utility.py",
+          " M tests/test_neural_seed_functional_verifiers.py",
+          " M tests/test_pre_long_run_independent_readiness_audit.py",
+          " M tests/test_pre_long_run_replacement_freeze.py",
+          " M tests/test_pretraining_architecture_freeze.py",
+          " M tests/test_project_registry_route_evidence.py",
+          " M tests/test_roadmap_pretraining_gate.py"
+        ]
+      }
+    },
+    "transactional_hold": {
+      "hold_present": true,
+      "hold_removed": false,
+      "passed": true
     }
   },
   "missing_gates": [],
@@ -1971,9 +2088,9 @@
     "This package does not prove physical performance optimality.",
     "This package does not evaluate model capability or utility.",
     "Scoped candidate dispositions are not broad scientific falsifications.",
-    "This package does not remove the operator hold or start long training."
+    "This package does not lease the transactional hold or start long training."
   ],
-  "package_identity": "sha256:957eef550046e66d3ced190e25e2dd747bd0f3af40057e1b89bca44157b0e914",
+  "package_identity": "sha256:53692a58e67fe4e434f864180f35bff3c567d20c4b17077cbfabca7322876a5d",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",
@@ -1981,20 +2098,22 @@
     "checkpoint_custody",
     "prospective_lineage",
     "functional_surface",
+    "functional_surface_freshness",
     "architecture_selection",
     "candidate_dispositions",
     "resource_policy",
-    "operator_hold"
+    "source_binding",
+    "transactional_hold"
   ],
   "resume_authority": {
-    "authorized_state": "EXACT_STEP_11416_UNCHANGED_AFTER_OPERATOR_REMOVES_HOLD",
+    "authorized_state": "NONE",
     "incompatible_state_policy": "Any model topology, tensor, optimizer, RNG, cursor, data, objective, schedule, or evaluation mismatch requires a new content-addressed lineage; no state reinterpretation.",
     "long_training_authorized_now": false,
     "long_training_started_or_resumed": false,
-    "operator_hold_present": true,
-    "operator_hold_removed_by_package": false
+    "transactional_hold_present": true,
+    "transactional_hold_removed_by_package": false
   },
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "selected_architecture": {
     "execution_recipe": {
       "compile_width_quantum": 64,
@@ -2020,16 +2139,99 @@
       "surface_codec": "impl.t0a.fixed_open_vocab_codec.v1"
     }
   },
+  "source_artifacts": {
+    "configs/pre_long_run_independent_readiness_audit.json": {
+      "bytes": 3550,
+      "path": "configs/pre_long_run_independent_readiness_audit.json",
+      "sha256": "2d1a99faeb84c4f2113c004e0535602d562086821e2893ed3ac279399c6d89a2"
+    },
+    "configs/pre_long_run_replacement_freeze.json": {
+      "bytes": 4559,
+      "path": "configs/pre_long_run_replacement_freeze.json",
+      "sha256": "ec2f4e60d9df6f6773940654549afe1839168120e7cf3558b15df0e1f2d925a3"
+    },
+    "configs/project_manifest_registry.json": {
+      "bytes": 548106,
+      "path": "configs/project_manifest_registry.json",
+      "sha256": "d90035dee285a95c4b99aa2292051eca0dbd3fa9774dc659694502031c431b0a"
+    },
+    "configs/roadmap_implementation_matrix.json": {
+      "bytes": 1677808,
+      "path": "configs/roadmap_implementation_matrix.json",
+      "sha256": "215504529a4193ecf89532bb9d118cd824c3b34702b2b208b5f66774cc66013c"
+    },
+    "scripts/pre_long_run_independent_readiness_audit.py": {
+      "bytes": 29147,
+      "path": "scripts/pre_long_run_independent_readiness_audit.py",
+      "sha256": "7a5c66ade88e18a441fada180408af25e75a54aa0e70be05b2488b63b161bdb8"
+    },
+    "scripts/pre_long_run_replacement_freeze.py": {
+      "bytes": 27772,
+      "path": "scripts/pre_long_run_replacement_freeze.py",
+      "sha256": "b97c93eecb27ae7a1f2d724136d577ae555161fe1fa08b5541679290c1ddbaac"
+    },
+    "tests/test_pre_long_run_independent_readiness_audit.py": {
+      "bytes": 6501,
+      "path": "tests/test_pre_long_run_independent_readiness_audit.py",
+      "sha256": "5ea2c134f6b435ff897a6fd4bfc653c572b2417366488b0a4840db15d008c2be"
+    },
+    "tests/test_pre_long_run_replacement_freeze.py": {
+      "bytes": 5385,
+      "path": "tests/test_pre_long_run_replacement_freeze.py",
+      "sha256": "d050ab5ce8f4ae7251781053e8a06f7dc97eb72d9dc94736f8f3162a33101ca9"
+    }
+  },
+  "source_binding": {
+    "branch": "main",
+    "clean_at_generation": false,
+    "commit": "ae6d03ccfaac6d99d94df8085b5be181119e9ec4",
+    "dirty_path_count": 33,
+    "dirty_paths": [
+      " M configs/core_evidence_local_8b_campaign.json",
+      " M configs/core_evidence_subsystem_adequacy.json",
+      " M configs/moecot_language_arm_training.json",
+      " M configs/neural_seed_pre_long_run_review.json",
+      " M configs/pre_long_run_independent_readiness_audit.json",
+      " M configs/pre_long_run_replacement_freeze.json",
+      " M configs/pretraining_architecture_freeze.json",
+      " M configs/project_manifest_registry.json",
+      " M docs/CORE_EVIDENCE_BRIEF.md",
+      " M docs/REAL_TRAINING_PREFLIGHT.md",
+      " M reports/core_evidence_subsystem_adequacy_inventory.json",
+      " M reports/pre_long_run_acceleration_residual_audit.json",
+      " M reports/pre_long_run_independent_readiness_audit.json",
+      " M reports/pre_long_run_replacement_freeze.json",
+      " M reports/procedural_memory_route_adoption.json",
+      " M reports/roadmap_pre_training_architecture_readiness_gate.json",
+      " M reports/roadmap_pre_training_architecture_readiness_gate.md",
+      " M reports/theseus_p4s_campaign_attempt2_progress.json",
+      " M scripts/core_evidence_subsystem_adequacy_inventory.py",
+      " M scripts/macos_metal_production_route_readiness.py",
+      " M scripts/neural_seed_functional_generate.py",
+      " M scripts/neural_seed_functional_utility.py",
+      " M scripts/pre_long_run_independent_readiness_audit.py",
+      " M scripts/pre_long_run_replacement_freeze.py",
+      " M scripts/theseus_project_registry.py",
+      " M tests/test_core_evidence_subsystem_adequacy_inventory.py",
+      " M tests/test_neural_seed_functional_utility.py",
+      " M tests/test_neural_seed_functional_verifiers.py",
+      " M tests/test_pre_long_run_independent_readiness_audit.py",
+      " M tests/test_pre_long_run_replacement_freeze.py",
+      " M tests/test_pretraining_architecture_freeze.py",
+      " M tests/test_project_registry_route_evidence.py",
+      " M tests/test_roadmap_pretraining_gate.py"
+    ]
+  },
   "supersession": {
     "historical_package_does_not_authorize_current_resume": true,
     "historical_package_remains_valid_for_its_exact_past_transaction": true,
-    "reason": "The historical package binds step 3480. This replacement binds the exact held step-11416 state, prospective lineage, completed finite candidates, current acceleration selection, independent audits, and unconsumed functional surface.",
+    "reason": "The historical package binds step 3480. This replacement binds the exact held step-11416 state, prospective lineage, completed finite candidates, current acceleration selection, independent audits, functional-surface integrity, and the source commit. Final publication is valid only when the source-binding gate records a clean post-maintenance tree.",
     "superseded_package": {
       "bytes": 263149,
       "path": "reports/pretraining_architecture_freeze_package.json",
       "sha256": "966590a47b3e85c2d86299f15d5177b2ae6233a8eed04b72b2f18f99627a8c30"
     }
   },
-  "support_state": "SUPPORTED_CONTENT_ADDRESSED_REPLACEMENT_FREEZE",
-  "trigger_state": "GREEN"
+  "support_state": "UNSUPPORTED_FREEZE_GATE_FAULT",
+  "trigger_state": "RED"
 }
