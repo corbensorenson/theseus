@@ -33,7 +33,14 @@
     "arbitrary_remote_execution_allowed": false,
     "raw_private_user_text_training_default": false,
     "candidate_integrity_independent_audit_required": true,
-    "vcm_public_calibration_taint_excluded_from_training": true
+    "vcm_public_calibration_taint_excluded_from_training": true,
+    "project_selected_generated_token_quality_caps_allowed": false,
+    "normal_learned_generation_completion": [
+      "parser_or_declared_artifact_complete",
+      "model_eos"
+    ],
+    "numeric_generation_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
+    "physical_or_request_boundary_hit_disposition": "invalidate_observation_never_score_as_model_candidate_mechanism_evaluator_or_architecture_failure"
   },
   "execution_order": [
     "T0_preflight_freeze",
@@ -519,6 +526,7 @@
   "next_concrete_sequence": [
     "Preserve the immutable v8 data, tokenizer, seed, supervision, development, confirmation, and verifier contract.",
     "Finish the in-flight T3 active-parameter dense control, then the total-parameter dense control through transactional checkpoints.",
+    "Before any fresh T4 or T5 learned-generation observation, migrate every active candidate, repair, rater, judge, adjudicator, assistant, worker, resident-runtime, and local-compatibility path from project token ceilings to exact context-residual completion telemetry; preserve consumed capped instruments as immutable non-propagating evidence.",
     "Run T4 direct per-language evaluation for both controls and publish MoECOT-versus-dense results under both preregistered accounting views.",
     "Select the practical architecture from the frozen Pareto verdict; do not tune from interim or aggregate-only results.",
     "Spend each confirmation split once on the selected unchanged implementation and execute a registry replacement transaction only if it qualifies.",

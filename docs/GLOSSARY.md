@@ -180,6 +180,22 @@ Whether an experiment faithfully implements the mechanism, learns, uses strong
 matched controls, has sufficient diversity/seeds/power, and uses independent
 heldouts and evaluators.
 
+**Natural generation completion**
+Generation ends when the declared artifact or parser says the output is
+complete, or when the model emits EOS. A project-selected generated-token count
+is not a competence boundary.
+
+**Model context residual**
+The pinned model's declared context window minus the exact encoded prompt. It is
+a physical addressability boundary, not an allocated answer budget. Reaching it
+invalidates the affected observation and is never a model, mechanism, candidate,
+or evaluator failure.
+
+**Request-constrained completion**
+A caller may explicitly request a shorter answer. If that boundary truncates the
+artifact, the result describes compliance with the request constraint; it cannot
+be used as negative capability evidence.
+
 ## State Labels
 
 **`CUSTODY_GREEN`**
@@ -189,8 +205,8 @@ Exact state and lineage are preserved and replayable. No capability is implied.
 No new long training segment may launch.
 
 **`TRAINING_READY`**
-Every current launch gate passes for one exact route. Operator approval is
-still required.
+Every current launch gate passes for one exact route. The registered autonomous
+controller may lease one exact transaction without a user or operator gate.
 
 **`NOT_EVALUATED`**
 The capability surface has not been consumed.

@@ -267,6 +267,21 @@ model load, four parser-complete calls, and zero physical-boundary hits. These
 are mechanics-only results. They open a fresh source-disjoint P4 decision
 denominator, not D1, book support, training use, or serving authority.
 
+The no-arbitrary-generation-cap contract is not yet universal. P4R/P4S and the
+frozen D2 candidate and local-rater paths use artifact completion or EOS with
+the exact model context residual as their only numeric token boundary. The live
+assistant default still declares 512 product tokens; the current TMax action
+worker declares 1,536 action tokens; the disabled resident OpenAI-compatible
+route declares 128 tokens; and the resident neural runtime retains 32-token API
+defaults plus an 8-token mechanics qualification. These are migration debt, not
+acceptable successor quality boundaries. They must not be silently widened or
+used for a negative claim. After P4S seals, the canonical runtime migration must
+replace them with exact prompt-token accounting, parser/artifact completion or
+EOS, full termination telemetry, and invalid-observation treatment whenever a
+physical or caller-requested boundary truncates an answer. Historical consumed
+instruments and bounded mechanics tests remain immutable and explicitly
+non-propagating.
+
 Historical L0 evidence remains preserved:
 
 - L0-001 is infrastructure-blocked and exposed missing partial-candidate

@@ -1118,6 +1118,24 @@ physical safety boundary only; reaching it invalidates the observation and can
 never be scored as model, mechanism, candidate, or evaluator failure. Token use,
 latency, and cost remain measured outcomes rather than output scissors.
 
+This contract is implemented for P4R/P4S and the frozen D2 candidate and local
+judge paths, but it is not yet universal. The current local assistant default
+still carries a 512-token product ceiling, the TMax action worker carries a
+1,536-token action ceiling, and the disabled resident OpenAI-compatible route
+defaults to 128 tokens while the resident neural runtime exposes 32-token API
+defaults and an 8-token mechanics qualification. These values may remain in
+immutable consumed evidence and small mechanics tests, but none may propagate
+into a successor serving, repair, ranking, or capability-measurement route.
+After the live P4S campaign seals, migrate the canonical assistant backend,
+worker, resident runtime, and local compatibility shim to exact prompt
+tokenization plus model-declared context residual, parser/artifact completion or
+EOS, explicit termination telemetry, and invalid-observation handling at any
+physical or request-supplied boundary. A caller-requested shorter response is a
+request constraint, not evidence about model competence. Training-corpus token
+counts, optimizer positions, finite call counts, effect limits, and verifier
+safety windows remain legitimate resource or causal budgets; if one can truncate
+the behavior under evaluation, its activation invalidates that observation.
+
 Missing preauthorization is a terminal machine-policy wall. External
 publication, destructive deletion, account spending outside a predeclared
 budget, or mutation of a third-party system stays out of scope; the program

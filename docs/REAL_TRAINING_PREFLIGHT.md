@@ -82,7 +82,11 @@ Before every launch, verify:
    - semantic case identity, not only the wrapper/freeze digest, has no match in
      any prior consumption record;
    - no unchanged deterministic generator/input pair is relabeled fresh;
-   - forbidden-field runtime enforcement and independent integrity checks pass.
+   - forbidden-field runtime enforcement and independent integrity checks pass;
+   - learned generation, repair, rating, judging, and adjudication have no
+     project-selected generated-token quality cap;
+   - completion is parser/artifact complete or model EOS after exact prompt
+     tokenization, and model-context exhaustion invalidates the observation.
 7. **Resources**
    - disk reserve is derived from two complete measured checkpoint
      transactions;
