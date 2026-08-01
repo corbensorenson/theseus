@@ -52,3 +52,12 @@ def test_r1_is_scoped_to_non_claim_transport_repair() -> None:
     assert canary.POLICY.endswith("canary_r1_v1")
     assert "bound-skeleton repair" in canary.__doc__.lower()
     assert canary.MODEL_CONTEXT_TOKENS == 262144
+
+
+def test_frozen_r1_config_audits_green() -> None:
+    report = canary.audit_config(
+        ROOT / "configs" / "theseus_p4r_intervention_locality_canary_r1.json"
+    )
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["faults"] == []
