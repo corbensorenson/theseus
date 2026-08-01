@@ -1,0 +1,16 @@
+{
+  "config_sha256": "68d7b5131e66b1f32d57eef5d0191f82e81e4131f8e0a697d691d9ae1da0f941",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T07:28:17.863804Z",
+  "faults": [],
+  "policy": "project_theseus_p4r_semantic_ir_v2_canary_audit_v1",
+  "trigger_state": "GREEN"
+}

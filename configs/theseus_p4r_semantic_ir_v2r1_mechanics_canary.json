@@ -1,0 +1,90 @@
+{
+  "policy": "project_theseus_p4r_semantic_ir_v2_mechanics_canary_config_v1",
+  "state": "FROZEN_BEFORE_LEARNED_MECHANICS_CALLS",
+  "purpose": "Apply one bounded prompt/header transport repair to the three failed non-claim Semantic-IR v2 mechanics cases without changing their source, requests, obligations, hidden expected sources, or pass rule.",
+  "predecessor_failed_canary": "reports/theseus_p4r_semantic_ir_v2_mechanics_canary.json",
+  "predecessor_failed_canary_sha256": "b6e8bc6f76468a91bafc45872dbe680438f53e22128f95d0c54a885b8796fdd8",
+  "observed_failure_before_repair": {
+    "parse_and_lower": "0/3",
+    "verified": "0/3",
+    "version_header_omitted": "3/3",
+    "wrong_insert_operation_after_header_normalization": "2/3",
+    "physical_context_boundary_hits": 0
+  },
+  "repair": {
+    "header": "Infer the already-bound v2 version only for a complete headerless labeled artifact beginning with SOURCE and ending with END; record the inference and grant no answer information.",
+    "operation": "Require OP REPLACE for these selected-node replacement mechanics cases.",
+    "replacement_scope": "Show selected node source and require node-only replacement text without surrounding indentation or enclosing source.",
+    "source_or_expected_answer_changed": false,
+    "decision_rule_changed": false
+  },
+  "terminal_p4r_disposition": "reports/theseus_p4r_terminal_disposition.json",
+  "terminal_p4r_disposition_sha256": "9e4295294cb29e1a2ab579e6086fe4992886de52d3d73f470d098f4c47684334",
+  "parser": "scripts/theseus_semantic_ir_v2r1.py",
+  "parser_sha256": "77fc569dd097a48b0901ca170825b75427e97b5d02b1e0a5a11cb83757dfbce9",
+  "parser_commit": "985502ac",
+  "runner": "scripts/theseus_p4r_semantic_ir_v2r1_canary.py",
+  "runner_sha256": "e075ee4c481a8ac839d843a9f7bd6b0ebe508148f4caf9f7de3a7ffae134b539",
+  "runner_commit": "985502ac",
+  "base_local_instrument": "configs/theseus_p4r_local_instrument.json",
+  "base_local_instrument_sha256": "66629d03fe402d968d21f0ec734dfe7266634767011a210d7deae5ff8a8445e5",
+  "generation_policy": {
+    "normal_completion": ["parser_complete", "model_eos"],
+    "project_selected_quality_token_cap": null,
+    "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
+    "boundary_hit_invalidates_observation": true
+  },
+  "cases": [
+    {
+      "case_id": "tuple_add",
+      "natural_request": "Change VALUES from (1, 2) to (1, 2, 3).",
+      "source": "VALUES = (1, 2)\n",
+      "expected_source": "VALUES = (1, 2, 3)\n",
+      "target_node_type": "Tuple",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "add integer 3 to VALUES"},
+        {"id": "O2", "kind": "preserve", "text": "preserve integers 1 and 2 in order"},
+        {"id": "O3", "kind": "non_goal", "text": "make no other source change"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    },
+    {
+      "case_id": "return_membership",
+      "natural_request": "Change is_member so it returns whether value is not in (1, 2).",
+      "source": "def is_member(value):\n    return value in (1, 2)\n",
+      "expected_source": "def is_member(value):\n    return value not in (1, 2)\n",
+      "target_node_type": "Return",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "change the membership test from in to not in"},
+        {"id": "O2", "kind": "preserve", "text": "preserve function name, parameter, and tuple values"},
+        {"id": "O3", "kind": "non_goal", "text": "do not change the function signature"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    },
+    {
+      "case_id": "assignment_literal",
+      "natural_request": "Change MODE from the string fast to the string safe.",
+      "source": "MODE = \"fast\"\n",
+      "expected_source": "MODE = \"safe\"\n",
+      "target_node_type": "Assign",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "set MODE to the exact string safe"},
+        {"id": "O2", "kind": "preserve", "text": "preserve the MODE variable name"},
+        {"id": "O3", "kind": "non_goal", "text": "do not add statements or comments"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    }
+  ],
+  "decision_rule": {
+    "pass": "All 3 learned outputs parse and lower, all 3 exact sources verify, one persistent model load serves exactly 3 calls, every call ends by parser completion or model EOS, and zero physical-context boundary hits occur.",
+    "failure": "INCONCLUSIVE_IMPLEMENTATION; preserve both attempts and stop transport repair before any fresh P4 task.",
+    "pass_authority": "Opens only the intervention and dependency-local repair mechanics canary; it cannot open a fresh P4 denominator by itself."
+  },
+  "boundaries": {
+    "task_source": "same_hand_authored_non_claim_mechanics_cases",
+    "training_eligible": false,
+    "D1_or_D2_eligible": false,
+    "book_support_state_effect": "none",
+    "user_gate": "none"
+  }
+}
