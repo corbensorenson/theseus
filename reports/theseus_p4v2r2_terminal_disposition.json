@@ -1,0 +1,394 @@
+{
+  "adequacy": {
+    "all_five_corruption_classes_rejected": "10/10",
+    "candidate_integrity_recomputed_tasks": "0/10",
+    "compiler_oracle_useful": "0/10",
+    "experiment_floor_passed": false,
+    "independent_evaluator_replay_contract": {
+      "correctness_safety_rollback_effect_and_verifier_fields_excluded": false,
+      "excluded_as_volatile": [
+        "created_utc",
+        "runtime_ms",
+        "sandbox_temporary_root_names_in_tracebacks",
+        "evaluator_only_oracle_digest_that_includes_visible_verifier_runtime"
+      ],
+      "learned_candidate_digests_excluded": false,
+      "oracle_digest_repair_owner": "fresh_D1_evaluator_successor_only_if_P4V2R2_survives",
+      "static_control_candidate_digests_excluded": false
+    },
+    "independent_evaluator_replay_tasks": "0/10",
+    "information_flow_green": false,
+    "mechanics_floor_passed": false,
+    "natural_termination_receipts": "0/60",
+    "route_blind_tasks": "0/10",
+    "semantic_ir_parse_and_lower": "0/10",
+    "semantic_ir_required_floor": "8/10",
+    "treatment_protocol_signature": {
+      "exact_headers": "0/10",
+      "parse_fault_counts": {},
+      "terminal_END": "0/10"
+    },
+    "v2r2_transport_oracle_replays": "10/10"
+  },
+  "arm_totals": {
+    "deterministic_request_compiler_baseline": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 0,
+      "model_calls": 0,
+      "model_runtime_ms": 0.0,
+      "parseable_candidates": 0,
+      "prompt_tokens": 0,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 0,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    },
+    "direct_target_generation": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 0,
+      "model_calls": 0,
+      "model_runtime_ms": 0.0,
+      "parseable_candidates": 0,
+      "prompt_tokens": 0,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 0,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    },
+    "natural_language_plan_control": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 0,
+      "model_calls": 0,
+      "model_runtime_ms": 0.0,
+      "parseable_candidates": 0,
+      "prompt_tokens": 0,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 0,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    },
+    "typed_semantic_ir_treatment": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 0,
+      "model_calls": 0,
+      "model_runtime_ms": 0.0,
+      "parseable_candidates": 0,
+      "prompt_tokens": 0,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 0,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    }
+  },
+  "claim_id": "cognitive-compilation-and-semantic-ir.core",
+  "consumption": {
+    "all_failures_retained": false,
+    "all_ten_tasks_consumed": false,
+    "eligible_for_D1": false,
+    "eligible_for_D2": false,
+    "eligible_for_exact_rerun": null,
+    "eligible_for_training": false
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T19:39:50.804771Z",
+  "decision_rule": {
+    "comparator_useful": {
+      "deterministic_request_compiler_baseline": 0,
+      "direct_target_generation": 0,
+      "natural_language_plan_control": 0
+    },
+    "effect_decision_authorized": false,
+    "joined_cost_dominance": {
+      "deterministic_request_compiler_baseline": {
+        "comparator_dominates_treatment": false,
+        "comparator_no_more_costly_all_dimensions": true,
+        "comparator_strictly_cheaper_any_dimension": false,
+        "comparator_useful_not_worse": true,
+        "dimensions": {
+          "generated_tokens": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "model_calls": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "model_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "prompt_tokens": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "rollback_failures": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "verifier_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          }
+        }
+      },
+      "direct_target_generation": {
+        "comparator_dominates_treatment": false,
+        "comparator_no_more_costly_all_dimensions": true,
+        "comparator_strictly_cheaper_any_dimension": false,
+        "comparator_useful_not_worse": true,
+        "dimensions": {
+          "generated_tokens": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "model_calls": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "model_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "prompt_tokens": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "rollback_failures": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "verifier_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          }
+        }
+      },
+      "natural_language_plan_control": {
+        "comparator_dominates_treatment": false,
+        "comparator_no_more_costly_all_dimensions": true,
+        "comparator_strictly_cheaper_any_dimension": false,
+        "comparator_useful_not_worse": true,
+        "dimensions": {
+          "generated_tokens": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "model_calls": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "model_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "prompt_tokens": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "rollback_failures": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "verifier_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          }
+        }
+      }
+    },
+    "paired_uncertainty": {
+      "deterministic_request_compiler_baseline": {
+        "exact_one_sided_sign_probability": 1.0,
+        "mean_useful_delta": 0.0,
+        "non_ties": 0,
+        "task_bootstrap_95_interval": [
+          0.0,
+          0.0
+        ],
+        "ties": 0,
+        "treatment_losses": 0,
+        "treatment_wins": 0
+      },
+      "direct_target_generation": {
+        "exact_one_sided_sign_probability": 1.0,
+        "mean_useful_delta": 0.0,
+        "non_ties": 0,
+        "task_bootstrap_95_interval": [
+          0.0,
+          0.0
+        ],
+        "ties": 0,
+        "treatment_losses": 0,
+        "treatment_wins": 0
+      },
+      "natural_language_plan_control": {
+        "exact_one_sided_sign_probability": 1.0,
+        "mean_useful_delta": 0.0,
+        "non_ties": 0,
+        "task_bootstrap_95_interval": [
+          0.0,
+          0.0
+        ],
+        "ties": 0,
+        "treatment_losses": 0,
+        "treatment_wins": 0
+      }
+    },
+    "predeclared": {
+      "adequate_no_survivor": "Every adequacy requirement passes but the development-survivor rule does not. This exact implementation is not advanced; no broader cognitive-compilation falsification follows.",
+      "development_survivor": "The treatment is useful on at least four of ten tasks, solves at least three more tasks than each learned control and the prospective no-model compiler control, loses head-to-head on no more than one task against either learned control, has zero unsafe or rollback failures, meets every mechanics and custody floor, and is not dominated on joined model-call, token, verifier, latency, or rollback cost.",
+      "inconclusive_experiment": "Task diversity, matched resources, blind evaluation, source disjointness, uncertainty, weak-tail, or total-cost custody is incomplete.",
+      "inconclusive_implementation": "Any treatment mechanics, parsing/lowering, intervention/locality, checkpoint-independent replay, or corruption floor fails.",
+      "negative_scope": "A null or loss applies only to this exact bounded Python Semantic-IR v2r2 implementation, frozen TMax model, ten-task distribution, completion policy, validator, and repair policy. It cannot falsify cognitive compilation generally.",
+      "primary_outcome": "independently_verified_useful_safe_completion",
+      "terminal_states": [
+        "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "P4V2R2_ADEQUATE_NO_SURVIVOR",
+        "INCONCLUSIVE_IMPLEMENTATION",
+        "INCONCLUSIVE_EXPERIMENT",
+        "INVALID_INFORMATION_FLOW",
+        "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+      ],
+      "uncertainty": "Report all paired win/loss/tie tables, exact one-sided sign probabilities for non-tied treatment-versus-control outcomes, and task-level bootstrap intervals as descriptive development uncertainty; ten tasks cannot support a general population claim."
+    },
+    "survivor_effect_rule_passed": false,
+    "treatment_useful": 0
+  },
+  "denominators": {
+    "hosted_model_calls": 0,
+    "learned_arms": 0,
+    "learned_model_calls": 0,
+    "model_context_window_tokens": 262144,
+    "oracle_mechanics_controls": 0,
+    "persistent_model_loads": 0,
+    "project_selected_quality_token_cap": null,
+    "static_compiler_controls": 0,
+    "tasks": 0
+  },
+  "faults": [
+    "campaign_audit_red",
+    "campaign_not_complete",
+    "result_missing:p4v2r2_01_flask_5917",
+    "result_missing:p4v2r2_02_jinja_2061",
+    "result_missing:p4v2r2_03_textual_6592",
+    "result_missing:p4v2r2_04_scrapy_7783",
+    "result_missing:p4v2r2_05_pyflakes_765",
+    "result_missing:p4v2r2_06_pycodestyle_1286",
+    "result_missing:p4v2r2_07_drf_9977",
+    "result_missing:p4v2r2_08_pylsp_715",
+    "result_missing:p4v2r2_09_hypothesis_4787",
+    "result_missing:p4v2r2_10_pillow_9821"
+  ],
+  "maximum_inference": "This report can decide only whether this exact mechanics-qualified Semantic-IR v2r2 implementation with frozen TMax survives this ten-task decision-development surface and may be qualified once on fresh source-disjoint D1. It cannot establish or falsify cognitive compilation generally, qualify serving or training, decide D2, or promote ASI Stack book support.",
+  "next_stage": {
+    "D1_eligible": false,
+    "book_support_state_effect": "none",
+    "state": "D1_CLOSED_RETAIN_SCOPED_P4V2R2_EVIDENCE"
+  },
+  "oracle_totals": {
+    "correctness_evaluated_candidates": 0,
+    "generated_tokens": 0,
+    "incorrect_candidates": 0,
+    "malformed_candidates": 0,
+    "model_calls": 0,
+    "model_runtime_ms": 0.0,
+    "parseable_candidates": 0,
+    "prompt_tokens": 0,
+    "rollback_failures": 0,
+    "rollback_verified_candidates": 0,
+    "tasks": 0,
+    "unsafe_candidates": 0,
+    "useful_candidates": 0,
+    "verifier_runtime_ms": 0.0
+  },
+  "policy": "project_theseus_p4v2r2_cognitive_compilation_terminal_disposition_v1",
+  "scientific_status": "P4V2R2_REVIEW_REQUIRED",
+  "scope": "Exact frozen TMax model, completion-based Semantic-IR v2r2 instrument, and ten licensed decision-development tasks. No D1, D2, serving, training, hosted-model, or automatic book-support authority.",
+  "source_identities": {
+    "campaign_progress": {
+      "path": "reports/theseus_p4v2r2_campaign_attempt1_progress.json",
+      "sha256": "a246708f88053bfc13141de100ec5575f3d2b17997a3239626ea6fd2b0a54fe8"
+    },
+    "instrument": {
+      "path": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
+      "sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff"
+    },
+    "oracle_materialization_corrections": {
+      "path": "configs/theseus_p4v2r2_oracle_materialization_corrections.json",
+      "sha256": "340a7e09e0422bcbfd00dc513d6d7c7590b33e618196576494db973df7088c8e"
+    },
+    "pool": {
+      "path": "configs/theseus_p4v2r2_task_pool.json",
+      "sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd"
+    },
+    "pool_seal_commit": "9cd965514ea4babbd58317e5d9908563f0b440ba",
+    "runtime_attempt_namespace": "p4v2r2_attempt1",
+    "runtime_receipts": [],
+    "source_pool_audit": {
+      "distinct_repository_count": 10,
+      "faults": [],
+      "license_spdx_ids": [
+        "BSD-3-Clause",
+        "MIT",
+        "MIT-CMU",
+        "MPL-2.0"
+      ],
+      "passed": true,
+      "predecessor_repository_overlap": [],
+      "source_fetch_report": {
+        "path": "reports/theseus_p4v2r2_source_fetch.json",
+        "sha256": "7c42c31e8fd1cc2408b3cf9a297882fadd8f409de1cfa5219d8e33b8c4e9f3eb"
+      },
+      "source_registry": {
+        "path": "configs/theseus_p4v2r2_task_sources.json",
+        "sha256": "7264e2a040092de68e98a8a91b97ec38ca9a04a442f80a3c0551e767b0c68915"
+      },
+      "task_count": 10
+    }
+  },
+  "task_results": [],
+  "termination_custody": {
+    "completion_rule": "Parser-complete artifact or model EOS; the exact prompt residual of the declared model context is the sole numeric boundary. A boundary hit invalidates the observation and is never a mechanism failure.",
+    "maximum_generated_tokens": 0,
+    "maximum_prompt_tokens": 0,
+    "minimum_generated_tokens": 0,
+    "normal_termination_calls": 0,
+    "safety_ceiling_hits": 0,
+    "termination_reason_counts": {},
+    "total_generated_tokens": 0
+  },
+  "trigger_state": "RED",
+  "weak_tail": {
+    "all_task_failures_retained": false,
+    "treatment_failures": 0,
+    "treatment_pairwise_losses": {
+      "deterministic_request_compiler_baseline": 0,
+      "direct_target_generation": 0,
+      "natural_language_plan_control": 0
+    }
+  }
+}

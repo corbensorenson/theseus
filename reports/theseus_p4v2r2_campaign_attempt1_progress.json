@@ -1,0 +1,205 @@
+{
+  "complete_tasks": 0,
+  "created_utc": "2026-08-01T19:39:50.684753Z",
+  "faults": [
+    "candidate_run_red:p4v2r2_01_flask_5917",
+    "matched_set_invalid:p4v2r2_01_flask_5917",
+    "model_call_count_invalid:p4v2r2_01_flask_5917",
+    "model_load_count_invalid:p4v2r2_01_flask_5917",
+    "run_instrument_binding_invalid:p4v2r2_01_flask_5917",
+    "run_task_binding_invalid:p4v2r2_01_flask_5917",
+    "runtime_receipt_count_invalid:p4v2r2_01_flask_5917"
+  ],
+  "hosted_reference": {
+    "P4V2R2_blocking": false,
+    "calls": 0,
+    "effort": "xhigh",
+    "model": "gpt-5.6-luna",
+    "state": "DEFINED_TRANSPORT_NOT_BOUND"
+  },
+  "instrument": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
+  "instrument_audit": {
+    "completion_model_contract": {
+      "faults": [],
+      "identity": {
+        "decoder": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "kv_bits": null,
+          "kv_group_size": null,
+          "maximum_tokens": 262144,
+          "quantized_kv_start": null,
+          "repetition_context_size": 128,
+          "repetition_penalty": 1.05,
+          "temperature": 0.0,
+          "worker_maximum_action_tokens": 262144
+        },
+        "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+        "generation_boundary": {
+          "ceiling_hit_is_instrument_invalid": true,
+          "model_declared_context_window_tokens": 262144,
+          "numeric_ceiling_source": "model_declared_context_window",
+          "policy": "configs/theseus_generation_completion_policy.json",
+          "project_selected_quality_token_cap": null
+        },
+        "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+        "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+      },
+      "model_card": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "maximum_action_tokens": 262144,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "temperature": 0.0
+      },
+      "ready": true,
+      "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+      "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json"
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T19:39:50.672735Z",
+    "faults": [],
+    "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+    "policy": "project_theseus_p4v2r2_instrument_audit_v1",
+    "runtime_ms": 1.213,
+    "trigger_state": "GREEN",
+    "v2r2_mechanics": {
+      "binding_sha256": "b5cb83b74373699005f59226a6dac2d26f5b3c352f867a9a5066d2c1bebcc8bd",
+      "state": "PROSPECTIVE_LIST_NORMALIZATION_MECHANICS_GREEN"
+    }
+  },
+  "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+  "maximum_inference": "Campaign execution custody only; terminal scientific status is computed separately from sealed blind evaluations.",
+  "model_calls_retained": 0,
+  "model_eos_calls": 0,
+  "parser_complete_calls": 0,
+  "pending_tasks": 10,
+  "policy": "project_theseus_p4v2r2_cognitive_compilation_campaign_v1",
+  "pool": "configs/theseus_p4v2r2_task_pool.json",
+  "pool_seal_commit": "9cd965514ea4babbd58317e5d9908563f0b440ba",
+  "pool_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
+  "project_selected_quality_token_cap": null,
+  "runtime_attempt_namespace": "p4v2r2_attempt1",
+  "safety_ceiling_hits": 0,
+  "scope": "Exact sealed completion-based P4-v2r2 local decision-development campaign; no hosted, D1, D2, serving, training, or automatic book-support authority.",
+  "tasks": [
+    {
+      "campaign_index": 1,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "reports/theseus_p4v2r2_attempt1_01_flask_5917_run.json",
+      "run_sha256": "b40a957528e1b47b0e4354250199a401c869a74be709771358ca0d0ddde9f6b6",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_01_flask_5917"
+    },
+    {
+      "campaign_index": 2,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_02_jinja_2061"
+    },
+    {
+      "campaign_index": 3,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_03_textual_6592"
+    },
+    {
+      "campaign_index": 4,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_04_scrapy_7783"
+    },
+    {
+      "campaign_index": 5,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_05_pyflakes_765"
+    },
+    {
+      "campaign_index": 6,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_06_pycodestyle_1286"
+    },
+    {
+      "campaign_index": 7,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_07_drf_9977"
+    },
+    {
+      "campaign_index": 8,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_08_pylsp_715"
+    },
+    {
+      "campaign_index": 9,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_09_hypothesis_4787"
+    },
+    {
+      "campaign_index": 10,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_10_pillow_9821"
+    }
+  ],
+  "trigger_state": "RED"
+}

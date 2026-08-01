@@ -1,0 +1,932 @@
+{
+  "campaign_complete": false,
+  "campaign_execution_complete": false,
+  "child_returncode": 2,
+  "child_stderr_tail": "",
+  "child_stdout_tail": "{\n  \"complete_tasks\": 0,\n  \"faults\": [\n    \"candidate_run_red:p4v2r2_01_flask_5917\",\n    \"matched_set_invalid:p4v2r2_01_flask_5917\",\n    \"model_call_count_invalid:p4v2r2_01_flask_5917\",\n    \"model_load_count_invalid:p4v2r2_01_flask_5917\",\n    \"run_instrument_binding_invalid:p4v2r2_01_flask_5917\",\n    \"run_task_binding_invalid:p4v2r2_01_flask_5917\",\n    \"runtime_receipt_count_invalid:p4v2r2_01_flask_5917\"\n  ],\n  \"model_calls_retained\": 0,\n  \"pending_tasks\": 10,\n  \"safety_ceiling_hits\": 0,\n  \"trigger_state\": \"RED\"\n}\n",
+  "created_utc": "2026-08-01T19:39:50.817421Z",
+  "disposition_complete": false,
+  "disposition_stderr_tail": "",
+  "disposition_stdout_tail": "{\n  \"complete_tasks\": 0,\n  \"faults\": [\n    \"campaign_audit_red\",\n    \"campaign_not_complete\",\n    \"result_missing:p4v2r2_01_flask_5917\",\n    \"result_missing:p4v2r2_02_jinja_2061\",\n    \"result_missing:p4v2r2_03_textual_6592\",\n    \"result_missing:p4v2r2_04_scrapy_7783\",\n    \"result_missing:p4v2r2_05_pyflakes_765\",\n    \"result_missing:p4v2r2_06_pycodestyle_1286\",\n    \"result_missing:p4v2r2_07_drf_9977\",\n    \"result_missing:p4v2r2_08_pylsp_715\",\n    \"result_missing:p4v2r2_09_hypothesis_4787\",\n    \"result_missing:p4v2r2_10_pillow_9821\"\n  ],\n  \"learned_model_calls\": 0,\n  \"safety_ceiling_hits\": 0,\n  \"scientific_status\": \"P4V2R2_REVIEW_REQUIRED\",\n  \"trigger_state\": \"RED\"\n}\n",
+  "error": "",
+  "final_campaign_audit": {
+    "complete_tasks": 0,
+    "created_utc": "2026-08-01T19:39:50.711454Z",
+    "faults": [
+      "matched_set_invalid:p4v2r2_01_flask_5917",
+      "model_call_count_invalid:p4v2r2_01_flask_5917",
+      "model_load_count_invalid:p4v2r2_01_flask_5917",
+      "run_instrument_binding_invalid:p4v2r2_01_flask_5917",
+      "run_task_binding_invalid:p4v2r2_01_flask_5917",
+      "runtime_receipt_count_invalid:p4v2r2_01_flask_5917"
+    ],
+    "hosted_reference": {
+      "P4V2R2_blocking": false,
+      "calls": 0,
+      "effort": "xhigh",
+      "model": "gpt-5.6-luna",
+      "state": "DEFINED_TRANSPORT_NOT_BOUND"
+    },
+    "instrument": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
+    "instrument_audit": {
+      "completion_model_contract": {
+        "faults": [],
+        "identity": {
+          "decoder": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "kv_bits": null,
+            "kv_group_size": null,
+            "maximum_tokens": 262144,
+            "quantized_kv_start": null,
+            "repetition_context_size": 128,
+            "repetition_penalty": 1.05,
+            "temperature": 0.0,
+            "worker_maximum_action_tokens": 262144
+          },
+          "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+          "generation_boundary": {
+            "ceiling_hit_is_instrument_invalid": true,
+            "model_declared_context_window_tokens": 262144,
+            "numeric_ceiling_source": "model_declared_context_window",
+            "policy": "configs/theseus_generation_completion_policy.json",
+            "project_selected_quality_token_cap": null
+          },
+          "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+          "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+          "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+          "runtime": "mlx_lm_local_metal",
+          "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+          "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+        },
+        "model_card": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "maximum_action_tokens": 262144,
+          "repetition_context_size": 128,
+          "repetition_penalty": 1.05,
+          "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+          "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+          "temperature": 0.0
+        },
+        "ready": true,
+        "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+        "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json"
+      },
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "created_utc": "2026-08-01T19:39:50.698531Z",
+      "faults": [],
+      "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+      "policy": "project_theseus_p4v2r2_instrument_audit_v1",
+      "runtime_ms": 1.341,
+      "trigger_state": "GREEN",
+      "v2r2_mechanics": {
+        "binding_sha256": "b5cb83b74373699005f59226a6dac2d26f5b3c352f867a9a5066d2c1bebcc8bd",
+        "state": "PROSPECTIVE_LIST_NORMALIZATION_MECHANICS_GREEN"
+      }
+    },
+    "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+    "maximum_inference": "Campaign execution custody only; terminal scientific status is computed separately from sealed blind evaluations.",
+    "model_calls_retained": 0,
+    "model_eos_calls": 0,
+    "parser_complete_calls": 0,
+    "pending_tasks": 10,
+    "policy": "project_theseus_p4v2r2_cognitive_compilation_campaign_v1",
+    "pool": "configs/theseus_p4v2r2_task_pool.json",
+    "pool_seal_commit": "9cd965514ea4babbd58317e5d9908563f0b440ba",
+    "pool_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
+    "project_selected_quality_token_cap": null,
+    "runtime_attempt_namespace": "p4v2r2_attempt1",
+    "safety_ceiling_hits": 0,
+    "scope": "Exact sealed completion-based P4-v2r2 local decision-development campaign; no hosted, D1, D2, serving, training, or automatic book-support authority.",
+    "tasks": [
+      {
+        "campaign_index": 1,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "reports/theseus_p4v2r2_attempt1_01_flask_5917_run.json",
+        "run_sha256": "b40a957528e1b47b0e4354250199a401c869a74be709771358ca0d0ddde9f6b6",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_01_flask_5917"
+      },
+      {
+        "campaign_index": 2,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_02_jinja_2061"
+      },
+      {
+        "campaign_index": 3,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_03_textual_6592"
+      },
+      {
+        "campaign_index": 4,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_04_scrapy_7783"
+      },
+      {
+        "campaign_index": 5,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_05_pyflakes_765"
+      },
+      {
+        "campaign_index": 6,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_06_pycodestyle_1286"
+      },
+      {
+        "campaign_index": 7,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_07_drf_9977"
+      },
+      {
+        "campaign_index": 8,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_08_pylsp_715"
+      },
+      {
+        "campaign_index": 9,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_09_hypothesis_4787"
+      },
+      {
+        "campaign_index": 10,
+        "complete": false,
+        "evaluation": "",
+        "evaluation_sha256": "",
+        "run": "",
+        "run_sha256": "",
+        "runtime_receipts": 0,
+        "stem": "p4v2r2_10_pillow_9821"
+      }
+    ],
+    "trigger_state": "RED"
+  },
+  "launch_authorized": true,
+  "lease": {
+    "path": "reports/theseus_p4v2r2_campaign_leases/7847d0a1444f4447bf513e5a0a983ab7.json",
+    "sha256": "bff06225ffa81e7062c1e50d8ebc9ef925ab017b2ff12166927514de4af01698"
+  },
+  "physical_stop_is_negative_evidence": false,
+  "policy": "project_theseus_p4v2r2_autonomous_launch_v1",
+  "preflight": {
+    "active_lease": "runtime/control/theseus_p4v2r2_campaign_lease.json",
+    "authority": {
+      "D1_authorized": false,
+      "D2_authorized": false,
+      "book_support_promotion_authorized": false,
+      "external_inference_authorized": false,
+      "kind": "machine_predicate_exclusive_one_shot_lease",
+      "physical_boundary_is_negative_evidence": false,
+      "project_selected_quality_token_cap_allowed": false,
+      "require_battery_not_discharging": true,
+      "require_derived_disk_envelope_available": true,
+      "require_external_power_physically_connected": true,
+      "require_measured_runtime_memory_available": true,
+      "require_no_competing_accelerator_job": true,
+      "serving_authorized": false,
+      "training_row_admission_authorized": false,
+      "user_or_operator_approval_required": false
+    },
+    "campaign_audit": {
+      "complete_tasks": 0,
+      "created_utc": "2026-08-01T19:39:50.522308Z",
+      "faults": [],
+      "hosted_reference": {
+        "P4V2R2_blocking": false,
+        "calls": 0,
+        "effort": "xhigh",
+        "model": "gpt-5.6-luna",
+        "state": "DEFINED_TRANSPORT_NOT_BOUND"
+      },
+      "instrument": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
+      "instrument_audit": {
+        "completion_model_contract": {
+          "faults": [],
+          "identity": {
+            "decoder": {
+              "chat_template_kwargs": {
+                "enable_thinking": false
+              },
+              "kv_bits": null,
+              "kv_group_size": null,
+              "maximum_tokens": 262144,
+              "quantized_kv_start": null,
+              "repetition_context_size": 128,
+              "repetition_penalty": 1.05,
+              "temperature": 0.0,
+              "worker_maximum_action_tokens": 262144
+            },
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "generation_boundary": {
+              "ceiling_hit_is_instrument_invalid": true,
+              "model_declared_context_window_tokens": 262144,
+              "numeric_ceiling_source": "model_declared_context_window",
+              "policy": "configs/theseus_generation_completion_policy.json",
+              "project_selected_quality_token_cap": null
+            },
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "model_card": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            },
+            "maximum_action_tokens": 262144,
+            "repetition_context_size": 128,
+            "repetition_penalty": 1.05,
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "temperature": 0.0
+          },
+          "ready": true,
+          "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+          "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json"
+        },
+        "counters": {
+          "D2_cases_consumed": 0,
+          "external_inference_calls": 0,
+          "fallback_return_count": 0,
+          "public_calibration_cases_consumed": 0,
+          "public_training_rows_written": 0,
+          "teacher_calls": 0,
+          "user_facing_effects": 0
+        },
+        "created_utc": "2026-08-01T19:39:50.509985Z",
+        "faults": [],
+        "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+        "policy": "project_theseus_p4v2r2_instrument_audit_v1",
+        "runtime_ms": 1.537,
+        "trigger_state": "GREEN",
+        "v2r2_mechanics": {
+          "binding_sha256": "b5cb83b74373699005f59226a6dac2d26f5b3c352f867a9a5066d2c1bebcc8bd",
+          "state": "PROSPECTIVE_LIST_NORMALIZATION_MECHANICS_GREEN"
+        }
+      },
+      "instrument_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+      "maximum_inference": "Campaign execution custody only; terminal scientific status is computed separately from sealed blind evaluations.",
+      "model_calls_retained": 0,
+      "model_eos_calls": 0,
+      "parser_complete_calls": 0,
+      "pending_tasks": 10,
+      "policy": "project_theseus_p4v2r2_cognitive_compilation_campaign_v1",
+      "pool": "configs/theseus_p4v2r2_task_pool.json",
+      "pool_seal_commit": "9cd965514ea4babbd58317e5d9908563f0b440ba",
+      "pool_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
+      "project_selected_quality_token_cap": null,
+      "runtime_attempt_namespace": "p4v2r2_attempt1",
+      "safety_ceiling_hits": 0,
+      "scope": "Exact sealed completion-based P4-v2r2 local decision-development campaign; no hosted, D1, D2, serving, training, or automatic book-support authority.",
+      "tasks": [
+        {
+          "campaign_index": 1,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_01_flask_5917"
+        },
+        {
+          "campaign_index": 2,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_02_jinja_2061"
+        },
+        {
+          "campaign_index": 3,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_03_textual_6592"
+        },
+        {
+          "campaign_index": 4,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_04_scrapy_7783"
+        },
+        {
+          "campaign_index": 5,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_05_pyflakes_765"
+        },
+        {
+          "campaign_index": 6,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_06_pycodestyle_1286"
+        },
+        {
+          "campaign_index": 7,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_07_drf_9977"
+        },
+        {
+          "campaign_index": 8,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_08_pylsp_715"
+        },
+        {
+          "campaign_index": 9,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_09_hypothesis_4787"
+        },
+        {
+          "campaign_index": 10,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2_10_pillow_9821"
+        }
+      ],
+      "trigger_state": "GREEN"
+    },
+    "competing_accelerator_jobs": [],
+    "config": {
+      "path": "configs/theseus_p4v2r2_autonomous_launch.json",
+      "sha256": "45d2f4fc53a8e46f340cecf51f1614f30f68c82c3dd34a528f8fe947dede5df9"
+    },
+    "created_utc": "2026-08-01T19:39:50.522583Z",
+    "disk": {
+      "derivation": {
+        "disk_output_bytes_per_context_token": 8,
+        "disk_output_call_count": 60,
+        "disk_source_copy_count": 2,
+        "minimum_reclaimable_memory_source": "measured_runtime_preflight_peak_rss_mib"
+      },
+      "free_bytes": 49770979328,
+      "maximum_retained_output_bytes": 125829120,
+      "passed": true,
+      "required_bytes": 926461784,
+      "source_fixture_bytes": 400316332
+    },
+    "failed_gates": [],
+    "faults": [],
+    "gates": {
+      "battery_not_discharging": true,
+      "campaign_audit_green": true,
+      "campaign_has_pending_tasks": true,
+      "config_valid": true,
+      "derived_disk_envelope_available": true,
+      "exclusive_lease_available": true,
+      "external_power_physically_connected": true,
+      "measured_runtime_memory_available": true,
+      "no_competing_accelerator_job": true,
+      "sealed_bindings_exact": true
+    },
+    "launch_authorized": true,
+    "maximum_inference": "A GREEN state authorizes exactly the already-sealed local P4-v2r2 campaign under an exclusive lease. It grants no D1, D2, serving, training, hosted inference, book-support, or rerun authority.",
+    "memory": {
+      "observed_reclaimable_mib": 6389.469,
+      "passed": true,
+      "physical_memory_mib": 16384.0,
+      "required_reclaimable_mib": 4621.016,
+      "required_source": "bound_runtime_preflight_peak_rss_mib"
+    },
+    "policy": "project_theseus_p4v2r2_autonomous_launch_v1",
+    "power": {
+      "available": true,
+      "battery_percent": 28,
+      "discharging": false,
+      "external_connected": true,
+      "ioreg_external_values": [
+        "Yes",
+        "Yes"
+      ],
+      "pmset_summary": "Now drawing from 'AC Power' -InternalBattery-0 (id=23724131) 28%; charging; (no estimate) present: true"
+    },
+    "sealed_bindings": {
+      "faults": [],
+      "owners": [
+        {
+          "expected_sha256": "2ced83220b6eeb4d0e08b7a098f5b1f5f47024ab2c696408ba0f5b79b0f3dcf8",
+          "observed_sha256": "2ced83220b6eeb4d0e08b7a098f5b1f5f47024ab2c696408ba0f5b79b0f3dcf8",
+          "owner": "campaign",
+          "passed": true,
+          "path": "scripts/theseus_p4v2r2_campaign.py"
+        },
+        {
+          "expected_sha256": "4a8e31f28ada85c3449d767107db08c0b3133a009fcecdfb43ae68bd92704031",
+          "observed_sha256": "4a8e31f28ada85c3449d767107db08c0b3133a009fcecdfb43ae68bd92704031",
+          "owner": "disposition",
+          "passed": true,
+          "path": "scripts/theseus_p4v2r2_disposition.py"
+        },
+        {
+          "expected_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
+          "observed_sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd",
+          "owner": "task_pool",
+          "passed": true,
+          "path": "configs/theseus_p4v2r2_task_pool.json"
+        },
+        {
+          "expected_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+          "observed_sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff",
+          "owner": "instrument",
+          "passed": true,
+          "path": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json"
+        },
+        {
+          "expected_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+          "observed_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+          "owner": "runtime_preflight",
+          "passed": true,
+          "path": "reports/core_evidence_tmax_9b_runtime_preflight.json"
+        }
+      ],
+      "passed": true
+    },
+    "trigger_state": "GREEN"
+  },
+  "project_selected_quality_token_cap": null,
+  "terminal_disposition": {
+    "adequacy": {
+      "all_five_corruption_classes_rejected": "10/10",
+      "candidate_integrity_recomputed_tasks": "0/10",
+      "compiler_oracle_useful": "0/10",
+      "experiment_floor_passed": false,
+      "independent_evaluator_replay_contract": {
+        "correctness_safety_rollback_effect_and_verifier_fields_excluded": false,
+        "excluded_as_volatile": [
+          "created_utc",
+          "runtime_ms",
+          "sandbox_temporary_root_names_in_tracebacks",
+          "evaluator_only_oracle_digest_that_includes_visible_verifier_runtime"
+        ],
+        "learned_candidate_digests_excluded": false,
+        "oracle_digest_repair_owner": "fresh_D1_evaluator_successor_only_if_P4V2R2_survives",
+        "static_control_candidate_digests_excluded": false
+      },
+      "independent_evaluator_replay_tasks": "0/10",
+      "information_flow_green": false,
+      "mechanics_floor_passed": false,
+      "natural_termination_receipts": "0/60",
+      "route_blind_tasks": "0/10",
+      "semantic_ir_parse_and_lower": "0/10",
+      "semantic_ir_required_floor": "8/10",
+      "treatment_protocol_signature": {
+        "exact_headers": "0/10",
+        "parse_fault_counts": {},
+        "terminal_END": "0/10"
+      },
+      "v2r2_transport_oracle_replays": "10/10"
+    },
+    "arm_totals": {
+      "deterministic_request_compiler_baseline": {
+        "correctness_evaluated_candidates": 0,
+        "generated_tokens": 0,
+        "incorrect_candidates": 0,
+        "malformed_candidates": 0,
+        "model_calls": 0,
+        "model_runtime_ms": 0.0,
+        "parseable_candidates": 0,
+        "prompt_tokens": 0,
+        "rollback_failures": 0,
+        "rollback_verified_candidates": 0,
+        "tasks": 0,
+        "unsafe_candidates": 0,
+        "useful_candidates": 0,
+        "verifier_runtime_ms": 0.0
+      },
+      "direct_target_generation": {
+        "correctness_evaluated_candidates": 0,
+        "generated_tokens": 0,
+        "incorrect_candidates": 0,
+        "malformed_candidates": 0,
+        "model_calls": 0,
+        "model_runtime_ms": 0.0,
+        "parseable_candidates": 0,
+        "prompt_tokens": 0,
+        "rollback_failures": 0,
+        "rollback_verified_candidates": 0,
+        "tasks": 0,
+        "unsafe_candidates": 0,
+        "useful_candidates": 0,
+        "verifier_runtime_ms": 0.0
+      },
+      "natural_language_plan_control": {
+        "correctness_evaluated_candidates": 0,
+        "generated_tokens": 0,
+        "incorrect_candidates": 0,
+        "malformed_candidates": 0,
+        "model_calls": 0,
+        "model_runtime_ms": 0.0,
+        "parseable_candidates": 0,
+        "prompt_tokens": 0,
+        "rollback_failures": 0,
+        "rollback_verified_candidates": 0,
+        "tasks": 0,
+        "unsafe_candidates": 0,
+        "useful_candidates": 0,
+        "verifier_runtime_ms": 0.0
+      },
+      "typed_semantic_ir_treatment": {
+        "correctness_evaluated_candidates": 0,
+        "generated_tokens": 0,
+        "incorrect_candidates": 0,
+        "malformed_candidates": 0,
+        "model_calls": 0,
+        "model_runtime_ms": 0.0,
+        "parseable_candidates": 0,
+        "prompt_tokens": 0,
+        "rollback_failures": 0,
+        "rollback_verified_candidates": 0,
+        "tasks": 0,
+        "unsafe_candidates": 0,
+        "useful_candidates": 0,
+        "verifier_runtime_ms": 0.0
+      }
+    },
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "consumption": {
+      "all_failures_retained": false,
+      "all_ten_tasks_consumed": false,
+      "eligible_for_D1": false,
+      "eligible_for_D2": false,
+      "eligible_for_exact_rerun": null,
+      "eligible_for_training": false
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T19:39:50.804771Z",
+    "decision_rule": {
+      "comparator_useful": {
+        "deterministic_request_compiler_baseline": 0,
+        "direct_target_generation": 0,
+        "natural_language_plan_control": 0
+      },
+      "effect_decision_authorized": false,
+      "joined_cost_dominance": {
+        "deterministic_request_compiler_baseline": {
+          "comparator_dominates_treatment": false,
+          "comparator_no_more_costly_all_dimensions": true,
+          "comparator_strictly_cheaper_any_dimension": false,
+          "comparator_useful_not_worse": true,
+          "dimensions": {
+            "generated_tokens": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "model_calls": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "model_runtime_ms": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "prompt_tokens": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "rollback_failures": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "verifier_runtime_ms": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            }
+          }
+        },
+        "direct_target_generation": {
+          "comparator_dominates_treatment": false,
+          "comparator_no_more_costly_all_dimensions": true,
+          "comparator_strictly_cheaper_any_dimension": false,
+          "comparator_useful_not_worse": true,
+          "dimensions": {
+            "generated_tokens": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "model_calls": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "model_runtime_ms": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "prompt_tokens": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "rollback_failures": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "verifier_runtime_ms": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            }
+          }
+        },
+        "natural_language_plan_control": {
+          "comparator_dominates_treatment": false,
+          "comparator_no_more_costly_all_dimensions": true,
+          "comparator_strictly_cheaper_any_dimension": false,
+          "comparator_useful_not_worse": true,
+          "dimensions": {
+            "generated_tokens": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "model_calls": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "model_runtime_ms": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "prompt_tokens": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "rollback_failures": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            },
+            "verifier_runtime_ms": {
+              "comparator": 0.0,
+              "treatment": 0.0
+            }
+          }
+        }
+      },
+      "paired_uncertainty": {
+        "deterministic_request_compiler_baseline": {
+          "exact_one_sided_sign_probability": 1.0,
+          "mean_useful_delta": 0.0,
+          "non_ties": 0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "ties": 0,
+          "treatment_losses": 0,
+          "treatment_wins": 0
+        },
+        "direct_target_generation": {
+          "exact_one_sided_sign_probability": 1.0,
+          "mean_useful_delta": 0.0,
+          "non_ties": 0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "ties": 0,
+          "treatment_losses": 0,
+          "treatment_wins": 0
+        },
+        "natural_language_plan_control": {
+          "exact_one_sided_sign_probability": 1.0,
+          "mean_useful_delta": 0.0,
+          "non_ties": 0,
+          "task_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "ties": 0,
+          "treatment_losses": 0,
+          "treatment_wins": 0
+        }
+      },
+      "predeclared": {
+        "adequate_no_survivor": "Every adequacy requirement passes but the development-survivor rule does not. This exact implementation is not advanced; no broader cognitive-compilation falsification follows.",
+        "development_survivor": "The treatment is useful on at least four of ten tasks, solves at least three more tasks than each learned control and the prospective no-model compiler control, loses head-to-head on no more than one task against either learned control, has zero unsafe or rollback failures, meets every mechanics and custody floor, and is not dominated on joined model-call, token, verifier, latency, or rollback cost.",
+        "inconclusive_experiment": "Task diversity, matched resources, blind evaluation, source disjointness, uncertainty, weak-tail, or total-cost custody is incomplete.",
+        "inconclusive_implementation": "Any treatment mechanics, parsing/lowering, intervention/locality, checkpoint-independent replay, or corruption floor fails.",
+        "negative_scope": "A null or loss applies only to this exact bounded Python Semantic-IR v2r2 implementation, frozen TMax model, ten-task distribution, completion policy, validator, and repair policy. It cannot falsify cognitive compilation generally.",
+        "primary_outcome": "independently_verified_useful_safe_completion",
+        "terminal_states": [
+          "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+          "P4V2R2_ADEQUATE_NO_SURVIVOR",
+          "INCONCLUSIVE_IMPLEMENTATION",
+          "INCONCLUSIVE_EXPERIMENT",
+          "INVALID_INFORMATION_FLOW",
+          "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+        ],
+        "uncertainty": "Report all paired win/loss/tie tables, exact one-sided sign probabilities for non-tied treatment-versus-control outcomes, and task-level bootstrap intervals as descriptive development uncertainty; ten tasks cannot support a general population claim."
+      },
+      "survivor_effect_rule_passed": false,
+      "treatment_useful": 0
+    },
+    "denominators": {
+      "hosted_model_calls": 0,
+      "learned_arms": 0,
+      "learned_model_calls": 0,
+      "model_context_window_tokens": 262144,
+      "oracle_mechanics_controls": 0,
+      "persistent_model_loads": 0,
+      "project_selected_quality_token_cap": null,
+      "static_compiler_controls": 0,
+      "tasks": 0
+    },
+    "faults": [
+      "campaign_audit_red",
+      "campaign_not_complete",
+      "result_missing:p4v2r2_01_flask_5917",
+      "result_missing:p4v2r2_02_jinja_2061",
+      "result_missing:p4v2r2_03_textual_6592",
+      "result_missing:p4v2r2_04_scrapy_7783",
+      "result_missing:p4v2r2_05_pyflakes_765",
+      "result_missing:p4v2r2_06_pycodestyle_1286",
+      "result_missing:p4v2r2_07_drf_9977",
+      "result_missing:p4v2r2_08_pylsp_715",
+      "result_missing:p4v2r2_09_hypothesis_4787",
+      "result_missing:p4v2r2_10_pillow_9821"
+    ],
+    "maximum_inference": "This report can decide only whether this exact mechanics-qualified Semantic-IR v2r2 implementation with frozen TMax survives this ten-task decision-development surface and may be qualified once on fresh source-disjoint D1. It cannot establish or falsify cognitive compilation generally, qualify serving or training, decide D2, or promote ASI Stack book support.",
+    "next_stage": {
+      "D1_eligible": false,
+      "book_support_state_effect": "none",
+      "state": "D1_CLOSED_RETAIN_SCOPED_P4V2R2_EVIDENCE"
+    },
+    "oracle_totals": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 0,
+      "model_calls": 0,
+      "model_runtime_ms": 0.0,
+      "parseable_candidates": 0,
+      "prompt_tokens": 0,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 0,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    },
+    "policy": "project_theseus_p4v2r2_cognitive_compilation_terminal_disposition_v1",
+    "scientific_status": "P4V2R2_REVIEW_REQUIRED",
+    "scope": "Exact frozen TMax model, completion-based Semantic-IR v2r2 instrument, and ten licensed decision-development tasks. No D1, D2, serving, training, hosted-model, or automatic book-support authority.",
+    "source_identities": {
+      "campaign_progress": {
+        "path": "reports/theseus_p4v2r2_campaign_attempt1_progress.json",
+        "sha256": "a246708f88053bfc13141de100ec5575f3d2b17997a3239626ea6fd2b0a54fe8"
+      },
+      "instrument": {
+        "path": "configs/theseus_p4v2r2_cognitive_compilation_instrument.json",
+        "sha256": "046f989e7eaa444a64e38d96fae8def10dabc4a6c3b1b2b2de3118ba4fe5d6ff"
+      },
+      "oracle_materialization_corrections": {
+        "path": "configs/theseus_p4v2r2_oracle_materialization_corrections.json",
+        "sha256": "340a7e09e0422bcbfd00dc513d6d7c7590b33e618196576494db973df7088c8e"
+      },
+      "pool": {
+        "path": "configs/theseus_p4v2r2_task_pool.json",
+        "sha256": "64269ba60e3798a5af91367c4bed98cdfdc70ae6bb7c5c3e885e91aa12f70ffd"
+      },
+      "pool_seal_commit": "9cd965514ea4babbd58317e5d9908563f0b440ba",
+      "runtime_attempt_namespace": "p4v2r2_attempt1",
+      "runtime_receipts": [],
+      "source_pool_audit": {
+        "distinct_repository_count": 10,
+        "faults": [],
+        "license_spdx_ids": [
+          "BSD-3-Clause",
+          "MIT",
+          "MIT-CMU",
+          "MPL-2.0"
+        ],
+        "passed": true,
+        "predecessor_repository_overlap": [],
+        "source_fetch_report": {
+          "path": "reports/theseus_p4v2r2_source_fetch.json",
+          "sha256": "7c42c31e8fd1cc2408b3cf9a297882fadd8f409de1cfa5219d8e33b8c4e9f3eb"
+        },
+        "source_registry": {
+          "path": "configs/theseus_p4v2r2_task_sources.json",
+          "sha256": "7264e2a040092de68e98a8a91b97ec38ca9a04a442f80a3c0551e767b0c68915"
+        },
+        "task_count": 10
+      }
+    },
+    "task_results": [],
+    "termination_custody": {
+      "completion_rule": "Parser-complete artifact or model EOS; the exact prompt residual of the declared model context is the sole numeric boundary. A boundary hit invalidates the observation and is never a mechanism failure.",
+      "maximum_generated_tokens": 0,
+      "maximum_prompt_tokens": 0,
+      "minimum_generated_tokens": 0,
+      "normal_termination_calls": 0,
+      "safety_ceiling_hits": 0,
+      "termination_reason_counts": {},
+      "total_generated_tokens": 0
+    },
+    "trigger_state": "RED",
+    "weak_tail": {
+      "all_task_failures_retained": false,
+      "treatment_failures": 0,
+      "treatment_pairwise_losses": {
+        "deterministic_request_compiler_baseline": 0,
+        "direct_target_generation": 0,
+        "natural_language_plan_control": 0
+      }
+    }
+  },
+  "trigger_state": "RED"
+}

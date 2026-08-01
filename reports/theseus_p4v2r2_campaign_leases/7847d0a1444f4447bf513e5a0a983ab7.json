@@ -1,0 +1,18 @@
+{
+  "campaign_command": [
+    "/usr/local/bin/python3",
+    "/Users/corbensorenson/Documents/Theseus-Hive/scripts/theseus_p4v2r2_campaign.py"
+  ],
+  "child_returncode": 2,
+  "completed_utc": "2026-08-01T19:39:50.816480Z",
+  "created_utc": "2026-08-01T19:39:50.524448Z",
+  "disposition_returncode": 2,
+  "error": "",
+  "final_campaign_audit_sha256": "ebe60192fe2749df4520c9b1e11b474cfba13320d2904ac8ecc6c81705cbcc6b",
+  "lease_id": "7847d0a1444f4447bf513e5a0a983ab7",
+  "policy": "project_theseus_p4v2r2_autonomous_launch_v1",
+  "preflight_sha256": "18f44433bedf005c78732ea18a6d0cfaf66d6e012d5e7099e8e5a6184bcbe671",
+  "state": "STOPPED_RETAIN_EVIDENCE",
+  "stderr_tail": "",
+  "stdout_tail": "{\n  \"complete_tasks\": 0,\n  \"faults\": [\n    \"candidate_run_red:p4v2r2_01_flask_5917\",\n    \"matched_set_invalid:p4v2r2_01_flask_5917\",\n    \"model_call_count_invalid:p4v2r2_01_flask_5917\",\n    \"model_load_count_invalid:p4v2r2_01_flask_5917\",\n    \"run_instrument_binding_invalid:p4v2r2_01_flask_5917\",\n    \"run_task_binding_invalid:p4v2r2_01_flask_5917\",\n    \"runtime_receipt_count_invalid:p4v2r2_01_flask_5917\"\n  ],\n  \"model_calls_retained\": 0,\n  \"pending_tasks\": 10,\n  \"safety_ceiling_hits\": 0,\n  \"trigger_state\": \"RED\"\n}\n"
+}
