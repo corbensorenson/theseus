@@ -1,0 +1,141 @@
+{
+  "policy": "project_theseus_d1_fresh_source_disjoint_qualification_instrument_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_P4_SURVIVOR_AND_D1_SOURCE_ACQUISITION",
+  "campaign_id": "theseus_d1_cognitive_compilation_fresh_qualification_v1",
+  "claim_id": "cognitive-compilation-and-semantic-ir.core",
+  "purpose": "Qualify a decision-relevant P4 survivor exactly once on fresh licensed source-disjoint real maintenance tasks without tuning, task replacement, user gates, or output-length caps.",
+  "activation": {
+    "p4_terminal_disposition": "reports/theseus_p4s_terminal_disposition.json",
+    "required_trigger_state": "GREEN",
+    "required_scientific_status": "P4S_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+    "required_claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "required_eligible_for_D1": true,
+    "user_or_operator_approval_required": false,
+    "source_acquisition_before_activation_forbidden": true,
+    "candidate_or_control_calls_before_surface_seal_forbidden": true
+  },
+  "frozen_candidate": {
+    "model_runtime_and_mechanism_identity": "inherit_exactly_from_the_green_P4S_terminal_disposition",
+    "tuning_on_D1": false,
+    "repair_or_prompt_changes_on_D1": false,
+    "model_shopping_on_D1": false,
+    "treatment": "typed_semantic_ir_treatment",
+    "learned_control_selection": "Choose the P4S learned control with the greatest independently verified useful count; break a tie in favor of direct_generation_control. Freeze that identity before D1 membership selection.",
+    "additional_controls": [
+      "prospective_no_model_static_compiler_control",
+      "evaluator_only_exact_target_oracle_ceiling"
+    ]
+  },
+  "generation_completion": {
+    "project_selected_quality_token_cap": null,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "sole_numeric_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
+    "boundary_or_host_stop_disposition": "INVALID_OBSERVATION",
+    "boundary_or_host_stop_is_model_mechanism_candidate_or_evaluator_failure": false,
+    "measure_generated_tokens_latency_and_cost_without_using_them_as_scissors": true
+  },
+  "source_surface": {
+    "acquisition_timing": "after_green_P4S_survivor_before_any_D1_parent_target_oracle_candidate_control_or_evaluator_execution",
+    "network_use": "licensed_source_and_public_metadata_acquisition_only",
+    "task_family": "merged_machine_verifiable_real_repository_maintenance_changes",
+    "natural_language_scope": "English",
+    "programming_language_scope": [
+      "Python",
+      "JavaScript/TypeScript",
+      "HTML/CSS",
+      "Rust"
+    ],
+    "allowed_license_spdx": [
+      "Apache-2.0",
+      "MIT",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "MPL-2.0",
+      "CC0-1.0",
+      "Unlicense"
+    ],
+    "source_disjoint_registry_paths": [
+      "configs/theseus_p2a_task_pool.json",
+      "configs/theseus_p2b_task_pool.json",
+      "configs/theseus_p2c_task_pool.json",
+      "configs/theseus_p3_task_pool.json",
+      "configs/theseus_p4_task_pool.json",
+      "configs/theseus_p4r_task_pool.json",
+      "configs/theseus_p4s_task_pool.json"
+    ],
+    "also_disjoint_from": [
+      "public_calibration_surfaces",
+      "D2",
+      "training_and_distillation_rows",
+      "all_consumed_private_surfaces"
+    ],
+    "membership_selection": "After all eligibility, license, reconstructability, verifier, source-disjointness, and contamination filters pass, order identities by SHA-256(campaign_id || repository || parent_revision || target_revision) and take the first design-derived cohort_size distinct repositories.",
+    "membership_fixed_before_archive_fetch": true,
+    "replacement_after_any_candidate_or_control_call": false,
+    "consume_exact_identity_once": true
+  },
+  "power_design": {
+    "primary_test": "one_sided_exact_sign_test_on_treatment_versus_frozen_strongest_learned_control_discordant_useful_outcomes",
+    "null_treatment_win_probability": 0.5,
+    "minimum_worthwhile_discordant_win_probability": 0.8,
+    "alpha": 0.05,
+    "minimum_power": 0.8,
+    "design_required_discordant_pairs": 18,
+    "design_required_treatment_wins_at_required_discordant_pairs": 13,
+    "conservative_discordance_rate_floor": 0.5,
+    "minimum_probability_of_reaching_required_discordant_pairs": 0.9,
+    "design_derived_cohort_size": 44,
+    "minimum_worthwhile_absolute_useful_rate_delta": 0.15,
+    "underpowered_disposition": "INCONCLUSIVE_EXPERIMENT"
+  },
+  "adequacy_requirements": {
+    "distinct_repositories": "44/44",
+    "licensed_provenance_and_exact_revision_binding": "44/44",
+    "parent_fails_and_exact_target_passes_independent_evaluator": "44/44",
+    "evaluator_only_oracle_passes": "44/44",
+    "candidate_and_control_information_flow_blind": "44/44",
+    "candidate_integrity_and_evaluator_replay_independent": "44/44",
+    "normal_completion_receipts_for_every_learned_call": true,
+    "zero_context_or_host_boundary_observations_in_scored_denominator": true,
+    "all_failures_abstentions_costs_and_weak_tails_retained": true,
+    "matched_model_calls_raw_information_verifier_budget_effect_sandbox_and_total_cost": true,
+    "oracle_candidate_semantic_digest_excludes_timestamps_runtime_and_temporary_paths": true
+  },
+  "decision_rule": {
+    "primary_outcome": "independently_verified_useful_safe_completion",
+    "qualification_requires": [
+      "all adequacy requirements pass",
+      "at least 18 treatment-versus-strongest-learned-control discordant tasks",
+      "one-sided exact sign probability <= 0.05",
+      "treatment useful-rate minus strongest learned-control useful-rate >= 0.15",
+      "treatment useful-rate minus static-compiler useful-rate >= 0.15",
+      "zero unsafe candidates and zero rollback failures",
+      "treatment is not joined-cost dominated by either control"
+    ],
+    "terminal_states": [
+      "D1_EXACT_IMPLEMENTATION_QUALIFIED",
+      "D1_EXACT_IMPLEMENTATION_NOT_QUALIFIED",
+      "INCONCLUSIVE_IMPLEMENTATION",
+      "INCONCLUSIVE_EXPERIMENT",
+      "INVALID_INFORMATION_FLOW",
+      "INVALID_OBSERVATION_CONTEXT_OR_HOST_BOUNDARY",
+      "INVALID_SOURCE_OR_CONSUMPTION_CUSTODY"
+    ],
+    "automatic_book_support_promotion": false,
+    "serving_training_D2_or_teacher_authority": false
+  },
+  "one_shot_authority": {
+    "kind": "machine_predicate_exclusive_lease",
+    "user_or_operator_gate": false,
+    "surface_consumption_registry_required": true,
+    "rerun_consumed_identity_allowed": false,
+    "failed_or_invalid_consumption_can_be_replaced": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "maximum_inference": "A GREEN D1 result may qualify only the exact frozen local model, runtime, labeled Semantic-IR mechanism, controls, task distribution, and evaluator for claim-level governed review. It cannot establish cognitive compilation generally, prove AGI or ASI, authorize serving or training, decide the independent D2 neural claim, or automatically promote ASI Stack book support. A null, boundary, underpowered, or inadequate result is scoped to the exact implementation and observation and cannot falsify the broader mechanism."
+}
