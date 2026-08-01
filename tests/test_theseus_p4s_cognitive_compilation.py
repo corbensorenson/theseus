@@ -27,6 +27,16 @@ def test_completion_accepts_labeled_v2_and_existing_control_envelopes() -> None:
     assert p4s.candidate_envelope_complete(direct)
 
 
+def test_completion_wrapper_does_not_recurse_when_shared_symbol_is_patched() -> None:
+    direct = "THESEUS_EDIT_V1\nREPLACE sample.py 1 1\n<<<\nx = 2\n>>>\nEND"
+    original = p4s.p4r.completion.candidate_envelope_complete
+    p4s.p4r.completion.candidate_envelope_complete = p4s.candidate_envelope_complete
+    try:
+        assert p4s.candidate_envelope_complete(direct)
+    finally:
+        p4s.p4r.completion.candidate_envelope_complete = original
+
+
 def test_semantic_scope_table_excludes_nested_statements_and_assignments() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)

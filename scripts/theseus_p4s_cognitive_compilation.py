@@ -32,6 +32,7 @@ SEMANTIC_PROMPT_MARKER = "[P4S_LABELED_SEMANTIC_IR_TREATMENT]"
 SEMANTIC_SCOPE_NODE_TYPES = {
     "FunctionDef", "AsyncFunctionDef", "Assign", "AnnAssign",
 }
+BASE_CANDIDATE_ENVELOPE_COMPLETE = completion.candidate_envelope_complete
 
 
 def main() -> int:
@@ -232,7 +233,7 @@ def run_experiment(
 
 
 def candidate_envelope_complete(text: str) -> bool:
-    return completion.candidate_envelope_complete(text) or ir_v2r1.complete(text)
+    return BASE_CANDIDATE_ENVELOPE_COMPLETE(text) or ir_v2r1.complete(text)
 
 
 def semantic_scope_symbol_table(root: Path, task: dict[str, Any]) -> dict[str, Any]:
