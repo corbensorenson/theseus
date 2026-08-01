@@ -174,6 +174,15 @@ class RoadmapBookSyncTests(unittest.TestCase):
             successor["source_materialization_implementation"],
         )
         self.assertEqual(
+            "green_exact_local_denial_canaries",
+            successor["evaluator_sandbox_qualification_state"],
+        )
+        self.assertFalse(
+            successor[
+                "untrusted_repository_execution_authorized_before_evaluator_seal"
+            ]
+        )
+        self.assertEqual(
             "not_implemented_do_not_claim_D1_execution_ready",
             successor["downstream_evaluator_campaign_and_disposition_state"],
         )
@@ -185,8 +194,22 @@ class RoadmapBookSyncTests(unittest.TestCase):
             "source_materialization_config",
             "source_materialization",
             "source_materialization_test",
+            "evaluator_sandbox_config",
+            "evaluator_sandbox",
+            "evaluator_sandbox_test",
+            "evaluator_sandbox_qualification",
         ):
             self.assertTrue((ROOT / successor[key]).is_file())
+        sandbox_report = json.loads(
+            (ROOT / successor["evaluator_sandbox_qualification"]).read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual("GREEN", sandbox_report["trigger_state"])
+        self.assertTrue(sandbox_report["untrusted_execution_authorized"])
+        self.assertFalse(sandbox_report["faults"])
+        self.assertTrue(all(sandbox_report["canary"].values()))
+        self.assertFalse(sandbox_report["run_receipt"]["boundary_hit"])
         self.assertFalse(successor["candidate_or_control_calls_authorized"])
         self.assertFalse(successor["automatic_book_support_promotion"])
 

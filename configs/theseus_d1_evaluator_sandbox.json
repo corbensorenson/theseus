@@ -1,0 +1,48 @@
+{
+  "policy": "project_theseus_d1_untrusted_evaluator_sandbox_v1",
+  "state": "PROSPECTIVE_QUALIFICATION_BEFORE_ANY_D1_PARENT_TARGET_OR_EVALUATOR_EXECUTION",
+  "backend": "/usr/bin/sandbox-exec",
+  "python": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+  "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+  "required_work_root": "/private/tmp",
+  "denied_read_roots": [
+    "/Users",
+    "/private/var/folders",
+    "/Volumes",
+    "/Network"
+  ],
+  "environment_allowlist": [
+    "HOME",
+    "LC_CTYPE",
+    "PATH",
+    "TMPDIR",
+    "NO_COLOR",
+    "PYTHONDONTWRITEBYTECODE"
+  ],
+  "qualification_limits": {
+    "cpu_seconds": 10,
+    "max_process_group_rss_mib": 1024,
+    "output_file_mib": 4,
+    "open_files": 64,
+    "user_processes": 256,
+    "wall_seconds": 20,
+    "terminate_grace_seconds": 2
+  },
+  "qualification_report": "reports/theseus_d1_evaluator_sandbox_qualification.json",
+  "authority": {
+    "user_or_operator_approval_required": false,
+    "untrusted_execution_before_green_qualification": false,
+    "network_authorized": false,
+    "host_home_read_authorized": false,
+    "write_outside_disposable_root_authorized": false,
+    "non_python_process_exec_authorized": false,
+    "unsanitized_environment_authorized": false,
+    "unbounded_output_authorized": false,
+    "unbounded_process_group_authorized": false,
+    "parent_target_or_evaluator_execution_authorized_by_config_alone": false,
+    "candidate_or_control_calls_authorized": false,
+    "external_inference_authorized": false,
+    "training_serving_D2_or_book_authority": false
+  },
+  "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism."
+}

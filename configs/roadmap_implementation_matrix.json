@@ -3999,9 +3999,15 @@
         "source_materialization": "scripts/theseus_d1_source_materialization.py",
         "source_materialization_test": "tests/test_theseus_d1_source_materialization.py",
         "source_materialization_implementation": "complete_waiting_on_frozen_registry_no_user_gate",
+        "evaluator_sandbox_config": "configs/theseus_d1_evaluator_sandbox.json",
+        "evaluator_sandbox": "scripts/theseus_d1_evaluator_sandbox.py",
+        "evaluator_sandbox_test": "tests/test_theseus_d1_evaluator_sandbox.py",
+        "evaluator_sandbox_qualification": "reports/theseus_d1_evaluator_sandbox_qualification.json",
+        "evaluator_sandbox_qualification_state": "green_exact_local_denial_canaries",
+        "untrusted_repository_execution_authorized_before_evaluator_seal": false,
         "downstream_evaluator_campaign_and_disposition_state": "not_implemented_do_not_claim_D1_execution_ready",
         "remaining_D1_execution_owners": [
-          "independent_parent_fail_target_pass_evaluator_seal",
+          "natural_request_and_independent_parent_fail_target_pass_evaluator_seal_on_qualified_sandbox",
           "blind_candidate_and_control_campaign",
           "independent_integrity_recomputation_and_terminal_disposition"
         ],

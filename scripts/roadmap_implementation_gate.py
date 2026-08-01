@@ -1115,8 +1115,20 @@ def audit_book_implementation_contract(
             "source_materialization_config",
             "source_materialization",
             "source_materialization_test",
+            "evaluator_sandbox_config",
+            "evaluator_sandbox",
+            "evaluator_sandbox_test",
+            "evaluator_sandbox_qualification",
         )
     ]
+    sandbox_report_path = ROOT / str(
+        d1_successor.get("evaluator_sandbox_qualification") or ""
+    )
+    sandbox_report = (
+        read_json(sandbox_report_path) if sandbox_report_path.is_file() else {}
+    )
+    sandbox_canary = dict_value(sandbox_report.get("canary"))
+    sandbox_receipt = dict_value(sandbox_report.get("run_receipt"))
     if (
         d1_successor.get("state")
         != "fail_closed_waiting_for_exact_P4V2R2_survivor"
@@ -1126,6 +1138,17 @@ def audit_book_implementation_contract(
         != "first_design_complete_44_repository_registry_frozen_before_archive_fetch"
         or d1_successor.get("source_materialization_implementation")
         != "complete_waiting_on_frozen_registry_no_user_gate"
+        or d1_successor.get("evaluator_sandbox_qualification_state")
+        != "green_exact_local_denial_canaries"
+        or d1_successor.get("untrusted_repository_execution_authorized_before_evaluator_seal")
+        is not False
+        or sandbox_report.get("trigger_state") != "GREEN"
+        or sandbox_report.get("untrusted_execution_authorized") is not True
+        or list_values(sandbox_report.get("faults"))
+        or not sandbox_canary
+        or any(value is not True for value in sandbox_canary.values())
+        or sandbox_receipt.get("returncode") != 0
+        or sandbox_receipt.get("boundary_hit") is not False
         or d1_successor.get("downstream_evaluator_campaign_and_disposition_state")
         != "not_implemented_do_not_claim_D1_execution_ready"
         or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 3

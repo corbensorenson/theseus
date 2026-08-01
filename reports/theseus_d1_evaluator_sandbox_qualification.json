@@ -1,0 +1,71 @@
+{
+  "activation_state": "D1_UNTRUSTED_EVALUATOR_SANDBOX_QUALIFIED",
+  "backend": {
+    "path": "/usr/bin/sandbox-exec",
+    "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"
+  },
+  "canary": {
+    "child_python_inherits_read_denial": true,
+    "cpu_limit_present": true,
+    "environment_minimized": true,
+    "file_size_limit_present": true,
+    "host_read_denied": true,
+    "inside_write_allowed": true,
+    "network_denied": true,
+    "open_file_limit_present": true,
+    "outside_write_denied": true,
+    "process_limit_present": true,
+    "shell_exec_denied": true,
+    "symlink_host_read_denied": true
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_d1_evaluator_sandbox.json",
+    "sha256": "ee7c78bc516384876272f51fc31b9a97bf91de24748d1c7f1b2505d06d896236"
+  },
+  "created_utc": "2026-08-01T19:43:16.548224Z",
+  "external_inference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism.",
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_d1_untrusted_evaluator_sandbox_v1",
+  "python": {
+    "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"
+  },
+  "qualification_executed": true,
+  "run_receipt": {
+    "boundary_hit": false,
+    "boundary_reason": "",
+    "duration_ms": 135.801,
+    "environment_keys": [
+      "HOME",
+      "LC_CTYPE",
+      "NO_COLOR",
+      "PATH",
+      "PYTHONDONTWRITEBYTECODE",
+      "TMPDIR"
+    ],
+    "limits": {
+      "cpu_seconds": 10,
+      "max_process_group_rss_mib": 1024,
+      "open_files": 64,
+      "output_file_mib": 4,
+      "terminate_grace_seconds": 2,
+      "user_processes": 256,
+      "wall_seconds": 20
+    },
+    "max_process_group_rss_mib": 1024.0,
+    "maximum_process_group_rss_mib": 3.891,
+    "profile_sha256": "4c8c35ff6ce85deecde72bf90716431d3d204bbd7408a5ae7bf9f753783ea60b",
+    "returncode": 0,
+    "rss_telemetry_fault": "",
+    "stderr_bytes": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 399,
+    "stdout_tail": "__THESEUS_D1_SANDBOX_RESULT__{\"child_python_inherits_read_denial\": true, \"cpu_limit_present\": true, \"environment_minimized\": true, \"file_size_limit_present\": true, \"host_read_denied\": true, \"inside_write_allowed\": true, \"network_denied\": true, \"open_file_limit_present\": true, \"outside_write_denied\": true, \"process_limit_present\": true, \"shell_exec_denied\": true, \"symlink_host_read_denied\": true}\n"
+  },
+  "sandbox_profile_sha256": "0b76cfde8a9c90f5192d05c6dc61f6ddf7944f9c7b48de0c239e7a904b7fc819",
+  "trigger_state": "GREEN",
+  "untrusted_execution_authorized": true
+}
