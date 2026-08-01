@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4S_FAIL_tenacity"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4s_hidden_test.py",
+      "sha256": "1c1c3ac602344fa29aa699761cbee154191847946e3b7c4e9715c7f3058b9813",
+      "source": "tests/fixtures/theseus_p4s_online/theseus_p4s_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4s_hidden_test.py', 'tenacity'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4S task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_oracle.semantic_ir",
+  "oracle_ir_sha256": "5bbbfb92e5eec0911f497ef151a6eabb5b9d9bde809ee71bb809f78ad64efd9a",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_target.tar.gz",
+  "target_archive_root": "tenacity-b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+  "target_archive_sha256": "60b53b5c21708d21ff34354f985859a5371d9c04ba4d9d494c5664f95c6a4853",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4s_01_tenacity_660_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "a28246b4b3b3459530ccb9669bf03b29dfbe97a9944e37cede0e510a6ddd8973",
+    "merge_revision": "b3c5a9f9212187aaf96353378daa9a9ebd800742",
+    "revision": "b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+    "upstream_archive": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_target_upstream.tar.gz",
+    "upstream_archive_sha256": "e2864112c2a16dece7a5652fd8541c730ef65b7d1396bf29832f9a63dc56615a"
+  },
+  "task_manifest": "configs/theseus_p4s_task_01_tenacity_660.json",
+  "task_manifest_sha256": "818cc4cc85e792f7db069c7de8990686e6210a56aaaff70a3c072946bc34d451"
+}

@@ -1,0 +1,130 @@
+{
+  "allowed_effect_paths": [
+    "httpcore/_sync/connection_pool.py",
+    "httpcore/_async/connection_pool.py"
+  ],
+  "campaign_index": 7,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 310,
+        "path": "httpcore/_sync/connection_pool.py",
+        "start_line": 275
+      },
+      {
+        "end_line": 310,
+        "path": "httpcore/_async/connection_pool.py",
+        "start_line": 275
+      }
+    ],
+    "searches": [
+      {
+        "literal": "max_keepalive_connections",
+        "paths": [
+          "httpcore/_sync/connection_pool.py",
+          "httpcore/_async/connection_pool.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3_p4_p4r": true,
+    "task_selected_after_p4s_instrument_freeze": true,
+    "task_selected_before_any_p4s_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4S development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Make both synchronous and asynchronous connection pools enforce max_keepalive_connections by counting only idle connections instead of the length of a boolean list. Preserve expired and closed connection handling, request assignment, sync/async parity, and behavior outside the two connection_pool.py files. Modify only those files.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O3"
+    },
+    {
+      "after": "O2",
+      "before": "O3"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "The synchronous pool compares the configured maximum against the number of idle connections."
+    },
+    {
+      "id": "O2",
+      "kind": "require",
+      "text": "The asynchronous pool applies the same idle-connection count rule."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "Expired/closed handling, request assignment, sync/async parity, and other files remain unchanged."
+    }
+  ],
+  "opaque_task_id": "p4s-cognitive-compilation-07",
+  "partition": "p4s_cognitive_compilation_decision_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_semantic_scope_nodes": 80,
+    "maximum_symbol_nodes": 68,
+    "maximum_units": 8,
+    "source_target_obligation_loss_and_dependency_identity_required": true,
+    "version": "theseus_semantic_ir_v2r1_labeled"
+  },
+  "source_archive": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_parent.tar.gz",
+  "source_archive_root": "httpcore-5974b03c7df89d3ee4e23779900d5349d550753c",
+  "source_archive_sha256": "655c4c5089012ca25cf251d78014c86238729705570c15772126162237be49af",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4s_07_httpcore_1000_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "16b6cac77c7234b1857d616ad2d1f5d2c48e50f8d2695b2915a842ffe88f5624",
+    "license_paths": [
+      "LICENSE.md"
+    ],
+    "license_spdx": "BSD-3-Clause",
+    "repository": "encode/httpcore",
+    "retrieved_utc": "2026-08-01T08:10:00Z",
+    "revision": "5974b03c7df89d3ee4e23779900d5349d550753c",
+    "upstream_archive": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "abd2710879f8e5022e9bf9a48e8e1ba4db6939721f40cf4fd5a293ea1f8d0399",
+    "upstream_merged_utc": "2025-10-13T12:41:26Z",
+    "upstream_request_title": "Fix max_keepalive_connections",
+    "upstream_request_url": "https://github.com/encode/httpcore/pull/1000",
+    "url": "https://github.com/encode/httpcore"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4S_VISIBLE_HTTPCORE_SYNC_IDLE_COUNT",
+      "obligation_ids": [
+        "O1",
+        "O3"
+      ]
+    },
+    {
+      "marker": "P4S_VISIBLE_HTTPCORE_ASYNC_IDLE_COUNT",
+      "obligation_ids": [
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4s_online/theseus_p4s_visible_test.py', 'httpcore'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

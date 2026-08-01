@@ -1,0 +1,29 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 2cc427ef436ef162fc578edf854d41af6742597b15d6fc85ff8c8f1dfd46e891
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/poetry/utils/authenticator.py N-6E827F48DEAC9C8A f801b1ce61648a0e823612bd9ff553bea8b15afaf88f144bdba90c3377ab5b99
+<<<
+def _get_credentials_for_url(
+        self, url: str, exact_match: bool = False
+    ) -> HTTPAuthCredential:
+        repository = self.get_repository_config_for_url(url, exact_match)
+
+        if repository is not None:
+            # _get_credentials_for_repository() already consults the password manager
+            # - by repository name, and (as a keyring fallback) by the repository url
+            # and netloc. Asking the password manager again here would only add
+            # a keyring lookup for the full request url, which is never a meaningful
+            # service name, while repeating the netloc lookup that was just performed.
+            return self._get_credentials_for_repository(repository=repository)
+
+        # No configured repository matches: fall back to a keyring lookup by
+        # the request url and netloc.
+        parsed_url = urllib.parse.urlsplit(url)
+        credential = self._password_manager.get_credential(url, parsed_url.netloc)
+
+        return HTTPAuthCredential(
+            username=credential.username, password=credential.password
+        )
+>>>
+LOSS NONE
+END

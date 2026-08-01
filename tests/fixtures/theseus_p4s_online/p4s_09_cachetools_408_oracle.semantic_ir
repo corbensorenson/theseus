@@ -1,0 +1,28 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 1ac9d86db3dda3d2ed0944c43a420626bf0f73c323ecd922733ad7fca498e3ac
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/cachetools/__init__.py N-1EB6BF3C8020E8D5 3bae96a9327c986ee21fd9f5a34dc6e48bafd412803cb3754c113ceb51195e0c
+<<<
+def __setitem__(self, key, value):
+        maxsize = self.__maxsize
+        size = self.getsizeof(value)
+        if size < 0:
+            raise ValueError("value size must be non-negative")
+        if size > maxsize:
+            raise ValueError("value too large")
+        if key not in self.__data:
+            diffsize = size
+            while self.__currsize + diffsize > maxsize:
+                self.popitem()
+        else:
+            diffsize = size - self.__size[key]
+            while self.__currsize + diffsize > maxsize:
+                self.popitem()
+                if key not in self.__data:
+                    diffsize = size
+        self.__data[key] = value
+        self.__size[key] = size
+        self.__currsize += diffsize
+>>>
+LOSS NONE
+END

@@ -1,0 +1,25 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 29d29c26b862e1ea8bdc9c58d269f0751df704b1b3ec3f1c1db547dcabf8ba00
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/apscheduler/_validators.py N-56B26604E72DE302 4809816c0993c687753fb363cfec435dc822c8030c9bcbf414cbf813f097bc46
+<<<
+def check_value(path: str, val: object) -> None:
+        if val is None:
+            return
+
+        if isinstance(val, list):
+            for index, item in enumerate(val):
+                check_value(f"{path}[{index}]", item)
+        elif isinstance(val, dict):
+            for k, v in val.items():
+                if not isinstance(k, str):
+                    raise ValueError(f"{path} has a non-string key ({k!r})")
+
+                check_value(f"{path}[{k!r}]", v)
+        elif not isinstance(val, (str, int, float, bool)):
+            raise ValueError(
+                f"{path} has a value that is not JSON compatible: ({val!r})"
+            )
+>>>
+LOSS NONE
+END

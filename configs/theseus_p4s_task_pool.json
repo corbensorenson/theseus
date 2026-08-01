@@ -1,0 +1,397 @@
+{
+  "candidate_generation_opened": false,
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "compiler_oracle_evaluator_audits": 10,
+    "deterministic_request_compiler_calls": 0,
+    "hosted_model_calls": 0,
+    "local_model_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "dependency_corruptions_rejected": 10,
+  "distinct_repositories": 10,
+  "evaluator_surface_commit": "f265e87ff0ce550a2ab5deab761da4cd72ed6824",
+  "execution_instrument_rebind_commit": "bf4f63b9",
+  "faults": [],
+  "generation_budget": {
+    "boundary_hit_counts_as_model_or_mechanism_failure": false,
+    "boundary_hit_invalidates_observation": true,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "physical_boundary": "model_declared_context_window_minus_exact_prompt_tokens",
+    "project_selected_quality_token_cap": null
+  },
+  "green_evaluator_audits": 10,
+  "hosted_reference": {
+    "P4S_blocking": false,
+    "effort": "xhigh",
+    "local_and_hosted_denominators_separate": true,
+    "model": "gpt-5.6-luna",
+    "same_sealed_pool_required": true,
+    "transport_state": "DEFINED_TRANSPORT_NOT_BOUND"
+  },
+  "information_flow": {
+    "candidate_integrity_recomputed_independently": true,
+    "natural_request_obligations_source_and_visible_feedback_candidate_visible": true,
+    "route_labels_passed_to_scoring": false,
+    "task_selection_conditioned_on_candidate_or_control_output": false,
+    "upstream_target_hidden_test_and_oracle_candidate_visible": false
+  },
+  "instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+  "instrument_audit": "reports/theseus_p4s_cognitive_compilation_instrument_audit_r2.json",
+  "instrument_audit_sha256": "6e3d4cd8d10457545e0fc47308fff8afbcff34129b0fd456c2ad0344d93d0535",
+  "instrument_sha256": "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828",
+  "maximum_inference": "A GREEN seal establishes only that ten fresh licensed parents fail, exact targets and evaluator-only Semantic-IR oracles pass, and source, obligation, target, loss, and dependency corruptions are rejected. It is not candidate, mechanism, D1, D2, serving, training, or ASI Stack support evidence.",
+  "partition": "p4s_cognitive_compilation_decision_development",
+  "policy": "project_theseus_p4s_cognitive_compilation_task_pool_v1",
+  "sealed_utc": "2026-08-01T08:35:01.698365Z",
+  "selection_instrument_freeze_commit": "42abb39b",
+  "selection_rule": "Select ten distinct merged, openly licensed Python maintenance changes from repositories absent from every consumed P2, P3, P4, and P4R source. Selection may use public PR metadata and patch structure for reconstructability, but is fixed after the P4S instrument freeze and before archive fetch, parent/target execution, oracle construction, learned calls, no-model compiler calls, hosted calls, or evaluator outcomes. A source may be excluded only for a preregistered materialization or evaluator impossibility before candidate generation; it may never be replaced after any candidate or control call.",
+  "source_acquisition_commit": "d19be2eeced6d3a715c49004311b09960a50d507",
+  "source_disjoint_from": {
+    "D1": "reserved_fresh_source_disjoint_surface_not_acquired",
+    "D2": "independent_neural_surface_not_acquired",
+    "P2_P3_P4_P4R": [
+      "agronholm/anyio",
+      "aio-libs/yarl",
+      "celery/celery",
+      "django/django",
+      "encode/starlette",
+      "encode/uvicorn",
+      "fastapi/fastapi",
+      "hynek/structlog",
+      "kludex/starlette",
+      "kludex/uvicorn",
+      "marshmallow-code/marshmallow",
+      "more-itertools/more-itertools",
+      "pallets/click",
+      "prompt-toolkit/python-prompt-toolkit",
+      "psf/black",
+      "psf/requests",
+      "pydantic/pydantic",
+      "pypa/installer",
+      "pypa/packaging",
+      "pytest-dev/pytest",
+      "python-attrs/attrs",
+      "python-poetry/tomlkit",
+      "python-trio/trio",
+      "python/typing",
+      "textualize/rich",
+      "tox-dev/filelock",
+      "tox-dev/tox",
+      "urllib3/urllib3"
+    ],
+    "training": "all_P4S_tasks_permanently_excluded"
+  },
+  "source_fetch_report": "reports/theseus_p4s_source_fetch.json",
+  "source_fetch_report_sha256": "907f03465a4ce645eae5f7db1868501cc27c5b712495920b2e1a0cd8e59b7164",
+  "source_registry": "configs/theseus_p4s_task_sources.json",
+  "source_registry_sha256": "4237d99b6c051d2e692c2678539183d28194b10a0a704c323b38b481eaef508f",
+  "source_selection_commit": "560df8f437d470e8eea9fbd927ee7854f1b93e74",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "task_count": 10,
+  "tasks": [
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 1,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_01_tenacity_660.json",
+      "evaluator_audit": "reports/theseus_p4s_01_tenacity_660_evaluator_audit.json",
+      "evaluator_audit_sha256": "6e2038bece5d6268ca9f613668acd8becdd71ff916fbb4b223dc3dab3f5b3494",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "c3f8215384551c659c431e827e40bb7e39d403a0b4f07cfcec704d8bfe90c0e1",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "Apache-2.0",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_oracle.semantic_ir",
+      "oracle_ir_sha256": "5bbbfb92e5eec0911f497ef151a6eabb5b9d9bde809ee71bb809f78ad64efd9a",
+      "parent_revision": "c650fb45204635f07910948d5fc59a8c551ffdda",
+      "pull_request_url": "https://github.com/jd/tenacity/pull/660",
+      "repository": "jd/tenacity",
+      "stem": "p4s_01_tenacity_660",
+      "target_revision": "b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+      "task": "configs/theseus_p4s_task_01_tenacity_660.json",
+      "task_sha256": "818cc4cc85e792f7db069c7de8990686e6210a56aaaff70a3c072946bc34d451",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 2,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_02_apscheduler_1100.json",
+      "evaluator_audit": "reports/theseus_p4s_02_apscheduler_1100_evaluator_audit.json",
+      "evaluator_audit_sha256": "14dc732a7fb4f39883512d92c156519935546e1edb2a8e3cdc2f0564c7666930",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "ed9d64b89795351058ef0472e44d63991479fb4657c7b734823d7ee1e99fb796",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "MIT",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_oracle.semantic_ir",
+      "oracle_ir_sha256": "70437f6412043680fda9a32f96e86b2eb05876a079d1b259218c4000a381dec1",
+      "parent_revision": "f2337f7aa675718ba5f0af33e0cb53006304ab0a",
+      "pull_request_url": "https://github.com/agronholm/apscheduler/pull/1100",
+      "repository": "agronholm/apscheduler",
+      "stem": "p4s_02_apscheduler_1100",
+      "target_revision": "0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+      "task": "configs/theseus_p4s_task_02_apscheduler_1100.json",
+      "task_sha256": "f20adada688f0d745f04abd71de522cb2801014aea6b283f0f5cd232a7c48e72",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 3,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_03_poetry_10959.json",
+      "evaluator_audit": "reports/theseus_p4s_03_poetry_10959_evaluator_audit.json",
+      "evaluator_audit_sha256": "429eabb4642bf33e692efd30898c176205f10bd83f945bcfe2ff1e450b044650",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "fb66ad74a4cf592492d864e0cfac39070d0a4ff73fa34f599295a0f096b9a91d",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "MIT",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_03_poetry_10959_oracle.semantic_ir",
+      "oracle_ir_sha256": "66ab31cc363786b9b5539d32bf8459b35a900874e63814d7273e6be8480182ba",
+      "parent_revision": "5ccad24e03e3f7539246bf7350f6b6599331bdcb",
+      "pull_request_url": "https://github.com/python-poetry/poetry/pull/10959",
+      "repository": "python-poetry/poetry",
+      "stem": "p4s_03_poetry_10959",
+      "target_revision": "53e406c45e1ac2358a2f46e090a05dda56aaec75",
+      "task": "configs/theseus_p4s_task_03_poetry_10959.json",
+      "task_sha256": "cd53559fb3736b0d633f023330245f09e8c79c67137769f5f77d2b29556b6ef8",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 4,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_04_pip_14199.json",
+      "evaluator_audit": "reports/theseus_p4s_04_pip_14199_evaluator_audit.json",
+      "evaluator_audit_sha256": "2ed253c7978596a853bbe8e4bda1e6064fc44ada7eb7619e8a2f31892415f44f",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "5aa65745af3a5addfdeffb4a7757fed9a0e57ddbeb6391cdd9e7c5c191dbce68",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "MIT",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_04_pip_14199_oracle.semantic_ir",
+      "oracle_ir_sha256": "cda773409d8d073639a2329750a9bea79dd2de77fb88cda2ddd4221528dbe6f5",
+      "parent_revision": "a48eefdfc6ba1c02e67331d891cdca052daca740",
+      "pull_request_url": "https://github.com/pypa/pip/pull/14199",
+      "repository": "pypa/pip",
+      "stem": "p4s_04_pip_14199",
+      "target_revision": "08c8768c5ab511780778649e5d88ac333b5dce7e",
+      "task": "configs/theseus_p4s_task_04_pip_14199.json",
+      "task_sha256": "b9c506431316ced9ca081b268f7e0463f9864307dab3b6632bef917659e44895",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 5,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_05_aiohttp_13125.json",
+      "evaluator_audit": "reports/theseus_p4s_05_aiohttp_13125_evaluator_audit.json",
+      "evaluator_audit_sha256": "cc8b231f757d5026fd1e287dd4d9a6b173a1676be6c22e109741d7ada257a429",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "01ddb3988c2cc51bda2573cbb88d2687acc590b630c8d4a012fdfc1f852dc6f1",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "Apache-2.0",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_05_aiohttp_13125_oracle.semantic_ir",
+      "oracle_ir_sha256": "40101e97e4d76b27fee32b0afdc248b0c5cfc63257c6ffc74c49967b8cbc6285",
+      "parent_revision": "9ead8fbb44f37403441a52e04bccced70e978ddb",
+      "pull_request_url": "https://github.com/aio-libs/aiohttp/pull/13125",
+      "repository": "aio-libs/aiohttp",
+      "stem": "p4s_05_aiohttp_13125",
+      "target_revision": "80f8883f96b4b12f58e4f2829f8d1011d1bab922",
+      "task": "configs/theseus_p4s_task_05_aiohttp_13125.json",
+      "task_sha256": "776c21002a5af9d80884c446d07983e6a3b47a1a4c8efe749acde81e4cd6a1f3",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 6,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_06_httpx_3699.json",
+      "evaluator_audit": "reports/theseus_p4s_06_httpx_3699_evaluator_audit.json",
+      "evaluator_audit_sha256": "a55daf8610deefa471627dfd377b12587b9a98b3b4ebf783929415e5afc68b03",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "8cf50fe451c5029f3041991f349510a18f0afa3b3ed8d18802e96c21698b1637",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "BSD-3-Clause",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_06_httpx_3699_oracle.semantic_ir",
+      "oracle_ir_sha256": "c39eeb2312af86777a5466fed7f196d9c0c82d005de650e7f84e36354d14ac4b",
+      "parent_revision": "ca097c96f97d8d2a5da09b8ca736c7e78a2467f6",
+      "pull_request_url": "https://github.com/encode/httpx/pull/3699",
+      "repository": "encode/httpx",
+      "stem": "p4s_06_httpx_3699",
+      "target_revision": "4b9f63e507c4ea75fa59f6bbdfb103e2f014a6f9",
+      "task": "configs/theseus_p4s_task_06_httpx_3699.json",
+      "task_sha256": "3b41d41466ec3da1cc723f8b6454abc42eac5853cc99e10a61ed6b82d604dcf8",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 7,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_07_httpcore_1000.json",
+      "evaluator_audit": "reports/theseus_p4s_07_httpcore_1000_evaluator_audit.json",
+      "evaluator_audit_sha256": "c2651bb58948ddb1ca89af6ab9fb0419b73e3fdd23d5cb055788501fb065cb6e",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "0335b4a869613ebe91f89670a0a3e50e208fe0f3a1dec22d10b2d1a74a4f9e2b",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "BSD-3-Clause",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_07_httpcore_1000_oracle.semantic_ir",
+      "oracle_ir_sha256": "cf97b6c60f2694d0c407925b517d24159b2503b6e5adcb46ae029c35b1d8917f",
+      "parent_revision": "5974b03c7df89d3ee4e23779900d5349d550753c",
+      "pull_request_url": "https://github.com/encode/httpcore/pull/1000",
+      "repository": "encode/httpcore",
+      "stem": "p4s_07_httpcore_1000",
+      "target_revision": "7fb20526175e2300185ce2b472a97acca95b2525",
+      "task": "configs/theseus_p4s_task_07_httpcore_1000.json",
+      "task_sha256": "1f0c08d21add5370549639fe77d86bfa28ca1ebcdf8f745489e751fa3c724b02",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 8,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_08_isort_2599.json",
+      "evaluator_audit": "reports/theseus_p4s_08_isort_2599_evaluator_audit.json",
+      "evaluator_audit_sha256": "c769748046f4f0ded8d89f12443db481aba67b19bf30a357a8ae02ba78f72030",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "b99dff33bc68902976e03c4f3387d3dc985e8e08ec37c86ffd9d123f51f420c8",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "MIT",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_oracle.semantic_ir",
+      "oracle_ir_sha256": "4282f77294d4f7f89c5ab6714cacd2fcfcc9885936ba04ceb791404f72c708e0",
+      "parent_revision": "47c4f9819c3e92d296efe43c2f460e6742a1a75f",
+      "pull_request_url": "https://github.com/PyCQA/isort/pull/2599",
+      "repository": "PyCQA/isort",
+      "stem": "p4s_08_isort_2599",
+      "target_revision": "f766bf605f315b65570791b0db0f19ffd5994a0b",
+      "task": "configs/theseus_p4s_task_08_isort_2599.json",
+      "task_sha256": "3e70dd3714b55c3b0b5a266943e239c7dc1563bc4b3e961419a1e1e5c7598005",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 9,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_09_cachetools_408.json",
+      "evaluator_audit": "reports/theseus_p4s_09_cachetools_408_evaluator_audit.json",
+      "evaluator_audit_sha256": "5d560de3f082146486e0021ee7ffe47853bb7ca3ca97e5064cf299955b3e7de0",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "520c31f4d076b49754684d50574e95afe1bf6c27e1a1049e05aa4d71319d8ed2",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "MIT",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_09_cachetools_408_oracle.semantic_ir",
+      "oracle_ir_sha256": "87936833fece58e6578076524487d30cea07d3ece15cee16781916088dc3e018",
+      "parent_revision": "13bb86a55e36e501cf0b3e4c35db516ed9409fd7",
+      "pull_request_url": "https://github.com/tkem/cachetools/pull/408",
+      "repository": "tkem/cachetools",
+      "stem": "p4s_09_cachetools_408",
+      "target_revision": "b0ea1a4a0b38e1d3c60e802d171d776795c7a81b",
+      "task": "configs/theseus_p4s_task_09_cachetools_408.json",
+      "task_sha256": "7c042e9e7afccf08d954be75a65fb3cb36d044db40deffde06ebbfbba9ed8c16",
+      "upstream_target_passed": true
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 10,
+      "compiler_oracle_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4s_evaluator_10_werkzeug_3215.json",
+      "evaluator_audit": "reports/theseus_p4s_10_werkzeug_3215_evaluator_audit.json",
+      "evaluator_audit_sha256": "f0d9acfd1a68ab884dd22706c1cdc20740c6ecdbce619b90226ce2c68c23c8b2",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "ce1cb4a59dea111f9c5859770d25bae12542642feb6dbc496c5f5d98a525d522",
+      "four_base_corruptions_rejected": true,
+      "license_spdx": "BSD-3-Clause",
+      "oracle_ir": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_oracle.semantic_ir",
+      "oracle_ir_sha256": "319927fb94e32c1e622c700be78d86ce5a34feb949c1c07d9c930a19b7e74d76",
+      "parent_revision": "1b00618e787f40dfb21eba29caf8f8be7c8e1d93",
+      "pull_request_url": "https://github.com/pallets/werkzeug/pull/3215",
+      "repository": "pallets/werkzeug",
+      "stem": "p4s_10_werkzeug_3215",
+      "target_revision": "884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+      "task": "configs/theseus_p4s_task_10_werkzeug_3215.json",
+      "task_sha256": "aa4b81ee768d1c7a2d028cedbcae8f333a697c9b980cc485cb5511e87081de01",
+      "upstream_target_passed": true
+    }
+  ]
+}

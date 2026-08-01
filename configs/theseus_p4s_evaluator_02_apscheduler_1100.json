@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4S_FAIL_apscheduler"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4s_hidden_test.py",
+      "sha256": "1c1c3ac602344fa29aa699761cbee154191847946e3b7c4e9715c7f3058b9813",
+      "source": "tests/fixtures/theseus_p4s_online/theseus_p4s_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4s_hidden_test.py', 'apscheduler'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4S task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_oracle.semantic_ir",
+  "oracle_ir_sha256": "70437f6412043680fda9a32f96e86b2eb05876a079d1b259218c4000a381dec1",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_target.tar.gz",
+  "target_archive_root": "apscheduler-0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+  "target_archive_sha256": "82b5e355bfb043a137a68da957bd5a068da56d237dff1d998628bdf2e575b2e5",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4s_02_apscheduler_1100_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "87ddf2e1f874d0c2d1e027fbafd6cfae37adc64ce81f68a5344a517505af5b1d",
+    "merge_revision": "ff65a444f83083ceef865f4eb97fccd2186fef01",
+    "revision": "0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+    "upstream_archive": "tests/fixtures/theseus_p4s_online/p4s_02_apscheduler_1100_target_upstream.tar.gz",
+    "upstream_archive_sha256": "5901ae6e2f9ebf29c64019f46f72bc3a12b8eaf426e9c56c236a6afd62276c16"
+  },
+  "task_manifest": "configs/theseus_p4s_task_02_apscheduler_1100.json",
+  "task_manifest_sha256": "f20adada688f0d745f04abd71de522cb2801014aea6b283f0f5cd232a7c48e72"
+}

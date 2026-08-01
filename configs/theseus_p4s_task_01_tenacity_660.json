@@ -1,0 +1,112 @@
+{
+  "allowed_effect_paths": [
+    "tenacity/retry.py"
+  ],
+  "campaign_index": 1,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 200,
+        "path": "tenacity/retry.py",
+        "start_line": 150
+      }
+    ],
+    "searches": [
+      {
+        "literal": "retry_if_exception_cause_type",
+        "paths": [
+          "tenacity/retry.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3_p4_p4r": true,
+    "task_selected_after_p4s_instrument_freeze": true,
+    "task_selected_before_any_p4s_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4S development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Prevent retry_if_exception_cause_type from hanging when an exception has a cyclic __cause__ chain. Preserve matching for ordinary acyclic cause chains, failed-outcome handling, accepted exception types, and all behavior outside tenacity/retry.py. Modify only tenacity/retry.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "Cause traversal terminates for self-cycles and multi-exception cycles without retrying forever."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Matching exception causes in ordinary acyclic chains retains existing behavior."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Do not change retry stop policies, outcome handling, or files outside tenacity/retry.py."
+    }
+  ],
+  "opaque_task_id": "p4s-cognitive-compilation-01",
+  "partition": "p4s_cognitive_compilation_decision_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_semantic_scope_nodes": 80,
+    "maximum_symbol_nodes": 45,
+    "maximum_units": 8,
+    "source_target_obligation_loss_and_dependency_identity_required": true,
+    "version": "theseus_semantic_ir_v2r1_labeled"
+  },
+  "source_archive": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_parent.tar.gz",
+  "source_archive_root": "tenacity-c650fb45204635f07910948d5fc59a8c551ffdda",
+  "source_archive_sha256": "5ef43f92d65dd008c23c054a1c4c2417460efa43f10dd7a33d73d5b44c9eb4d1",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4s_01_tenacity_660_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "edc5c432ea1e43a91b1320314863345865db835752316c2aa0ce41c5e47300eb",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_spdx": "Apache-2.0",
+    "repository": "jd/tenacity",
+    "retrieved_utc": "2026-08-01T08:10:00Z",
+    "revision": "c650fb45204635f07910948d5fc59a8c551ffdda",
+    "upstream_archive": "tests/fixtures/theseus_p4s_online/p4s_01_tenacity_660_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "23de05e93057d3b781ffb9aa4014dc84be66956ddf33f38d402f8bbcf59b6fa3",
+    "upstream_merged_utc": "2026-07-29T10:39:31Z",
+    "upstream_request_title": "fix: stop hanging on cyclic exception __cause__ chains",
+    "upstream_request_url": "https://github.com/jd/tenacity/pull/660",
+    "url": "https://github.com/jd/tenacity"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4S_VISIBLE_TENACITY_CAUSE_CYCLE",
+      "obligation_ids": [
+        "O1",
+        "O2"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4s_online/theseus_p4s_visible_test.py', 'tenacity'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

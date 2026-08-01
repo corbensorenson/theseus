@@ -1,0 +1,30 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 2f9ac7b9fa02d555df309662916c87f20dd976574e714812c1d3b5824eefa13d
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE aiohttp/web_request.py N-A100D688FEF0C2A0 22567c35b89156e4c518912fdaf5a043301f94a08a95ab22fed5af5bf960f545
+<<<
+ATTRS = HeadersMixin.ATTRS | frozenset(
+        [
+            "_message",
+            "_protocol",
+            "_payload_writer",
+            "_payload",
+            "_headers",
+            "_method",
+            "_version",
+            "_rel_url",
+            "_post",
+            "_read_bytes",
+            "_state",
+            "_cache",
+            "_task",
+            "_client_max_size",
+            "_loop",
+            "_transport_sslcontext",
+            "_transport_peername",
+            "_transport_sockname",
+        ]
+    )
+>>>
+LOSS NONE
+END

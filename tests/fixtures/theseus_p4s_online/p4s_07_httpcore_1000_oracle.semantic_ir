@@ -1,0 +1,151 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 8a47d675cb89404727096cfaf41ca2d0171460fe02c04493317df6755377f8fa
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O3 REPLACE httpcore/_sync/connection_pool.py N-416CB8681DAD096C 237cceab88b37aecbc61263a81eab61b4553d488b3e899b615a070cf0f8c5086
+<<<
+def _assign_requests_to_connections(self) -> list[ConnectionInterface]:
+        """
+        Manage the state of the connection pool, assigning incoming
+        requests to connections as available.
+
+        Called whenever a new request is added or removed from the pool.
+
+        Any closing connections are returned, allowing the I/O for closing
+        those connections to be handled seperately.
+        """
+        closing_connections = []
+
+        # First we handle cleaning up any connections that are closed,
+        # have expired their keep-alive, or surplus idle connections.
+        for connection in list(self._connections):
+            if connection.is_closed():
+                # log: "removing closed connection"
+                self._connections.remove(connection)
+            elif connection.has_expired():
+                # log: "closing expired connection"
+                self._connections.remove(connection)
+                closing_connections.append(connection)
+            elif (
+                connection.is_idle()
+                and sum(connection.is_idle() for connection in self._connections)
+                > self._max_keepalive_connections
+            ):
+                # log: "closing idle connection"
+                self._connections.remove(connection)
+                closing_connections.append(connection)
+
+        # Assign queued requests to connections.
+        queued_requests = [request for request in self._requests if request.is_queued()]
+        for pool_request in queued_requests:
+            origin = pool_request.request.url.origin
+            available_connections = [
+                connection
+                for connection in self._connections
+                if connection.can_handle_request(origin) and connection.is_available()
+            ]
+            idle_connections = [
+                connection for connection in self._connections if connection.is_idle()
+            ]
+
+            # There are three cases for how we may be able to handle the request:
+            #
+            # 1. There is an existing connection that can handle the request.
+            # 2. We can create a new connection to handle the request.
+            # 3. We can close an idle connection and then create a new connection
+            #    to handle the request.
+            if available_connections:
+                # log: "reusing existing connection"
+                connection = available_connections[0]
+                pool_request.assign_to_connection(connection)
+            elif len(self._connections) < self._max_connections:
+                # log: "creating new connection"
+                connection = self.create_connection(origin)
+                self._connections.append(connection)
+                pool_request.assign_to_connection(connection)
+            elif idle_connections:
+                # log: "closing idle connection"
+                connection = idle_connections[0]
+                self._connections.remove(connection)
+                closing_connections.append(connection)
+                # log: "creating new connection"
+                connection = self.create_connection(origin)
+                self._connections.append(connection)
+                pool_request.assign_to_connection(connection)
+
+        return closing_connections
+>>>
+UNIT U2 O2,O3 REPLACE httpcore/_async/connection_pool.py N-FCA94636D58E6429 f2a5133f634d190c9322bce822e4d15c34258aeaaac27496d8f3ca3b7d34690a
+<<<
+def _assign_requests_to_connections(self) -> list[AsyncConnectionInterface]:
+        """
+        Manage the state of the connection pool, assigning incoming
+        requests to connections as available.
+
+        Called whenever a new request is added or removed from the pool.
+
+        Any closing connections are returned, allowing the I/O for closing
+        those connections to be handled seperately.
+        """
+        closing_connections = []
+
+        # First we handle cleaning up any connections that are closed,
+        # have expired their keep-alive, or surplus idle connections.
+        for connection in list(self._connections):
+            if connection.is_closed():
+                # log: "removing closed connection"
+                self._connections.remove(connection)
+            elif connection.has_expired():
+                # log: "closing expired connection"
+                self._connections.remove(connection)
+                closing_connections.append(connection)
+            elif (
+                connection.is_idle()
+                and sum(connection.is_idle() for connection in self._connections)
+                > self._max_keepalive_connections
+            ):
+                # log: "closing idle connection"
+                self._connections.remove(connection)
+                closing_connections.append(connection)
+
+        # Assign queued requests to connections.
+        queued_requests = [request for request in self._requests if request.is_queued()]
+        for pool_request in queued_requests:
+            origin = pool_request.request.url.origin
+            available_connections = [
+                connection
+                for connection in self._connections
+                if connection.can_handle_request(origin) and connection.is_available()
+            ]
+            idle_connections = [
+                connection for connection in self._connections if connection.is_idle()
+            ]
+
+            # There are three cases for how we may be able to handle the request:
+            #
+            # 1. There is an existing connection that can handle the request.
+            # 2. We can create a new connection to handle the request.
+            # 3. We can close an idle connection and then create a new connection
+            #    to handle the request.
+            if available_connections:
+                # log: "reusing existing connection"
+                connection = available_connections[0]
+                pool_request.assign_to_connection(connection)
+            elif len(self._connections) < self._max_connections:
+                # log: "creating new connection"
+                connection = self.create_connection(origin)
+                self._connections.append(connection)
+                pool_request.assign_to_connection(connection)
+            elif idle_connections:
+                # log: "closing idle connection"
+                connection = idle_connections[0]
+                self._connections.remove(connection)
+                closing_connections.append(connection)
+                # log: "creating new connection"
+                connection = self.create_connection(origin)
+                self._connections.append(connection)
+                pool_request.assign_to_connection(connection)
+
+        return closing_connections
+>>>
+LOSS NONE
+END

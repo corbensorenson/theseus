@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4S_FAIL_werkzeug"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4s_hidden_test.py",
+      "sha256": "1c1c3ac602344fa29aa699761cbee154191847946e3b7c4e9715c7f3058b9813",
+      "source": "tests/fixtures/theseus_p4s_online/theseus_p4s_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4s_hidden_test.py', 'werkzeug'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4S task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_oracle.semantic_ir",
+  "oracle_ir_sha256": "319927fb94e32c1e622c700be78d86ce5a34feb949c1c07d9c930a19b7e74d76",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_target.tar.gz",
+  "target_archive_root": "werkzeug-884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+  "target_archive_sha256": "7a0ca6d471244ca5134e08bbca5e7b99d62dd9d3f9adef4b3807396498db09f9",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4s_10_werkzeug_3215_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "c2e64154f1165ac21414745e924a5ec1c5fa27440fbc2c33bd177cff8db93e7b",
+    "merge_revision": "9aede751e22d4f66c6027a34abb009df4240deab",
+    "revision": "884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+    "upstream_archive": "tests/fixtures/theseus_p4s_online/p4s_10_werkzeug_3215_target_upstream.tar.gz",
+    "upstream_archive_sha256": "031b6249f7600ac31b5615b0b04c5866320350480d8274aea2ded9560b865542"
+  },
+  "task_manifest": "configs/theseus_p4s_task_10_werkzeug_3215.json",
+  "task_manifest_sha256": "aa4b81ee768d1c7a2d028cedbcae8f333a697c9b980cc485cb5511e87081de01"
+}

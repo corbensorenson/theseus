@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 53.159,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-uacq6gxt/source/theseus_p4s_hidden_test.py\", line 320, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-uacq6gxt/source/theseus_p4s_hidden_test.py\", line 111, in apscheduler\n    validate(None, None, {\"a\": [None, {\"b\": None}], \"ok\": 3})\n  File \"src/apscheduler/_validators.py\", line 57, in valid_metadata\n    check_value(key, val)\n  File \"src/apscheduler/_validators.py\", line 41, in check_value\n    check_value(f\"{path}[{index}]\", item)\n  File \"src/apscheduler/_validators.py\", line 49, in check_value\n    raise ValueError(\nValueError: a[0] has a value that is not JSON compatible: (None)\nP4S_FAIL_apscheduler: ValueError: a[0] has a value that is not JSON compatible: (None)\n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "P4S_PASS_apscheduler\n",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T08:34:46.779758Z",
+  "evaluator_sha256": "ed9d64b89795351058ef0472e44d63991479fb4657c7b734823d7ee1e99fb796",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 1031.101,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 54.726,
+    "stderr_tail": "",
+    "stdout_tail": "P4S_PASS_apscheduler\n"
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "a434a4f231abc81222868432b198c3994022e2d167ae515aa7b0a50c59040ab4",
+    "task_sha256": "f20adada688f0d745f04abd71de522cb2801014aea6b283f0f5cd232a7c48e72",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "f20adada688f0d745f04abd71de522cb2801014aea6b283f0f5cd232a7c48e72",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4S_FAIL_isort"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4s_hidden_test.py",
+      "sha256": "1c1c3ac602344fa29aa699761cbee154191847946e3b7c4e9715c7f3058b9813",
+      "source": "tests/fixtures/theseus_p4s_online/theseus_p4s_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4s_hidden_test.py', 'isort'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed P4S task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_oracle.semantic_ir",
+  "oracle_ir_sha256": "4282f77294d4f7f89c5ab6714cacd2fcfcc9885936ba04ceb791404f72c708e0",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_target.tar.gz",
+  "target_archive_root": "isort-f766bf605f315b65570791b0db0f19ffd5994a0b",
+  "target_archive_sha256": "d9d98517dfaf87182b59608d72753b84fa86d9c0970393a7ceda011bdef0ebf5",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4s_08_isort_2599_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "7f4d9c605cba47e36ab79b50518aa6178dce6e191d20cc9235620f1187fb03ae",
+    "merge_revision": "c7d418226a76715382a6d89672c24ae71e8cbe97",
+    "revision": "f766bf605f315b65570791b0db0f19ffd5994a0b",
+    "upstream_archive": "tests/fixtures/theseus_p4s_online/p4s_08_isort_2599_target_upstream.tar.gz",
+    "upstream_archive_sha256": "fdbae392f902992ef73052d59db3fb66b59852754c1dfafc661ac74d108b3208"
+  },
+  "task_manifest": "configs/theseus_p4s_task_08_isort_2599.json",
+  "task_manifest_sha256": "3e70dd3714b55c3b0b5a266943e239c7dc1563bc4b3e961419a1e1e5c7598005"
+}

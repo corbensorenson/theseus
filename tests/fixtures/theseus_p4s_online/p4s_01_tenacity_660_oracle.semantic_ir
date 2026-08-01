@@ -1,0 +1,25 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 8e590028a0edf17a0c412cb83de86f668efb288cdb5d341f30907abc18d9b72c
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE tenacity/retry.py N-426E95B9D4073B4A a29dd46942cd0fb7009f1880b5c7fb09b0949132cca808c020891f4ccc2be5dc
+<<<
+def __call__(self, retry_state: "RetryCallState") -> bool:
+        if retry_state.outcome is None:
+            raise RuntimeError("__call__ called before outcome was set")
+
+        if retry_state.outcome.failed:
+            exc = retry_state.outcome.exception()
+            # Guard against cyclic __cause__ chains (e.g. ``raise e from e``),
+            # which would otherwise spin forever inside the predicate and
+            # prevent stop conditions from ever running (see #658).
+            seen: set[int] = set()
+            while exc is not None and id(exc) not in seen:
+                seen.add(id(exc))
+                if isinstance(exc.__cause__, self.exception_cause_types):
+                    return True
+                exc = exc.__cause__
+
+        return False
+>>>
+LOSS NONE
+END

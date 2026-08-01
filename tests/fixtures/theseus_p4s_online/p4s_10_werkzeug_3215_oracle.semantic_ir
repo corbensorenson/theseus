@@ -1,0 +1,111 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 6ac8f33943f97f85480646b12c117173d3c12ee507d39ce4f8fc2b74bd6fd96a
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/werkzeug/routing/map.py N-67BC95DF435E42A6 339832e15d99a4f17217e31fe332d6347e92741c1ede36369916e134be48b3f8
+<<<
+def build(
+        self,
+        endpoint: t.Any,
+        values: t.Mapping[str, t.Any] | None = None,
+        method: str | None = None,
+        force_external: bool = False,
+        append_unknown: bool = True,
+        url_scheme: str | None = None,
+    ) -> str:
+        """Build a URL by filling in any variable slots in the endpoint's rule
+        with the provided values.
+
+        This produces relative URLs (path only, no host) by default, which is
+        appropriate for most use cases. When using subdomain or host matching,
+        the URL will be absolute if the endpoint is not on the same host as the
+        current request. If you need an absolute URL no matter what, such as
+        when adding a link to an email, pass ``force_external=True``.
+
+        Characters that are not allowed directly in URLs will be percent-encoded
+        using UTF-8.
+
+        Additional values that don't match any rule parts are added to the query
+        (``?key=value``) part of the URL.
+
+        If a rule is not found, an :exc:`.BuildError` is raised. Converters may
+        also raise exceptions when preparing a value.
+
+        Unlike matching, building does not perform comprehensive validation of
+        the values, it's assumed that they are trusted and correct. It's also
+        possible to build a URL for one endpoint that will be matched by
+        another, or will not match. This is very unlikely to happen or to matter
+        in most applications, especially with testing. If you need a
+        stronger guarantee, you can use a helper to verify that
+        ``match(build(endpoint)) == endpoint``.
+
+        :param endpoint: The endpoint for the rule to build.
+        :param values: Values for the variable parts of the rule, which will be
+            converted using the part's converter's
+            :meth:`~.BaseConverter.to_url` method. Keys that don't match
+            variable parts will be converted to a query string unless
+            ``append_unknown`` is disabled.
+        :param method: Further match the rule to build by this HTTP method, for
+            when there are multiple rules for the same endpoint that vary based
+            on method.
+        :param force_external: Always produce an absolute URL, for external use.
+            If ``scheme`` is not set, this produces a protocol-relative URL.
+        :param append_unknown: Convert values that don't match any rule parts
+            to a query string. Disable to ignore such values.
+        :param url_scheme: Scheme to use for absolute URLs. Defaults to
+            :attr:`url_scheme`.
+
+        .. versionchanged:: 2.0
+            Added the ``url_scheme`` parameter.
+
+        .. versionadded:: 0.6
+           Added the ``append_unknown`` parameter.
+        """
+        self.map.update()
+
+        if values:
+            if isinstance(values, MultiDict):
+                values = {
+                    k: (v[0] if len(v) == 1 else v)
+                    for k, v in dict.items(values)
+                    if len(v) != 0
+                }
+            else:  # plain dict
+                values = {k: v for k, v in values.items() if v is not None}
+        else:
+            values = {}
+
+        rv = self._partial_build(endpoint, values, method, append_unknown)
+        if rv is None:
+            raise BuildError(endpoint, values, method, self)
+
+        domain_part, path, websocket = rv
+        host = self.get_host(domain_part)
+
+        if url_scheme is None:
+            url_scheme = self.url_scheme
+
+        # Always build WebSocket routes with the scheme (browsers
+        # require full URLs). If bound to a WebSocket, ensure that HTTP
+        # routes are built with an HTTP scheme.
+        secure = url_scheme in {"https", "wss"}
+
+        if websocket:
+            force_external = True
+            url_scheme = "wss" if secure else "ws"
+        elif url_scheme:
+            url_scheme = "https" if secure else "http"
+
+        # Return a plain path if neither host or subdomain matching is enabled,
+        # or if they are enabled and the current host matches.
+        if not force_external and (
+            not (self.map.subdomain_matching or self.map.host_matching)
+            or (self.map.subdomain_matching and domain_part == self.subdomain)
+            or (self.map.host_matching and host == self.server_name)
+        ):
+            return f"{self.script_name.rstrip('/')}/{path.lstrip('/')}"
+
+        scheme = f"{url_scheme}:" if url_scheme else ""
+        return f"{scheme}//{host}{self.script_name[:-1]}/{path.lstrip('/')}"
+>>>
+LOSS NONE
+END
