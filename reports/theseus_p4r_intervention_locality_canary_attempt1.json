@@ -1,0 +1,83 @@
+{
+  "policy": "project_theseus_p4r_intervention_locality_canary_attempt_disposition_v1",
+  "created_utc": "2026-08-01T07:48:00Z",
+  "trigger_state": "YELLOW",
+  "state": "INCONCLUSIVE_IMPLEMENTATION",
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "config": "configs/theseus_p4r_intervention_locality_canary.json",
+  "config_sha256": "a89672d6354844a33e763610facdb338ea7e33136d330e262f7dd6912d4f1101",
+  "prospective_freeze_commit": "e6234ffe",
+  "calls_planned": 4,
+  "calls_observed": 1,
+  "model_loads_observed": 1,
+  "cases_completed": 0,
+  "campaign_aborted_fail_closed": true,
+  "aborted_before_additional_model_calls": true,
+  "observation": {
+    "case_id": "repair_primary_preserve_secondary",
+    "call_number": 1,
+    "runtime_report": "runtime/p2a/p2a_p4r_intervention_locality_repair_primary_preserve_secondary_direct_local_model_1.json",
+    "runtime_report_sha256": "decced2a6c75245b0df681c3eb7a82bd8a4622c297decd5891dfd4e291763ab7",
+    "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_intervention_locality_repair_primary_preserve_secondary_direct_local_model_1.json",
+    "backend_report_sha256": "86ed0ee23ec0a82f5dcbb9d286c4b25458f1b3628395601885c27b241125e483",
+    "termination_reason": "model_eos",
+    "prompt_tokens": 689,
+    "generated_tokens": 397,
+    "physical_context_boundary_hit": false,
+    "route_integrity_ready": true,
+    "external_inference_calls": 0,
+    "public_training_rows_written": 0,
+    "parse_and_lower": false,
+    "parse_faults": [
+      "semantic_ir_v2_units_missing",
+      "semantic_ir_v2_unparsed_text"
+    ],
+    "parsed_units": 0,
+    "lowered_actions": 0,
+    "controlled_injection_applied": false,
+    "failure_wall": "The model copied prompt-side obligation, dependency, unit-description, and source labels into an envelope ending with END instead of emitting the bound two-unit grammar. The controlled U1 injector therefore had no valid unit to mutate and the runner raised before it could write its aggregate report."
+  },
+  "static_intervention_ladder": {
+    "trigger_state": "GREEN",
+    "valid_fixture_action_count": 2,
+    "required_corruption_rejections": {
+      "source_identity": true,
+      "obligation_coverage": true,
+      "target_identity": true,
+      "loss_record": true,
+      "dependency_closure": true
+    },
+    "learned_generation_credit": false
+  },
+  "faults": [
+    "learned_two_unit_prompt_transport_not_parseable",
+    "runner_failed_to_terminalize_unparseable_provisional_candidate"
+  ],
+  "maximum_inference": "This attempt shows that the frozen two-unit prompt transport and its exception path were inadequate for the exact local model. It does not test intervention sensitivity or dependency-local learned repair and cannot count against cognitive compilation.",
+  "repair_owner": [
+    "Replace descriptive prompt sections that resemble output with one fully bound two-unit output skeleton placed last.",
+    "Terminalize any unparseable provisional candidate as retained INCONCLUSIVE_IMPLEMENTATION evidence rather than raising.",
+    "Use a new runtime namespace and a prospectively frozen repair config; do not overwrite or treat this consumed call as part of the repaired denominator."
+  ],
+  "authority": {
+    "fresh_p4_open": false,
+    "D1_open": false,
+    "book_support_state_effect": "none",
+    "training_eligible": false,
+    "serving_authority_effect": "none"
+  },
+  "generation_policy": {
+    "project_selected_quality_token_cap": null,
+    "physical_boundary_hit_invalidates_observation": true,
+    "observed_boundary_hits": 0
+  },
+  "counters": {
+    "candidate_model_calls": 1,
+    "evaluator_model_calls": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  }
+}
