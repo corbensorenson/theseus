@@ -1,0 +1,150 @@
+{
+  "candidate_or_control_calls": 0,
+  "faults": [],
+  "maximum_inference": "Source transport and archive normalization only; no task adequacy, model, mechanism, or book claim.",
+  "network_use": "licensed_source_archive_acquisition_only",
+  "policy": "project_theseus_p4r_source_fetch_v1",
+  "source_registry": "configs/theseus_p4r_task_sources.json",
+  "source_registry_sha256": "f9de3264dc3082913ce6e358eeb5096ac27751edf5decad1c3ccad7a58b6f03a",
+  "tasks": [
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_parent.tar.gz",
+          "normalized_sha256": "56bc10494de56d31a84e37c14a1eb82fccb2ca1b85ca028dccbd49c214b35522",
+          "omitted_members": [],
+          "revision": "8049246eddaed76bb36501100a1fd79a80bad5bc",
+          "sanitization_report": "reports/theseus_p4r_08_black_5258_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "c6581c90b96e4a1ccdb6fa1c7479e05f63695f077503e5e6d1dbc65d43a43c86",
+          "source_archive_root": "black-8049246eddaed76bb36501100a1fd79a80bad5bc",
+          "upstream": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_parent_upstream.tar.gz",
+          "upstream_sha256": "237eb8294ec770aa360da4040542039027d4af895e5f2109d8012e43821b9f4f",
+          "url": "https://codeload.github.com/psf/black/tar.gz/8049246eddaed76bb36501100a1fd79a80bad5bc"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_target.tar.gz",
+          "normalized_sha256": "9d632101776952919932f5a76b7d2d07089de7d3d073845ab9946ba656d6c85e",
+          "omitted_members": [],
+          "revision": "183ef41c315579a60988d2e7c094593d26f054b8",
+          "sanitization_report": "reports/theseus_p4r_08_black_5258_target_archive_sanitization.json",
+          "sanitization_report_sha256": "6a277c93acbb6171ef7ed6e8973a4627e2c77f0d1bf8cdf07dd572ce939dd2aa",
+          "source_archive_root": "black-183ef41c315579a60988d2e7c094593d26f054b8",
+          "upstream": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_target_upstream.tar.gz",
+          "upstream_sha256": "449dd6089a5c026f14cfd5be04a7ad7caad063d51fa743bf557af7cf839d3b7f",
+          "url": "https://codeload.github.com/psf/black/tar.gz/183ef41c315579a60988d2e7c094593d26f054b8"
+        }
+      ],
+      "repository": "psf/black",
+      "stem": "p4r_08_black_5258"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_parent.tar.gz",
+          "normalized_sha256": "f496b8d1c9917251b62fabc0c7c90c244955aefc8d9e420cf53fdbb0121a85ef",
+          "omitted_members": [
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-behindscenes.png",
+              "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-behindscenes.png"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-note.png",
+              "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-note.png"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-philosophy.png",
+              "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-philosophy.png"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-warning.png",
+              "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-warning.png"
+            }
+          ],
+          "revision": "274a1d494d11d87a1b767340d1f398f197810f93",
+          "sanitization_report": "reports/theseus_p4r_09_django_21700_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "acccc95dc381bb89eba13520ffa1078967f4b1f55cb4b92a1994813afe11954a",
+          "source_archive_root": "django-274a1d494d11d87a1b767340d1f398f197810f93",
+          "upstream": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_parent_upstream.tar.gz",
+          "upstream_sha256": "fc7ed6590bac69f45d9fd4b5c64455ae9ab51786bc590dd95178ffcbb0b49cf8",
+          "url": "https://codeload.github.com/django/django/tar.gz/274a1d494d11d87a1b767340d1f398f197810f93"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_target.tar.gz",
+          "normalized_sha256": "c7b381b709e81c706a9e12a84c65eabb92edb52e249990b17a24af58affd4fa4",
+          "omitted_members": [
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-behindscenes.png",
+              "path": "django-7a24488c2377de6df2e2421892253d4d5814f111/docs/_theme/djangodocs-epub/static/docicons-behindscenes.png"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-note.png",
+              "path": "django-7a24488c2377de6df2e2421892253d4d5814f111/docs/_theme/djangodocs-epub/static/docicons-note.png"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-philosophy.png",
+              "path": "django-7a24488c2377de6df2e2421892253d4d5814f111/docs/_theme/djangodocs-epub/static/docicons-philosophy.png"
+            },
+            {
+              "kind": "symbolic_link",
+              "linkname": "../../djangodocs/static/docicons-warning.png",
+              "path": "django-7a24488c2377de6df2e2421892253d4d5814f111/docs/_theme/djangodocs-epub/static/docicons-warning.png"
+            }
+          ],
+          "revision": "7a24488c2377de6df2e2421892253d4d5814f111",
+          "sanitization_report": "reports/theseus_p4r_09_django_21700_target_archive_sanitization.json",
+          "sanitization_report_sha256": "733556c9f691d2b405c6ad48ee92ff2f954efa985daa9da8201c2b8fd5aeb1f9",
+          "source_archive_root": "django-7a24488c2377de6df2e2421892253d4d5814f111",
+          "upstream": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_target_upstream.tar.gz",
+          "upstream_sha256": "4fbae5194c30e54fe11eea2133b0ccc32d3c60e84d39677ac0f1800761490ac0",
+          "url": "https://codeload.github.com/django/django/tar.gz/7a24488c2377de6df2e2421892253d4d5814f111"
+        }
+      ],
+      "repository": "django/django",
+      "stem": "p4r_09_django_21700"
+    },
+    {
+      "artifacts": [
+        {
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_parent.tar.gz",
+          "normalized_sha256": "0c87fea6a78bb4fb32af7d074670797a223e219d809f68b5dd788c1c8065897d",
+          "omitted_members": [],
+          "revision": "a094d2a891cb77dcaa6ee432a5102a4863e5beff",
+          "sanitization_report": "reports/theseus_p4r_10_celery_10406_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "434e6847f7c4dca041f172c747f6fe5436e5d8f04b8265794a73a59a6a1625e1",
+          "source_archive_root": "celery-a094d2a891cb77dcaa6ee432a5102a4863e5beff",
+          "upstream": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_parent_upstream.tar.gz",
+          "upstream_sha256": "3cd6d4216e5fc5dfc2489fb20315d6fa671f3d2bc5425b4056fa25c5eb87881a",
+          "url": "https://codeload.github.com/celery/celery/tar.gz/a094d2a891cb77dcaa6ee432a5102a4863e5beff"
+        },
+        {
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_target.tar.gz",
+          "normalized_sha256": "105e93c33058c6b741062b2ab2fc9a57a2d4be3d24fea7df491306c2bd7bf42b",
+          "omitted_members": [],
+          "revision": "243522cad53e955cadeaa1be441b4193cdabef97",
+          "sanitization_report": "reports/theseus_p4r_10_celery_10406_target_archive_sanitization.json",
+          "sanitization_report_sha256": "0002867fc647e50aa2c6b2e756e70ee6ac2d2a309a32f5f3e37ea1c38f98dc5a",
+          "source_archive_root": "celery-243522cad53e955cadeaa1be441b4193cdabef97",
+          "upstream": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_target_upstream.tar.gz",
+          "upstream_sha256": "036a8a3d1178601c244c4f187d5dc93ab690dc96f18b79e4eccc7339bd08a09d",
+          "url": "https://codeload.github.com/celery/celery/tar.gz/243522cad53e955cadeaa1be441b4193cdabef97"
+        }
+      ],
+      "repository": "celery/celery",
+      "stem": "p4r_10_celery_10406"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

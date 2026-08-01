@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_yarl"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'yarl'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_04_yarl_1802_oracle.semantic_ir",
+  "oracle_ir_sha256": "279fb0391edfab88301e7cfb992da6a12d5de1dae190f0fefb24a287df20f71b",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_04_yarl_1802_target.tar.gz",
+  "target_archive_root": "yarl-ccdd824bb0d7a6e134ad07c37c46c7cc085e75a1",
+  "target_archive_sha256": "b795644f4c579625d8721df7be22b7a5a38e070a8faa98b5e0ace59125393f11",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_04_yarl_1802_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "cf046fe17f472a3fb8f3e71bc9aa6754d8c802fa9f7b96102ce7b0b2e8c6e933",
+    "merge_revision": "28c1bccabd1a37c34bf8f9cc03080deac29bc1f6",
+    "revision": "ccdd824bb0d7a6e134ad07c37c46c7cc085e75a1",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_04_yarl_1802_target_upstream.tar.gz",
+    "upstream_archive_sha256": "acd09b507d2ee351db007215a9cc9f98e9902b2b8927199c54036598cffc860f"
+  },
+  "task_manifest": "configs/theseus_p4r_task_01_yarl_1802.json",
+  "task_manifest_sha256": "18ba7bb0590d60ae39bf42ce865dac704adf02f3a1b3f0bc70906d5f42cb3b0b"
+}

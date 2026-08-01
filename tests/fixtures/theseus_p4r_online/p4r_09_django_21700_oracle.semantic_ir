@@ -1,0 +1,11 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 36edf93c68b12a051da3b94e90bbbe66f5f61c462f0fc203992c83a68af67b91
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE django/urls/utils.py N-0155F7E9BFFCD691 d1c0be590e950f548c1fd15a762d9847d62da7385cb3cc838150f3ecd45e0029
+<<<
+for start, end, _ignored in _find_groups(pattern, _UNNAMED_GROUP_MATCHER):
+        final_pattern += pattern[prev_end:start] + "<var>"
+        prev_end = end
+>>>
+LOSS NONE
+END

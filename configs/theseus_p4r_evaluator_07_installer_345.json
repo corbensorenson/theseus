@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_installer"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'installer'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_10_installer_345_oracle.semantic_ir",
+  "oracle_ir_sha256": "dd47b6e8b13d7bb6adb43ecf8c39cf248405bf7a18dab76396bc14750d77f858",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_10_installer_345_target.tar.gz",
+  "target_archive_root": "installer-d6b76a8ef9c3ebb5f15e7aba64dd8dfee1461ead",
+  "target_archive_sha256": "642c807f403e02c1d1267576a1e6f5f8b445691b9c1b5354cb18cd664b3f015d",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_10_installer_345_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "5e7e8c635c374e329ebab32c1b892debfc96c4df87132e8ef22f016c8ef4d72a",
+    "merge_revision": "97609d8b7c202f3a8e5174747559e83c61a4cc95",
+    "revision": "d6b76a8ef9c3ebb5f15e7aba64dd8dfee1461ead",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_10_installer_345_target_upstream.tar.gz",
+    "upstream_archive_sha256": "355d8b58a9349ef7a5257674d7ec5e6396344cd452ffa176d957b52c108ef5f1"
+  },
+  "task_manifest": "configs/theseus_p4r_task_07_installer_345.json",
+  "task_manifest_sha256": "82b25df5e2d74f172b3f9352a8281db48c9e56f559a538fde2c10b87fb16a9c3"
+}

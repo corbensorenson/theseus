@@ -1,0 +1,49 @@
+{
+  "admitted_regular_file_or_directory_count": 10348,
+  "faults": [],
+  "input": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4r_online/p4r_09_django_21700_parent_upstream.tar.gz",
+    "sha256": "fc7ed6590bac69f45d9fd4b5c64455ae9ab51786bc590dd95178ffcbb0b49cf8"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [
+    {
+      "kind": "symbolic_link",
+      "linkname": "../../djangodocs/static/docicons-behindscenes.png",
+      "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-behindscenes.png"
+    },
+    {
+      "kind": "symbolic_link",
+      "linkname": "../../djangodocs/static/docicons-note.png",
+      "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-note.png"
+    },
+    {
+      "kind": "symbolic_link",
+      "linkname": "../../djangodocs/static/docicons-philosophy.png",
+      "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-philosophy.png"
+    },
+    {
+      "kind": "symbolic_link",
+      "linkname": "../../djangodocs/static/docicons-warning.png",
+      "path": "django-274a1d494d11d87a1b767340d1f398f197810f93/docs/_theme/djangodocs-epub/static/docicons-warning.png"
+    }
+  ],
+  "output": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4r_online/p4r_09_django_21700_parent.tar.gz",
+    "sha256": "f496b8d1c9917251b62fabc0c7c90c244955aefc8d9e420cf53fdbb0121a85ef"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "django-274a1d494d11d87a1b767340d1f398f197810f93",
+  "trigger_state": "GREEN"
+}

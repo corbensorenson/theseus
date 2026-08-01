@@ -84,7 +84,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
 | P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
-| P4 causal development | `P4R_COMPLETION_INSTRUMENT_FROZEN_POOL_REPAIR_PENDING` | P4-v1 is preserved as an inconclusive interruption after 14 retained calls across three consumed tasks. No retained call hit 1,536 tokens, but that quality ceiling was arbitrary and finish-reason custody incomplete. P4R is GREEN with parser/EOS completion, explicit termination telemetry, no project-selected quality token cap, seven unopened tasks, and three fresh tasks still required |
+| P4 causal development | `P4R_COMPLETION_TASK_POOL_SEALED_RUN_PENDING` | P4-v1 is preserved as an inconclusive interruption after 14 retained calls across three consumed tasks. P4R is GREEN with parser/EOS completion, explicit termination telemetry, no project-selected quality token cap, and a sealed ten-task pool: seven never-opened predecessor surfaces plus fresh Black, Django, and Celery tasks; all parent/target/oracle/corruption gates pass and candidate/control calls remain zero |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -241,8 +241,11 @@ ceiling-hit status. It has no project-selected quality token cap. Its sole
 numeric token guard is the pinned model-declared context residual
 (`262,144 - exact prompt tokens`); reaching that physical boundary or a host
 emergency stop invalidates the observation rather than becoming a negative
-model or mechanism result. The repaired ten-task pool must contain unopened
-tasks 4-10 plus three newly acquired licensed, source-disjoint tasks.
+model or mechanism result. The repaired ten-task pool is now sealed from the
+seven exact unopened Yarl, Packaging, Structlog, Trio, Tox, Uvicorn, and
+Installer surfaces plus prospectively selected Black, Django, and Celery
+tasks. All ten parents fail, all exact targets and evaluator-only oracles pass,
+all corruption interventions reject, and candidate/control calls remain zero.
 
 Historical L0 evidence remains preserved:
 
@@ -564,10 +567,9 @@ In order:
 6. Preserve terminal P3 and its ten consumed tasks, 36 runtime receipts, blind
    evaluations, exact 1/10 versus 1/10 useful result, and zero-unsafe rollback
    evidence. Preserve interrupted P4-v1 as pilot-only evidence and never replay
-   its consumed tasks 1-3. Seal P4R from unopened tasks 4-10 plus three newly
-   acquired source-disjoint licensed tasks, then run its completion-based
-   matched arms without scoring any safety-boundary stop. No other mechanism is
-   active.
+   its consumed tasks 1-3. Run the sealed ten-task P4R pool exactly once through
+   its completion-based matched arms without replacement and without scoring
+   any safety-boundary stop. No other mechanism is active.
    Bind Luna-xhigh only when a callable governed transport exists, using the
    reserved identical pool once and retaining separate denominators.
 7. Refresh neural N0 source/custody readiness in parallel and implement the

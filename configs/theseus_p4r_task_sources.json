@@ -15,6 +15,16 @@
     "new_task_parent_target_oracle_calls_before_selection": 0,
     "user_task_or_label_dependency": false
   },
+  "post_selection_mechanics_repairs": [
+    {
+      "task": "p4r_08_black_5258",
+      "repair": "Bind the oracle replacement to the enclosing Cache.read Try node because ExceptHandler nodes are not emitted by the frozen Semantic-IR symbol table.",
+      "source_task_or_repository_changed": false,
+      "natural_request_or_obligations_changed": false,
+      "candidate_or_control_output_observed": false,
+      "task_replacement_allowed": false
+    }
+  ],
   "reused_unopened_tasks": [
     {
       "campaign_index": 1,
@@ -105,8 +115,8 @@
         "id": "U1",
         "obligation_ids": ["O1", "O2", "O3"],
         "operation": "REPLACE",
-        "parent_selector": {"node_type": "ExceptHandler", "qualified_name": "Cache.read", "contains": "pickle.UnpicklingError"},
-        "target_selectors": [{"node_type": "ExceptHandler", "qualified_name": "Cache.read", "contains": "PermissionError"}]
+        "parent_selector": {"node_type": "Try", "qualified_name": "Cache.read", "contains": "pickle.load"},
+        "target_selectors": [{"node_type": "Try", "qualified_name": "Cache.read", "contains": "PermissionError"}]
       }]
     },
     {

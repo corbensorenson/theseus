@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 72.314,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ww214h2o/source/theseus_p4_hidden_test.py\", line 140, in <module>\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ww214h2o/source/theseus_p4_hidden_test.py\", line 127, in celery\n    assert backend.get_key_for_task(identifier) == backend.get_key_for_task(str(identifier))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"celery/backends/base.py\", line 1025, in get_key_for_task\n    return self._get_key_for(self.task_keyprefix, task_id, key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"celery/backends/base.py\", line 1043, in _get_key_for\n    prefix, key_t(id), key_t(key),\n            ^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ww214h2o/source/theseus_p4_hidden_test.py\", line 106, in key_t\n    raise TypeError(type(value).__name__)\nTypeError: UUID\nP4R_FAIL_celery: TypeError: UUID\n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "P4R_PASS_celery\n",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T04:27:18.413936Z",
+  "evaluator_sha256": "ade7505a6c2c65c8abedd25a816bae0603634a017bfa442c819949aa5ecd04d2",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 2321.136,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 73.725,
+    "stderr_tail": "",
+    "stdout_tail": "P4R_PASS_celery\n"
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "0c87fea6a78bb4fb32af7d074670797a223e219d809f68b5dd788c1c8065897d",
+    "task_sha256": "fc084e3cf1386fc963ec6def83b6e8ea5ba0f4201e0c010cbf26b1888a74cc1f",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "fc084e3cf1386fc963ec6def83b6e8ea5ba0f4201e0c010cbf26b1888a74cc1f",
+  "trigger_state": "GREEN"
+}

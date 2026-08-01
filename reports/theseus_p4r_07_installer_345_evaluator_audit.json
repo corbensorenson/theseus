@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 1089.745,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-92yhbl_r/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-92yhbl_r/source/theseus_p4_hidden_test.py\", line 307, in check_installer\n    assert function(\"demo-1.0.database/payload.py\", source, \"purelib\") == (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"src/installer/_core.py\", line 52, in _determine_scheme\n    left, right = posixpath.split(left)\n                  ^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen posixpath>\", line 105, in split\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-92yhbl_r/source/theseus_p4_hidden_test.py\", line 302, in alarm\n    raise TimeoutError(\"common-prefix sibling caused nontermination\")\nTimeoutError: common-prefix sibling caused nontermination\nP4_FAIL_installer: TimeoutError: common-prefix sibling caused nontermination\n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "P4_PASS_installer\n",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T04:26:51.849863Z",
+  "evaluator_sha256": "73ce6dfd8a915f223247636808b47f5b35913be2d8c5564c28a3b74c5fe64f2f",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 1499.859,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 76.489,
+    "stderr_tail": "",
+    "stdout_tail": "P4_PASS_installer\n"
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "0426457e6f045bf2f32667d709cc355f2bd2c72df4ef82c2891d8af598a2de6a",
+    "task_sha256": "82b25df5e2d74f172b3f9352a8281db48c9e56f559a538fde2c10b87fb16a9c3",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "82b25df5e2d74f172b3f9352a8281db48c9e56f559a538fde2c10b87fb16a9c3",
+  "trigger_state": "GREEN"
+}

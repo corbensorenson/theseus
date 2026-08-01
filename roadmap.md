@@ -469,7 +469,7 @@ Luna for clear, repeatable, high-volume or focused coding work and permits
 
 #### P4 — Test one ASI Stack mechanism at a time
 
-State: `ACTIVE_COGNITIVE_COMPILATION_P4R_INSTRUMENT_FROZEN_POOL_REPAIR_PENDING`.
+State: `ACTIVE_COGNITIVE_COMPILATION_P4R_TASK_POOL_SEALED_RUN_PENDING`.
 
 Use the observed instrument and task residuals to select exactly one
 intervention. Do not run a factorial or make record production the dependent
@@ -532,9 +532,15 @@ ceiling-hit status. There is no project-selected quality token cap. The only
 numeric token boundary is the pinned model's declared context residual
 (`262,144 - exact prompt tokens`), a physical addressability guard: touching it
 invalidates the observation and can never be scored as a model or mechanism
-loss. Host emergency stops follow the same inconclusive rule. P4R must seal a
-ten-task denominator from the seven unopened tasks plus three newly acquired
-source-disjoint licensed tasks before another candidate call.
+loss. Host emergency stops follow the same inconclusive rule. P4R is now sealed
+before another candidate call at `configs/theseus_p4r_task_pool.json`. It
+rebinds the seven exact unopened Yarl, Packaging, Structlog, Trio, Tox, Uvicorn,
+and Installer surfaces under new opaque P4R identities and adds prospectively
+selected Black, Django, and Celery tasks from distinct licensed repositories.
+All ten parents fail, all ten exact targets pass, every evaluator-only oracle
+passes visible and hidden checks, and all four corruption classes are rejected.
+Candidate, hosted, and deterministic-compiler calls remain zero. The next work
+is the one-shot resumable P4R campaign; no task may be replayed or replaced.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -602,7 +608,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `P4R_COMPLETION_INSTRUMENT_FROZEN_POOL_REPAIR_PENDING` | P4-v1 stopped after 14 retained calls across three consumed tasks because its 1,536-token quality boundary was arbitrary and finish-reason custody incomplete; zero retained calls hit it, but the run is an inconclusive pilot only. P4R is GREEN with parser/EOS completion, explicit termination telemetry, no project-selected quality token cap, seven unopened tasks, and three fresh tasks still required before the repaired pool seals |
+| P4 causal development | `P4R_COMPLETION_TASK_POOL_SEALED_RUN_PENDING` | P4-v1 remains an inconclusive pilot after 14 retained calls across three consumed tasks. P4R is GREEN with parser/EOS completion, explicit termination telemetry, no project-selected quality token cap, and a sealed ten-task pool: seven never-opened predecessor surfaces plus fresh Black, Django, and Celery tasks; all parent/target/oracle/corruption gates pass and candidate/control calls remain zero |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -641,12 +647,10 @@ Maintenance serves P or N and does not become another research program:
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
 9. Preserve the interrupted P4-v1 receipts and disposition without aggregating
-   an arm effect. Keep tasks 1-3 consumed. Seal P4R from unopened tasks 4-10 and
-   three newly acquired source-disjoint licensed tasks only after the repaired
-   completion instrument commit. Then run the same three learned arms and
-   prospective no-model compiler control route-blind, invalidating rather than
-   scoring any context-ceiling or host-emergency stop. No other P4 mechanism is
-   active.
+   an arm effect. Keep tasks 1-3 consumed. Run the sealed P4R pool exactly once
+   with the same three learned arms and prospective no-model compiler control,
+   route-blind, invalidating rather than scoring any context-ceiling or
+   host-emergency stop. No task replacement and no other P4 mechanism is active.
 
 ## Historical Rapid Evidence Campaign
 

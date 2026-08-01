@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4R_FAIL_django"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "b47dc39646cd04de4790bbed21c667fc64f328007ee67e7fad51d214f22f2e31",
+      "source": "tests/fixtures/theseus_p4r_online/theseus_p4r_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'django'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_oracle.semantic_ir",
+  "oracle_ir_sha256": "52d38fbfea11805c32ee5a49d532b747cf0ec70fbe1b2463b6b2c58c5c870e2d",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_target.tar.gz",
+  "target_archive_root": "django-7a24488c2377de6df2e2421892253d4d5814f111",
+  "target_archive_sha256": "c7b381b709e81c706a9e12a84c65eabb92edb52e249990b17a24af58affd4fa4",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4r_09_django_21700_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "733556c9f691d2b405c6ad48ee92ff2f954efa985daa9da8201c2b8fd5aeb1f9",
+    "merge_revision": "ca14173f968cf36115f22d6c6785f738de4391ed",
+    "revision": "7a24488c2377de6df2e2421892253d4d5814f111",
+    "upstream_archive": "tests/fixtures/theseus_p4r_online/p4r_09_django_21700_target_upstream.tar.gz",
+    "upstream_archive_sha256": "4fbae5194c30e54fe11eea2133b0ccc32d3c60e84d39677ac0f1800761490ac0"
+  },
+  "task_manifest": "configs/theseus_p4_task_p4r_09_django_21700.json",
+  "task_manifest_sha256": "ab56d3095197f43e88b6a664d117704dff0ac88461f27e43ecec30f4b5888582"
+}

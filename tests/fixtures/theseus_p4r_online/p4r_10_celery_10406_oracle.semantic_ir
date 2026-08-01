@@ -1,0 +1,16 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE a1fcfacbc332893c7ec0781a4af786fcb48accdc6db7c964b7db83e2deb3f924
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE celery/backends/base.py N-3B0C09BFE34DE850 827d90d372cbe8437510f7c54355e2d0c944d4da303a0a36c56dc017443a5a19
+<<<
+def _get_key_for(self, prefix, id, key=''):
+        key_t = self.key_t
+        if isinstance(id, UUID):
+            id = str(id)
+
+        return key_t('').join([
+            prefix, key_t(id), key_t(key),
+        ])
+>>>
+LOSS NONE
+END

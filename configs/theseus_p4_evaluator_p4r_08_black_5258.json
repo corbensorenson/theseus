@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4R_FAIL_black"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "b47dc39646cd04de4790bbed21c667fc64f328007ee67e7fad51d214f22f2e31",
+      "source": "tests/fixtures/theseus_p4r_online/theseus_p4r_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'black'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_oracle.semantic_ir",
+  "oracle_ir_sha256": "431dc1565ccd35155181b56d041ecf7022ac42206c66c5954140f431e5c16bce",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_target.tar.gz",
+  "target_archive_root": "black-183ef41c315579a60988d2e7c094593d26f054b8",
+  "target_archive_sha256": "9d632101776952919932f5a76b7d2d07089de7d3d073845ab9946ba656d6c85e",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4r_08_black_5258_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "6a277c93acbb6171ef7ed6e8973a4627e2c77f0d1bf8cdf07dd572ce939dd2aa",
+    "merge_revision": "db2e3e7b317b40685ba4618235a8388c7c6ea5e2",
+    "revision": "183ef41c315579a60988d2e7c094593d26f054b8",
+    "upstream_archive": "tests/fixtures/theseus_p4r_online/p4r_08_black_5258_target_upstream.tar.gz",
+    "upstream_archive_sha256": "449dd6089a5c026f14cfd5be04a7ad7caad063d51fa743bf557af7cf839d3b7f"
+  },
+  "task_manifest": "configs/theseus_p4_task_p4r_08_black_5258.json",
+  "task_manifest_sha256": "afaed651e931ba5427c3d3a6b005d40545c6b53cf5f570d45965085ff210100e"
+}

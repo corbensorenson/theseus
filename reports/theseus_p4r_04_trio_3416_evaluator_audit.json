@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 86.146,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ozrhjkfg/source/theseus_p4_hidden_test.py\", line 207, in invoke\n    await function([\"unused\"], stdin=subprocess.PIPE)\n  File \"src/trio/_subprocess.py\", line 677, in _run_process\n    raise ValueError(\nValueError: stdout=subprocess.PIPE is only valid with nursery.start, since that's the only way to access the pipe; use nursery.start or pass the data you want to write directly\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ozrhjkfg/source/theseus_p4_hidden_test.py\", line 337, in main\n    CASES[case]()\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ozrhjkfg/source/theseus_p4_hidden_test.py\", line 215, in check_trio\n    asyncio.run(invoke())\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py\", line 194, in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py\", line 687, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"/private/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/theseus-p4-archive-audit-ozrhjkfg/source/theseus_p4_hidden_test.py\", line 210, in invoke\n    assert message.startswith(\"stdin=subprocess.PIPE\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\nP4_FAIL_trio: AssertionError: \n",
+    "stdout_tail": ""
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "P4_PASS_trio\n",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T04:26:48.182670Z",
+  "evaluator_sha256": "3987168e447db9c0e5cb187f8a2c7d5eab196be65722db35355a9d8670d56380",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 933.812,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 82.959,
+    "stderr_tail": "",
+    "stdout_tail": "P4_PASS_trio\n"
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "1c3b76f657001b2afe16c3f4bb805270d3e608d97b46e703adc9ea622908f46a",
+    "task_sha256": "535a0bcbab3ade1e53abdca119c01b637400f413b37a4b568f03e191b5bd9452",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "535a0bcbab3ade1e53abdca119c01b637400f413b37a4b568f03e191b5bd9452",
+  "trigger_state": "GREEN"
+}

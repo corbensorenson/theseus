@@ -1,0 +1,19 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 6966c8b1a350f8564dd36b67c36ae810a1a03a3cdc5d3f68f0cf8390b8422ddf
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/black/cache.py N-C1563235E41842C9 e39f8e3b55167bfb6b011411fc4e8ed854f2746062ea31e970d0e61b684a2fe7
+<<<
+try:
+                data: dict[str, tuple[float, int, str]] = pickle.load(fobj)
+                file_data = {k: FileData(*v) for k, v in data.items()}
+            except (
+                pickle.UnpicklingError,
+                EOFError,
+                ValueError,
+                IndexError,
+                PermissionError,
+            ):
+                return cls(mode, cache_file)
+>>>
+LOSS NONE
+END

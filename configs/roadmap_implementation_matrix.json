@@ -3746,7 +3746,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "active_P4R_completion_instrument_frozen_pool_repair_pending",
+    "execution_state": "active_P4R_completion_task_pool_sealed_run_pending",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -3809,7 +3809,7 @@
       "rule": "Preserve P4-v1 as an inconclusive mechanics-and-budget pilot. Never replay consumed tasks 1-3, aggregate an arm effect, or infer model, mechanism, serving, D1/D2, training, or book support from it."
     },
     "p4r_cognitive_compilation_instrument": {
-      "state": "completion_instrument_frozen_before_repaired_task_pool",
+      "state": "completion_instrument_and_repaired_task_pool_sealed_before_candidate_generation",
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
       "instrument": "configs/theseus_p4_cognitive_compilation_repaired_instrument.json",
       "candidate_runner": "scripts/theseus_p4_cognitive_compilation_repaired.py",
@@ -3822,12 +3822,18 @@
       "same_frozen_weights": true,
       "repaired_task_count": 10,
       "reuse_unopened_predecessor_indices": [4, 5, 6, 7, 8, 9, 10],
-      "new_source_disjoint_tasks_required": 3,
+      "new_source_disjoint_tasks_required": 0,
+      "task_pool": "configs/theseus_p4r_task_pool.json",
+      "task_pool_sha256": "19f4764e57217e0fe345dab359fe5dd51040a68674ca80b751164c5348f85b0d",
+      "source_registry": "configs/theseus_p4r_task_sources.json",
+      "reused_unopened_tasks": 7,
+      "new_source_disjoint_tasks": 3,
+      "parent_fail_target_pass_oracle_pass_corruption_green": 10,
       "candidate_generation_opened": false,
       "local_model_calls": 0,
       "hosted_model_calls": 0,
       "support_state_effect": "none",
-      "rule": "Freeze and seal the seven unopened predecessor tasks plus three fresh licensed source-disjoint tasks before any P4R candidate call; every learned call must retain explicit termination telemetry."
+      "rule": "Run the sealed ten-task pool exactly once without replacement; every learned call must retain explicit termination telemetry, and any context-boundary or host-emergency stop invalidates rather than loses the observation."
     },
     "shared_flagship_gate_ids": ["T0", "T0A", "T1", "T2", "T3", "T4", "T5", "T6"],
     "shared_flagship_rule": "Book-derived work reaches primary execution only through faithful implementation, instrument adequacy, autonomous machine-verifiable behavior, joined-trace, matched-causal, source-disjoint qualification, and book-handoff gates. Other mapped concepts remain dependencies, integrity maintenance, or explicitly deferred obligations.",

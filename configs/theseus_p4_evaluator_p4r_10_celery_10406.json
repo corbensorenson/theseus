@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4R_FAIL_celery"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "b47dc39646cd04de4790bbed21c667fc64f328007ee67e7fad51d214f22f2e31",
+      "source": "tests/fixtures/theseus_p4r_online/theseus_p4r_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'celery'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_oracle.semantic_ir",
+  "oracle_ir_sha256": "12acfe92e303c05744a5bcc02f221ead089a6da81f6e61975533686fef52e22f",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_target.tar.gz",
+  "target_archive_root": "celery-243522cad53e955cadeaa1be441b4193cdabef97",
+  "target_archive_sha256": "105e93c33058c6b741062b2ab2fc9a57a2d4be3d24fea7df491306c2bd7bf42b",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4r_10_celery_10406_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "0002867fc647e50aa2c6b2e756e70ee6ac2d2a309a32f5f3e37ea1c38f98dc5a",
+    "merge_revision": "6e0d683085f591de55106b0de698de93d6638af0",
+    "revision": "243522cad53e955cadeaa1be441b4193cdabef97",
+    "upstream_archive": "tests/fixtures/theseus_p4r_online/p4r_10_celery_10406_target_upstream.tar.gz",
+    "upstream_archive_sha256": "036a8a3d1178601c244c4f187d5dc93ab690dc96f18b79e4eccc7339bd08a09d"
+  },
+  "task_manifest": "configs/theseus_p4_task_p4r_10_celery_10406.json",
+  "task_manifest_sha256": "fc084e3cf1386fc963ec6def83b6e8ea5ba0f4201e0c010cbf26b1888a74cc1f"
+}
