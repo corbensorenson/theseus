@@ -1,8 +1,30 @@
 {
   "complete_tasks": 0,
-  "created_utc": "2026-08-01T08:38:15.232492Z",
+  "created_utc": "2026-08-01T08:41:47.108164Z",
   "execution_instrument_rebind_commit": "bf4f63b97ce3830ed8a26e616be65154c396323f",
-  "faults": [],
+  "faults": [
+    "candidate_run_red:p4s_01_tenacity_660",
+    "completion_predicate_disabled:p4s_01_tenacity_660:1",
+    "completion_predicate_disabled:p4s_01_tenacity_660:2",
+    "completion_predicate_disabled:p4s_01_tenacity_660:3",
+    "completion_predicate_disabled:p4s_01_tenacity_660:4",
+    "completion_predicate_disabled:p4s_01_tenacity_660:5",
+    "completion_predicate_disabled:p4s_01_tenacity_660:6",
+    "matched_set_invalid:p4s_01_tenacity_660",
+    "model_call_count_invalid:p4s_01_tenacity_660",
+    "termination_invalid:p4s_01_tenacity_660:1",
+    "termination_invalid:p4s_01_tenacity_660:2",
+    "termination_invalid:p4s_01_tenacity_660:3",
+    "termination_invalid:p4s_01_tenacity_660:4",
+    "termination_invalid:p4s_01_tenacity_660:5",
+    "termination_invalid:p4s_01_tenacity_660:6",
+    "termination_token_custody_invalid:p4s_01_tenacity_660:1",
+    "termination_token_custody_invalid:p4s_01_tenacity_660:2",
+    "termination_token_custody_invalid:p4s_01_tenacity_660:3",
+    "termination_token_custody_invalid:p4s_01_tenacity_660:4",
+    "termination_token_custody_invalid:p4s_01_tenacity_660:5",
+    "termination_token_custody_invalid:p4s_01_tenacity_660:6"
+  ],
   "hosted_reference": {
     "P4S_blocking": false,
     "calls": 0,
@@ -60,7 +82,7 @@
       "teacher_calls": 0,
       "user_facing_effects": 0
     },
-    "created_utc": "2026-08-01T08:38:15.186829Z",
+    "created_utc": "2026-08-01T08:41:47.095046Z",
     "faults": [],
     "instrument_sha256": "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828",
     "mechanics_qualification": {
@@ -68,7 +90,7 @@
       "state": "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN"
     },
     "policy": "project_theseus_p4s_cognitive_compilation_instrument_audit_v1",
-    "runtime_ms": 31.768,
+    "runtime_ms": 3.215,
     "trigger_state": "GREEN"
   },
   "instrument_sha256": "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828",
@@ -90,9 +112,9 @@
       "complete": false,
       "evaluation": "",
       "evaluation_sha256": "",
-      "run": "",
-      "run_sha256": "",
-      "runtime_receipts": 0,
+      "run": "reports/theseus_p4s_01_tenacity_660_run.json",
+      "run_sha256": "86af03037855f1397c564f5d3f2a9c61323b9663a8497c5b3776bfc27d458881",
+      "runtime_receipts": 6,
       "stem": "p4s_01_tenacity_660"
     },
     {
@@ -186,5 +208,5 @@
       "stem": "p4s_10_werkzeug_3215"
     }
   ],
-  "trigger_state": "GREEN"
+  "trigger_state": "RED"
 }

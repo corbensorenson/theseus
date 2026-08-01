@@ -1,0 +1,52 @@
+{
+  "policy": "project_theseus_p4s_campaign_invalid_transport_attempt_v1",
+  "state": "INCONCLUSIVE_IMPLEMENTATION_TRANSPORT_PRE_CANDIDATE",
+  "campaign": "ASI-THESEUS-FLAGSHIP-01-P4S-COGNITIVE-COMPILATION",
+  "attempt": 1,
+  "task": "p4s_01_tenacity_660",
+  "task_pool": "configs/theseus_p4s_task_pool.json",
+  "task_pool_sha256": "76826de011e74f460e80a6b5012d04e9836f727981125c7c98886d77ed21c76a",
+  "instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+  "instrument_sha256": "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828",
+  "run_report": "reports/theseus_p4s_01_tenacity_660_run.json",
+  "run_report_sha256": "86af03037855f1397c564f5d3f2a9c61323b9663a8497c5b3776bfc27d458881",
+  "campaign_progress": "reports/theseus_p4s_campaign_progress.json",
+  "campaign_progress_sha256": "65d88e058adf4e707e01ba1c4827540c1aa3b8b4afc19d704aaeae0ea8fbc9f1",
+  "failure": {
+    "owner": "P4S completion-predicate transport aliasing",
+    "exception": "RecursionError",
+    "mechanism": "The P4S runner replaced the shared completion.candidate_envelope_complete symbol with its wrapper, while that wrapper called the same mutable shared symbol. The first completion check therefore recursed instead of testing the accumulated text.",
+    "failed_runtime_receipts": 6,
+    "correct_frozen_model_loads": 1,
+    "retained_model_inference_calls": 0,
+    "retained_model_responses": 0,
+    "parseable_candidates": 0,
+    "sealed_candidates": 0,
+    "blind_evaluations": 0,
+    "physical_context_boundary_hits": 0,
+    "project_selected_quality_token_cap": null
+  },
+  "information_flow": {
+    "task_membership_changed": false,
+    "source_or_request_changed": false,
+    "target_hidden_test_or_oracle_exposed_to_model": false,
+    "candidate_or_control_output_used_to_change_instrument": false,
+    "model_weights_or_state_changed": false,
+    "training_rows_written": 0,
+    "teacher_calls": 0,
+    "hosted_model_calls": 0
+  },
+  "disposition": {
+    "counts_as_model_or_subsystem_evidence": false,
+    "counts_as_a_consumed_candidate_observation": false,
+    "same_task_repair_retry_authorized": true,
+    "retry_conditions": [
+      "Retain and commit this invalid attempt and every raw receipt.",
+      "Replace the mutable predicate self-reference with an immutable base-predicate binding and add a regression test that exercises the patched context.",
+      "Re-audit and prospectively rebind the execution instrument before retry.",
+      "Use a distinct attempt namespace while keeping task membership, source, request, evaluator, model, completion semantics, and decision rule unchanged.",
+      "Do not use any failed output for prompting, selection, repair content, or scoring."
+    ]
+  },
+  "maximum_inference": "This attempt demonstrates only a completion-predicate transport bug. It contains no retained model answer, candidate, blind score, mechanism result, D1/D2 evidence, serving qualification, training evidence, or ASI Stack support effect."
+}
