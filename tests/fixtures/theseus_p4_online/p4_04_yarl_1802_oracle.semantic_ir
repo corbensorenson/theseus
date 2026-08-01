@@ -1,0 +1,10 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE ba8a949bd1a9d28b7a36c9cc8dcdf819bb91b1bf4a6453f6b7160f112b9e0414
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 INSERT_BEFORE yarl/_url.py N-D18A5DA0A6EC0929 cf6f42450c2cbd21cdde602b5a56a824c7296c5941ba0c00cfe2676187d1cc47
+<<<
+        if path and not self._scheme and not self._netloc and ":" in path:
+            path = _encode_relative_scheme_colon(path)
+>>>
+LOSS NONE
+END

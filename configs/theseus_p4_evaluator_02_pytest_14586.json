@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_pytest"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'pytest'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_02_pytest_14586_oracle.semantic_ir",
+  "oracle_ir_sha256": "1bc46d0e11f276a913d61dc3faaf6df50f189aaea7e7c92327343677206e4a84",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_02_pytest_14586_target.tar.gz",
+  "target_archive_root": "pytest-60835b4993da146c43766ac9d2c8704cb627cea2",
+  "target_archive_sha256": "0e86ace92cc6eecc32cc8bab54710925c82eab99a278e3b190c1caef4f511924",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_02_pytest_14586_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "08157e3ba027b55d0f08a14e8aac6ac52a925d1b7b46e0a5fe22ce62665f782e",
+    "merge_revision": "771ab77e131d19124daf0d558baaed38c9d4833e",
+    "revision": "60835b4993da146c43766ac9d2c8704cb627cea2",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_02_pytest_14586_target_upstream.tar.gz",
+    "upstream_archive_sha256": "79bd25ca3f905661bcf969d974bc3acd90c341f79890230ae47aa35d88ce2605"
+  },
+  "task_manifest": "configs/theseus_p4_task_02_pytest_14586.json",
+  "task_manifest_sha256": "f91340175624ef0606472009c71b0d2ebaeb17dfe5f22fff420e19aa03c6cba3"
+}

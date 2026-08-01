@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_fastapi"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'fastapi'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_03_fastapi_15515_oracle.semantic_ir",
+  "oracle_ir_sha256": "10fc8a02a94754d6bcb8d76b79b69248c4c8c42729c50dfc8b1abd830edc29f6",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_03_fastapi_15515_target.tar.gz",
+  "target_archive_root": "fastapi-871cfe7ea8cb922902ed9e140ec40db2722caf4a",
+  "target_archive_sha256": "a5929e0480f2ce52f26444b7f23bb95898ee9c7887b1fe4ebd4e2594032cd18a",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_03_fastapi_15515_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "c1064cbda2b7722c34f48b2cc5c6f09e07b2060b4054281b968a960e93090846",
+    "merge_revision": "0f3e7bd682a81488919227f2b5f1f7de1718ecdd",
+    "revision": "871cfe7ea8cb922902ed9e140ec40db2722caf4a",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_03_fastapi_15515_target_upstream.tar.gz",
+    "upstream_archive_sha256": "1324844c92de81400ba8f332075caa92dc5ae759f0f8101a988a4b45881a690c"
+  },
+  "task_manifest": "configs/theseus_p4_task_03_fastapi_15515.json",
+  "task_manifest_sha256": "7ca26c0d5fb95a2f08dfc9884092226fc75a1ec4c626199cbd34ba45b3d84c7e"
+}

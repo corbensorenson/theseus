@@ -1,0 +1,14 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 3851a8fb6bf7179353c8c4f24e31d351c71c8a9ca90afd0e7b8270cbfbf6d272
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/trio/_subprocess.py N-8CAE95389F8718BF ba509289e930ec738408f774b5d91c08b93aa5ea011c7f4263348923581db0d4
+<<<
+if stdin is subprocess.PIPE:
+            raise ValueError(
+                "stdin=subprocess.PIPE is only valid with nursery.start, "
+                "since that's the only way to access the pipe; use nursery.start "
+                "or pass the data you want to write directly",
+            )
+>>>
+LOSS NONE
+END

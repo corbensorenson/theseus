@@ -468,7 +468,7 @@ Luna for clear, repeatable, high-volume or focused coding work and permits
 
 #### P4 — Test one ASI Stack mechanism at a time
 
-State: `ACTIVE_COGNITIVE_COMPILATION_INSTRUMENT_FROZEN_TASK_POOL_PENDING`.
+State: `ACTIVE_COGNITIVE_COMPILATION_TASK_POOL_SEALED_RUN_PENDING`.
 
 Use the observed instrument and task residuals to select exactly one
 intervention. Do not run a factorial or make record production the dependent
@@ -501,8 +501,15 @@ scoring. A prospectively fixed, visible-request-only no-model compiler is the
 real deterministic control and must explicitly abstain outside two narrow
 rules. A separate evaluator-only target-derived oracle is only a mechanics
 ceiling and receives no learned or treatment credit. The instrument audit and
-all mechanics/corruption tests are GREEN. Acquire and seal ten fresh licensed
-tasks next without selecting on any arm or compiler outcome.
+all mechanics/corruption tests are GREEN. The P4 pool is now sealed before
+candidate generation at `configs/theseus_p4_task_pool.json`: ten distinct
+licensed repository parents fail their independent behavioral evaluator, all
+ten exact upstream targets pass, all ten evaluator-only Semantic IR oracles
+pass visible and hidden checks, and source, obligation, target, and loss
+corruptions are rejected. Archive-link omissions are symmetric and do not
+overlap licensed or editable paths. No learned arm, Luna, or prospective
+static-compiler call was used to select the tasks. Run this exact pool next;
+do not replace a task after an arm is opened.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -570,7 +577,7 @@ Maintenance serves P or N and does not become another research program:
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
-| P4 causal development | `COGNITIVE_COMPILATION_INSTRUMENT_FROZEN_TASK_POOL_PENDING` | The exact Qwen3.5 three-arm instrument, prospective no-model compiler control, evaluator-only oracle ceiling, budgets, integrity checks, and decision rule are frozen before task acquisition; no claim support follows unless ten fresh licensed tasks pass adequacy and the treatment survives matched controls |
+| P4 causal development | `COGNITIVE_COMPILATION_TASK_POOL_SEALED_RUN_PENDING` | The exact Qwen3.5 instrument and ten fresh licensed tasks are sealed before candidate generation; all parent-fail/target-pass/oracle/corruption gates are GREEN, candidate/control calls remain zero, and no claim support follows unless the treatment survives its matched run |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -608,11 +615,13 @@ Maintenance serves P or N and does not become another research program:
 8. In parallel, refresh N0 with the training hold installed and implement the
    automated N1 launch/resource/rollback controller. Start no long run until
    that controller proves every frozen predicate.
-9. Preserve the frozen P4 cognitive-compilation instrument and GREEN mechanics
-   audit. Acquire and seal ten fresh licensed, machine-verifiable tasks without
-   observing any arm or static-compiler outcome; then run the three matched
-   learned arms, prospective no-model compiler control, and evaluator-only
-   mechanics oracle. No other P4 mechanism is active.
+9. Preserve the frozen P4 cognitive-compilation instrument and the sealed
+   ten-task pool. Run the three matched learned arms and prospective no-model
+   compiler control on each exact parent, then score route-blind with the
+   already sealed evaluators and oracle ceiling. Retain every malformed output,
+   edit, verifier result, latency, call receipt, safety/rollback result, and
+   weak-tail observation. No other P4 mechanism is active, and no task may be
+   replaced after candidate generation opens.
 
 ## Historical Rapid Evidence Campaign
 

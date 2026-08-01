@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_trio"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'trio'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_07_trio_3416_oracle.semantic_ir",
+  "oracle_ir_sha256": "2b830a1ffeb511300cf62817cb58d16686e59abfe567efec7a29eb30a0dfaee7",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_07_trio_3416_target.tar.gz",
+  "target_archive_root": "trio-e8c3ba386749d02124cb1e187c860e5fe01f1357",
+  "target_archive_sha256": "d0d8c5b8ec7b118f1ff057467a32462b85b8c53a449400f1c8d4719a1003a14d",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_07_trio_3416_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "a4b4d457be5e060ecb3f41dee085ad7569cfadc59fa8909b7af4f3afb41f0dab",
+    "merge_revision": "c5c4b7c1084cffc6f0734abb975c17116bd78179",
+    "revision": "e8c3ba386749d02124cb1e187c860e5fe01f1357",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_07_trio_3416_target_upstream.tar.gz",
+    "upstream_archive_sha256": "6aa537d39b8cd4d8919544b7a3b16d91bece2f4a6df014ec61048696d48482b0"
+  },
+  "task_manifest": "configs/theseus_p4_task_07_trio_3416.json",
+  "task_manifest_sha256": "f7051e9341a9286800a240da5ac34e6b2c22c14224bb23ce30b932e53803b07f"
+}

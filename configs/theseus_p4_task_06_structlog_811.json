@@ -1,0 +1,123 @@
+{
+  "allowed_effect_paths": [
+    "src/structlog/_output.py"
+  ],
+  "campaign_index": 6,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 205,
+        "path": "src/structlog/_output.py",
+        "start_line": 140
+      }
+    ],
+    "searches": [
+      {
+        "literal": "class WriteLogger",
+        "paths": [
+          "src/structlog/_output.py"
+        ]
+      },
+      {
+        "literal": "__setstate__",
+        "paths": [
+          "src/structlog/_output.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3": true,
+    "task_selected_after_p4_instrument_freeze": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "When a WriteLogger is unpickled, restore its cached write and flush bindings as well as its selected stream and shared lock. Preserve the restriction that only stdout and stderr WriteLogger instances are picklable. Modify only src/structlog/_output.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    },
+    {
+      "after": "O1",
+      "before": "O3"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "Unpickled WriteLogger instances restore callable write and flush bindings for their selected stream."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "The restored stream and per-stream shared lock remain correct for stdout and stderr."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "The existing non-stdout/stderr pickling restriction and normal construction behavior remain unchanged."
+    }
+  ],
+  "opaque_task_id": "p4-cognitive-compilation-06",
+  "partition": "p4_cognitive_compilation_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_symbol_nodes": 80,
+    "maximum_units": 8,
+    "source_target_obligation_and_loss_identity_required": true,
+    "version": "theseus_semantic_ir_v1"
+  },
+  "source_archive": "tests/fixtures/theseus_p4_online/p4_06_structlog_811_parent.tar.gz",
+  "source_archive_root": "structlog-de5dcd4127b8c9652ebadf0b6411c4bb9c10f3b7",
+  "source_archive_sha256": "29e2c45ee3fa42c373f08693df1fc9ad4915a8048ad3903123ce35865b32d3b9",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_06_structlog_811_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "e0dbdae2418cab14d404b021c862852bcbddc0732721fd9093cbe8445a300d2c",
+    "license_paths": [
+      "LICENSE-MIT",
+      "LICENSE-APACHE"
+    ],
+    "license_spdx": "MIT OR Apache-2.0",
+    "repository": "hynek/structlog",
+    "retrieved_utc": "2026-08-01T03:06:46Z",
+    "revision": "de5dcd4127b8c9652ebadf0b6411c4bb9c10f3b7",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_06_structlog_811_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "0717c313f1b498777ff2b1f171bbbed2e690ea15211b340904943e900afd1ab6",
+    "upstream_merged_utc": "2026-05-10T14:29:09Z",
+    "upstream_request_title": "Restore WriteLogger bindings when unpickled",
+    "upstream_request_url": "https://github.com/hynek/structlog/pull/811",
+    "url": "https://github.com/hynek/structlog"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4_VISIBLE_structlog_PRIMARY",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4_online/theseus_p4_visible_test.py', 'structlog'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

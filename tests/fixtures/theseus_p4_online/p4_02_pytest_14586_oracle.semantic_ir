@@ -1,0 +1,13 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 73cf48ce9361bab794b265ee28fa47dbe06e3174a99ca503f4334b8eefd814b8
+OBLIGATIONS O1,O2,O3,O4
+UNIT U1 O1,O3 REPLACE src/_pytest/logging.py N-6A5ADF63CEB2AA5D f32d03665887ba53d496b4fa12ca31613e11f2bf895b7733dfca06d19d7a3a9e
+<<<
+return max(auto_indent_option, 0)
+>>>
+UNIT U2 O2,O4 REPLACE src/_pytest/logging.py N-E9407175FFAD1B5C 03f13cff50e4c55049141506e30dc44be8a6f9e5f17f299e386ed7ab3c07d56c
+<<<
+return max(int(auto_indent_option), 0)
+>>>
+LOSS NONE
+END

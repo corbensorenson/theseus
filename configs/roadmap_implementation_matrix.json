@@ -3746,7 +3746,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "active_P4_cognitive_compilation_instrument_frozen_task_pool_pending",
+    "execution_state": "active_P4_cognitive_compilation_task_pool_sealed_run_pending",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -3779,7 +3779,7 @@
       "rule": "P3 selects the semantic translation/repair residual for one fresh-task P4 instrument; it neither supports nor falsifies the selected claim, and all ten local P3 tasks are consumed."
     },
     "p4_cognitive_compilation_instrument": {
-      "state": "frozen_before_task_acquisition",
+      "state": "instrument_frozen_and_task_pool_sealed_before_candidate_generation",
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
       "instrument": "configs/theseus_p4_cognitive_compilation_instrument.json",
       "candidate_runner": "scripts/theseus_p4_cognitive_compilation.py",
@@ -3793,7 +3793,13 @@
       "prospective_no_model_control": "deterministic_request_compiler_baseline",
       "evaluator_only_mechanics_ceiling": "deterministic_compiler_oracle_ceiling",
       "fresh_task_count": 10,
-      "task_pool_state": "pending_autonomous_licensed_source_disjoint_acquisition",
+      "task_pool": "configs/theseus_p4_task_pool.json",
+      "task_source_registry": "configs/theseus_p4_task_sources.json",
+      "task_pool_state": "sealed_10_of_10_parent_fail_target_pass_oracle_pass_corruptions_rejected",
+      "candidate_generation_opened": false,
+      "local_model_calls": 0,
+      "hosted_model_calls": 0,
+      "deterministic_request_compiler_calls": 0,
       "support_state_effect": "none",
       "rule": "Task selection may not condition on any learned arm, deterministic compiler, or oracle outcome; the exact frozen instrument decides only P4 development-survivor eligibility."
     },

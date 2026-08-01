@@ -1,0 +1,12 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 496f56e5989433f49003b76f78fbea85c86430e42d971ba18b801231453ec965
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE pydantic/types.py N-DF20307016F3799D dc4c75c3ca5532e5365ad4095a4deede6146187ce15cb96ba7432f6d8d4279b6
+<<<
+return secrets.compare_digest(
+            self.get_secret_value().encode('utf-8', errors='surrogatepass'),
+            other.get_secret_value().encode('utf-8', errors='surrogatepass'),
+        )
+>>>
+LOSS NONE
+END

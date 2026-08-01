@@ -1,0 +1,122 @@
+{
+  "allowed_effect_paths": [
+    "fastapi/sse.py"
+  ],
+  "campaign_index": 3,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 230,
+        "path": "fastapi/sse.py",
+        "start_line": 145
+      }
+    ],
+    "searches": [
+      {
+        "literal": "format_sse_event",
+        "paths": [
+          "fastapi/sse.py"
+        ]
+      },
+      {
+        "literal": "splitlines",
+        "paths": [
+          "fastapi/sse.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3": true,
+    "task_selected_after_p4_instrument_freeze": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Format server-sent event data and comments by splitting only on LF, CRLF, or CR and preserving trailing empty lines. Do not split Unicode line separators or vertical tabs, and preserve event termination and the other SSE fields. Modify only fastapi/sse.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O3"
+    },
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "Data and comment fields split on LF, CRLF, and CR while retaining trailing empty fields."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Unicode line separators and vertical tabs remain within a single SSE field."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "Event, id, retry, comments, encoding, and final blank-line termination retain existing behavior."
+    }
+  ],
+  "opaque_task_id": "p4-cognitive-compilation-03",
+  "partition": "p4_cognitive_compilation_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_symbol_nodes": 80,
+    "maximum_units": 8,
+    "source_target_obligation_and_loss_identity_required": true,
+    "version": "theseus_semantic_ir_v1"
+  },
+  "source_archive": "tests/fixtures/theseus_p4_online/p4_03_fastapi_15515_parent.tar.gz",
+  "source_archive_root": "fastapi-31ce3cb8d73a6e20221315a90dd98a117f0101a0",
+  "source_archive_sha256": "0b6b45871a014b5bdc6c62ef303df3bfc065ae86f11aebf1cc55a05454972c26",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_03_fastapi_15515_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "c564a1bb3cc2fde7a352b70e731227b2813a9be39636b153e280af77b4072385",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_spdx": "MIT",
+    "repository": "fastapi/fastapi",
+    "retrieved_utc": "2026-08-01T03:06:46Z",
+    "revision": "31ce3cb8d73a6e20221315a90dd98a117f0101a0",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_03_fastapi_15515_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "3cd31d7a5eb6502ac632dbf94a09c64e09e0f60a82f55fcc0bb4b990f94d61f3",
+    "upstream_merged_utc": "2026-07-28T14:54:54Z",
+    "upstream_request_title": "Split server-sent event fields only on SSE line endings",
+    "upstream_request_url": "https://github.com/fastapi/fastapi/pull/15515",
+    "url": "https://github.com/fastapi/fastapi"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4_VISIBLE_fastapi_PRIMARY",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4_online/theseus_p4_visible_test.py', 'fastapi'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

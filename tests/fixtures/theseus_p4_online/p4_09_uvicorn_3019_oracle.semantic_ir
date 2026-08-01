@@ -1,0 +1,49 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE ed8c1b9e8adb433dd1b0a24876b33d4e925ceb09273a6c912bae554109ded420
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE uvicorn/protocols/websockets/websockets_sansio_impl.py N-5C380E06DFEB9E12 f299cd45f98ffb475f5497ac615c5cc16df4e36daa8c2e2726aa847ebded5b30
+<<<
+def handle_connect(self, event: Request) -> None:
+        self.request = event
+        self.response = self.conn.accept(event)
+        self.handshake_initiated = True
+        if self.response.status_code != 101:
+            self.handshake_complete = True
+            self.close_sent = True
+            self.conn.send_response(self.response)
+            output = self.conn.data_to_send()
+            self.transport.write(b"".join(output))
+            self.transport.close()
+            return
+
+        headers = [
+            (key.encode("ascii"), value.encode("ascii", errors="surrogateescape"))
+            for key, value in event.headers.raw_items()
+        ]
+        raw_path, _, query_string = event.path.partition("?")
+        subprotocols: list[str] = []
+        for header in event.headers.get_all("Sec-WebSocket-Protocol"):
+            subprotocols.extend([token.strip() for token in header.split(",")])
+        self.scope: WebSocketScope = {
+            "type": "websocket",
+            "asgi": {"version": self.asgi_version, "spec_version": "2.4"},
+            "http_version": "1.1",
+            "scheme": self.scheme,
+            "server": self.server,
+            "client": self.client,
+            "root_path": self.root_path,
+            "path": self.root_path + unquote(raw_path),
+            "raw_path": self.root_path.encode("ascii") + raw_path.encode("ascii"),
+            "query_string": query_string.encode("ascii"),
+            "headers": headers,
+            "subprotocols": subprotocols,
+            "state": self.app_state.copy(),
+            "extensions": {"websocket.http.response": {}},
+        }
+        self.queue.put_nowait({"type": "websocket.connect"})
+        task = self.loop.create_task(self.run_asgi())
+        task.add_done_callback(self.on_task_complete)
+        self.tasks.add(task)
+>>>
+LOSS NONE
+END

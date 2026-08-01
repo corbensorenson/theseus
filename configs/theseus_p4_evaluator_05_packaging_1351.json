@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_packaging"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'packaging'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_05_packaging_1351_oracle.semantic_ir",
+  "oracle_ir_sha256": "70cbfa93a7c039eedcacbcae54944e56cca24e5ddc63d123c9764ffa8dfc3e42",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_05_packaging_1351_target.tar.gz",
+  "target_archive_root": "packaging-bc34570561dedcc1a31657714b472fcde49b4ac9",
+  "target_archive_sha256": "e0401ad69aeac0d246cc90984ed3fea7952dde0e7b757f829ef7fed1a666de83",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_05_packaging_1351_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "15b67dbd01fe2c32ce4d9b227fdb2fbd885397b1450fa94f51ed3841edbb2c4a",
+    "merge_revision": "26fa1d42ccd98010d5fcf701dd10069e761b034c",
+    "revision": "bc34570561dedcc1a31657714b472fcde49b4ac9",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_05_packaging_1351_target_upstream.tar.gz",
+    "upstream_archive_sha256": "c2d9096e08e5cdd620e2c12c1715c5fa50a3bfa2f2e82bbd1a1ff57eab9904dc"
+  },
+  "task_manifest": "configs/theseus_p4_task_05_packaging_1351.json",
+  "task_manifest_sha256": "5f31c893b954eb2d9195f58f7c69a8a56e326ca3fac30d0031d15449f90fd3d8"
+}

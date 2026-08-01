@@ -1,0 +1,124 @@
+{
+  "allowed_effect_paths": [
+    "src/packaging/tags.py"
+  ],
+  "campaign_index": 5,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 310,
+        "path": "src/packaging/tags.py",
+        "start_line": 225
+      }
+    ],
+    "searches": [
+      {
+        "literal": "parse_tag",
+        "paths": [
+          "src/packaging/tags.py"
+        ]
+      },
+      {
+        "literal": "InvalidTag",
+        "paths": [
+          "src/packaging/tags.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3": true,
+    "task_selected_after_p4_instrument_freeze": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Reject wheel tags whose interpreter component is not a valid Python identifier while continuing to accept valid standard and custom interpreter identifiers. Preserve the existing empty-component, ordering, size-limit, and three-component checks. Modify only src/packaging/tags.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    },
+    {
+      "after": "O1",
+      "before": "O3"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "Every interpreter component must be a Python identifier or raise InvalidTag."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Valid standard and custom identifiers continue to produce the same Tag combinations."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "Existing empty-component, sorted-order, limit, and arity validation remains intact."
+    }
+  ],
+  "opaque_task_id": "p4-cognitive-compilation-05",
+  "partition": "p4_cognitive_compilation_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_symbol_nodes": 80,
+    "maximum_units": 8,
+    "source_target_obligation_and_loss_identity_required": true,
+    "version": "theseus_semantic_ir_v1"
+  },
+  "source_archive": "tests/fixtures/theseus_p4_online/p4_05_packaging_1351_parent.tar.gz",
+  "source_archive_root": "packaging-b62954b62d04f58a939d2856c67ebe4de32cdb5d",
+  "source_archive_sha256": "f65b5617bca552d3fc1f94e91d127a5a365e8459f95341da67bb78dfaf193e35",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_05_packaging_1351_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "10e0f5c4474d4f7d67bee685ac08cbf83f118dbde09f62dafc85384be8f30761",
+    "license_paths": [
+      "LICENSE",
+      "LICENSE.APACHE",
+      "LICENSE.BSD"
+    ],
+    "license_spdx": "Apache-2.0 OR BSD-2-Clause",
+    "repository": "pypa/packaging",
+    "retrieved_utc": "2026-08-01T03:06:46Z",
+    "revision": "b62954b62d04f58a939d2856c67ebe4de32cdb5d",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_05_packaging_1351_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "382034294e3d690f4ec07dc858084e40b9f81f26da169ae007386bfd3efde281",
+    "upstream_merged_utc": "2026-07-28T03:40:28Z",
+    "upstream_request_title": "Reject invalid interpreter tag components",
+    "upstream_request_url": "https://github.com/pypa/packaging/pull/1351",
+    "url": "https://github.com/pypa/packaging"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4_VISIBLE_packaging_PRIMARY",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4_online/theseus_p4_visible_test.py', 'packaging'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

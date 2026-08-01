@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_pydantic"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'pydantic'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_01_pydantic_13537_oracle.semantic_ir",
+  "oracle_ir_sha256": "0db02e9aba32979896be7aa748a0dd535551b2ab251b67af8be08b3dae39115d",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_01_pydantic_13537_target.tar.gz",
+  "target_archive_root": "pydantic-38bfb0771ea83ee327f786f97198db0bc2e36913",
+  "target_archive_sha256": "5e59c8cb8a4c2c3b6236de240586d2f7403b4bd0e334574cc760ce6aadec0df0",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_01_pydantic_13537_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "4f82e548482d5212f6476f2d1289e2cf28a0d02af096ac0467518a7e0a2600b3",
+    "merge_revision": "35b8d94c1435a3e78fc919cfdb439a1ef85a8d6f",
+    "revision": "38bfb0771ea83ee327f786f97198db0bc2e36913",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_01_pydantic_13537_target_upstream.tar.gz",
+    "upstream_archive_sha256": "c8fdbbf3826df99e1d49aa72e1753b49317b4ef3803be9a16fd3b895b59adecd"
+  },
+  "task_manifest": "configs/theseus_p4_task_01_pydantic_13537.json",
+  "task_manifest_sha256": "48fb54f4164c0009ef97890204d7b30df2cdae62d685a163bdda28e8f137b42c"
+}

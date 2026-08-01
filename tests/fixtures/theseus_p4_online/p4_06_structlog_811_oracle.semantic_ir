@@ -1,0 +1,10 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 804533c1e34c466465eb01e6412aa2396ed44d7d47aa057ecb72f9cf44b7d378
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 INSERT_BEFORE src/structlog/_output.py N-3AB5A39780EAFC1C 26d8796ef5de9d0698b03ccc9c743bb505481ac1085265a38b45c7affc71969a
+<<<
+        self._write = self._file.write
+        self._flush = self._file.flush
+>>>
+LOSS NONE
+END

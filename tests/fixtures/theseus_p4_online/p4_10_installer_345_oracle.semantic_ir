@@ -1,0 +1,10 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 8030dcd9e64ffc7c6ba2f67a83687fa0c1f01c654b7971f9a94be03c262a14b8
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/installer/_core.py N-183F7F99DAE20A28 d83cee85efd4eac24187c6847d595b56e34297e23294e94dccfe12e6e38aec3a
+<<<
+if posixpath.commonpath([data_dir, path]) != data_dir:
+        return root_scheme, path
+>>>
+LOSS NONE
+END

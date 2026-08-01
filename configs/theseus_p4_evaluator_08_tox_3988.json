@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_tox"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'tox'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_08_tox_3988_oracle.semantic_ir",
+  "oracle_ir_sha256": "8dfe530ecc1384257ec4bb95d901d53832b0a16ec07792756f365f7f194627aa",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_08_tox_3988_target.tar.gz",
+  "target_archive_root": "tox-0551d2a70f6400dcf42862278b0ead2642c0f81d",
+  "target_archive_sha256": "7bee5b6e983bff2d606a12991358447cfe81cd5e560a404d59010152d3b01571",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_08_tox_3988_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "99288ab3a109886ae38357af1b1641e864da6551cca2e9340c7f63351dc2426e",
+    "merge_revision": "e19069f6b50de8b4bee25b4370d8dd235c931dec",
+    "revision": "0551d2a70f6400dcf42862278b0ead2642c0f81d",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_08_tox_3988_target_upstream.tar.gz",
+    "upstream_archive_sha256": "b9f9d6c44738bb76412aef67d7bdff0a0aaf2864303e485e5e2d18ed65593e46"
+  },
+  "task_manifest": "configs/theseus_p4_task_08_tox_3988.json",
+  "task_manifest_sha256": "911e060744fc3c5d254875c88970bf4fc713fd8e1749ee85c946b5dbae864340"
+}

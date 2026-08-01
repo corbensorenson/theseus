@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_structlog"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'structlog'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_06_structlog_811_oracle.semantic_ir",
+  "oracle_ir_sha256": "1261a9603c96ed3f6a54293d2472b8e5f827750fa3f07760b90ce3a499e0081d",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_06_structlog_811_target.tar.gz",
+  "target_archive_root": "structlog-c0ba373b5c4ead7f39630026808bc74418a4460a",
+  "target_archive_sha256": "acd525672eff2733eeca786ec27c51414e60036cb255a361fed0d2adb5089fb4",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_06_structlog_811_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "d372b4633a5771c5e9f93d5f79542e4e08dcf1caebe8d4b8777b59d6d5fcf4cd",
+    "merge_revision": "c6e7cad18ffe91febf2b97dac03a465134b1a5d1",
+    "revision": "c0ba373b5c4ead7f39630026808bc74418a4460a",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_06_structlog_811_target_upstream.tar.gz",
+    "upstream_archive_sha256": "11c08da14d65255a9ecff84e139eafa8a058e65a33548aff1aa208eb5fe74940"
+  },
+  "task_manifest": "configs/theseus_p4_task_06_structlog_811.json",
+  "task_manifest_sha256": "7dd0e9a597389790960e70ab4cf6f46919b8d0414e6db511ac71ae551cbe6c5c"
+}

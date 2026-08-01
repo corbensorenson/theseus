@@ -1,0 +1,17 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE ffe9fedc7653134aecc727681c5abc35da9b2fa73bc3823fb43da449f6911d3d
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/packaging/tags.py N-819BE3EE371D21C4 b3b43a43ddc84182cec07f4abe9e84e34d7ac248c56e6dfdfe517ec22eceb889
+<<<
+for interpreter in interpreters:
+        if not interpreter.isidentifier():
+            raise InvalidTag(f"Tag {tag!r} has an invalid interpreter: {interpreter!r}")
+    return frozenset(
+        Tag(interpreter, abi, platform_)
+        for interpreter in interpreters
+        for abi in abis
+        for platform_ in platforms
+    )
+>>>
+LOSS NONE
+END

@@ -1,0 +1,49 @@
+{
+  "baseline_failure_markers": [
+    "P4_FAIL_uvicorn"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4_hidden_test.py",
+      "sha256": "8b10b68910ed9b8306fe0938ae6e68c339ce6dec736feeaee6f9375f397a7ae0",
+      "source": "tests/fixtures/theseus_p4_online/theseus_p4_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4_hidden_test.py', 'uvicorn'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4_online/p4_09_uvicorn_3019_oracle.semantic_ir",
+  "oracle_ir_sha256": "ff6f1c89c8f8fee4eba64bd978b0383f04442fb26fc7b31de082ac6a8b0178ca",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4_online/p4_09_uvicorn_3019_target.tar.gz",
+  "target_archive_root": "uvicorn-c68f76def93f96e028347f1af189e98e1dba1792",
+  "target_archive_sha256": "25a235464118eed7b96d77f92ef3ec94907ff490feb995f25a333a137540b9c2",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_09_uvicorn_3019_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "bda55c6fab006ab0d6e5868f17b8011928d8230c3a7cb296d776c58bf9f813a3",
+    "merge_revision": "2a9151d0e763df2c56da2bfe8c5dcead4fe5a276",
+    "revision": "c68f76def93f96e028347f1af189e98e1dba1792",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_09_uvicorn_3019_target_upstream.tar.gz",
+    "upstream_archive_sha256": "ced99d7fae4c19637a3583893cde389e3dfe4f0f56424a51361fcc8bd9fe5b91"
+  },
+  "task_manifest": "configs/theseus_p4_task_09_uvicorn_3019.json",
+  "task_manifest_sha256": "3d998c87c0e99f57d0724cefebf9c987791477e673ac329036809f050c34a6dd"
+}

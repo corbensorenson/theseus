@@ -1,0 +1,122 @@
+{
+  "allowed_effect_paths": [
+    "src/installer/_core.py"
+  ],
+  "campaign_index": 10,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 80,
+        "path": "src/installer/_core.py",
+        "start_line": 30
+      }
+    ],
+    "searches": [
+      {
+        "literal": "_determine_scheme",
+        "paths": [
+          "src/installer/_core.py"
+        ]
+      },
+      {
+        "literal": "commonprefix",
+        "paths": [
+          "src/installer/_core.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3": true,
+    "task_selected_after_p4_instrument_freeze": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Determine wheel data-directory containment by complete path components rather than character prefixes, so a sibling name such as a .database path remains in the root scheme. Preserve valid .data scheme mapping and invalid scheme handling. Modify only src/installer/_core.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    },
+    {
+      "after": "O1",
+      "before": "O3"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "A character-prefix sibling of the wheel data directory is treated as a root-scheme path without looping."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Paths truly inside the .data directory continue to map to their named install scheme."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "Root paths and invalid data scheme errors retain existing behavior."
+    }
+  ],
+  "opaque_task_id": "p4-cognitive-compilation-10",
+  "partition": "p4_cognitive_compilation_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_symbol_nodes": 80,
+    "maximum_units": 8,
+    "source_target_obligation_and_loss_identity_required": true,
+    "version": "theseus_semantic_ir_v1"
+  },
+  "source_archive": "tests/fixtures/theseus_p4_online/p4_10_installer_345_parent.tar.gz",
+  "source_archive_root": "installer-c18863d235a9d927f48d1831cbf738b0274ac59e",
+  "source_archive_sha256": "0426457e6f045bf2f32667d709cc355f2bd2c72df4ef82c2891d8af598a2de6a",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_10_installer_345_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "2c45930e0f055abc3b48b8b4cabf075a8a27adb4b7e67eb3fddaca207c696d30",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_spdx": "MIT",
+    "repository": "pypa/installer",
+    "retrieved_utc": "2026-08-01T03:06:46Z",
+    "revision": "c18863d235a9d927f48d1831cbf738b0274ac59e",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_10_installer_345_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "15825a595118cf27ddb88fe3abf7d3a9a26ab7b687a2eff692300384db231f38",
+    "upstream_merged_utc": "2026-07-21T09:38:28Z",
+    "upstream_request_title": "Use component-aware containment for wheel data paths",
+    "upstream_request_url": "https://github.com/pypa/installer/pull/345",
+    "url": "https://github.com/pypa/installer"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4_VISIBLE_installer_PRIMARY",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4_online/theseus_p4_visible_test.py', 'installer'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

@@ -84,7 +84,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
 | P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
-| P4 causal development | `COGNITIVE_COMPILATION_INSTRUMENT_FROZEN_TASK_POOL_PENDING` | The exact Qwen3.5 three-arm instrument, prospective visible-request-only no-model compiler control, evaluator-only oracle ceiling, budgets, integrity checks, and decision rule are frozen before task acquisition; no claim support follows unless ten fresh licensed tasks pass adequacy and the treatment survives matched controls |
+| P4 causal development | `COGNITIVE_COMPILATION_TASK_POOL_SEALED_RUN_PENDING` | The exact Qwen3.5 instrument and ten distinct fresh licensed tasks are sealed before candidate generation; 10/10 parents fail, targets pass, evaluator-only oracles pass, and corruption gates reject, while learned/Luna/static candidate calls remain zero |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -219,8 +219,13 @@ The real compiler-only control is a fixed no-model request compiler with narrow
 literal-replacement and collection-edit rules plus explicit abstention. The
 target-derived Semantic IR oracle is separately evaluator-only and proves only
 mechanics reachability. The instrument audit and corruption interventions are
-GREEN. Ten fresh licensed tasks remain to be acquired and sealed without
-conditioning selection on any treatment, control, or oracle outcome.
+GREEN. Ten fresh licensed tasks are now sealed without conditioning selection
+on any learned arm, Luna row, or static-compiler outcome. All ten parents fail
+their independent hidden behavior check, all ten exact upstream targets pass,
+all ten evaluator-only Semantic IR oracles pass visible and hidden checks, and
+all four identity/loss corruption classes are rejected. The pool is
+development-only, source-disjoint from P2/P3, permanently excluded from
+training/D1/D2, and still contains zero candidate or static-control calls.
 
 Historical L0 evidence remains preserved:
 
@@ -542,8 +547,9 @@ In order:
 6. Preserve terminal P3 and its ten consumed tasks, 36 runtime receipts, blind
    evaluations, exact 1/10 versus 1/10 useful result, and zero-unsafe rollback
    evidence. Preserve the prospectively frozen P4 cognitive-compilation
-   instrument and acquire/seal ten fresh licensed tasks without observing arm
-   outcomes; no other mechanism is active.
+   instrument and its now-sealed ten-task licensed pool; run its exact matched
+   arms next without task replacement or information-boundary changes. No
+   other mechanism is active.
    Bind Luna-xhigh only when a callable governed transport exists, using the
    reserved identical pool once and retaining separate denominators.
 7. Refresh neural N0 source/custody readiness in parallel and implement the

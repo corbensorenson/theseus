@@ -1,0 +1,119 @@
+{
+  "allowed_effect_paths": [
+    "src/_pytest/logging.py"
+  ],
+  "campaign_index": 2,
+  "candidate_visible_context": {
+    "maximum_total_characters": 9000,
+    "reads": [
+      {
+        "end_line": 205,
+        "path": "src/_pytest/logging.py",
+        "start_line": 145
+      }
+    ],
+    "searches": [
+      {
+        "literal": "_get_auto_indent",
+        "paths": [
+          "src/_pytest/logging.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_D1_or_D2": false,
+    "development_task_eligible_for_training": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "memorization_risk": "public_recent_maintenance_change_not_claim_bearing",
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_p2_p3": true,
+    "task_selected_after_p4_instrument_freeze": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Treat negative integer and numeric-string log_auto_indent values as zero indentation. Preserve positive integers, booleans, recognized boolean strings, invalid strings, and the surrounding multiline formatter behavior. Modify only src/_pytest/logging.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O3"
+    },
+    {
+      "after": "O2",
+      "before": "O4"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "A negative integer auto-indent input produces zero."
+    },
+    {
+      "id": "O2",
+      "kind": "require",
+      "text": "A negative numeric-string auto-indent input produces zero."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "Positive integer and boolean auto-indent behavior remains unchanged."
+    },
+    {
+      "id": "O4",
+      "kind": "preserve",
+      "text": "Recognized boolean strings, invalid strings, None, and surrounding formatter behavior remain unchanged."
+    }
+  ],
+  "opaque_task_id": "p4-cognitive-compilation-02",
+  "partition": "p4_cognitive_compilation_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_symbol_nodes": 80,
+    "maximum_units": 8,
+    "source_target_obligation_and_loss_identity_required": true,
+    "version": "theseus_semantic_ir_v1"
+  },
+  "source_archive": "tests/fixtures/theseus_p4_online/p4_02_pytest_14586_parent.tar.gz",
+  "source_archive_root": "pytest-ced9022c0ca87ae2a0a604c68d2e1c462f8a5c6f",
+  "source_archive_sha256": "1e2530bb207a6d4e32c17f27550d08c0dd131a78c4e862b39d1a41bc7d569f94",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4_02_pytest_14586_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "e95f5aaa948e5a2f1a7739a7f92975b189a16b9f68e781b878270efe2d8447cf",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_spdx": "MIT",
+    "repository": "pytest-dev/pytest",
+    "retrieved_utc": "2026-08-01T03:06:46Z",
+    "revision": "ced9022c0ca87ae2a0a604c68d2e1c462f8a5c6f",
+    "upstream_archive": "tests/fixtures/theseus_p4_online/p4_02_pytest_14586_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "b4effbc2d29a4a7d8ca34ffa2f9b4d0c45983cb2de6e6e24a6b7d330d6015100",
+    "upstream_merged_utc": "2026-07-27T21:25:05Z",
+    "upstream_request_title": "Clamp negative log_auto_indent values",
+    "upstream_request_url": "https://github.com/pytest-dev/pytest/pull/14586",
+    "url": "https://github.com/pytest-dev/pytest"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4_VISIBLE_pytest_PRIMARY",
+      "obligation_ids": [
+        "O1"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4_online/theseus_p4_visible_test.py', 'pytest'])"
+    ],
+    "timeout_seconds": 60
+  }
+}
