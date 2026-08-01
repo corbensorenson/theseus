@@ -3985,6 +3985,9 @@
         "mlx_version": "0.32.0",
         "mlx_lm_version": "0.31.3",
         "independent_preflight_gate": "qualified_runtime_executable_bound",
+        "accelerator_inventory_commit": "ed9f7a0038d54ee53f3210aee66aff4ba476a76f",
+        "exiting_process_rule": "exclude_Darwin_E_dead_and_zombie_states_only_with_positive_metal_usability_gate",
+        "positive_metal_gate": "mlx_float32_vector_add_and_synchronize",
         "attempt2_reports_preserve_attempt1_evidence": true,
         "surface_reuse_authorized_only_because_zero_model_calls": true
       },
@@ -4002,7 +4005,7 @@
       "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
       "physical_boundary_hit_disposition": "invalidate_observation_never_score_as_model_or_mechanism_failure",
       "launch_authority": "machine_predicate_exclusive_one_shot_lease_no_user_gate",
-      "current_machine_wall": "repaired_attempt2_controller_sealed_zero_consumption_not_yet_relaunched",
+      "current_machine_wall": "repaired_attempt2_controller_all_host_and_runtime_preflight_gates_green_ready_for_autonomous_relaunch",
       "D1_eligible": false,
       "prospective_D1_successor": {
         "state": "fail_closed_waiting_for_exact_P4V2R2_survivor",

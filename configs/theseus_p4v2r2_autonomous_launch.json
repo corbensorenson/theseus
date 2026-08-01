@@ -16,6 +16,9 @@
   "source_fixture_root": "tests/fixtures/theseus_p4v2r2_online",
   "python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
   "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+  "accelerator_inventory": "scripts/neural_seed_training_campaign.py",
+  "accelerator_inventory_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
+  "accelerator_inventory_commit": "ed9f7a0038d54ee53f3210aee66aff4ba476a76f",
   "qualified_runtime": {
     "python_version": [3, 12, 5],
     "mlx_version": "0.32.0",
@@ -28,7 +31,12 @@
     "candidate_or_control_calls": 0,
     "tasks_consumed": 0,
     "candidate_outputs": 0,
-    "surface_reuse_rule": "Authorized only because exact preserved receipts prove zero model calls, zero candidates, zero runtime receipts, and zero completed tasks; attempt-1 evidence remains immutable under its incident commit."
+    "surface_reuse_rule": "Authorized only because exact preserved receipts prove zero model calls, zero candidates, zero runtime receipts, and zero completed tasks; attempt-1 evidence remains immutable under its incident commit.",
+    "exiting_process_recovery": {
+      "implementation_commit": "ed9f7a0038d54ee53f3210aee66aff4ba476a76f",
+      "rule": "Darwin E-state and dead/zombie processes cannot dispatch new accelerator work and are excluded from live competitors only when the independent positive Metal arithmetic-and-synchronize canary passes.",
+      "positive_metal_canary_required": true
+    }
   },
   "progress": "reports/theseus_p4v2r2_campaign_attempt2_progress.json",
   "report": "reports/theseus_p4v2r2_attempt2_autonomous_launch.json",

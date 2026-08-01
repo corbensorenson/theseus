@@ -649,7 +649,10 @@ receipts, and 0/10 completed tasks, so the failure carries no model, mechanism,
 task, or token-boundary inference and does not consume the surface. The repaired
 attempt-2 controller binds `runtime/venvs/mlx-0.32.0-py312/bin/python`, checks
 Python 3.12.5, MLX 0.32.0, and MLX-LM 0.31.3 before launch, and writes separate
-attempt-2 evidence paths. Autonomous host readiness remains external power,
+attempt-2 evidence paths. The process inventory excludes only Darwin exit/dead
+states and pairs that exclusion with a positive MLX vector-add-and-synchronize
+device canary; it does not ignore a live matching process. Autonomous host
+readiness remains external power,
 adequate memory and disk, and exclusive accelerator custody; it is not a user
 gate. The campaign still has no project-selected quality-token cap. Model
 context exhaustion or a host emergency invalidates an observation rather than

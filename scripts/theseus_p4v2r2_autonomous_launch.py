@@ -31,6 +31,7 @@ DEFAULT_CONFIG = ROOT / "configs" / "theseus_p4v2r2_autonomous_launch.json"
 CONTEXT_TOKENS = 262_144
 CAMPAIGN_COMMIT = "0da65913ad738a8b0ff1c3878076fa4ad4eb2374"
 DISPOSITION_COMMIT = "0da65913ad738a8b0ff1c3878076fa4ad4eb2374"
+ACCELERATOR_INVENTORY_COMMIT = "ed9f7a0038d54ee53f3210aee66aff4ba476a76f"
 
 
 def main() -> int:
@@ -346,6 +347,7 @@ def audit_bindings(config: dict[str, Any]) -> dict[str, Any]:
         ("instrument", "instrument_sha256"),
         ("runtime_preflight", "runtime_preflight_sha256"),
         ("python", "python_sha256"),
+        ("accelerator_inventory", "accelerator_inventory_sha256"),
     ):
         path = p2a.resolve(str(config.get(path_key) or ""))
         expected = str(config.get(hash_key) or "")
@@ -369,6 +371,8 @@ def audit_bindings(config: dict[str, Any]) -> dict[str, Any]:
         faults.append("campaign_commit_invalid")
     if config.get("disposition_commit") != DISPOSITION_COMMIT:
         faults.append("disposition_commit_invalid")
+    if config.get("accelerator_inventory_commit") != ACCELERATOR_INVENTORY_COMMIT:
+        faults.append("accelerator_inventory_commit_invalid")
     repair = campaign.audit_preconsumption_bootstrap_failure()
     if repair.get("passed") is not True:
         faults.extend(p2a.strings(repair.get("faults")))
