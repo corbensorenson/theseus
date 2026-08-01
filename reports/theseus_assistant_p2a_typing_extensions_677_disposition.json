@@ -1,0 +1,164 @@
+{
+  "consumption": {
+    "eligible_for_D1_or_D2": false,
+    "eligible_for_exact_rerun": false,
+    "eligible_for_training": false,
+    "task_consumed": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T00:39:48.665435Z",
+  "faults": [],
+  "maximum_inference": "The exact frozen TMax P2A instrument/task combination did not reach independent correctness evaluation. This does not estimate a Theseus subsystem effect, compare direct with integrated quality, falsify the ASI Stack mechanism, or establish general model competence.",
+  "next_stage": {
+    "id": "P2B_NEW_INSTRUMENT_AND_SOURCE_DISJOINT_TASK",
+    "requirements": [
+      "freeze a new instrument identity before opening a new task",
+      "use one canonical repo-relative path namespace in request, context, edits, verifier, and evaluator",
+      "treat a top-level runtime RED separately from a route-integrity receipt",
+      "select the local model prospectively from retained model-selection evidence",
+      "consume a fresh licensed source-disjoint development task exactly once"
+    ]
+  },
+  "observed_residuals": {
+    "integrated_failed_gate_names": [
+      "assistant_product_trace_exercises_required_surfaces",
+      "code_private_probe_reports_current_capability_wall",
+      "dogfood_feedback_processed"
+    ],
+    "integrated_runtime_red_is_separate_from_route_integrity": true,
+    "task_path_namespace": {
+      "allowed_effect_paths": [
+        "typing_extensions_677_parent/src/typing_extensions.py"
+      ],
+      "archive_top_level_prefixes": [
+        "typing_extensions_677_parent"
+      ],
+      "repo_relative_path_ambiguity_present": true,
+      "request_paths_rejected_but_allowed_with_archive_prefix": [
+        "src/typing_extensions.py"
+      ],
+      "request_repo_relative_paths": [
+        "read-only/mutable-key",
+        "src/typing_extensions.py"
+      ]
+    },
+    "typed_action_parse_faults_by_arm": {
+      "direct_local_model": {
+        "final_call": [
+          "typed_action_path_unauthorized"
+        ],
+        "first_call": [
+          "typed_action_envelope_invalid"
+        ]
+      },
+      "integrated_local_model": {
+        "final_call": [
+          "typed_action_envelope_invalid"
+        ],
+        "first_call": [
+          "typed_action_envelope_invalid"
+        ]
+      }
+    }
+  },
+  "policy": "project_theseus_p2a_terminal_disposition_v1",
+  "recomputed_checks": {
+    "correctness_evaluated_candidates": 0,
+    "external_inference_calls": 0,
+    "matched_pair_ready": true,
+    "model_calls_within_four_call_pair_budget": true,
+    "one_persistent_model_load": true,
+    "parseable_candidates": 0,
+    "route_integrity_ready_for_every_call": true,
+    "user_facing_effects": 0
+  },
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "source_identities": {
+    "candidate_report": {
+      "path": "reports/theseus_assistant_p2a_typing_extensions_677_run.json",
+      "sha256": "27fea082ca927cbc6c3f3099ef956bb04917fb2d72dd686bed781fee4619f603"
+    },
+    "evaluation_report": {
+      "path": "reports/theseus_assistant_p2a_typing_extensions_677_evaluation.json",
+      "sha256": "674fbf9b8468665810b49f5123824a81a3dd3d5005c68e7997c35b8b4238bff7"
+    },
+    "instrument_sha256": "de89fd73d7a3b8ececf6d0e6c9358b352a849f31bb55510ca313fe43c1432101",
+    "runtime_reports": [
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 1,
+        "failed_gates": [],
+        "path": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1.json",
+        "route_integrity_ready": true,
+        "sha256": "0a4c05a92db1735976825936bd9e0c70efa78a8601acbe72bdd62b9805c04c95",
+        "trigger_state": "GREEN"
+      },
+      {
+        "arm_id": "direct_local_model",
+        "call_number": 2,
+        "failed_gates": [],
+        "path": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_2.json",
+        "route_integrity_ready": true,
+        "sha256": "ec0a51375e5fe84af723eef3e3daca1a39cdffad1b9fb13dab3268cca6d719f0",
+        "trigger_state": "GREEN"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 1,
+        "failed_gates": [
+          {
+            "name": "code_private_probe_reports_current_capability_wall",
+            "severity": "warning"
+          },
+          {
+            "name": "dogfood_feedback_processed",
+            "severity": "warning"
+          },
+          {
+            "name": "assistant_product_trace_exercises_required_surfaces",
+            "severity": "hard"
+          }
+        ],
+        "path": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_integrated_local_model_1.json",
+        "route_integrity_ready": true,
+        "sha256": "6cd0be01a81005b302f62459b150b410f254890680ca0d0ad350880836350d9f",
+        "trigger_state": "RED"
+      },
+      {
+        "arm_id": "integrated_local_model",
+        "call_number": 2,
+        "failed_gates": [
+          {
+            "name": "code_private_probe_reports_current_capability_wall",
+            "severity": "warning"
+          },
+          {
+            "name": "dogfood_feedback_processed",
+            "severity": "warning"
+          },
+          {
+            "name": "assistant_product_trace_exercises_required_surfaces",
+            "severity": "hard"
+          }
+        ],
+        "path": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_integrated_local_model_2.json",
+        "route_integrity_ready": true,
+        "sha256": "2219d324b91f0fc0191ab25ca4d9f3930c477e231dff8291c8ddb305886add63",
+        "trigger_state": "RED"
+      }
+    ],
+    "task_manifest": {
+      "path": "configs/theseus_p2a_task_typing_extensions_677.json",
+      "sha256": "7a1ec46a08576559dfd91553a301405dbf0223fd023ed8c3b682b4c61ce236a4"
+    }
+  },
+  "terminal_disposition": "P2A_TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE",
+  "trigger_state": "GREEN"
+}

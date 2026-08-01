@@ -217,7 +217,7 @@ mechanism. P2-001 may not be replayed for fresh credit.
 
 #### P2A — Establish an adequate autonomous coding instrument
 
-State: `INSTRUMENT_AND_LICENSED_TASK_SEALED_READY_TO_RUN`.
+State: `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE`.
 
 P2-001 ended an exact instrument version; it did not end the fixed-model
 strategy. P2A is now implemented as a prospectively named successor instrument
@@ -249,16 +249,26 @@ successor, mark it unsuitable for the coding denominator and autonomously
 qualify one stronger locally installed model under a new instrument identity.
 Do not enlarge the same denominator repeatedly.
 
-The source-bound instrument uses one in-process persistent offline backend,
-an explicit 1,536-token decoder identity, at most two calls per arm, atomic
-line-addressed `REPLACE` operations, bounded task-defined read/search context,
-one visible-verifier feedback turn, and a separate route-blind evaluator that
-recomputes candidate seals, effects, hidden correctness, and rollback. Its
-mechanics suite and frozen-instrument audit are GREEN. This does not establish
-empirical adequacy. The first task is now sealed from PSF-licensed
-`python/typing_extensions` PR 677: the exact parent fails evaluator-only
-upstream assertions and the exact upstream target passes. Candidate generation
-has not opened; the next step is the source-bound P2A run and blind evaluation.
+The exact source-bound run consumed the PSF-licensed
+`python/typing_extensions` PR 677 task once. Pair integrity stayed GREEN: one
+persistent TMax load served four calls, both routes used the same frozen model
+and budgets, every call had a valid route-integrity receipt, external inference
+and user-facing effects remained zero, and the route-blind evaluator opened no
+route label. Neither arm produced a parseable candidate, so zero candidates
+reached correctness evaluation. Both first calls ignored the edit envelope;
+the direct repair used `src/typing_extensions.py`, which matched the natural
+request but was rejected because the archive exposed only
+`typing_extensions_677_parent/src/typing_extensions.py`; the integrated repair
+again ignored the envelope. The integrated runtime also reported its unrelated
+product-trace gate RED while its route-integrity receipt stayed GREEN.
+
+The terminal disposition is `INCONCLUSIVE_IMPLEMENTATION`, not a direct versus
+integrated result and not negative evidence about any ASI Stack mechanism. The
+task is consumed and may not be rerun, trained on, or reused for D1/D2. P2B must
+freeze a new instrument identity, use one canonical repository-relative path
+namespace, separate runtime-product health from experiment route integrity,
+prospectively select a stronger installed local candidate, and consume one
+fresh licensed source-disjoint development task.
 
 ##### Autonomous task-source contract
 
@@ -414,9 +424,9 @@ Maintenance serves P or N and does not become another research program:
 | Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated learned-generation modes use the exact offline TMax snapshot; the status shim remains a maintenance-compatible mode |
 | Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
-| Autonomous instrument successor | `P2A_INSTRUMENT_AND_TASK_SEALED_READY_TO_RUN` | Persistent exact TMax and the PSF-licensed typing-qualifier task are audit-GREEN and frozen before candidate generation; empirical adequacy awaits the run |
+| Autonomous instrument successor | `P2A_TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | The exact matched TMax run held its route/persistence budgets but produced zero parseable candidates; a repo-relative/archive-prefix mismatch also made the task packet ambiguous, so no subsystem comparison is valid |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
-| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 produced zero independently evaluable candidates; P3 will compare the best qualified local model and a separately governed Luna-xhigh reference, each direct and integrated |
+| Autonomous usefulness | `NOT_ESTABLISHED` | P2-001 and P2A produced zero independently evaluable candidates under their exact protocols; P3 remains closed until a new instrument qualifies, then compares the best qualified local model and governed Luna-xhigh reference, each direct and integrated |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -433,13 +443,17 @@ Maintenance serves P or N and does not become another research program:
    exact identities, causal variables, adequacy requirements, strongest
    controls, decisions, and maximum inferences are now the experiment
    contract; the binding changes no book support state.
-3. Preserve the audit-GREEN P2A instrument as a source-bound transaction; do
-   not tune it after task acquisition begins.
-4. Preserve the sealed PSF-licensed `typing_extensions` parent, target,
-   evaluator, and pool bindings; do not tune them after candidate generation.
-5. Run P2A automatically now that its source and task packets pass. If it reaches
-   independent correctness evaluation, open P3; if it fails, qualify one
-   stronger local model under a new denominator.
+3. Preserve the terminal P2A run, blind evaluation, runtime receipts, and
+   independent disposition as immutable negative evidence. Do not rerun its
+   consumed `typing_extensions` task or translate its instrument failure into a
+   subsystem result.
+4. Freeze P2B under a new instrument identity with a canonical repo-relative
+   path namespace and explicit separation between runtime-product health and
+   route-integrity validity. Prospectively select the strongest retained local
+   diagnostic candidate, then consume one fresh licensed source-disjoint task.
+5. Open P3 only if P2B reaches independent correctness evaluation within its
+   frozen budget; otherwise preserve the exact failure and repair the measured
+   owner under another new denominator rather than stretching P2B.
 6. Before P3, select the best adequate installed local model on the sealed
    development pool and bind the measurement-only Luna-xhigh adapter. Run both
    models direct and integrated on the same ten tasks without mixing

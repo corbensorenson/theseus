@@ -2,8 +2,8 @@
 
 Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
 `cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
-page includes the bounded 13-claim causal-binding transaction and the
-audit-GREEN P2A instrument.
+page includes the bounded 13-claim causal-binding transaction and the terminal
+P2A instrument-adequacy result.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -17,9 +17,12 @@ largest ASI Stack ideas. Its governance machinery, exact resumable
 infrastructure, not the goal by themselves. P1 now proves that the exact local
 model traverses the canonical direct and integrated routes, but P2-001 and its
 only repair produced no applicable candidate under the 512-token protocol.
-Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. The next
-step is to run the source-bound P2A instrument on the now-sealed,
-PSF-licensed `typing_extensions` task. In parallel, the neural campaign remains held on clean
+Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. P2A has
+now also terminated without an evaluable candidate: its matched execution held,
+but TMax did not follow the edit protocol and the task exposed a path-namespace
+ambiguity. The next step is a newly frozen P2B instrument with a stronger local
+diagnostic candidate and one fresh licensed source-disjoint task. In parallel,
+the neural campaign remains held on clean
 source binding and migration from manual holds to bounded machine-readable
 launch and one-shot evaluation authority. No forward phase depends on Corben
 supplying tasks, labels, approvals, or timing.
@@ -74,14 +77,14 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated modes invoke the exact offline TMax snapshot; the deterministic status path remains for maintenance compatibility |
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
-| P2A successor instrument | `INSTRUMENT_AND_TASK_SEALED_READY_TO_RUN` | One persistent exact-TMax load, the 1,536-token decoder, atomic typed edits, repair, blind evaluation, and the PSF-licensed typing-qualifier parent/target task all pass pre-generation audits; empirical adequacy awaits execution |
+| P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
 | Training | `TRAINING_HELD_AUTOMATION_MIGRATION_PENDING` | `runtime/control/neural_seed_yield_after_segment` is present; removal must move to the exact automated launch controller |
 | Learned capability | `NOT_EVALUATED_SEALED` | The 57M candidate has no D2 result; the current surface is independently fresh at exact and normalized model-visible prompt scope, but automated one-shot evaluation authority is not implemented |
 | Matched controls | `NOT_TRAINED` | Both dense controls remain at 0 optimizer steps |
-| Instrument usefulness | `NOT_ESTABLISHED` | P2-001 traversed both canonical routes but produced zero independently evaluable candidates; no route or subsystem won |
+| Instrument usefulness | `NOT_ESTABLISHED` | P2-001 and P2A both traversed matched canonical routes but produced zero independently evaluable candidates under their exact protocols; no route or subsystem won |
 | Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
 | Teacher accounting | `GREEN_ACCOUNTING` | 15 teacher-accepted rows among 115,429 accepted rows, about 0.013% |
 | Storage | `RETENTION_POLICY_PENDING` | Current trees are roughly 2.0 GiB / 7,379 report files and 41 GiB / 249,010 runtime files. A machine-readable retention controller and custody must identify safe targets before deletion; checkpoints, corpora, and negative evidence are not implicitly eligible |
@@ -109,17 +112,20 @@ Both repaired candidates sealed safely but reached exactly 512 tokens, ended
 mid-patch, and failed independent patch application. The exact TMax/512-token
 instrument is terminally unsuitable for this coding denominator. Theseus
 subsystem efficacy remains `INCONCLUSIVE_IMPLEMENTATION`; P3, P4, and all
-subsystem-specific claim experiments remain blocked until P2A proves instrument
-adequacy.
+subsystem-specific claim experiments remain blocked until a newly frozen P2B
+successor proves instrument adequacy.
 
-P2A now implements a persistent frozen backend, concise line-addressed edits,
-atomic application, one verifier-fed repair, and independent route-blind
-evaluation. It will use a deterministic task selected from a sealed, license-compatible
-online repository pool. Candidate-visible inputs are the natural request,
-parent snapshot, callable surface, and allowed context; later patches, hidden
-tests, commit identity, source-task metadata, and answer-derived labels remain
-sealed. This replaces personal-assistant data collection and creates no runtime
-external-inference authority.
+P2A used one persistent frozen backend, concise line-addressed edits, atomic
+application, one repair, and independent route-blind evaluation on the sealed
+PSF-licensed task. Pair integrity, model identity, call limits, route integrity,
+zero external inference, and evaluator blindness all held. Both first calls
+ignored the typed envelope. The direct repair emitted the repo-relative path
+named in the request, but the task authorized only its archive-prefixed form;
+the integrated repair remained malformed. No candidate was sealed or scored.
+The integrated runtime's product-trace gate was also RED on both calls while
+the experiment-relevant route-integrity receipts were GREEN. The consumed task
+is permanently ineligible for rerun, training, D1, or D2. This is exact
+instrument/task evidence only and cannot support a route or subsystem verdict.
 
 Historical L0 evidence remains preserved:
 
@@ -429,11 +435,14 @@ In order:
    exact identities, causal variables, adequacy requirements, strongest
    controls, decisions, and maximum-inference boundaries are now fixed; the
    binding changes no book support state.
-3. Keep the audit-GREEN P2A implementation frozen while its source transaction
-   is bound; do not tune it after the online task pool is opened.
-4. Run the already sealed license-compatible P2A task automatically. Open P3
-   on adequacy; otherwise qualify one stronger local
-   model under a new denominator. Do not replay P2-001.
+3. Preserve P2A's run, blind evaluation, runtime receipts, and terminal
+   disposition as immutable `INCONCLUSIVE_IMPLEMENTATION` evidence. Do not
+   replay its consumed `typing_extensions` task or infer a subsystem effect.
+4. Freeze P2B under a new identity with one canonical repository-relative path
+   namespace and explicit runtime-product versus route-integrity accounting.
+   Prospectively select a stronger installed local candidate, then consume one
+   fresh licensed source-disjoint development task exactly once. Open P3 only
+   if at least one candidate reaches independent correctness evaluation.
 5. For P3, freeze the best adequate installed local model and a separately
    governed Luna-xhigh reference adapter. Run each model direct and integrated
    on the same ten sealed tasks; interpret within-model Theseus effects and

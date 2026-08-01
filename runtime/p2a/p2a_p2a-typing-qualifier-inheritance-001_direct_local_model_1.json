@@ -1,0 +1,411 @@
+{
+  "assistant_text": "THESEUS_EDIT_V1\nREPLACE typing_extensions.py 1185 1190\n<<<\n                if sys.version_info <= (3, 14):\n                    annotations.update(base_dict.get('__annotations__', {}))\n                # Handle key qualifier inheritance with redeclaration priority.\n                # Later bases override earlier ones; own annotations override all bases.\n                base_required = base_dict.get('__required_keys__', ())\n                base_optional = base_dict.get('__optional_keys__', ())\n                \n                # Determine if this key is being redeclared in the current class's own annotations\n                own_annotations = {k: v for k, v in own_checked_annotations.items()}\n                is_own_key = annotation_key in own_annotations if 'annotation_key' in locals() else False\n                \n                # We need to process base keys first, then apply own keys with priority.\n                # However, the loop structure iterates bases then processes own.\n                # To fix inheritance correctly where a subclass redeclares a key:\n                # 1. Collect all base keys.\n                # 2. When processing own keys, they override base status.\n                # 3. If a base redeclares a key (later in MRO), it overrides previous bases.\n                \n                # Revised logic for this specific block:\n                # We must not simply update sets if the key exists in 'own' or later bases.\n                # But since we are inside the 'for base in bases' loop, we handle one base at a time.\n                # The issue is that simple .update() allows earlier optional to persist if later base doesn't touch it?\n                # No, the prompt says \"last base must win\". So update is correct for bases.\n                # The issue is likely when 'own_checked_annotations' contains a key that was optional in a base but Required in own.\n                # OR when a subclass redefines a key present in a parent.\n                \n                # Let's look at the specific failure mode: \"subclass or a later base redeclares the same key\".\n                # If Base1 has {k: Optional}, Base2 has {k: Required}.\n                # Loop Base1: optional_keys.add(k).\n                # Loop Base2: required_keys.add(k) (if it's in Base2's __required_keys__).\n                # This works for bases.\n                \n                # What if Base1 has {k: Optional}, and Subclass defines {k: Required} in own_annotations?\n                # The code below processes own_annotations AFTER the loop.\n                # It adds to required_keys/optional_keys based on own_annotations qualifiers.\n                # This overwrites the base status correctly for 'own'.\n                \n                # The problem described is likely:\n                # Base1: k=Optional (__optional_keys__)\n                # Base2: k=Optional (__optional_keys__) -> update keeps it optional.\n                # Subclass: k=Required (in own_annotations) -> adds to required_keys.\n                # Result: k is in both? No, sets are distinct.\n                # But __required_keys__ and __optional_keys__ are set at the end.\n                # If a key is in both sets, which wins? The code doesn't check intersection.\n                # PEP 589/728 implies a key cannot be both.\n                \n                # Actually, the standard logic is:\n                # required_keys = set()\n                # optional_keys = set()\n                # for base in bases:\n                #    required_keys.update(base.__required_keys__)\n                #    optional_keys.update(base.__optional_keys__)\n                # for own_key, own_type in own_annotations.items():\n                #    ... determine status ...\n                #    if status == Required: required_keys.add(key)\n                #    elif status == Optional: optional_keys.add(key)\n                \n                # If Base1 has k in optional, Base2 has k in optional.\n                # own has k in Required.\n                # Loop bases: optional_keys = {k}.\n                # Process own: required_keys = {k}.\n                # Final: __required_keys__={k}, __optional_keys__={k}.\n                # This is invalid. A key should not be in both.\n                # The fix: When adding to own_keys, remove from the other set if present?\n                # Or better: The sets should be mutually exclusive.\n                # But wait, the prompt says \"Required must replace NotRequired\".\n                # So if a key is in both, it's an error or needs resolution.\n                # Usually, TypedDict construction ensures mutual exclusion by checking existence.\n                \n                # Let's re-read the code flow carefully.\n                # 1185-1190: Loop bases, update sets.\n                # 1200+: Process own_annotations.\n                # If 'k' is in own_annotations with Required:\n                #   required_keys.add(k)\n                # If 'k' was already in optional_keys (from base), it stays there too.\n                # Result: k in both.\n                # The fix must ensure that when we add to one set, we remove from the other if the key exists.\n                \n                # Wait, the prompt says \"last base must win\".\n                # This implies the order of bases matters for inheritance conflicts between bases.\n                # But the code does `update`, so later base wins over earlier base for the same key.\n                # So Base1 Optional, Base2 Required -> Required wins. Correct.\n                \n                # The conflict is between Base and Own.\n                # If Base has Optional, Own has Required -> Own should win (it's the definition).\n                # Current code: adds to both.\n                # Fix: When processing own_annotations, if key is in required_keys, remove from optional_keys and vice versa?\n                # Or simply: The sets are built independently. At assignment time (1261), we need to resolve conflicts.\n                # But the prompt asks to fix the logic during construction.\n                \n                # Let's assume the intended behavior:\n                # 1. Aggregate bases (later wins earlier).\n                # 2. Apply own definitions (own always wins over bases).\n                # 3. Ensure mutual exclusion.\n                \n                # Implementation change:\n                # In the loop for bases, we still update.\n                # In the loop for own_annotations:\n                #   If key in required_keys: optional_keys.discard(key)\n                #   If key in optional_keys: required_keys.discard(key)\n                #   Then add to appropriate set.\n                \n                # However, there is a nuance: \"last base must win\".\n                # If Base1 (Optional), Base2 (Required).\n                # Loop Base1: opt={k}.\n                # Loop Base2: req={k}.\n                # Now req={k}, opt={k}. Conflict between bases?\n                # The prompt says \"last base must win\". So if Base2 is later, it should override Base1.\n                # But `update` adds both.\n                # We need to track the \"current status\" of each key across the base loop.",
+  "assistant_trace_schema": {
+    "allowed_outcomes": [
+      "accepted",
+      "missed",
+      "ignored",
+      "corrected",
+      "completed",
+      "failed",
+      "abstained"
+    ],
+    "boundaries": {
+      "assisted_behavior_learned_model_credit_allowed": false,
+      "dogfood_metadata_is_private_training_pressure_only": true,
+      "external_inference_at_runtime_allowed": false,
+      "fallback_returns_allowed": false,
+      "public_benchmark_training_allowed": false,
+      "raw_prompt_persistence": "hash_only",
+      "raw_text_training_allowed": false,
+      "tool_outputs_are_evidence_not_model_only_skill": true
+    },
+    "dogfood_training_row_schema": {
+      "inputs": [
+        "assistant_lane",
+        "outcome",
+        "intent_summary_redacted",
+        "artifact_refs",
+        "error_family",
+        "duration_bucket"
+      ],
+      "public_benchmark_rows": false,
+      "raw_user_text": false,
+      "targets": [
+        "outcome_label",
+        "repair_priority",
+        "lane_feedback"
+      ],
+      "teacher_rows": false
+    },
+    "empty_outcome_allowed": true,
+    "exists": true,
+    "failure_behavior": {
+      "missing_required_event_field": "fail_closed_hard_gate",
+      "missing_schema": "fail_closed_hard_gate",
+      "raw_text_or_public_training_attempt": "hard_block",
+      "unknown_outcome": "normalize_to_missed_and_mark_schema_violation"
+    },
+    "outcome_semantics": {
+      "abstained": "The assisted lane deliberately declined because authority, evidence, or safe execution was insufficient.",
+      "accepted": "The user accepted the result or route as useful.",
+      "completed": "The task reached a usable completed state without implying model promotion.",
+      "corrected": "The user or verifier supplied a correction signal.",
+      "failed": "The assisted lane reached a terminal failure and must not receive success or capability credit.",
+      "ignored": "The output was not used and should not be treated as successful.",
+      "missed": "The assistant failed to address the user's actual need."
+    },
+    "path": "configs/assistant_trace_schema.json",
+    "policy": "project_theseus_assistant_trace_schema_v1",
+    "purpose": "Shared product assistant trace and dogfood outcome contract for every local Theseus assistant route.",
+    "required_event_fields": [
+      "session_id",
+      "intent",
+      "assistant_lane",
+      "prompt_sha256",
+      "assistant_text_sha256",
+      "feedback",
+      "dogfood_event_written",
+      "vcm_context_ready",
+      "vcm_context_governor_ready",
+      "viea_materialized_view_ready",
+      "private_verifier_spine_ready",
+      "public_training_rows_written",
+      "external_inference_calls"
+    ],
+    "required_viea_bindings": [
+      "policy_optimization_record",
+      "context_transaction",
+      "context_adequacy",
+      "artifact_graph_record",
+      "claim_record",
+      "evidence_transition_record"
+    ],
+    "schema_version": "1.0.0",
+    "sha256": "c99285f737b7806c51944b5517ec93854bb5c31da342190146422ef589dca14d"
+  },
+  "assistant_viea_trace": [],
+  "checkpoint_chat": {
+    "out": "reports/theseus_assistant_checkpoint_chat_p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1.json",
+    "returncode": 0,
+    "session": {
+      "history_turns_loaded": 0,
+      "persistence": "disabled_no_raw_text_retention",
+      "session_id": "p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1",
+      "session_path": ""
+    },
+    "stderr_tail": ""
+  },
+  "context_refresh": [],
+  "created_utc": "2026-08-01T00:11:36.816297+00:00",
+  "dogfood": {},
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "gates": [
+    {
+      "evidence": [],
+      "name": "local_model_contract_ready",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": [],
+      "name": "direct_generation_request_ready",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "effect_canary": false
+      },
+      "name": "direct_mode_has_no_effect_authority",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "command": [
+          "persistent_in_process_frozen_backend"
+        ],
+        "id": "local_inference",
+        "model_load_count": 1,
+        "persistent_backend": true,
+        "persistent_session_id": "p2a-p2a-typing-qualifier-inheritance-001",
+        "prompt_transport": "in_process_ephemeral_not_argv",
+        "returncode": 0,
+        "runtime_ms": 357530,
+        "stderr_tail": "",
+        "stdout_tail": ""
+      },
+      "name": "local_inference_completed",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": {
+        "failed_checks": []
+      },
+      "name": "live_route_integrity_release_authorized",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "raw_text_training_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "runtime_external_inference_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "public_benchmark_training_disabled",
+      "passed": true,
+      "severity": "hard"
+    },
+    {
+      "evidence": false,
+      "name": "fallback_returns_disabled",
+      "passed": true,
+      "severity": "hard"
+    }
+  ],
+  "generation_backend": {
+    "execution_mode": "direct_local_model",
+    "id": "local_inference",
+    "out": "reports/theseus_assistant_checkpoint_chat_p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1.json",
+    "returncode": 0
+  },
+  "generation_request_binding": {
+    "automatic_effects": 0,
+    "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "context_pages": [],
+    "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+    "execution_mode": "direct_local_model",
+    "maximum_model_calls": 1,
+    "model_identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+    "model_prompt_sha256": "2f7ce8d6341aa3e120926d412e603abaf66bb62df2637b7c328443bcfcb3d7a5",
+    "policy": "project_theseus_live_route_integrity_v1",
+    "raw_context_text_stored": false,
+    "raw_prompt_stored": false,
+    "request_binding_sha256": "1cf14d3a17c0e7ded250042527a5be61cee3cc58abc37fdf1447489f3d1ab8af",
+    "route_packet": {
+      "automatic_effects": 0,
+      "planning": "none",
+      "route_kind": "direct_fixed_model",
+      "tool_calls": 0,
+      "vcm": "none"
+    },
+    "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+    "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+    "user_prompt_sha256": "2f7ce8d6341aa3e120926d412e603abaf66bb62df2637b7c328443bcfcb3d7a5"
+  },
+  "inputs": {
+    "config": "configs/theseus_assistant_runtime.json",
+    "origin": "local_user_control",
+    "principal": "local-user",
+    "prompt_sha256": "2f7ce8d6341aa3e120926d412e603abaf66bb62df2637b7c328443bcfcb3d7a5",
+    "surface": "local_assistant"
+  },
+  "local_model_contract": {
+    "faults": [],
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 1536,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 1536
+      },
+      "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+      "identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1"
+    },
+    "model_card": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "maximum_action_tokens": 1536,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "temperature": 0.0
+    },
+    "ready": true,
+    "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v3.json"
+  },
+  "outputs": {
+    "assistant_viea_trace": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1_viea.jsonl",
+    "conversation_events": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1_events.jsonl",
+    "markdown": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1.md",
+    "report": "runtime/p2a/p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1.json"
+  },
+  "policy": "project_theseus_assistant_runtime_v1",
+  "public_training_rows_written": 0,
+  "response": {
+    "answer": "THESEUS_EDIT_V1\nREPLACE typing_extensions.py 1185 1190\n<<<\n                if sys.version_info <= (3, 14):\n                    annotations.update(base_dict.get('__annotations__', {}))\n                # Handle key qualifier inheritance with redeclaration priority.\n                # Later bases override earlier ones; own annotations override all bases.\n                base_required = base_dict.get('__required_keys__', ())\n                base_optional = base_dict.get('__optional_keys__', ())\n                \n                # Determine if this key is being redeclared in the current class's own annotations\n                own_annotations = {k: v for k, v in own_checked_annotations.items()}\n                is_own_key = annotation_key in own_annotations if 'annotation_key' in locals() else False\n                \n                # We need to process base keys first, then apply own keys with priority.\n                # However, the loop structure iterates bases then processes own.\n                # To fix inheritance correctly where a subclass redeclares a key:\n                # 1. Collect all base keys.\n                # 2. When processing own keys, they override base status.\n                # 3. If a base redeclares a key (later in MRO), it overrides previous bases.\n                \n                # Revised logic for this specific block:\n                # We must not simply update sets if the key exists in 'own' or later bases.\n                # But since we are inside the 'for base in bases' loop, we handle one base at a time.\n                # The issue is that simple .update() allows earlier optional to persist if later base doesn't touch it?\n                # No, the prompt says \"last base must win\". So update is correct for bases.\n                # The issue is likely when 'own_checked_annotations' contains a key that was optional in a base but Required in own.\n                # OR when a subclass redefines a key present in a parent.\n                \n                # Let's look at the specific failure mode: \"subclass or a later base redeclares the same key\".\n                # If Base1 has {k: Optional}, Base2 has {k: Required}.\n                # Loop Base1: optional_keys.add(k).\n                # Loop Base2: required_keys.add(k) (if it's in Base2's __required_keys__).\n                # This works for bases.\n                \n                # What if Base1 has {k: Optional}, and Subclass defines {k: Required} in own_annotations?\n                # The code below processes own_annotations AFTER the loop.\n                # It adds to required_keys/optional_keys based on own_annotations qualifiers.\n                # This overwrites the base status correctly for 'own'.\n                \n                # The problem described is likely:\n                # Base1: k=Optional (__optional_keys__)\n                # Base2: k=Optional (__optional_keys__) -> update keeps it optional.\n                # Subclass: k=Required (in own_annotations) -> adds to required_keys.\n                # Result: k is in both? No, sets are distinct.\n                # But __required_keys__ and __optional_keys__ are set at the end.\n                # If a key is in both sets, which wins? The code doesn't check intersection.\n                # PEP 589/728 implies a key cannot be both.\n                \n                # Actually, the standard logic is:\n                # required_keys = set()\n                # optional_keys = set()\n                # for base in bases:\n                #    required_keys.update(base.__required_keys__)\n                #    optional_keys.update(base.__optional_keys__)\n                # for own_key, own_type in own_annotations.items():\n                #    ... determine status ...\n                #    if status == Required: required_keys.add(key)\n                #    elif status == Optional: optional_keys.add(key)\n                \n                # If Base1 has k in optional, Base2 has k in optional.\n                # own has k in Required.\n                # Loop bases: optional_keys = {k}.\n                # Process own: required_keys = {k}.\n                # Final: __required_keys__={k}, __optional_keys__={k}.\n                # This is invalid. A key should not be in both.\n                # The fix: When adding to own_keys, remove from the other set if present?\n                # Or better: The sets should be mutually exclusive.\n                # But wait, the prompt says \"Required must replace NotRequired\".\n                # So if a key is in both, it's an error or needs resolution.\n                # Usually, TypedDict construction ensures mutual exclusion by checking existence.\n                \n                # Let's re-read the code flow carefully.\n                # 1185-1190: Loop bases, update sets.\n                # 1200+: Process own_annotations.\n                # If 'k' is in own_annotations with Required:\n                #   required_keys.add(k)\n                # If 'k' was already in optional_keys (from base), it stays there too.\n                # Result: k in both.\n                # The fix must ensure that when we add to one set, we remove from the other if the key exists.\n                \n                # Wait, the prompt says \"last base must win\".\n                # This implies the order of bases matters for inheritance conflicts between bases.\n                # But the code does `update`, so later base wins over earlier base for the same key.\n                # So Base1 Optional, Base2 Required -> Required wins. Correct.\n                \n                # The conflict is between Base and Own.\n                # If Base has Optional, Own has Required -> Own should win (it's the definition).\n                # Current code: adds to both.\n                # Fix: When processing own_annotations, if key is in required_keys, remove from optional_keys and vice versa?\n                # Or simply: The sets are built independently. At assignment time (1261), we need to resolve conflicts.\n                # But the prompt asks to fix the logic during construction.\n                \n                # Let's assume the intended behavior:\n                # 1. Aggregate bases (later wins earlier).\n                # 2. Apply own definitions (own always wins over bases).\n                # 3. Ensure mutual exclusion.\n                \n                # Implementation change:\n                # In the loop for bases, we still update.\n                # In the loop for own_annotations:\n                #   If key in required_keys: optional_keys.discard(key)\n                #   If key in optional_keys: required_keys.discard(key)\n                #   Then add to appropriate set.\n                \n                # However, there is a nuance: \"last base must win\".\n                # If Base1 (Optional), Base2 (Required).\n                # Loop Base1: opt={k}.\n                # Loop Base2: req={k}.\n                # Now req={k}, opt={k}. Conflict between bases?\n                # The prompt says \"last base must win\". So if Base2 is later, it should override Base1.\n                # But `update` adds both.\n                # We need to track the \"current status\" of each key across the base loop.",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v1",
+      "model_identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "route_integrity": {
+    "checks": {
+      "D2_consumption_zero": true,
+      "authority_controls_effect_scope": true,
+      "backend_completed": true,
+      "backend_model_identity_bound": true,
+      "backend_prompt_bound": true,
+      "backend_route_bound": true,
+      "backend_user_facing_effects_zero": true,
+      "compiled_plan_executed_or_held": true,
+      "decorative_labels_cannot_satisfy_integrated_route": true,
+      "effect_observation_and_exact_rollback_bound": true,
+      "execution_mode_bound": true,
+      "external_inference_zero": true,
+      "fallback_returns_zero": true,
+      "local_model_backend_owned_by_canonical_assistant_runtime": true,
+      "public_calibration_consumption_zero": true,
+      "public_training_rows_zero": true,
+      "request_binding_digest_valid": true,
+      "response_present": true,
+      "route_changes_callable_capability_budget_tool_or_hold": true,
+      "selected_vcm_content_consumed_by_model": true,
+      "single_model_call_budget": true,
+      "supported_execution_mode": true,
+      "teacher_calls_zero": true,
+      "verification_controls_release_or_repair": true
+    },
+    "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+    "execution_mode": "direct_local_model",
+    "expected_model_identity": {
+      "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+      "identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1"
+    },
+    "failed_checks": [],
+    "non_claims": [
+      "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+      "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+    ],
+    "observed_model_identity": {
+      "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+      "identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "56d02b20e314a5314337c53f610b80b729407c6b3e39909b794f12ae8a98e7c1"
+    },
+    "pair_contract": {
+      "automatic_effects": 0,
+      "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+      "maximum_model_calls": 1,
+      "model_identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+      "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+    },
+    "policy": "project_theseus_live_route_integrity_v1",
+    "ready": true,
+    "receipt_sha256": "1241f755ee66dc81e9c6d6a9b5b7dc0e83adaea2936df9c891f1ffc1e3ca3440",
+    "release_allowed": true,
+    "request_binding": {
+      "automatic_effects": 0,
+      "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "context_pages": [],
+      "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+      "execution_mode": "direct_local_model",
+      "maximum_model_calls": 1,
+      "model_identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+      "model_prompt_sha256": "2f7ce8d6341aa3e120926d412e603abaf66bb62df2637b7c328443bcfcb3d7a5",
+      "policy": "project_theseus_live_route_integrity_v1",
+      "raw_context_text_stored": false,
+      "raw_prompt_stored": false,
+      "request_binding_sha256": "1cf14d3a17c0e7ded250042527a5be61cee3cc58abc37fdf1447489f3d1ab8af",
+      "route_packet": {
+        "automatic_effects": 0,
+        "planning": "none",
+        "route_kind": "direct_fixed_model",
+        "tool_calls": 0,
+        "vcm": "none"
+      },
+      "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+      "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+      "user_prompt_sha256": "2f7ce8d6341aa3e120926d412e603abaf66bb62df2637b7c328443bcfcb3d7a5"
+    },
+    "structural_verification": {
+      "checks": {
+        "D2_consumption_zero": true,
+        "backend_completed": true,
+        "backend_model_identity_bound": true,
+        "backend_prompt_bound": true,
+        "backend_route_bound": true,
+        "backend_user_facing_effects_zero": true,
+        "external_inference_zero": true,
+        "fallback_returns_zero": true,
+        "public_calibration_consumption_zero": true,
+        "public_training_rows_zero": true,
+        "response_present": true,
+        "single_model_call_budget": true,
+        "teacher_calls_zero": true
+      },
+      "independent_from_backend": true,
+      "passed": true,
+      "task_correctness_evaluated": false,
+      "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+      "verifier_id": "theseus_local_response_integrity_verifier_v1"
+    }
+  },
+  "summary": {
+    "assistant_lane": "direct_fixed_model_runtime",
+    "assistant_text_chars": 7196,
+    "assistant_trace_schema": "configs/assistant_trace_schema.json",
+    "assistant_trace_schema_ready": true,
+    "assistant_trace_schema_sha256": "c99285f737b7806c51944b5517ec93854bb5c31da342190146422ef589dca14d",
+    "checkpoint_chat_returncode": 0,
+    "checkpoint_history_turns_loaded": 0,
+    "checkpoint_id": "live",
+    "checkpoint_session_path": "",
+    "dogfood_event_written": false,
+    "dogfood_training_rows_written": 0,
+    "execution_mode": "direct_local_model",
+    "fallback_return_count": 0,
+    "feedback": "completed",
+    "generation_request_ready": true,
+    "intent": "code",
+    "local_model_contract_ready": true,
+    "local_model_identity_sha256": "ba7de9d6d66cd014500d7687413cd2333a9a74cb54c889c41094867f5ab9099c",
+    "public_training_rows_written": 0,
+    "requested_intent": "code",
+    "route_integrity_disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+    "route_integrity_failed_checks": [],
+    "route_integrity_ready": true,
+    "route_integrity_release_allowed": true,
+    "runtime_external_inference_calls": 0,
+    "runtime_ms": 357591,
+    "session_id": "p2a_p2a-typing-qualifier-inheritance-001_direct_local_model_1"
+  },
+  "trigger_state": "GREEN"
+}
