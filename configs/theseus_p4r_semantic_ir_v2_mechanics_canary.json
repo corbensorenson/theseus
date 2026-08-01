@@ -1,0 +1,91 @@
+{
+  "policy": "project_theseus_p4r_semantic_ir_v2_mechanics_canary_config_v1",
+  "state": "FROZEN_BEFORE_LEARNED_MECHANICS_CALLS",
+  "purpose": "Test whether the exact frozen local model can emit, parse, lower, and verify a labeled Semantic-IR v2 artifact on three hand-authored non-claim mechanics cases before any fresh P4 task is acquired.",
+  "predecessor_commit": "6a1e7cee",
+  "terminal_p4r_disposition": "reports/theseus_p4r_terminal_disposition.json",
+  "terminal_p4r_disposition_sha256": "9e4295294cb29e1a2ab579e6086fe4992886de52d3d73f470d098f4c47684334",
+  "parser": "scripts/theseus_semantic_ir_v2.py",
+  "parser_sha256": "5ac4c6e18c54dd7cc944b1da1f2a67d7bd7d4ac9b5aa779b3654d59966802257",
+  "parser_commit": "7632b70a",
+  "runner": "scripts/theseus_p4r_semantic_ir_v2_canary.py",
+  "runner_sha256": "0ee785182f64406eeedc41ffe85e7bbbd54f0e5eae4ea59ccabf61a2b7add41d",
+  "runner_commit": "0202f794",
+  "base_local_instrument": "configs/theseus_p4r_local_instrument.json",
+  "base_local_instrument_sha256": "66629d03fe402d968d21f0ec734dfe7266634767011a210d7deae5ff8a8445e5",
+  "generation_policy": {
+    "normal_completion": ["parser_complete", "model_eos"],
+    "project_selected_quality_token_cap": null,
+    "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
+    "boundary_hit_invalidates_observation": true
+  },
+  "information_flow": {
+    "model_visible": [
+      "natural request",
+      "three natural-language obligations",
+      "source text",
+      "selected AST node id and sha256",
+      "exact labeled output grammar"
+    ],
+    "model_hidden": [
+      "expected_source",
+      "verification equality result",
+      "aggregate pass state"
+    ],
+    "candidate_integrity_recomputed": true
+  },
+  "cases": [
+    {
+      "case_id": "tuple_add",
+      "natural_request": "Change VALUES from (1, 2) to (1, 2, 3).",
+      "source": "VALUES = (1, 2)\n",
+      "expected_source": "VALUES = (1, 2, 3)\n",
+      "target_node_type": "Tuple",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "add integer 3 to VALUES"},
+        {"id": "O2", "kind": "preserve", "text": "preserve integers 1 and 2 in order"},
+        {"id": "O3", "kind": "non_goal", "text": "make no other source change"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    },
+    {
+      "case_id": "return_membership",
+      "natural_request": "Change is_member so it returns whether value is not in (1, 2).",
+      "source": "def is_member(value):\n    return value in (1, 2)\n",
+      "expected_source": "def is_member(value):\n    return value not in (1, 2)\n",
+      "target_node_type": "Return",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "change the membership test from in to not in"},
+        {"id": "O2", "kind": "preserve", "text": "preserve function name, parameter, and tuple values"},
+        {"id": "O3", "kind": "non_goal", "text": "do not change the function signature"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    },
+    {
+      "case_id": "assignment_literal",
+      "natural_request": "Change MODE from the string fast to the string safe.",
+      "source": "MODE = \"fast\"\n",
+      "expected_source": "MODE = \"safe\"\n",
+      "target_node_type": "Assign",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "set MODE to the exact string safe"},
+        {"id": "O2", "kind": "preserve", "text": "preserve the MODE variable name"},
+        {"id": "O3", "kind": "non_goal", "text": "do not add statements or comments"}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}]
+    }
+  ],
+  "decision_rule": {
+    "pass": "All 3 learned outputs parse and lower, all 3 exact sources verify, one persistent model load serves exactly 3 calls, every call ends by parser completion or model EOS, and zero physical-context boundary hits occur.",
+    "failure": "INCONCLUSIVE_IMPLEMENTATION; retain outputs and repair transport without acquiring fresh P4 decision tasks.",
+    "pass_authority": "Opens only the intervention and dependency-local repair mechanics canary; it cannot open a fresh P4 denominator by itself."
+  },
+  "boundaries": {
+    "task_source": "hand_authored_non_claim_mechanics",
+    "public_benchmark": false,
+    "training_eligible": false,
+    "D1_or_D2_eligible": false,
+    "book_support_state_effect": "none",
+    "user_gate": "none"
+  }
+}
