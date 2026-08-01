@@ -23,6 +23,12 @@ def test_p4s_pool_builder_binds_frozen_inputs_and_zero_call_registry() -> None:
     assert pool.p2a.sha256_file(pool.SOURCE_REGISTRY) == pool.EXPECTED_SOURCE_REGISTRY_SHA256
     assert pool.p2a.sha256_file(pool.SOURCE_FETCH) == pool.EXPECTED_SOURCE_FETCH_SHA256
     assert pool.p2a.sha256_file(pool.INSTRUMENT) == pool.EXPECTED_INSTRUMENT_SHA256
+    sealed_pool = read(ROOT / "configs" / "theseus_p4s_task_pool.json")
+    assert (
+        sealed_pool["instrument_sha256"]
+        == pool.EXPECTED_SELECTION_INSTRUMENT_SHA256
+    )
+    assert sealed_pool["execution_instrument_rebind_commit"] == "bf4f63b9"
     assert (
         pool.p2a.sha256_file(pool.INSTRUMENT_AUDIT)
         == pool.EXPECTED_INSTRUMENT_AUDIT_SHA256

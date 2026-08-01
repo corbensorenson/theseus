@@ -9,6 +9,8 @@ import hashlib
 import json
 import math
 import random
+import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -19,6 +21,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_p4_cognitive_compilation as p4  # noqa: E402
+import theseus_p4_cognitive_compilation_evaluator as p4_evaluator  # noqa: E402
 import theseus_p4s_campaign as campaign  # noqa: E402
 import theseus_p4s_cognitive_compilation as p4s  # noqa: E402
 
@@ -68,6 +71,8 @@ def build_report() -> dict[str, Any]:
 
     pool = p2a.read_json(POOL)
     instrument = p2a.read_json(INSTRUMENT)
+    pool_audit = audit_source_pool(pool)
+    faults.extend(pool_audit["faults"])
     tasks = p2a.dicts(pool.get("tasks"))
     if len(tasks) != 10:
         faults.append("task_count_invalid")
@@ -82,6 +87,7 @@ def build_report() -> dict[str, Any]:
     prompt_tokens: list[int] = []
     route_blind_tasks = 0
     candidate_integrity_tasks = 0
+    independent_evaluator_replay_tasks = 0
     exact_treatment_headers = 0
     treatment_terminal_end = 0
 
@@ -114,6 +120,24 @@ def build_report() -> dict[str, Any]:
             faults.append(f"evaluation_owner_mismatch:{stem}")
         if evaluation.get("trigger_state") != "GREEN":
             faults.append(f"evaluation_red:{stem}")
+        try:
+            replayed_evaluation = p4_evaluator.evaluate_report(
+                paths["run"], evaluator_path
+            )
+        except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
+            replayed_evaluation = {
+                "trigger_state": "RED",
+                "faults": [f"independent_replay_fault:{type(exc).__name__}"],
+            }
+            faults.append(
+                f"independent_evaluation_replay_fault:{stem}:{type(exc).__name__}"
+            )
+        stored_projection = stable_evaluation_projection(evaluation)
+        replayed_projection = stable_evaluation_projection(replayed_evaluation)
+        replay_match = stored_projection == replayed_projection
+        independent_evaluator_replay_tasks += int(replay_match)
+        if not replay_match:
+            faults.append(f"independent_evaluation_replay_mismatch:{stem}")
         if p2a.mapping(run.get("matched_set")).get("ready") is not True:
             faults.append(f"matched_set_invalid:{stem}")
         expected_order = list(p4.arm_order(expected))
@@ -265,6 +289,13 @@ def build_report() -> dict[str, Any]:
             "repository": pool_row.get("repository"),
             "run": source_identity(paths["run"]),
             "evaluation": source_identity(paths["evaluation"]),
+            "independent_evaluation_replay": {
+                "matched": replay_match,
+                "stored_projection_sha256": p2a.stable_hash(stored_projection),
+                "replayed_projection_sha256": p2a.stable_hash(
+                    replayed_projection
+                ),
+            },
             "arms": per_arm,
             "static_compiler": {
                 "parseable": static_parseable,
@@ -298,12 +329,15 @@ def build_report() -> dict[str, Any]:
         and semantic_parseable >= 8
     )
     information_flow_green = (
-        route_blind_tasks == 10 and candidate_integrity_tasks == 10
+        route_blind_tasks == 10
+        and candidate_integrity_tasks == 10
+        and independent_evaluator_replay_tasks == 10
     )
     experiment_floor = (
         len(task_rows) == 10
         and termination_green
         and information_flow_green
+        and pool_audit["passed"]
         and learned_calls == 60
         and campaign_audit.get("trigger_state") == "GREEN"
     )
@@ -365,6 +399,7 @@ def build_report() -> dict[str, Any]:
             "campaign_progress": source_identity(PROGRESS),
             "invalid_attempt1": source_identity(campaign.INVALID_ATTEMPT),
             "runtime_receipts": runtime_receipts,
+            "source_pool_audit": pool_audit,
         },
         "denominators": {
             "tasks": len(task_rows),
@@ -401,6 +436,21 @@ def build_report() -> dict[str, Any]:
             "natural_termination_receipts": f"{sum(termination_counts.values())}/60",
             "route_blind_tasks": f"{route_blind_tasks}/10",
             "candidate_integrity_recomputed_tasks": f"{candidate_integrity_tasks}/10",
+            "independent_evaluator_replay_tasks": f"{independent_evaluator_replay_tasks}/10",
+            "independent_evaluator_replay_contract": {
+                "excluded_as_volatile": [
+                    "created_utc",
+                    "runtime_ms",
+                    "sandbox_temporary_root_names_in_tracebacks",
+                    "evaluator_only_oracle_digest_that_includes_visible_verifier_runtime",
+                ],
+                "learned_candidate_digests_excluded": False,
+                "static_control_candidate_digests_excluded": False,
+                "correctness_safety_rollback_effect_and_verifier_fields_excluded": False,
+                "oracle_digest_repair_owner": (
+                    "fresh_D1_evaluator_successor_after_P4S_seals"
+                ),
+            },
             "mechanics_floor_passed": mechanics_floor,
             "experiment_floor_passed": experiment_floor,
             "information_flow_green": information_flow_green,
@@ -446,6 +496,144 @@ def build_report() -> dict[str, Any]:
         ),
         "counters": p2a.zero_counters(),
     }
+
+
+def audit_source_pool(pool: dict[str, Any]) -> dict[str, Any]:
+    """Independently recompute the source/licensing/disjointness pool floor."""
+
+    faults: list[str] = []
+    if pool.get("policy") != (
+        "project_theseus_p4s_cognitive_compilation_task_pool_v1"
+    ):
+        faults.append("source_pool_policy_invalid")
+    if pool.get("state") != "SEALED_BEFORE_CANDIDATE_GENERATION":
+        faults.append("source_pool_not_sealed")
+    if p2a.strings(pool.get("faults")):
+        faults.append("source_pool_declared_faults_present")
+
+    registry_path = p2a.resolve(str(pool.get("source_registry") or ""))
+    fetch_path = p2a.resolve(str(pool.get("source_fetch_report") or ""))
+    if (
+        not registry_path.is_file()
+        or p2a.sha256_file(registry_path)
+        != str(pool.get("source_registry_sha256") or "")
+    ):
+        faults.append("source_registry_binding_invalid")
+    if (
+        not fetch_path.is_file()
+        or p2a.sha256_file(fetch_path)
+        != str(pool.get("source_fetch_report_sha256") or "")
+    ):
+        faults.append("source_fetch_binding_invalid")
+    fetch = p2a.read_json(fetch_path) if fetch_path.is_file() else {}
+    if (
+        fetch.get("trigger_state") != "GREEN"
+        or p2a.strings(fetch.get("faults"))
+        or int(fetch.get("candidate_or_control_calls") or 0) != 0
+    ):
+        faults.append("source_fetch_custody_invalid")
+
+    tasks = p2a.dicts(pool.get("tasks"))
+    repositories = [str(row.get("repository") or "").lower() for row in tasks]
+    licenses = [str(row.get("license_spdx") or "") for row in tasks]
+    revisions = [
+        (
+            str(row.get("repository") or "").lower(),
+            str(row.get("parent_revision") or ""),
+            str(row.get("target_revision") or ""),
+        )
+        for row in tasks
+    ]
+    prior_repositories = {
+        str(value).lower()
+        for value in p2a.strings(
+            p2a.mapping(pool.get("source_disjoint_from")).get(
+                "P2_P3_P4_P4R"
+            )
+        )
+    }
+    if len(tasks) != 10 or int(pool.get("task_count") or 0) != 10:
+        faults.append("source_pool_task_count_invalid")
+    if len(set(repositories)) != 10 or int(
+        pool.get("distinct_repositories") or 0
+    ) != 10:
+        faults.append("source_pool_repositories_not_distinct")
+    if prior_repositories.intersection(repositories):
+        faults.append("source_pool_predecessor_repository_overlap")
+    if any(not license_id for license_id in licenses):
+        faults.append("source_pool_license_missing")
+    if any(
+        not repository
+        or not parent
+        or not target
+        or parent == target
+        for repository, parent, target in revisions
+    ):
+        faults.append("source_pool_revision_identity_invalid")
+    if p2a.mapping(pool.get("source_disjoint_from")).get("training") != (
+        "all_P4S_tasks_permanently_excluded"
+    ):
+        faults.append("source_pool_training_exclusion_missing")
+    return {
+        "passed": not faults,
+        "faults": sorted(set(faults)),
+        "task_count": len(tasks),
+        "distinct_repository_count": len(set(repositories)),
+        "license_spdx_ids": sorted(set(licenses)),
+        "predecessor_repository_overlap": sorted(
+            prior_repositories.intersection(repositories)
+        ),
+        "source_registry": source_identity(registry_path),
+        "source_fetch_report": source_identity(fetch_path),
+    }
+
+
+def stable_evaluation_projection(value: Any) -> Any:
+    """Remove only timing/timestamp fields before exact replay comparison."""
+
+    projected = _stable_evaluation_value(value)
+    if not isinstance(projected, dict):
+        return projected
+    results = p2a.dicts(projected.get("results"))
+    digest_to_arm = {
+        str(row.get("candidate_output_sha256") or ""): str(
+            row.get("arm_id") or ""
+        )
+        for row in results
+        if str(row.get("candidate_output_sha256") or "")
+    }
+    for row in results:
+        if row.get("arm_id") == ORACLE:
+            row["candidate_output_sha256"] = (
+                "INDEPENDENTLY_REBUILT_EVALUATOR_ONLY_ORACLE"
+            )
+    results.sort(key=lambda row: str(row.get("arm_id") or ""))
+    projected["results"] = results
+    blinding = p2a.mapping(projected.get("evaluation_blinding"))
+    scoring_order = p2a.strings(blinding.pop("scoring_order", []))
+    blinding["scored_arm_multiset"] = sorted(
+        digest_to_arm.get(digest, "") for digest in scoring_order
+    )
+    projected["evaluation_blinding"] = blinding
+    return projected
+
+
+def _stable_evaluation_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _stable_evaluation_value(item)
+            for key, item in sorted(value.items())
+            if key not in {"created_utc", "runtime_ms"}
+        }
+    if isinstance(value, list):
+        return [_stable_evaluation_value(item) for item in value]
+    if isinstance(value, str):
+        return re.sub(
+            r"/(?:private/)?var/folders/(?:[^/]+/){2}T/theseus-p4-[^/]+",
+            "<EVALUATOR_TEMP_ROOT>",
+            value,
+        )
+    return value
 
 
 def empty_totals() -> dict[str, int | float]:

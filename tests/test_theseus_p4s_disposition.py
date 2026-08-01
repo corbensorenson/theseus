@@ -84,3 +84,95 @@ def test_no_arbitrary_quality_token_cap_is_encoded_in_disposition() -> None:
     assert '"project_selected_quality_token_cap": None' in source
     assert "sole numeric boundary" in source
     assert "hit invalidates the observation" in source
+    assert '"learned_candidate_digests_excluded": False' in source
+    assert '"static_control_candidate_digests_excluded": False' in source
+
+
+def test_source_pool_audit_recomputes_license_and_disjointness() -> None:
+    pool = disposition.p2a.read_json(
+        ROOT / "configs" / "theseus_p4s_task_pool.json"
+    )
+    audit = disposition.audit_source_pool(pool)
+    assert audit["passed"] is True
+    assert audit["faults"] == []
+    assert audit["task_count"] == 10
+    assert audit["distinct_repository_count"] == 10
+    assert audit["predecessor_repository_overlap"] == []
+    assert audit["license_spdx_ids"]
+
+
+def test_evaluator_replay_projection_ignores_only_volatile_timing() -> None:
+    stored = {
+        "created_utc": "first",
+        "trigger_state": "GREEN",
+        "runtime_ms": 1.0,
+        "results": [
+            {
+                "arm_id": "opaque",
+                "useful": 1,
+                "verification": {"passed": True, "runtime_ms": 2.0},
+            }
+        ],
+    }
+    replayed = {
+        "created_utc": "second",
+        "trigger_state": "GREEN",
+        "runtime_ms": 9.0,
+        "results": [
+            {
+                "arm_id": "opaque",
+                "useful": 1,
+                "verification": {"passed": True, "runtime_ms": 8.0},
+            }
+        ],
+    }
+    assert disposition.stable_evaluation_projection(stored) == (
+        disposition.stable_evaluation_projection(replayed)
+    )
+    replayed["results"][0]["useful"] = 0
+    assert disposition.stable_evaluation_projection(stored) != (
+        disposition.stable_evaluation_projection(replayed)
+    )
+
+
+def test_evaluator_replay_projection_normalizes_only_evaluator_oracle_identity() -> None:
+    def report(oracle_digest: str, learned_digest: str, temp: str) -> dict:
+        return {
+            "results": [
+                {
+                    "arm_id": disposition.ORACLE,
+                    "candidate_output_sha256": oracle_digest,
+                    "useful": 1,
+                },
+                {
+                    "arm_id": "learned",
+                    "candidate_output_sha256": learned_digest,
+                    "useful": 0,
+                    "verification": {
+                        "stderr_tail": f"{temp}/candidate/test.py failed"
+                    },
+                },
+            ],
+            "evaluation_blinding": {
+                "scoring_order": [oracle_digest, learned_digest],
+                "arm_labels_passed_to_scoring": False,
+            },
+        }
+
+    first = report(
+        "a" * 64,
+        "b" * 64,
+        "/private/var/folders/8t/a/T/theseus-p4-score-first",
+    )
+    second = report(
+        "c" * 64,
+        "b" * 64,
+        "/private/var/folders/8t/a/T/theseus-p4-score-second",
+    )
+    assert disposition.stable_evaluation_projection(first) == (
+        disposition.stable_evaluation_projection(second)
+    )
+    second["results"][1]["candidate_output_sha256"] = "d" * 64
+    assert disposition.stable_evaluation_projection(first) != (
+        disposition.stable_evaluation_projection(second)
+    )

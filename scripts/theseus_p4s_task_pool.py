@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import subprocess
 import sys
 import tempfile
@@ -34,7 +33,8 @@ SOURCE_ACQUISITION_COMMIT = "d19be2eeced6d3a715c49004311b09960a50d507"
 EVALUATOR_SURFACE_COMMIT = "f265e87ff0ce550a2ab5deab761da4cd72ed6824"
 EXPECTED_SOURCE_REGISTRY_SHA256 = "4237d99b6c051d2e692c2678539183d28194b10a0a704c323b38b481eaef508f"
 EXPECTED_SOURCE_FETCH_SHA256 = "907f03465a4ce645eae5f7db1868501cc27c5b712495920b2e1a0cd8e59b7164"
-EXPECTED_INSTRUMENT_SHA256 = "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828"
+EXPECTED_SELECTION_INSTRUMENT_SHA256 = "19e546e0256bdbfbaaac2bcfa881358bc770dbff6710b6bf2de29b6d713d0828"
+EXPECTED_INSTRUMENT_SHA256 = "6dba153b0d54753c3000fa3c4b949ffdce2ab3e24363084b962f34d035b771b1"
 EXPECTED_INSTRUMENT_AUDIT_SHA256 = "6e3d4cd8d10457545e0fc47308fff8afbcff34129b0fd456c2ad0344d93d0535"
 
 
@@ -236,7 +236,19 @@ def audit_registry(registry: dict[str, Any]) -> list[str]:
         or int(fetch.get("candidate_or_control_calls") or 0) != 0
     ):
         faults.append("source_fetch_receipt_invalid")
-    if p2a.sha256_file(INSTRUMENT) != EXPECTED_INSTRUMENT_SHA256:
+    instrument = p2a.read_json(INSTRUMENT)
+    namespace_repair = p2a.mapping(
+        instrument.get("invalid_attempt1_runtime_namespace_repair")
+    )
+    if (
+        p2a.sha256_file(INSTRUMENT) != EXPECTED_INSTRUMENT_SHA256
+        or instrument.get("runtime_attempt_namespace") != "attempt2"
+        or namespace_repair.get("state")
+        != "PROSPECTIVELY_BOUND_BEFORE_REPAIRED_ATTEMPT2"
+        or namespace_repair.get("runtime_attempt_namespace") != "attempt2"
+        or namespace_repair.get("repair_commit")
+        != "db86ea89bd1b4d62e096ce5c2cb41a93052aeb6b"
+    ):
         faults.append("instrument_digest_mismatch")
     audit = p2a.read_json(INSTRUMENT_AUDIT)
     if (
