@@ -30,8 +30,8 @@
   },
   "harness": {
     "candidate_runner": "scripts/theseus_p4s_cognitive_compilation.py",
-    "candidate_runner_sha256": "8e0daadf1b399f171d73e26b1af4e949df69b660962d761f9462e7abcfd958f0",
-    "candidate_runner_commit": "47ffe8a79ea28e4e49f059105628ef8d7903c9c4",
+    "candidate_runner_sha256": "d25a8454dd3a8f47282879fed9aa4252580f35ba268ae1a083fd669d3b8c5272",
+    "candidate_runner_commit": "dae4adf2fd9c6ada18928f7a46ea0db79ab9b232",
     "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
     "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
     "local_backend": "scripts/theseus_local_inference_backend.py",
@@ -56,6 +56,23 @@
     "local_or_hosted_model_calls_before_repair": 0,
     "teacher_calls_before_repair": 0,
     "maximum_inference": "Pre-candidate instrument-adequacy repair only; no model, mechanism, D1, D2, serving, training, or book evidence."
+  },
+  "post_source_selection_pre_candidate_integration_repair": {
+    "state": "PROSPECTIVELY_REBOUND_BEFORE_ANY_CANDIDATE_OR_CONTROL_CALL",
+    "prior_repair_commit": "47ffe8a79ea28e4e49f059105628ef8d7903c9c4",
+    "repair_commit": "dae4adf2fd9c6ada18928f7a46ea0db79ab9b232",
+    "prior_candidate_runner_sha256": "8e0daadf1b399f171d73e26b1af4e949df69b660962d761f9462e7abcfd958f0",
+    "repaired_candidate_runner_sha256": "d25a8454dd3a8f47282879fed9aa4252580f35ba268ae1a083fd669d3b8c5272",
+    "repair": "Separate the exact fine-grained evaluator/lowerer identity inventory from the model-facing semantic-scope inventory. The latter retains the frozen 80-scope bound after filtering; the former includes every identity inside the unchanged candidate-visible read ranges so the unchanged blind evaluator can recompute target identity.",
+    "task_membership_changed": false,
+    "candidate_visible_source_changed": false,
+    "model_facing_semantic_scope_bound_changed": false,
+    "blind_evaluator_file_or_decision_rule_changed": false,
+    "model_or_completion_policy_changed": false,
+    "candidate_or_control_calls_before_repair": 0,
+    "local_or_hosted_model_calls_before_repair": 0,
+    "teacher_calls_before_repair": 0,
+    "maximum_inference": "Pre-candidate integration repair only; no model, mechanism, D1, D2, serving, training, or book evidence."
   },
   "matched_arm_contract": {
     "arms": [
