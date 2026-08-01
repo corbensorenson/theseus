@@ -1,0 +1,60 @@
+{
+  "completion_model_contract": {
+    "faults": [],
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "identity_sha256": "034781071900c1a2dcfc766ff5c433bc2acac535575a010ac2b49dc1d9ab38c3",
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+      "worker_config_sha256": "4b8026eda74ca7703f640950fbb834108fe10c0fee2ddb36954115fe3a6282f6"
+    },
+    "model_card": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "maximum_action_tokens": 262144,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+      "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+      "temperature": 0.0
+    },
+    "ready": true,
+    "runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
+    "worker_config": "configs/core_evidence_qwen35_9b_completion_worker.json"
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T08:22:39.766468Z",
+  "faults": [],
+  "instrument_sha256": "466225cc14169c4d4f01700eb38880b93fdb419f138fc85d68528f0009fd2d90",
+  "mechanics_qualification": {
+    "report_sha256": "2b217ccbab42ac4cd2da37e1f0cc7a3fced97b39bccdf2ee1c245e18df111135",
+    "state": "INTERVENTION_AND_DEPENDENCY_LOCAL_REPAIR_MECHANICS_GREEN"
+  },
+  "policy": "project_theseus_p4s_cognitive_compilation_instrument_audit_v1",
+  "runtime_ms": 4.891,
+  "trigger_state": "GREEN"
+}
