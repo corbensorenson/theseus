@@ -362,16 +362,17 @@ class NeuralSeedResidentRuntime:
         self,
         prompt: str,
         *,
-        max_tokens: int = 32,
+        max_tokens: int | None = None,
         beam_width: int = 2,
         branching_factor: int = 2,
         length_penalty: float = 0.6,
         use_prefix_cache: bool = True,
         use_completion_cache: bool = True,
     ) -> dict[str, Any]:
+        boundary = self._generation_boundary(prompt, requested_max_tokens=max_tokens)
         request = {
             "prompt": prompt,
-            "max_tokens": max_tokens,
+            "max_tokens": boundary["effective_generation_tokens"],
             "beam_width": beam_width,
             "branching_factor": branching_factor,
             "length_penalty": length_penalty,
@@ -383,22 +384,25 @@ class NeuralSeedResidentRuntime:
             batch_key = digest_json(
                 {key: value for key, value in request.items() if key != "prompt"}
             )
-            return self.continuous_batcher.submit(batch_key, request)
-        return self.generate_batch(
-            [prompt],
-            max_tokens=max_tokens,
-            beam_width=beam_width,
-            branching_factor=branching_factor,
-            length_penalty=length_penalty,
-            use_prefix_cache=use_prefix_cache,
-            use_completion_cache=use_completion_cache,
-        )[0]
+            result = self.continuous_batcher.submit(batch_key, request)
+        else:
+            result = self.generate_batch(
+                [prompt],
+                max_tokens=int(boundary["effective_generation_tokens"]),
+                beam_width=beam_width,
+                branching_factor=branching_factor,
+                length_penalty=length_penalty,
+                use_prefix_cache=use_prefix_cache,
+                use_completion_cache=use_completion_cache,
+            )[0]
+        result["runtime_receipt"]["generation_boundary"] = boundary
+        return result
 
     def generate_batch(
         self,
         prompts: list[str],
         *,
-        max_tokens: int = 32,
+        max_tokens: int,
         beam_width: int = 2,
         branching_factor: int = 2,
         length_penalty: float = 0.6,
@@ -517,6 +521,53 @@ class NeuralSeedResidentRuntime:
             if any(result is None for result in results):
                 raise RuntimeError("resident batch lost a request result")
             return [result for result in results if result is not None]
+
+    def _generation_boundary(
+        self, prompt: str, *, requested_max_tokens: int | None
+    ) -> dict[str, Any]:
+        """Bind generation to the trained model window, not a project quality cap."""
+
+        prepared = self.training.prepare_model_text_prompt(
+            prompt,
+            self.source_vocab,
+            self.target_vocab,
+            self.base,
+            max_source_tokens=int(
+                self.config["supervision"]["maximum_source_encoded_tokens"]
+            ),
+        )
+        if prepared.get("fault"):
+            raise ValueError(str(prepared["fault"]))
+        exact_prompt_tokens = len(prepared["prompt_ids"])
+        declared_context = int(
+            (self.base.get("tokenization") or {}).get("max_sequence_tokens") or 0
+        )
+        context_residual = declared_context - exact_prompt_tokens
+        if declared_context <= 0:
+            raise ValueError("resident model declared context window missing")
+        if context_residual <= 0:
+            raise ValueError("resident prompt exhausts model context window")
+        if requested_max_tokens is not None and int(requested_max_tokens) < 1:
+            raise ValueError("requested max_tokens must be positive")
+        effective = (
+            min(int(requested_max_tokens), context_residual)
+            if requested_max_tokens is not None
+            else context_residual
+        )
+        return {
+            "policy": "project_theseus_generation_completion_policy_v1",
+            "model_declared_context_window_tokens": declared_context,
+            "exact_prompt_tokens": exact_prompt_tokens,
+            "effective_context_residual_tokens": context_residual,
+            "effective_generation_tokens": effective,
+            "project_selected_quality_token_cap": None,
+            "request_selected_max_tokens": (
+                int(requested_max_tokens)
+                if requested_max_tokens is not None
+                else None
+            ),
+            "request_limit_is_capability_evidence": False,
+        }
 
     @staticmethod
     def _validate_request(

@@ -1,0 +1,37 @@
+{
+  "policy": "project_theseus_tmax_local_completion_worker_v1",
+  "model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "temperature": 0.0,
+    "maximum_action_tokens": 262144,
+    "repetition_penalty": 1.05,
+    "repetition_context_size": 128
+  },
+  "generation_boundary": {
+    "policy": "configs/theseus_generation_completion_policy.json",
+    "normal_stop": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "numeric_ceiling_source": "model_declared_context_window",
+    "model_declared_context_window_tokens": 262144,
+    "model_declared_context_window_source": "Pinned snapshot config.json text_config.max_position_embeddings",
+    "project_selected_quality_token_cap": null,
+    "ceiling_hit_is_instrument_invalid": true
+  },
+  "boundaries": {
+    "network": "forbidden",
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "public_calibration_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_facing_effects": 0,
+    "learned_generation_credit": 1,
+    "candidate_snapshot_has_git_metadata": false,
+    "arbitrary_shell": false
+  }
+}

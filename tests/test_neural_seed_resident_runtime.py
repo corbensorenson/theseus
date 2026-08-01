@@ -126,8 +126,11 @@ def test_continuous_request_batcher_never_mixes_incompatible_contracts() -> None
 
 
 def test_openai_compat_routes_enabled_resident_model_without_subprocess() -> None:
+    observed: dict[str, object] = {}
+
     class FakeRuntime:
-        def generate(self, prompt: str, **_kwargs: object) -> dict:
+        def generate(self, prompt: str, **kwargs: object) -> dict:
+            observed.update(kwargs)
             return {
                 "text": prompt.upper(),
                 "generation": {"state": "GREEN"},
@@ -158,6 +161,59 @@ def test_openai_compat_routes_enabled_resident_model_without_subprocess() -> Non
     assert result["content"] == "HELLO"
     assert result["mode"] == "resident_neural_seed"
     assert result["external_inference_calls"] == 0
+    assert observed["max_tokens"] is None
+
+    openai_compat_server.local_answer(
+        "hello",
+        "theseus-neural-seed",
+        cfg,
+        {},
+        resident_runtime=FakeRuntime(),
+        requested_max_tokens=7,
+    )
+    assert observed["max_tokens"] == 7
+
+
+def test_openai_max_tokens_is_optional_positive_request_constraint() -> None:
+    openai_compat_server.validate_request_payload(
+        "/v1/completions", {"prompt": "hello"}
+    )
+    assert openai_compat_server.requested_max_tokens({"prompt": "hello"}) is None
+    assert openai_compat_server.requested_max_tokens({"max_tokens": 9}) == 9
+    for invalid in (0, -1, True, 1.5, "8"):
+        try:
+            openai_compat_server.validate_request_payload(
+                "/v1/completions", {"prompt": "hello", "max_tokens": invalid}
+            )
+        except openai_compat_server.RequestFault as exc:
+            assert exc.code == "max_tokens_must_be_positive_integer"
+        else:
+            raise AssertionError("invalid max_tokens must fail closed")
+
+
+def test_resident_default_generation_boundary_uses_model_context_residual() -> None:
+    class FakeTraining:
+        @staticmethod
+        def prepare_model_text_prompt(*_args: object, **_kwargs: object) -> dict:
+            return {"prompt_ids": [1, 2, 3, 4]}
+
+    runtime = object.__new__(
+        __import__("neural_seed_resident_runtime").NeuralSeedResidentRuntime
+    )
+    runtime.training = FakeTraining()
+    runtime.source_vocab = {}
+    runtime.target_vocab = {}
+    runtime.base = {"tokenization": {"max_sequence_tokens": 512}}
+    runtime.config = {"supervision": {"maximum_source_encoded_tokens": 168}}
+
+    default = runtime._generation_boundary("prompt", requested_max_tokens=None)
+    requested = runtime._generation_boundary("prompt", requested_max_tokens=20)
+
+    assert default["effective_generation_tokens"] == 508
+    assert default["project_selected_quality_token_cap"] is None
+    assert default["request_selected_max_tokens"] is None
+    assert requested["effective_generation_tokens"] == 20
+    assert requested["request_limit_is_capability_evidence"] is False
 
 
 def test_resident_model_never_falls_back_when_enabled_but_unavailable() -> None:

@@ -672,7 +672,7 @@ Maintenance serves P or N and does not become another research program:
 | Documentation | `DIRECTION_RECOVERY_SOURCE_BOUND` | P1 and P2 are isolated source transactions; the roadmap/book reconciliation is an independently validated bounded transaction |
 | Primary scientific objective | `ASI_STACK_CAUSAL_PROOF_ACTIVE` | P2A/P3 establish the instrument and residuals; P4 develops one book mechanism at a time; P5 provides fresh D1 qualification; N tests the modular neural claim on D2 |
 | Frozen local model | `GREEN_STANDALONE_INSTRUMENT` | Exact TMax revision loads through pinned MLX; this proves runtime compatibility only |
-| Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated learned-generation modes use the exact offline TMax snapshot; the status shim remains a maintenance-compatible mode |
+| Canonical assistant backend | `FROZEN_TMAX_COMPLETION_BOUNDARY_GREEN` | Direct and integrated learned-generation modes use the exact offline TMax snapshot with exact prompt-token accounting, no project quality cap, model-declared context residual, termination telemetry, and invalid-observation treatment at the physical boundary; the status shim remains a maintenance-compatible mode |
 | Integrated TMax + Theseus runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM and route state are model-consumed and independently receipt-bound; no usefulness claim follows |
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
 | Autonomous instrument successor | `P2A_TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | The exact matched TMax run held its route/persistence budgets but produced zero parseable candidates; a repo-relative/archive-prefix mismatch also made the task packet ambiguous, so no subsystem comparison is valid |
@@ -1138,23 +1138,21 @@ physical safety boundary only; reaching it invalidates the observation and can
 never be scored as model, mechanism, candidate, or evaluator failure. Token use,
 latency, and cost remain measured outcomes rather than output scissors.
 
-This contract is implemented for P4R/P4S and the frozen D2 candidate and local
-judge paths, but it is not yet universal. The current local assistant default
-still carries a 512-token product ceiling, the TMax action worker carries a
-1,536-token action ceiling, and the disabled resident OpenAI-compatible route
-defaults to 128 tokens while the resident neural runtime exposes 32-token API
-defaults and an 8-token mechanics qualification. These values may remain in
-immutable consumed evidence and small mechanics tests, but none may propagate
-into a successor serving, repair, ranking, or capability-measurement route.
-The P4S campaign is sealed. Migrate the canonical assistant backend,
-worker, resident runtime, and local compatibility shim to exact prompt
-tokenization plus model-declared context residual, parser/artifact completion or
-EOS, explicit termination telemetry, and invalid-observation handling at any
-physical or request-supplied boundary. A caller-requested shorter response is a
-request constraint, not evidence about model competence. Training-corpus token
-counts, optimizer positions, finite call counts, effect limits, and verifier
-safety windows remain legitimate resource or causal budgets; if one can truncate
-the behavior under evaluation, its activation invalidates that observation.
+This contract is now implemented for P4R/P4S, the frozen D2 candidate and local
+judge paths, the canonical TMax assistant backend and successor completion
+worker, the resident neural runtime, and its disabled OpenAI-compatible shim.
+The TMax route always tokenizes the exact chat prompt and derives its only
+numeric boundary from the pinned snapshot's declared 262,144-token context
+window. The resident route derives the trained model context residual from its
+exact encoded prompt. Both record a null project-selected quality cap. Physical
+boundary activation fails closed as an invalid observation. An explicit
+OpenAI-compatible `max_tokens` value remains an optional caller constraint and
+is denied capability-evidence status. Historical consumed 512/1,536-token
+instruments and bounded 8-token mechanics qualifications remain immutable and
+non-propagating. Training-corpus token counts, optimizer positions, finite call
+counts, effect limits, and verifier safety windows remain legitimate resource
+or causal budgets; if one can truncate the behavior under evaluation, its
+activation invalidates that observation.
 
 Missing preauthorization is a terminal machine-policy wall. External
 publication, destructive deletion, account spending outside a predeclared

@@ -4602,7 +4602,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-08-01",
-    "recommendation": "Preserve terminal P3, interrupted P4-v1, terminal P4R, and terminal P4S without replay or overclaim. P4S completed 60 natural-completion calls with zero context-boundary hits and every custody/information-flow audit green, but the learned Semantic-IR treatment parsed and lowered 0/10 against its frozen 8/10 mechanics floor because the exact parser rejected bracketed, quoted, and whitespace-separated obligation lists. Classify INCONCLUSIVE_IMPLEMENTATION, never rescore consumed P4S outputs, repair non-answer-bearing list normalization and round-trip mechanics, and require an entirely fresh source-disjoint P4 denominator before any effect inference. Migrate remaining canonical runtime token ceilings now that P4S is sealed. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
+    "recommendation": "Preserve terminal P3, interrupted P4-v1, terminal P4R, and terminal P4S without replay or overclaim. P4S completed 60 natural-completion calls with zero context-boundary hits and every custody/information-flow audit green, but the learned Semantic-IR treatment parsed and lowered 0/10 against its frozen 8/10 mechanics floor because the exact parser rejected bracketed, quoted, and whitespace-separated obligation lists. Classify INCONCLUSIVE_IMPLEMENTATION and never rescore consumed P4S outputs. The canonical TMax assistant, successor worker, resident runtime, and local compatibility shim now use exact prompt accounting, model-declared context residual, null project quality caps, termination custody, and invalid-observation treatment at physical boundaries. Repair non-answer-bearing list normalization and round-trip mechanics next, then require an entirely fresh source-disjoint P4 denominator before effect inference. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4614,7 +4614,7 @@
       "preserve_terminal_P4R_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits",
       "preserve_terminal_P4S_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits_without_rescoring",
       "repair_non_answer_bearing_obligation_list_normalization_and_round_trip_mechanics_before_an_entirely_fresh_P4_denominator",
-      "migrate_remaining_canonical_runtime_quality_token_ceilings_to_completion_or_EOS_with_physical_context_residual_custody",
+      "preserve_completed_canonical_runtime_generation_boundary_migration_with_null_project_quality_caps_and_physical_context_residual_custody",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "refresh_step_11416_source_and_custody_readiness_under_machine_predicate_authority_without_user_approval",
       "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training",

@@ -82,7 +82,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks and was historically admitted for D1 stack evaluation only, never student/D2 credit; its result does not transfer after Worker-v4 repairs |
 | D1 local-8B causal campaign | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | After generic controller repairs, TMax inspected four source spans and an analogous test, accepted a five-criterion/two-path plan, then twice regressed to forbidden reads instead of editing or abstaining. No patch or verification occurred. E2 stays sealed; a later D1 qualification must prospectively freeze a competent local identity after L0 selection, but model shopping is not a prerequisite for L0 work |
 | Frozen TMax runtime | `P2_TERMINAL_CODING_INSTRUMENT_UNSUITABLE` | Exact model and revision remain runtime-compatible, but P2-001 and its only repair produced no applicable candidate under the frozen 512-token protocol |
-| Canonical assistant backend | `FROZEN_TMAX_PLUS_STATUS_COMPATIBILITY` | Direct and integrated modes invoke the exact offline TMax snapshot; the deterministic status path remains for maintenance compatibility |
+| Canonical assistant backend | `FROZEN_TMAX_COMPLETION_BOUNDARY_GREEN` | Direct and integrated modes invoke the exact offline TMax snapshot with exact prompt tokenization, no project-selected quality-token cap, model-declared context residual, full termination telemetry, and fail-closed physical-boundary handling; the deterministic status path remains for maintenance compatibility |
 | Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
@@ -287,20 +287,18 @@ on, or reused in D1/D2. The next owner is a non-claim parser-normalization and
 round-trip mechanics repair, followed—only if adequate—by a new source-disjoint
 P4 denominator. D1 and book support remain closed.
 
-The no-arbitrary-generation-cap contract is not yet universal. P4R/P4S and the
-frozen D2 candidate and local-rater paths use artifact completion or EOS with
-the exact model context residual as their only numeric token boundary. The live
-assistant default still declares 512 product tokens; the current TMax action
-worker declares 1,536 action tokens; the disabled resident OpenAI-compatible
-route declares 128 tokens; and the resident neural runtime retains 32-token API
-defaults plus an 8-token mechanics qualification. These are migration debt, not
-acceptable successor quality boundaries. They must not be silently widened or
-used for a negative claim. P4S is now sealed, so the canonical runtime migration must
-replace them with exact prompt-token accounting, parser/artifact completion or
-EOS, full termination telemetry, and invalid-observation treatment whenever a
-physical or caller-requested boundary truncates an answer. Historical consumed
-instruments and bounded mechanics tests remain immutable and explicitly
-non-propagating.
+The no-arbitrary-generation-cap contract now covers P4R/P4S, the frozen D2
+candidate and local-rater paths, the canonical TMax assistant backend and
+worker, the resident neural runtime, and its disabled OpenAI-compatible shim.
+The successor TMax worker binds the pinned snapshot's declared 262,144-token
+window; the backend always tokenizes the exact chat prompt and derives the
+remaining physical context. The resident route derives its boundary from the
+training base configuration and exact encoded prompt. Neither has a
+project-selected quality-token cap. A physical-boundary hit fails closed as an
+invalid observation, while an explicit OpenAI-compatible `max_tokens` value is
+recorded only as a caller constraint and cannot support capability inference.
+Historical consumed 512/1,536-token instruments and the 8-token resident
+mechanics qualification remain immutable, explicitly non-propagating evidence.
 
 Historical L0 evidence remains preserved:
 

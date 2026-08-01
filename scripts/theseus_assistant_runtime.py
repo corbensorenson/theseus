@@ -306,7 +306,7 @@ def build_report(args: argparse.Namespace, started: float) -> dict[str, Any]:
     if execution_mode == route_integrity.INTEGRATED_MODE:
         local_config = dict(config.get("local_inference") or {})
         local_model_contract = route_integrity.load_model_contract(
-            str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"),
+            str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_completion_worker.json"),
             str(local_config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"),
             maximum_tokens=int(local_config.get("product_maximum_tokens") or 0),
             required_repo_id=str(local_config.get("required_repo_id") or ""),
@@ -957,7 +957,7 @@ def run_local_inference(
         str(resolve(str(config.get("python_executable") or "runtime/venvs/mlx-0.32.0-py312/bin/python"))),
         str(resolve(str(config.get("backend_entrypoint") or "scripts/theseus_local_inference_backend.py"))),
         "--config",
-        rel(resolve(str(config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"))),
+        rel(resolve(str(config.get("worker_config") or "configs/core_evidence_tmax_9b_completion_worker.json"))),
         "--runtime-preflight",
         rel(resolve(str(config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"))),
         "--session-id",
@@ -1046,7 +1046,7 @@ def build_direct_local_model_report(
     """Run the matched fixed-model baseline without VCM, planning, or routing."""
     local_config = dict(config.get("local_inference") or {})
     model_contract = route_integrity.load_model_contract(
-        str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_worker_control_v3.json"),
+        str(local_config.get("worker_config") or "configs/core_evidence_tmax_9b_completion_worker.json"),
         str(local_config.get("runtime_preflight") or "reports/core_evidence_tmax_9b_runtime_preflight.json"),
         maximum_tokens=int(local_config.get("product_maximum_tokens") or 0),
         required_repo_id=str(local_config.get("required_repo_id") or ""),

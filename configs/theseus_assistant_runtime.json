@@ -7,13 +7,23 @@
   "local_inference": {
     "backend_entrypoint": "scripts/theseus_local_inference_backend.py",
     "python_executable": "runtime/venvs/mlx-0.32.0-py312/bin/python",
-    "worker_config": "configs/core_evidence_tmax_9b_worker_control_v3.json",
+    "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json",
     "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
     "required_runtime_preflight_state": "GREEN",
     "required_repo_id": "mlx-community/Tmax-9B-MLX-8bit",
     "required_revision": "33812d6cf04f88856f25eb828de4f3144a194560",
     "required_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
-    "product_maximum_tokens": 512,
+    "product_maximum_tokens": null,
+    "generation_boundary": {
+      "policy": "configs/theseus_generation_completion_policy.json",
+      "normal_stop": [
+        "model_eos"
+      ],
+      "numeric_ceiling_source": "model_declared_context_window_minus_exact_prompt_tokens",
+      "project_selected_quality_token_cap": null,
+      "physical_boundary_hit_is_invalid_observation": true,
+      "caller_requested_shorter_response_is_request_constraint_not_capability_evidence": true
+    },
     "maximum_context_pages": 8,
     "maximum_context_characters": 12000,
     "timeout_seconds": 720,
@@ -25,7 +35,8 @@
     "matched_pair_contract": {
       "same_model_repo_revision_snapshot": true,
       "same_mlx_runtime": true,
-      "same_decoder_and_product_token_budget": true,
+      "same_decoder_and_physical_context_residual_rule": true,
+      "same_project_selected_quality_token_cap": null,
       "same_structural_release_verifier": "theseus_local_response_integrity_verifier_v1",
       "same_effect_sandbox": "theseus_assistant_no_automatic_effects_v1",
       "automatic_source_effects": 0,

@@ -334,6 +334,7 @@ class Handler(BaseHTTPRequestHandler):
             self.config,
             self.policy,
             resident_runtime=self.resident_runtime,
+            requested_max_tokens=requested_max_tokens(payload),
         )
         if payload.get("stream"):
             return self.send_chat_stream(model, result)
@@ -353,6 +354,7 @@ class Handler(BaseHTTPRequestHandler):
             self.config,
             self.policy,
             resident_runtime=self.resident_runtime,
+            requested_max_tokens=requested_max_tokens(payload),
         )
         return self.send_json(text_completion_response(model, result, payload))
 
@@ -462,6 +464,7 @@ def local_answer(
     policy: dict[str, Any],
     *,
     resident_runtime: Any | None = None,
+    requested_max_tokens: int | None = None,
 ) -> dict[str, Any]:
     resident = cfg.get("resident_neural_seed") or {}
     if resident.get("enabled") is True and model == str(
@@ -479,7 +482,7 @@ def local_answer(
             }
         generated = resident_runtime.generate(
             prompt,
-            max_tokens=int(resident.get("max_tokens") or 128),
+            max_tokens=requested_max_tokens,
             beam_width=int(resident.get("beam_width") or 2),
             branching_factor=int(resident.get("branching_factor") or 2),
             length_penalty=float(resident.get("length_penalty") or 0.6),
@@ -841,6 +844,17 @@ def validate_request_payload(path: str, payload: dict[str, Any]) -> None:
             "unknown_fields:" + ",".join(unknown),
             400,
         )
+    if "max_tokens" in payload:
+        value = payload["max_tokens"]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            raise RequestFault("max_tokens_must_be_positive_integer", 400)
+
+
+def requested_max_tokens(payload: dict[str, Any]) -> int | None:
+    """Return an optional caller constraint; absence means model-context residual."""
+
+    value = payload.get("max_tokens")
+    return int(value) if isinstance(value, int) and not isinstance(value, bool) else None
 
 
 def public_config(cfg: dict[str, Any]) -> dict[str, Any]:
