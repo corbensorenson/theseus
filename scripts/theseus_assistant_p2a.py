@@ -30,6 +30,7 @@ POLICY = "project_theseus_p2a_frozen_model_run_v1"
 INSTRUMENT_POLICIES = {
     "project_theseus_p2a_frozen_model_instrument_v1",
     "project_theseus_p2b_frozen_model_instrument_v1",
+    "project_theseus_p2c_frozen_model_instrument_v1",
 }
 ARMS = (route_integrity.DIRECT_MODE, route_integrity.INTEGRATED_MODE)
 FORBIDDEN_TASK_FIELDS = {
@@ -76,6 +77,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     if value.get("state") not in {
         "PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
         "P2B_PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
+        "P2C_PROSPECTIVELY_BOUND_BEFORE_TASK_ACQUISITION",
     }:
         faults.append("instrument_not_prospectively_bound")
     runtime_config = assistant_runtime.load_runtime_config(resolve(str(value.get("runtime_config") or "")))
@@ -118,7 +120,12 @@ def audit_instrument(path: Path) -> dict[str, Any]:
             faults.append(f"matched_contract_false:{key}")
     if matched.get("same_typed_edit_protocol") != "theseus_line_edit_v1":
         faults.append("typed_edit_protocol_mismatch")
-    if value.get("policy") == "project_theseus_p2b_frozen_model_instrument_v1":
+    successor_policy = value.get("policy") in {
+        "project_theseus_p2b_frozen_model_instrument_v1",
+        "project_theseus_p2c_frozen_model_instrument_v1",
+    }
+    grammar_round_trip: dict[str, Any] = {}
+    if successor_policy:
         if value.get("candidate_path_namespace") != "repository_root_relative_no_archive_prefix":
             faults.append("p2b_candidate_path_namespace_invalid")
         selection_path = resolve(str(value.get("model_selection_report") or ""))
@@ -134,6 +141,35 @@ def audit_instrument(path: Path) -> dict[str, Any]:
             harness_path = resolve(str(harness.get(name) or ""))
             if sha256_file(harness_path) != str(harness.get(f"{name}_sha256") or ""):
                 faults.append(f"p2b_{name}_digest_mismatch")
+    if value.get("policy") == "project_theseus_p2c_frozen_model_instrument_v1":
+        protocol = mapping(value.get("candidate_protocol"))
+        grammar = str(protocol.get("grammar") or "")
+        example = (
+            grammar.replace("<repository-relative-path>", "src/example.py")
+            .replace("<start-line>", "1")
+            .replace("<end-line>", "1")
+            .replace("<replacement text>", "value = 1")
+        )
+        actions, parse_faults = parse_actions(
+            example, {"allowed_effect_paths": ["src/example.py"]}, protocol
+        )
+        rendered = render_candidate_prompt("Change the value.", "[READ src/example.py:1-1]\nvalue = 0", protocol)
+        grammar_round_trip = {
+            "configured_grammar_contains_actual_newlines": "\n" in grammar,
+            "configured_grammar_contains_literal_backslash_n": "\\n" in grammar,
+            "configured_grammar_rendered_exactly": grammar in rendered,
+            "example_parse_faults": parse_faults,
+            "example_action_count": len(actions),
+            "ready": (
+                "\n" in grammar
+                and "\\n" not in grammar
+                and grammar in rendered
+                and not parse_faults
+                and len(actions) == 1
+            ),
+        }
+        if grammar_round_trip["ready"] is not True:
+            faults.append("p2c_rendered_grammar_parser_round_trip_invalid")
     return {
         "policy": "project_theseus_p2a_instrument_audit_v1",
         "created_utc": now(),
@@ -141,6 +177,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         "faults": sorted(set(faults)),
         "instrument_sha256": sha256_file(path),
         "model_identity": identity,
+        "grammar_round_trip": grammar_round_trip,
         "runtime_ms": round((time.perf_counter() - started) * 1000, 3),
         "counters": zero_counters(),
     }

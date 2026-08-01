@@ -321,6 +321,21 @@ budgets, runtime overlay, path namespace, evaluator boundary, and effect
 authority stay fixed. P2C receives a fresh licensed source-disjoint task under
 a new pre-task instrument identity.
 
+#### P2C — Repair and qualify the exact grammar transport
+
+State: `INSTRUMENT_SEALED_TASK_NOT_ACQUIRED`.
+
+P2C is now implemented with the exact P2B Qwen3.5 model, snapshot, decoder,
+persistent load, arm order, call/token budgets, assistant runtime overlay,
+repository-relative namespace, patch application, visible verifier, blind
+evaluator contract, runtime-health interpretation, and zero-effect boundary.
+The sole experimental change is that the JSON grammar decodes to actual newline
+characters. Its independent instrument audit renders the exact configured
+grammar, substitutes one concrete authorized action, and proves the result
+parses through the exact candidate parser with one action and zero faults.
+This audit is GREEN before task acquisition. No candidate call, competence
+claim, subsystem effect, or book-support change follows.
+
 ##### Autonomous task-source contract
 
 Task acquisition is an offline-serving data-ingestion process, not external
@@ -477,6 +492,7 @@ Maintenance serves P or N and does not become another research program:
 | Paired instrument A/B | `P2_TERMINAL_INSTRUMENT_UNSUITABLE` | P2-001 used the only allowed repair; both 512-token candidates failed patch application, so its exact denominator is closed |
 | Autonomous instrument successor | `P2A_TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | The exact matched TMax run held its route/persistence budgets but produced zero parseable candidates; a repo-relative/archive-prefix mismatch also made the task packet ambiguous, so no subsystem comparison is valid |
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | Qwen3.5 reproduced the prompt's literal backslash-n transport on all four matched calls, but the parser required actual newlines; zero candidates were evaluable, so the exact result is a harness implementation failure only |
+| P2C grammar-transport instrument | `INSTRUMENT_SEALED_TASK_NOT_ACQUIRED` | Every P2B denominator variable is retained, the displayed grammar now uses actual newlines, and the exact render-to-parser round-trip audit is GREEN before a fresh task opens |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `NOT_ESTABLISHED` | P2-001, P2A, and P2B produced zero independently evaluable candidates under their exact protocols; P3 remains closed until a new instrument qualifies, then compares the best qualified local model and governed Luna-xhigh reference, each direct and integrated |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
@@ -502,9 +518,9 @@ Maintenance serves P or N and does not become another research program:
 4. Preserve P2B's run, blind evaluation, runtime receipts, and terminal
    disposition. Do not rerun its consumed Requests task or infer model or
    subsystem failure from the literal-newline transport mismatch.
-5. Freeze P2C before opening a fresh task. Change only the displayed grammar to
-   actual newlines and prove the rendered example round-trips through the exact
-   parser; retain Qwen3.5 and every other P2B denominator variable.
+5. Preserve the now-frozen P2C grammar repair and GREEN render-to-parser audit.
+   Acquire, seal, and consume one fresh licensed source-disjoint task exactly
+   once without changing any retained P2B denominator variable.
 6. Open P3 only if P2C reaches independent correctness evaluation within its
    frozen budget; otherwise preserve the exact failure and repair the measured
    owner under another new denominator rather than stretching P2C.

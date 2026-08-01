@@ -2,8 +2,8 @@
 
 Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
 `cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
-page includes the bounded 13-claim causal-binding transaction and the terminal
-P2A instrument-adequacy result plus the prospectively frozen P2B successor.
+page includes the bounded 13-claim causal-binding transaction, the terminal
+P2A/P2B instrument-adequacy results, and the prospectively frozen P2C successor.
 
 This is the canonical human-readable current-state page. It describes what is
 true now; it is not the historical evidence ledger and it does not authorize a
@@ -81,6 +81,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
+| P2C grammar-transport instrument | `INSTRUMENT_SEALED_TASK_NOT_ACQUIRED` | The exact P2B model, decoder, routes, persistence, budgets, namespace, runtime, evaluator, and effects are retained; only the displayed grammar uses actual newlines, and its exact render-to-parser round trip is audit-GREEN before task acquisition |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
@@ -156,6 +157,12 @@ status is `INCONCLUSIVE_IMPLEMENTATION`, the Requests task is consumed, and no
 model, route, subsystem, or book claim follows. P2C will change only the grammar
 transport and add an exact render-to-parser round-trip audit before acquiring a
 fresh licensed task.
+
+P2C is now prospectively frozen with that single repair. The exact configured
+grammar renders with actual newline characters, a concrete authorized example
+round-trips through the exact parser as one action with zero faults, and every
+other P2B denominator variable remains fixed. Its instrument audit is GREEN.
+No task has been selected and no candidate call has occurred under P2C.
 
 Historical L0 evidence remains preserved:
 
@@ -471,11 +478,11 @@ In order:
 4. Preserve P2B's run, blind evaluation, runtime receipts, and terminal
    disposition. Do not replay its consumed Requests task or infer model or
    subsystem failure from the literal-newline transport mismatch.
-5. Freeze P2C before task acquisition. Change only the grammar transport to
-   actual newlines, require an exact rendered-example/parser round trip, and
-   retain Qwen3.5 plus every other denominator variable. Consume one fresh
-   licensed source-disjoint task exactly once; open P3 only if a candidate
-   reaches independent correctness evaluation.
+5. Preserve the now-frozen P2C grammar repair and GREEN exact
+   rendered-example/parser round trip. Acquire, seal, and consume one fresh
+   licensed source-disjoint task exactly once without changing any other P2B
+   denominator variable; open P3 only if a candidate reaches independent
+   correctness evaluation.
 6. For P3, freeze the best adequate installed local model and a separately
    governed Luna-xhigh reference adapter. Run each model direct and integrated
    on the same ten sealed tasks; interpret within-model Theseus effects and

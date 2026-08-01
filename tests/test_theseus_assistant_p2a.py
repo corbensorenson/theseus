@@ -33,12 +33,60 @@ def test_frozen_p2a_instrument_audit_is_green() -> None:
     assert report["model_identity"]["decoder"]["maximum_tokens"] == 1536
 
 
-def test_prospectively_bound_p2b_instrument_audit_is_green() -> None:
-    report = p2a.audit_instrument(ROOT / "configs" / "theseus_assistant_p2b_instrument.json")
+def test_consumed_p2b_retains_its_source_bound_green_instrument_audit() -> None:
+    instrument = ROOT / "configs" / "theseus_assistant_p2b_instrument.json"
+    report = json.loads(
+        (ROOT / "reports" / "theseus_assistant_p2b_instrument_audit.json").read_text()
+    )
 
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
+    assert report["instrument_sha256"] == p2a.sha256_file(instrument)
     assert report["model_identity"]["repo_id"] == "mlx-community/Qwen3.5-9B-MLX-4bit"
+
+
+def test_p2c_rendered_grammar_round_trips_through_exact_parser() -> None:
+    report = p2a.audit_instrument(ROOT / "configs" / "theseus_assistant_p2c_instrument.json")
+
+    assert report["trigger_state"] == "GREEN"
+    assert report["faults"] == []
+    assert report["grammar_round_trip"] == {
+        "configured_grammar_contains_actual_newlines": True,
+        "configured_grammar_contains_literal_backslash_n": False,
+        "configured_grammar_rendered_exactly": True,
+        "example_parse_faults": [],
+        "example_action_count": 1,
+        "ready": True,
+    }
+
+
+def test_p2c_retains_p2b_denominator_variables() -> None:
+    p2b = json.loads((ROOT / "configs" / "theseus_assistant_p2b_instrument.json").read_text())
+    p2c = json.loads((ROOT / "configs" / "theseus_assistant_p2c_instrument.json").read_text())
+
+    for key in (
+        "runtime_config",
+        "model_selection_report",
+        "model_selection_report_sha256",
+        "runtime_binding",
+        "frozen_model",
+        "candidate_path_namespace",
+        "matched_arm_contract",
+        "runtime_health_interpretation",
+        "boundaries",
+    ):
+        assert p2c[key] == p2b[key]
+    for key in (
+        "version",
+        "maximum_actions_per_candidate",
+        "maximum_replacement_bytes",
+        "allowed_operation",
+        "line_coordinates",
+    ):
+        assert p2c["candidate_protocol"][key] == p2b["candidate_protocol"][key]
+    assert "\\n" in p2b["candidate_protocol"]["grammar"]
+    assert "\\n" not in p2c["candidate_protocol"]["grammar"]
+    assert "\n" in p2c["candidate_protocol"]["grammar"]
 
 
 def test_typed_line_edits_are_concise_authorized_and_deterministically_applied(tmp_path: Path) -> None:

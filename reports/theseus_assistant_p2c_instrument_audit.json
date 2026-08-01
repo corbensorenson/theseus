@@ -1,0 +1,47 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T01:07:21.111971Z",
+  "faults": [],
+  "grammar_round_trip": {
+    "configured_grammar_contains_actual_newlines": true,
+    "configured_grammar_contains_literal_backslash_n": false,
+    "configured_grammar_rendered_exactly": true,
+    "example_action_count": 1,
+    "example_parse_faults": [],
+    "ready": true
+  },
+  "instrument_sha256": "e27d742c6c78e5120a7b96cc7176ec1219a2a55fa4b5426bce9017dbf520219b",
+  "model_identity": {
+    "decoder": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "kv_bits": null,
+      "kv_group_size": null,
+      "maximum_tokens": 1536,
+      "quantized_kv_start": null,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "temperature": 0.0,
+      "worker_maximum_action_tokens": 1536
+    },
+    "decoder_sha256": "c4f67e487a470f2e4e3d90b04dd85c08a0f77f380903b1d2d6922644e336da43",
+    "identity_sha256": "2f0589ba0dd0957e9d62acb1da61c6cb918fb3b21e359ff38ceb4602cc446aca",
+    "repo_id": "mlx-community/Qwen3.5-9B-MLX-4bit",
+    "revision": "938d8919941c6e7efd3c7150eff7fe9d12afa631",
+    "runtime": "mlx_lm_local_metal",
+    "snapshot_manifest_sha256": "ecf77d8fce837f7ce7a12602feb7e0b33c270f04500425b95460a13bf81bf2cf",
+    "worker_config_sha256": "dd6a9535b2240a27bac2c43988900db64af15f4d1f9a86aca475be75255f6652"
+  },
+  "policy": "project_theseus_p2a_instrument_audit_v1",
+  "runtime_ms": 3.765,
+  "trigger_state": "GREEN"
+}
