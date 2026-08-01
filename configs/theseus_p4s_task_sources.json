@@ -1,0 +1,394 @@
+{
+  "policy": "project_theseus_p4s_online_source_selection_v1",
+  "state": "FIXED_BEFORE_ARCHIVE_FETCH_PARENT_TARGET_EXECUTION_OR_CANDIDATE_GENERATION",
+  "sealed_utc": "2026-08-01T08:10:00Z",
+  "selection_rule": "Select ten distinct merged, openly licensed Python maintenance changes from repositories absent from every consumed P2, P3, P4, and P4R source. Selection may use public PR metadata and patch structure for reconstructability, but is fixed after the P4S instrument freeze and before archive fetch, parent/target execution, oracle construction, learned calls, no-model compiler calls, hosted calls, or evaluator outcomes. A source may be excluded only for a preregistered materialization or evaluator impossibility before candidate generation; it may never be replaced after any candidate or control call.",
+  "instrument": "configs/theseus_p4s_cognitive_compilation_instrument.json",
+  "instrument_freeze_commit": "42abb39b",
+  "instrument_sha256": "466225cc14169c4d4f01700eb38880b93fdb419f138fc85d68528f0009fd2d90",
+  "task_count": 10,
+  "distinct_repository_count": 10,
+  "boundaries": {
+    "candidate_generation_opened": false,
+    "archive_fetches_after_membership_freeze": 0,
+    "parent_target_oracle_executions": 0,
+    "local_model_calls": 0,
+    "hosted_model_calls": 0,
+    "deterministic_request_compiler_calls": 0,
+    "teacher_calls": 0,
+    "public_benchmark_cases": 0,
+    "training_rows_written": 0,
+    "user_task_label_or_approval_dependency": false
+  },
+  "source_disjoint_from_repositories": [
+    "agronholm/anyio",
+    "aio-libs/yarl",
+    "celery/celery",
+    "django/django",
+    "encode/starlette",
+    "encode/uvicorn",
+    "fastapi/fastapi",
+    "hynek/structlog",
+    "kludex/starlette",
+    "kludex/uvicorn",
+    "marshmallow-code/marshmallow",
+    "more-itertools/more-itertools",
+    "pallets/click",
+    "prompt-toolkit/python-prompt-toolkit",
+    "psf/black",
+    "psf/requests",
+    "pydantic/pydantic",
+    "pypa/installer",
+    "pypa/packaging",
+    "pytest-dev/pytest",
+    "python-attrs/attrs",
+    "python-poetry/tomlkit",
+    "python-trio/trio",
+    "python/typing",
+    "textualize/rich",
+    "tox-dev/filelock",
+    "tox-dev/tox",
+    "urllib3/urllib3"
+  ],
+  "tasks": [
+    {
+      "campaign_index": 1,
+      "stem": "p4s_01_tenacity_660",
+      "case": "tenacity",
+      "repository": "jd/tenacity",
+      "license_spdx": "Apache-2.0",
+      "license_paths": ["LICENSE"],
+      "pull_request": 660,
+      "pull_request_title": "fix: stop hanging on cyclic exception __cause__ chains",
+      "merged_utc": "2026-07-29T10:39:31Z",
+      "parent_revision": "c650fb45204635f07910948d5fc59a8c551ffdda",
+      "target_revision": "b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+      "merge_revision": "b3c5a9f9212187aaf96353378daa9a9ebd800742",
+      "source_root": "tenacity-c650fb45204635f07910948d5fc59a8c551ffdda",
+      "target_root": "tenacity-b1936f1cc172b17e3fcd45ed84416f7e4c191fc0",
+      "allowed_effect_paths": ["tenacity/retry.py"],
+      "natural_request": "Prevent retry_if_exception_cause_type from hanging when an exception has a cyclic __cause__ chain. Preserve matching for ordinary acyclic cause chains, failed-outcome handling, accepted exception types, and all behavior outside tenacity/retry.py. Modify only tenacity/retry.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Cause traversal terminates for self-cycles and multi-exception cycles without retrying forever."},
+        {"id": "O2", "kind": "preserve", "text": "Matching exception causes in ordinary acyclic chains retains existing behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change retry stop policies, outcome handling, or files outside tenacity/retry.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "tenacity/retry.py", "start_line": 150, "end_line": 200}],
+      "searches": [{"literal": "retry_if_exception_cause_type", "paths": ["tenacity/retry.py"]}],
+      "visible_markers": [{"marker": "P4S_VISIBLE_TENACITY_CAUSE_CYCLE", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "tenacity/retry.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "retry_if_exception_cause_type.__call__", "contains": "while exc is not None"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "retry_if_exception_cause_type.__call__", "contains": "id(exc) not in seen"}]
+      }]
+    },
+    {
+      "campaign_index": 2,
+      "stem": "p4s_02_apscheduler_1100",
+      "case": "apscheduler",
+      "repository": "agronholm/apscheduler",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 1100,
+      "pull_request_title": "Fix wrong variable references in valid_metadata validator",
+      "merged_utc": "2026-02-20T20:50:01Z",
+      "parent_revision": "f2337f7aa675718ba5f0af33e0cb53006304ab0a",
+      "target_revision": "0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+      "merge_revision": "ff65a444f83083ceef865f4eb97fccd2186fef01",
+      "source_root": "apscheduler-f2337f7aa675718ba5f0af33e0cb53006304ab0a",
+      "target_root": "apscheduler-0ddc30a45b439f1cd869af6ed6f47b92d07e34c3",
+      "allowed_effect_paths": ["src/apscheduler/_validators.py"],
+      "natural_request": "Fix valid_metadata so nested None values are accepted and a non-string mapping key reports that actual key instead of referencing an unrelated name. Preserve recursive validation of lists and dictionaries, accepted scalar types, and behavior outside src/apscheduler/_validators.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Nested None metadata values return from validation instead of falling through as invalid values."},
+        {"id": "O2", "kind": "require", "text": "A non-string metadata mapping key raises ValueError naming the actual offending key without NameError."},
+        {"id": "O3", "kind": "preserve", "text": "Recursive list/dict validation and accepted scalar metadata types retain existing behavior."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [{"path": "src/apscheduler/_validators.py", "start_line": 25, "end_line": 65}],
+      "searches": [{"literal": "def valid_metadata", "paths": ["src/apscheduler/_validators.py"]}],
+      "visible_markers": [
+        {"marker": "P4S_VISIBLE_APSCHEDULER_NESTED_NONE", "obligation_ids": ["O1"]},
+        {"marker": "P4S_VISIBLE_APSCHEDULER_KEY_REPORT", "obligation_ids": ["O2"]}
+      ],
+      "oracle_units": [{
+        "id": "U1", "path": "src/apscheduler/_validators.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "valid_metadata.check_value", "contains": "if value is None"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "valid_metadata.check_value", "contains": "if val is None"}]
+      }]
+    },
+    {
+      "campaign_index": 3,
+      "stem": "p4s_03_poetry_10959",
+      "case": "poetry",
+      "repository": "python-poetry/poetry",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 10959,
+      "pull_request_title": "perf: avoid redundant keyring lookups for repositories without credentials",
+      "merged_utc": "2026-07-26T15:25:05Z",
+      "parent_revision": "5ccad24e03e3f7539246bf7350f6b6599331bdcb",
+      "target_revision": "53e406c45e1ac2358a2f46e090a05dda56aaec75",
+      "merge_revision": "c459f14f1d5012bd0e3b6558c77b0e42c9d452df",
+      "source_root": "poetry-5ccad24e03e3f7539246bf7350f6b6599331bdcb",
+      "target_root": "poetry-53e406c45e1ac2358a2f46e090a05dda56aaec75",
+      "allowed_effect_paths": ["src/poetry/utils/authenticator.py"],
+      "natural_request": "Avoid a redundant password-manager lookup when a URL already matches a configured Poetry repository: return the repository credential path directly. For unmatched URLs, continue looking up credentials by the request URL and netloc. Preserve usernames, passwords, URL matching, and behavior outside src/poetry/utils/authenticator.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A configured repository uses exactly the repository credential path without a second full-request-URL keyring lookup."},
+        {"id": "O2", "kind": "preserve", "text": "An unmatched URL still looks up credentials using the request URL and parsed netloc and returns both username and password."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change repository matching, Git URL credentials, or files outside src/poetry/utils/authenticator.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "src/poetry/utils/authenticator.py", "start_line": 300, "end_line": 355}],
+      "searches": [{"literal": "def _get_credentials_for_url", "paths": ["src/poetry/utils/authenticator.py"]}],
+      "visible_markers": [{"marker": "P4S_VISIBLE_POETRY_CREDENTIAL_LOOKUPS", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/poetry/utils/authenticator.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "contains": "credential = ("},
+        "target_selectors": [{"node_type": "FunctionDef", "contains": "if repository is not None"}]
+      }]
+    },
+    {
+      "campaign_index": 4,
+      "stem": "p4s_04_pip_14199",
+      "case": "pip",
+      "repository": "pypa/pip",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 14199,
+      "pull_request_title": "fix: Respect --(only|prefer|no)-binary in pip list",
+      "merged_utc": "2026-07-25T03:31:35Z",
+      "parent_revision": "a48eefdfc6ba1c02e67331d891cdca052daca740",
+      "target_revision": "08c8768c5ab511780778649e5d88ac333b5dce7e",
+      "merge_revision": "5a7998f52bd235016e95a90530cf97af5c7dfde9",
+      "source_root": "pip-a48eefdfc6ba1c02e67331d891cdca052daca740",
+      "target_root": "pip-08c8768c5ab511780778649e5d88ac333b5dce7e",
+      "allowed_effect_paths": ["src/pip/_internal/commands/list.py"],
+      "natural_request": "Make pip list --outdated and --uptodate pass the parsed binary-format restrictions and prefer-binary option into the package finder's selection preferences. Preserve yanked-release rejection, release-control handling, index options, and behavior outside src/pip/_internal/commands/list.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Package selection for list outdated/uptodate receives the command's format_control restrictions."},
+        {"id": "O2", "kind": "require", "text": "Package selection for list outdated/uptodate receives the command's prefer_binary choice."},
+        {"id": "O3", "kind": "preserve", "text": "Yanked-release rejection, release control, index options, and all other list behavior remain unchanged."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [{"path": "src/pip/_internal/commands/list.py", "start_line": 140, "end_line": 180}],
+      "searches": [{"literal": "def _build_package_finder", "paths": ["src/pip/_internal/commands/list.py"]}],
+      "visible_markers": [{"marker": "P4S_VISIBLE_PIP_BINARY_SELECTION", "obligation_ids": ["O1", "O2", "O3"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/pip/_internal/commands/list.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "contains": "release_control=options.release_control"},
+        "target_selectors": [{"node_type": "FunctionDef", "contains": "format_control=options.format_control"}]
+      }]
+    },
+    {
+      "campaign_index": 5,
+      "stem": "p4s_05_aiohttp_13125",
+      "case": "aiohttp",
+      "repository": "aio-libs/aiohttp",
+      "license_spdx": "Apache-2.0",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 13125,
+      "pull_request_title": "Add _transport_sockname to ATTRS",
+      "merged_utc": "2026-07-12T21:18:09Z",
+      "parent_revision": "9ead8fbb44f37403441a52e04bccced70e978ddb",
+      "target_revision": "80f8883f96b4b12f58e4f2829f8d1011d1bab922",
+      "merge_revision": "7330fd710474a29ac94b7e82cc0018948a456af2",
+      "source_root": "aiohttp-9ead8fbb44f37403441a52e04bccced70e978ddb",
+      "target_root": "aiohttp-80f8883f96b4b12f58e4f2829f8d1011d1bab922",
+      "allowed_effect_paths": ["aiohttp/web_request.py"],
+      "natural_request": "Include BaseRequest's _transport_sockname cached attribute in ATTRS so request cloning/state handling recognizes it alongside the existing transport peername and SSL context attributes. Preserve all existing ATTRS entries and behavior outside aiohttp/web_request.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "BaseRequest.ATTRS contains the exact _transport_sockname attribute name."},
+        {"id": "O2", "kind": "preserve", "text": "Every existing BaseRequest.ATTRS entry remains present exactly once."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change request behavior or files outside aiohttp/web_request.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "aiohttp/web_request.py", "start_line": 105, "end_line": 150}],
+      "searches": [{"literal": "_transport_peername", "paths": ["aiohttp/web_request.py"]}],
+      "visible_markers": [{"marker": "P4S_VISIBLE_AIOHTTP_ATTRS", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "aiohttp/web_request.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "Assign", "qualified_name": "BaseRequest", "contains": "_transport_peername"},
+        "target_selectors": [{"node_type": "Assign", "qualified_name": "BaseRequest", "contains": "_transport_sockname"}]
+      }]
+    },
+    {
+      "campaign_index": 6,
+      "stem": "p4s_06_httpx_3699",
+      "case": "httpx",
+      "repository": "encode/httpx",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE.md"],
+      "pull_request": 3699,
+      "pull_request_title": "Expose `FunctionAuth` in `__all__`",
+      "merged_utc": "2025-12-10T14:58:48Z",
+      "parent_revision": "ca097c96f97d8d2a5da09b8ca736c7e78a2467f6",
+      "target_revision": "4b9f63e507c4ea75fa59f6bbdfb103e2f014a6f9",
+      "merge_revision": "ae1b9f66238f75ced3ced5e4485408435de10768",
+      "source_root": "httpx-ca097c96f97d8d2a5da09b8ca736c7e78a2467f6",
+      "target_root": "httpx-4b9f63e507c4ea75fa59f6bbdfb103e2f014a6f9",
+      "allowed_effect_paths": ["httpx/_auth.py", "httpx/__init__.py"],
+      "natural_request": "Expose FunctionAuth as part of HTTPX's public API by including it in both the auth module and package-level __all__ lists. Preserve every existing export, export ordering conventions, imports, and behavior outside httpx/_auth.py and httpx/__init__.py. Modify only those two files.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "httpx/_auth.py __all__ includes FunctionAuth exactly once."},
+        {"id": "O2", "kind": "require", "text": "httpx/__init__.py package __all__ includes FunctionAuth exactly once."},
+        {"id": "O3", "kind": "preserve", "text": "All existing exports, imports, ordering conventions, and other files remain unchanged."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [
+        {"path": "httpx/_auth.py", "start_line": 1, "end_line": 30},
+        {"path": "httpx/__init__.py", "start_line": 35, "end_line": 75}
+      ],
+      "searches": [{"literal": "__all__", "paths": ["httpx/_auth.py", "httpx/__init__.py"]}],
+      "visible_markers": [
+        {"marker": "P4S_VISIBLE_HTTPX_AUTH_EXPORT", "obligation_ids": ["O1", "O3"]},
+        {"marker": "P4S_VISIBLE_HTTPX_PACKAGE_EXPORT", "obligation_ids": ["O2", "O3"]}
+      ],
+      "oracle_units": [
+        {"id": "U1", "path": "httpx/_auth.py", "obligation_ids": ["O1", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "Assign", "starts_with": "__all__ ="}, "target_selectors": [{"node_type": "Assign", "starts_with": "__all__ =", "contains": "FunctionAuth"}]},
+        {"id": "U2", "path": "httpx/__init__.py", "obligation_ids": ["O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "Assign", "starts_with": "__all__ ="}, "target_selectors": [{"node_type": "Assign", "starts_with": "__all__ =", "contains": "FunctionAuth"}]}
+      ]
+    },
+    {
+      "campaign_index": 7,
+      "stem": "p4s_07_httpcore_1000",
+      "case": "httpcore",
+      "repository": "encode/httpcore",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE.md"],
+      "pull_request": 1000,
+      "pull_request_title": "Fix max_keepalive_connections",
+      "merged_utc": "2025-10-13T12:41:26Z",
+      "parent_revision": "5974b03c7df89d3ee4e23779900d5349d550753c",
+      "target_revision": "7fb20526175e2300185ce2b472a97acca95b2525",
+      "merge_revision": "10a658221deb38a4c5b16db55ab554b0bf731707",
+      "source_root": "httpcore-5974b03c7df89d3ee4e23779900d5349d550753c",
+      "target_root": "httpcore-7fb20526175e2300185ce2b472a97acca95b2525",
+      "allowed_effect_paths": ["httpcore/_sync/connection_pool.py", "httpcore/_async/connection_pool.py"],
+      "natural_request": "Make both synchronous and asynchronous connection pools enforce max_keepalive_connections by counting only idle connections instead of the length of a boolean list. Preserve expired and closed connection handling, request assignment, sync/async parity, and behavior outside the two connection_pool.py files. Modify only those files.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "The synchronous pool compares the configured maximum against the number of idle connections."},
+        {"id": "O2", "kind": "require", "text": "The asynchronous pool applies the same idle-connection count rule."},
+        {"id": "O3", "kind": "preserve", "text": "Expired/closed handling, request assignment, sync/async parity, and other files remain unchanged."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [
+        {"path": "httpcore/_sync/connection_pool.py", "start_line": 275, "end_line": 310},
+        {"path": "httpcore/_async/connection_pool.py", "start_line": 275, "end_line": 310}
+      ],
+      "searches": [{"literal": "max_keepalive_connections", "paths": ["httpcore/_sync/connection_pool.py", "httpcore/_async/connection_pool.py"]}],
+      "visible_markers": [
+        {"marker": "P4S_VISIBLE_HTTPCORE_SYNC_IDLE_COUNT", "obligation_ids": ["O1", "O3"]},
+        {"marker": "P4S_VISIBLE_HTTPCORE_ASYNC_IDLE_COUNT", "obligation_ids": ["O2", "O3"]}
+      ],
+      "oracle_units": [
+        {"id": "U1", "path": "httpcore/_sync/connection_pool.py", "obligation_ids": ["O1", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "contains": "len([connection.is_idle() for connection in self._connections])"}, "target_selectors": [{"node_type": "FunctionDef", "contains": "sum(connection.is_idle() for connection in self._connections)"}]},
+        {"id": "U2", "path": "httpcore/_async/connection_pool.py", "obligation_ids": ["O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "contains": "len([connection.is_idle() for connection in self._connections])"}, "target_selectors": [{"node_type": "FunctionDef", "contains": "sum(connection.is_idle() for connection in self._connections)"}]}
+      ]
+    },
+    {
+      "campaign_index": 8,
+      "stem": "p4s_08_isort_2599",
+      "case": "isort",
+      "repository": "PyCQA/isort",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 2599,
+      "pull_request_title": "Fix preservation of form-feed blank lines",
+      "merged_utc": "2026-07-29T19:51:36Z",
+      "parent_revision": "47c4f9819c3e92d296efe43c2f460e6742a1a75f",
+      "target_revision": "f766bf605f315b65570791b0db0f19ffd5994a0b",
+      "merge_revision": "c7d418226a76715382a6d89672c24ae71e8cbe97",
+      "source_root": "isort-47c4f9819c3e92d296efe43c2f460e6742a1a75f",
+      "target_root": "isort-f766bf605f315b65570791b0db0f19ffd5994a0b",
+      "allowed_effect_paths": ["isort/parse.py", "isort/output.py"],
+      "natural_request": "Preserve form-feed characters around blank lines when parsing and rendering imports. Split source only on actual CR, LF, or CRLF newline sequences, keep empty input empty, and reattach form feeds while enforcing configured lines after imports. Preserve ordinary newline handling and behavior outside isort/parse.py and isort/output.py. Modify only those files.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "file_contents splits only on normalized CR/LF newline sequences, preserves form feed in its source line, and represents empty input as no lines."},
+        {"id": "O2", "kind": "require", "text": "sorted_imports preserves form feeds removed with trailing blank lines and places overflow form feeds before the following construct."},
+        {"id": "O3", "kind": "preserve", "text": "Configured import spacing, ordinary newline handling, and all other files retain existing behavior."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [
+        {"path": "isort/parse.py", "start_line": 65, "end_line": 100},
+        {"path": "isort/output.py", "start_line": 120, "end_line": 205}
+      ],
+      "searches": [{"literal": "splitlines", "paths": ["isort/parse.py"]}, {"literal": "lines_after_imports", "paths": ["isort/output.py"]}],
+      "visible_markers": [
+        {"marker": "P4S_VISIBLE_ISORT_PARSE_FORM_FEED", "obligation_ids": ["O1", "O3"]},
+        {"marker": "P4S_VISIBLE_ISORT_OUTPUT_FORM_FEED", "obligation_ids": ["O2", "O3"]}
+      ],
+      "oracle_units": [
+        {"id": "U1", "path": "isort/parse.py", "obligation_ids": ["O1", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "file_contents", "contains": "contents.splitlines()"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "file_contents", "contains": ".replace(\"\\r\\n\", \"\\n\")"}]},
+        {"id": "U2", "path": "isort/output.py", "obligation_ids": ["O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "sorted_imports", "contains": "formatted_output.pop(imports_tail)"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "sorted_imports", "contains": "overflow_form_feeds"}]}
+      ]
+    },
+    {
+      "campaign_index": 9,
+      "stem": "p4s_09_cachetools_408",
+      "case": "cachetools",
+      "repository": "tkem/cachetools",
+      "license_spdx": "MIT",
+      "license_paths": ["LICENSE"],
+      "pull_request": 408,
+      "pull_request_title": "Fix Cache.__setitem__ over-evicting when growing an existing key",
+      "merged_utc": "2026-07-30T15:27:00Z",
+      "parent_revision": "13bb86a55e36e501cf0b3e4c35db516ed9409fd7",
+      "target_revision": "b0ea1a4a0b38e1d3c60e802d171d776795c7a81b",
+      "merge_revision": "4296bbde2be128341b17126e43a06271259ae477",
+      "source_root": "cachetools-13bb86a55e36e501cf0b3e4c35db516ed9409fd7",
+      "target_root": "cachetools-b0ea1a4a0b38e1d3c60e802d171d776795c7a81b",
+      "allowed_effect_paths": ["src/cachetools/__init__.py"],
+      "natural_request": "Fix Cache.__setitem__ capacity accounting when replacing an existing key: reserve only the size difference, avoid evicting entries unnecessarily, and recover correctly if eviction removes the key being replaced. Preserve new-key insertion, same-size and shrinking replacements, size validation, and behavior outside src/cachetools/__init__.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Growing an existing key reserves only the additional size and does not over-evict unrelated entries."},
+        {"id": "O2", "kind": "require", "text": "If eviction removes the key being replaced, capacity accounting switches to the full new value size."},
+        {"id": "O3", "kind": "preserve", "text": "New keys, same-size/shrinking replacements, size validation, and other files retain existing behavior."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "reads": [{"path": "src/cachetools/__init__.py", "start_line": 60, "end_line": 110}],
+      "searches": [{"literal": "def __setitem__", "paths": ["src/cachetools/__init__.py"]}],
+      "visible_markers": [{"marker": "P4S_VISIBLE_CACHETOOLS_REPLACE_SIZE", "obligation_ids": ["O1", "O2", "O3"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/cachetools/__init__.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "Cache.__setitem__", "contains": "self.__currsize + size"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "Cache.__setitem__", "contains": "self.__currsize + diffsize"}]
+      }]
+    },
+    {
+      "campaign_index": 10,
+      "stem": "p4s_10_werkzeug_3215",
+      "case": "werkzeug",
+      "repository": "pallets/werkzeug",
+      "license_spdx": "BSD-3-Clause",
+      "license_paths": ["LICENSE.txt"],
+      "pull_request": 3215,
+      "pull_request_title": "fix boolean logic for external url",
+      "merged_utc": "2026-07-29T17:10:40Z",
+      "parent_revision": "1b00618e787f40dfb21eba29caf8f8be7c8e1d93",
+      "target_revision": "884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+      "merge_revision": "9aede751e22d4f66c6027a34abb009df4240deab",
+      "source_root": "werkzeug-1b00618e787f40dfb21eba29caf8f8be7c8e1d93",
+      "target_root": "werkzeug-884437aef93e543ebaff3b9cdbe857ee47e7e00c",
+      "allowed_effect_paths": ["src/werkzeug/routing/map.py"],
+      "natural_request": "Fix MapAdapter.build so it returns a relative path when external output is not forced and neither host nor subdomain matching is enabled, while still requiring the matching host or subdomain when those modes are enabled. Preserve forced-external URL construction, server-name preference, script-name handling, and behavior outside src/werkzeug/routing/map.py. Modify only that file.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Without host or subdomain matching and without force_external, build returns a relative path."},
+        {"id": "O2", "kind": "preserve", "text": "Enabled host/subdomain matching still returns relative paths only for matching domains, and forced external URLs still use server_name."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change route matching, script-name normalization, or files outside src/werkzeug/routing/map.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "reads": [{"path": "src/werkzeug/routing/map.py", "start_line": 930, "end_line": 985}],
+      "searches": [{"literal": "force_external", "paths": ["src/werkzeug/routing/map.py"]}],
+      "visible_markers": [{"marker": "P4S_VISIBLE_WERKZEUG_RELATIVE_BUILD", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{
+        "id": "U1", "path": "src/werkzeug/routing/map.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE",
+        "parent_selector": {"node_type": "FunctionDef", "qualified_name": "MapAdapter.build", "contains": "and (self.map.subdomain_matching or self.map.host_matching)"},
+        "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "MapAdapter.build", "contains": "not (self.map.subdomain_matching or self.map.host_matching)"}]
+      }]
+    }
+  ],
+  "maximum_inference": "This fixed registry establishes only prospective source membership, public provenance, license metadata, candidate-visible request/obligation design, and oracle-selector intent. No archive, parent/target behavior, evaluator, oracle, candidate, control, D1, D2, serving, training, or book-support result exists until independently materialized and audited."
+}
