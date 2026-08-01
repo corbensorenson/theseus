@@ -1,0 +1,110 @@
+{
+  "cases": [
+    {
+      "apply_faults": [],
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_v2_mechanics_tuple_add_direct_local_model_1.json",
+      "backend_report_sha256": "0ec5ecdf88b8299b5dd08673aa3bf332fc842afd2c21f850fb0af811f597e96f",
+      "case_id": "tuple_add",
+      "expected_source_sha256": "78c02d9b28dfe808cac94127f32241440aa700ae22f639002312e98b9c631352",
+      "generated_tokens": 206,
+      "observed_source_sha256": "26157b14a0596579585e69ed266e755071ae1df17688bce10dddaa0a82c4a589",
+      "parse_and_lower": false,
+      "parse_faults": [
+        "semantic_ir_v2_envelope_invalid"
+      ],
+      "prompt_tokens": 513,
+      "route_integrity_ready": true,
+      "runtime_report": "runtime/p2a/p2a_p4r_v2_mechanics_tuple_add_direct_local_model_1.json",
+      "runtime_report_sha256": "9ba6770e40143f5ea1a65ec47775a5379b6440eb80228fe45cafce0859cdb12a",
+      "safety_ceiling_hit": false,
+      "target_node_id": "N-3A10D834AF179F7E",
+      "target_node_sha256": "cf4dabed2ce0f4fc293425d4063a8c54df5e1164a6d4a6d85712e0f491ea08c8",
+      "termination_reason": "model_eos",
+      "verified": false
+    },
+    {
+      "apply_faults": [],
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_v2_mechanics_return_membership_direct_local_model_1.json",
+      "backend_report_sha256": "469968e1b12eb42d4db4af2ee27c9bce761b7f0068c3171f084d42f4d7cbc0a4",
+      "case_id": "return_membership",
+      "expected_source_sha256": "45806956a5b22c4c6e5970392a139676242034d699367e1f0e09a0cf7a8b0614",
+      "generated_tokens": 216,
+      "observed_source_sha256": "fbf1b59e5c10e6c12c1734a62aa296302b695849cc80ccd3c2df64133e6e7c17",
+      "parse_and_lower": false,
+      "parse_faults": [
+        "semantic_ir_v2_envelope_invalid"
+      ],
+      "prompt_tokens": 520,
+      "route_integrity_ready": true,
+      "runtime_report": "runtime/p2a/p2a_p4r_v2_mechanics_return_membership_direct_local_model_1.json",
+      "runtime_report_sha256": "befbe8078e3270a22ce56ed4c1a992e16485e41581876218fb414544e1c24a96",
+      "safety_ceiling_hit": false,
+      "target_node_id": "N-771DF0DD52BD419A",
+      "target_node_sha256": "6104e45ef9551c8d958e11b80320d3f4a2c5cabf53ede602763f63e36b300ab0",
+      "termination_reason": "model_eos",
+      "verified": false
+    },
+    {
+      "apply_faults": [],
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4r_v2_mechanics_assignment_literal_direct_local_model_1.json",
+      "backend_report_sha256": "e1a0a2516422e3a031351892804fd02252789e73dd11b768869dc0678b1986bd",
+      "case_id": "assignment_literal",
+      "expected_source_sha256": "008ad233ab4fe49ce90957733c639aa30a532842c9afa1aa7de1458516fdfcab",
+      "generated_tokens": 205,
+      "observed_source_sha256": "2b2271e50a7b14df87430fb7f370b2019a35609a762f61e5ef0b42e9b425daf1",
+      "parse_and_lower": false,
+      "parse_faults": [
+        "semantic_ir_v2_envelope_invalid"
+      ],
+      "prompt_tokens": 498,
+      "route_integrity_ready": true,
+      "runtime_report": "runtime/p2a/p2a_p4r_v2_mechanics_assignment_literal_direct_local_model_1.json",
+      "runtime_report_sha256": "a1de9f7a39c86fada3f23e27c2f8e1ca84e507d611fcbc76dfa67d49835148a7",
+      "safety_ceiling_hit": false,
+      "target_node_id": "N-18DCBF19350A13F0",
+      "target_node_sha256": "8edc7823e13e22ca68658aba6bea36a433b86c7ff2c880ac04069866dfc4269a",
+      "termination_reason": "model_eos",
+      "verified": false
+    }
+  ],
+  "config_audit": {
+    "config_sha256": "5526f40b7880a8158c82ec7cd716643353fa0562e0f2c031c766c737b5505229",
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-01T07:22:18.291234Z",
+    "faults": [],
+    "policy": "project_theseus_p4r_semantic_ir_v2_canary_audit_v1",
+    "trigger_state": "GREEN"
+  },
+  "config_sha256": "5526f40b7880a8158c82ec7cd716643353fa0562e0f2c031c766c737b5505229",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-01T07:23:43.857342Z",
+  "faults": [
+    "learned_transport_mechanics_floor_not_met"
+  ],
+  "model_calls": 3,
+  "model_loads": 1,
+  "next_gate": "Intervention and dependency-local repair canary, then a fresh source-disjoint P4 denominator only if all mechanics gates pass.",
+  "parse_and_lower": "0/3",
+  "policy": "project_theseus_p4r_semantic_ir_v2_learned_mechanics_canary_v1",
+  "safety_ceiling_hits": 0,
+  "scope": "Non-claim hand-authored transport mechanics only. Passing cannot support cognitive compilation or qualify a fresh P4 denominator by itself.",
+  "state": "INCONCLUSIVE_IMPLEMENTATION",
+  "trigger_state": "YELLOW",
+  "verified": "0/3"
+}
