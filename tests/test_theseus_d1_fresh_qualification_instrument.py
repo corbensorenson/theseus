@@ -19,7 +19,7 @@ def test_instrument_is_green_but_does_not_open_D1_before_survivor() -> None:
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
     assert report["activation_state"] == (
-        "WAITING_FOR_GREEN_DECISION_RELEVANT_P4S_SURVIVOR"
+        "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2_SURVIVOR"
     )
     assert report["execution_authorized"] is False
     assert report["source_acquisition_authorized"] is False
@@ -63,7 +63,7 @@ def test_D1_language_scope_matches_the_exact_P4_implementation() -> None:
 def test_green_survivor_opens_only_source_acquisition() -> None:
     disposition = {
         "trigger_state": "GREEN",
-        "scientific_status": "P4S_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
         "consumption": {"eligible_for_D1": True},
         "decision_rule": {
@@ -81,6 +81,22 @@ def test_green_survivor_opens_only_source_acquisition() -> None:
     assert report["execution_authorized"] is False
 
 
+def test_historical_p4s_survivor_cannot_open_the_successor_d1_lane() -> None:
+    disposition = {
+        "trigger_state": "GREEN",
+        "scientific_status": "P4S_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "claim_id": "cognitive-compilation-and-semantic-ir.core",
+        "consumption": {"eligible_for_D1": True},
+        "decision_rule": {
+            "survivor_effect_rule_passed": True,
+            "effect_decision_authorized": True,
+        },
+    }
+    report = instrument.build_report(CONFIG, disposition_override=disposition)
+    assert report["source_acquisition_authorized"] is False
+    assert report["survivor_checks"]["decision_relevant_survivor"] is False
+
+
 def test_no_user_gate_rerun_or_cross_stage_authority() -> None:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     assert config["activation"]["user_or_operator_approval_required"] is False
@@ -94,7 +110,7 @@ def test_prior_repository_inventory_is_bound_for_disjoint_selection() -> None:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     repositories, faults = instrument.prior_repository_inventory(config)
     assert faults == []
-    assert len(repositories) >= 37
+    assert len(repositories) >= 47
     assert "jd/tenacity" in repositories
     assert "urllib3/urllib3" in repositories
     assert len(repositories) == len(set(repositories))

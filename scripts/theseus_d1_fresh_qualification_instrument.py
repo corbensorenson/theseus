@@ -2,7 +2,7 @@
 """Audit the prospective, one-shot D1 qualification instrument.
 
 This module deliberately does not acquire a D1 source.  Source membership may
-open only after the sealed P4S terminal disposition identifies an eligible
+open only after the sealed P4-v2r2 terminal disposition identifies an eligible
 survivor.  The audit exists now so the statistical design, completion policy,
 controls, and inference boundary cannot be chosen after seeing D1 tasks.
 """
@@ -76,7 +76,7 @@ def build_report(
     activation_state = (
         "READY_FOR_AUTONOMOUS_D1_SOURCE_MEMBERSHIP_FREEZE"
         if activation_ready
-        else "WAITING_FOR_GREEN_DECISION_RELEVANT_P4S_SURVIVOR"
+        else "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2_SURVIVOR"
     )
     design = recompute_power_design(mapping(config.get("power_design")))
     return {
@@ -144,7 +144,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("boundary_misclassified_as_negative_evidence")
     surface = mapping(config.get("source_surface"))
     registries = list(surface.get("source_disjoint_registry_paths") or [])
-    if len(registries) != 7 or len(set(registries)) != 7:
+    if len(registries) != 8 or len(set(registries)) != 8:
         faults.append("source_disjoint_registry_set_invalid")
     if surface.get("membership_fixed_before_archive_fetch") is not True:
         faults.append("membership_not_fixed_before_fetch")

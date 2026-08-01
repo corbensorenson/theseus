@@ -3984,8 +3984,22 @@
       "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
       "physical_boundary_hit_disposition": "invalidate_observation_never_score_as_model_or_mechanism_failure",
       "launch_authority": "machine_predicate_exclusive_one_shot_lease_no_user_gate",
-      "current_machine_wall": "physical_external_power_not_connected_and_process_inventory_requires_unsandboxed_telemetry",
+      "current_machine_wall": "autonomous_controller_running_zero_consumption_waiting_on_physical_external_power_and_battery_not_discharging",
       "D1_eligible": false,
+      "prospective_D1_successor": {
+        "state": "fail_closed_waiting_for_exact_P4V2R2_survivor",
+        "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
+        "source_selection": "configs/theseus_d1_source_selection.json",
+        "activation_disposition": "reports/theseus_p4v2r2_terminal_disposition.json",
+        "required_scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "historical_P4S_survivor_cannot_activate": true,
+        "temporal_contamination_identity": "mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560",
+        "source_disjoint_registry_count": 8,
+        "power_derived_cohort_size": 44,
+        "source_acquisition_authorized": false,
+        "candidate_or_control_calls_authorized": false,
+        "automatic_book_support_promotion": false
+      },
       "support_state_effect": "none",
       "rule": "Run the exact sealed local campaign once only when physical power, measured-runtime memory, derived disk, process inventory, and exclusive accelerator lease gates pass. Never add an answer-length cap, replace a task after candidate generation, score a physical stop as a failure, open D1 without the predeclared survivor status, or promote book support automatically."
     },

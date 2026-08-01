@@ -18,7 +18,7 @@ def survivor() -> dict[str, object]:
     return {
         "created_utc": "2026-08-01T12:00:00Z",
         "trigger_state": "GREEN",
-        "scientific_status": "P4S_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
         "consumption": {"eligible_for_D1": True},
         "decision_rule": {
@@ -179,6 +179,20 @@ def test_pre_snapshot_task_is_independently_excluded() -> None:
     assert report["temporal_contamination_guard"][
         "candidate_emitted_contamination_flags_trusted"
     ] is False
+
+
+def test_temporal_guard_is_bound_to_the_exact_p4v2r2_tmax_identity() -> None:
+    config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    audit, faults = selection.audit_temporal_guard(config)
+    assert faults == []
+    assert audit["model_identity"] == {
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "snapshot_manifest_sha256": (
+            "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc"
+        ),
+    }
+    assert audit["model_snapshot_observed_utc"] == "2026-07-30T12:35:41.833397Z"
 
 
 def test_metadata_acquired_before_survivor_is_rejected() -> None:

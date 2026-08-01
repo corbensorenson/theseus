@@ -15,7 +15,7 @@
       "prevent"
     ],
     "query_partitioning": "complete_nonoverlapping_UTC_intervals_per_allowed_programming_language",
-    "interval_policy": "Use complete UTC intervals strictly after the exact frozen model snapshot was locally observed. After P4S survivor activation, extend the frame forward through complete intervals until the metadata-only eligible distinct-repository count reaches the design-derived cohort size; there is no candidate-outcome stopping rule, retrospective pre-snapshot task admission, or maximum interval count.",
+    "interval_policy": "Use complete UTC intervals strictly after the exact frozen model snapshot was locally observed. After P4V2R2 survivor activation, extend the frame forward through complete intervals until the metadata-only eligible distinct-repository count reaches the design-derived cohort size; there is no candidate-outcome stopping rule, retrospective pre-snapshot task admission, or maximum interval count.",
     "require_every_partition_complete": true,
     "require_raw_response_digests": true,
     "external_inference_calls": 0,
@@ -25,10 +25,11 @@
     "archive_fetches": 0
   },
   "temporal_contamination_guard": {
-    "model_runtime_preflight": "reports/core_evidence_qwen35_9b_preflight.json",
-    "model_runtime_preflight_sha256": "0e223d63c3a69999a4207d6c61fb9f681879b72661823fc4f7e8a4686d70f670",
-    "model_freeze": "reports/theseus_p3_local_model_freeze.json",
-    "model_freeze_sha256": "cb37c28ca4c9b84672f7783bb523068dad8a2bb900b81e43b7853c6d4cc71d14",
+    "model_runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+    "model_runtime_preflight_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+    "model_freeze": "configs/theseus_p4v2r2_local_instrument.json",
+    "model_freeze_sha256": "2e34a08d063a87748359149c46faa8ddba374d02ab8a0f3b8fdceb2123eb13f7",
+    "model_freeze_identity_field": "frozen_model",
     "public_benchmark_catalog": "configs/online_source_catalog.json",
     "public_benchmark_catalog_sha256": "6531fd86dd6e7b8a4046f1dbaa6416264fa0de12fea6b5fc0122374dcb968188",
     "require_task_merged_strictly_after_model_snapshot_observed_utc": true,
@@ -67,7 +68,7 @@
     "user_or_operator_approval_required": false
   },
   "authority": {
-    "source_metadata_acquisition_opens_only_after_green_P4S_survivor": true,
+    "source_metadata_acquisition_opens_only_after_green_P4V2R2_survivor": true,
     "registry_write_requires_complete_metadata_frame": true,
     "candidate_calls_after_registry_write": false,
     "archive_fetch_after_registry_write_only": true,

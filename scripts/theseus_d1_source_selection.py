@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Freeze a fresh D1 source cohort from metadata only after a P4S survivor.
+"""Freeze a fresh D1 source cohort from metadata only after a P4-v2r2 survivor.
 
 Archive contents and every parent, target, oracle, evaluator, candidate, and
 control outcome are deliberately outside this selection boundary.  A selected
@@ -199,7 +199,7 @@ def build_report(
         "campaign_id": d1.read_json(instrument_path).get("campaign_id"),
         "claim_id": d1.read_json(instrument_path).get("claim_id"),
         "instrument": d1.artifact(instrument_path),
-        "P4S_terminal_disposition": instrument_report.get("p4_terminal_disposition"),
+        "P4V2R2_terminal_disposition": instrument_report.get("p4_terminal_disposition"),
         "metadata_frame": base["metadata_frame"],
         "selection_config": d1.artifact(config_path),
         "task_count": len(selected),
@@ -222,7 +222,7 @@ def build_report(
             "INCONCLUSIVE_EXPERIMENT_NOT_REPLACED"
         ),
         "source_disjoint_from": {
-            "prior_P2_P3_P4_P4R_P4S_repositories": d1.stable_hash(
+            "prior_P2_P3_P4_P4R_P4S_P4V2R2_repositories": d1.stable_hash(
                 prior_repositories
             ),
             "public_benchmark_catalog_repositories": d1.stable_hash(
@@ -266,9 +266,9 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("user_or_operator_gate_present")
     authority = d1.mapping(config.get("authority"))
     if authority.get(
-        "source_metadata_acquisition_opens_only_after_green_P4S_survivor"
+        "source_metadata_acquisition_opens_only_after_green_P4V2R2_survivor"
     ) is not True:
-        faults.append("P4S_survivor_activation_not_required")
+        faults.append("P4V2R2_survivor_activation_not_required")
     if authority.get("candidate_calls_after_registry_write") is not False:
         faults.append("registry_write_improperly_authorizes_candidate_calls")
     if authority.get("serving_training_teacher_D2_or_book_promotion_authority") is not False:
@@ -312,7 +312,10 @@ def audit_temporal_guard(config: dict[str, Any]) -> tuple[dict[str, Any], list[s
         ):
             faults.append("model_freeze_digest_mismatch")
     preflight_identity = d1.mapping(preflight.get("model_identity"))
-    freeze_identity = d1.mapping(freeze.get("selected_model_identity"))
+    freeze_identity_field = str(
+        temporal.get("model_freeze_identity_field") or "selected_model_identity"
+    )
+    freeze_identity = d1.mapping(freeze.get(freeze_identity_field))
     identity_keys = ("repo_id", "revision", "snapshot_manifest_sha256")
     if (
         preflight.get("trigger_state") != "GREEN"
