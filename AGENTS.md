@@ -53,6 +53,15 @@ experimental substrate, not the primary product goal.
    Measurement-only reference controls inherit the same OpenAI-only provider
    restriction and may run only through ChatGPT, Codex, or an explicitly
    approved OpenAI API path.
+10. Quality-bearing generation must not use a project-selected generated-token
+    count as a quality, competence, or mechanism-failure boundary. Normal
+    completion is a prospectively declared complete artifact or model EOS. The
+    pinned model's exact context residual is a physical addressability boundary,
+    not an answer-length budget; touching it invalidates the observation for
+    capability inference. Host-safety interlocks and explicit caller constraints
+    remain valid, but their activation cannot be scored as a model or mechanism
+    failure. Matched experiments must record actual tokens, time, verifier use,
+    and total cost instead of manufacturing equality through truncation.
 
 ## Anti-Cheating Guardrail
 

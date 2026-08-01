@@ -47,3 +47,19 @@ def test_charter_and_roadmap_bind_the_measurement_only_exception() -> None:
     assert "mixed into local-model denominators" in charter
     assert "P3 hosted reference control" in roadmap
     assert "gpt-5.6-luna" in roadmap
+
+
+def test_charter_forbids_project_selected_quality_token_caps() -> None:
+    charter = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    completion = json.loads(
+        (ROOT / "configs" / "theseus_generation_completion_policy.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert "must not use a project-selected generated-token" in charter
+    assert "physical addressability boundary" in charter
+    assert "actual tokens, time, verifier use" in charter
+    assert completion["physical_safety_boundary"]["project_selected_token_cap"] is None
+    assert completion["ceiling_hit_disposition"]["score_as_model_failure"] is False
+    assert completion["ceiling_hit_disposition"]["include_in_treatment_effect_denominator"] is False
