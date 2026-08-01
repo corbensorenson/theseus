@@ -22,11 +22,15 @@ from neural_seed_functional_utility import (  # noqa: E402
     compare_qualifications,
     evaluate_bundle,
     semantic_training_config_sha256,
+    validate_config,
     validate_precomputed_code_evaluation,
     validate_freeze,
 )
 import neural_seed_functional_generate  # noqa: E402
 from neural_seed_functional_cases import stable_hash  # noqa: E402
+from neural_seed_local_english_raters import (  # noqa: E402
+    prospective_machine_audit_sample,
+)
 
 
 CONFIG_PATH = ROOT / "configs/neural_seed_functional_utility.json"
@@ -38,6 +42,58 @@ def test_default_freeze_matches_active_57m_evaluation_contract() -> None:
 
     assert DEFAULT_FREEZE == expected
     assert neural_seed_functional_generate.DEFAULT_FREEZE == expected
+
+
+def test_d2_candidate_generation_uses_context_residual_not_quality_cap() -> None:
+    training_config = json.loads(
+        (ROOT / "configs/moecot_language_arm_training.json").read_text()
+    )
+    base = json.loads((ROOT / training_config["base_config"]).read_text())
+    metadata = json.loads(
+        (ROOT / training_config["stage_dir"] / "stage_metadata_v1.json").read_text()
+    )
+
+    bound = neural_seed_functional_generate.context_bound_for_prompt(
+        "hello",
+        dict(metadata["source_vocab"]),
+        dict(metadata["target_vocab"]),
+        base,
+        max_source_tokens=training_config["supervision"][
+            "maximum_source_encoded_tokens"
+        ],
+    )
+
+    assert bound["state"] == "GREEN"
+    assert bound["project_selected_quality_token_cap"] is None
+    assert bound["model_declared_context_window_tokens"] == 512
+    assert bound["effective_context_residual_tokens"] == (
+        512 - bound["exact_encoded_prompt_tokens"]
+    )
+    assert (
+        bound["effective_context_residual_tokens"]
+        != training_config["evaluation"]["decode_max_target_tokens"]
+    )
+
+
+def test_d2_config_rejects_quality_cap_or_prefix_completion() -> None:
+    capped = copy.deepcopy(CONFIG)
+    capped["candidate_generation"]["project_selected_quality_token_cap"] = 208
+    assert "candidate_generation_project_token_cap_present" in validate_config(capped)
+
+    prefix = copy.deepcopy(CONFIG)
+    prefix["candidate_generation"]["serialization_complete_prefix_is_completion"] = True
+    assert "candidate_generation_prefix_completion_not_forbidden" in validate_config(
+        prefix
+    )
+
+    underpowered = copy.deepcopy(CONFIG)
+    underpowered["sandbox"]["rust_timeout_seconds"] = 30
+    underpowered["sandbox"]["browser_render_timeout_seconds"] = 10
+    underpowered["sandbox"]["timeout_disposition"] = "candidate_failure"
+    gaps = validate_config(underpowered)
+    assert "rust_verifier_mechanics_timeout_inadequate" in gaps
+    assert "browser_verifier_mechanics_timeout_inadequate" in gaps
+    assert "verifier_timeout_disposition_mismatch" in gaps
 
 
 def test_training_config_identity_excludes_only_checkpoint_migration_ledger(
@@ -76,7 +132,10 @@ def test_manifest_is_green_disjoint_and_candidate_packet_is_blind() -> None:
     assert manifest["source_disjoint_audit"]["rows_scanned"] > 0
     assert manifest["candidate_packet"]["row_count"] == 160
     assert manifest["candidate_packet"]["evaluator_metadata_present"] is False
-    assert all(set(row) == {"case_id", "arm_id", "prompt"} for row in manifest["candidate_packet"]["rows"])
+    assert all(
+        set(row) == {"case_id", "arm_id", "prompt"}
+        for row in manifest["candidate_packet"]["rows"]
+    )
 
 
 def test_blind_english_packet_binds_content_without_model_identity(monkeypatch) -> None:
@@ -128,7 +187,9 @@ def test_freeze_detects_compiler_or_contract_mutation() -> None:
 
     mutated = copy.deepcopy(freeze)
     mutated["verifier_sha256"] = "0" * 64
-    assert "freeze_identity_mismatch:verifier_sha256" in validate_freeze(manifest, mutated)
+    assert "freeze_identity_mismatch:verifier_sha256" in validate_freeze(
+        manifest, mutated
+    )
 
     mutated = copy.deepcopy(freeze)
     mutated["consumption_registry"] = "reports/alternate.jsonl"
@@ -148,8 +209,18 @@ def test_candidate_bundle_fails_closed_on_missing_duplicate_and_fake_flags() -> 
         "templates_renderers_routers_tools_credit": 0,
         "checkpoint_artifacts": [],
         "candidates": [
-            {"case_id": first["case_id"], "output": "fake", "passed": True, "learned": True},
-            {"case_id": first["case_id"], "output": "fake", "passed": True, "learned": True},
+            {
+                "case_id": first["case_id"],
+                "output": "fake",
+                "passed": True,
+                "learned": True,
+            },
+            {
+                "case_id": first["case_id"],
+                "output": "fake",
+                "passed": True,
+                "learned": True,
+            },
         ],
     }
     result = evaluate_bundle(CONFIG, manifest, bundle, freeze, [])
@@ -173,15 +244,51 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
         "candidate_packet_sha256": "p" * 64,
         "generation_wrapper_sha256": "g" * 64,
         "training_generator_sha256": "t" * 64,
-        "v8_plan_sha256": "a" * 64,
-        "v8_stage_signature": "s" * 64,
+        "training_plan_sha256": "a" * 64,
+        "training_stage_signature": "s" * 64,
+        "training_config": "configs/training.json",
     }
+    source_training = json.loads(
+        (ROOT / "configs/moecot_language_arm_training.json").read_text()
+    )
+    base = json.loads((ROOT / source_training["base_config"]).read_text())
+    metadata = json.loads(
+        (ROOT / source_training["stage_dir"] / "stage_metadata_v1.json").read_text()
+    )
+    config_dir = tmp_path / "configs"
+    config_dir.mkdir()
+    (config_dir / "base.json").write_text(json.dumps(base))
+    stage_dir = tmp_path / "runtime/stage"
+    stage_dir.mkdir(parents=True)
+    (stage_dir / "stage_metadata_v1.json").write_text(json.dumps(metadata))
+    (config_dir / "training.json").write_text(
+        json.dumps(
+            {
+                "base_config": "configs/base.json",
+                "stage_dir": "runtime/stage",
+                "supervision": {
+                    "maximum_source_encoded_tokens": source_training["supervision"][
+                        "maximum_source_encoded_tokens"
+                    ]
+                },
+            }
+        )
+    )
+    bound = neural_seed_functional_generate.context_bound_for_prompt(
+        "hello",
+        dict(metadata["source_vocab"]),
+        dict(metadata["target_vocab"]),
+        base,
+        max_source_tokens=source_training["supervision"][
+            "maximum_source_encoded_tokens"
+        ],
+    )
     (directory / "training_receipt.json").write_text(
         json.dumps(
             {
                 "complete": True,
-                "plan_sha256": freeze["v8_plan_sha256"],
-                "stage_signature": freeze["v8_stage_signature"],
+                "plan_sha256": freeze["training_plan_sha256"],
+                "stage_signature": freeze["training_stage_signature"],
                 "checkpoint": str(checkpoint.relative_to(tmp_path)),
                 "checkpoint_sha256": checkpoint_hash,
             }
@@ -196,10 +303,17 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
         "generation_function": "moecot_language_arm_training.generate_model_text",
         "generation_wrapper_sha256": freeze["generation_wrapper_sha256"],
         "training_generator_sha256": freeze["training_generator_sha256"],
+        "training_plan_sha256": freeze["training_plan_sha256"],
         "templates_renderers_routers_tools_credit": 0,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+        "candidate_generation_completion": {
+            "normal_completion": ["model_eos"],
+            "project_selected_quality_token_cap": None,
+            "physical_context_boundary_hits": 0,
+            "model_eos_count": 1,
+        },
         "timing": {
             "clock": "time.perf_counter",
             "checkpoint_load_duration_ms_by_target": {target: 5.0},
@@ -208,7 +322,11 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
             "wall_duration_ms": 15.0,
         },
         "checkpoint_artifacts": [
-            {"target_id": target, "path": str(checkpoint.relative_to(tmp_path)), "sha256": checkpoint_hash}
+            {
+                "target_id": target,
+                "path": str(checkpoint.relative_to(tmp_path)),
+                "sha256": checkpoint_hash,
+            }
         ],
         "candidates": [
             {
@@ -217,12 +335,26 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
                 "output": output,
                 "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
                 "generation_duration_ms": 10.0,
+                "generation": {
+                    "state": "GREEN",
+                    "stop_reason": "eos",
+                    **bound,
+                },
             }
         ],
     }
-    cases = {"case-1": {"case_id": "case-1", "arm_id": "python"}}
+    cases = {
+        "case-1": {
+            "case_id": "case-1",
+            "arm_id": "python",
+            "model_visible": {"prompt": "hello"},
+        }
+    }
 
-    assert audit_candidate_provenance(bundle, freeze, cases, root=tmp_path)["state"] == "GREEN"
+    assert (
+        audit_candidate_provenance(bundle, freeze, cases, root=tmp_path)["state"]
+        == "GREEN"
+    )
 
     mutated = copy.deepcopy(bundle)
     mutated["candidates"][0]["output"] = "changed"
@@ -238,7 +370,9 @@ def test_candidate_provenance_binds_receipt_output_and_target(tmp_path: Path) ->
     assert "candidate_generation_timing_total_mismatch" in result["hard_gaps"]
 
 
-def test_accepted_output_rate_includes_generation_verification_and_cold_load(monkeypatch) -> None:
+def test_accepted_output_rate_includes_generation_verification_and_cold_load(
+    monkeypatch,
+) -> None:
     manifest = build_manifest(CONFIG, CONFIG_PATH)
     freeze = build_freeze(manifest, CONFIG_PATH)
     candidates = [
@@ -284,7 +418,9 @@ def test_accepted_output_rate_includes_generation_verification_and_cold_load(mon
     assert result["summary"]["accepted_verified_output_per_second_warm"] == 128 / 3.84
 
 
-def test_final_qualification_reuses_bound_code_rows_without_reexecution(monkeypatch) -> None:
+def test_final_qualification_reuses_bound_code_rows_without_reexecution(
+    monkeypatch,
+) -> None:
     manifest = build_manifest(CONFIG, CONFIG_PATH)
     freeze = build_freeze(manifest, CONFIG_PATH)
     candidates = [
@@ -404,7 +540,8 @@ def qualification(target: str, rates: dict[str, float], throughput: float) -> di
 
 def exact_diagnostic(freeze: dict) -> dict:
     return {
-        "policy": "project_theseus_moecot_dense_exact_recovery_diagnostic_v8",
+        "policy": "project_theseus_neural_seed_exact_recovery_diagnostic_v2",
+        "implementation_sha256": freeze["exact_diagnostic_implementation_sha256"],
         "trigger_state": "GREEN",
         "publication_ready": True,
         "freeze_identity": {
@@ -447,7 +584,9 @@ def test_architecture_verdict_falsifies_all_code_zero_before_pareto() -> None:
     assert result["route_replacement_authorized"] is False
 
 
-def test_architecture_verdict_requires_dense_confirmation_on_strict_pareto_gain() -> None:
+def test_architecture_verdict_requires_dense_confirmation_on_strict_pareto_gain() -> (
+    None
+):
     manifest = build_manifest(CONFIG, CONFIG_PATH)
     freeze = build_freeze(manifest, CONFIG_PATH)
     sparse_rates = {arm: 0.25 for arm in CONFIG["arms"]}
@@ -536,7 +675,9 @@ def test_architecture_verdict_preserves_quality_cost_tradeoff_as_unresolved() ->
     assert not any(result["pareto"].values())
 
 
-def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeypatch) -> None:
+def test_local_english_judgments_require_bound_receipt_and_pinned_models(
+    monkeypatch,
+) -> None:
     manifest = build_manifest(CONFIG, CONFIG_PATH)
     freeze = build_freeze(manifest, CONFIG_PATH)
     bundle = {
@@ -567,7 +708,7 @@ def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeyp
     ]
     identity = {"path": "reports/judgments.jsonl", "sha256": "j" * 64, "row_count": 64}
     receipt = {
-        "policy": "project_theseus_local_blind_english_judgment_receipt_v1",
+        "policy": "project_theseus_local_blind_english_judgment_receipt_v2",
         "trigger_state": "GREEN",
         "config_sha256": freeze["local_english_rater_config_sha256"],
         "implementation_sha256": freeze["local_english_rater_implementation_sha256"],
@@ -594,33 +735,12 @@ def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeyp
                 "blind_packet_contract_sha256": blind["packet_sha256"],
             }
         ],
-        "human_audit": {
-            "prospective_sample": [
-                {
-                    "case_id": item["case_id"],
-                    "blind_item_id": item["blind_item_id"],
-                    "candidate_sha256": item["candidate_sha256"],
-                }
-                for item in blind["items"][:8]
-            ]
+        "independent_machine_audit": {
+            "policy": "project_theseus_independent_english_machine_audit_sample_v1",
+            "prospective_sample": prospective_machine_audit_sample(
+                blind["items"], rater_config
+            ),
         },
-    }
-    human_receipt = {
-        "policy": "project_theseus_blind_english_human_audit_v1",
-        "rows": [
-            {
-                **row,
-                "human_scores": scores,
-                "injection_or_malformed_flag": False,
-                "auditor_id": "human-auditor-1",
-                "audited_utc": "2026-07-29T00:00:00Z",
-            }
-            for row in receipt["human_audit"]["prospective_sample"]
-        ],
-    }
-    human_identity = {
-        "path": "reports/human-audit.json",
-        "sha256": "h" * 64,
     }
 
     audit = audit_local_english_judgments(
@@ -632,10 +752,12 @@ def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeyp
         receipt,
         identity,
         "opaque_a",
-        human_receipt,
-        human_identity,
     )
     assert audit["state"] == "GREEN"
+    assert audit["independent_machine_audit"]["user_or_human_gate_required"] is False
+    assert (
+        audit["independent_machine_audit"]["independently_verified_sample_count"] == 8
+    )
 
     tampered = copy.deepcopy(receipt)
     tampered["judgment_files"][0]["sha256"] = "0" * 64
@@ -648,8 +770,6 @@ def test_local_english_judgments_require_bound_receipt_and_pinned_models(monkeyp
         tampered,
         identity,
         "opaque_a",
-        human_receipt,
-        human_identity,
     )
     assert audit["state"] == "RED"
     assert "local_judgment_file_identity_mismatch:sha256" in audit["hard_gaps"]

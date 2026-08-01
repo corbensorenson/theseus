@@ -27,7 +27,11 @@ completed its single licensed Click run: the harness is adequate, but the task
 was not solved. In parallel,
 the neural campaign remains held on clean source binding and exclusive
 accelerator custody. Its one-segment launch authority is now machine-readable
-and autonomous; a separate one-shot D2 evaluation controller is still required.
+and autonomous. The separate D2 one-shot evaluation controller is now
+implemented with machine-only authority, exact freeze/source binding,
+exclusive accelerator custody, append-only consumption, terminal invalidation,
+and no rerun permission; it remains paused until the source transaction is
+clean and both dense controls are complete.
 No forward phase depends on Corben supplying tasks, labels, approvals, or
 timing.
 
@@ -90,7 +94,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
 | Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
 | Training | `TRAINING_HELD_SOURCE_BINDING_AND_ACCELERATOR_CUSTODY` | The autonomous launch controller may lease `runtime/control/neural_seed_yield_after_segment` for exactly one transactional segment only after clean source binding and every machine predicate pass; it requires no user approval and restores the hold on every exit |
-| Learned capability | `NOT_EVALUATED_SEALED` | The 57M candidate has no D2 result; the current surface is independently fresh at exact and normalized model-visible prompt scope, but automated one-shot evaluation authority is not implemented |
+| Learned capability | `NOT_EVALUATED_SEALED` | The 57M candidate has no D2 result; the current surface is independently fresh at exact and normalized model-visible prompt scope, and automated one-shot evaluation authority is implemented but not executable until its clean-source, exact-freeze, checkpoint, local-rater, nonconsumption, output-collision, and exclusive-accelerator predicates all pass |
 | Matched controls | `NOT_TRAINED` | Both dense controls remain at 0 optimizer steps |
 | Instrument usefulness | `NOT_ESTABLISHED` | P2-001 and P2A both traversed matched canonical routes but produced zero independently evaluable candidates under their exact protocols; no route or subsystem won |
 | Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
@@ -416,18 +420,24 @@ The current private functional utility metadata says:
 - independent candidate-integrity recomputation;
 - prompt-injection, rubric-copy, self-score, empty, and malformed-output
   rejection;
-- a separately bound prospective human-audit receipt;
-- 0 registry matches for the new wrapper digest alone;
+- a prospective independently recomputed machine audit with no user or human
+  completion gate;
+- EOS-only candidate completion, with no project-selected quality-token cap;
+- exact prompt-token recomputation against the pinned 512-token model context;
+- physical context exhaustion invalidates the observation rather than failing
+  the model or architecture;
+- Rust and Chrome verifier safety windows are mechanics-qualified, and any
+  verifier timeout invalidates the D2 observation rather than failing the
+  candidate or architecture;
 - capability claim `NOT_EVALUATED`.
 
-That metadata is insufficient. The unchanged case compiler and unchanged
-case-generation inputs are equivalent to the v8 case contract
-`d724363eca913129cb1701105b06c8f51ebc644d1a7485994bc1a50b54bdc792`.
-The append-only registry has nine reservation rows for that equivalent surface,
-covering all three candidates through final functional qualification. The
-current readiness reports therefore fail closed. Do not materialize or consume
-the 57M surface, and do not create a replacement suite as an unreviewed cleanup
-side effect.
+No D2 candidate or qualification result exists. The current replacement surface
+is fresh at exact and normalized model-visible prompt scope, but D2 remains
+sealed until the source-bound freeze and autonomous one-shot controller are
+GREEN. The controller must reserve every stage before execution, stop the whole
+campaign on any invalid observation, consume each target exactly once, and
+derive no negative model or architecture inference from a physical context or
+host boundary.
 
 ## Autonomous Measurement-Lane State
 
@@ -557,7 +567,7 @@ publication policy is established; they do not block local proof work.
 | Pre-training architecture | `NOT_READY` | Phase 0 awaits a clean source-bound replacement package; the selected Phase 8 route remains mechanically qualified |
 | Replacement freeze | Current `RED` | Fails only `source_binding` on the dirty maintenance tree; hold remains |
 | Independent pre-long-run audit | Current `GREEN` | Recomputes the current contract, historical packet identity and consumption, and zero exact/normalized prompt overlap |
-| Functional utility freeze | `NOT_EVALUATED_SEALED` | The 57M candidate is unevaluated; current exact surface nonconsumption and scoped freshness pass, while automated one-shot execution authority is not implemented |
+| Functional utility freeze | `NOT_EVALUATED_SEALED` | The 57M candidate is unevaluated; current exact surface nonconsumption and scoped freshness pass. EOS-only uncapped generation, autonomous independent English audit, current-checkpoint exact diagnostics, and one-shot D2 authority are implemented; execution remains sealed pending the clean source-bound freeze and completed dense controls |
 | Runtime exposure | `LOCAL_ONLY` | No LAN/public authorization |
 
 ## Immediate Work

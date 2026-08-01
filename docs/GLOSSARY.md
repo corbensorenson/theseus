@@ -152,7 +152,8 @@ but must be reported separately.
 
 **Functional utility**
 Whether the model completes source-disjoint natural-language or programming
-tasks under the frozen verifier and human-audit contract.
+tasks under the frozen verifier and autonomous independent-machine-audit
+contract.
 
 **Weakest-arm utility**
 The least successful supported language arm. An average cannot hide a failed

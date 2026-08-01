@@ -11,7 +11,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from moecot_dense_exact_recovery_diagnostic import ARMS, build_diagnostic
+from moecot_dense_exact_recovery_diagnostic import ARMS, build_diagnostic  # noqa: E402
 
 
 PLAN = "a" * 64
@@ -24,7 +24,7 @@ def write_json(path: Path, value: dict) -> None:
 
 
 def seed_target(root: Path, target: str, *, complete: bool = True) -> None:
-    directory = root / "checkpoints/moecot_language_seed_v8" / target
+    directory = root / "checkpoints/neural_seed_57m" / target
     checkpoint = directory / "weights.bin"
     checkpoint.parent.mkdir(parents=True, exist_ok=True)
     checkpoint.write_bytes((target * 3).encode())
@@ -46,9 +46,11 @@ def seed_target(root: Path, target: str, *, complete: bool = True) -> None:
         "templates_renderers_routers_tools_credit": 0,
     }
     if target in ARMS:
-        shared = root / "checkpoints/moecot_language_seed_v8/shared_trunk/weights.bin"
+        shared = root / "checkpoints/neural_seed_57m/shared_trunk/weights.bin"
         receipt["shared_trunk_checkpoint"] = str(shared.relative_to(root))
-        receipt["shared_trunk_checkpoint_sha256"] = hashlib.sha256(shared.read_bytes()).hexdigest()
+        receipt["shared_trunk_checkpoint_sha256"] = hashlib.sha256(
+            shared.read_bytes()
+        ).hexdigest()
     write_json(directory / "training_receipt.json", receipt)
     if target == "shared_trunk":
         return
@@ -81,24 +83,55 @@ def seed_target(root: Path, target: str, *, complete: bool = True) -> None:
 
 
 def test_complete_diagnostic_defers_architecture_verdict(tmp_path: Path) -> None:
-    for target in ("shared_trunk", *ARMS, "dense_active_parameter", "dense_total_parameter"):
+    for target in (
+        "shared_trunk",
+        *ARMS,
+        "dense_active_parameter",
+        "dense_total_parameter",
+    ):
         seed_target(tmp_path, target)
 
-    report = build_diagnostic(tmp_path, {"v8_plan_sha256": PLAN, "v8_stage_signature": STAGE, "case_contract_sha256": "c" * 64, "evaluation_state": "NOT_EVALUATED"})
+    report = build_diagnostic(
+        tmp_path,
+        {
+            "training_plan_sha256": PLAN,
+            "training_stage_signature": STAGE,
+            "checkpoint_root": "checkpoints/neural_seed_57m",
+            "case_contract_sha256": "c" * 64,
+            "evaluation_state": "NOT_EVALUATED",
+            "exact_diagnostic_implementation_sha256": "test-only",
+        },
+        plan_sha_override=PLAN,
+    )
 
     assert report["publication_ready"] is True
     assert report["trigger_state"] == "GREEN"
     assert report["architecture_verdict"] == "DEFER_TO_FROZEN_FUNCTIONAL_UTILITY"
     assert report["boundaries"]["functional_utility_claimed"] is False
     assert report["moecot"]["summary"]["row_count"] == 20
-    assert report["dense_controls"]["dense_active_parameter"]["summary"]["row_count"] == 20
+    assert (
+        report["dense_controls"]["dense_active_parameter"]["summary"]["row_count"] == 20
+    )
 
 
 def test_incomplete_control_fails_publication_closed(tmp_path: Path) -> None:
-    for target in ("shared_trunk", *ARMS, "dense_active_parameter", "dense_total_parameter"):
+    for target in (
+        "shared_trunk",
+        *ARMS,
+        "dense_active_parameter",
+        "dense_total_parameter",
+    ):
         seed_target(tmp_path, target, complete=target != "dense_total_parameter")
 
-    report = build_diagnostic(tmp_path, {"v8_plan_sha256": PLAN, "v8_stage_signature": STAGE})
+    report = build_diagnostic(
+        tmp_path,
+        {
+            "training_plan_sha256": PLAN,
+            "training_stage_signature": STAGE,
+            "checkpoint_root": "checkpoints/neural_seed_57m",
+        },
+        plan_sha_override=PLAN,
+    )
 
     assert report["publication_ready"] is False
     assert report["trigger_state"] == "YELLOW"
@@ -106,12 +139,25 @@ def test_incomplete_control_fails_publication_closed(tmp_path: Path) -> None:
 
 
 def test_shared_trunk_mutation_invalidates_every_expert(tmp_path: Path) -> None:
-    for target in ("shared_trunk", *ARMS, "dense_active_parameter", "dense_total_parameter"):
+    for target in (
+        "shared_trunk",
+        *ARMS,
+        "dense_active_parameter",
+        "dense_total_parameter",
+    ):
         seed_target(tmp_path, target)
-    shared = tmp_path / "checkpoints/moecot_language_seed_v8/shared_trunk/weights.bin"
+    shared = tmp_path / "checkpoints/neural_seed_57m/shared_trunk/weights.bin"
     shared.write_bytes(b"mutated")
 
-    report = build_diagnostic(tmp_path, {"v8_plan_sha256": PLAN, "v8_stage_signature": STAGE})
+    report = build_diagnostic(
+        tmp_path,
+        {
+            "training_plan_sha256": PLAN,
+            "training_stage_signature": STAGE,
+            "checkpoint_root": "checkpoints/neural_seed_57m",
+        },
+        plan_sha_override=PLAN,
+    )
 
     assert report["publication_ready"] is False
     assert "shared_trunk:checkpoint_identity_mismatch" in report["hard_gaps"]

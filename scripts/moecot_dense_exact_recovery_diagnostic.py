@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish the frozen v8 exact-recovery comparison without utility claims."""
+"""Publish the frozen neural-seed exact-recovery comparison without utility claims."""
 
 from __future__ import annotations
 
@@ -12,11 +12,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import moecot_language_arm_training as training
+
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_FREEZE = ROOT / "configs/neural_seed_functional_utility_freeze.json"
-DEFAULT_OUT = ROOT / "reports/moecot_dense_exact_recovery_diagnostic_v8.json"
-DEFAULT_MARKDOWN = ROOT / "reports/moecot_dense_exact_recovery_diagnostic_v8.md"
+DEFAULT_FREEZE = ROOT / "configs/neural_seed_57m_functional_utility_freeze.json"
+DEFAULT_OUT = ROOT / "reports/neural_seed_57m_exact_recovery_diagnostic.json"
+DEFAULT_MARKDOWN = ROOT / "reports/neural_seed_57m_exact_recovery_diagnostic.md"
 ARMS = ("english", "python", "javascript_typescript", "html_css", "rust")
 CONTROLS = ("dense_active_parameter", "dense_total_parameter")
 
@@ -45,18 +47,48 @@ def main() -> int:
     return 0 if report["publication_ready"] else 2
 
 
-def build_diagnostic(root: Path, freeze: dict[str, Any]) -> dict[str, Any]:
-    plan_sha = str(freeze.get("v8_plan_sha256") or "")
-    stage_signature = str(freeze.get("v8_stage_signature") or "")
+def build_diagnostic(
+    root: Path,
+    freeze: dict[str, Any],
+    *,
+    plan_sha_override: str = "",
+) -> dict[str, Any]:
+    training_config_path = resolve_from(root, str(freeze.get("training_config") or ""))
+    if plan_sha_override:
+        plan_sha = plan_sha_override
+    elif training_config_path.is_file():
+        training_config = read_json(training_config_path)
+        plan_sha = str(
+            training.build_plan(
+                training_config,
+                config_path=training_config_path,
+            ).get("plan_sha256")
+            or ""
+        )
+    else:
+        plan_sha = ""
+    stage_signature = str(freeze.get("training_stage_signature") or "")
+    checkpoint_root = resolve_from(root, str(freeze.get("checkpoint_root") or ""))
     gaps = []
+    if not plan_sha:
+        gaps.append("freeze_training_plan_missing")
+    if not stage_signature:
+        gaps.append("freeze_training_stage_missing")
+    if not checkpoint_root.is_dir():
+        gaps.append("freeze_checkpoint_root_missing")
     target_rows: dict[str, dict[str, Any]] = {}
     for target_id in ("shared_trunk", *ARMS, *CONTROLS):
-        row, faults = collect_target(root, target_id, plan_sha, stage_signature)
+        row, faults = collect_target(
+            root,
+            checkpoint_root,
+            target_id,
+            plan_sha,
+            stage_signature,
+        )
         target_rows[target_id] = row
         gaps.extend(f"{target_id}:{fault}" for fault in faults)
     sparse_by_arm = {
-        arm: target_rows[arm].get("evaluation_by_arm", {}).get(arm)
-        for arm in ARMS
+        arm: target_rows[arm].get("evaluation_by_arm", {}).get(arm) for arm in ARMS
     }
     controls_by_arm = {
         control: target_rows[control].get("evaluation_by_arm", {})
@@ -67,7 +99,9 @@ def build_diagnostic(root: Path, freeze: dict[str, Any]) -> dict[str, Any]:
     for control, by_arm in controls_by_arm.items():
         if set(by_arm) != set(ARMS):
             gaps.append(f"{control}:per_arm_evaluation_incomplete")
-    sparse_summary = aggregate_metrics([value for value in sparse_by_arm.values() if value])
+    sparse_summary = aggregate_metrics(
+        [value for value in sparse_by_arm.values() if value]
+    )
     control_summaries = {
         control: aggregate_metrics(list(by_arm.values()))
         for control, by_arm in controls_by_arm.items()
@@ -77,20 +111,30 @@ def build_diagnostic(root: Path, freeze: dict[str, Any]) -> dict[str, Any]:
         **{control: target_rows[control].get("resource") for control in CONTROLS},
     }
     return {
-        "policy": "project_theseus_moecot_dense_exact_recovery_diagnostic_v8",
+        "policy": "project_theseus_neural_seed_exact_recovery_diagnostic_v2",
         "created_utc": now(),
+        "implementation": relative_to(root, Path(__file__).resolve()),
+        "implementation_sha256": sha256_file(Path(__file__).resolve()),
         "trigger_state": "GREEN" if not gaps else "YELLOW",
         "publication_ready": not gaps,
         "freeze_identity": {
             "plan_sha256": plan_sha,
             "stage_signature": stage_signature,
+            "checkpoint_root": relative_to(root, checkpoint_root),
+            "training_config": relative_to(root, training_config_path),
             "functional_case_contract_sha256": freeze.get("case_contract_sha256"),
             "functional_evaluation_state": freeze.get("evaluation_state"),
+            "exact_diagnostic_implementation_sha256": freeze.get(
+                "exact_diagnostic_implementation_sha256"
+            ),
         },
         "score_semantics": "exact target-string recovery and serialization diagnostics only; not functional utility",
         "moecot": {"by_arm": sparse_by_arm, "summary": sparse_summary},
         "dense_controls": {
-            control: {"by_arm": controls_by_arm[control], "summary": control_summaries[control]}
+            control: {
+                "by_arm": controls_by_arm[control],
+                "summary": control_summaries[control],
+            }
             for control in CONTROLS
         },
         "preregistered_views": {
@@ -123,9 +167,13 @@ def build_diagnostic(root: Path, freeze: dict[str, Any]) -> dict[str, Any]:
 
 
 def collect_target(
-    root: Path, target_id: str, plan_sha: str, stage_signature: str
+    root: Path,
+    checkpoint_root: Path,
+    target_id: str,
+    plan_sha: str,
+    stage_signature: str,
 ) -> tuple[dict[str, Any], list[str]]:
-    directory = root / "checkpoints/moecot_language_seed_v8" / target_id
+    directory = checkpoint_root / target_id
     receipt_path = directory / "training_receipt.json"
     evaluation_path = directory / "evaluation_private_dev_receipt.json"
     faults = []
@@ -159,17 +207,23 @@ def collect_target(
     shared_checkpoint = None
     shared_checkpoint_hash = ""
     if target_id in ARMS:
-        shared_checkpoint = resolve_from(root, str(receipt.get("shared_trunk_checkpoint") or ""))
+        shared_checkpoint = resolve_from(
+            root, str(receipt.get("shared_trunk_checkpoint") or "")
+        )
         expected_shared_hash = str(receipt.get("shared_trunk_checkpoint_sha256") or "")
-        shared_receipt_path = root / "checkpoints/moecot_language_seed_v8/shared_trunk/training_receipt.json"
-        shared_receipt = read_json(shared_receipt_path) if shared_receipt_path.is_file() else {}
+        shared_receipt_path = checkpoint_root / "shared_trunk/training_receipt.json"
+        shared_receipt = (
+            read_json(shared_receipt_path) if shared_receipt_path.is_file() else {}
+        )
         if not shared_checkpoint.is_file():
             faults.append("shared_checkpoint_missing")
         else:
             shared_checkpoint_hash = sha256_file(shared_checkpoint)
             if shared_checkpoint_hash != expected_shared_hash:
                 faults.append("shared_checkpoint_identity_mismatch")
-            if shared_checkpoint_hash != str(shared_receipt.get("checkpoint_sha256") or ""):
+            if shared_checkpoint_hash != str(
+                shared_receipt.get("checkpoint_sha256") or ""
+            ):
                 faults.append("shared_checkpoint_receipt_mismatch")
     evaluation = read_json(evaluation_path) if evaluation_path.is_file() else {}
     needs_evaluation = target_id != "shared_trunk"
@@ -202,7 +256,7 @@ def collect_target(
         "energy_measurement_state": receipt.get("energy_measurement_state"),
         "checkpoint_bytes": checkpoint_bytes,
         "peak_memory_bytes": None,
-        "peak_memory_measurement_state": "NOT_RECORDED_BY_FROZEN_V8_TRAINER",
+        "peak_memory_measurement_state": "NOT_RECORDED_BY_FROZEN_TRAINER",
         "checkpoint_load_time_ms": None,
         "checkpoint_load_measurement_state": "MEASURE_WITH_FROZEN_FUNCTIONAL_GENERATOR",
         "phase_tokens_per_second": {
@@ -216,9 +270,15 @@ def collect_target(
             "target_id": target_id,
             "state": "GREEN" if not faults else "INCOMPLETE",
             "training_receipt": relative_to(root, receipt_path),
-            "training_receipt_sha256": sha256_file(receipt_path) if receipt_path.is_file() else "",
-            "evaluation_receipt": relative_to(root, evaluation_path) if evaluation_path.is_file() else "",
-            "evaluation_receipt_sha256": sha256_file(evaluation_path) if evaluation_path.is_file() else "",
+            "training_receipt_sha256": sha256_file(receipt_path)
+            if receipt_path.is_file()
+            else "",
+            "evaluation_receipt": relative_to(root, evaluation_path)
+            if evaluation_path.is_file()
+            else "",
+            "evaluation_receipt_sha256": sha256_file(evaluation_path)
+            if evaluation_path.is_file()
+            else "",
             "checkpoint": relative_to(root, checkpoint) if checkpoint.is_file() else "",
             "checkpoint_sha256": checkpoint_hash,
             "shared_checkpoint": (
@@ -240,7 +300,9 @@ def aggregate_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
     total = sum(int(row.get("row_count") or 0) for row in rows)
     exact = sum(int(row.get("exact_match_count") or 0) for row in rows)
     nonempty = sum(int(row.get("nonempty_count") or 0) for row in rows)
-    serialization = sum(int(row.get("byte_serialization_valid_count") or 0) for row in rows)
+    serialization = sum(
+        int(row.get("byte_serialization_valid_count") or 0) for row in rows
+    )
     syntax_checked = sum(int(row.get("syntax_checked_count") or 0) for row in rows)
     syntax_valid = sum(int(row.get("syntax_valid_count") or 0) for row in rows)
     return {
@@ -253,7 +315,9 @@ def aggregate_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "byte_serialization_valid_rate": serialization / total if total else None,
         "syntax_checked_count": syntax_checked,
         "syntax_valid_count": syntax_valid,
-        "syntax_valid_rate_when_checked": syntax_valid / syntax_checked if syntax_checked else None,
+        "syntax_valid_rate_when_checked": syntax_valid / syntax_checked
+        if syntax_checked
+        else None,
     }
 
 
@@ -261,22 +325,30 @@ def sparse_resource_summary(targets: dict[str, dict[str, Any]]) -> dict[str, Any
     shared = targets["shared_trunk"]["resource"]
     experts = [targets[arm]["resource"] for arm in ARMS]
     return {
-        "active_parameter_count_per_request": max((int(row["parameter_count"]) for row in experts), default=0),
-        "total_parameter_count": int(shared["parameter_count"]) + sum(int(row["trainable_parameter_count"]) for row in experts),
-        "optimizer_positions": int(shared["optimizer_positions"]) + sum(int(row["optimizer_positions"]) for row in experts),
-        "optimizer_steps": int(shared["optimizer_steps"]) + sum(int(row["optimizer_steps"]) for row in experts),
-        "wall_seconds": sum(float(row.get("wall_seconds") or 0) for row in [shared, *experts]),
-        "checkpoint_bytes": int(shared["checkpoint_bytes"]) + sum(int(row["checkpoint_bytes"]) for row in experts),
+        "active_parameter_count_per_request": max(
+            (int(row["parameter_count"]) for row in experts), default=0
+        ),
+        "total_parameter_count": int(shared["parameter_count"])
+        + sum(int(row["trainable_parameter_count"]) for row in experts),
+        "optimizer_positions": int(shared["optimizer_positions"])
+        + sum(int(row["optimizer_positions"]) for row in experts),
+        "optimizer_steps": int(shared["optimizer_steps"])
+        + sum(int(row["optimizer_steps"]) for row in experts),
+        "wall_seconds": sum(
+            float(row.get("wall_seconds") or 0) for row in [shared, *experts]
+        ),
+        "checkpoint_bytes": int(shared["checkpoint_bytes"])
+        + sum(int(row["checkpoint_bytes"]) for row in experts),
         "energy_joules": None,
         "energy_measurement_state": "NOT_AVAILABLE_FROM_MLX_RUNTIME",
         "peak_memory_bytes": None,
-        "peak_memory_measurement_state": "NOT_RECORDED_BY_FROZEN_V8_TRAINER",
+        "peak_memory_measurement_state": "NOT_RECORDED_BY_FROZEN_TRAINER",
     }
 
 
 def render_markdown(report: dict[str, Any]) -> str:
     lines = [
-        "# v8 Exact-Recovery Diagnostic",
+        "# Neural-Seed Exact-Recovery Diagnostic",
         "",
         f"State: **{report['trigger_state']}**",
         "",
@@ -309,7 +381,9 @@ def read_json(path: Path) -> dict[str, Any]:
 def write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + f".tmp-{os.getpid()}")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     os.replace(temporary, path)
 
 

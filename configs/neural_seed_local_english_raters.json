@@ -2,6 +2,7 @@
   "policy": "project_theseus_local_blind_english_raters_v2",
   "generation_completion_policy": "configs/theseus_generation_completion_policy.json",
   "generation_completion_policy_sha256": "0fa5037ef2d82a71cb4e24aa2f8f15983ccca8891dbe6f3479bbbcb47ea292c7",
+  "model_cache_root": "runtime/model_cache/neural_seed_local_english_raters",
   "seed": 20260715,
   "primary_raters": [
     {
@@ -69,23 +70,21 @@
     "self_score_detection_required": true,
     "empty_or_malformed_detection_required": true,
     "blocked_candidate_score": 0,
-    "maximum_candidate_characters": 16384,
     "independent_binding_recomputation_required": true,
     "adversarial_control_suite_required": true
   },
-  "human_audit": {
+  "independent_machine_audit": {
     "required_for_final_qualification": true,
     "prospective_sample_size": 8,
     "selection_seed": 20260729,
     "candidate_identity_blinded": true,
+    "recompute_candidate_bindings": true,
+    "recompute_score_schema": true,
+    "require_all_primary_raters": true,
     "required_fields": [
       "case_id",
       "blind_item_id",
-      "candidate_sha256",
-      "human_scores",
-      "injection_or_malformed_flag",
-      "auditor_id",
-      "audited_utc"
+      "candidate_sha256"
     ]
   },
   "boundaries": {

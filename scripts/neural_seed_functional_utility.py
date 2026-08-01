@@ -25,7 +25,9 @@ from neural_seed_functional_verifiers import (
     score_english_judgments,
     verify_candidate,
 )
-from neural_seed_local_english_raters import validate_config as validate_local_rater_config
+from neural_seed_local_english_raters import (
+    validate_config as validate_local_rater_config,
+)
 from neural_seed_functional_consumption import (
     complete_reservation,
     fail_reservation,
@@ -45,6 +47,15 @@ TRAINING_CONFIG = ROOT / "configs/moecot_language_arm_training.json"
 GENERATION_WRAPPER = ROOT / "scripts/neural_seed_functional_generate.py"
 LOCAL_RATER_CONFIG = ROOT / "configs/neural_seed_local_english_raters.json"
 LOCAL_RATER_IMPLEMENTATION = ROOT / "scripts/neural_seed_local_english_raters.py"
+EXACT_DIAGNOSTIC_IMPLEMENTATION = (
+    ROOT / "scripts/moecot_dense_exact_recovery_diagnostic.py"
+)
+D2_CONTROLLER_CONFIG = (
+    ROOT / "configs/neural_seed_d2_autonomous_evaluation_controller.json"
+)
+D2_CONTROLLER_IMPLEMENTATION = (
+    ROOT / "scripts/neural_seed_d2_autonomous_evaluation_controller.py"
+)
 
 
 def main() -> int:
@@ -60,7 +71,6 @@ def main() -> int:
     parser.add_argument("--blind-english-packet-out", default="")
     parser.add_argument("--judgments", default="")
     parser.add_argument("--judgment-receipt", default="")
-    parser.add_argument("--human-audit-receipt", default="")
     parser.add_argument("--judgment-label", default="")
     parser.add_argument("--compare-results", nargs=3, default=[])
     parser.add_argument("--exact-diagnostic", default="")
@@ -78,13 +88,21 @@ def main() -> int:
             immutable = read_json(freeze_path)
             identity_gaps = validate_freeze(manifest, immutable)
             if identity_gaps and not args.supersede_freeze_before_results:
-                print(json.dumps({"trigger_state": "RED", "hard_gaps": identity_gaps}, indent=2))
+                print(
+                    json.dumps(
+                        {"trigger_state": "RED", "hard_gaps": identity_gaps}, indent=2
+                    )
+                )
                 return 2
             if identity_gaps:
                 if not args.supersede_reason.strip():
                     raise ValueError("superseding a freeze requires --supersede-reason")
-                if manifest["training_state_at_materialization"]["dense_controls_complete"]:
-                    raise ValueError("cannot supersede functional contract after dense-control completion")
+                if manifest["training_state_at_materialization"][
+                    "dense_controls_complete"
+                ]:
+                    raise ValueError(
+                        "cannot supersede functional contract after dense-control completion"
+                    )
                 freeze = build_freeze(
                     manifest,
                     config_path,
@@ -98,11 +116,17 @@ def main() -> int:
     if args.evaluate_candidates:
         freeze_path = resolve(args.freeze_out)
         if not freeze_path.is_file():
-            raise ValueError("functional utility must be frozen before candidate evaluation")
+            raise ValueError(
+                "functional utility must be frozen before candidate evaluation"
+            )
         bundle_path = resolve(args.evaluate_candidates)
         bundle = read_json(bundle_path)
         active_freeze = read_json(freeze_path)
-        stage = "final_functional_qualification" if args.judgments else "code_verification_and_blind_packet"
+        stage = (
+            "final_functional_qualification"
+            if args.judgments
+            else "code_verification_and_blind_packet"
+        )
         registry_path = consumption_registry_path(config, active_freeze)
         bundle_identity = {
             "path": relative(bundle_path),
@@ -116,17 +140,15 @@ def main() -> int:
         output_path = resolve(args.out)
         prior_code_evaluation: dict[str, Any] | None = None
         prior_code_identity: dict[str, Any] = {}
-        judgment_receipt_path = resolve(args.judgment_receipt) if args.judgment_receipt else None
-        judgment_receipt_identity: dict[str, Any] = {}
-        human_audit_path = (
-            resolve(args.human_audit_receipt)
-            if args.human_audit_receipt
-            else None
+        judgment_receipt_path = (
+            resolve(args.judgment_receipt) if args.judgment_receipt else None
         )
-        human_audit_identity: dict[str, Any] = {}
+        judgment_receipt_identity: dict[str, Any] = {}
         if args.judgments:
             if not output_path.is_file():
-                raise ValueError("final qualification requires the consumed code evaluation")
+                raise ValueError(
+                    "final qualification requires the consumed code evaluation"
+                )
             prior_code_identity = {
                 "path": relative(output_path),
                 "sha256": sha256_file(output_path),
@@ -138,7 +160,9 @@ def main() -> int:
             )
             prior_code_evaluation = read_json(output_path)
             if not judgment_receipt_path or not judgment_receipt_path.is_file():
-                raise ValueError("final qualification requires a consumed judgment receipt")
+                raise ValueError(
+                    "final qualification requires a consumed judgment receipt"
+                )
             judgment_receipt_identity = {
                 "path": relative(judgment_receipt_path),
                 "sha256": sha256_file(judgment_receipt_path),
@@ -148,14 +172,6 @@ def main() -> int:
                 stage="blind_english_local_scoring",
                 artifact_sha256=judgment_receipt_identity["sha256"],
             )
-            if not human_audit_path or not human_audit_path.is_file():
-                raise ValueError(
-                    "final qualification requires the prospective human-audit receipt"
-                )
-            human_audit_identity = {
-                "path": relative(human_audit_path),
-                "sha256": sha256_file(human_audit_path),
-            }
         elif output_path.exists():
             raise ValueError("preliminary functional evaluation output already exists")
         reservation = reserve_once(
@@ -168,24 +184,25 @@ def main() -> int:
                 "case_contract_sha256": active_freeze.get("case_contract_sha256"),
                 "prior_code_evaluation_sha256": prior_code_identity.get("sha256", ""),
                 "judgment_receipt_sha256": judgment_receipt_identity.get("sha256", ""),
-                "human_audit_receipt_sha256": human_audit_identity.get(
-                    "sha256",
-                    "",
-                ),
             },
         )
         try:
-            blind_packet_path = resolve(args.blind_english_packet_out) if args.blind_english_packet_out else None
+            blind_packet_path = (
+                resolve(args.blind_english_packet_out)
+                if args.blind_english_packet_out
+                else None
+            )
             if blind_packet_path:
-                blind_packet = build_blind_english_packet(config, manifest, bundle, active_freeze)
+                blind_packet = build_blind_english_packet(
+                    config, manifest, bundle, active_freeze
+                )
                 write_json(blind_packet_path, blind_packet)
                 if blind_packet["trigger_state"] != "GREEN":
                     raise ValueError("blind English packet failed its frozen contract")
             judgments_path = resolve(args.judgments) if args.judgments else None
             judgments = read_jsonl(judgments_path) if judgments_path else []
-            judgment_receipt = read_json(judgment_receipt_path) if judgment_receipt_path else {}
-            human_audit_receipt = (
-                read_json(human_audit_path) if human_audit_path else {}
+            judgment_receipt = (
+                read_json(judgment_receipt_path) if judgment_receipt_path else {}
             )
             judgments_identity = (
                 {
@@ -203,8 +220,6 @@ def main() -> int:
                 active_freeze,
                 judgments,
                 judgment_receipt=judgment_receipt,
-                human_audit_receipt=human_audit_receipt,
-                human_audit_identity=human_audit_identity,
                 judgments_identity=judgments_identity,
                 judgment_label=args.judgment_label,
                 candidate_bundle_identity=bundle_identity,
@@ -240,12 +255,17 @@ def main() -> int:
             raise ValueError("--compare-results requires --exact-diagnostic")
         freeze_path = resolve(args.freeze_out)
         if not freeze_path.is_file():
-            raise ValueError("functional utility must be frozen before architecture comparison")
+            raise ValueError(
+                "functional utility must be frozen before architecture comparison"
+            )
         result_paths = [resolve(value) for value in args.compare_results]
         exact_path = resolve(args.exact_diagnostic)
         active_freeze = read_json(freeze_path)
         registry_path = consumption_registry_path(config, active_freeze)
-        result_sources = [{"path": relative(path), "sha256": sha256_file(path)} for path in result_paths]
+        result_sources = [
+            {"path": relative(path), "sha256": sha256_file(path)}
+            for path in result_paths
+        ]
         exact_source = {"path": relative(exact_path), "sha256": sha256_file(exact_path)}
         for source in result_sources:
             require_completed_artifact(
@@ -296,14 +316,20 @@ def main() -> int:
 def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     gaps = validate_config(config)
     cases = materialize_cases(config)
-    expected = len(ARMS) * len(next(iter(config["arms"].values()))["families"]) * int(config["variants_per_family"])
+    expected = (
+        len(ARMS)
+        * len(next(iter(config["arms"].values()))["families"])
+        * int(config["variants_per_family"])
+    )
     if len(cases) != expected:
         gaps.append("case_count_mismatch")
     ids = [case["case_id"] for case in cases]
     if len(set(ids)) != len(ids):
         gaps.append("duplicate_case_id")
     for arm in ARMS:
-        if sum(case["arm_id"] == arm for case in cases) != int(config["expected_cases_per_arm"]):
+        if sum(case["arm_id"] == arm for case in cases) != int(
+            config["expected_cases_per_arm"]
+        ):
             gaps.append(f"arm_case_count_mismatch:{arm}")
     overlap = source_disjoint_audit(config, cases)
     gaps.extend(overlap["hard_gaps"])
@@ -312,14 +338,27 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
     if any(set(row) != visible_keys for row in packet_rows):
         gaps.append("generator_packet_field_mismatch")
     forbidden = set(config["evaluator_only_fields"]) | {
-        "task_family", "category", "solution", "solution_body", "tests", "hidden_tests",
-        "expected", "answer", "source_task_id", "return_shape", "type_family", "required_constructs",
+        "task_family",
+        "category",
+        "solution",
+        "solution_body",
+        "tests",
+        "hidden_tests",
+        "expected",
+        "answer",
+        "source_task_id",
+        "return_shape",
+        "type_family",
+        "required_constructs",
     }
     leaked = sorted({key for row in packet_rows for key in row if key in forbidden})
     if leaked:
         gaps.append("generator_packet_evaluator_metadata_leak:" + ",".join(leaked))
     case_contract_sha = stable_hash(
-        [{key: value for key, value in case.items() if key != "model_visible"} for case in cases]
+        [
+            {key: value for key, value in case.items() if key != "model_visible"}
+            for case in cases
+        ]
     )
     candidate_packet = {
         "policy": "project_theseus_private_functional_candidate_packet_v1",
@@ -342,12 +381,25 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "config_sha256": sha256_file(config_path),
         "compiler": relative(Path(__file__).resolve()),
         "compiler_sha256": sha256_file(Path(__file__).resolve()),
-        "case_compiler_sha256": sha256_file(ROOT / "scripts/neural_seed_functional_cases.py"),
-        "verifier_sha256": sha256_file(ROOT / "scripts/neural_seed_functional_verifiers.py"),
+        "case_compiler_sha256": sha256_file(
+            ROOT / "scripts/neural_seed_functional_cases.py"
+        ),
+        "verifier_sha256": sha256_file(
+            ROOT / "scripts/neural_seed_functional_verifiers.py"
+        ),
         "generation_wrapper_sha256": sha256_file(GENERATION_WRAPPER),
         "training_generator_sha256": sha256_file(TRAINING_SCRIPT),
         "local_english_rater_config_sha256": sha256_file(LOCAL_RATER_CONFIG),
-        "local_english_rater_implementation_sha256": sha256_file(LOCAL_RATER_IMPLEMENTATION),
+        "local_english_rater_implementation_sha256": sha256_file(
+            LOCAL_RATER_IMPLEMENTATION
+        ),
+        "exact_diagnostic_implementation_sha256": sha256_file(
+            EXACT_DIAGNOSTIC_IMPLEMENTATION
+        ),
+        "d2_controller_config_sha256": sha256_file(D2_CONTROLLER_CONFIG),
+        "d2_controller_implementation_sha256": sha256_file(
+            D2_CONTROLLER_IMPLEMENTATION
+        ),
         "toolchain_identity": toolchains,
         "toolchain_identity_sha256": stable_hash(toolchains),
         "candidate_id": campaign["candidate_id"],
@@ -359,7 +411,9 @@ def build_manifest(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "checkpoint_root": campaign["checkpoint_root"],
         "case_contract_sha256": case_contract_sha,
         "case_count": len(cases),
-        "cases_by_arm": {arm: sum(case["arm_id"] == arm for case in cases) for arm in ARMS},
+        "cases_by_arm": {
+            arm: sum(case["arm_id"] == arm for case in cases) for arm in ARMS
+        },
         "candidate_packet": candidate_packet,
         "candidate_packet_sha256": stable_hash(candidate_packet),
         "consumption": dict(config.get("consumption") or {}),
@@ -385,7 +439,9 @@ def build_blind_english_packet(
 ) -> dict[str, Any]:
     gaps = validate_freeze(manifest, freeze)
     cases = {case["case_id"]: case for case in manifest["evaluator_cases"]}
-    rows = bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    rows = (
+        bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    )
     candidate_rows = {str(row.get("case_id") or ""): row for row in rows}
     if len(candidate_rows) != len(rows) or set(candidate_rows) != set(cases):
         gaps.append("candidate_case_set_invalid_for_blind_packet")
@@ -485,8 +541,19 @@ def build_freeze(
         "verifier_sha256": manifest["verifier_sha256"],
         "generation_wrapper_sha256": manifest["generation_wrapper_sha256"],
         "training_generator_sha256": manifest["training_generator_sha256"],
-        "local_english_rater_config_sha256": manifest["local_english_rater_config_sha256"],
-        "local_english_rater_implementation_sha256": manifest["local_english_rater_implementation_sha256"],
+        "local_english_rater_config_sha256": manifest[
+            "local_english_rater_config_sha256"
+        ],
+        "local_english_rater_implementation_sha256": manifest[
+            "local_english_rater_implementation_sha256"
+        ],
+        "exact_diagnostic_implementation_sha256": manifest[
+            "exact_diagnostic_implementation_sha256"
+        ],
+        "d2_controller_config_sha256": manifest["d2_controller_config_sha256"],
+        "d2_controller_implementation_sha256": manifest[
+            "d2_controller_implementation_sha256"
+        ],
         "toolchain_identity_sha256": manifest["toolchain_identity_sha256"],
         "case_contract_sha256": manifest["case_contract_sha256"],
         "candidate_packet_sha256": manifest["candidate_packet_sha256"],
@@ -515,7 +582,9 @@ def build_freeze(
     }
 
 
-def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -> dict[str, Any]:
+def source_disjoint_audit(
+    config: dict[str, Any], cases: list[dict[str, Any]]
+) -> dict[str, Any]:
     root = resolve(config["source_disjoint"]["supervision_root"])
     prompt_hashes: dict[str, str] = {}
     normalized: dict[str, str] = {}
@@ -532,7 +601,9 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
                     row = json.loads(line)
                     rows_scanned += 1
                     prompt = str(row.get("prompt") or "")
-                    prompt_hashes[hashlib.sha256(prompt.encode()).hexdigest()] = str(row.get("row_id") or "")
+                    prompt_hashes[hashlib.sha256(prompt.encode()).hexdigest()] = str(
+                        row.get("row_id") or ""
+                    )
                     normalized[normalize_text(prompt)] = str(row.get("row_id") or "")
                     target_hash = str(row.get("target_sha256") or "")
                     if target_hash:
@@ -543,13 +614,14 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
     target_as_prompt = []
     prior_surface_overlap = []
     for packet_value in config["source_disjoint"].get("prior_candidate_packets") or []:
-        packet_ref = packet_value if isinstance(packet_value, dict) else {
-            "path": str(packet_value), "sha256": ""
-        }
+        packet_ref = (
+            packet_value
+            if isinstance(packet_value, dict)
+            else {"path": str(packet_value), "sha256": ""}
+        )
         packet_path = resolve(str(packet_ref.get("path") or ""))
-        if (
-            not packet_path.is_file()
-            or sha256_file(packet_path) != str(packet_ref.get("sha256") or "")
+        if not packet_path.is_file() or sha256_file(packet_path) != str(
+            packet_ref.get("sha256") or ""
         ):
             gaps.append("prior_functional_surface_identity_mismatch")
             continue
@@ -562,10 +634,14 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
     for case in cases:
         prompt_hash = case["prompt_sha256"]
         if prompt_hash in prompt_hashes:
-            exact.append({"case_id": case["case_id"], "row_id": prompt_hashes[prompt_hash]})
+            exact.append(
+                {"case_id": case["case_id"], "row_id": prompt_hashes[prompt_hash]}
+            )
         norm = normalize_text(case["prompt"])
         if norm in normalized:
-            normalized_hits.append({"case_id": case["case_id"], "row_id": normalized[norm]})
+            normalized_hits.append(
+                {"case_id": case["case_id"], "row_id": normalized[norm]}
+            )
         if prompt_hash in target_hashes:
             target_as_prompt.append(case["case_id"])
         if prompt_hash in prior_prompt_hashes or norm in prior_normalized_prompts:
@@ -592,11 +668,19 @@ def source_disjoint_audit(config: dict[str, Any], cases: list[dict[str, Any]]) -
 
 def campaign_binding(config: dict[str, Any]) -> dict[str, Any]:
     binding = config.get("campaign_binding") or {}
-    training_config_path = resolve(str(binding.get("training_config") or TRAINING_CONFIG))
-    training_config = training.bind_scale_preregistration(read_json(training_config_path))
+    training_config_path = resolve(
+        str(binding.get("training_config") or TRAINING_CONFIG)
+    )
+    training_config = training.bind_scale_preregistration(
+        read_json(training_config_path)
+    )
     base_path = resolve(str(training_config["base_config"]))
-    stage_metadata_path = resolve(str(training_config["stage_dir"])) / "stage_metadata_v1.json"
-    stage_metadata = read_json(stage_metadata_path) if stage_metadata_path.is_file() else {}
+    stage_metadata_path = (
+        resolve(str(training_config["stage_dir"])) / "stage_metadata_v1.json"
+    )
+    stage_metadata = (
+        read_json(stage_metadata_path) if stage_metadata_path.is_file() else {}
+    )
     candidate_id = str(binding.get("candidate_id") or "")
     if not candidate_id or candidate_id != str(
         (training_config.get("scale_preregistration") or {}).get("candidate_id") or ""
@@ -605,9 +689,7 @@ def campaign_binding(config: dict[str, Any]) -> dict[str, Any]:
     return {
         "candidate_id": candidate_id,
         "training_config": relative(training_config_path),
-        "training_config_sha256": semantic_training_config_sha256(
-            training_config_path
-        ),
+        "training_config_sha256": semantic_training_config_sha256(training_config_path),
         "training_config_identity": {
             "policy": "project_theseus_functional_training_config_semantic_identity_v1",
             "excluded_fields": ["plan_identity.legacy_migrations"],
@@ -656,7 +738,9 @@ def current_training_state(
         "checkpoint_root": relative(checkpoint_root),
         "controls": controls,
         "dense_controls_complete": all(row["complete"] for row in controls.values()),
-        "functional_contract_frozen_before_control_completion": not all(row["complete"] for row in controls.values()),
+        "functional_contract_frozen_before_control_completion": not all(
+            row["complete"] for row in controls.values()
+        ),
     }
 
 
@@ -668,8 +752,6 @@ def evaluate_bundle(
     judgments: list[dict[str, Any]],
     *,
     judgment_receipt: dict[str, Any] | None = None,
-    human_audit_receipt: dict[str, Any] | None = None,
-    human_audit_identity: dict[str, Any] | None = None,
     judgments_identity: dict[str, Any] | None = None,
     judgment_label: str = "",
     candidate_bundle_identity: dict[str, Any] | None = None,
@@ -678,7 +760,9 @@ def evaluate_bundle(
 ) -> dict[str, Any]:
     gaps = validate_freeze(manifest, freeze)
     cases = {case["case_id"]: case for case in manifest["evaluator_cases"]}
-    rows = bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    rows = (
+        bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    )
     ids = [str(row.get("case_id") or "") for row in rows]
     if len(ids) != len(set(ids)):
         gaps.append("duplicate_candidate_case")
@@ -686,7 +770,9 @@ def evaluate_bundle(
         gaps.append("candidate_case_set_mismatch")
     provenance = audit_candidate_provenance(bundle, freeze, cases)
     gaps.extend(provenance["hard_gaps"])
-    outputs = {str(row.get("case_id") or ""): str(row.get("output") or "") for row in rows}
+    outputs = {
+        str(row.get("case_id") or ""): str(row.get("output") or "") for row in rows
+    }
     generation_ms_by_case = {
         str(row.get("case_id") or ""): float(row.get("generation_duration_ms") or 0.0)
         for row in rows
@@ -716,14 +802,22 @@ def evaluate_bundle(
             verifier_row["candidate_sha256"] = hashlib.sha256(
                 outputs[case_id].encode("utf-8")
             ).hexdigest()
-            verifier_row["generation_duration_ms"] = generation_ms_by_case[
-                case_id
-            ]
+            verifier_row["generation_duration_ms"] = generation_ms_by_case[case_id]
             verifier_row["end_to_end_duration_ms"] = round(
                 float(verifier_row["generation_duration_ms"])
                 + float(verifier_row.get("duration_ms") or 0.0),
                 6,
             )
+    verifier_boundary_rows = [
+        str(row.get("case_id") or "")
+        for row in verifier_rows
+        if row.get("fault") == "timeout"
+    ]
+    if verifier_boundary_rows:
+        gaps.append(
+            "verifier_physical_boundary_invalid_observation:"
+            + ",".join(sorted(verifier_boundary_rows))
+        )
     judgment_audit = audit_local_english_judgments(
         config,
         manifest,
@@ -733,27 +827,46 @@ def evaluate_bundle(
         judgment_receipt or {},
         judgments_identity or {},
         judgment_label,
-        human_audit_receipt or {},
-        human_audit_identity or {},
     )
     gaps.extend(judgment_audit["hard_gaps"])
-    english = score_english_judgments(list(cases.values()), outputs, judgments, config) if judgments else {
-        "valid": False, "faults": ["blind_english_judgments_pending"], "results": [], "quadratic_weighted_kappa": None, "passed": 0, "total": 32
-    }
+    english = (
+        score_english_judgments(list(cases.values()), outputs, judgments, config)
+        if judgments
+        else {
+            "valid": False,
+            "faults": ["blind_english_judgments_pending"],
+            "results": [],
+            "quadratic_weighted_kappa": None,
+            "passed": 0,
+            "total": 32,
+        }
+    )
     code_rows = verifier_rows
     by_arm = {}
     for arm in ARMS:
-        arm_rows = english["results"] if arm == "english" else [row for row in code_rows if row["arm_id"] == arm]
-        by_arm[arm] = metric_summary(arm_rows, expected=int(config["expected_cases_per_arm"]))
+        arm_rows = (
+            english["results"]
+            if arm == "english"
+            else [row for row in code_rows if row["arm_id"] == arm]
+        )
+        by_arm[arm] = metric_summary(
+            arm_rows, expected=int(config["expected_cases_per_arm"])
+        )
     all_complete = not gaps and english["valid"] and len(code_rows) == 128
     passed = sum(row["passed"] for row in code_rows) + int(english["passed"])
     total = len(code_rows) + (int(english["total"]) if english["valid"] else 0)
-    code_generation_ms = sum(float(row.get("generation_duration_ms") or 0.0) for row in code_rows)
-    code_verification_ms = sum(float(row.get("duration_ms") or 0.0) for row in code_rows)
+    code_generation_ms = sum(
+        float(row.get("generation_duration_ms") or 0.0) for row in code_rows
+    )
+    code_verification_ms = sum(
+        float(row.get("duration_ms") or 0.0) for row in code_rows
+    )
     code_load_ms = code_checkpoint_load_duration_ms(bundle)
     code_passed = sum(bool(row.get("passed")) for row in code_rows)
     warm_duration_seconds = (code_generation_ms + code_verification_ms) / 1000.0
-    cold_duration_seconds = (code_load_ms + code_generation_ms + code_verification_ms) / 1000.0
+    cold_duration_seconds = (
+        code_load_ms + code_generation_ms + code_verification_ms
+    ) / 1000.0
     return {
         "policy": "project_theseus_private_functional_utility_qualification_v1",
         "created_utc": now(),
@@ -774,10 +887,30 @@ def evaluate_bundle(
             "functional_pass_rate": passed / total if total else None,
             "passed": passed,
             "total_scored": total,
-            "tail_floor": min((row["functional_pass_rate"] for row in by_arm.values() if row["functional_pass_rate"] is not None), default=None),
-            "invalid_rate": sum(row.get("fault") in {"syntax_error", "markdown_fence", "candidate_too_large"} for row in code_rows) / len(code_rows) if code_rows else None,
-            "timeout_rate": sum(row.get("fault") == "timeout" for row in code_rows) / len(code_rows) if code_rows else None,
-            "no_output_rate": sum(row.get("fault") == "no_output" for row in code_rows) / len(code_rows) if code_rows else None,
+            "tail_floor": min(
+                (
+                    row["functional_pass_rate"]
+                    for row in by_arm.values()
+                    if row["functional_pass_rate"] is not None
+                ),
+                default=None,
+            ),
+            "invalid_rate": sum(
+                row.get("fault")
+                in {"syntax_error", "markdown_fence", "candidate_too_large"}
+                for row in code_rows
+            )
+            / len(code_rows)
+            if code_rows
+            else None,
+            "timeout_rate": sum(row.get("fault") == "timeout" for row in code_rows)
+            / len(code_rows)
+            if code_rows
+            else None,
+            "no_output_rate": sum(row.get("fault") == "no_output" for row in code_rows)
+            / len(code_rows)
+            if code_rows
+            else None,
             "english_inter_rater_agreement": english["quadratic_weighted_kappa"],
             "candidate_budget_per_case": 1,
             "pass_if_any_rate": passed / total if total else None,
@@ -833,11 +966,18 @@ def audit_candidate_provenance(
         gaps.append("candidate_bundle_contract_mismatch")
     if bundle.get("candidate_packet_sha256") != freeze["candidate_packet_sha256"]:
         gaps.append("candidate_packet_identity_mismatch")
-    if bundle.get("generation_function") != "moecot_language_arm_training.generate_model_text":
+    if (
+        bundle.get("generation_function")
+        != "moecot_language_arm_training.generate_model_text"
+    ):
         gaps.append("candidate_generation_function_mismatch")
-    if bundle.get("generation_wrapper_sha256") != freeze.get("generation_wrapper_sha256"):
+    if bundle.get("generation_wrapper_sha256") != freeze.get(
+        "generation_wrapper_sha256"
+    ):
         gaps.append("candidate_generation_wrapper_mismatch")
-    if bundle.get("training_generator_sha256") != freeze.get("training_generator_sha256"):
+    if bundle.get("training_generator_sha256") != freeze.get(
+        "training_generator_sha256"
+    ):
         gaps.append("candidate_training_generator_mismatch")
     for key in (
         "templates_renderers_routers_tools_credit",
@@ -849,13 +989,24 @@ def audit_candidate_provenance(
             gaps.append(f"candidate_bundle_nonzero_or_missing_boundary:{key}")
     target_id = str(bundle.get("target_id") or "")
     if target_id == "moecot_system":
-        expected_targets = {"shared_trunk", "english", "python", "javascript_typescript", "html_css", "rust"}
+        expected_targets = {
+            "shared_trunk",
+            "english",
+            "python",
+            "javascript_typescript",
+            "html_css",
+            "rust",
+        }
     elif target_id in {"dense_active_parameter", "dense_total_parameter"}:
         expected_targets = {target_id}
     else:
         expected_targets = set()
         gaps.append("candidate_bundle_target_invalid")
-    artifacts = bundle.get("checkpoint_artifacts") if isinstance(bundle.get("checkpoint_artifacts"), list) else []
+    artifacts = (
+        bundle.get("checkpoint_artifacts")
+        if isinstance(bundle.get("checkpoint_artifacts"), list)
+        else []
+    )
     if not artifacts:
         gaps.append("checkpoint_artifacts_missing")
     artifact_ids = [str(row.get("target_id") or "") for row in artifacts]
@@ -877,18 +1028,18 @@ def audit_candidate_provenance(
         receipt = read_json(receipt_path) if receipt_path.is_file() else {}
         if not receipt.get("complete"):
             gaps.append(f"checkpoint_receipt_incomplete:{artifact_target}")
-        expected_plan = bundle.get("training_plan_sha256") or freeze.get(
-            "v8_plan_sha256"
-        )
-        expected_stage = freeze.get("training_stage_signature") or freeze.get(
-            "v8_stage_signature"
-        )
+        expected_plan = bundle.get("training_plan_sha256")
+        if not expected_plan:
+            gaps.append("candidate_training_plan_identity_missing")
+        expected_stage = freeze.get("training_stage_signature")
         if receipt.get("plan_sha256") != expected_plan:
             gaps.append(f"checkpoint_receipt_plan_mismatch:{artifact_target}")
         if receipt.get("stage_signature") != expected_stage:
             gaps.append(f"checkpoint_receipt_stage_mismatch:{artifact_target}")
         receipt_checkpoint = resolve_from(root, str(receipt.get("checkpoint") or ""))
-        if receipt_checkpoint.resolve() != path.resolve() or receipt.get("checkpoint_sha256") != row.get("sha256"):
+        if receipt_checkpoint.resolve() != path.resolve() or receipt.get(
+            "checkpoint_sha256"
+        ) != row.get("sha256"):
             gaps.append(f"checkpoint_receipt_artifact_mismatch:{artifact_target}")
     if target_id == "moecot_system":
         artifact_map = {str(row.get("target_id") or ""): row for row in artifacts}
@@ -897,10 +1048,45 @@ def audit_candidate_provenance(
         for arm in ("english", "python", "javascript_typescript", "html_css", "rust"):
             receipt_path = checkpoint_root / arm / "training_receipt.json"
             receipt = read_json(receipt_path) if receipt_path.is_file() else {}
-            declared_path = resolve_from(root, str(receipt.get("shared_trunk_checkpoint") or ""))
-            if declared_path.resolve() != shared_path.resolve() or receipt.get("shared_trunk_checkpoint_sha256") != shared_row.get("sha256"):
+            declared_path = resolve_from(
+                root, str(receipt.get("shared_trunk_checkpoint") or "")
+            )
+            if declared_path.resolve() != shared_path.resolve() or receipt.get(
+                "shared_trunk_checkpoint_sha256"
+            ) != shared_row.get("sha256"):
                 gaps.append(f"expert_shared_trunk_binding_mismatch:{arm}")
-    candidates = bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    candidates = (
+        bundle.get("candidates") if isinstance(bundle.get("candidates"), list) else []
+    )
+    generation_contract = bundle.get("candidate_generation_completion") or {}
+    if generation_contract.get("normal_completion") != ["model_eos"]:
+        gaps.append("candidate_generation_normal_completion_mismatch")
+    if generation_contract.get("project_selected_quality_token_cap") is not None:
+        gaps.append("candidate_generation_project_token_cap_present")
+    if int(generation_contract.get("physical_context_boundary_hits", -1)) != 0:
+        gaps.append("candidate_generation_physical_boundary_observation_invalid")
+    if int(generation_contract.get("model_eos_count", -1)) != len(candidates):
+        gaps.append("candidate_generation_eos_count_mismatch")
+    training_config_path = resolve_from(root, str(freeze.get("training_config") or ""))
+    training_config = (
+        read_json(training_config_path) if training_config_path.is_file() else {}
+    )
+    base_path = resolve_from(root, str(training_config.get("base_config") or ""))
+    base = read_json(base_path) if base_path.is_file() else {}
+    stage_dir = resolve_from(root, str(training_config.get("stage_dir") or ""))
+    metadata_path = stage_dir / "stage_metadata_v1.json"
+    metadata = read_json(metadata_path) if metadata_path.is_file() else {}
+    source_vocab = dict(metadata.get("source_vocab") or {})
+    target_vocab = dict(metadata.get("target_vocab") or {})
+    declared_context_window = int(
+        (base.get("tokenization") or {}).get("max_sequence_tokens") or 0
+    )
+    maximum_source_tokens = int(
+        (training_config.get("supervision") or {}).get("maximum_source_encoded_tokens")
+        or 0
+    )
+    if not source_vocab or not target_vocab or declared_context_window <= 0:
+        gaps.append("candidate_generation_context_recomputation_inputs_missing")
     timing = bundle.get("timing") if isinstance(bundle.get("timing"), dict) else {}
     if timing.get("clock") != "time.perf_counter":
         gaps.append("candidate_timing_clock_invalid")
@@ -909,7 +1095,9 @@ def audit_candidate_provenance(
         if isinstance(timing.get("checkpoint_load_duration_ms_by_target"), dict)
         else {}
     )
-    if set(load_by_target) != expected_targets - ({"shared_trunk"} if target_id == "moecot_system" else set()):
+    if set(load_by_target) != expected_targets - (
+        {"shared_trunk"} if target_id == "moecot_system" else set()
+    ):
         gaps.append("checkpoint_load_timing_target_set_mismatch")
     if not all(nonnegative_finite(value) for value in load_by_target.values()):
         gaps.append("checkpoint_load_timing_invalid")
@@ -919,22 +1107,71 @@ def audit_candidate_provenance(
         if row.get("output_sha256") != hashlib.sha256(output.encode()).hexdigest():
             gaps.append(f"candidate_output_identity_mismatch:{case_id}")
         case = cases.get(case_id) or {}
-        expected_target = case.get("arm_id") if target_id == "moecot_system" else target_id
+        expected_target = (
+            case.get("arm_id") if target_id == "moecot_system" else target_id
+        )
         if row.get("target_id") != expected_target:
             gaps.append(f"candidate_target_binding_mismatch:{case_id}")
+        generation = (
+            row.get("generation") if isinstance(row.get("generation"), dict) else {}
+        )
+        if generation.get("state") != "GREEN" or generation.get("stop_reason") != "eos":
+            gaps.append(f"candidate_generation_not_model_eos:{case_id}")
+        if generation.get("project_selected_quality_token_cap") is not None:
+            gaps.append(f"candidate_generation_project_token_cap_present:{case_id}")
+        model_visible = (
+            case.get("model_visible")
+            if isinstance(case.get("model_visible"), dict)
+            else {}
+        )
+        if source_vocab and target_vocab and model_visible:
+            prepared = training.prepare_model_text_prompt(
+                str(model_visible.get("prompt") or ""),
+                source_vocab,
+                target_vocab,
+                base,
+                max_source_tokens=maximum_source_tokens,
+            )
+            expected_prompt_tokens = len(prepared.get("prompt_ids") or [])
+            expected_residual = declared_context_window - expected_prompt_tokens
+            if prepared.get("fault") or expected_residual <= 0:
+                gaps.append(
+                    f"candidate_generation_context_recomputation_failed:{case_id}"
+                )
+            if (
+                int(generation.get("exact_encoded_prompt_tokens") or -1)
+                != expected_prompt_tokens
+            ):
+                gaps.append(f"candidate_generation_prompt_token_mismatch:{case_id}")
+            if (
+                int(generation.get("model_declared_context_window_tokens") or -1)
+                != declared_context_window
+            ):
+                gaps.append(f"candidate_generation_context_window_mismatch:{case_id}")
+            if (
+                int(generation.get("effective_context_residual_tokens") or -1)
+                != expected_residual
+            ):
+                gaps.append(f"candidate_generation_context_residual_mismatch:{case_id}")
         if not nonnegative_finite(row.get("generation_duration_ms")):
             gaps.append(f"candidate_generation_timing_invalid:{case_id}")
     candidate_duration_total = sum(
         float(row.get("generation_duration_ms") or 0.0) for row in candidates
     )
     load_duration_total = sum(float(value) for value in load_by_target.values())
-    if not close_timing_total(timing.get("generation_duration_ms_total"), candidate_duration_total):
+    if not close_timing_total(
+        timing.get("generation_duration_ms_total"), candidate_duration_total
+    ):
         gaps.append("candidate_generation_timing_total_mismatch")
-    if not close_timing_total(timing.get("checkpoint_load_duration_ms_total"), load_duration_total):
+    if not close_timing_total(
+        timing.get("checkpoint_load_duration_ms_total"), load_duration_total
+    ):
         gaps.append("checkpoint_load_timing_total_mismatch")
-    if not nonnegative_finite(timing.get("wall_duration_ms")) or float(
-        timing.get("wall_duration_ms") or 0.0
-    ) + 1.0 < candidate_duration_total + load_duration_total:
+    if (
+        not nonnegative_finite(timing.get("wall_duration_ms"))
+        or float(timing.get("wall_duration_ms") or 0.0) + 1.0
+        < candidate_duration_total + load_duration_total
+    ):
         gaps.append("candidate_wall_timing_invalid")
     return {
         "state": "GREEN" if not gaps else "RED",
@@ -953,8 +1190,6 @@ def audit_local_english_judgments(
     receipt: dict[str, Any],
     judgments_identity: dict[str, Any],
     label: str,
-    human_audit_receipt: dict[str, Any] | None = None,
-    human_audit_identity: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if not judgments:
         return {
@@ -963,15 +1198,18 @@ def audit_local_english_judgments(
             "hard_gaps": [],
         }
     gaps = []
-    human_audit_receipt = human_audit_receipt or {}
-    human_audit_identity = human_audit_identity or {}
-    if receipt.get("policy") != "project_theseus_local_blind_english_judgment_receipt_v1":
+    if (
+        receipt.get("policy")
+        != "project_theseus_local_blind_english_judgment_receipt_v2"
+    ):
         gaps.append("local_judgment_receipt_policy_mismatch")
     if receipt.get("trigger_state") != "GREEN":
         gaps.append("local_judgment_receipt_not_green")
     if receipt.get("config_sha256") != freeze.get("local_english_rater_config_sha256"):
         gaps.append("local_judgment_config_mismatch")
-    if receipt.get("implementation_sha256") != freeze.get("local_english_rater_implementation_sha256"):
+    if receipt.get("implementation_sha256") != freeze.get(
+        "local_english_rater_implementation_sha256"
+    ):
         gaps.append("local_judgment_implementation_mismatch")
     for key in ("external_inference_calls", "public_training_rows_written"):
         if int(receipt.get(key, -1)) != 0:
@@ -1005,21 +1243,38 @@ def audit_local_english_judgments(
     allowed_adjudicator = str(configured["adjudicator"]["rater_id"])
     if observed_adjudicators - {allowed_adjudicator}:
         gaps.append("local_judgment_adjudicator_mismatch")
-    model_receipts = receipt.get("model_receipts") if isinstance(receipt.get("model_receipts"), list) else []
+    model_receipts = (
+        receipt.get("model_receipts")
+        if isinstance(receipt.get("model_receipts"), list)
+        else []
+    )
     model_by_id = {str(row.get("rater_id") or ""): row for row in model_receipts}
     for card in [*configured["primary_raters"], configured["adjudicator"]]:
         rater_id = str(card["rater_id"])
         if rater_id == allowed_adjudicator and not observed_adjudicators:
             continue
         model_row = model_by_id.get(rater_id) or {}
-        if model_row.get("repo_id") != card["repo_id"] or model_row.get("revision") != card["revision"]:
+        if (
+            model_row.get("repo_id") != card["repo_id"]
+            or model_row.get("revision") != card["revision"]
+        ):
             gaps.append(f"local_judgment_model_identity_mismatch:{rater_id}")
-        if (model_row.get("snapshot_identity") or {}).get("manifest_sha256") in (None, ""):
+        if (model_row.get("snapshot_identity") or {}).get("manifest_sha256") in (
+            None,
+            "",
+        ):
             gaps.append(f"local_judgment_snapshot_identity_missing:{rater_id}")
     if not label:
         gaps.append("local_judgment_label_missing")
-    file_rows = receipt.get("judgment_files") if isinstance(receipt.get("judgment_files"), list) else []
+    file_rows = (
+        receipt.get("judgment_files")
+        if isinstance(receipt.get("judgment_files"), list)
+        else []
+    )
     matches = [row for row in file_rows if row.get("label") == label]
+    blind_packet = build_blind_english_packet(config, manifest, bundle, freeze)
+    if blind_packet.get("trigger_state") != "GREEN":
+        gaps.append("local_judgment_blind_packet_invalid")
     if len(matches) != 1:
         gaps.append("local_judgment_file_binding_missing")
     else:
@@ -1027,18 +1282,17 @@ def audit_local_english_judgments(
         for key in ("path", "sha256", "row_count"):
             if file_row.get(key) != judgments_identity.get(key):
                 gaps.append(f"local_judgment_file_identity_mismatch:{key}")
-        blind_packet = build_blind_english_packet(config, manifest, bundle, freeze)
-        if blind_packet.get("trigger_state") != "GREEN":
-            gaps.append("local_judgment_blind_packet_invalid")
-        if file_row.get("blind_packet_contract_sha256") != blind_packet.get("packet_sha256"):
+        if file_row.get("blind_packet_contract_sha256") != blind_packet.get(
+            "packet_sha256"
+        ):
             gaps.append("local_judgment_blind_packet_mismatch")
-    human_audit = audit_prospective_human_sample(
+    machine_audit = audit_independent_machine_sample(
+        blind_packet,
+        judgments,
         receipt,
-        human_audit_receipt,
-        human_audit_identity,
         configured,
     )
-    gaps.extend(human_audit["hard_gaps"])
+    gaps.extend(machine_audit["hard_gaps"])
     return {
         "state": "GREEN" if not gaps else "RED",
         "receipt_policy": receipt.get("policy"),
@@ -1048,88 +1302,99 @@ def audit_local_english_judgments(
         "adjudicator_ids": sorted(observed_adjudicators),
         "local_evaluator_inference_calls": local_calls,
         "external_inference_calls": 0,
-        "human_audit": human_audit,
+        "independent_machine_audit": machine_audit,
         "hard_gaps": sorted(set(gaps)),
     }
 
 
-def audit_prospective_human_sample(
+def audit_independent_machine_sample(
+    blind_packet: dict[str, Any],
+    judgments: list[dict[str, Any]],
     rater_receipt: dict[str, Any],
-    human_receipt: dict[str, Any],
-    human_identity: dict[str, Any],
     rater_config: dict[str, Any],
 ) -> dict[str, Any]:
     gaps = []
+    audit_receipt = rater_receipt.get("independent_machine_audit") or {}
     if (
-        human_receipt.get("policy")
-        != "project_theseus_blind_english_human_audit_v1"
+        audit_receipt.get("policy")
+        != "project_theseus_independent_english_machine_audit_sample_v1"
     ):
-        gaps.append("human_audit_policy_mismatch")
+        gaps.append("independent_machine_audit_policy_mismatch")
     planned = (
-        (rater_receipt.get("human_audit") or {}).get("prospective_sample")
-        if isinstance(rater_receipt.get("human_audit"), dict)
+        audit_receipt.get("prospective_sample")
+        if isinstance(audit_receipt, dict)
         else []
     )
     planned = planned if isinstance(planned, list) else []
-    rows = (
-        human_receipt.get("rows")
-        if isinstance(human_receipt.get("rows"), list)
-        else []
+    policy = rater_config.get("independent_machine_audit") or {}
+    entries = (
+        blind_packet.get("items") if isinstance(blind_packet.get("items"), list) else []
     )
-    expected = {
-        (
-            str(row.get("case_id") or ""),
-            str(row.get("blind_item_id") or ""),
-            str(row.get("candidate_sha256") or ""),
-        )
-        for row in planned
-        if isinstance(row, dict)
-    }
-    observed = {
-        (
-            str(row.get("case_id") or ""),
-            str(row.get("blind_item_id") or ""),
-            str(row.get("candidate_sha256") or ""),
-        )
-        for row in rows
-        if isinstance(row, dict)
-    }
-    if not expected or observed != expected:
-        gaps.append("human_audit_prospective_sample_mismatch")
+    sample_size = min(int(policy.get("prospective_sample_size") or 0), len(entries))
+    seed = int(policy.get("selection_seed") or 0)
+    independently_ranked = sorted(
+        entries,
+        key=lambda entry: hashlib.sha256(
+            f"{seed}:{entry.get('blind_item_id', '')}".encode("utf-8")
+        ).hexdigest(),
+    )
+    expected_rows = [
+        {
+            "case_id": str(entry.get("case_id") or ""),
+            "blind_item_id": str(entry.get("blind_item_id") or ""),
+            "candidate_sha256": str(entry.get("candidate_sha256") or ""),
+        }
+        for entry in independently_ranked[:sample_size]
+    ]
+    if not expected_rows or planned != expected_rows:
+        gaps.append("independent_machine_audit_prospective_sample_mismatch")
     dimensions = list(rater_config["scoring"]["dimensions"])
-    rater_ids = {
-        str(card["rater_id"])
-        for card in [
-            *rater_config["primary_raters"],
-            rater_config["adjudicator"],
+    primary_ids = {str(card["rater_id"]) for card in rater_config["primary_raters"]}
+    independently_verified = 0
+    for expected in expected_rows:
+        matching = [
+            row
+            for row in judgments
+            if str(row.get("case_id") or "") == expected["case_id"]
+            and str(row.get("blind_item_id") or "") == expected["blind_item_id"]
+            and str(row.get("candidate_sha256") or "") == expected["candidate_sha256"]
+            and row.get("adjudicator") is not True
         ]
-    }
-    for row in rows:
-        scores = row.get("human_scores") if isinstance(row, dict) else {}
-        if (
-            not isinstance(scores, dict)
-            or set(scores) != set(dimensions)
+        if {str(row.get("rater_id") or "") for row in matching} != primary_ids:
+            gaps.append(
+                f"independent_machine_audit_primary_coverage_mismatch:{expected['case_id']}"
+            )
+            continue
+        if len(matching) != len(primary_ids):
+            gaps.append(
+                f"independent_machine_audit_duplicate_primary_judgment:{expected['case_id']}"
+            )
+            continue
+        invalid_score = any(
+            not isinstance(row.get("scores"), dict)
+            or set(row["scores"]) != set(dimensions)
             or any(
-                not isinstance(scores[dimension], int)
-                or not 0 <= scores[dimension] <= 4
+                not isinstance(row["scores"].get(dimension), int)
+                or not 0 <= row["scores"][dimension] <= 4
                 for dimension in dimensions
             )
-        ):
-            gaps.append("human_audit_scores_invalid")
-        auditor = str(row.get("auditor_id") or "")
-        if not auditor or auditor in rater_ids:
-            gaps.append("human_auditor_not_independent")
-        if not str(row.get("audited_utc") or ""):
-            gaps.append("human_audit_timestamp_missing")
-        if not isinstance(row.get("injection_or_malformed_flag"), bool):
-            gaps.append("human_audit_integrity_flag_missing")
-    if not human_identity.get("sha256"):
-        gaps.append("human_audit_artifact_identity_missing")
+            for row in matching
+        )
+        if invalid_score:
+            gaps.append(
+                f"independent_machine_audit_scores_invalid:{expected['case_id']}"
+            )
+            continue
+        independently_verified += 1
     return {
         "state": "GREEN" if not gaps else "RED",
-        "receipt": human_identity,
-        "prospective_sample_count": len(expected),
-        "audited_row_count": len(rows),
+        "policy": "project_theseus_independent_english_machine_audit_v1",
+        "prospective_sample_count": len(expected_rows),
+        "independently_verified_sample_count": independently_verified,
+        "user_or_human_gate_required": False,
+        "candidate_binding_recomputed": True,
+        "score_schema_recomputed": True,
+        "primary_rater_coverage_recomputed": True,
         "hard_gaps": sorted(set(gaps)),
     }
 
@@ -1141,9 +1406,7 @@ def code_checkpoint_load_duration_ms(bundle: dict[str, Any]) -> float:
         return 0.0
     if str(bundle.get("target_id") or "") == "moecot_system":
         return sum(
-            float(value)
-            for target, value in by_target.items()
-            if target != "english"
+            float(value) for target, value in by_target.items() if target != "english"
         )
     return sum(float(value) for value in by_target.values())
 
@@ -1165,14 +1428,22 @@ def compare_qualifications(
     gaps: list[str] = list(contract_gaps or [])
     by_target: dict[str, dict[str, Any]] = {}
     for row in qualifications:
-        target = str((row.get("candidate_provenance") or {}).get("bundle_target_id") or "")
+        target = str(
+            (row.get("candidate_provenance") or {}).get("bundle_target_id") or ""
+        )
         if not target or target in by_target:
             gaps.append("qualification_target_missing_or_duplicate")
             continue
         by_target[target] = row
-        if row.get("policy") != "project_theseus_private_functional_utility_qualification_v1":
+        if (
+            row.get("policy")
+            != "project_theseus_private_functional_utility_qualification_v1"
+        ):
             gaps.append(f"qualification_policy_mismatch:{target}")
-        if row.get("trigger_state") != "GREEN" or row.get("evaluation_complete") is not True:
+        if (
+            row.get("trigger_state") != "GREEN"
+            or row.get("evaluation_complete") is not True
+        ):
             gaps.append(f"qualification_incomplete:{target}")
         if row.get("evaluation_stage") != "final_functional_qualification":
             gaps.append(f"qualification_stage_mismatch:{target}")
@@ -1207,12 +1478,24 @@ def compare_qualifications(
                 gaps.append(f"qualification_cost_invalid:{target}:{metric}")
     if set(by_target) != set(expected_targets):
         gaps.append("qualification_target_set_mismatch")
-    if exact_diagnostic.get("policy") != "project_theseus_moecot_dense_exact_recovery_diagnostic_v8":
+    if (
+        exact_diagnostic.get("policy")
+        != "project_theseus_neural_seed_exact_recovery_diagnostic_v2"
+    ):
         gaps.append("exact_diagnostic_policy_mismatch")
-    if exact_diagnostic.get("trigger_state") != "GREEN" or exact_diagnostic.get("publication_ready") is not True:
+    if exact_diagnostic.get("implementation_sha256") != freeze.get(
+        "exact_diagnostic_implementation_sha256"
+    ):
+        gaps.append("exact_diagnostic_implementation_mismatch")
+    if (
+        exact_diagnostic.get("trigger_state") != "GREEN"
+        or exact_diagnostic.get("publication_ready") is not True
+    ):
         gaps.append("exact_diagnostic_incomplete")
     exact_freeze = exact_diagnostic.get("freeze_identity") or {}
-    if exact_freeze.get("functional_case_contract_sha256") != freeze.get("case_contract_sha256"):
+    if exact_freeze.get("functional_case_contract_sha256") != freeze.get(
+        "case_contract_sha256"
+    ):
         gaps.append("exact_diagnostic_functional_contract_mismatch")
     exact_boundaries = exact_diagnostic.get("boundaries") or {}
     for key in (
@@ -1298,11 +1581,17 @@ def validate_precomputed_code_evaluation(
     generation_ms_by_case: dict[str, float],
 ) -> tuple[list[dict[str, Any]], list[str]]:
     gaps = []
-    if prior.get("policy") != "project_theseus_private_functional_utility_qualification_v1":
+    if (
+        prior.get("policy")
+        != "project_theseus_private_functional_utility_qualification_v1"
+    ):
         gaps.append("precomputed_code_policy_mismatch")
     if prior.get("evaluation_stage") != "code_verification_and_blind_packet":
         gaps.append("precomputed_code_stage_mismatch")
-    if prior.get("evaluation_complete") is not False or prior.get("trigger_state") != "YELLOW":
+    if (
+        prior.get("evaluation_complete") is not False
+        or prior.get("trigger_state") != "YELLOW"
+    ):
         gaps.append("precomputed_code_state_mismatch")
     if prior.get("code_evaluation_reused") is not False:
         gaps.append("precomputed_code_must_be_original_execution")
@@ -1326,9 +1615,7 @@ def validate_precomputed_code_evaluation(
         if int((prior.get("boundaries") or {}).get(key, -1)) != 0:
             gaps.append(f"precomputed_code_boundary_nonzero:{key}")
     expected = {
-        case_id: row
-        for case_id, row in cases.items()
-        if row["arm_id"] != "english"
+        case_id: row for case_id, row in cases.items() if row["arm_id"] != "english"
     }
     rows = prior.get("rows") if isinstance(prior.get("rows"), list) else []
     by_id = {str(row.get("case_id") or ""): row for row in rows}
@@ -1336,7 +1623,9 @@ def validate_precomputed_code_evaluation(
         gaps.append("precomputed_code_case_set_mismatch")
     for case_id, case in expected.items():
         row = by_id.get(case_id) or {}
-        candidate_sha256 = hashlib.sha256(outputs.get(case_id, "").encode("utf-8")).hexdigest()
+        candidate_sha256 = hashlib.sha256(
+            outputs.get(case_id, "").encode("utf-8")
+        ).hexdigest()
         if row.get("arm_id") != case["arm_id"]:
             gaps.append(f"precomputed_code_arm_mismatch:{case_id}")
         if row.get("candidate_sha256") != candidate_sha256:
@@ -1418,12 +1707,38 @@ def close_timing_total(value: Any, expected: float) -> bool:
 
 def validate_freeze(manifest: dict[str, Any], freeze: dict[str, Any]) -> list[str]:
     gaps = []
-    for key in ("config_sha256", "compiler_sha256", "case_compiler_sha256", "verifier_sha256", "generation_wrapper_sha256", "training_generator_sha256", "local_english_rater_config_sha256", "local_english_rater_implementation_sha256", "toolchain_identity_sha256", "case_contract_sha256", "candidate_packet_sha256", "candidate_id", "training_config", "training_config_sha256", "training_config_identity", "training_base_config_sha256", "training_stage_signature", "checkpoint_root"):
+    for key in (
+        "config_sha256",
+        "compiler_sha256",
+        "case_compiler_sha256",
+        "verifier_sha256",
+        "generation_wrapper_sha256",
+        "training_generator_sha256",
+        "local_english_rater_config_sha256",
+        "local_english_rater_implementation_sha256",
+        "exact_diagnostic_implementation_sha256",
+        "d2_controller_config_sha256",
+        "d2_controller_implementation_sha256",
+        "toolchain_identity_sha256",
+        "case_contract_sha256",
+        "candidate_packet_sha256",
+        "candidate_id",
+        "training_config",
+        "training_config_sha256",
+        "training_config_identity",
+        "training_base_config_sha256",
+        "training_stage_signature",
+        "checkpoint_root",
+    ):
         if manifest.get(key) != freeze.get(key):
             gaps.append(f"freeze_identity_mismatch:{key}")
-    if freeze.get("consumption_registry") != (manifest.get("consumption") or {}).get("registry"):
+    if freeze.get("consumption_registry") != (manifest.get("consumption") or {}).get(
+        "registry"
+    ):
         gaps.append("freeze_identity_mismatch:consumption_registry")
-    if freeze.get("consumption_policy_sha256") != stable_hash(manifest.get("consumption") or {}):
+    if freeze.get("consumption_policy_sha256") != stable_hash(
+        manifest.get("consumption") or {}
+    ):
         gaps.append("freeze_identity_mismatch:consumption_policy_sha256")
     return gaps
 
@@ -1448,16 +1763,46 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     ):
         if english.get(key) is not True:
             gaps.append(f"english_scoring_boundary_missing:{key}")
-    if english.get("blind_packet_policy") != "project_theseus_blind_english_judgment_packet_v1":
+    if (
+        english.get("blind_packet_policy")
+        != "project_theseus_blind_english_judgment_packet_v1"
+    ):
         gaps.append("english_blind_packet_policy_mismatch")
     if english.get("local_rater_config") != relative(LOCAL_RATER_CONFIG):
         gaps.append("english_local_rater_config_mismatch")
-    if english.get("local_rater_implementation") != relative(LOCAL_RATER_IMPLEMENTATION):
+    if english.get("local_rater_implementation") != relative(
+        LOCAL_RATER_IMPLEMENTATION
+    ):
         gaps.append("english_local_rater_implementation_mismatch")
     if english.get("local_judgment_receipt_required") is not True:
         gaps.append("english_local_judgment_receipt_boundary_missing")
-    if english.get("prospective_human_audit_receipt_required") is not True:
-        gaps.append("english_human_audit_receipt_boundary_missing")
+    if english.get("independent_machine_audit_required") is not True:
+        gaps.append("english_independent_machine_audit_boundary_missing")
+    candidate_generation = config.get("candidate_generation") or {}
+    if candidate_generation.get("normal_completion") != ["model_eos"]:
+        gaps.append("candidate_generation_normal_completion_mismatch")
+    if candidate_generation.get("project_selected_quality_token_cap") is not None:
+        gaps.append("candidate_generation_project_token_cap_present")
+    if (
+        candidate_generation.get("serialization_complete_prefix_is_completion")
+        is not False
+    ):
+        gaps.append("candidate_generation_prefix_completion_not_forbidden")
+    if (
+        candidate_generation.get("physical_boundary_disposition")
+        != "INVALIDATE_OBSERVATION_NOT_MODEL_OR_ARCHITECTURE_FAILURE"
+    ):
+        gaps.append("candidate_generation_physical_boundary_disposition_mismatch")
+    sandbox = config.get("sandbox") or {}
+    if int(sandbox.get("rust_timeout_seconds") or 0) < 60:
+        gaps.append("rust_verifier_mechanics_timeout_inadequate")
+    if int(sandbox.get("browser_render_timeout_seconds") or 0) < 20:
+        gaps.append("browser_verifier_mechanics_timeout_inadequate")
+    if (
+        sandbox.get("timeout_disposition")
+        != "INVALIDATE_OBSERVATION_NOT_MODEL_CANDIDATE_OR_ARCHITECTURE_FAILURE"
+    ):
+        gaps.append("verifier_timeout_disposition_mismatch")
     local_rater = read_json(LOCAL_RATER_CONFIG)
     gaps.extend(
         f"english_local_rater:{gap}" for gap in validate_local_rater_config(local_rater)
@@ -1481,7 +1826,10 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     if verdict.get("route_replacement_before_confirmation_allowed") is not False:
         gaps.append("architecture_verdict_confirmation_boundary_missing")
     consumption = config.get("consumption") or {}
-    if consumption.get("registry") != "reports/private_functional_consumption_registry.jsonl":
+    if (
+        consumption.get("registry")
+        != "reports/private_functional_consumption_registry.jsonl"
+    ):
         gaps.append("functional_consumption_registry_mismatch")
     for key in (
         "append_only",
@@ -1492,7 +1840,11 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         if consumption.get(key) is not True:
             gaps.append(f"functional_consumption_boundary_missing:{key}")
     for key, value in config.get("boundaries", {}).items():
-        if key.endswith("count") or key in {"public_training_rows_written", "external_inference_calls", "templates_renderers_routers_tools_credit"}:
+        if key.endswith("count") or key in {
+            "public_training_rows_written",
+            "external_inference_calls",
+            "templates_renderers_routers_tools_credit",
+        }:
             if isinstance(value, int) and value != 0:
                 gaps.append(f"nonzero_boundary:{key}")
     return gaps
@@ -1503,7 +1855,9 @@ def metric_summary(rows: list[dict[str, Any]], *, expected: int) -> dict[str, An
         "passed": sum(bool(row.get("passed")) for row in rows),
         "scored": len(rows),
         "expected": expected,
-        "functional_pass_rate": sum(bool(row.get("passed")) for row in rows) / len(rows) if rows else None,
+        "functional_pass_rate": sum(bool(row.get("passed")) for row in rows) / len(rows)
+        if rows
+        else None,
     }
 
 
@@ -1541,14 +1895,26 @@ def toolchain_identity() -> dict[str, Any]:
         "cargo": [shutil.which("cargo") or "cargo", "--version"],
         "rustc": [shutil.which("rustc") or "rustc", "--version"],
         "tidy": [shutil.which("tidy") or "/usr/bin/tidy", "-v"],
-        "chrome": ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--version"],
+        "chrome": [
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "--version",
+        ],
     }
     rows = {}
     for name, command in commands.items():
         executable = Path(command[0])
-        completed = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=10, check=False)
+        completed = subprocess.run(
+            command,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=10,
+            check=False,
+        )
         rows[name] = {
-            "executable": str(executable.resolve()) if executable.exists() else command[0],
+            "executable": str(executable.resolve())
+            if executable.exists()
+            else command[0],
             "version": completed.stdout.strip(),
             "returncode": completed.returncode,
         }
@@ -1587,7 +1953,9 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 def write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + f".tmp-{os.getpid()}")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     os.replace(temporary, path)
 
 

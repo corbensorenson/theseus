@@ -20,8 +20,10 @@ As of 2026-07-30:
 - the current independent readiness audit is GREEN after recomputing exact and
   normalized prompt freshness against the consumed v8 packet;
 - the replacement freeze is RED only on its mandatory clean-source binding;
-- no 57M D2 result exists, and the current surface remains sealed pending a
-  separate machine-predicate one-shot evaluation controller.
+- no 57M D2 result exists; the machine-predicate one-shot D2 controller is
+  implemented, but the surface remains sealed until its clean-source,
+  exact-freeze, checkpoint-completion, local-rater, nonconsumption,
+  output-collision, and exclusive-accelerator predicates all pass.
 
 Therefore no long run should launch from the current source state.
 

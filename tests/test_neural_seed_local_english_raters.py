@@ -11,7 +11,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from neural_seed_local_english_raters import (
+from neural_seed_local_english_raters import (  # noqa: E402
     adversarial_control_suite,
     adjudication_keys,
     independent_candidate_integrity,
@@ -25,7 +25,9 @@ from neural_seed_local_english_raters import (
 )
 
 
-CONFIG = json.loads((ROOT / "configs/neural_seed_local_english_raters.json").read_text())
+CONFIG = json.loads(
+    (ROOT / "configs/neural_seed_local_english_raters.json").read_text()
+)
 
 
 def test_config_pins_three_distinct_local_raters() -> None:
@@ -34,13 +36,24 @@ def test_config_pins_three_distinct_local_raters() -> None:
     assert len({row["rater_id"] for row in cards}) == 3
     assert len({row["revision"] for row in cards}) == 3
     assert CONFIG["boundaries"]["external_inference_calls"] == 0
-    assert CONFIG["consumption_registry"] == "reports/private_functional_consumption_registry.jsonl"
+    assert (
+        CONFIG["consumption_registry"]
+        == "reports/private_functional_consumption_registry.jsonl"
+    )
     assert "maximum_output_tokens" not in CONFIG["generation"]
     assert CONFIG["generation"]["project_selected_quality_token_cap"] is None
     assert CONFIG["generation"]["normal_completion"] == [
         "parser_complete",
         "model_eos",
     ]
+    assert "human_audit" not in CONFIG
+    assert (
+        CONFIG["independent_machine_audit"]["required_for_final_qualification"] is True
+    )
+    assert "maximum_candidate_characters" not in CONFIG["candidate_integrity"]
+    assert CONFIG["model_cache_root"] == (
+        "runtime/model_cache/neural_seed_local_english_raters"
+    )
     assert [row["declared_context_window_tokens"] for row in cards] == [
         40960,
         131072,
@@ -123,9 +136,7 @@ def test_model_eos_and_physical_context_boundary_are_distinct() -> None:
     assert boundary["safety_ceiling_hit"] is True
     assert boundary["effective_context_residual_tokens"] == 0
 
-    complete_scores = {
-        dimension: 3 for dimension in CONFIG["scoring"]["dimensions"]
-    }
+    complete_scores = {dimension: 3 for dimension in CONFIG["scoring"]["dimensions"]}
 
     def exact_boundary_stream(*_args, **_kwargs):
         yield SimpleNamespace(
@@ -278,6 +289,5 @@ def test_packet_rejects_candidate_confidence_and_self_rating_fields() -> None:
     }
 
     assert any(
-        gap.startswith("packet_item_unknown_fields:")
-        for gap in validate_packet(packet)
+        gap.startswith("packet_item_unknown_fields:") for gap in validate_packet(packet)
     )

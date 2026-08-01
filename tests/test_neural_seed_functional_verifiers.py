@@ -22,13 +22,6 @@ from neural_seed_functional_verifiers import (  # noqa: E402
 CONFIG = json.loads((ROOT / "configs/neural_seed_functional_utility.json").read_text())
 CASES = materialize_cases(CONFIG)
 RUST_MECHANICS_TEST_CONFIG = copy.deepcopy(CONFIG)
-# The immutable D2 contract keeps its original 12-second candidate budget. On
-# loaded macOS hosts, cold cargo test linking can take ~16 seconds even when the
-# fixture itself completes in milliseconds. This mechanics-only regression
-# budget is deliberately test-local and does not alter the frozen evaluator.
-RUST_MECHANICS_TEST_CONFIG["sandbox"]["timeout_seconds"] = max(
-    30, int(CONFIG["sandbox"]["timeout_seconds"])
-)
 
 
 def case(arm: str, family: str, variant: int = 0) -> dict:

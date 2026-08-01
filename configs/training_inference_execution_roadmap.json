@@ -231,8 +231,8 @@
         "reports/moecot_language_arm_training_scale_v2_experts_full.json",
         "reports/moecot_language_arm_training_scale_v2_dense_active_full.json",
         "reports/moecot_language_arm_training_scale_v2_dense_total_full.json",
-        "reports/moecot_dense_exact_recovery_diagnostic_v8.json",
-        "reports/moecot_dense_exact_recovery_diagnostic_v8.md",
+        "reports/neural_seed_57m_exact_recovery_diagnostic.json",
+        "reports/neural_seed_57m_exact_recovery_diagnostic.md",
         "checkpoints/moecot_language_seed_v8/*/training_receipt.json"
       ],
       "exit_criteria": [
@@ -278,7 +278,9 @@
       "required_gates": [
         "python3 scripts/neural_seed_functional_utility.py",
         "python3 scripts/neural_seed_functional_generate.py --target TARGET --out CANDIDATE_BUNDLE --gate",
+        "python3 scripts/neural_seed_d2_autonomous_evaluation_controller.py",
         "python3 -m pytest -q tests/test_neural_seed_functional_cases.py tests/test_neural_seed_functional_verifiers.py tests/test_neural_seed_functional_utility.py",
+        "python3 -m pytest -q tests/test_neural_seed_d2_autonomous_evaluation_controller.py tests/test_moecot_dense_exact_recovery_diagnostic.py",
         "python3 scripts/neural_seed_strict_generator_fanout_receipt.py --gate",
         "python3 scripts/correctness_generator_survival_lane_gate.py --gate",
         "python3 scripts/neural_seed_survival_readiness_gate.py --gate"
@@ -300,11 +302,13 @@
       "evidence_outputs": [
         "reports/private_functional_utility_manifest.json",
         "reports/private_functional_utility_candidate_packet.json",
-        "reports/private_functional_candidates_moecot.json",
-        "reports/private_functional_candidates_dense_active.json",
-        "reports/private_functional_candidates_dense_total.json",
-        "reports/private_functional_utility_qualification.json",
-        "configs/neural_seed_functional_utility_freeze.json",
+        "reports/private_functional_candidates_57m_d2_moecot.json",
+        "reports/private_functional_candidates_57m_d2_dense_active.json",
+        "reports/private_functional_candidates_57m_d2_dense_total.json",
+        "reports/private_functional_utility_qualification_57m_d2.json",
+        "configs/neural_seed_57m_functional_utility_freeze.json",
+        "configs/neural_seed_d2_autonomous_evaluation_controller.json",
+        "reports/neural_seed_d2_autonomous_evaluation_controller.json",
         "reports/candidate_integrity_*.json",
         "reports/blind_information_flow_audit_*.json",
         "reports/neural_seed_strict_generator_fanout_receipt.json",

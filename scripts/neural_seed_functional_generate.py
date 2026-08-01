@@ -88,7 +88,23 @@ def main() -> int:
         except Exception:
             pass
         raise
-    print(json.dumps({key: bundle[key] for key in ("policy", "created_utc", "target_id", "candidate_count", "case_contract_sha256", "hard_gaps")}, indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                key: bundle[key]
+                for key in (
+                    "policy",
+                    "created_utc",
+                    "target_id",
+                    "candidate_count",
+                    "case_contract_sha256",
+                    "hard_gaps",
+                )
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 
@@ -99,6 +115,25 @@ def build_generation_contract(
     freeze = read_json(freeze_path) if freeze_path.is_file() else {}
     packet = read_json(packet_path) if packet_path.is_file() else {}
     config = read_json(config_path)
+    base = read_json(resolve(str(config["base_config"])))
+    utility_config_path = resolve(
+        str(
+            freeze.get("config") or ROOT / "configs/neural_seed_functional_utility.json"
+        )
+    )
+    utility_config = read_json(utility_config_path)
+    completion = utility_config.get("candidate_generation") or {}
+    if completion.get("normal_completion") != ["model_eos"]:
+        gaps.append("candidate_generation_normal_completion_mismatch")
+    if completion.get("project_selected_quality_token_cap") is not None:
+        gaps.append("candidate_generation_project_token_cap_present")
+    if completion.get("serialization_complete_prefix_is_completion") is not False:
+        gaps.append("candidate_generation_prefix_completion_not_forbidden")
+    declared_context_window = int(
+        (base.get("tokenization") or {}).get("max_sequence_tokens") or 0
+    )
+    if declared_context_window <= 0:
+        gaps.append("candidate_generation_declared_context_window_missing")
     plan = training.build_plan(config, config_path=config_path)
     if freeze.get("policy") not in {
         "project_theseus_private_functional_utility_freeze_v1",
@@ -109,7 +144,9 @@ def build_generation_contract(
         gaps.append("candidate_packet_freeze_mismatch")
     if freeze.get("generation_wrapper_sha256") != sha256_file(Path(__file__).resolve()):
         gaps.append("generation_wrapper_freeze_mismatch")
-    if freeze.get("training_generator_sha256") != sha256_file(ROOT / "scripts/moecot_language_arm_training.py"):
+    if freeze.get("training_generator_sha256") != sha256_file(
+        ROOT / "scripts/moecot_language_arm_training.py"
+    ):
         gaps.append("training_generator_freeze_mismatch")
     consumption_registry = str(freeze.get("consumption_registry") or "")
     if consumption_registry != "reports/private_functional_consumption_registry.jsonl":
@@ -144,19 +181,48 @@ def build_generation_contract(
             gaps.append(f"checkpoint_plan_mismatch:{item}")
         if receipt.get("stage_signature") != expected_stage:
             gaps.append(f"checkpoint_stage_mismatch:{item}")
-        checkpoint = resolve(str(receipt.get("checkpoint") or target.get("checkpoint") or ""))
-        if not checkpoint.is_file() or sha256_file(checkpoint) != str(receipt.get("checkpoint_sha256") or ""):
+        checkpoint = resolve(
+            str(receipt.get("checkpoint") or target.get("checkpoint") or "")
+        )
+        if not checkpoint.is_file() or sha256_file(checkpoint) != str(
+            receipt.get("checkpoint_sha256") or ""
+        ):
             gaps.append(f"checkpoint_identity_mismatch:{item}")
         else:
-            checkpoint_artifacts.append({"target_id": item, "path": relative(checkpoint), "sha256": sha256_file(checkpoint)})
-        shared = resolve(str(target.get("shared_trunk_checkpoint") or "")) if target.get("shared_trunk_checkpoint") else None
+            checkpoint_artifacts.append(
+                {
+                    "target_id": item,
+                    "path": relative(checkpoint),
+                    "sha256": sha256_file(checkpoint),
+                }
+            )
+        shared = (
+            resolve(str(target.get("shared_trunk_checkpoint") or ""))
+            if target.get("shared_trunk_checkpoint")
+            else None
+        )
         if shared:
             shared_receipt_path = shared.parent / "training_receipt.json"
-            shared_receipt = read_json(shared_receipt_path) if shared_receipt_path.is_file() else {}
-            if not shared_receipt.get("complete") or not shared.is_file() or sha256_file(shared) != str(shared_receipt.get("checkpoint_sha256") or ""):
+            shared_receipt = (
+                read_json(shared_receipt_path) if shared_receipt_path.is_file() else {}
+            )
+            if (
+                not shared_receipt.get("complete")
+                or not shared.is_file()
+                or sha256_file(shared)
+                != str(shared_receipt.get("checkpoint_sha256") or "")
+            ):
                 gaps.append(f"shared_checkpoint_identity_mismatch:{item}")
-            elif not any(row["target_id"] == "shared_trunk" for row in checkpoint_artifacts):
-                checkpoint_artifacts.append({"target_id": "shared_trunk", "path": relative(shared), "sha256": sha256_file(shared)})
+            elif not any(
+                row["target_id"] == "shared_trunk" for row in checkpoint_artifacts
+            ):
+                checkpoint_artifacts.append(
+                    {
+                        "target_id": "shared_trunk",
+                        "path": relative(shared),
+                        "sha256": sha256_file(shared),
+                    }
+                )
         targets.append(target)
     return {
         "policy": "project_theseus_direct_model_candidate_generation_contract_v1",
@@ -174,6 +240,10 @@ def build_generation_contract(
         "plan": plan,
         "targets": targets,
         "checkpoint_artifacts": checkpoint_artifacts,
+        "candidate_generation": {
+            **completion,
+            "model_declared_context_window_tokens": declared_context_window,
+        },
         "hard_gaps": gaps,
         "boundaries": {
             "generator_visible_fields": ["case_id", "arm_id", "prompt"],
@@ -183,6 +253,7 @@ def build_generation_contract(
             "public_training_rows_written": 0,
             "external_inference_calls": 0,
             "fallback_return_count": 0,
+            "project_selected_quality_token_cap": None,
         },
     }
 
@@ -205,7 +276,11 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
     try:
         for row in contract["rows"]:
             arm_id = str(row["arm_id"])
-            target_id = arm_id if contract["target_id"] == "moecot_system" else contract["target_id"]
+            target_id = (
+                arm_id
+                if contract["target_id"] == "moecot_system"
+                else contract["target_id"]
+            )
             if target_id not in models:
                 load_started = time.perf_counter()
                 target = (plan["targets"] or {})[target_id]
@@ -230,7 +305,10 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
                 receipt = read_json(resolve(str(target["receipt"])))
                 checkpoint = resolve(str(receipt.get("checkpoint") or checkpoint))
                 if target.get("role") == "language_expert":
-                    model.load_weights(str(resolve(str(target["shared_trunk_checkpoint"]))), strict=False)
+                    model.load_weights(
+                        str(resolve(str(target["shared_trunk_checkpoint"]))),
+                        strict=False,
+                    )
                     model.load_weights(str(checkpoint), strict=False)
                 else:
                     model.load_weights(str(checkpoint))
@@ -241,19 +319,67 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
                     (time.perf_counter() - load_started) * 1000.0, 6
                 )
             generation_started = time.perf_counter()
+            context_bound = context_bound_for_prompt(
+                str(row["prompt"]),
+                source_vocab,
+                target_vocab,
+                base,
+                max_source_tokens=int(
+                    config["supervision"]["maximum_source_encoded_tokens"]
+                ),
+            )
+            if (
+                context_bound.get("fault")
+                and context_bound.get("fault") != "physical_context_boundary"
+            ):
+                raise RuntimeError(
+                    f"candidate_prompt_not_encodable:{row['case_id']}:{context_bound['fault']}"
+                )
+            prompt_tokens = int(context_bound["exact_encoded_prompt_tokens"])
+            declared_context_window = int(
+                context_bound["model_declared_context_window_tokens"]
+            )
+            context_residual_tokens = int(
+                context_bound["effective_context_residual_tokens"]
+            )
+            if context_bound.get("state") != "GREEN" or context_residual_tokens <= 0:
+                raise RuntimeError(
+                    "INVALID_OBSERVATION:physical_context_boundary:"
+                    f"{row['case_id']}:prompt_tokens={prompt_tokens}:"
+                    f"declared_context_window={declared_context_window}"
+                )
             output, generation = training.generate_model_text(
                 models[target_id],
                 str(row["prompt"]),
                 source_vocab,
                 target_vocab,
                 base,
-                max_tokens=int(config["evaluation"]["decode_max_target_tokens"]),
-                max_source_tokens=int(config["supervision"]["maximum_source_encoded_tokens"]),
+                max_tokens=context_residual_tokens,
+                max_source_tokens=int(
+                    config["supervision"]["maximum_source_encoded_tokens"]
+                ),
                 beam_width=int(config["evaluation"]["beam_width"]),
                 branching_factor=int(config["evaluation"]["branching_factor"]),
                 length_penalty=float(config["evaluation"]["length_penalty"]),
                 mx=mx,
             )
+            generation.update(
+                {
+                    "completion_policy": "model_eos_only_v1",
+                    "project_selected_quality_token_cap": None,
+                    "model_declared_context_window_tokens": declared_context_window,
+                    "exact_encoded_prompt_tokens": prompt_tokens,
+                    "effective_context_residual_tokens": context_residual_tokens,
+                    "numeric_ceiling_source": (
+                        "model_declared_context_window_minus_exact_encoded_prompt_tokens"
+                    ),
+                }
+            )
+            if generation.get("stop_reason") != "eos":
+                raise RuntimeError(
+                    "INVALID_OBSERVATION:physical_context_boundary:"
+                    f"{row['case_id']}:termination={generation.get('stop_reason') or generation.get('reason')}"
+                )
             generation_duration_ms = round(
                 (time.perf_counter() - generation_started) * 1000.0, 6
             )
@@ -284,7 +410,9 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
         "generation_function": "moecot_language_arm_training.generate_model_text",
         "generation_wrapper": relative(Path(__file__).resolve()),
         "generation_wrapper_sha256": sha256_file(Path(__file__).resolve()),
-        "training_generator_sha256": sha256_file(ROOT / "scripts/moecot_language_arm_training.py"),
+        "training_generator_sha256": sha256_file(
+            ROOT / "scripts/moecot_language_arm_training.py"
+        ),
         "checkpoint_artifacts": contract["checkpoint_artifacts"],
         "training_plan_sha256": contract["plan"]["plan_sha256"],
         "training_stage_signature": (contract["plan"].get("stage") or {}).get(
@@ -302,6 +430,12 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
             ),
         },
         "hard_gaps": [],
+        "candidate_generation_completion": {
+            "normal_completion": ["model_eos"],
+            "project_selected_quality_token_cap": None,
+            "physical_context_boundary_hits": 0,
+            "model_eos_count": len(candidates),
+        },
         "templates_renderers_routers_tools_credit": 0,
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
@@ -309,10 +443,54 @@ def generate(contract: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def context_bound_for_prompt(
+    prompt: str,
+    source_vocab: dict[str, int],
+    target_vocab: dict[str, int],
+    base: dict[str, Any],
+    *,
+    max_source_tokens: int,
+) -> dict[str, Any]:
+    """Derive the only decode ceiling from the pinned model context contract."""
+
+    prepared = training.prepare_model_text_prompt(
+        prompt,
+        source_vocab,
+        target_vocab,
+        base,
+        max_source_tokens=max_source_tokens,
+    )
+    declared = int((base.get("tokenization") or {}).get("max_sequence_tokens") or 0)
+    if prepared.get("fault"):
+        return {
+            "state": "INVALID_OBSERVATION",
+            "fault": str(prepared["fault"]),
+            "project_selected_quality_token_cap": None,
+        }
+    prompt_tokens = len(prepared["prompt_ids"])
+    residual = declared - prompt_tokens
+    return {
+        "state": "GREEN" if declared > 0 and residual > 0 else "INVALID_OBSERVATION",
+        "fault": "" if declared > 0 and residual > 0 else "physical_context_boundary",
+        "model_declared_context_window_tokens": declared,
+        "exact_encoded_prompt_tokens": prompt_tokens,
+        "effective_context_residual_tokens": residual,
+        "numeric_ceiling_source": (
+            "model_declared_context_window_minus_exact_encoded_prompt_tokens"
+        ),
+        "project_selected_quality_token_cap": None,
+        "physical_boundary_disposition": (
+            "INVALIDATE_OBSERVATION_NOT_MODEL_OR_ARCHITECTURE_FAILURE"
+        ),
+    }
+
+
 def write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + f".tmp-{os.getpid()}")
-    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     os.replace(temporary, path)
 
 

@@ -71,7 +71,7 @@ The private gate should report:
 - paired candidate-control effects;
 - latency, memory, and total cost;
 - uncertainty;
-- prospective human-audit receipt;
+- prospective independent machine-audit recomputation with no user gate;
 - exact consumption-ledger state.
 
 Average success cannot hide a failed language arm.

@@ -1982,9 +1982,9 @@
         "owner_work_package": "ASI-32",
         "state": "implemented_unconsumed_freeze_2026_07_29",
         "blocks": ["T0A_replacement_evaluator_freeze", "T1"],
-        "acceptance": "Candidate output is inert judge data; adversarial injection, copied-rubric, self-score, empty, malformed, agreement, and prospective human-audit controls pass; STATIC_FLOW_LINT_PASS is supplemented by runtime forbidden-field taint/capability enforcement and independent candidate-integrity recomputation.",
+        "acceptance": "Candidate output is inert judge data; adversarial injection, copied-rubric, self-score, empty, malformed, agreement, and prospective independent-machine-audit controls pass without a user gate; STATIC_FLOW_LINT_PASS is supplemented by runtime forbidden-field taint/capability enforcement and independent candidate-integrity recomputation.",
         "evidence": ["scripts/blind_runtime_guard.py", "scripts/blind_information_flow_audit.py", "scripts/neural_seed_local_english_raters.py", "scripts/neural_seed_functional_utility.py", "scripts/neural_seed_functional_verifiers.py", "configs/neural_seed_57m_functional_utility_freeze.json", "tests/test_blind_runtime_guard.py", "tests/test_neural_seed_local_english_raters.py", "tests/test_neural_seed_functional_utility.py"],
-        "residual": "Runtime capability enforcement and adversarial controls reduce known threats but are not semantic noninterference or judge-correctness proofs; the prospective human audit remains required at consumption."
+        "residual": "Runtime capability enforcement, adversarial controls, and independent machine recomputation reduce known threats but are not semantic noninterference or judge-correctness proofs; English scores remain diagnostic and the architecture verdict is bound to machine-verifiable code arms."
       },
       {
         "id": "review.evidence.status_vector",
@@ -4272,7 +4272,7 @@
         "state": "pretraining_contract",
         "phase_refs": [0, 4, 10, 12, 14],
         "depends_on": ["ASI-01", "ASI-13"],
-        "acceptance_boundary": "Before the T0A replacement freeze, the local English judge treats candidate output as inert data and passes adversarial injection, copied-rubric, self-score, malformed, agreement, and prospective human-audit controls; blind-flow reports are scoped as static lint and runtime forbidden-field taint/capability guards reject alias, indexing, helper, attribute, derived-label, cache, and ranking leakage under independent integrity recomputation.",
+        "acceptance_boundary": "Before the T0A replacement freeze, the local English judge treats candidate output as inert data and passes adversarial injection, copied-rubric, self-score, malformed, agreement, and prospective independent-machine-audit controls without a user gate; blind-flow reports are scoped as static lint and runtime forbidden-field taint/capability guards reject alias, indexing, helper, attribute, derived-label, cache, and ranking leakage under independent integrity recomputation. Candidate generation completes only at model EOS, has no project-selected quality-token cap, and treats declared-context exhaustion as an invalid observation. Mechanics-qualified Rust/Chrome verifier safety windows are physical host boundaries: a timeout invalidates the observation and cannot become candidate or architecture failure.",
         "non_claim_boundary": "Evaluator hardening reduces known measurement threats but is not a proof of semantic noninterference, judge correctness, model capability, or utility."
       }
     ],
@@ -4625,9 +4625,9 @@
       },
       "D2": {
         "question": "Does the locally trained modular Theseus student achieve useful source-disjoint behavior and improve over dense-active and dense-total controls?",
-        "state": "candidate_not_evaluated_surface_fresh_sealed",
+        "state": "candidate_not_evaluated_surface_fresh_controller_implemented_sealed",
         "surface": "fresh_160_case_contract_exact_and_normalized_prompt_overlap_zero",
-        "noninterference": "No 57M D2 result exists. Independent freshness does not authorize execution: the surface remains sealed until the clean source-bound replacement package, private custody, and automated one-shot evaluation authority are complete."
+        "noninterference": "No 57M D2 result exists. Independent freshness and implemented controller source do not authorize execution: the surface remains sealed until the clean source-bound freeze, private custody, completed matched checkpoints, pinned local raters, zero current-identity consumption, zero output collisions, and exclusive accelerator lease all pass. The controller forbids user approval gates, arbitrary quality-token caps, reruns, external inference, and negative inference from physical boundaries."
       }
     },
     "claim_ids": [
@@ -5971,10 +5971,11 @@
         "the current transformer checkpoint exemption is explicitly development-only and non-routeable; production/default routes require admission, while private signing keys remain outside the repository",
         "shared archive resolution follows inline or retention-sidecar pointers, prefers live originals, and makes the T2 readiness gate recompute archived checkpoint and live vocabulary hashes; corrupted archived bytes fail closed",
         "the independent D2 freshness audit rematerializes all 160 current cases, reproduces contract d48875c5..., verifies the content-addressed consumed v8 packet and contract d724363e..., observes zero exact or whitespace/case-normalized model-visible prompt overlap, and leaves evaluation authorization false",
-        "the replacement freeze now has a mandatory source-binding gate and can be finalized exactly once only from a clean post-maintenance commit"
+        "the replacement freeze now has a mandatory source-binding gate and can be finalized exactly once only from a clean post-maintenance commit",
+        "the D2 one-shot controller is machine-only, source/freeze/checkpoint bound, collision refusing, append-only, EOS-only, and terminal on invalid observations without rerun or user approval"
       ],
       "missing_items": [
-        "commit the reviewed maintenance transaction, then generate the source-bound step-11,416 replacement package exactly once from that clean commit; migrate the manual hold to the automated launch controller and keep D2 behind automated one-shot authority",
+        "commit the reviewed maintenance transaction, then generate the source-bound step-11,416 replacement package exactly once from that clean commit; keep training and D2 behind their implemented autonomous one-shot controllers until every machine predicate passes",
         "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
       ],
       "pre_training_readiness": {
@@ -7427,7 +7428,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Preserve the 57.315M proposal, corpus, objective, schedule, modular candidate, dense-active control, dense-total control, checkpoint lineage, current frozen 160-case surface, and consumed-v8 evidence. Keep the hold installed until the machine-readable launch/resource/rollback controller proves its predicates. Complete clean source binding and independent private custody before automated one-shot D2 execution; do not create a replacement benchmark as incidental cleanup.",
+      "smallest_next_patch": "Preserve the 57.315M proposal, corpus, objective, schedule, modular candidate, dense-active control, dense-total control, checkpoint lineage, current frozen 160-case surface, and consumed-v8 evidence. Keep the hold installed until the machine-readable launch/resource/rollback controller proves its predicates. Commit clean source binding, complete the matched controls under autonomous leases, then let the implemented D2 controller consume the frozen surface once; do not create a replacement benchmark or ask for user approval.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",

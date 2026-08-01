@@ -1,0 +1,71 @@
+{
+  "policy": "project_theseus_neural_seed_d2_autonomous_one_shot_evaluation_v1",
+  "campaign_id": "moecot_mlx_57m_active_preregistered_v1",
+  "freeze": "configs/neural_seed_57m_functional_utility_freeze.json",
+  "functional_config": "configs/neural_seed_functional_utility.json",
+  "training_config": "configs/moecot_language_arm_training.json",
+  "qualified_python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+  "manifest": "reports/private_functional_utility_manifest.json",
+  "candidate_packet": "reports/private_functional_utility_candidate_packet.json",
+  "consumption_registry": "reports/private_functional_consumption_registry.jsonl",
+  "candidate_bundles": {
+    "moecot_system": "reports/private_functional_candidates_57m_d2_moecot.json",
+    "dense_active_parameter": "reports/private_functional_candidates_57m_d2_dense_active.json",
+    "dense_total_parameter": "reports/private_functional_candidates_57m_d2_dense_total.json"
+  },
+  "blind_packets": {
+    "moecot_system": "reports/private_functional_blind_english_57m_d2_moecot.json",
+    "dense_active_parameter": "reports/private_functional_blind_english_57m_d2_dense_active.json",
+    "dense_total_parameter": "reports/private_functional_blind_english_57m_d2_dense_total.json"
+  },
+  "judgment_labels": {
+    "moecot_system": "d2_opaque_a",
+    "dense_active_parameter": "d2_opaque_b",
+    "dense_total_parameter": "d2_opaque_c"
+  },
+  "judgment_directory": "reports/private_functional_english_judgments_57m_d2",
+  "judgment_receipt": "reports/private_functional_english_judgment_receipt_57m_d2.json",
+  "qualifications": {
+    "moecot_system": "reports/private_functional_utility_qualification_57m_d2_moecot.json",
+    "dense_active_parameter": "reports/private_functional_utility_qualification_57m_d2_dense_active.json",
+    "dense_total_parameter": "reports/private_functional_utility_qualification_57m_d2_dense_total.json"
+  },
+  "exact_diagnostic": "reports/neural_seed_57m_exact_recovery_diagnostic.json",
+  "exact_diagnostic_markdown": "reports/neural_seed_57m_exact_recovery_diagnostic.md",
+  "architecture_verdict": "reports/private_functional_utility_qualification_57m_d2.json",
+  "active_lease": "runtime/control/neural_seed_d2_evaluation_lease.json",
+  "lease_archive_directory": "reports/neural_seed_d2_evaluation_leases",
+  "report": "reports/neural_seed_d2_autonomous_evaluation_controller.json",
+  "local_rater_model_acquisition": {
+    "enabled": true,
+    "automatic_only_when_every_other_gate_is_green": true,
+    "cache_root": "runtime/model_cache/neural_seed_local_english_raters",
+    "report": "reports/neural_seed_d2_local_rater_model_acquisition.json",
+    "static_weight_download_only": true,
+    "exact_repo_revision_and_license_required": true,
+    "external_inference_calls": 0,
+    "training_rows_written": 0
+  },
+  "exclusive_accelerator_process_patterns": [
+    "theseus_p4s_campaign.py",
+    "neural_seed_training_campaign.py --execute",
+    "moecot_language_arm_training.py --execute",
+    "neural_seed_functional_generate.py",
+    "neural_seed_local_english_raters.py"
+  ],
+  "authority": {
+    "kind": "machine_predicate_exclusive_one_shot_lease",
+    "user_or_operator_approval_required": false,
+    "require_clean_source": true,
+    "require_exact_freeze_source_hashes": true,
+    "require_all_checkpoints_complete": true,
+    "require_no_competing_accelerator_job": true,
+    "rerun_consumed_identity_allowed": false,
+    "physical_boundary_is_negative_evidence": false,
+    "project_selected_quality_token_cap_allowed": false,
+    "public_calibration_authorized": false,
+    "external_inference_authorized": false,
+    "serving_authorized": false,
+    "training_row_admission_authorized": false
+  }
+}

@@ -109,6 +109,9 @@
   "sandbox": {
     "policy": "macos_sandbox_exec_network_denied_v1",
     "timeout_seconds": 12,
+    "rust_timeout_seconds": 90,
+    "browser_render_timeout_seconds": 30,
+    "timeout_disposition": "INVALIDATE_OBSERVATION_NOT_MODEL_CANDIDATE_OR_ARCHITECTURE_FAILURE",
     "maximum_candidate_bytes": 65536,
     "network_allowed": false,
     "write_scope": "candidate_executors_per_case_temporary_directory_only",
@@ -153,7 +156,17 @@
     "local_rater_config": "configs/neural_seed_local_english_raters.json",
     "local_rater_implementation": "scripts/neural_seed_local_english_raters.py",
     "local_judgment_receipt_required": true,
-    "prospective_human_audit_receipt_required": true
+    "independent_machine_audit_required": true
+  },
+  "candidate_generation": {
+    "normal_completion": [
+      "model_eos"
+    ],
+    "project_selected_quality_token_cap": null,
+    "model_declared_context_window_source": "training_base_config.tokenization.max_sequence_tokens",
+    "physical_boundary": "model_declared_context_window_tokens_minus_exact_encoded_prompt_tokens",
+    "physical_boundary_disposition": "INVALIDATE_OBSERVATION_NOT_MODEL_OR_ARCHITECTURE_FAILURE",
+    "serialization_complete_prefix_is_completion": false
   },
   "reporting": {
     "exact_recovery_separate": true,
