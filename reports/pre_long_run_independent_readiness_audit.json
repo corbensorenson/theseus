@@ -960,7 +960,7 @@
     },
     "resource_integrity": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 49442893824,
+      "disk_free_bytes": 53029711872,
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
       "two_transaction_required_bytes": 1316247456
@@ -989,11 +989,11 @@
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4906be726ffc0193b3f6dab360ce5bcb62f5d478b7e1199015d80cbcba8a3e7d"
+      "sha256": "8e9a059c5d01cae9bcc9f31132489d7d2c34390d1960f66d866226a059510d0f"
     },
     "residual_audit": {
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "e51c44f16245358c183b92fa23600fc1d1865e8aae35d6d67e2bad46bd86af9b"
+      "sha256": "435d5cf132cddfef54189fad484f46c17c7ca53bef871c3573dffb0b6fbda093"
     },
     "training_availability_config": {
       "path": "configs/neural_seed_training_availability.json",
@@ -1001,7 +1001,7 @@
     },
     "training_campaign": {
       "path": "scripts/neural_seed_training_campaign.py",
-      "sha256": "ca623d022722c8facdd86bd55dbe8996e96b8fd28dde320a1c60d5128d879622"
+      "sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d"
     }
   },
   "capability_claim": "NONE_INDEPENDENT_READINESS_AUDIT_ONLY",

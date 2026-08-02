@@ -115,11 +115,11 @@ def test_exact_step_11416_plan_migration_is_accepted_without_state_reset() -> No
     target = plan["targets"][training.SHARED_TRUNK_ID]
     migration = training.accepted_plan_identity_migration(receipt, plan, target)
     assert plan["plan_sha256"] == (
-        "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1"
+        "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c"
     )
     assert migration is not None
     assert migration["migration_id"] == (
-        "shared_trunk_step11416_uncapped_d2_contract_rebind_v1"
+        "shared_trunk_step11416_exiting_process_inventory_rebind_v1"
     )
     assert migration["legacy_optimizer_steps"] == 11416
     assert migration["legacy_optimizer_positions"] == 87441996

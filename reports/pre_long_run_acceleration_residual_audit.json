@@ -18,7 +18,7 @@
     },
     "production_trainer_config": {
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4906be726ffc0193b3f6dab360ce5bcb62f5d478b7e1199015d80cbcba8a3e7d"
+      "sha256": "8e9a059c5d01cae9bcc9f31132489d7d2c34390d1960f66d866226a059510d0f"
     },
     "training_availability_config": {
       "path": "configs/neural_seed_training_availability.json",
@@ -26,7 +26,7 @@
     },
     "training_campaign_script": {
       "path": "scripts/neural_seed_training_campaign.py",
-      "sha256": "ca623d022722c8facdd86bd55dbe8996e96b8fd28dde320a1c60d5128d879622"
+      "sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d"
     }
   },
   "capability_claim": "NONE_ACCELERATION_READINESS_AND_CUSTODY_ONLY",
@@ -341,7 +341,7 @@
     },
     "memory_disk": {
       "checkpoint_transaction_bytes": 658123728,
-      "disk_free_bytes": 51482595328,
+      "disk_free_bytes": 53037621248,
       "disposition": "predicted_exhaustion_and_derived_two_transaction_disk_custody",
       "fixed_available_memory_floor_mib": 0,
       "passed": true,
