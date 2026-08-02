@@ -1,0 +1,35 @@
+{
+  "backend_policy": "project_theseus_local_inference_backend_v2",
+  "backend_receipt": {
+    "path": "reports/theseus_assistant_checkpoint_chat_p4v2r2r2_route_canary_a16cc4cff75268f0.json",
+    "sha256": "b8b92856487ada418137078b81a5df141202b395af0d32282aebba79c8b703c5"
+  },
+  "canonical_runtime_canary": {
+    "path": "reports/theseus_p4v2r2r2_route_canary.json",
+    "sha256": "f4886eccc340ed83db8b319c397ae95e3c454af424788e84468fee47d40ef97f"
+  },
+  "external_inference_calls": 0,
+  "faults": [],
+  "generated_tokens": 5,
+  "instrument": {
+    "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+    "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+  },
+  "maximum_inference": "A GREEN canary proves only that one non-task frozen TMax call traversed the canonical direct runtime, ended naturally, emitted immutable v2 telemetry, and passed route release. It is not task or mechanism evidence.",
+  "physical_context_boundary_hits": 0,
+  "policy": "project_theseus_p4v2r2r2_route_canary_audit_v1",
+  "project_selected_quality_token_cap": null,
+  "route_canary_model_calls": 1,
+  "route_policy": "project_theseus_live_route_integrity_v2",
+  "route_receipt_sha256": "7bbf2fdfdba6a09b1297c95156185eb65de2b647d38c76ebe12b5222ca443377",
+  "sandbox_infrastructure_failure": {
+    "candidate_or_control_calls": 0,
+    "classification": "INVALID_INFRASTRUCTURE_NO_METAL_DEVICE_VISIBLE",
+    "counts_as_model_or_mechanism_failure": false,
+    "path": "reports/theseus_p4v2r2r2_route_canary_attempt1_sandbox_metal_unavailable.json",
+    "sha256": "52d2849489835b88b11fa8866edfa2c83889475922425f80c6a5820cc516c240"
+  },
+  "task_candidate_or_control_calls": 0,
+  "termination_reason": "model_eos",
+  "trigger_state": "GREEN"
+}
