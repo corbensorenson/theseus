@@ -148,8 +148,12 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     registries = list(surface.get("source_disjoint_registry_paths") or [])
     if len(registries) != 9 or len(set(registries)) != 9:
         faults.append("source_disjoint_registry_set_invalid")
-    if surface.get("membership_fixed_before_archive_fetch") is not True:
-        faults.append("membership_not_fixed_before_fetch")
+    if surface.get("metadata_source_order_fixed_before_archive_fetch") is not True:
+        faults.append("metadata_source_order_not_fixed_before_fetch")
+    if surface.get(
+        "final_membership_fixed_after_independent_pre_model_evaluator_qualification"
+    ) is not True:
+        faults.append("final_membership_boundary_invalid")
     if surface.get("replacement_after_any_candidate_or_control_call") is not False:
         faults.append("post_generation_task_replacement_allowed")
     if surface.get("consume_exact_identity_once") is not True:

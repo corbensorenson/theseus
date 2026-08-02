@@ -1,0 +1,63 @@
+{
+  "policy": "project_theseus_d1_pre_model_evaluator_seal_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_D1_ARCHIVE_OR_EVALUATOR_EXECUTION",
+  "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
+  "source_registry": "configs/theseus_d1_task_sources.json",
+  "materialization_report": "reports/theseus_d1_source_materialization.json",
+  "sandbox_config": "configs/theseus_d1_evaluator_sandbox.json",
+  "sandbox_qualification": "reports/theseus_d1_evaluator_sandbox_qualification.json",
+  "qualification_report": "reports/theseus_d1_evaluator_seal.json",
+  "final_task_pool": "configs/theseus_d1_task_pool.json",
+  "sealed_task_root": "runtime/d1_acquisition/sealed_tasks",
+  "active_lease": "runtime/control/theseus_d1_evaluator_seal_lease.json",
+  "lease_archive_directory": "reports/theseus_d1_evaluator_seal_leases",
+  "task_shape": {
+    "programming_language": "Python",
+    "changed_source_file_count": 1,
+    "changed_callable_count": 1,
+    "callable_kinds": ["FunctionDef", "AsyncFunctionDef"],
+    "callable_signature_must_be_identical": true,
+    "all_non_target_AST_must_be_identical": true,
+    "minimum_changed_test_node_count": 2,
+    "visible_hidden_split": "ascending_sha256(campaign_id || source_identity || pytest_node_id), alternating visible then hidden",
+    "parent_must_fail_visible_and_hidden": true,
+    "target_must_pass_visible_and_hidden": true,
+    "target_callable_transplant_into_parent_must_pass_visible_and_hidden": true,
+    "candidate_visible_request": "public_pull_request_title_and_body_only",
+    "candidate_visible_code": "exact_parent_source_and_callable_signature_only",
+    "candidate_visible_test_source": false,
+    "candidate_visible_target_source": false
+  },
+  "cohort_policy": {
+    "required_qualified_task_count_source": "instrument.power_design.design_derived_cohort_size",
+    "qualification_order": "source_registry_campaign_index_then_selection_digest",
+    "eligible_task_identity": "first independently evaluator-qualified distinct repositories in the prospectively ordered source frame",
+    "candidate_or_control_calls_before_final_pool_seal": false,
+    "all_pre_model_rejections_retained": true,
+    "rejection_is_model_or_mechanism_negative_evidence": false,
+    "additional_complete_metadata_intervals_if_underfilled": "append_only_before_any_candidate_or_control_call_without_deadline_or_user_gate",
+    "post_candidate_task_replacement_allowed": false
+  },
+  "execution": {
+    "pytest_entry": ["-m", "pytest", "-q"],
+    "network": "forbidden",
+    "dependency_installation": "forbidden",
+    "sandbox_receipt_required_for_every_parent_target_oracle_run": true,
+    "boundary_hit_disposition": "TASK_NOT_EVALUATOR_QUALIFIED_RETAINED_PRE_MODEL",
+    "boundary_hit_is_model_or_mechanism_failure": false,
+    "project_selected_quality_token_cap": null
+  },
+  "authority": {
+    "kind": "exclusive_idempotent_pre_model_evaluator_qualification_lease",
+    "user_or_operator_approval_required": false,
+    "opens_only_after_green_source_materialization": true,
+    "candidate_or_control_calls_authorized": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false
+  },
+  "maximum_inference": "A GREEN final seal proves only that the retained D1 tasks were selected without candidate outcomes, are exact post-snapshot licensed source identities, expose one Python callable repair, and have independently sandbox-replayed visible and hidden parent-fail/target-pass/transplant-pass evaluators. It does not prove candidate utility, mechanism efficacy, cognitive compilation generally, serving, training, D2, or ASI Stack support. Pre-model task rejection is instrument-adequacy evidence, never model or mechanism negative evidence."
+}

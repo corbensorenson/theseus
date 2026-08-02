@@ -166,7 +166,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             successor["source_stage_implementation"],
         )
         self.assertEqual(
-            "first_design_complete_44_repository_registry_frozen_before_archive_fetch",
+            "design_derived_206_repository_initial_metadata_frame_order_frozen_before_archive_fetch_then_first_44_independently_evaluator_qualified_before_candidate_calls",
             successor["source_stage_terminal_boundary"],
         )
         self.assertEqual(
@@ -183,7 +183,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            "not_implemented_do_not_claim_D1_execution_ready",
+            "pre_model_evaluator_seal_implemented_campaign_integrity_and_terminal_disposition_not_implemented_do_not_claim_D1_execution_ready",
             successor["downstream_evaluator_campaign_and_disposition_state"],
         )
         self.assertEqual(3, len(successor["remaining_D1_execution_owners"]))
@@ -198,6 +198,9 @@ class RoadmapBookSyncTests(unittest.TestCase):
             "evaluator_sandbox",
             "evaluator_sandbox_test",
             "evaluator_sandbox_qualification",
+            "evaluator_seal_config",
+            "evaluator_seal",
+            "evaluator_seal_test",
         ):
             self.assertTrue((ROOT / successor[key]).is_file())
         sandbox_report = json.loads(

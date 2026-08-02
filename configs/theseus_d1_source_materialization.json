@@ -2,7 +2,7 @@
   "policy": "project_theseus_d1_source_materialization_v1",
   "state": "BOUND_BEFORE_D1_SOURCE_REGISTRY_EXISTS",
   "source_successor_config": "configs/theseus_d1_autonomous_source_successor.json",
-  "source_successor_config_sha256": "393d2cac6dd624946469b6eaca835d899f762f6b7e53707791fd54872c2280ad",
+  "source_successor_config_sha256": "6d83689e6775e0272a916a6c63638f1db7d62c00871216d0436a19450de615d7",
   "source_registry": "configs/theseus_d1_task_sources.json",
   "sanitizer": "scripts/theseus_p2b_sanitize_archive.py",
   "sanitizer_sha256": "492aade0141d9f3bec3a0e9871a413ff9cf2fae4d540bc231e62c7ded04b9816",

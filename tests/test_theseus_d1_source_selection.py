@@ -42,6 +42,7 @@ def candidate(index: int) -> dict[str, object]:
         "pull_request": index + 1,
         "pull_request_url": f"https://github.com/{repository}/pull/{index + 1}",
         "pull_request_title": f"Repair behavior {index}",
+        "pull_request_body": f"Fix the public behavior for case {index}.",
         "merged_utc": "2026-08-01T13:00:00Z",
         "parent_revision": digit,
         "target_revision": target,
@@ -72,7 +73,7 @@ def candidate(index: int) -> dict[str, object]:
     }
 
 
-def ledger(count: int = 44) -> dict[str, object]:
+def ledger(count: int = 206) -> dict[str, object]:
     disposition = survivor()
     return {
         "policy": "project_theseus_d1_online_metadata_frame_v1",
@@ -121,8 +122,8 @@ def test_survivor_freezes_metadata_only_power_derived_cohort() -> None:
     assert report["faults"] == []
     assert report["registry_ready"] is True
     registry = report["registry_candidate"]
-    assert registry["task_count"] == 44
-    assert registry["distinct_repository_count"] == 44
+    assert registry["task_count"] == 206
+    assert registry["distinct_repository_count"] == 206
     assert registry["boundaries"]["archive_fetches"] == 0
     assert registry["boundaries"]["candidate_or_control_calls"] == 0
     assert registry["replacement_after_membership_freeze"] is False
@@ -134,7 +135,7 @@ def test_survivor_freezes_metadata_only_power_derived_cohort() -> None:
 
 
 def test_selection_is_deterministic_and_input_order_independent() -> None:
-    first = ledger(50)
+    first = ledger(212)
     second = dict(first)
     second["rows"] = list(reversed(first["rows"]))
     left = selection.build_report(
@@ -152,11 +153,14 @@ def test_underfilled_frame_pauses_without_smaller_substitute() -> None:
     report = selection.build_report(
         CONFIG,
         disposition_override=survivor(),
-        ledger_override=ledger(43),
+        ledger_override=ledger(205),
     )
     assert report["trigger_state"] == "PAUSED"
     assert report["registry_ready"] is False
-    assert "eligible_distinct_repository_count_below_design:43/44" in report["faults"]
+    assert (
+        "eligible_distinct_repository_count_below_initial_frame_design:205/206"
+        in report["faults"]
+    )
 
 
 def test_candidate_or_evaluator_outcome_in_metadata_invalidates_frame() -> None:
@@ -184,7 +188,7 @@ def test_answer_identifying_metadata_invalidates_frame() -> None:
 
 
 def test_pre_snapshot_task_is_independently_excluded() -> None:
-    value = ledger(45)
+    value = ledger(207)
     value["rows"][0]["merged_utc"] = "2026-07-30T04:53:03Z"
     report = selection.build_report(
         CONFIG,
@@ -229,7 +233,7 @@ def test_metadata_acquired_before_survivor_is_rejected() -> None:
 
 
 def test_prior_consumed_repository_is_excluded() -> None:
-    value = ledger(45)
+    value = ledger(207)
     value["rows"][0]["repository"] = "jd/tenacity"
     value["rows"][0]["repository_url"] = "https://github.com/jd/tenacity"
     value["rows"][0]["pull_request_url"] = "https://github.com/jd/tenacity/pull/1"
@@ -249,7 +253,7 @@ def test_prior_consumed_repository_is_excluded() -> None:
 
 
 def test_public_benchmark_repository_is_independently_excluded() -> None:
-    value = ledger(45)
+    value = ledger(207)
     value["rows"][0]["repository"] = "SWE-bench/SWE-bench"
     value["rows"][0]["repository_url"] = "https://github.com/SWE-bench/SWE-bench"
     value["rows"][0]["pull_request_url"] = (
@@ -272,7 +276,10 @@ def test_public_benchmark_repository_is_independently_excluded() -> None:
 def test_selection_contract_has_no_user_gate_or_postfreeze_replacement() -> None:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     assert config["selection"]["user_or_operator_approval_required"] is False
-    assert config["selection"]["replacement_after_membership_freeze"] is False
+    assert config["selection"]["replacement_after_any_candidate_or_control_call"] is False
+    assert selection.recompute_initial_source_frame_size(
+        44, config["selection"]
+    ) == 206
     assert config["authority"]["candidate_calls_after_registry_write"] is False
     assert config["discovery_frame"]["external_inference_calls"] == 0
 

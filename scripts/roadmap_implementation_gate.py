@@ -1119,6 +1119,9 @@ def audit_book_implementation_contract(
             "evaluator_sandbox",
             "evaluator_sandbox_test",
             "evaluator_sandbox_qualification",
+            "evaluator_seal_config",
+            "evaluator_seal",
+            "evaluator_seal_test",
         )
     ]
     sandbox_report_path = ROOT / str(
@@ -1135,11 +1138,13 @@ def audit_book_implementation_contract(
         or d1_successor.get("source_stage_implementation")
         != "complete_waiting_indefinitely_without_user_gate"
         or d1_successor.get("source_stage_terminal_boundary")
-        != "first_design_complete_44_repository_registry_frozen_before_archive_fetch"
+        != "design_derived_206_repository_initial_metadata_frame_order_frozen_before_archive_fetch_then_first_44_independently_evaluator_qualified_before_candidate_calls"
         or d1_successor.get("source_materialization_implementation")
         != "complete_waiting_on_frozen_registry_no_user_gate"
         or d1_successor.get("evaluator_sandbox_qualification_state")
         != "green_exact_local_denial_canaries"
+        or d1_successor.get("evaluator_seal_implementation")
+        != "complete_prospective_pre_model_single_callable_visible_hidden_parent_fail_target_pass_transplant_pass_filter_waiting_on_source_materialization"
         or d1_successor.get("untrusted_repository_execution_authorized_before_evaluator_seal")
         is not False
         or sandbox_report.get("trigger_state") != "GREEN"
@@ -1150,7 +1155,7 @@ def audit_book_implementation_contract(
         or sandbox_receipt.get("returncode") != 0
         or sandbox_receipt.get("boundary_hit") is not False
         or d1_successor.get("downstream_evaluator_campaign_and_disposition_state")
-        != "not_implemented_do_not_claim_D1_execution_ready"
+        != "pre_model_evaluator_seal_implemented_campaign_integrity_and_terminal_disposition_not_implemented_do_not_claim_D1_execution_ready"
         or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 3
         or d1_successor.get("candidate_or_control_calls_authorized") is not False
         or d1_successor.get("automatic_book_support_promotion") is not False

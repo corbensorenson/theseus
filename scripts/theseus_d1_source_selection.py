@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Freeze a fresh D1 source cohort from metadata only after a P4-v2r2-r2 survivor.
+"""Freeze an ordered fresh D1 source frame after a P4-v2r2-r2 survivor.
 
 Archive contents and every parent, target, oracle, evaluator, candidate, and
-control outcome are deliberately outside this selection boundary.  A selected
-task that later fails materialization is retained and makes the qualification
-inconclusive; it is never silently replaced.
+control outcome are deliberately outside this ordering boundary.  Independent
+pre-model evaluator qualification later retains every rejection and seals the
+first 44 adequate tasks before any candidate or control call.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import sys
 from datetime import datetime
@@ -162,25 +163,29 @@ def build_report(
         )
         or 0
     )
+    source_frame_size = recompute_initial_source_frame_size(
+        cohort_size, d1.mapping(config.get("selection"))
+    )
     selected, exclusions = select_rows(
         dictionaries(ledger.get("rows")),
         config=config,
         campaign_id=str(d1.read_json(instrument_path).get("campaign_id") or ""),
         prior_repositories=set(prior_repositories),
-        cohort_size=cohort_size,
+        cohort_size=source_frame_size,
         model_snapshot_observed_utc=str(
             temporal_guard.get("model_snapshot_observed_utc") or ""
         ),
         public_benchmark_repositories=benchmark_repositories,
     )
-    if len(selected) != cohort_size:
+    if len(selected) != source_frame_size:
         ledger_faults.append(
-            f"eligible_distinct_repository_count_below_design:{len(selected)}/{cohort_size}"
+            f"eligible_distinct_repository_count_below_initial_frame_design:{len(selected)}/{source_frame_size}"
         )
     base["faults"] = sorted(set(ledger_faults))
     base["trigger_state"] = "GREEN" if not ledger_faults else "PAUSED"
     base["selection"] = {
         "design_derived_cohort_size": cohort_size,
+        "design_derived_initial_source_frame_size": source_frame_size,
         "selected_count": len(selected),
         "excluded_count": len(exclusions),
         "prior_repository_count": len(prior_repositories),
@@ -258,10 +263,26 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     if discovery.get("require_every_partition_complete") is not True:
         faults.append("complete_query_partitions_not_required")
     selection = d1.mapping(config.get("selection"))
-    if selection.get("membership_fixed_before_archive_fetch") is not True:
-        faults.append("membership_not_fixed_before_archive_fetch")
-    if selection.get("replacement_after_membership_freeze") is not False:
-        faults.append("postfreeze_replacement_allowed")
+    if selection.get("metadata_order_fixed_before_archive_fetch") is not True:
+        faults.append("metadata_order_not_fixed_before_archive_fetch")
+    if selection.get(
+        "final_membership_fixed_after_independent_pre_model_evaluator_qualification"
+    ) is not True:
+        faults.append("final_membership_boundary_invalid")
+    if selection.get("pre_model_rejection_retained") is not True:
+        faults.append("pre_model_rejection_not_retained")
+    if selection.get("replacement_after_any_candidate_or_control_call") is not False:
+        faults.append("post_candidate_replacement_allowed")
+    if recompute_initial_source_frame_size(
+        int(
+            d1.mapping(
+                d1.read_json(d1.resolve(str(config["instrument"]))).get("power_design")
+            ).get("design_derived_cohort_size")
+            or 0
+        ),
+        selection,
+    ) != int(selection.get("design_derived_initial_source_frame_size") or 0):
+        faults.append("initial_source_frame_power_design_mismatch")
     if selection.get("user_or_operator_approval_required") is not False:
         faults.append("user_or_operator_gate_present")
     authority = d1.mapping(config.get("authority"))
@@ -534,11 +555,13 @@ def normalize_row(row: dict[str, Any]) -> dict[str, Any]:
         "pull_request",
         "pull_request_url",
         "pull_request_title",
+        "pull_request_body",
         "merged_utc",
         "parent_revision",
         "target_revision",
         "merge_revision",
         "changed_paths",
+        "changed_files",
         "metadata_retrieved_utc",
     )
     value = {key: row[key] for key in keys}
@@ -558,6 +581,30 @@ def selection_digest(campaign_id: str, row: dict[str, Any]) -> str:
         str(row["target_revision"]).lower(),
     ))
     return hashlib.sha256(identity.encode()).hexdigest()
+
+
+def recompute_initial_source_frame_size(
+    required_qualified: int, selection: dict[str, Any]
+) -> int:
+    probability = float(
+        selection.get("minimum_pre_model_evaluator_qualification_rate_floor") or 0.0
+    )
+    reach = float(
+        selection.get("minimum_probability_of_reaching_final_cohort_in_initial_frame")
+        or 0.0
+    )
+    if required_qualified < 1 or not 0.0 < probability <= 1.0 or not 0.0 < reach < 1.0:
+        return 0
+    for tasks in range(required_qualified, 100000):
+        tail = sum(
+            math.comb(tasks, successes)
+            * probability**successes
+            * (1.0 - probability) ** (tasks - successes)
+            for successes in range(required_qualified, tasks + 1)
+        )
+        if tail >= reach:
+            return tasks
+    return 0
 
 
 def contains_forbidden_outcome_key(value: Any) -> bool:

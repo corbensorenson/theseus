@@ -443,6 +443,7 @@ def fetch_candidate_row(
         "pull_request": number,
         "pull_request_url": f"https://github.com/{repository}/pull/{number}",
         "pull_request_title": str(pull.get("title") or ""),
+        "pull_request_body": str(pull.get("body") or ""),
         "merged_utc": str(pull.get("merged_at") or ""),
         "parent_revision": parent_revision,
         "target_revision": merge_revision,

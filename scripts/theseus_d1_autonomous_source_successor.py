@@ -332,7 +332,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("authority_kind_invalid")
     required_true = (
         "network_metadata_only_after_exact_p4_survivor",
-        "freeze_first_design_complete_cohort_exactly_once",
+        "freeze_design_derived_initial_source_frame_exactly_once",
     )
     required_false = (
         "user_or_operator_approval_required",
@@ -393,12 +393,15 @@ def audit_registry(registry: dict[str, Any]) -> list[str]:
     ):
         faults.append("source_registry_state_invalid")
     tasks = dictionaries(registry.get("tasks"))
-    if int(registry.get("task_count") or 0) != 44 or len(tasks) != 44:
+    declared_count = int(registry.get("task_count") or 0)
+    if declared_count < 44 or len(tasks) != declared_count:
         faults.append("source_registry_task_count_invalid")
     repositories = [str(row.get("repository") or "").lower() for row in tasks]
-    if len(set(repositories)) != 44:
+    if len(set(repositories)) != declared_count:
         faults.append("source_registry_repositories_not_distinct")
-    if [int(row.get("campaign_index") or 0) for row in tasks] != list(range(1, 45)):
+    if [int(row.get("campaign_index") or 0) for row in tasks] != list(
+        range(1, declared_count + 1)
+    ):
         faults.append("source_registry_campaign_indexes_invalid")
     boundaries = mapping(registry.get("boundaries"))
     for key in (

@@ -4015,7 +4015,7 @@
         "autonomous_source_successor": "scripts/theseus_d1_autonomous_source_successor.py",
         "autonomous_source_successor_test": "tests/test_theseus_d1_autonomous_source_successor.py",
         "source_stage_implementation": "complete_waiting_indefinitely_without_user_gate",
-        "source_stage_terminal_boundary": "first_design_complete_44_repository_registry_frozen_before_archive_fetch",
+        "source_stage_terminal_boundary": "design_derived_206_repository_initial_metadata_frame_order_frozen_before_archive_fetch_then_first_44_independently_evaluator_qualified_before_candidate_calls",
         "source_materialization_config": "configs/theseus_d1_source_materialization.json",
         "source_materialization": "scripts/theseus_d1_source_materialization.py",
         "source_materialization_test": "tests/test_theseus_d1_source_materialization.py",
@@ -4025,10 +4025,14 @@
         "evaluator_sandbox_test": "tests/test_theseus_d1_evaluator_sandbox.py",
         "evaluator_sandbox_qualification": "reports/theseus_d1_evaluator_sandbox_qualification.json",
         "evaluator_sandbox_qualification_state": "green_exact_local_denial_canaries",
+        "evaluator_seal_config": "configs/theseus_d1_evaluator_seal.json",
+        "evaluator_seal": "scripts/theseus_d1_evaluator_seal.py",
+        "evaluator_seal_test": "tests/test_theseus_d1_evaluator_seal.py",
+        "evaluator_seal_implementation": "complete_prospective_pre_model_single_callable_visible_hidden_parent_fail_target_pass_transplant_pass_filter_waiting_on_source_materialization",
         "untrusted_repository_execution_authorized_before_evaluator_seal": false,
-        "downstream_evaluator_campaign_and_disposition_state": "not_implemented_do_not_claim_D1_execution_ready",
+        "downstream_evaluator_campaign_and_disposition_state": "pre_model_evaluator_seal_implemented_campaign_integrity_and_terminal_disposition_not_implemented_do_not_claim_D1_execution_ready",
         "remaining_D1_execution_owners": [
-          "natural_request_and_independent_parent_fail_target_pass_evaluator_seal_on_qualified_sandbox",
+          "append_only_metadata_materialization_and_evaluator_qualification_controller_if_initial_206_source_frame_yields_fewer_than_44_adequate_tasks",
           "blind_candidate_and_control_campaign",
           "independent_integrity_recomputation_and_terminal_disposition"
         ],
@@ -4038,6 +4042,7 @@
         "temporal_contamination_identity": "mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560",
         "source_disjoint_registry_count": 9,
         "power_derived_cohort_size": 44,
+        "power_derived_initial_source_frame_size": 206,
         "source_acquisition_authorized": false,
         "candidate_or_control_calls_authorized": false,
         "automatic_book_support_promotion": false

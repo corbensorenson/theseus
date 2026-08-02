@@ -73,9 +73,10 @@
       "training_and_distillation_rows",
       "all_consumed_private_surfaces"
     ],
-    "membership_selection": "Using only prospectively allowed public metadata, apply language, license, immutable-revision, changed-source-and-test-path, source-disjointness, and contamination filters; then order identities by SHA-256(campaign_id || repository || parent_revision || target_revision) and take the first design-derived cohort_size distinct repositories. Archive contents, parent/target execution, oracle construction, evaluator outcomes, and candidate/control behavior are forbidden selection inputs.",
-    "membership_fixed_before_archive_fetch": true,
-    "post_membership_materialization_or_evaluator_failure": "retain_the_task_and_classify_the_D1_experiment_inconclusive_if_the_44_of_44_adequacy_floor_fails",
+    "membership_selection": "Using only prospectively allowed public metadata, apply language, license, immutable-revision, changed-source-and-test-path, source-disjointness, and contamination filters; order identities by SHA-256(campaign_id || repository || parent_revision || target_revision); freeze the design-derived initial source frame before archive fetch; then retain every pre-model rejection and seal the first 44 independently evaluator-qualified distinct repositories before any candidate or control call. Candidate or control outcomes are never selection inputs.",
+    "metadata_source_order_fixed_before_archive_fetch": true,
+    "final_membership_fixed_after_independent_pre_model_evaluator_qualification": true,
+    "post_initial_frame_underfill": "append_complete_metadata_intervals_and_retain_all_prior_pre_model_evidence_until_44_qualify_before_any_candidate_or_control_call",
     "replacement_after_any_candidate_or_control_call": false,
     "consume_exact_identity_once": true
   },

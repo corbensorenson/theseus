@@ -257,11 +257,12 @@ def materialize(
             )
         rows.append(task_row)
     artifact_count = sum(len(row["artifacts"]) for row in rows)
-    if len(rows) != 44:
+    expected_tasks = len(dictionaries(registry.get("tasks")))
+    if len(rows) != expected_tasks:
         faults.append("materialized_task_count_invalid")
-    if artifact_count != 88:
+    if artifact_count != expected_tasks * 2:
         faults.append("materialized_archive_count_invalid")
-    terminal = bool(faults) or artifact_count == 88
+    terminal = bool(faults) or artifact_count == expected_tasks * 2
     report = {
         "policy": POLICY,
         "created_utc": successor.now(),
@@ -459,7 +460,8 @@ def audit_existing_materialization(config: dict[str, Any], registry: dict[str, A
                 path = resolve(str(artifact.get(path_key) or ""))
                 if not path.is_file() or sha256_file(path) != artifact.get(hash_key):
                     faults.append(f"existing_artifact_invalid:{path_key}")
-    return {"complete": not faults and artifact_count == 88, "artifact_count": artifact_count, "faults": sorted(set(faults))}
+    expected_artifacts = len(dictionaries(registry.get("tasks"))) * 2
+    return {"complete": not faults and artifact_count == expected_artifacts, "artifact_count": artifact_count, "faults": sorted(set(faults))}
 
 
 def download(url: str, destination: Path) -> None:
