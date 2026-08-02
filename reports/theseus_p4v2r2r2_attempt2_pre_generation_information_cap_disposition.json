@@ -1,16 +1,18 @@
 {
-  "policy": "project_theseus_p4_pre_generation_information_cap_disposition_v1",
+  "policy": "project_theseus_p4_pre_generation_information_cap_disposition_v2",
   "state": "SEALED_ZERO_CALL_PRE_GENERATION_REPAIR",
   "scientific_status": "NO_OBSERVATION",
   "trigger_state": "GREEN",
   "faults": [],
   "campaign": "P4V2R2R2 attempt 2",
   "discovery": {
-    "kind": "arbitrary_asymmetric_provisional_artifact_prompt_restriction",
+    "kind": "arbitrary_quality_bearing_repair_prompt_information_restrictions",
     "direct_and_plan_characters_retained": 12000,
     "typed_semantic_ir_characters_retained": 16000,
-    "why_invalid_for_forward_execution": "The second learned call did not receive the complete first-call artifact and the retained amount differed by arm. Although this was not a generated-token decoder ceiling, it was a project-selected information restriction capable of changing repair quality and arm comparability.",
-    "required_repair": "Pass the complete first-call artifact to every learned arm, apply no project-selected character or token restriction to that artifact, count the exact complete repair prompt with the pinned tokenizer, and treat a non-addressable repair prompt as instrument-invalid rather than model- or mechanism-negative evidence."
+    "visible_verifier_characters_retained_upstream": 2000,
+    "visible_verifier_characters_retained_in_repair_prompt": 1000,
+    "why_invalid_for_forward_execution": "The second learned call did not receive the complete first-call artifact or complete visible-verifier feedback, and the retained artifact amount differed by arm. Although these were not generated-token decoder ceilings, they were project-selected information restrictions capable of changing repair quality and arm comparability.",
+    "required_repair": "Pass the complete first-call artifact and complete visible-verifier feedback to every learned arm, apply no project-selected character or token restriction to either, count the exact complete repair prompt with the pinned tokenizer, and treat a non-addressable repair prompt as instrument-invalid rather than model- or mechanism-negative evidence."
   },
   "custody": {
     "candidate_generation_opened": false,
@@ -53,5 +55,5 @@
     "task_failure": false,
     "reason": "No candidate or control call occurred. This is an instrument-design finding only."
   },
-  "maximum_inference": "This report proves only that P4V2R2R2 attempt 2 consumed no model calls or tasks before an asymmetric provisional-artifact prompt restriction was identified and that the unchanged task pool may be used once in a prospectively repaired attempt. It supplies no model, mechanism, task, D1, D2, serving, training, or ASI Stack support evidence."
+  "maximum_inference": "This amended report proves only that P4V2R2R2 attempt 2 consumed no model calls or tasks before arbitrary first-artifact and visible-verifier-feedback prompt restrictions were identified and that the unchanged task pool may be used once in a prospectively repaired attempt. It supplies no model, mechanism, task, D1, D2, serving, training, or ASI Stack support evidence."
 }

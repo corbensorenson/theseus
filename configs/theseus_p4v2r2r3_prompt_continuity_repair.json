@@ -4,9 +4,9 @@
   "base_instrument": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
   "base_instrument_sha256": "86f8e1840dd6ced36e48257eca8a427377852cb662f2ad66d53441d048218b4d",
   "zero_call_disposition": "reports/theseus_p4v2r2r2_attempt2_pre_generation_information_cap_disposition.json",
-  "zero_call_disposition_sha256": "f6f5898f9ac919710654b613fd5777dfdb56cd5f7906d404c0035ca14b53f42e",
+  "zero_call_disposition_sha256": "27887408a24147b77f732afc3cacebd55939b441b8f7048967c02c61e156ee9d",
   "candidate_runner": "scripts/theseus_p4v2r2r4_cognitive_compilation.py",
-  "candidate_runner_sha256": "eda31eb1e4e77303a7f472006bd5287dafd71b4292ed09e1690e74f246c387c2",
+  "candidate_runner_sha256": "5528dae6e9a478130a5b829465d80238758721cb56409902d1543d913fec7ad1",
   "runtime_attempt_namespace": "p4v2r2r4_attempt1",
   "generation_budget": {
     "project_selected_quality_token_cap": null,
@@ -20,8 +20,10 @@
   },
   "prompt_continuity_repair": {
     "complete_first_call_artifact_visible_to_second_call": true,
+    "complete_visible_verifier_feedback_visible_to_second_call": true,
     "project_selected_first_artifact_character_cap": null,
     "project_selected_first_artifact_token_cap": null,
+    "project_selected_verifier_feedback_character_cap": null,
     "same_rule_all_learned_arms": true,
     "exact_complete_repair_prompt_counted_by_pinned_tokenizer": true,
     "repair_prompt_must_fit_model_declared_context": true,

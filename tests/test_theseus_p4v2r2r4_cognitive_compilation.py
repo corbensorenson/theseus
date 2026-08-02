@@ -25,6 +25,8 @@ def test_repair_instrument_is_green_zero_call_and_uncapped() -> None:
     repair = value["prompt_continuity_repair"]
     assert repair["project_selected_first_artifact_character_cap"] is None
     assert repair["project_selected_first_artifact_token_cap"] is None
+    assert repair["project_selected_verifier_feedback_character_cap"] is None
+    assert repair["complete_visible_verifier_feedback_visible_to_second_call"] is True
     assert repair["same_rule_all_learned_arms"] is True
     runner_path = ROOT / value["candidate_runner"]
     assert runner.p2a.sha256_file(runner_path) == value["candidate_runner_sha256"]
@@ -33,11 +35,13 @@ def test_repair_instrument_is_green_zero_call_and_uncapped() -> None:
 def test_full_repair_prompt_retains_prefix_beyond_historical_tail_for_every_arm() -> None:
     prefix = "BEGIN-OF-PROVISIONAL-ARTIFACT\n"
     first = prefix + ("x" * 20000) + "\nEND-OF-PROVISIONAL-ARTIFACT"
+    verifier_prefix = "BEGIN-OF-VERIFIER-FEEDBACK\n"
+    verifier_output = verifier_prefix + ("v" * 5000) + "\nEND-OF-VERIFIER-FEEDBACK"
     verification = {
         "apply_faults": [],
         "visible_verifier": {
             "returncode": 1,
-            "stdout_tail": "failed",
+            "stdout_tail": verifier_output,
             "stderr_tail": "",
         },
     }
@@ -55,6 +59,26 @@ def test_full_repair_prompt_retains_prefix_beyond_historical_tail_for_every_arm(
         )
         assert first in prompt
         assert prefix in prompt
+        assert json.dumps(verifier_output) in prompt
+        assert "BEGIN-OF-VERIFIER-FEEDBACK" in prompt
+        assert "END-OF-VERIFIER-FEEDBACK" in prompt
+
+
+def test_visible_verifier_retains_complete_output(tmp_path: Path) -> None:
+    marker = "BEGIN" + ("z" * 5000) + "END"
+    report = runner.run_complete_visible_verifier(
+        tmp_path,
+        {
+            "visible_verifier": {
+                "command": [sys.executable, "-c", f"print({marker!r})"],
+                "timeout_seconds": 10,
+            }
+        },
+    )
+    assert report["passed"] is True
+    assert marker in report["stdout_tail"]
+    assert report["stdout_complete"] is True
+    assert report["project_selected_character_cap"] is None
 
 
 def test_projected_instrument_changes_only_attempt_and_prompt_repair_fields() -> None:

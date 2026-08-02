@@ -5,7 +5,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import subprocess
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -64,6 +67,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     repair = p2a.mapping(value.get("prompt_continuity_repair"))
     required_true = (
         "complete_first_call_artifact_visible_to_second_call",
+        "complete_visible_verifier_feedback_visible_to_second_call",
         "same_rule_all_learned_arms",
         "exact_complete_repair_prompt_counted_by_pinned_tokenizer",
         "repair_prompt_must_fit_model_declared_context",
@@ -83,6 +87,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     if (
         repair.get("project_selected_first_artifact_character_cap") is not None
         or repair.get("project_selected_first_artifact_token_cap") is not None
+        or repair.get("project_selected_verifier_feedback_character_cap") is not None
         or p2a.mapping(value.get("generation_budget")).get(
             "project_selected_quality_token_cap"
         )
@@ -131,14 +136,14 @@ def render_full_final_prompt(
         "visible_verifier_returncode": p2a.mapping(
             verification.get("visible_verifier")
         ).get("returncode"),
-        "visible_verifier_stdout_tail": str(
+        "visible_verifier_stdout_complete": str(
             p2a.mapping(verification.get("visible_verifier")).get("stdout_tail")
             or ""
-        )[-1000:],
-        "visible_verifier_stderr_tail": str(
+        ),
+        "visible_verifier_stderr_complete": str(
             p2a.mapping(verification.get("visible_verifier")).get("stderr_tail")
             or ""
-        )[-1000:],
+        ),
         "dependency_local_repair_obligation_ids": sorted(implicated),
     }
     if original.startswith(causal.SEMANTIC_PROMPT_MARKER):
@@ -162,6 +167,50 @@ def render_full_final_prompt(
         + "\n\nReturn one complete final candidate against the ORIGINAL snapshot in the "
         "same arm grammar. Do not emit a delta against the provisional candidate."
     )
+
+
+def run_complete_visible_verifier(
+    root: Path, task: dict[str, Any]
+) -> dict[str, Any]:
+    """Retain all verifier feedback; the model context is the only prompt boundary."""
+    verifier = p2a.mapping(task.get("visible_verifier"))
+    command = p2a.strings(verifier.get("command"))
+    started = time.perf_counter()
+    try:
+        result = subprocess.run(
+            command,
+            cwd=root,
+            text=True,
+            capture_output=True,
+            timeout=max(1, int(verifier.get("timeout_seconds") or 60)),
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+        )
+        return {
+            "passed": result.returncode == 0,
+            "returncode": result.returncode,
+            # Historical field names are retained for consumer compatibility;
+            # these values are complete and are never sliced in this runner.
+            "stdout_tail": result.stdout,
+            "stderr_tail": result.stderr,
+            "stdout_complete": True,
+            "stderr_complete": True,
+            "project_selected_character_cap": None,
+            "runtime_ms": round((time.perf_counter() - started) * 1000, 3),
+            "command_sha256": p2a.stable_hash(command),
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "passed": False,
+            "returncode": 124,
+            "timed_out": True,
+            "stdout_tail": str(exc.stdout or ""),
+            "stderr_tail": str(exc.stderr or ""),
+            "stdout_complete": False,
+            "stderr_complete": False,
+            "project_selected_character_cap": None,
+            "runtime_ms": round((time.perf_counter() - started) * 1000, 3),
+            "command_sha256": p2a.stable_hash(command),
+        }
 
 
 def projected_instrument(overlay: dict[str, Any]) -> dict[str, Any]:
@@ -196,6 +245,7 @@ def run_experiment(
     original_namespace = predecessor.RUNTIME_ATTEMPT_NAMESPACE
     original_state = predecessor.INSTRUMENT_STATE
     original_render = causal.render_final_prompt
+    original_verifier = p2a.run_visible_verifier
     with tempfile.NamedTemporaryFile(
         mode="w",
         encoding="utf-8",
@@ -210,6 +260,7 @@ def run_experiment(
         predecessor.RUNTIME_ATTEMPT_NAMESPACE = RUNTIME_ATTEMPT_NAMESPACE
         predecessor.INSTRUMENT_STATE = INSTRUMENT_STATE
         causal.render_final_prompt = render_full_final_prompt
+        p2a.run_visible_verifier = run_complete_visible_verifier
         report = predecessor.run_experiment(
             temporary,
             task_path,
@@ -219,15 +270,18 @@ def run_experiment(
         predecessor.RUNTIME_ATTEMPT_NAMESPACE = original_namespace
         predecessor.INSTRUMENT_STATE = original_state
         causal.render_final_prompt = original_render
+        p2a.run_visible_verifier = original_verifier
         temporary.unlink(missing_ok=True)
     report["policy"] = POLICY
     report["instrument_overlay_sha256"] = p2a.sha256_file(instrument_path)
     report["runtime_attempt_namespace"] = RUNTIME_ATTEMPT_NAMESPACE
     report["prompt_continuity"] = {
         "complete_first_call_artifact_retained": True,
+        "complete_visible_verifier_feedback_retained": True,
         "same_rule_all_learned_arms": True,
         "project_selected_first_artifact_character_cap": None,
         "project_selected_first_artifact_token_cap": None,
+        "project_selected_verifier_feedback_character_cap": None,
         "physical_context_boundary_disposition": (
             "INVALID_OBSERVATION_INSTRUMENT_INADEQUATE"
         ),
