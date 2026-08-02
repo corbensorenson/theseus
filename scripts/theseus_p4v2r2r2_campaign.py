@@ -15,26 +15,26 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_p4_cognitive_compilation_evaluator as evaluator  # noqa: E402
-import theseus_p4v2r2r2_cognitive_compilation as candidate  # noqa: E402
+import theseus_p4v2r2r3_cognitive_compilation as candidate  # noqa: E402
 
 
 POLICY = "project_theseus_p4v2r2r2_campaign_v1"
 POOL = ROOT / "configs" / "theseus_p4v2r2r2_task_pool.json"
 INSTRUMENT = ROOT / "configs" / "theseus_p4v2r2r2_cognitive_compilation_instrument.json"
 ROUTE_CANARY = ROOT / "reports" / "theseus_p4v2r2r2_route_canary_audit.json"
-PROGRESS = ROOT / "reports" / "theseus_p4v2r2r2_campaign_progress.json"
-POOL_SHA256 = "3c5138a7690a9d620d93e4ef64925060af7b39239a99fbf758f126acdcb2ffbd"
-INSTRUMENT_SHA256 = "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
-ROUTE_CANARY_SHA256 = "042c4476af2a9c997dc1d8c6e304576e27c8db3ea55b2ef717e3f70597725af7"
-RUNTIME_ATTEMPT_NAMESPACE = "p4v2r2r2_attempt1"
+PROGRESS = ROOT / "reports" / "theseus_p4v2r2r2_attempt2_campaign_progress.json"
+POOL_SHA256 = "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f"
+INSTRUMENT_SHA256 = "86f8e1840dd6ced36e48257eca8a427377852cb662f2ad66d53441d048218b4d"
+ROUTE_CANARY_SHA256 = "14b3c8775b835972d4866e9cad2ed3d64928d600583f266e832201bcf50a15be"
+RUNTIME_ATTEMPT_NAMESPACE = "p4v2r2r3_attempt1"
 NORMAL_TERMINATIONS = {"parser_complete", "model_eos"}
 
 
 def result_paths(row: dict[str, Any]) -> dict[str, Path]:
     stem = p2a.safe_slug(str(row.get("stem") or "task"))
     return {
-        "run": ROOT / "reports" / f"theseus_p4v2r2r2_attempt1_{stem}_run.json",
-        "evaluation": ROOT / "reports" / f"theseus_p4v2r2r2_attempt1_{stem}_evaluation.json",
+        "run": ROOT / "reports" / f"theseus_p4v2r2r2_attempt2_{stem}_run.json",
+        "evaluation": ROOT / "reports" / f"theseus_p4v2r2r2_attempt2_{stem}_evaluation.json",
     }
 
 

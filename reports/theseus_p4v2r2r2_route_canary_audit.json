@@ -13,7 +13,7 @@
   "generated_tokens": 5,
   "instrument": {
     "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
-    "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+    "sha256": "86f8e1840dd6ced36e48257eca8a427377852cb662f2ad66d53441d048218b4d"
   },
   "maximum_inference": "A GREEN canary proves only that one non-task frozen TMax call traversed the canonical direct runtime, ended naturally, emitted immutable v2 telemetry, and passed route release. It is not task or mechanism evidence.",
   "physical_context_boundary_hits": 0,

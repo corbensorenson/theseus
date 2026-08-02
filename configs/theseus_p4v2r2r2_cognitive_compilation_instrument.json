@@ -47,7 +47,7 @@
     "task_count": 10,
     "visible_verifier_timeout_seconds": 60
   },
-  "campaign_id": "ASI-THESEUS-FLAGSHIP-01-P4V2R2R2-FRESH-RECOVERY",
+  "campaign_id": "ASI-THESEUS-FLAGSHIP-01-P4V2R2R3-PRE-GENERATION-REPAIR",
   "decision_rule": {
     "adequate_no_survivor": "Every adequacy requirement passes but the development-survivor rule does not. This exact implementation is not advanced; no broader cognitive-compilation falsification follows.",
     "development_survivor": "The treatment is useful on at least four of ten tasks, solves at least three more tasks than each learned control and the prospective no-model compiler control, loses head-to-head on no more than one task against either learned control, has zero unsafe or rollback failures, meets every mechanics and custody floor, and is not dominated on joined model-call, token, verifier, latency, or rollback cost.",
@@ -107,8 +107,8 @@
     "assistant_runtime_sha256": "3fbc31ebf222929562c147d06a069dce3b94d4400b40833b43e26ca8fb734fc8",
     "blind_evaluator": "scripts/theseus_p4_cognitive_compilation_evaluator.py",
     "blind_evaluator_sha256": "ce79be5b2507435f928982ad6edb56207947b1f1c8a22a654d20795400d3cd70",
-    "candidate_runner": "scripts/theseus_p4v2r2r2_cognitive_compilation.py",
-    "candidate_runner_sha256": "985cf5b950106d5bbd8b9e3fb07d8168f7e81a4a4fc1e72fc75e55bfc75fa75a",
+    "candidate_runner": "scripts/theseus_p4v2r2r3_cognitive_compilation.py",
+    "candidate_runner_sha256": "5f28fa7ad8ad5054a96708e6aa3af60baad20b17a1b87f15b88e8cf5b81d9093",
     "causal_runner": "scripts/theseus_p4v2r2_cognitive_compilation.py",
     "causal_runner_sha256": "f5b144d86fc63de0967bd1bb63aa59b3dd3c0c8029e7eb0b9cf69c54ae9e7248",
     "local_backend": "scripts/theseus_local_inference_backend_v2.py",
@@ -152,7 +152,18 @@
   "p4s_terminal_disposition": "reports/theseus_p4s_terminal_disposition.json",
   "p4s_terminal_disposition_sha256": "2efb3120ddb7396bc45d9c8dd22c66cdaa62b8293fb2b66135a03e89f068c7b8",
   "policy": "project_theseus_p4v2r2_cognitive_compilation_instrument_v1",
-  "purpose": "Run a wholly fresh recovery denominator after the externally interrupted r1 transaction while holding frozen TMax, Semantic-IR v2r2, learned controls, completion semantics, evaluator, and decision rule constant.",
+  "purpose": "Run a wholly fresh recovery denominator after repairing the pre-generation namespace-audit recursion while holding the frozen task pool, TMax, Semantic-IR v2r2, learned controls, completion semantics, evaluator, and decision rule constant.",
+  "pre_generation_repair": {
+    "candidate_generation_opened": false,
+    "causal_runner_changed": false,
+    "failure_disposition": {
+      "path": "reports/theseus_p4v2r2r2_attempt1_pre_generation_failure_disposition.json",
+      "sha256": "a159fa6637a4653ebef2083adc51d7c95f66d551fcaf4f07c57df1b5d0778fce"
+    },
+    "local_model_calls_consumed": 0,
+    "repair": "Bind the adapter audit to an immutable non-adapter function reference before execution monkeypatching.",
+    "same_task_pool_reuse_authorized": true
+  },
   "recovery_predecessor": {
     "candidate_unseen_tasks_excluded": 3,
     "complete_tasks_excluded": 6,
@@ -174,7 +185,7 @@
     "task_denominator_consumed": 0,
     "task_prompt_or_source_visible": false
   },
-  "runtime_attempt_namespace": "p4v2r2r2_attempt1",
+  "runtime_attempt_namespace": "p4v2r2r3_attempt1",
   "selected_claim": {
     "automatic_support_promotion": false,
     "causal_variable": "Typed source-to-semantic-to-target lowering with stable obligation and semantic-scope identities, explicit loss, actual target validation, and dependency-local repair.",
@@ -189,7 +200,7 @@
     "task_membership_sealed_after_instrument_commit": true,
     "treatment_transport": "theseus_semantic_ir_v2r2_labeled"
   },
-  "state": "PROSPECTIVELY_RESEALED_AFTER_EXTERNAL_EXECUTION_INTERRUPTION",
+  "state": "PROSPECTIVELY_RESEALED_AFTER_PRE_GENERATION_RUNNER_RECURSION",
   "v2r2_mechanics_binding": "configs/theseus_semantic_ir_v2r2_mechanics.json",
   "v2r2_mechanics_binding_sha256": "b5cb83b74373699005f59226a6dac2d26f5b3c352f867a9a5066d2c1bebcc8bd"
 }

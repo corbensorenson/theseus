@@ -2,7 +2,7 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 79.107,
+    "runtime_ms": 62.041,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_XARRAY:ZeroDivisionError:float division by zero\n"
   },
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-02T03:24:02.519837Z",
+  "created_utc": "2026-08-02T03:42:08.241187Z",
   "evaluator_sha256": "9597c863034d4e04ee34c8af1270429a9a5ded24a5779a523fe93c6601f3614b",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 360.458,
+  "runtime_ms": 293.986,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 77.027,
+    "runtime_ms": 66.913,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_PASS_XARRAY\n"
   },

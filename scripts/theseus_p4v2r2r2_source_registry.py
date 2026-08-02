@@ -50,11 +50,34 @@ def audit(path: Path = REGISTRY) -> dict[str, Any]:
         faults.append("registry_not_prospectively_fixed")
 
     instrument_path = p2a.resolve(str(value.get("instrument") or ""))
-    if (
-        not instrument_path.is_file()
-        or p2a.sha256_file(instrument_path) != str(value.get("instrument_sha256") or "")
-    ):
+    declared_instrument_sha256 = str(value.get("instrument_sha256") or "")
+    observed_instrument_sha256 = p2a.sha256_file(instrument_path)
+    instrument_binding_mode = "exact_original_freeze"
+    if not instrument_path.is_file():
         faults.append("instrument_binding_invalid")
+    elif observed_instrument_sha256 != declared_instrument_sha256:
+        instrument_binding_mode = "prospective_pre_generation_repair"
+        repaired = p2a.read_json(instrument_path)
+        repair = p2a.mapping(repaired.get("pre_generation_repair"))
+        disposition_owner = p2a.mapping(repair.get("failure_disposition"))
+        disposition_path = p2a.resolve(str(disposition_owner.get("path") or ""))
+        disposition = (
+            p2a.read_json(disposition_path) if disposition_path.is_file() else {}
+        )
+        frozen = p2a.mapping(disposition.get("frozen_transaction"))
+        frozen_instrument = p2a.mapping(frozen.get("instrument"))
+        if (
+            not disposition_path.is_file()
+            or p2a.sha256_file(disposition_path)
+            != str(disposition_owner.get("sha256") or "")
+            or frozen_instrument.get("sha256") != declared_instrument_sha256
+            or disposition.get("scientific_status") != "NO_OBSERVATION"
+            or int(disposition.get("local_model_calls") or 0) != 0
+            or int(disposition.get("runtime_backend_receipts") or 0) != 0
+            or repair.get("candidate_generation_opened") is not False
+            or repair.get("same_task_pool_reuse_authorized") is not True
+        ):
+            faults.append("instrument_binding_invalid")
     predecessor_path = p2a.resolve(
         str(value.get("predecessor_terminal_disposition") or "")
     )
@@ -145,7 +168,9 @@ def audit(path: Path = REGISTRY) -> dict[str, Any]:
         "registry": {"path": p2a.rel(path), "sha256": p2a.sha256_file(path)},
         "instrument": {
             "path": p2a.rel(instrument_path),
-            "sha256": p2a.sha256_file(instrument_path),
+            "sha256": observed_instrument_sha256,
+            "registry_freeze_sha256": declared_instrument_sha256,
+            "binding_mode": instrument_binding_mode,
             "freeze_commit": value.get("instrument_freeze_commit"),
         },
         "predecessor_terminal_disposition": {

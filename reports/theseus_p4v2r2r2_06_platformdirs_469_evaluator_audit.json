@@ -2,7 +2,7 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 76.077,
+    "runtime_ms": 65.423,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_PLATFORMDIRS:AssertionError:\n"
   },
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-02T03:23:59.959687Z",
+  "created_utc": "2026-08-02T03:42:06.113885Z",
   "evaluator_sha256": "dc578fed72cebec0025b594ddabdbe08315be2033d619d775eb480ac8d9f64f7",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 341.647,
+  "runtime_ms": 292.912,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 76.948,
+    "runtime_ms": 66.237,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_PASS_PLATFORMDIRS\n"
   },

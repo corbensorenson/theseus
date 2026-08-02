@@ -23,6 +23,7 @@ def test_fresh_source_registry_is_prospective_disjoint_and_uncapped() -> None:
     assert report["candidate_or_control_calls"] == 0
     assert report["archive_fetches"] == 0
     assert report["project_selected_quality_token_cap"] is None
+    assert report["instrument"]["binding_mode"] == "prospective_pre_generation_repair"
 
 
 def test_fresh_source_registry_has_complexity_gradient_and_no_user_gate() -> None:

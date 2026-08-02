@@ -20,7 +20,7 @@ INSTRUMENT = ROOT / "configs" / "theseus_p4v2r2r2_cognitive_compilation_instrume
 CANARY = ROOT / "reports" / "theseus_p4v2r2r2_route_canary.json"
 SANDBOX_FAILURE = ROOT / "reports" / "theseus_p4v2r2r2_route_canary_attempt1_sandbox_metal_unavailable.json"
 OUT = ROOT / "reports" / "theseus_p4v2r2r2_route_canary_audit.json"
-INSTRUMENT_SHA256 = "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+INSTRUMENT_SHA256 = "86f8e1840dd6ced36e48257eca8a427377852cb662f2ad66d53441d048218b4d"
 
 
 def audit() -> dict[str, Any]:
@@ -28,6 +28,13 @@ def audit() -> dict[str, Any]:
     if not INSTRUMENT.is_file() or p2a.sha256_file(INSTRUMENT) != INSTRUMENT_SHA256:
         faults.append("instrument_binding_invalid")
     instrument = p2a.read_json(INSTRUMENT)
+    repair = p2a.mapping(instrument.get("pre_generation_repair"))
+    if (
+        repair.get("candidate_generation_opened") is not False
+        or int(repair.get("local_model_calls_consumed") or 0) != 0
+        or repair.get("same_task_pool_reuse_authorized") is not True
+    ):
+        faults.append("pre_generation_repair_invalid")
     canary = p2a.read_json(CANARY) if CANARY.is_file() else {}
     failure = p2a.read_json(SANDBOX_FAILURE) if SANDBOX_FAILURE.is_file() else {}
     if canary.get("trigger_state") != "GREEN":

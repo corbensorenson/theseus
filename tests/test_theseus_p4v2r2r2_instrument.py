@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_assistant_p2a as p2a  # noqa: E402
-import theseus_p4v2r2r2_cognitive_compilation as runner  # noqa: E402
+import theseus_p4v2r2r3_cognitive_compilation as runner  # noqa: E402
 
 
 INSTRUMENT = ROOT / "configs" / "theseus_p4v2r2r2_cognitive_compilation_instrument.json"
@@ -21,10 +21,12 @@ def test_fresh_recovery_instrument_is_green_and_uncapped() -> None:
 
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
-    assert report["runtime_attempt_namespace"] == "p4v2r2r2_attempt1"
+    assert report["runtime_attempt_namespace"] == "p4v2r2r3_attempt1"
     assert value["generation_budget"]["project_selected_quality_token_cap"] is None
     assert value["boundaries"]["user_gate"] == "none"
     assert value["single_mechanism_change"]["causal_implementation_changed_from_r1"] is False
+    assert value["pre_generation_repair"]["candidate_generation_opened"] is False
+    assert value["pre_generation_repair"]["local_model_calls_consumed"] == 0
 
 
 def test_fresh_recovery_instrument_excludes_every_predecessor_task() -> None:

@@ -2,7 +2,7 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 81.609,
+    "runtime_ms": 67.909,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_ITSDANGEROUS:RuntimeError:sha1 unavailable at import time\n"
   },
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-02T03:24:01.242815Z",
+  "created_utc": "2026-08-02T03:42:07.194829Z",
   "evaluator_sha256": "eee9c489fcb5baf08ea7fc58148ad840753109827860839562336b395e49c598",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 362.69,
+  "runtime_ms": 309.994,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 80.227,
+    "runtime_ms": 72.175,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_PASS_ITSDANGEROUS\n"
   },

@@ -21,7 +21,7 @@ import theseus_p4_cognitive_compilation as p4  # noqa: E402
 import theseus_p4_task_pool as base_pool  # noqa: E402
 import theseus_p4s_task_pool as p4s_pool  # noqa: E402
 import theseus_p4v2r2_task_pool as predecessor  # noqa: E402
-import theseus_p4v2r2r2_cognitive_compilation as runner  # noqa: E402
+import theseus_p4v2r2r3_cognitive_compilation as runner  # noqa: E402
 import theseus_p4v2r2r2_revision_repair as revision_repair  # noqa: E402
 import theseus_p4v2r2r2_source_registry as source_registry  # noqa: E402
 import theseus_semantic_ir_v2r2 as ir_v2r2  # noqa: E402
@@ -33,7 +33,7 @@ REVISION_CORRECTIONS = ROOT / "configs" / "theseus_p4v2r2r2_revision_corrections
 REVISION_FETCH = ROOT / "reports" / "theseus_p4v2r2r2_revision_repair_fetch.json"
 CONTRACTS = ROOT / "configs" / "theseus_p4v2r2r2_task_contracts.json"
 INSTRUMENT = ROOT / "configs" / "theseus_p4v2r2r2_cognitive_compilation_instrument.json"
-INSTRUMENT_AUDIT = ROOT / "reports" / "theseus_p4v2r2r2_instrument_audit.json"
+INSTRUMENT_AUDIT = ROOT / "reports" / "theseus_p4v2r2r3_instrument_audit.json"
 POOL = ROOT / "configs" / "theseus_p4v2r2r2_task_pool.json"
 FIXTURES = ROOT / "tests" / "fixtures" / "theseus_p4v2r2r2_online"
 CORE = FIXTURES / "theseus_p4v2r2r2_evaluator_core.py"

@@ -2,7 +2,7 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 79.14,
+    "runtime_ms": 62.757,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_MARKUPSAFE:AssertionError:\n"
   },
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-02T03:24:00.593744Z",
+  "created_utc": "2026-08-02T03:42:06.639189Z",
   "evaluator_sha256": "2f8321382cf8d0f08bf8b556fe1c9c2e1f063e3786de3032809cf27b1e027e4b",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 354.912,
+  "runtime_ms": 292.583,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 75.9,
+    "runtime_ms": 63.698,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_PASS_MARKUPSAFE\n"
   },

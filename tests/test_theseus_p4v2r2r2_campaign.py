@@ -27,6 +27,6 @@ def test_result_and_runtime_namespaces_are_attempt_isolated() -> None:
     row = pool["tasks"][0]
     paths = campaign.result_paths(row)
 
-    assert "p4v2r2r2_attempt1" in paths["run"].name
-    assert "p4v2r2r2_attempt1" in paths["evaluation"].name
-    assert campaign.RUNTIME_ATTEMPT_NAMESPACE == "p4v2r2r2_attempt1"
+    assert "p4v2r2r2_attempt2" in paths["run"].name
+    assert "p4v2r2r2_attempt2" in paths["evaluation"].name
+    assert campaign.RUNTIME_ATTEMPT_NAMESPACE == "p4v2r2r3_attempt1"

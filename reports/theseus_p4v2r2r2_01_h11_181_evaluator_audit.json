@@ -2,7 +2,7 @@
   "baseline_verification": {
     "hidden_passed": false,
     "returncode": 1,
-    "runtime_ms": 82.48,
+    "runtime_ms": 77.678,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_H11:AssertionError:21-digit Content-Length was accepted\n"
   },
@@ -30,17 +30,17 @@
     "teacher_calls": 0,
     "user_facing_effects": 0
   },
-  "created_utc": "2026-08-02T03:23:56.637397Z",
+  "created_utc": "2026-08-02T03:42:02.889017Z",
   "evaluator_sha256": "0a959f2798b7fe8637a43ffce5e53fc9f03d256b0cc17d4a3c418cc414ac0372",
   "faults": [],
   "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
   "route_labels_opened": 0,
-  "runtime_ms": 360.12,
+  "runtime_ms": 328.471,
   "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
   "target_verification": {
     "hidden_passed": true,
     "returncode": 0,
-    "runtime_ms": 78.018,
+    "runtime_ms": 71.56,
     "stderr_tail": "",
     "stdout_tail": "P4V2R2R2_HIDDEN_PASS_H11\n"
   },
