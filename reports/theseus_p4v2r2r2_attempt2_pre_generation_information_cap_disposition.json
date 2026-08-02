@@ -1,0 +1,57 @@
+{
+  "policy": "project_theseus_p4_pre_generation_information_cap_disposition_v1",
+  "state": "SEALED_ZERO_CALL_PRE_GENERATION_REPAIR",
+  "scientific_status": "NO_OBSERVATION",
+  "trigger_state": "GREEN",
+  "faults": [],
+  "campaign": "P4V2R2R2 attempt 2",
+  "discovery": {
+    "kind": "arbitrary_asymmetric_provisional_artifact_prompt_restriction",
+    "direct_and_plan_characters_retained": 12000,
+    "typed_semantic_ir_characters_retained": 16000,
+    "why_invalid_for_forward_execution": "The second learned call did not receive the complete first-call artifact and the retained amount differed by arm. Although this was not a generated-token decoder ceiling, it was a project-selected information restriction capable of changing repair quality and arm comparability.",
+    "required_repair": "Pass the complete first-call artifact to every learned arm, apply no project-selected character or token restriction to that artifact, count the exact complete repair prompt with the pinned tokenizer, and treat a non-addressable repair prompt as instrument-invalid rather than model- or mechanism-negative evidence."
+  },
+  "custody": {
+    "candidate_generation_opened": false,
+    "local_model_calls": 0,
+    "runtime_backend_receipts": 0,
+    "complete_tasks": 0,
+    "consumed_tasks": 0,
+    "task_pool_reuse_on_repaired_attempt_authorized": true,
+    "prior_outputs_reused_or_rescored": false,
+    "project_selected_quality_token_cap": null
+  },
+  "evidence": {
+    "autonomous_launch": {
+      "path": "reports/theseus_p4v2r2r2_attempt2_autonomous_launch.json",
+      "sha256": "695df491915e0cd72ec760541c4ec64c8ec92ce051d2c5f7a150f072dda7030b",
+      "trigger_state": "PAUSED"
+    },
+    "campaign_progress": {
+      "path": "reports/theseus_p4v2r2r2_attempt2_campaign_progress.json",
+      "sha256": "ab4d7f954046fcec8b8909cf378f080c9cc1c921e472d15a74990af31e81bf6e",
+      "complete_tasks": 0,
+      "model_calls_retained": 0
+    },
+    "instrument": {
+      "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+      "sha256": "86f8e1840dd6ced36e48257eca8a427377852cb662f2ad66d53441d048218b4d"
+    },
+    "candidate_runner": {
+      "path": "scripts/theseus_p4v2r2r3_cognitive_compilation.py",
+      "sha256": "5f28fa7ad8ad5054a96708e6aa3af60baad20b17a1b87f15b88e8cf5b81d9093"
+    },
+    "causal_runner": {
+      "path": "scripts/theseus_p4v2r2_cognitive_compilation.py",
+      "sha256": "f5b144d86fc63de0967bd1bb63aa59b3dd3c0c8029e7eb0b9cf69c54ae9e7248"
+    }
+  },
+  "negative_evidence": {
+    "model_failure": false,
+    "mechanism_failure": false,
+    "task_failure": false,
+    "reason": "No candidate or control call occurred. This is an instrument-design finding only."
+  },
+  "maximum_inference": "This report proves only that P4V2R2R2 attempt 2 consumed no model calls or tasks before an asymmetric provisional-artifact prompt restriction was identified and that the unchanged task pool may be used once in a prospectively repaired attempt. It supplies no model, mechanism, task, D1, D2, serving, training, or ASI Stack support evidence."
+}
