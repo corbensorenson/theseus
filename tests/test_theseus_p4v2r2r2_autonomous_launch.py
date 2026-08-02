@@ -65,3 +65,36 @@ def test_physical_resource_failure_pauses_without_user_gate() -> None:
     assert report["trigger_state"] == "PAUSED"
     assert "external_power_physically_connected" in report["failed_gates"]
     assert "no_competing_accelerator_job" in report["failed_gates"]
+
+
+def test_wait_mode_retries_machine_pause_without_a_human_gate(monkeypatch) -> None:
+    paused = {
+        "created_utc": "2026-08-02T00:00:00Z",
+        "trigger_state": "PAUSED",
+        "failed_gates": ["measured_runtime_memory_available"],
+        "faults": [],
+    }
+    green = {
+        "created_utc": "2026-08-02T00:00:20Z",
+        "trigger_state": "GREEN",
+        "failed_gates": [],
+        "faults": [],
+    }
+    checks = iter((paused, green))
+    monkeypatch.setattr(launcher, "preflight", lambda *args, **kwargs: next(checks))
+    monkeypatch.setattr(launcher.p2a, "write_json", lambda *args, **kwargs: None)
+    monkeypatch.setattr(launcher.time, "sleep", lambda seconds: None)
+    monkeypatch.setattr(
+        launcher,
+        "execute_once",
+        lambda *args, **kwargs: {
+            "trigger_state": "GREEN",
+            "campaign_complete": True,
+        },
+    )
+
+    result = launcher.wait_and_execute(
+        config(), config_path=CONFIG_PATH, poll_seconds=1.0
+    )
+
+    assert result["campaign_complete"] is True

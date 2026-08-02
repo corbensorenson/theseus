@@ -4,7 +4,7 @@
     "D1_cases_consumed": 0,
     "D2_cases_consumed": 0,
     "complete_tasks": 0,
-    "created_utc": "2026-08-02T03:45:27.558659Z",
+    "created_utc": "2026-08-02T03:47:10.292622Z",
     "external_inference_calls": 0,
     "faults": [],
     "instrument": {
@@ -147,7 +147,7 @@
     "path": "configs/theseus_p4v2r2r2_autonomous_launch.json",
     "sha256": "9f34106fdc3410c2db93ccaa2af9275fdb3d31a0bc065ac9cfcd7bb1d4e9d4a0"
   },
-  "created_utc": "2026-08-02T03:45:27.950700Z",
+  "created_utc": "2026-08-02T03:47:10.673180Z",
   "disk": {
     "derivation": {
       "disk_output_bytes_per_context_token": 8,
@@ -155,7 +155,7 @@
       "disk_source_copy_count": 2,
       "minimum_reclaimable_memory_source": "measured_runtime_preflight_peak_rss_mib"
     },
-    "free_bytes": 53822959616,
+    "free_bytes": 53816233984,
     "maximum_retained_output_bytes": 125829120,
     "passed": true,
     "required_bytes": 212422198,
@@ -182,7 +182,7 @@
   "launch_authorized": false,
   "maximum_inference": "Authorizes exactly one local sealed campaign under an exclusive machine lease; no D1, D2, training, serving, hosted inference, or book promotion.",
   "memory": {
-    "observed_reclaimable_mib": 4212.688,
+    "observed_reclaimable_mib": 4183.938,
     "passed": false,
     "physical_memory_mib": 16384.0,
     "required_reclaimable_mib": 4621.016,

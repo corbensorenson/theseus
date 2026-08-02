@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 import uuid
 from pathlib import Path
 from typing import Any
@@ -227,18 +228,59 @@ def execute_once(config: dict[str, Any], *, config_path: Path) -> dict[str, Any]
     }
 
 
+def wait_and_execute(
+    config: dict[str, Any],
+    *,
+    config_path: Path,
+    poll_seconds: float = 20.0,
+) -> dict[str, Any]:
+    """Wait on machine predicates, then execute without a human timing gate."""
+    while True:
+        before = preflight(config, config_path=config_path)
+        p2a.write_json(p2a.resolve(str(config["report"])), before)
+        print(
+            json.dumps(
+                {
+                    "created_utc": before["created_utc"],
+                    "trigger_state": before["trigger_state"],
+                    "failed_gates": before.get("failed_gates", []),
+                    "faults": before.get("faults", []),
+                    "waiting_for_machine": before["trigger_state"] == "PAUSED",
+                },
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+        if before["trigger_state"] == "RED":
+            return before
+        if before["trigger_state"] == "GREEN":
+            result = execute_once(config, config_path=config_path)
+            if result.get("trigger_state") != "PAUSED":
+                return result
+        time.sleep(max(1.0, poll_seconds))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=p2a.rel(DEFAULT_CONFIG))
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--wait-for-machine", action="store_true")
+    parser.add_argument("--poll-seconds", type=float, default=20.0)
     args = parser.parse_args()
     config_path = p2a.resolve(args.config)
     config = p2a.read_json(config_path)
-    report = (
-        execute_once(config, config_path=config_path)
-        if args.execute
-        else preflight(config, config_path=config_path)
-    )
+    if args.wait_for_machine and not args.execute:
+        parser.error("--wait-for-machine requires --execute")
+    if args.wait_for_machine:
+        report = wait_and_execute(
+            config,
+            config_path=config_path,
+            poll_seconds=args.poll_seconds,
+        )
+    elif args.execute:
+        report = execute_once(config, config_path=config_path)
+    else:
+        report = preflight(config, config_path=config_path)
     p2a.write_json(p2a.resolve(str(config["report"])), report)
     campaign_audit = p2a.mapping(
         report.get("final_campaign_audit") or report.get("campaign_audit")
